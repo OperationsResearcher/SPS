@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redmine / Faaliyetler Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>📋 Redmine / Faaliyetler Kontrol Listesi</h1>
+            <p>Faaliyet Akışı Sayfası - Merkezi Veri, Filtreleme, Detay Modalı</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('redmine', 'Redmine / Faaliyetler')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('redmine', 'Redmine / Faaliyetler')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'redmine';
+        const moduleTitle = 'Redmine / Faaliyetler';
+        
+        const questions = [
+            {
+                text: 'Redmine / Faaliyetler sayfasına erişilebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfada "Faaliyet Akışı" başlığı görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Filtre butonları (Tümü, Kritik 🔥, Açık İşler) görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Tümü" butonuna tıklandığında tüm faaliyetler gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Kritik 🔥" butonuna tıklandığında sadece kritik öncelikli (High) faaliyetler filtreleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Açık İşler" butonuna tıklandığında sadece açık/beklemede/devam eden faaliyetler filtreleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Filtre değiştirildiğinde aktif buton görsel olarak vurgulanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Faaliyet tablosu görüntüleniyor mu? (Durum, Konu/Başlık, Kaynak & Proje, Tarih, İşlem kolonları ile)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tablo verileri merkezi mock data\'dan geliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Faaliyetler tarihe göre sıralanmış mı? (En yeni en üstte)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Her faaliyet için öncelik durumu badge\'i doğru gösteriliyor mu? (Kritik: kırmızı, Normal: mavi, Düşük: gri)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Faaliyet konusu/başlığı ve ID numarası görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Proje bilgisi ve kaynak (Redmine, Jira, Dahili, CRM) bilgisi görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tarih bilgisi görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Her faaliyet için "İncele" butonu görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"İncele" butonuna tıklandığında detay modalı açılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Detay modalında faaliyet ID\'si, konusu, projesi, durumu, önceliği görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Detay modalında kaynak ve tarih bilgisi görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Modal\'daki "Kapat" butonu modal\'ı kapatıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Modal\'daki "Kaynağa Git ↗" butonu görüntüleniyor mu? (İşlevsellik ileride eklenebilir)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfa responsive mi? (Mobil cihazlarda düzgün görüntüleniyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tablo mobil cihazlarda yatay kaydırma ile görüntülenebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak sayfa performansı ve kullanılabilirlik iyi mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+
+
+

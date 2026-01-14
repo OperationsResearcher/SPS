@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Giriş - Stratejik Planlama Sistemi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <!-- Giriş Formu -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h3 class="mb-0 text-white">Stratejik Planlama Sistemi</h3>
+                    <p class="text-white-50 mb-0 small">Hesabınıza giriş yapın</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('auth.login') }}" class="needs-validation" novalidate
+                        id="loginForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="mb-3">
+                            <label for="kurumSelect" class="form-label">Kurum Seçiniz</label>
+                            <select class="form-select" id="kurumSelect" name="kurum_id" required>
+                                <option value="" selected disabled>Kurum seçiniz</option>
+                                {% for kurum in kurumlar %}
+                                <option value="{{ kurum.id }}">{{ kurum.kisa_ad }} - {{ kurum.ticari_unvan }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                placeholder="kullanici.adi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Şifre <span class="text-muted small" id="passwordStatus"></span></label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="••••••••" required>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="1" id="quickLogin" name="quick_login">
+                            <label class="form-check-label" for="quickLogin">
+                                <strong>Kolay Giriş</strong> (Şifre gerektirmez)
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="rememberMe" checked disabled>
+                            <label class="form-check-label" for="rememberMe">
+                                Beni hatırla (zorunlu güvenlik politikası)
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">Giriş Yap</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Hızlı Giriş - Tüm Kullanıcılar -->
+            {% if kullanicilar %}
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header text-center py-3"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="mb-0 text-white">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        <strong>Hızlı Giriş - Tüm Kullanıcılar</strong>
+                    </h5>
+                    <small class="text-white-50">{{ kullanicilar|length }} kullanıcı • Tek tıkla direkt giriş</small>
+                </div>
+                <div class="card-body p-3">
+                    <!-- Arama -->
+                    <div class="mb-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input id="quickAra" type="text" class="form-control"
+                                placeholder="İsim, kullanıcı adı veya rol ara...">
+                        </div>
+                    </div>
+
+                    <!-- Rol Filtreleri -->
+                    <div class="mb-3">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-outline-dark role-filter active"
+                                data-role="all">
+                                <i class="bi bi-people-fill"></i> Tümü
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger role-filter" data-role="admin">
+                                <i class="bi bi-shield-fill-check"></i> Admin
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary role-filter"
+                                data-role="kurum_yoneticisi">
+                                <i class="bi bi-person-badge"></i> Yönetici
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info role-filter" data-role="kullanici">
+                                <i class="bi bi-person"></i> Kullanıcı
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary role-filter" data-role="kmf">
+                                <i class="bi bi-building"></i> KMF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Kullanıcı Grid - Scroll Yapmadan Tümü Görünsün -->
+                    <div id="quickList" class="row g-2">
+                        {% for u in kullanicilar %}
+                        {% set display_name = (u.first_name + ' ' + u.last_name).strip() if u.first_name and u.last_name
+                        else u.username %}
+                        {% set role = (u.sistem_rol or '').lower() %}
+                        {% set btn_class = 'btn-outline-danger' if role == 'admin' else 'btn-outline-warning' if role ==
+                        'kurum_yoneticisi' else 'btn-outline-info' if role == 'ust_yonetim' else 'btn-outline-secondary'
+                        if role in ['surec_lideri', 'surec_uyesi'] else 'btn-outline-success' %}
+                        {% set icon_class = 'bi-crown-fill' if role == 'admin' else 'bi-person-badge-fill' if role ==
+                        'kurum_yoneticisi' else 'bi-shield-fill' if role == 'ust_yonetim' else 'bi-tasks' if role in
+                        ['surec_lideri', 'surec_uyesi'] else 'bi-person-fill' %}
+                        {% set kurum_adi = u.kurum.kisa_ad if u.kurum else 'Kurum Bilgisi Yok' %}
+                        <div class="col-6 col-md-4 col-lg-3 user-card" data-role="{{ u.sistem_rol }}"
+                            data-kurum-ad="{{ kurum_adi }}">
+                            <button type="button" class="btn {{ btn_class }} btn-sm w-100 quick-login-btn"
+                                data-username="{{ u.username }}" data-kurum="{{ u.kurum_id }}"
+                                title="{{ kurum_adi }} - {{ u.sistem_rol|role_name }}">
+                                <i class="bi {{ icon_class }} me-1"></i>
+                                <span class="d-inline-block text-truncate" style="max-width: 120px;">{{ display_name
+                                    }}</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Demo Bilgisi -->
+                    <div class="alert alert-info alert-dismissible fade show mt-3 mb-0 py-2" role="alert">
+                        <small>
+                            <i class="bi bi-info-circle-fill"></i>
+                            <strong>Demo Şifresi:</strong>
+                            Tüm kullanıcılar için: <code class="bg-white px-2 py-1 rounded">123456</code>
+                        </small>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            style="font-size: 0.7rem;"></button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .quick-login-btn {
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .quick-login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .quick-login-btn:active {
+        transform: translateY(0);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('loginForm');
+        const quickLoginCheckbox = document.getElementById('quickLogin');
+        const passwordInput = document.getElementById('password');
+        const passwordStatus = document.getElementById('passwordStatus');
+        const csrfInput = document.querySelector('input[name="csrf_token"]');
+        
+        if (!csrfInput) {
+            console.error('CSRF token bulunamadı!');
+            showToast('error', 'Güvenlik hatası: CSRF token bulunamadı. Sayfayı yenileyin.');
+            return;
+        }
+        const csrfToken = csrfInput.value;
+
+        // Kolay giriş checkbox'ı kontrolü
+        if (quickLoginCheckbox) {
+            quickLoginCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    passwordInput.disabled = true;
+                    passwordInput.value = '';
+                    passwordInput.required = false;
+                    passwordStatus.textContent = '(İsteğe bağlı)';
+                    passwordStatus.classList.add('text-success');
+                    showToast('info', 'Kolay giriş etkinleştirildi. Sadece kullanıcı adı gerekli.');
+                } else {
+                    passwordInput.disabled = false;
+                    passwordInput.required = true;
+                    passwordStatus.textContent = '';
+                    passwordStatus.classList.remove('text-success');
+                }
+            });
+        }
+
+        // Hızlı giriş butonları - Kolay giriş seçeneğini aktif et
+        document.querySelectorAll('.quick-login-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const username = this.dataset.username;
+                const kurum = this.dataset.kurum;
+
+                // Kurum ID kontrolü
+                if (!kurum || kurum === 'None' || kurum === '') {
+                    showToast('error', 'Hata: Bu kullanıcı için kurum bilgisi bulunamadı. Lütfen sistem yöneticisine başvurun.');
+                    console.error('Kurum ID bulunamadı:', { username, kurum });
+                    return;
+                }
+
+                const kurumSelect = document.getElementById('kurumSelect');
+                const usernameInput = document.getElementById('username');
+
+                if (kurumSelect) {
+                    kurumSelect.value = kurum;
+                }
+                if (usernameInput) {
+                    usernameInput.value = username;
+                }
+
+                // Kolay giriş otomatik aktivleştir
+                if (quickLoginCheckbox) {
+                    quickLoginCheckbox.checked = true;
+                    quickLoginCheckbox.dispatchEvent(new Event('change'));
+                }
+
+                // Formu otomatik gönder
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    form.submit();
+                }, 300);
+            });
+        });
+
+        // Arama fonksiyonu
+        const quickAra = document.getElementById('quickAra');
+        if (quickAra) {
+            quickAra.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                document.querySelectorAll('.user-card').forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(term) ? '' : 'none';
+                });
+                updateUserCounts();
+            });
+        }
+
+        // Rol filtreleme
+        document.querySelectorAll('.role-filter').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Aktif butonu değiştir
+                document.querySelectorAll('.role-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const role = this.dataset.role;
+                document.querySelectorAll('.user-card').forEach(card => {
+                    if (role === 'all') {
+                        card.style.display = '';
+                    } else if (role === 'kmf') {
+                        const kurum = (card.dataset.kurumAd || '').toLowerCase();
+                        card.style.display = kurum.includes('kmf') ? '' : 'none';
+                    } else if (role === 'kullanici') {
+                        // Kurum kullanıcısı, süreç üyesi, süreç lideri
+                        const cardRole = card.dataset.role;
+                        card.style.display = ['kurum_kullanici', 'surec_uyesi', 'surec_lideri'].includes(cardRole) ? '' : 'none';
+                    } else {
+                        card.style.display = card.dataset.role === role ? '' : 'none';
+                    }
+                });
+                updateUserCounts();
+            });
+        });
+
+        function updateUserCounts() {
+            // Görünür kullanıcı sayısını güncelle
+            const allCards = document.querySelectorAll('.user-card');
+            const visibleCards = Array.from(allCards).filter(card => {
+                return card.style.display !== 'none' && window.getComputedStyle(card).display !== 'none';
+            });
+            const visible = visibleCards.length;
+
+            const allBtn = document.querySelector('.role-filter[data-role="all"]');
+            if (allBtn) {
+                const icon = allBtn.querySelector('i');
+                if (icon) {
+                    allBtn.innerHTML = '';
+                    allBtn.appendChild(icon.cloneNode(true));
+                    allBtn.innerHTML += ` Tümü (${visible})`;
+                }
+            }
+        }
+
+        // İlk yükleme
+        const allFilterBtn = document.querySelector('.role-filter[data-role="all"]');
+        if (allFilterBtn) {
+            allFilterBtn.classList.add('active');
+            updateUserCounts();
+        }
+    });
+</script>
+{% endblock %}

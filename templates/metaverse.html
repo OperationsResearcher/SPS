@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Metaverse Departman İkizi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-vr-cardboard me-2"></i>
+                Metaverse Departman İkizi
+            </h2>
+        </div>
+    </div>
+
+    {% if departments %}
+    <div class="row">
+        {% for dept in departments %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">{{ dept.department_name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Lokasyon:</strong> {{ dept.virtual_location or '-' }}</p>
+                    <p><strong>Aktif Kullanıcı:</strong> {{ dept.active_users }}</p>
+                    <p><strong>Avatar Sayısı:</strong> {{ dept.avatar_count }}</p>
+                    <span class="badge bg-{{ 'success' if dept.status == 'active' else 'secondary' }}">
+                        {{ 'Aktif' if dept.status == 'active' else 'Pasif' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz metaverse departmanı bulunmuyor.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

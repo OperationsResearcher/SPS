@@ -1,0 +1,163 @@
+# -*- coding: utf-8 -*-
+"""
+Konfigürasyon Yönetimi
+Environment variables kullanarak güvenli konfigürasyon yönetimi
+"""
+import os
+from datetime import timedelta
+from urllib.parse import quote_plus
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def build_sqlserver_uri():
+    """SQL Server connection string oluştur"""
+    server = os.environ.get('SQL_SERVER', 'localhost')
+    database = os.environ.get('SQL_DATABASE', 'stratejik_planlama')
+    username = os.environ.get('SQL_USERNAME', 'sa')
+    password = os.environ.get('SQL_PASSWORD', '')
+    driver = os.environ.get('SQL_DRIVER', 'ODBC Driver 17 for SQL Server')
+    
+    # SQL Server connection string formatı
+    # mssql+pyodbc://username:password@server/database?driver=ODBC+Driver+17+for+SQL+Server
+    if password:
+        # URL encoding için password'ü encode et
+        encoded_password = quote_plus(password)
+        return f'mssql+pyodbc://{username}:{encoded_password}@{server}/{database}?driver={quote_plus(driver)}&trusted_connection=no'
+    else:
+        # Windows Authentication (Trusted Connection)
+        return f'mssql+pyodbc://{server}/{database}?driver={quote_plus(driver)}&trusted_connection=yes'
+
+
+class Config:
+    """Temel konfigürasyon sınıfı"""
+    
+    # Flask ayarları
+    # SECRET_KEY: Production'da mutlaka environment variable olmalı (Fail-Fast)
+    _secret_key = os.environ.get('SECRET_KEY')
+    if not _secret_key:
+        env = os.environ.get('FLASK_ENV', 'development')
+        if env == 'production':
+            raise ValueError(
+                "SECRET_KEY environment variable must be set in production! "
+                "Set it with: export SECRET_KEY='your-secret-key-here'"
+            )
+        # Development'ta fallback (uyarı ile)
+        import warnings
+        warnings.warn(
+            "SECRET_KEY not set in environment. Using development fallback. "
+            "This is UNSAFE for production!",
+            UserWarning
+        )
+        _secret_key = 'dev-secret-key-change-in-production'
+    SECRET_KEY = _secret_key
+    
+    # Veritabanı - SQL Server veya SQLite
+    # Öncelik sırası: DATABASE_URL > SQL Server env vars > SQLite (fallback)
+    if os.environ.get('DATABASE_URL'):
+        # Direkt connection string verilmişse kullan
+        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    elif os.environ.get('SQL_SERVER'):
+        # SQL Server environment variables varsa kullan (Migration için geçici olarak aktif)
+        SQLALCHEMY_DATABASE_URI = build_sqlserver_uri()
+    else:
+        # Varsayılan: SQLite (Migration sonrası aktif)
+        # SQLite veritabanı dosyası: proje kök dizininde spsv2.db
+        SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(basedir, "spsv2.db")}'
+    
+    # SQL Server için özel ayarlar
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,  # Connection pool'da bağlantıları kontrol et
+        'pool_recycle': 3600,   # 1 saatte bir bağlantıları yenile
+        'echo': False           # SQL sorgularını logla (debug için True yapılabilir)
+    }
+    
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Session ayarları
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=1)
+    SESSION_COOKIE_SECURE = os.environ.get('FLASK_ENV') == 'production'
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    
+    # Dosya yükleme
+    UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads', 'logos')
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'}
+    
+    # Cache ayarları (development için)
+    SEND_FILE_MAX_AGE_DEFAULT = 0
+    TEMPLATES_AUTO_RELOAD = True
+    
+    # Logging
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
+    LOG_FILE = os.path.join(basedir, 'logs', 'stratejik_planlama.log')
+    LOG_MAX_BYTES = 10240000  # 10MB
+    LOG_BACKUP_COUNT = 10
+
+
+class DevelopmentConfig(Config):
+    """Development konfigürasyonu"""
+    DEBUG = True
+    TEMPLATES_AUTO_RELOAD = True
+    SEND_FILE_MAX_AGE_DEFAULT = 0
+    # Development'ta SQL sorgularını görmek için
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        **Config.SQLALCHEMY_ENGINE_OPTIONS,
+        'echo': True  # SQL sorgularını console'da göster
+    }
+
+
+class ProductionConfig(Config):
+    """Production konfigürasyonu"""
+    DEBUG = False
+    TESTING = False
+    TEMPLATES_AUTO_RELOAD = False
+    SEND_FILE_MAX_AGE_DEFAULT = 31536000  # 1 yıl
+    SESSION_COOKIE_SECURE = True
+    WTF_CSRF_ENABLED = True  # CSRF koruması aktif
+    
+    # Production'da veritabanı bilgileri zorunlu (Fail-Fast)
+    def __init__(self):
+        super().__init__()
+        # Veritabanı bağlantı bilgileri kontrolü
+        if not os.environ.get('DATABASE_URL') and not os.environ.get('SQL_SERVER'):
+            raise ValueError(
+                "Production ortamında DATABASE_URL veya SQL_SERVER environment variable'ı zorunludur!"
+            )
+        if os.environ.get('SQL_SERVER') and not os.environ.get('SQL_PASSWORD'):
+            # SQL Server kullanılıyorsa password zorunlu (Windows Auth hariç)
+            if not os.environ.get('SQL_TRUSTED_CONNECTION') == 'yes':
+                raise ValueError(
+                    "Production ortamında SQL_PASSWORD environment variable'ı zorunludur "
+                    "(veya SQL_TRUSTED_CONNECTION=yes kullanın)!"
+                )
+    
+    # Production'da SQL echo kapalı
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        **Config.SQLALCHEMY_ENGINE_OPTIONS,
+        'echo': False
+    }
+
+
+class TestingConfig(Config):
+    """Testing konfigürasyonu"""
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False
+
+
+# Konfigürasyon mapping
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'testing': TestingConfig,
+    'default': DevelopmentConfig
+}
+
+
+def get_config():
+    """Environment'a göre konfigürasyon döndür"""
+    env = os.environ.get('FLASK_ENV', 'development')
+    return config.get(env, config['default'])
+

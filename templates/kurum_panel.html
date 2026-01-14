@@ -1,0 +1,2228 @@
+{% extends "base.html" %}
+
+{% block title %}Kurum Paneli - Stratejik Planlama Sistemi{% endblock %}
+
+{% block content %}
+
+<style>
+/* Modern Kart Animasyonları */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Kart Stilleri */
+.modern-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease-out;
+    overflow: hidden;
+}
+
+.modern-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient Header Stilleri */
+.gradient-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.modern-card:hover .gradient-header::before {
+    transform: translateX(100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+/* İkon Stilleri */
+.icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon-box-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.icon-box-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.icon-box-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.icon-box-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+/* İstatistik Kartları */
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.stat-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Liste Kartları */
+.list-card-item {
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.list-card-item:hover {
+    border-left-color: #667eea;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(5px);
+}
+
+/* Accordion Stilleri */
+.custom-accordion .accordion-item {
+    border: none;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.custom-accordion .accordion-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 1.25rem;
+}
+
+.custom-accordion .accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+}
+
+.custom-accordion .accordion-button::after {
+    filter: brightness(0) invert(1);
+}
+
+/* Saatline Stilleri */
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 70px;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.timeline-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Buton Stilleri */
+.modern-btn {
+    padding: 0.625rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge Stilleri */
+.modern-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ç–zel Scroll */
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modern-card {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+/* Collapse Animasyonu */
+.card-body-collapsible {
+    transition: all 0.3s ease;
+    max-height: 1000px;
+    overflow: hidden;
+}
+
+.card-body-collapsible.collapsed {
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    opacity: 0;
+}
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center mb-4">
+            <div class="icon-box icon-box-primary">
+                <i class="fas fa-building"></i>
+            </div>
+            <div>
+                <h2 class="mb-0">Kurum Paneli</h2>
+                <p class="text-muted mb-0">{{ current_user.kurum.kisa_ad }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card" style="border-left-color: #667eea;">
+            <div class="d-flex align-items-center">
+                <div class="icon-box icon-box-primary me-3">
+                    <i class="fas fa-chess-queen"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-primary">{{ ana_stratejiler|length }}</div>
+                    <div class="text-muted small">Ana Strateji</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card" style="border-left-color: #11998e;">
+            <div class="d-flex align-items-center">
+                <div class="icon-box icon-box-success me-3">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-success">{{ degerler|length }}</div>
+                    <div class="text-muted small">Değer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card" style="border-left-color: #4facfe;">
+            <div class="d-flex align-items-center">
+                <div class="icon-box icon-box-info me-3">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-info">{{ uyeler|length }}</div>
+                    <div class="text-muted small">Üye</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card" style="border-left-color: #f093fb;">
+            <div class="d-flex align-items-center">
+                <div class="icon-box icon-box-warning me-3">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-danger">{{ surecler|length }}</div>
+                    <div class="text-muted small">Süreç</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kurum Özlük Bilgileri -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card modern-card">
+            <div class="card-header gradient-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Kurum Bilgileri</h5>
+                </div>
+                <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="card-body p-4 card-body-collapsible">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-tag text-primary me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Kısa Ad</small>
+                                    <strong>{{ current_user.kurum.kisa_ad or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-briefcase text-success me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Ticari Ünvan</small>
+                                    <strong>{{ current_user.kurum.ticari_unvan or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-tasks text-info me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Faaliyet Alanı</small>
+                                    <strong>{{ current_user.kurum.faaliyet_alani or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-users text-warning me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Çalışan Sayısı</small>
+                                    <strong>{{ current_user.kurum.calisan_sayisi or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-industry text-danger me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Sektör</small>
+                                    <strong>{{ current_user.kurum.sektor or '-' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-landmark text-primary me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Vergi Dairesi</small>
+                                    <strong>{{ current_user.kurum.vergi_dairesi or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-file-invoice text-success me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Vergi Numarası</small>
+                                    <strong>{{ current_user.kurum.vergi_numarasi or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-envelope text-info me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">E-posta</small>
+                                    <strong>{{ current_user.kurum.email or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <i class="fas fa-globe text-warning me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Web Adresi</small>
+                                    <strong>{{ current_user.kurum.web_adresi or '-' }}</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-phone text-danger me-3 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">Telefon</small>
+                                    <strong>{{ current_user.kurum.telefon or '-' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kurum Logosu -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card modern-card">
+            <div class="card-header gradient-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-image me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Kurum Logosu</h5>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <h6 class="text-muted mb-3">Mevcut Logo</h6>
+                            {% if current_user.kurum.logo_url %}
+                                {% set logo_url = current_user.kurum.logo_url %}
+                                {% if not logo_url.startswith('http://') and not logo_url.startswith('https://') %}
+                                    {% if logo_url.startswith('/static/') %}
+                                        {% set logo_url = url_for('static', filename=logo_url[8:]) %}
+                                    {% else %}
+                                        {% set logo_url = url_for('static', filename=logo_url.lstrip('/static/').lstrip('/')) %}
+                                    {% endif %}
+                                {% endif %}
+                                <img id="currentLogo" src="{{ logo_url }}" alt="Kurum Logosu" class="img-fluid rounded" style="max-height: 200px; max-width: 100%; border: 2px solid #dee2e6; padding: 10px;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="alert alert-info" style="display: none;">
+                                    <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h6 class="text-muted mb-3">Logo Yükle</h6>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-upload me-1"></i>Bilgisayardan Logo Yükle
+                            </label>
+                            <input type="file" class="form-control" id="logoFileInput" accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp" onchange="handleLogoFileSelect(this)">
+                            <small class="text-muted">PNG, JPG, JPEG, GIF, SVG, WEBP formatları desteklenir. Maksimum 5MB.</small>
+                            <div class="progress mt-2" id="logoUploadProgress" style="display: none;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-link me-1"></i>Logo URL'si (Alternatif)
+                            </label>
+                            <input type="text" class="form-control" id="logoUrlInput" placeholder="https://example.com/logo.png veya /static/uploads/logos/logo.png" value="{{ current_user.kurum.logo_url or '' }}">
+                            <small class="text-muted">Harici bir URL veya sistem içi dosya yolu girebilirsiniz.</small>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="saveLogo()" id="saveLogoBtn">
+                            <i class="fas fa-save me-2"></i>Logoyu Kaydet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kurum Ayarları -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card modern-card">
+            <div class="card-header gradient-info d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-cog me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Kurum Ayarları</h5>
+                </div>
+                <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="card-body p-4 card-body-collapsible">
+                <div class="row g-4">
+                    <!-- Rehber Sistemi Ayarı -->
+                    <div class="col-md-12">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="flex-grow-1 me-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-robot text-primary me-2" style="font-size: 1.5rem;"></i>
+                                            <h6 class="mb-0 fw-bold">İnteraktif Rehber Sistemi</h6>
+                                        </div>
+                                        <p class="text-muted mb-0 small">
+                                            Sağ altta görünen avatarlı yardımcı sistem, kullanıcılarınıza sayfa kullanımı konusunda 
+                                            adım adım rehberlik sağlar. Bu ayar tüm kurum çalışanları için geçerlidir.
+                                        </p>
+                                        <div class="mt-2">
+                                            <span class="badge bg-primary-subtle text-primary me-2">
+                                                <i class="fas fa-info-circle me-1"></i>Otomatik Rehberlik
+                                            </span>
+                                            <span class="badge bg-success-subtle text-success me-2">
+                                                <i class="fas fa-mouse-pointer me-1"></i>İnteraktif Yardım
+                                            </span>
+                                            <span class="badge bg-info-subtle text-info">
+                                                <i class="fas fa-graduation-cap me-1"></i>Kullanıcı Eğitimi
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch" style="font-size: 1.5rem;">
+                                        <input class="form-check-input" type="checkbox" role="switch" 
+                                               id="guideSystemSwitch" 
+                                               {% if current_user.kurum.show_guide_system %}checked{% endif %}
+                                               onchange="toggleGuideSystem(this.checked)">
+                                        <label class="form-check-label visually-hidden" for="guideSystemSwitch">
+                                            Rehber Sistemi
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="row g-2 text-center">
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-white">
+                                                <i class="fas fa-book-open text-primary d-block mb-1"></i>
+                                                <small class="text-muted">Sayfa Rehberleri</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-white">
+                                                <i class="fas fa-lightbulb text-warning d-block mb-1"></i>
+                                                <small class="text-muted">İpuçları</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="p-2 rounded bg-white">
+                                                <i class="fas fa-keyboard text-info d-block mb-1"></i>
+                                                <small class="text-muted">Kısayollar</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stratejik Planlama Bilgileri -->
+<div class="row mb-4">
+    <!-- Amaç ve Vizyon - İki Kart -->
+    <div class="col-lg-6 mb-4">
+        <div class="card modern-card">
+            <div class="card-header gradient-success d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bullseye me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Amaç ve Vizyon</h5>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-light btn-sm modern-btn" onclick="editAmacVizyon()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body card-body-collapsible">
+                <!-- Amaç -->
+                <div class="mb-4 p-3 bg-white rounded-3 shadow-sm">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 50px; height: 50px; font-size: 1.2rem;">
+                            <i class="fas fa-target text-white"></i>
+                        </div>
+                        <div class="ms-3 flex-grow-1">
+                            <h6 class="mb-2 text-primary fw-bold">
+                                <i class="fas fa-bullseye me-2"></i>Amaç
+                            </h6>
+                            <p class="mb-0 text-muted" id="amac-display" style="line-height: 1.6;">
+                                {{ current_user.kurum.amac or 'Kurum amacı henüz tanımlanmamış.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vizyon -->
+                <div class="p-3 bg-white rounded-3 shadow-sm">
+                    <div class="d-flex align-items-start">
+                        <div class="icon-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); width: 50px; height: 50px; font-size: 1.2rem;">
+                            <i class="fas fa-eye text-white"></i>
+                        </div>
+                        <div class="ms-3 flex-grow-1">
+                            <h6 class="mb-2 text-success fw-bold">
+                                <i class="fas fa-binoculars me-2"></i>Vizyon
+                            </h6>
+                            <p class="mb-0 text-muted" id="vizyon-display" style="line-height: 1.6;">
+                                {{ current_user.kurum.vizyon or 'Kurum vizyonu henüz tanımlanmamış.' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Değerler - Saatline Stili -->
+    <div class="col-lg-6 mb-4">
+        <div class="card modern-card">
+            <div class="card-header gradient-info d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-heart me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Değerlerimiz</h5>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-light btn-sm modern-btn" onclick="showEkleDegerModal()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="degerler-container">
+                {% if degerler %}
+                    <div class="timeline">
+                        {% for deger in degerler %}
+                        <div class="timeline-item" data-id="{{ deger.id }}">
+                            <div class="timeline-marker">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-2 text-primary">{{ deger.baslik }}</h6>
+                                        <p class="mb-0 text-muted small">{{ deger.aciklama }}</p>
+                                    </div>
+                                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                    <div class="btn-group btn-group-sm ms-2">
+                                        <button class="btn btn-outline-primary modern-btn" onclick="editDeger({{ deger.id }}, '{{ deger.baslik }}', '{{ deger.aciklama }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger modern-btn" onclick="deleteDeger({{ deger.id }}, '{{ deger.baslik }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-heart text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted">Henüz değer tanımlanmamış.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Etik Kurallar ve Kalite Politikaları -->
+<div class="row mb-4">
+    <!-- Etik Kuralları - Liste Kartları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card modern-card">
+            <div class="card-header gradient-warning d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-gavel me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Etik Kuralları</h5>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-light btn-sm modern-btn" onclick="showEkleEtikKuralModal()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="etik-kurallari-container">
+                {% if etik_kurallari %}
+                    {% for kural in etik_kurallari %}
+                    <div class="list-card-item p-3 bg-light mb-2" data-id="{{ kural.id }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="modern-badge bg-warning text-dark me-2">{{ loop.index }}</span>
+                                    <h6 class="mb-0">{{ kural.baslik }}</h6>
+                                </div>
+                                <p class="mb-0 text-muted small ms-4">{{ kural.aciklama }}</p>
+                            </div>
+                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                            <div class="btn-group btn-group-sm ms-2">
+                                <button class="btn btn-outline-primary modern-btn" onclick="editEtikKural({{ kural.id }}, '{{ kural.baslik }}', '{{ kural.aciklama }}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger modern-btn" onclick="deleteEtikKural({{ kural.id }}, '{{ kural.baslik }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-gavel text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted">Henüz etik kuralı tanımlanmamış.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kalite Politikaları - Liste Kartları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card modern-card">
+            <div class="card-header gradient-danger d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-award me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Kalite Politikaları</h5>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-light btn-sm modern-btn" onclick="showEkleKalitePolitikasiModal()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="kalite-politikalari-container">
+                {% if kalite_politikalari %}
+                    {% for politika in kalite_politikalari %}
+                    <div class="list-card-item p-3 bg-light mb-2" data-id="{{ politika.id }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="modern-badge bg-danger text-white me-2">{{ loop.index }}</span>
+                                    <h6 class="mb-0">{{ politika.baslik }}</h6>
+                                </div>
+                                <p class="mb-0 text-muted small ms-4">{{ politika.aciklama }}</p>
+                            </div>
+                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                            <div class="btn-group btn-group-sm ms-2">
+                                <button class="btn btn-outline-primary modern-btn" onclick="editKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}', '{{ politika.aciklama }}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger modern-btn" onclick="deleteKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-award text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted">Henüz kalite politikası tanımlanmamış.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stratejiler -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card fade-in-up">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <span>
+                    <i class="fas fa-chess-queen me-2"></i>
+                    <strong>Stratejik Planlama</strong>
+                    <span class="badge bg-light text-primary ms-2">{{ ana_stratejiler|length }} Ana Strateji</span>
+                </span>
+                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                <button class="btn btn-light btn-sm" onclick="showEkleAnaStratejiModal()">
+                    <i class="fas fa-plus me-1"></i>Yeni Ana Strateji
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-body p-4">
+                {% if ana_stratejiler %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for ana_strateji in ana_stratejiler %}
+                    <div class="col" data-id="{{ ana_strateji.id }}">
+                        <div class="card h-100 shadow-sm border-0 strategy-card" style="border-left: 4px solid #0d6efd !important;">
+                            <div class="card-body">
+                                <!-- Ana Strateji Başlık -->
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-2">
+                                            <i class="fas fa-layer-group text-primary me-2"></i>
+                                            {{ ana_strateji.ad }}
+                                        </h5>
+                                        <p class="card-text text-muted small mb-0">
+                                            {{ ana_strateji.aciklama or 'Açıklama yok' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Alt Stratejiler Sayısı Badge -->
+                                <div class="mb-3">
+                                    <span class="badge bg-success-subtle text-success border border-success">
+                                        <i class="fas fa-sitemap me-1"></i>
+                                        {{ ana_strateji.alt_stratejiler|length }} Alt Strateji
+                                    </span>
+                                </div>
+
+                                <!-- Alt Stratejiler Listesi -->
+                                <div class="alt-stratejiler-container mb-3" id="alt-container-{{ ana_strateji.id }}">
+                                    {% if ana_strateji.alt_stratejiler %}
+                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
+                                        <div class="alt-strateji-item mb-2 p-2 bg-light rounded-3 border border-success-subtle" 
+                                             data-id="{{ alt_strateji.id }}"
+                                             style="transition: all 0.3s ease;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="flex-grow-1" style="min-width: 0;">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <i class="fas fa-angle-double-right text-success me-2" style="font-size: 0.8rem;"></i>
+                                                        <strong class="text-truncate" style="font-size: 0.9rem;">{{ alt_strateji.ad }}</strong>
+                                                    </div>
+                                                    {% if alt_strateji.aciklama %}
+                                                    <p class="text-muted mb-0 ms-4" style="font-size: 0.75rem; line-height: 1.3;">
+                                                        {{ alt_strateji.aciklama[:80] }}{% if alt_strateji.aciklama|length > 80 %}...{% endif %}
+                                                    </p>
+                                                    {% endif %}
+                                                </div>
+                                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                                <div class="btn-group btn-group-sm ms-2" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary" 
+                                                            data-id="{{ alt_strateji.id }}"
+                                                            data-ana-strateji-id="{{ ana_strateji.id }}"
+                                                            data-ad="{{ alt_strateji.ad|e }}"
+                                                            data-aciklama="{{ alt_strateji.aciklama|e }}"
+                                                            onclick="editAltStrateji(this.dataset.id, this.dataset.anaStratejiId, this.dataset.ad, this.dataset.aciklama)"
+                                                            title="Düzenle">
+                                                        <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" 
+                                                            data-id="{{ alt_strateji.id }}"
+                                                            data-ad="{{ alt_strateji.ad|e }}"
+                                                            onclick="deleteAltStrateji(this.dataset.id, this.dataset.ad)"
+                                                            title="Sil">
+                                                        <i class="fas fa-trash" style="font-size: 0.75rem;"></i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="text-center py-3 bg-light rounded-3 border border-dashed">
+                                            <i class="fas fa-inbox text-muted mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+                                            <p class="text-muted small mb-0">Henüz alt strateji yok</p>
+                                            <small class="text-muted" style="font-size: 0.7rem;">Alt strateji eklemek için aşağıdaki butona tıklayın</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Aksiyon Butonları -->
+                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                                    <button class="btn btn-sm btn-success flex-fill" 
+                                            data-ana-strateji-id="{{ ana_strateji.id }}"
+                                            data-ana-strateji-ad="{{ ana_strateji.ad|e }}"
+                                            onclick="showEkleAltStratejiModal(this.dataset.anaStratejiId, this.dataset.anaStratejiAd)"
+                                            title="Alt Strateji Ekle">
+                                        <i class="fas fa-plus me-1"></i>Alt Strateji
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            data-id="{{ ana_strateji.id }}"
+                                            data-ad="{{ ana_strateji.ad|e }}"
+                                            data-aciklama="{{ ana_strateji.aciklama|e }}"
+                                            onclick="editAnaStrateji(this.dataset.id, this.dataset.ad, this.dataset.aciklama)"
+                                            title="Ana Stratejiyi Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            data-id="{{ ana_strateji.id }}"
+                                            data-ad="{{ ana_strateji.ad|e }}"
+                                            onclick="deleteAnaStrateji(this.dataset.id, this.dataset.ad)"
+                                            title="Ana Stratejiyi Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Kart Alt Kısmı - Görsel Bağlantı Göstergesi -->
+                            <div class="card-footer bg-primary-subtle border-0 text-center py-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-link me-1"></i>
+                                    Bağlı Alt Stratejiler: <strong>{{ ana_strateji.alt_stratejiler|length }}</strong>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Boş Durum Mesajı -->
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-chess-queen text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                    </div>
+                    <h5 class="text-muted mb-3">Henüz Ana Strateji Tanımlanmamış</h5>
+                    <p class="text-muted mb-4">
+                        Stratejik planlamanıza başlamak için ilk ana stratejiyi oluşturun.<br>
+                        Her ana stratejiye birden fazla alt strateji ekleyebilirsiniz.
+                    </p>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-primary" onclick="showEkleAnaStratejiModal()">
+                        <i class="fas fa-plus me-2"></i>İlk Ana Strateji Oluştur
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ek CSS Stilleri -->
+<style>
+.strategy-card {
+    transition: all 0.3s ease;
+}
+
+.strategy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.alt-strateji-item:hover {
+    background-color: #e7f5ff !important;
+    border-color: #0d6efd !important;
+    transform: translateX(5px);
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.border-success-subtle {
+    border-color: rgba(25, 135, 84, 0.3) !important;
+}
+</style>
+
+<!-- Süreçler ve Üyeler -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card modern-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-cogs me-3" style="font-size: 1.5rem;"></i>
+                        <h5 class="mb-0">Kurum Süreçleri</h5>
+                    </div>
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body card-body-collapsible">
+                {% if surecler and surecler|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-folder me-2 text-primary"></i>Süreç Adı</th>
+                                <th><i class="fas fa-user-tie me-2 text-success"></i>Lider</th>
+                                <th class="text-center"><i class="fas fa-info-circle me-2 text-info"></i>Durum</th>
+                                <th class="text-center"><i class="fas fa-chart-line me-2 text-warning"></i>İlerleme</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for surec in surecler %}
+                            <tr class="list-card-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 35px; height: 35px; font-size: 0.9rem; margin-right: 0.75rem;">
+                                            <i class="fas fa-folder text-white"></i>
+                                        </div>
+                                        <strong>{{ surec.ad }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if surec.lider %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.75rem;">
+                                            {% if surec.lider.first_name and surec.lider.last_name %}
+                                                {{ surec.lider.first_name[0]|upper }}{{ surec.lider.last_name[0]|upper }}
+                                            {% elif surec.lider.first_name %}
+                                                {{ surec.lider.first_name[0]|upper }}{{ surec.lider.first_name[1]|upper if surec.lider.first_name|length > 1 else surec.lider.first_name[0]|upper }}
+                                            {% elif surec.lider.username %}
+                                                {{ surec.lider.username[0]|upper }}{{ surec.lider.username[1]|upper if surec.lider.username|length > 1 else surec.lider.username[0]|upper }}
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <span>
+                                            {% if surec.lider.first_name and surec.lider.last_name %}
+                                                {{ surec.lider.first_name }} {{ surec.lider.last_name }}
+                                            {% elif surec.lider.first_name %}
+                                                {{ surec.lider.first_name }}
+                                            {% elif surec.lider.username %}
+                                                {{ surec.lider.username }}
+                                            {% else %}
+                                                Kullanıcı
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="modern-badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}secondary{% endif %}">
+                                        <i class="fas fa-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}pause-circle{% endif %} me-1"></i>
+                                        {{ surec.durum }}
+                                    </span>
+                                </td>
+                                <td style="min-width: 120px;">
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 22px;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                 style="width: {{ surec.ilerleme or 0 }}%; background: linear-gradient(90deg, {% if surec.ilerleme >= 75 %}#11998e, #38ef7d{% elif surec.ilerleme >= 50 %}#4facfe, #00f2fe{% elif surec.ilerleme >= 25 %}#f093fb, #f5576c{% else %}#fa709a, #fee140{% endif %});">
+                                            </div>
+                                        </div>
+                                        <strong class="text-muted" style="font-size: 0.85rem; min-width: 35px;">{{ surec.ilerleme or 0 }}%</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-cogs text-muted mb-3" style="font-size: 4rem; opacity: 0.3;"></i>
+                    <h5 class="text-muted mb-3">Henüz Süreç Tanımlanmamış</h5>
+                    <p class="text-muted mb-4">
+                        Kurumunuz için ilk süreci oluşturarak başlayabilirsiniz.<br>
+                        Süreçler, kurumunuzun iş akışlarını ve operasyonlarını yönetmenize yardımcı olur.
+                    </p>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <a href="{{ url_for('main.surec_paneli') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>İlk Süreci Oluştur
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card modern-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-users me-3" style="font-size: 1.5rem;"></i>
+                        <h5 class="mb-0">Kurum Üyeleri</h5>
+                    </div>
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 500px; overflow-y: auto;">
+                {% if uyeler %}
+                <div class="list-group list-group-flush">
+                    {% for uye in uyeler %}
+                    <div class="list-group-item px-0 list-card-item" style="border-left-width: 3px;">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                {% if uye.profile_photo %}
+                                <img src="{{ '/' + uye.profile_photo if not uye.profile_photo.startswith('static/') else url_for('static', filename=uye.profile_photo.replace('static/', '')) }}" 
+                                     alt="{{ uye.first_name or uye.username }}" 
+                                     class="rounded-circle shadow-sm" 
+                                     width="45" 
+                                     height="45"
+                                     style="border: 3px solid #11998e; object-fit: cover;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                {% endif %}
+                                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                     style="width: 45px; height: 45px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold; font-size: 1rem; {% if uye.profile_photo %}display: none;{% endif %}">
+                                    {% if uye.first_name and uye.last_name %}
+                                        {{ uye.first_name[0]|upper }}{{ uye.last_name[0]|upper }}
+                                    {% elif uye.first_name %}
+                                        {{ uye.first_name[0]|upper }}{{ uye.first_name[1]|upper if uye.first_name|length > 1 else uye.first_name[0]|upper }}
+                                    {% elif uye.username %}
+                                        {{ uye.username[0]|upper }}{{ uye.username[1]|upper if uye.username|length > 1 else uye.username[0]|upper }}
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1 fw-bold">
+                                    {% if uye.first_name and uye.last_name %}
+                                        {{ uye.first_name }} {{ uye.last_name }}
+                                    {% elif uye.first_name %}
+                                        {{ uye.first_name }}
+                                    {% elif uye.username %}
+                                        {{ uye.username }}
+                                    {% else %}
+                                        Kullanıcı
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted d-flex align-items-center">
+                                    <span class="modern-badge bg-light text-dark border" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-{% if uye.role == 'sistem_admin' %}crown{% elif uye.role == 'kurum_yetkilisi' %}shield-alt{% elif uye.role == 'ust_yonetim' %}user-tie{% elif uye.role == 'surec_lideri' %}user-cog{% else %}user{% endif %} me-1"></i>
+                                        {% if uye.role == 'sistem_admin' %}Sistem Admin
+                                        {% elif uye.role == 'kurum_yetkilisi' %}Kurum Yetkilisi
+                                        {% elif uye.role == 'ust_yonetim' %}Üst Yönetim
+                                        {% elif uye.role == 'surec_lideri' %}Süreç Lideri
+                                        {% elif uye.role == 'surec_uyesi' %}Süreç Üyesi
+                                        {% else %}{{ uye.role }}
+                                        {% endif %}
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p class="text-muted">Henüz üye bulunmuyor.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Amaç Vizyon Modal -->
+<div class="modal fade" id="amacVizyonModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-bullseye me-2"></i>Amaç ve Vizyon Düzenle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="amacVizyonForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-target me-2"></i>Amaç</label>
+                        <textarea class="form-control" name="amac" rows="4" placeholder="Kurumun amacını yazın...">{{ current_user.kurum.amac or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-eye me-2"></i>Vizyon</label>
+                        <textarea class="form-control" name="vizyon" rows="4" placeholder="Kurumun vizyonunu yazın...">{{ current_user.kurum.vizyon or '' }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Değer Ekle/Düzenle Modal -->
+<div class="modal fade" id="degerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-heart me-2"></i><span id="degerModalBaşlık">Değer Ekle</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="degerForm">
+                <input type="hidden" name="deger_id" id="deger_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" id="deger_baslik" required placeholder="Örn: Dürüstlük">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" id="deger_aciklama" rows="3" placeholder="Değer açıklaması..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Etik Kural Ekle/Düzenle Modal -->
+<div class="modal fade" id="etikKuralModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-gavel me-2"></i><span id="etikKuralModalBaşlık">Etik Kural Ekle</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="etikKuralForm">
+                <input type="hidden" name="etik_kural_id" id="etik_kural_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" id="etik_kural_baslik" required placeholder="Örn: İş Etiği">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" id="etik_kural_aciklama" rows="3" placeholder="Etik kural açıklaması..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Kalite Politikası Ekle/Düzenle Modal -->
+<div class="modal fade" id="kalitePolitikasiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-award me-2"></i><span id="kalitePolitikasiModalBaşlık">Kalite Politikası Ekle</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="kalitePolitikasiForm">
+                <input type="hidden" name="kalite_politikasi_id" id="kalite_politikasi_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" id="kalite_politikasi_baslik" required placeholder="Örn: Müşteri Memnuniyeti">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" id="kalite_politikasi_aciklama" rows="3" placeholder="Kalite politikası açıklaması..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Ana Strateji Ekle/Düzenle Modal -->
+<div class="modal fade" id="anaStratejiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-layer-group me-2"></i><span id="anaStratejiModalBaşlık">Ana Strateji Ekle</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="anaStratejiForm">
+                <input type="hidden" name="ana_strateji_id" id="ana_strateji_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Strateji Adı</label>
+                        <input type="text" class="form-control" name="ad" id="ana_strateji_ad" required placeholder="Örn: İnsan Kaynakları Gelişimi">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" id="ana_strateji_aciklama" rows="3" placeholder="Strateji açıklaması..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Alt Strateji Ekle/Düzenle Modal -->
+<div class="modal fade" id="altStratejiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-sitemap me-2"></i><span id="altStratejiModalBaşlık">Alt Strateji Ekle</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="altStratejiForm">
+                <input type="hidden" name="alt_strateji_id" id="alt_strateji_id">
+                <input type="hidden" name="ana_strateji_id" id="alt_strateji_ana_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Ana Strateji</label>
+                        <input type="text" class="form-control" id="alt_strateji_ana_ad" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alt Strateji Adı</label>
+                        <input type="text" class="form-control" name="ad" id="alt_strateji_ad" required placeholder="Örn: Çalışan Eğitimi">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" id="alt_strateji_aciklama" rows="3" placeholder="Alt strateji açıklaması..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ==========================================
+// CSRF Yardımcıları (Flask-WTF CSRF açık)
+// ==========================================
+
+function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+function ensureCsrfInFormData(formData) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken && formData && !formData.has('csrf_token')) {
+        formData.append('csrf_token', csrfToken);
+    }
+    return csrfToken;
+}
+
+function csrfHeaders(extraHeaders = {}) {
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) return extraHeaders;
+    return { ...extraHeaders, 'X-CSRFToken': csrfToken };
+}
+
+async function postForm(url, formData) {
+    ensureCsrfInFormData(formData);
+    return fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: csrfHeaders()
+    });
+}
+
+// Kart Gizle/Göster Fonksiyonu
+function toggleCardBody(button) {
+    const card = button.closest('.card');
+    const cardBody = card.querySelector('.card-body-collapsible');
+    const icon = button.querySelector('i');
+    
+    if (cardBody.classList.contains('collapsed')) {
+        // Aç
+        cardBody.classList.remove('collapsed');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+        button.setAttribute('title', 'Gizle');
+    } else {
+        // Kapat
+        cardBody.classList.add('collapsed');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+        button.setAttribute('title', 'Göster');
+    }
+}
+
+// Toast bildirimi göster
+function showToast(message, type = 'success') {
+    const toastContainer = document.createElement('div');
+    toastContainer.classAd = 'position-fixed bottom-0 end-0 p-3';
+    toastContainer.style.zIndex = '9999';
+    
+    const toastHTML = `
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'}" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.innerHTML = toastHTML;
+    document.body.appendChild(toastContainer);
+    
+    // Başarılı işlemlerde Stratejik Planlama Akışı'nı bilgilendir
+    if (type === 'success') {
+        notifyStratejikPlanlamaGüncelle();
+    }
+    
+    const toast = new bootstrap.Toast(toastContainer.querySelector('.toast'), { delay: 3000 });
+    toast.show();
+    
+    setTimeout(() => toastContainer.remove(), 4000);
+}
+
+// Amaç ve Vizyon Düzenle
+function editAmacVizyon() {
+    const modal = new bootstrap.Modal(document.getElementById('amacVizyonModal'));
+    modal.show();
+}
+
+document.getElementById('amacVizyonForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    
+    try {
+        const response = await postForm('/kurum/update-amac-vizyon', formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('amac-display').textContent = formData.get('amac') || 'Kurum amacı henüz tanımlanmamış.';
+            document.getElementById('vizyon-display').textContent = formData.get('vizyon') || 'Kurum vizyonu henüz tanımlanmamış.';
+            
+            bootstrap.Modal.getInstance(document.getElementById('amacVizyonModal')).hide();
+            showToast(data.message);
+            
+            // Stratejik planlama akışı sayfasını bilgilendir
+            notifyStratejikPlanlamaGüncelle();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Değer İşlemleri
+function showEkleDegerModal() {
+    document.getElementById('degerModalBaşlık').textContent = 'Değer Ekle';
+    document.getElementById('deger_id').value = '';
+    document.getElementById('deger_baslik').value = '';
+    document.getElementById('deger_aciklama').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('degerModal'));
+    modal.show();
+}
+
+function editDeger(id, baslik, aciklama) {
+    document.getElementById('degerModalBaşlık').textContent = 'Değer Düzenle';
+    document.getElementById('deger_id').value = id;
+    document.getElementById('deger_baslik').value = baslik;
+    document.getElementById('deger_aciklama').value = aciklama;
+    
+    const modal = new bootstrap.Modal(document.getElementById('degerModal'));
+    modal.show();
+}
+
+async function deleteDeger(id, baslik) {
+    if (!confirm(`"${baslik}" değerini silmek istediğinizden emin misiniz?`)) return;
+    
+    try {
+        const formData = new FormData();
+        const response = await postForm(`/kurum/degerler/delete/${id}`, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.querySelector(`#degerler-container [data-id="${id}"]`).remove();
+            
+            if (document.querySelectorAll('#degerler-container [data-id]').length === 0) {
+                document.getElementById('degerler-container').innerHTML = `
+                    <p class="text-muted text-center py-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz değer tanımlanmamış.
+                    </p>
+                `;
+            }
+            
+            showToast(data.message);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+}
+
+document.getElementById('degerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    const degerId = document.getElementById('deger_id').value;
+    
+    const url = degerId ? `/kurum/degerler/update/${degerId}` : '/kurum/degerler/add';
+    
+    try {
+        const response = await postForm(url, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('degerModal')).hide();
+            showToast(data.message);
+            location.reload(); // Reload to show changes
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Etik Kural İşlemleri
+function showEkleEtikKuralModal() {
+    document.getElementById('etikKuralModalBaşlık').textContent = 'Etik Kural Ekle';
+    document.getElementById('etik_kural_id').value = '';
+    document.getElementById('etik_kural_baslik').value = '';
+    document.getElementById('etik_kural_aciklama').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('etikKuralModal'));
+    modal.show();
+}
+
+function editEtikKural(id, baslik, aciklama) {
+    document.getElementById('etikKuralModalBaşlık').textContent = 'Etik Kural Düzenle';
+    document.getElementById('etik_kural_id').value = id;
+    document.getElementById('etik_kural_baslik').value = baslik;
+    document.getElementById('etik_kural_aciklama').value = aciklama;
+    
+    const modal = new bootstrap.Modal(document.getElementById('etikKuralModal'));
+    modal.show();
+}
+
+async function deleteEtikKural(id, baslik) {
+    if (!confirm(`"${baslik}" etik kuralını silmek istediğinizden emin misiniz?`)) return;
+    
+    try {
+        const formData = new FormData();
+        const response = await postForm(`/kurum/etik-kurallari/delete/${id}`, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.querySelector(`#etik-kurallari-container [data-id="${id}"]`).remove();
+            
+            if (document.querySelectorAll('#etik-kurallari-container [data-id]').length === 0) {
+                document.getElementById('etik-kurallari-container').innerHTML = `
+                    <p class="text-muted text-center py-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz etik kuralı tanımlanmamış.
+                    </p>
+                `;
+            }
+            
+            showToast(data.message);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+}
+
+document.getElementById('etikKuralForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    const etikKuralId = document.getElementById('etik_kural_id').value;
+    
+    const url = etikKuralId ? `/kurum/etik-kurallari/update/${etikKuralId}` : '/kurum/etik-kurallari/add';
+    
+    try {
+        const response = await postForm(url, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('etikKuralModal')).hide();
+            showToast(data.message);
+            location.reload();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Kalite Politikası İşlemleri
+function showEkleKalitePolitikasiModal() {
+    document.getElementById('kalitePolitikasiModalBaşlık').textContent = 'Kalite Politikası Ekle';
+    document.getElementById('kalite_politikasi_id').value = '';
+    document.getElementById('kalite_politikasi_baslik').value = '';
+    document.getElementById('kalite_politikasi_aciklama').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('kalitePolitikasiModal'));
+    modal.show();
+}
+
+function editKalitePolitikasi(id, baslik, aciklama) {
+    document.getElementById('kalitePolitikasiModalBaşlık').textContent = 'Kalite Politikası Düzenle';
+    document.getElementById('kalite_politikasi_id').value = id;
+    document.getElementById('kalite_politikasi_baslik').value = baslik;
+    document.getElementById('kalite_politikasi_aciklama').value = aciklama;
+    
+    const modal = new bootstrap.Modal(document.getElementById('kalitePolitikasiModal'));
+    modal.show();
+}
+
+async function deleteKalitePolitikasi(id, baslik) {
+    if (!confirm(`"${baslik}" kalite politikasını silmek istediğinizden emin misiniz?`)) return;
+    
+    try {
+        const formData = new FormData();
+        const response = await postForm(`/kurum/kalite-politikalari/delete/${id}`, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.querySelector(`#kalite-politikalari-container [data-id="${id}"]`).remove();
+            
+            if (document.querySelectorAll('#kalite-politikalari-container [data-id]').length === 0) {
+                document.getElementById('kalite-politikalari-container').innerHTML = `
+                    <p class="text-muted text-center py-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz kalite politikası tanımlanmamış.
+                    </p>
+                `;
+            }
+            
+            showToast(data.message);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+}
+
+document.getElementById('kalitePolitikasiForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    const kalitePolitikasiId = document.getElementById('kalite_politikasi_id').value;
+    
+    const url = kalitePolitikasiId ? `/kurum/kalite-politikalari/update/${kalitePolitikasiId}` : '/kurum/kalite-politikalari/add';
+    
+    try {
+        const response = await postForm(url, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('kalitePolitikasiModal')).hide();
+            showToast(data.message);
+            location.reload();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Ana Strateji İşlemleri
+function showEkleAnaStratejiModal() {
+    document.getElementById('anaStratejiModalBaşlık').textContent = 'Ana Strateji Ekle';
+    document.getElementById('ana_strateji_id').value = '';
+    document.getElementById('ana_strateji_ad').value = '';
+    document.getElementById('ana_strateji_aciklama').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('anaStratejiModal'));
+    modal.show();
+}
+
+function editAnaStrateji(id, ad, aciklama) {
+    document.getElementById('anaStratejiModalBaşlık').textContent = 'Ana Strateji Düzenle';
+    document.getElementById('ana_strateji_id').value = id;
+    document.getElementById('ana_strateji_ad').value = ad;
+    document.getElementById('ana_strateji_aciklama').value = aciklama;
+    
+    const modal = new bootstrap.Modal(document.getElementById('anaStratejiModal'));
+    modal.show();
+}
+
+async function deleteAnaStrateji(id, ad) {
+    if (!confirm(`"${ad}" ana stratejisini ve tüm bağlı alt stratejileri silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`)) return;
+    
+    try {
+        const formData = new FormData();
+        const response = await postForm(`/kurum/ana-stratejiler/delete/${id}`, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Card layout için güncellendi
+            const cardCol = document.querySelector(`.col[data-id="${id}"]`);
+            if (cardCol) {
+                cardCol.style.transition = 'all 0.5s ease';
+                cardCol.style.opacity = '0';
+                cardCol.style.transform = 'scale(0.8)';
+                setTimeout(() => cardCol.remove(), 500);
+            }
+            showToast(data.message);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+}
+
+document.getElementById('anaStratejiForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    const anaStratejiId = document.getElementById('ana_strateji_id').value;
+    
+    const url = anaStratejiId ? `/kurum/ana-stratejiler/update/${anaStratejiId}` : '/kurum/ana-stratejiler/add';
+    
+    try {
+        const response = await postForm(url, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('anaStratejiModal')).hide();
+            showToast(data.message);
+            location.reload();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Alt Strateji İşlemleri
+function showEkleAltStratejiModal(anaStratejiId, anaStratejiAd) {
+    document.getElementById('altStratejiModalBaşlık').textContent = 'Alt Strateji Ekle';
+    document.getElementById('alt_strateji_id').value = '';
+    document.getElementById('alt_strateji_ana_id').value = anaStratejiId;
+    document.getElementById('alt_strateji_ana_ad').value = anaStratejiAd;
+    document.getElementById('alt_strateji_ad').value = '';
+    document.getElementById('alt_strateji_aciklama').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('altStratejiModal'));
+    modal.show();
+}
+
+function editAltStrateji(id, anaStratejiId, ad, aciklama) {
+    document.getElementById('altStratejiModalBaşlık').textContent = 'Alt Strateji Düzenle';
+    document.getElementById('alt_strateji_id').value = id;
+    document.getElementById('alt_strateji_ana_id').value = anaStratejiId;
+    document.getElementById('alt_strateji_ad').value = ad;
+    document.getElementById('alt_strateji_aciklama').value = aciklama;
+    
+    // Card layout için güncellendi - ana strateji adını karttan al
+    const anaStratejiCard = document.querySelector(`.col[data-id="${anaStratejiId}"] .card-title`);
+    const anaStratejiAd = anaStratejiCard ? anaStratejiCard.textContent.trim().replace(/^.*?\s+/, '') : '';
+    document.getElementById('alt_strateji_ana_ad').value = anaStratejiAd;
+    
+    const modal = new bootstrap.Modal(document.getElementById('altStratejiModal'));
+    modal.show();
+}
+
+async function deleteAltStrateji(id, ad) {
+    if (!confirm(`"${ad}" alt stratejisini silmek istediğinizden emin misiniz?`)) return;
+    
+    try {
+        const formData = new FormData();
+        const response = await postForm(`/kurum/alt-stratejiler/delete/${id}`, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Card layout için güncellendi
+            const altStratejiItem = document.querySelector(`.alt-strateji-item[data-id="${id}"]`);
+            if (altStratejiItem) {
+                altStratejiItem.style.transition = 'all 0.3s ease';
+                altStratejiItem.style.opacity = '0';
+                altStratejiItem.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    altStratejiItem.remove();
+                    
+                    // Alt strateji sayısını güncelle
+                    const container = altStratejiItem.closest('.alt-stratejiler-container');
+                    if (container && container.querySelectorAll('.alt-strateji-item').length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center py-3 bg-light rounded-3 border border-dashed">
+                                <i class="fas fa-inbox text-muted mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+                                <p class="text-muted small mb-0">Henüz alt strateji yok</p>
+                                <small class="text-muted" style="font-size: 0.7rem;">Alt strateji eklemek için aşağıdaki butona tıklayın</small>
+                            </div>
+                        `;
+                    }
+                }, 300);
+            }
+            
+            showToast(data.message);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+}
+
+document.getElementById('altStratejiForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    ensureCsrfInFormData(formData);
+    const altStratejiId = document.getElementById('alt_strateji_id').value;
+    
+    const url = altStratejiId ? `/kurum/alt-stratejiler/update/${altStratejiId}` : '/kurum/alt-stratejiler/add';
+    
+    try {
+        const response = await postForm(url, formData);
+        const data = await response.json();
+        
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('altStratejiModal')).hide();
+            showToast(data.message);
+            location.reload();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Bir hata oluştu: ' + error.message, 'error');
+    }
+});
+
+// Progress bar animasyonları
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+});
+
+// ==========================================
+// CANLI GÜNCELLEME BİLDİRİMİ
+// ==========================================
+
+/**
+ * Stratejik planlama akışı sayfasını bilgilendir
+ * LocalStorage kullanarak diğer sekmelere veri değişikliği sinyali gönderir
+ */
+function notifyStratejikPlanlamaGüncelle() {
+    try {
+        // Son güncelleme zamanını kaydet
+        const updateData = {
+            timestamp: new Date().toISOString(),
+            page: 'kurum_panel',
+            message: 'Kurum verileri güncellendi'
+        };
+        
+        localStorage.setItem('sp_data_updated', JSON.stringify(updateData));
+        
+        console.log('Stratejik planlama akışı bilgilendirildi:', updateData);
+        
+        // 1 saniye sonra temizle (diğer sekmeler algıladı mı kontrol için)
+        setTimeout(() => {
+            localStorage.removeItem('sp_data_updated');
+        }, 1000);
+    } catch (error) {
+        console.error('LocalStorage hatası:', error);
+    }
+}
+
+</script>
+
+<script>
+// Logo yükleme fonksiyonları
+let selectedLogoFile = null;
+
+function handleLogoFileSelect(input) {
+    const file = input.files[0];
+    if (!file) {
+        selectedLogoFile = null;
+        return;
+    }
+    
+    // Dosya tipi kontrolü
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showToast('Geçersiz dosya tipi! Sadece resim dosyaları (png, jpg, gif, svg, webp) yükleyebilirsiniz.', 'error');
+        input.value = '';
+        selectedLogoFile = null;
+        return;
+    }
+    
+    // Dosya boyutu kontrolü (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showToast('Dosya boyutu çok büyük! Maksimum 5MB dosya yükleyebilirsiniz.', 'error');
+        input.value = '';
+        selectedLogoFile = null;
+        return;
+    }
+    
+    selectedLogoFile = file;
+    
+    // Önizleme göster
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const previewImg = document.getElementById('currentLogo');
+        if (previewImg) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            const alertDiv = previewImg.nextElementSibling;
+            if (alertDiv && alertDiv.classList.contains('alert')) {
+                alertDiv.style.display = 'none';
+            }
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+async function saveLogo() {
+    const logoUrlInput = document.getElementById('logoUrlInput');
+    const saveBtn = document.getElementById('saveLogoBtn');
+    const progressDiv = document.getElementById('logoUploadProgress');
+    const progressBar = progressDiv.querySelector('.progress-bar');
+    
+    // Dosya yükleme varsa önce dosyayı yükle
+    if (selectedLogoFile) {
+        try {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yükleniyor...';
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressBar.setAttribute('aria-valuenow', '0');
+            progressBar.textContent = '0%';
+            
+            const formData = new FormData();
+            formData.append('file', selectedLogoFile);
+            
+            // CSRF token'ı ekle
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
+            
+            const response = await fetch('/api/kurum/upload-logo', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken || ''
+                }
+            });
+            
+            // Response'un JSON olup olmadığını kontrol et
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Beklenmeyen response:', text);
+                throw new Error('Sunucudan JSON yanıt alınamadı.');
+            }
+            
+            const data = await response.json();
+            
+            progressDiv.style.display = 'none';
+            
+            if (data.success) {
+                // URL input'unu güncelle
+                if (logoUrlInput) {
+                    logoUrlInput.value = data.logo_url;
+                }
+                // Logo görüntüsünü güncelle
+                const currentLogo = document.getElementById('currentLogo');
+                if (currentLogo) {
+                    const logoUrl = data.logo_url.startsWith('http')
+                        ? data.logo_url
+                        : (data.logo_url.startsWith('/') ? data.logo_url : `/${data.logo_url}`);
+                    currentLogo.src = logoUrl;
+                    currentLogo.style.display = 'block';
+                    const alertDiv = currentLogo.nextElementSibling;
+                    if (alertDiv && alertDiv.classList.contains('alert')) {
+                        alertDiv.style.display = 'none';
+                    }
+                }
+                showToast('Logo başarıyla yüklendi!', 'success');
+                selectedLogoFile = null;
+                document.getElementById('logoFileInput').value = '';
+            } else {
+                throw new Error(data.message || 'Logo yüklenemedi.');
+            }
+        } catch (error) {
+            progressDiv.style.display = 'none';
+            showToast('Logo yüklenirken hata oluştu: ' + error.message, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Logoyu Kaydet';
+        }
+    } else if (logoUrlInput && logoUrlInput.value.trim()) {
+        // Sadece URL güncellemesi
+        try {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Kaydediliyor...';
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            const response = await fetch('/api/kurum/update-logo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken || ''
+                },
+                body: JSON.stringify({
+                    logo_url: logoUrlInput.value.trim()
+                })
+            });
+            
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Beklenmeyen response:', text);
+                throw new Error('Sunucudan JSON yanıt alınamadı.');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Logo görüntüsünü güncelle
+                const currentLogo = document.getElementById('currentLogo');
+                if (currentLogo) {
+                    const logoUrl = data.logo_url.startsWith('http')
+                        ? data.logo_url
+                        : (data.logo_url.startsWith('/') ? data.logo_url : `/${data.logo_url}`);
+                    currentLogo.src = logoUrl;
+                    currentLogo.style.display = 'block';
+                    const alertDiv = currentLogo.nextElementSibling;
+                    if (alertDiv && alertDiv.classList.contains('alert')) {
+                        alertDiv.style.display = 'none';
+                    }
+                }
+                showToast('Logo URL\'si başarıyla güncellendi!', 'success');
+            } else {
+                throw new Error(data.message || 'Logo güncellenemedi.');
+            }
+        } catch (error) {
+            showToast('Logo güncellenirken hata oluştu: ' + error.message, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Logoyu Kaydet';
+        }
+    } else {
+        showToast('Lütfen bir logo dosyası seçin veya logo URL\'si girin!', 'warning');
+    }
+}
+
+// Rehber Sistemi Toggle
+async function toggleGuideSystem(enabled) {
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        const response = await fetch('/api/kurum/toggle-guide-system', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken || ''
+            },
+            body: JSON.stringify({
+                show_guide_system: enabled
+            })
+        });
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Beklenmeyen response:', text);
+            throw new Error('Sunucudan JSON yanıt alınamadı.');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast(
+                enabled 
+                    ? 'İnteraktif rehber sistemi tüm kurum için aktif edildi.' 
+                    : 'İnteraktif rehber sistemi tüm kurum için devre dışı bırakıldı.', 
+                'success'
+            );
+            
+            // Sayfayı yenile (eğer kullanıcı rehber sistemi kapatıyorsa)
+            if (!enabled) {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } else {
+            throw new Error(data.message || 'Ayar güncellenemedi.');
+        }
+    } catch (error) {
+        showToast('Ayar güncellenirken hata oluştu: ' + error.message, 'error');
+        // Hata durumunda checkbox'ı eski haline çevir
+        const checkbox = document.getElementById('guideSystemSwitch');
+        if (checkbox) {
+            checkbox.checked = !enabled;
+        }
+    }
+}
+</script>
+{% endblock %}
+
+
+

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}KPI Yönetim Paneli{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Performans Göstergeleri (KPI) Yönetimi
+                    </h4>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addKpiModal">
+                        <i class="fas fa-plus me-1"></i>Yeni KPI Ekle
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Özet Kartlar -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h3 class="text-primary mb-0">{{ summary_stats.total }}</h3>
+                                    <small class="text-muted">Toplam KPI</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success mb-0">{{ summary_stats.achieved }}</h3>
+                                    <small class="text-muted">Hedefi Tutturanlar</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-danger">
+                                <div class="card-body text-center">
+                                    <h3 class="text-danger mb-0">{{ summary_stats.critical }}</h3>
+                                    <small class="text-muted">Kritik Durumda</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning mb-0">{{ summary_stats.pending }}</h3>
+                                    <small class="text-muted">Beklemede</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI Listesi -->
+                    {% if kpis_with_scores|length == 0 %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz KPI tanımlanmamış.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Süreç</th>
+                                        <th>Gösterge Adı</th>
+                                        <th class="text-center">Birim</th>
+                                        <th class="text-center">Hedef</th>
+                                        <th class="text-center">Gerçekleşen</th>
+                                        <th class="text-center">Başarı Durumu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in kpis_with_scores %}
+                                    {% set kpi = item.kpi %}
+                                    <tr {% if item.is_critical %}class="table-danger"{% endif %}>
+                                        <td>
+                                            <strong>{{ kpi.surec.code if kpi.surec.code else 'N/A' }}</strong><br>
+                                            <small class="text-muted">{{ kpi.surec.ad }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ kpi.ad }}</strong>
+                                            {% if kpi.aciklama %}
+                                            <br><small class="text-muted">{{ kpi.aciklama[:50] }}{% if kpi.aciklama|length > 50 %}...{% endif %}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary">{{ kpi.unit or kpi.birim or 'N/A' }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if item.target_value %}
+                                                <strong>{{ item.target_value }}</strong>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if item.actual_value is not none %}
+                                                <strong>{{ item.actual_value }}</strong>
+                                            {% else %}
+                                                <span class="text-muted">Veri Yok</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if item.success_rate is not none %}
+                                                {% set success_rate = item.success_rate %}
+                                                <div class="progress" style="height: 25px;">
+                                                    <div class="progress-bar {% if success_rate >= 100 %}bg-success{% elif success_rate >= 70 %}bg-info{% elif success_rate >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                         role="progressbar" 
+                                                         style="width: {{ [success_rate, 100]|min }}%;"
+                                                         aria-valuenow="{{ success_rate }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        {{ "%.1f"|format(success_rate) }}%
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Hesaplanamadı</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni KPI Ekleme Modalı -->
+<div class="modal fade" id="addKpiModal" tabindex="-1" aria-labelledby="addKpiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('main.strategy_kpi_add') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addKpiModalLabel">
+                        <i class="fas fa-plus-circle me-2"></i>Yeni KPI Ekle
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="kpi_name" class="form-label">
+                            <strong>Gösterge Adı <span class="text-danger">*</span></strong>
+                        </label>
+                        <input type="text" class="form-control" id="kpi_name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="kpi_process" class="form-label">
+                            <strong>Süreç <span class="text-danger">*</span></strong>
+                        </label>
+                        <select class="form-select" id="kpi_process" name="process_id" required>
+                            <option value="">Süreç Seçin...</option>
+                            {% for process in processes %}
+                            <option value="{{ process.id }}">{{ process.code }} - {{ process.ad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="kpi_unit" class="form-label">
+                                <strong>Birim</strong>
+                            </label>
+                            <input type="text" class="form-control" id="kpi_unit" name="unit" placeholder="Örn: %, Adet, TL">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="kpi_target" class="form-label">
+                                <strong>2025 Hedefi</strong>
+                            </label>
+                            <input type="number" step="0.01" class="form-control" id="kpi_target" name="target_value" placeholder="Örn: 100">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="kpi_direction" class="form-label">
+                            <strong>Hedef Yönü</strong>
+                        </label>
+                        <select class="form-select" id="kpi_direction" name="direction">
+                            <option value="Artan">Artan (Yüksek değer iyi)</option>
+                            <option value="Azalan">Azalan (Düşük değer iyi)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="kpi_description" class="form-label">
+                            <strong>Açıklama</strong>
+                        </label>
+                        <textarea class="form-control" id="kpi_description" name="description" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

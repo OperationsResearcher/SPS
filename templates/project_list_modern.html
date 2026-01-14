@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Proje Yönetimi{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="row mb-4 animate-fade-in">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2" style="font-weight: 800; font-size: 2rem;">
+                        <i class="fas fa-folder-open me-2 text-primary"></i>
+                        <span class="gradient-text">Projeler</span>
+                    </h1>
+                    <p class="text-secondary mb-0">Projelerinizi yönetin ve takip edin</p>
+                </div>
+                <a href="{{ url_for('main.proje_yeni') }}" class="btn-premium btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Yeni Proje Oluştur
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if projeler %}
+    <!-- Project Cards Grid -->
+    <div class="row g-4">
+        {% for proje in projeler %}
+        <div class="col-xl-4 col-lg-6 col-md-6 animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+            <div class="card-premium h-100">
+                <div class="card-premium-header" style="background: var(--gradient-primary); color: white;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0 fw-bold">{{ proje.name }}</h5>
+                        <span class="badge-modern" style="background: rgba(255,255,255,0.2); color: white;">
+                            <i class="fas fa-folder"></i>
+                            Proje
+                        </span>
+                    </div>
+                </div>
+                <div class="card-premium-body">
+                    {% if proje.description %}
+                    <p class="text-secondary mb-3" style="min-height: 60px;">
+                        {{ proje.description[:120] }}{% if proje.description|length > 120 %}...{% endif %}
+                    </p>
+                    {% else %}
+                    <p class="text-secondary mb-3" style="min-height: 60px; font-style: italic;">
+                        Proje açıklaması bulunmuyor
+                    </p>
+                    {% endif %}
+                    
+                    <!-- Project Manager -->
+                    <div class="d-flex align-items-center mb-3 p-2" style="background: var(--bg-secondary); border-radius: var(--radius-md);">
+                        <div class="stat-icon-modern me-2" style="width: 36px; height: 36px; font-size: 0.875rem; background: var(--gradient-success);">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-secondary">Proje Yöneticisi</div>
+                            {% if proje.manager %}
+                            <div class="fw-600">{{ proje.manager.first_name }} {{ proje.manager.last_name }}</div>
+                            {% else %}
+                            <div class="text-muted small">Atanmamış</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Related Processes -->
+                    {% if proje.related_processes %}
+                    <div class="mb-3">
+                        <div class="text-xs text-secondary mb-2">
+                            <i class="fas fa-cogs me-1"></i>
+                            İlişkili Süreçler ({{ proje.related_processes|length }})
+                        </div>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for surec in proje.related_processes[:3] %}
+                            <span class="badge-modern badge-primary">
+                                {{ surec.ad }}
+                            </span>
+                            {% endfor %}
+                            {% if proje.related_processes|length > 3 %}
+                            <span class="badge-modern" style="background: var(--bg-tertiary);">
+                                +{{ proje.related_processes|length - 3 }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Dates -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2" style="background: var(--bg-secondary); border-radius: var(--radius-sm);">
+                                <div class="text-xs text-secondary">Başlangıç</div>
+                                <div class="fw-600 text-sm">
+                                    {% if proje.start_date %}
+                                    {{ proje.start_date.strftime('%d.%m.%Y') }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2" style="background: var(--bg-secondary); border-radius: var(--radius-sm);">
+                                <div class="text-xs text-secondary">Bitiş</div>
+                                <div class="fw-600 text-sm">
+                                    {% if proje.end_date %}
+                                    {{ proje.end_date.strftime('%d.%m.%Y') }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress -->
+                    {% if proje.progress is not none %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-sm fw-600">İlerleme</span>
+                            <span class="badge-modern badge-success">{{ proje.progress }}%</span>
+                        </div>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: {{ proje.progress }}%; background: var(--gradient-success);"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status -->
+                    <div class="mb-3">
+                        {% if proje.status == 'active' %}
+                        <span class="badge-modern badge-success">
+                            <i class="fas fa-play"></i>
+                            Aktif
+                        </span>
+                        {% elif proje.status == 'completed' %}
+                        <span class="badge-modern badge-primary">
+                            <i class="fas fa-check"></i>
+                            Tamamlandı
+                        </span>
+                        {% elif proje.status == 'on_hold' %}
+                        <span class="badge-modern badge-warning">
+                            <i class="fas fa-pause"></i>
+                            Beklemede
+                        </span>
+                        {% else %}
+                        <span class="badge-modern badge-danger">
+                            <i class="fas fa-stop"></i>
+                            Durduruldu
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('main.proje_detay', proje_id=proje.id) }}" class="btn-premium btn-primary flex-fill">
+                            <i class="fas fa-eye"></i>
+                            Detay
+                        </a>
+                        <a href="{{ url_for('main.proje_duzenle', proje_id=proje.id) }}" class="btn-premium btn-ghost">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-premium text-center py-5 animate-scale-in">
+                <div class="card-premium-body">
+                    <div class="stat-icon-modern mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem; background: var(--gradient-primary);">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3 class="mb-3">Henüz proje bulunmuyor</h3>
+                    <p class="text-secondary mb-4">İlk projenizi oluşturarak başlayın</p>
+                    <a href="{{ url_for('main.proje_yeni') }}" class="btn-premium btn-primary btn-lg">
+                        <i class="fas fa-plus"></i>
+                        İlk Projeyi Oluştur
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

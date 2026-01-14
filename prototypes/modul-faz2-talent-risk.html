@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 2 - Talent & Risk Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>👥 Faz 2 - Talent & Risk Paketi (V60.0)</h1>
+            <p>Yetkinlik Matrisi, Risk Yönetimi, Yönetim Kurulu Özeti kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz2-talent-risk', 'Faz 2 - Talent & Risk Paketi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz2-talent-risk')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz2-talent-risk';
+        const moduleTitle = 'Faz 2 - Talent & Risk Paketi';
+        
+        const questions = [
+            {
+                text: 'Yetkinlik Matrisi sayfası (/competencies) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yetkinlik kartları doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kullanıcı yetkinlik seviyeleri doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni yetkinlik ekleme formu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk Yönetimi sayfası (/risks) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '5x5 Risk Matrisi görselleştirmesi doğru çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk seviyesi özet kartları doğru hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk listesi doğru sıralanıyor mu? (Risk skoruna göre)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni risk ekleme formu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk skoru (probability * impact) doğru hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk seviyesi (Düşük, Orta, Yüksek, Kritik) doğru belirleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yönetim Kurulu Özeti sayfası (/executive-report) erişilebilir mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yönetim Kurulu Özeti sayfası yetki kontrolü yapıyor mu? (Sadece üst yönetim)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Özet istatistik kartları doğru hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Son eklenen riskler listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yetkinlik eklediğimde kayıt başarıyla oluşturuluyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir kullanıcıya yetkinlik seviyesi atadığımda, bu atama kaydediliyor ve görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk eklediğimde kayıt başarıyla oluşturuluyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Risk matrisi görselleştirmesi interaktif ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yetkinlik heatmap bölümü hazır mı? (Yakında özelliği)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Form validasyonları doğru çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Hata mesajları kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Talent & Risk paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

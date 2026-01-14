@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-shield-alt"></i> RAID Yönetimi — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('raid')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <button class="btn btn-primary" onclick="openAddModal('Risk')"><i class="fas fa-plus"></i> Risk Ekle</button>
+      <button class="btn btn-info" onclick="openAddModal('Assumption')"><i class="fas fa-plus"></i> Varsayım Ekle</button>
+      <button class="btn btn-warning" onclick="openAddModal('Issue')"><i class="fas fa-plus"></i> Sorun Ekle</button>
+      <button class="btn btn-secondary" onclick="openAddModal('Dependency')"><i class="fas fa-plus"></i> Bağımlılık Ekle</button>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs mb-3" id="raidTabs" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#risks-tab">Riskler</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#assumptions-tab">Varsayımlar</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#issues-tab">Sorunlar</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#dependencies-tab">Bağımlılıklar</button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="risks-tab">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div id="risks-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="assumptions-tab">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div id="assumptions-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="issues-tab">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div id="issues-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="dependencies-tab">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div id="dependencies-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="raidModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">RAID Öğesi Ekle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="item-id">
+        <input type="hidden" id="item-type">
+        <div class="mb-3">
+          <label class="form-label">Başlık</label>
+          <input type="text" class="form-control" id="item-title" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Açıklama</label>
+          <textarea class="form-control" id="item-description" rows="3"></textarea>
+        </div>
+        
+        <!-- Risk için Olasılık ve Etki Alanları -->
+        <div id="risk-fields" style="display:none;">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Olasılık (1-5)</label>
+              <select class="form-select" id="item-probability">
+                <option value="1">1 - Düşük</option>
+                <option value="2">2 - Az Olası</option>
+                <option value="3" selected>3 - Orta</option>
+                <option value="4">4 - Olası</option>
+                <option value="5">5 - Yüksek</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Etki (1-5)</label>
+              <select class="form-select" id="item-impact">
+                <option value="1">1 - Düşük</option>
+                <option value="2">2 - Az Ciddi</option>
+                <option value="3" selected>3 - Orta</option>
+                <option value="4">4 - Ciddi</option>
+                <option value="5">5 - Kritik</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Azaltma Stratejisi</label>
+            <textarea class="form-control" id="item-mitigation" rows="3" placeholder="Bu riski nasıl azaltacaksınız?"></textarea>
+          </div>
+        </div>
+        
+        <!-- Assumption (Varsayım) için alanlar -->
+        <div id="assumption-fields" style="display:none;">
+          <div class="mb-3">
+            <label class="form-label">Doğrulama Tarihi</label>
+            <input type="date" class="form-control" id="item-validation-date">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Doğrulama Notları</label>
+            <textarea class="form-control" id="item-assumption-notes" rows="3" placeholder="Varsayımın doğruluğunu kontrol etmek için yapılan işlemler..."></textarea>
+          </div>
+        </div>
+        
+        <!-- Issue (Sorun) için alanlar -->
+        <div id="issue-fields" style="display:none;">
+          <div class="mb-3">
+            <label class="form-label">Aciliyet</label>
+            <select class="form-select" id="item-urgency">
+              <option value="Düşük">Düşük</option>
+              <option value="Orta" selected>Orta</option>
+              <option value="Yüksek">Yüksek</option>
+              <option value="Kritik">Kritik</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Etkilenen Çalışma</label>
+            <input type="text" class="form-control" id="item-affected-work" placeholder="Hangi çalışmaları etkiliyor?">
+          </div>
+        </div>
+        
+        <!-- Dependency (Bağımlılık) için alanlar -->
+        <div id="dependency-fields" style="display:none;">
+          <div class="mb-3">
+            <label class="form-label">Bağımlılık Tipi</label>
+            <select class="form-select" id="item-dependency-type">
+              <option value="FS">FS - Bitiş-Başlangıç</option>
+              <option value="SS" selected>SS - Başlangıç-Başlangıç</option>
+              <option value="FF">FF - Bitiş-Bitiş</option>
+              <option value="SF">SF - Başlangıç-Bitiş</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Bağımlı Görev ID</label>
+            <input type="number" class="form-control" id="item-task-id" placeholder="Bağlı olan görevin numarası">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Durum</label>
+          <select class="form-select" id="item-status">
+            <option value="Open">Açık</option>
+            <option value="In Progress">Devam Ediyor</option>
+            <option value="Mitigated">Azaltıldı</option>
+            <option value="Closed">Kapalı</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="saveItem()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let raidData = { Risk: [], Assumption: [], Issue: [], Dependency: [] };
+function getRaidModal() {
+  const el = document.getElementById('raidModal');
+  return bootstrap.Modal.getOrCreateInstance(el);
+}
+
+async function loadRAID() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/raid');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    
+    raidData = { Risk: [], Assumption: [], Issue: [], Dependency: [] };
+    (data.items || []).forEach(item => {
+      const itemType = item.type || item.item_type;
+      if (raidData[itemType]) raidData[itemType].push(item);
+    });
+    
+    renderLists();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'RAID Yükleme Hatası');
+  }
+}
+
+function renderLists() {
+  const types = ['Risk', 'Assumption', 'Issue', 'Dependency'];
+  const containers = ['risks-list', 'assumptions-list', 'issues-list', 'dependencies-list'];
+  
+  types.forEach((type, idx) => {
+    const container = document.getElementById(containers[idx]);
+    const items = raidData[type] || [];
+    
+    if (items.length === 0) {
+      container.innerHTML = '<p class="text-muted">Henüz öğe eklenmedi.</p>';
+      return;
+    }
+    
+    container.innerHTML = items.map(item => {
+      let extraInfo = '';
+      
+      if (type === 'Risk' && item.probability) {
+        extraInfo = `<div class="small mt-2">
+          <span class="badge bg-info">Olasılık: ${item.probability}/5</span>
+          <span class="badge bg-info">Etki: ${item.impact}/5</span>
+        </div>`;
+      } else if (type === 'Assumption' && item.assumption_validation_date) {
+        extraInfo = `<div class="small mt-2">
+          <span class="badge bg-secondary">Doğrulama: ${item.assumption_validation_date}</span>
+        </div>`;
+      } else if (type === 'Issue' && item.issue_urgency) {
+        const urgencyColor = {
+          'Düşük': 'info',
+          'Orta': 'warning',
+          'Yüksek': 'danger',
+          'Kritik': 'danger'
+        };
+        extraInfo = `<div class="small mt-2">
+          <span class="badge bg-${urgencyColor[item.issue_urgency] || 'secondary'}">Aciliyet: ${item.issue_urgency}</span>
+        </div>`;
+      } else if (type === 'Dependency' && item.dependency_type) {
+        extraInfo = `<div class="small mt-2">
+          <span class="badge bg-secondary">Tip: ${item.dependency_type}</span>
+        </div>`;
+      }
+      
+      return `
+        <div class="card mb-2">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <h6>${item.title}</h6>
+              <div>
+                <span class="badge bg-${item.status === 'Closed' ? 'success' : 'warning'}">${item.status}</span>
+                <button class="btn btn-sm btn-outline-primary ms-2" onclick="editItem(${item.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${item.id})"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+            ${item.description ? `<p class="text-muted small mb-0">${item.description}</p>` : ''}
+            ${extraInfo}
+          </div>
+        </div>
+      `;
+    }).join('');
+  });
+}
+
+function openAddModal(type) {
+  document.getElementById('item-id').value = '';
+  document.getElementById('item-type').value = type;
+  document.getElementById('item-title').value = '';
+  document.getElementById('item-description').value = '';
+  document.getElementById('item-status').value = 'Open';
+  
+  // Tüm alan gruplarını gizle
+  document.getElementById('risk-fields').style.display = 'none';
+  document.getElementById('assumption-fields').style.display = 'none';
+  document.getElementById('issue-fields').style.display = 'none';
+  document.getElementById('dependency-fields').style.display = 'none';
+  
+  // İlgili alan grubunu göster
+  if (type === 'Risk') {
+    document.getElementById('risk-fields').style.display = 'block';
+    document.getElementById('item-probability').value = '3';
+    document.getElementById('item-impact').value = '3';
+    document.getElementById('item-mitigation').value = '';
+  } else if (type === 'Assumption') {
+    document.getElementById('assumption-fields').style.display = 'block';
+    document.getElementById('item-validation-date').value = '';
+    document.getElementById('item-assumption-notes').value = '';
+  } else if (type === 'Issue') {
+    document.getElementById('issue-fields').style.display = 'block';
+    document.getElementById('item-urgency').value = 'Orta';
+    document.getElementById('item-affected-work').value = '';
+  } else if (type === 'Dependency') {
+    document.getElementById('dependency-fields').style.display = 'block';
+    document.getElementById('item-dependency-type').value = 'SS';
+    document.getElementById('item-task-id').value = '';
+  }
+  
+  document.getElementById('modalTitle').textContent = type + ' Ekle';
+  getRaidModal().show();
+}
+
+function editItem(id) {
+  const item = Object.values(raidData).flat().find(i => i.id === id);
+  if (!item) return;
+  
+  document.getElementById('item-id').value = item.id;
+  document.getElementById('item-type').value = item.item_type;
+  document.getElementById('item-title').value = item.title;
+  document.getElementById('item-description').value = item.description || '';
+  document.getElementById('item-status').value = item.status;
+  document.getElementById('modalTitle').textContent = item.item_type + ' Düzenle';
+  
+  // Tüm alan gruplarını gizle
+  document.getElementById('risk-fields').style.display = 'none';
+  document.getElementById('assumption-fields').style.display = 'none';
+  document.getElementById('issue-fields').style.display = 'none';
+  document.getElementById('dependency-fields').style.display = 'none';
+  
+  // İlgili alan grubunu göster ve verileri doldur
+  if (item.item_type === 'Risk') {
+    document.getElementById('risk-fields').style.display = 'block';
+    document.getElementById('item-probability').value = item.probability || '3';
+    document.getElementById('item-impact').value = item.impact || '3';
+    document.getElementById('item-mitigation').value = item.mitigation_plan || '';
+  } else if (item.item_type === 'Assumption') {
+    document.getElementById('assumption-fields').style.display = 'block';
+    document.getElementById('item-validation-date').value = item.assumption_validation_date || '';
+    document.getElementById('item-assumption-notes').value = item.assumption_notes || '';
+  } else if (item.item_type === 'Issue') {
+    document.getElementById('issue-fields').style.display = 'block';
+    document.getElementById('item-urgency').value = item.issue_urgency || 'Orta';
+    document.getElementById('item-affected-work').value = item.issue_affected_work || '';
+  } else if (item.item_type === 'Dependency') {
+    document.getElementById('dependency-fields').style.display = 'block';
+    document.getElementById('item-dependency-type').value = item.dependency_type || 'SS';
+    document.getElementById('item-task-id').value = item.dependency_task_id || '';
+  }
+  
+  getRaidModal().show();
+}
+
+async function saveItem() {
+  const id = document.getElementById('item-id').value;
+  const type = document.getElementById('item-type').value;
+  const title = document.getElementById('item-title').value.trim();
+  const description = document.getElementById('item-description').value.trim();
+  const status = document.getElementById('item-status').value;
+  
+  if (!title) return alert('Başlık gerekli');
+  
+  const body = { item_type: type, title, description, status };
+  
+  // Type'a göre ilgili alanları ekle
+  if (type === 'Risk') {
+    body.probability = parseInt(document.getElementById('item-probability').value) || 3;
+    body.impact = parseInt(document.getElementById('item-impact').value) || 3;
+    body.mitigation_plan = document.getElementById('item-mitigation').value.trim();
+  } else if (type === 'Assumption') {
+    body.assumption_validation_date = document.getElementById('item-validation-date').value;
+    body.assumption_notes = document.getElementById('item-assumption-notes').value.trim();
+  } else if (type === 'Issue') {
+    body.issue_urgency = document.getElementById('item-urgency').value;
+    body.issue_affected_work = document.getElementById('item-affected-work').value.trim();
+  } else if (type === 'Dependency') {
+    body.dependency_type = document.getElementById('item-dependency-type').value;
+    body.dependency_task_id = parseInt(document.getElementById('item-task-id').value) || null;
+  }
+  
+  const url = id ? `/api/projeler/{{ project.id }}/raid/${id}` : '/api/projeler/{{ project.id }}/raid';
+  const method = id ? 'PUT' : 'POST';
+  
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    
+    getRaidModal().hide();
+    loadRAID();
+    if (window.showToast) showToast('success', 'RAID öğesi kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kaydetme Hatası');
+  }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Bu öğeyi silmek istediğinizden emin misiniz?')) return;
+  
+  try {
+    const res = await fetch(`/api/projeler/{{ project.id }}/raid/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    
+    loadRAID();
+    if (window.showToast) showToast('success', 'RAID öğesi silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Silme Hatası');
+  }
+}
+
+loadRAID();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+{% endblock %}

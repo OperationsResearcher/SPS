@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Zaman Takibi{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Zaman Takibi (Timesheet)
+                </h2>
+                <div class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>
+                    {{ hafta_basi.strftime('%d.%m.%Y') }} - {{ hafta_sonu.strftime('%d.%m.%Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if active_entry %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-play-circle me-2"></i>
+                        <strong>Aktif Zaman Takibi:</strong> 
+                        Görev #{{ active_entry.task_id }} üzerinde çalışıyorsunuz.
+                        <span id="activeTimer" class="ms-2"></span>
+                    </div>
+                    <button class="btn btn-danger" onclick="stopTimer({{ active_entry.id }})">
+                        <i class="fas fa-stop me-1"></i> Durdur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                    <h3>{{ "%.1f"|format(toplam_saat) }} saat</h3>
+                    <p class="text-muted mb-0">Bu Hafta Toplam</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-list fa-3x text-info mb-3"></i>
+                    <h3>{{ entries|length }}</h3>
+                    <p class="text-muted mb-0">Toplam Kayıt</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-day fa-3x text-success mb-3"></i>
+                    <h3>{{ (toplam_saat / 5)|round(1) }} saat</h3>
+                    <p class="text-muted mb-0">Günlük Ortalama</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Zaman Kayıtları
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if entries %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Görev</th>
+                                    <th>Başlangıç</th>
+                                    <th>Bitiş</th>
+                                    <th>Süre</th>
+                                    <th>Açıklama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in entries %}
+                                <tr>
+                                    <td>
+                                        {% if entry.task %}
+                                        <a href="{{ url_for('main.proje_detay', project_id=entry.task.project_id) }}">
+                                            {{ entry.task.title }}
+                                        </a>
+                                        {% else %}
+                                        Görev #{{ entry.task_id }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.start_time.strftime('%d.%m.%Y %H:%M') if entry.start_time else '-' }}</td>
+                                    <td>
+                                        {% if entry.end_time %}
+                                        {{ entry.end_time.strftime('%d.%m.%Y %H:%M') }}
+                                        {% else %}
+                                        <span class="badge bg-warning">Devam Ediyor</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if entry.duration_minutes %}
+                                        {{ "%.1f"|format(entry.duration_minutes / 60) }} saat
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.description or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Bu hafta için zaman kaydı bulunmamaktadır.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function stopTimer(entryId) {
+    if (confirm('Zaman takibini durdurmak istediğinize emin misiniz?')) {
+        fetch(`/api/timesheet/stop/${entryId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                showToast('error', data.message || 'Zaman takibi durdurulamadı', 'Hata');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'Bir hata oluştu', 'Hata');
+        });
+    }
+}
+
+{% if active_entry %}
+// Aktif timer için gerçek zamanlı gösterim
+function updateTimer() {
+    const startTime = new Date('{{ active_entry.start_time.isoformat() }}');
+    const now = new Date();
+    const diff = now - startTime;
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    document.getElementById('activeTimer').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+{% endif %}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

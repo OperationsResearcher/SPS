@@ -1,0 +1,8 @@
+Starting debug run...
+C:\SPY_Cursor\SP_Code\config.py:22: UserWarning: SECRET_KEY not set. Using development fallback.
+  warnings.warn("SECRET_KEY not set. Using development fallback.", UserWarning)
+[2026-01-04 03:36:49,476] INFO in __init__: Veritabanı tabloları kontrol edildi ve güncellendi.
+Importing create_app done.
+[2026-01-04 03:36:51,049] INFO in __init__: Veritabanı tabloları kontrol edildi ve güncellendi.
+create_app() called successfully.
+Debug run finished.

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Yetkinlik Matrisi{% endblock %}
+
+{% block styles %}
+<style>
+    .competency-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid #667eea;
+    }
+    
+    .competency-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .level-indicator {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    
+    .level-1 { background-color: #dc3545; }
+    .level-2 { background-color: #fd7e14; }
+    .level-3 { background-color: #ffc107; }
+    .level-4 { background-color: #198754; }
+    .level-5 { background-color: #0dcaf0; }
+    
+    .heatmap-cell {
+        text-align: center;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .heatmap-cell:hover {
+        transform: scale(1.1);
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-users-cog me-2"></i>
+                    Yetkinlik Matrisi
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCompetencyModal">
+                    <i class="fas fa-plus me-2"></i>
+                    Yeni Yetkinlik Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if competencies %}
+    <div class="row mb-4">
+        {% for competency in competencies %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card competency-card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ competency.competency_name }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if competency.competency_category %}
+                    <span class="badge bg-secondary mb-2">{{ competency.competency_category }}</span>
+                    {% endif %}
+                    {% if competency.description %}
+                    <p class="card-text">{{ competency.description[:150] }}{% if competency.description|length > 150 %}...{% endif %}</p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <strong>Seviyem:</strong>
+                        {% if competency.id in user_competency_map %}
+                            {% set level = user_competency_map[competency.id] %}
+                            <span class="level-indicator level-{{ level }}"></span>
+                            <span>Seviye {{ level }}</span>
+                        {% else %}
+                            <span class="text-muted">Değerlendirilmedi</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz yetkinlik tanımlanmamış. Yeni yetkinlik eklemek için yukarıdaki butona tıklayın.
+    </div>
+    {% endif %}
+
+    <!-- Heatmap Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Yetkinlik Isı Haritası
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Bu özellik yakında eklenecek. Tüm kullanıcıların yetkinlik seviyelerini görselleştireceksiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Competency Modal -->
+<div class="modal fade" id="addCompetencyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Yetkinlik Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addCompetencyForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Yetkinlik Adı *</label>
+                        <input type="text" class="form-control" name="competency_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="competency_category">
+                            <option value="technical">Teknik</option>
+                            <option value="leadership">Liderlik</option>
+                            <option value="soft_skills">Yumuşak Beceriler</option>
+                            <option value="domain">Alan Bilgisi</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,138 @@
+{
+  "dashboard": {
+    "page_id": "dashboard",
+    "title": "Gösterge Paneli",
+    "intro": "Hoş geldiniz! Bu sayfada kurumunuzun genel performansını ve önemli metrikleri görüntüleyebilirsiniz.",
+    "character_greeting": "Merhaba! Size gösterge panelini tanıtmak isterim.",
+    "steps": [
+      {
+        "title": "Hızlı Özet Kartları",
+        "description": "Üst kısımda aktif projeler, süreçler ve KPI'lar hakkında özet bilgiler yer alır.",
+        "tip": "Bu kartlar gerçek zamanlı güncellenir.",
+        "highlight_selector": ".stat-card"
+      },
+      {
+        "title": "Performans Grafikleri",
+        "description": "Alt bölümde süreç performansı, proje durumu gibi görselleştirmeler bulunur.",
+        "tip": "Grafiklerin üzerine gelerek detaylı bilgi alabilirsiniz."
+      },
+      {
+        "title": "Hızlı Erişim",
+        "description": "Sol menüden tüm modüllere kolayca erişebilirsiniz.",
+        "tip": "Arama kutusunu kullanarak istediğiniz özelliğe hızlıca ulaşın."
+      }
+    ],
+    "shortcuts": [
+      { "key": "Ctrl+K", "action": "Hızlı arama" },
+      { "key": "Alt+D", "action": "Dashboard'a dön" }
+    ]
+  },
+  "stratejik_planlama_akisi_dinamik": {
+    "page_id": "stratejik_planlama_akisi_dinamik",
+    "title": "Dinamik Stratejik Planlama Akışı",
+    "intro": "Kurumunuzun stratejik haritasını interaktif olarak görselleştirin ve yönetin.",
+    "character_greeting": "Stratejik planlamanızı zihin haritası olarak görselleştiriyoruz!",
+    "steps": [
+      {
+        "title": "Vizyon ve Hiyerarşi",
+        "description": "En üstte vizyonunuz, altında ana stratejiler, daha sonra alt stratejiler ve süreçler yer alır.",
+        "tip": "Düğümler arasındaki çizgiler ilişki gücünü gösterir (A=9, B=3).",
+        "highlight_selector": "#spGraph"
+      },
+      {
+        "title": "Odak Modu",
+        "description": "Bir düğüme TEK TIKLAYINCA sadece o düğüm ve bağlantıları görünür hale gelir.",
+        "tip": "ESC tuşu veya boş alana tıklayarak tüm grafiği tekrar görebilirsiniz."
+      },
+      {
+        "title": "Aç/Kapat Yapısı",
+        "description": "ÇİFT TIKLAYARAK alt öğeleri açıp kapatabilirsiniz. Bu sayede sadece ilgilendiğiniz bölümleri görüntülersiniz.",
+        "tip": "'Hepsini Aç' ve 'Hepsini Kapat' butonlarını kullanarak tüm yapıyı kontrol edebilirsiniz."
+      },
+      {
+        "title": "Arama ve Filtreler",
+        "description": "Sol paneldeki arama kutusu ile herhangi bir strateji, süreç veya projeyi bulup odaklanabilirsiniz.",
+        "tip": "Proje ve KPI filtrelerini kapatarak daha temiz bir görünüm elde edebilirsiniz.",
+        "highlight_selector": "#nodeSearch"
+      },
+      {
+        "title": "Zoom ve Görünüm",
+        "description": "Kompakt görünüm ile daha sıkı, normal görünüm ile daha geniş aralıklı bir düzen seçebilirsiniz.",
+        "tip": "Zoom butonları ile grafiği yakınlaştırıp uzaklaştırabilirsiniz."
+      }
+    ],
+    "shortcuts": [
+      { "key": "ESC", "action": "Odak modundan çık" },
+      { "key": "Tek Tık", "action": "Odak modu" },
+      { "key": "Çift Tık", "action": "Aç/Kapat veya Detay" }
+    ]
+  },
+  "projeler": {
+    "page_id": "projeler",
+    "title": "Proje Yönetimi",
+    "intro": "Kurumunuzun tüm projelerini bu sayfadan yönetin, ilerlemeyi takip edin ve raporlar oluşturun.",
+    "character_greeting": "Projelerinizi merkezi bir yerden yönetmenize yardımcı olacağım!",
+    "steps": [
+      {
+        "title": "Proje Listesi",
+        "description": "Tüm aktif, tamamlanan ve arşivlenen projelerinizi bu listede görüntüleyebilirsiniz.",
+        "tip": "Filtreleri kullanarak duruma, sorumluya veya önceliğe göre projelerinizi sıralayın."
+      },
+      {
+        "title": "Yeni Proje Oluşturma",
+        "description": "'Yeni Proje' butonuna tıklayarak hızlıca yeni bir proje başlatabilirsiniz.",
+        "tip": "Proje şablonları kullanarak tekrarlayan süreçleri hızlandırın."
+      },
+      {
+        "title": "Proje Detayları",
+        "description": "Bir projeye tıklayarak görevler, kilometre taşları, bütçe ve kaynakları görüntüleyin.",
+        "tip": "Proje araçları (RAID, CPM, SLA) ile daha derinlemesine analiz yapın."
+      }
+    ],
+    "shortcuts": [
+      { "key": "Ctrl+N", "action": "Yeni proje" },
+      { "key": "Ctrl+F", "action": "Proje ara" }
+    ]
+  },
+  "kurum_paneli": {
+    "page_id": "kurum_paneli",
+    "title": "Kurum Paneli",
+    "intro": "Kurumunuzun stratejik yapısını, değerlerini ve amaçlarını bu panelden yönetin.",
+    "character_greeting": "Kurumunuzun kimliğini ve stratejik yapısını burada tanımlıyoruz!",
+    "steps": [
+      {
+        "title": "Vizyon ve Misyon",
+        "description": "Kurumunuzun vizyon, misyon ve amaçlarını tanımlayın.",
+        "tip": "Bu bilgiler tüm stratejik planlama sürecinizin temelidir."
+      },
+      {
+        "title": "Stratejiler",
+        "description": "Ana ve alt stratejilerinizi oluşturun, düzenleyin ve puanlayın.",
+        "tip": "Her stratejiye kod vererek takip ve raporlamayı kolaylaştırın."
+      },
+      {
+        "title": "SWOT Analizi",
+        "description": "Kurumunuzun güçlü ve zayıf yönlerini, fırsat ve tehditlerini analiz edin.",
+        "tip": "SWOT matrisi otomatik olarak stratejilerinizle ilişkilendirilir."
+      }
+    ]
+  },
+  "admin_panel": {
+    "page_id": "admin_panel",
+    "title": "Admin Paneli",
+    "intro": "Sistem ayarları, kullanıcı yönetimi ve genel yapılandırmalar için admin kontrol paneli.",
+    "character_greeting": "Sistem yönetimi için tüm araçlar burada!",
+    "steps": [
+      {
+        "title": "Kullanıcı Yönetimi",
+        "description": "Kullanıcı ekleyin, düzenleyin, roller ve yetkiler atayın.",
+        "tip": "Toplu kullanıcı import için Excel şablonunu kullanabilirsiniz."
+      },
+      {
+        "title": "Sistem Ayarları",
+        "description": "Genel sistem parametrelerini ve entegrasyonları yapılandırın.",
+        "tip": "Değişiklikleri kaydetmeden önce test modunu kullanın."
+      }
+    ]
+  }
+}

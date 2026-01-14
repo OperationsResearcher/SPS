@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurum Yönetimi Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="kontrol.html">Ana Sayfa</a> > Kurum Yönetimi Modülü
+            </div>
+            <h1>🏢 Kurum Yönetimi Kontrol Listesi</h1>
+        </div>
+        
+        <div class="progress-section">
+            <div id="progress-text">0 / 0 soru cevaplandı (0%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <!-- Sorular buraya eklenecek -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportResults('kurum', 'Kurum Yönetimi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="window.location.href='kontrol.html'">Ana Sayfaya Dön</button>
+            <button class="btn btn-danger" onclick="clearResults('kurum', 'Kurum Yönetimi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "Admin panelinden yeni kurum ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum ekleme formunda tüm zorunlu alanlar (kısa ad, ticari ünvan) belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum ekleme işlemi başarıyla tamamlandığında onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum listesinde kurum bilgileri (logo, ad, ticari ünvan, sektör) düzgün görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum düzenleme butonu tıklanabilir ve modal/form açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum düzenleme formunda mevcut veriler doğru şekilde yükleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum düzenleme işlemi başarıyla kaydediliyor ve liste güncelleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum silme butonu görünüyor mu? (Sadece admin için)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum silme işleminde onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum silme işlemi başarıyla tamamlanıyor ve listeden kaldırılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Logo yükleme işlemi çalışıyor mu? (Drag & drop veya dosya seçme)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Yüklenen logo önizlemede ve listede düzgün görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum görüntüleme (view) butonu ile detaylar gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum detay sayfasında tüm bilgiler (iletişim, adres, sektör vb.) görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum listesinde sayfalama (pagination) çalışıyor mu? (Çok sayıda kurum varsa)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum arama/filtreleme özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum paneli sayfasına erişim doğru yetki kontrolü ile yapılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurumsal kimlik (misyon, vizyon, değerler) ayarları yapılabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Form validasyonları (e-posta formatı, telefon formatı) çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hata durumlarında kullanıcıya anlaşılır hata mesajları gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum işlemleri mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule('kurum', questions);
+        initializeModule('kurum', 'Kurum Yönetimi', questions);
+        
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+
+
+
+

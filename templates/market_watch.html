@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Market Watcher{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-eye me-2"></i>
+                Market Watcher
+            </h2>
+        </div>
+    </div>
+
+    {% if intels %}
+    <div class="row">
+        {% for intel in intels %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ intel.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <span class="badge bg-secondary mb-2">{{ intel.intel_type }}</span>
+                    <p class="card-text">{{ intel.description[:200] }}{% if intel.description|length > 200 %}...{% endif %}</p>
+                    {% if intel.source %}
+                    <p><small class="text-muted">Kaynak: {{ intel.source }}</small></p>
+                    {% endif %}
+                    <p><small class="text-muted">{{ intel.collected_at.strftime('%d.%m.%Y %H:%M') }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz pazar istihbaratı bulunmuyor.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

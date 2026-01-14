@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Gösterge Paneli{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4 animate-fade-in">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2" style="font-weight: 800; font-size: 2.25rem;">
+                        <span class="gradient-text">Hoş Geldiniz,</span> {{ current_user.first_name or current_user.username }}!
+                    </h1>
+                    <p class="text-secondary mb-0">Stratejik planlarınızı yönetin ve performansınızı takip edin</p>
+                </div>
+                <button class="btn-premium btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Yeni Proje
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6 animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="stat-card-modern">
+                <div class="stat-icon-modern" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="stat-value">
+                    <span id="totalProjects">{{ stats.total_projects or 12 }}</span>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12%</span>
+                    </div>
+                </div>
+                <div class="stat-label">Toplam Proje</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-slide-up" style="animation-delay: 0.2s;">
+            <div class="stat-card-modern">
+                <div class="stat-icon-modern" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">
+                    <span id="completedTasks">{{ stats.completed_tasks or 87 }}</span>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8%</span>
+                    </div>
+                </div>
+                <div class="stat-label">Tamamlanan Görevler</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-slide-up" style="animation-delay: 0.3s;">
+            <div class="stat-card-modern">
+                <div class="stat-icon-modern" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">
+                    <span id="pendingTasks">{{ stats.pending_tasks or 23 }}</span>
+                    <div class="stat-trend down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>3%</span>
+                    </div>
+                </div>
+                <div class="stat-label">Bekleyen Görevler</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-slide-up" style="animation-delay: 0.4s;">
+            <div class="stat-card-modern">
+                <div class="stat-icon-modern" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-value">
+                    <span id="performanceScore">{{ stats.performance_score or 94 }}%</span>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5%</span>
+                    </div>
+                </div>
+                <div class="stat-label">Performans Skoru</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6 animate-scale-in" style="animation-delay: 0.5s;">
+            <a href="{{ url_for('main.surec_karnesi') }}" style="text-decoration: none;">
+                <div class="card-premium h-100">
+                    <div class="card-premium-body text-center">
+                        <div class="stat-icon-modern mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-file-earmark-spreadsheet"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Süreç Karnesi</h5>
+                        <p class="text-secondary small mb-3">Performans göstergelerinizi yönetin</p>
+                        <button class="btn-premium btn-primary w-100">
+                            <i class="fas fa-arrow-right"></i>
+                            Göster
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-3 col-md-6 animate-scale-in" style="animation-delay: 0.6s;">
+            <a href="{{ url_for('main.projeler') }}" style="text-decoration: none;">
+                <div class="card-premium h-100">
+                    <div class="card-premium-body text-center">
+                        <div class="stat-icon-modern mx-auto" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Proje Yönetimi</h5>
+                        <p class="text-secondary small mb-3">Projelerinizi takip edin</p>
+                        <button class="btn-premium btn-success w-100">
+                            <i class="fas fa-folder-open"></i>
+                            Projeler
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-3 col-md-6 animate-scale-in" style="animation-delay: 0.7s;">
+            <a href="{{ url_for('main.gorevlerim') }}" style="text-decoration: none;">
+                <div class="card-premium h-100">
+                    <div class="card-premium-body text-center">
+                        <div class="stat-icon-modern mx-auto" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Görevlerim</h5>
+                        <p class="text-secondary small mb-3">Aktif görevlerinizi görün</p>
+                        <button class="btn-premium btn-warning w-100">
+                            <i class="fas fa-list-check"></i>
+                            Görevler
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-3 col-md-6 animate-scale-in" style="animation-delay: 0.8s;">
+            <a href="{{ url_for('main.executive_dashboard') }}" style="text-decoration: none;">
+                <div class="card-premium h-100">
+                    <div class="card-premium-body text-center">
+                        <div class="stat-icon-modern mx-auto" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Yönetici Kokpiti</h5>
+                        <p class="text-secondary small mb-3">Detaylı analitik raporlar</p>
+                        <button class="btn-premium btn-danger w-100">
+                            <i class="fas fa-chart-bar"></i>
+                            Raporlar
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Progress -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card-premium animate-slide-up">
+                <div class="card-premium-header">
+                    <i class="fas fa-clock"></i>
+                    Son Aktiviteler
+                </div>
+                <div class="card-premium-body">
+                    <div class="table-responsive">
+                        <table class="table-modern">
+                            <thead>
+                                <tr>
+                                    <th>Proje</th>
+                                    <th>Aktivite</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Stratejik Plan 2024</strong>
+                                    </td>
+                                    <td>Yeni hedef eklendi</td>
+                                    <td>
+                                        <span class="badge-modern badge-success">
+                                            <i class="fas fa-check"></i>
+                                            Tamamlandı
+                                        </span>
+                                    </td>
+                                    <td>2 saat önce</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Performans Analizi</strong>
+                                    </td>
+                                    <td>Rapor güncellendi</td>
+                                    <td>
+                                        <span class="badge-modern badge-primary">
+                                            <i class="fas fa-sync"></i>
+                                            Devam Ediyor
+                                        </span>
+                                    </td>
+                                    <td>5 saat önce</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Bütçe Planlaması</strong>
+                                    </td>
+                                    <td>Onay bekliyor</td>
+                                    <td>
+                                        <span class="badge-modern badge-warning">
+                                            <i class="fas fa-clock"></i>
+                                            Bekliyor
+                                        </span>
+                                    </td>
+                                    <td>1 gün önce</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Yıllık Hedefler</strong>
+                                    </td>
+                                    <td>Revizyon gerekli</td>
+                                    <td>
+                                        <span class="badge-modern badge-danger">
+                                            <i class="fas fa-exclamation"></i>
+                                            Acil
+                                        </span>
+                                    </td>
+                                    <td>2 gün önce</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card-premium animate-slide-up">
+                <div class="card-premium-header">
+                    <i class="fas fa-chart-pie"></i>
+                    Proje İlerlemesi
+                </div>
+                <div class="card-premium-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-600">Stratejik Plan 2024</span>
+                            <span class="badge-modern badge-success">85%</span>
+                        </div>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 85%; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-600">Performans Analizi</span>
+                            <span class="badge-modern badge-warning">62%</span>
+                        </div>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 62%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-600">Bütçe Planlaması</span>
+                            <span class="badge-modern badge-primary">45%</span>
+                        </div>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 45%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-600">Yıllık Hedefler</span>
+                            <span class="badge-modern badge-danger">23%</span>
+                        </div>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 23%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Smooth number counting animation
+function animateValue(id, start, end, duration) {
+    const obj = document.getElementById(id);
+    if (!obj) return;
+    
+    const range = end - start;
+    const increment = end > start ? 1 : -1;
+    const stepTime = Math.abs(Math.floor(duration / range));
+    let current = start;
+    
+    const timer = setInterval(function() {
+        current += increment;
+        obj.textContent = current;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
+// Animate numbers on page load
+document.addEventListener('DOMContentLoaded', function() {
+    animateValue('totalProjects', 0, {{ stats.total_projects or 12 }}, 1000);
+    animateValue('completedTasks', 0, {{ stats.completed_tasks or 87 }}, 1200);
+    animateValue('pendingTasks', 0, {{ stats.pending_tasks or 23 }}, 800);
+    animateValue('performanceScore', 0, {{ stats.performance_score or 94 }}, 1500);
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,620 @@
+{% extends "base.html" %}
+
+{% block title %}{% if task %}Görev Düzenle{% else %}Yeni Görev{% endif %} - {{ project.name }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}">Ana Sayfa</a> / 
+<a href="{{ url_for('main.projeler') }}">Proje Yönetimi</a> / 
+<a href="{{ url_for('main.proje_detay', project_id=project.id) }}">{{ project.name }}</a> / 
+{% if task %}Görev Düzenle{% else %}Yeni Görev{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>
+                        {% if task %}Görev Düzenle{% else %}Yeni Görev{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="taskForm">
+                        <!-- Görev Bilgileri -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">Görev Bilgileri</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="title" class="form-label">Görev Başlığı <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           value="{{ task.title if task else '' }}" required>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="status" class="form-label">Durum</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="Yapılacak" {% if task and task.status == 'Yapılacak' %}selected{% endif %}>Yapılacak</option>
+                                        <option value="Devam Ediyor" {% if task and task.status == 'Devam Ediyor' %}selected{% endif %}>Devam Ediyor</option>
+                                        <option value="Beklemede" {% if task and task.status == 'Beklemede' %}selected{% endif %}>Beklemede</option>
+                                        <option value="Tamamlandı" {% if task and task.status == 'Tamamlandı' %}selected{% endif %}>Tamamlandı</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="priority" class="form-label">Öncelik</label>
+                                    <select class="form-select" id="priority" name="priority">
+                                        <option value="Düşük" {% if task and task.priority == 'Düşük' %}selected{% endif %}>Düşük</option>
+                                        <option value="Orta" {% if task and task.priority == 'Orta' %}selected{% endif %}>Orta</option>
+                                        <option value="Yüksek" {% if task and task.priority == 'Yüksek' %}selected{% endif %}>Yüksek</option>
+                                        <option value="Acil" {% if task and task.priority == 'Acil' %}selected{% endif %}>Acil</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="assigned_to_id" class="form-label">Atanan Kişi</label>
+                                    <select class="form-select" id="assigned_to_id" name="assigned_to_id">
+                                        <option value="">Atanmamış</option>
+                                        {% if proje_uyeleri %}
+                                            <optgroup label="Proje Üyeleri">
+                                                {% for uye in proje_uyeleri %}
+                                                <option value="{{ uye.id }}" {% if task and task.assigned_to_id == uye.id %}selected{% endif %}>
+                                                    {{ uye.first_name }} {{ uye.last_name }} ({{ uye.username }})
+                                                </option>
+                                                {% endfor %}
+                                            </optgroup>
+                                        {% endif %}
+                                        {% if kullanicilar %}
+                                            <optgroup label="Kurum Kullanıcıları">
+                                                {% for kullanici in kullanicilar %}
+                                                    {% if not proje_uyeleri or kullanici not in proje_uyeleri %}
+                                                    <option value="{{ kullanici.id }}" {% if task and task.assigned_to_id == kullanici.id %}selected{% endif %}>
+                                                        {{ kullanici.first_name }} {{ kullanici.last_name }} ({{ kullanici.username }})
+                                                    </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </optgroup>
+                                        {% endif %}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="external_assignee_name" class="form-label">Dış Sorumlu (varsa)</label>
+                                    <input type="text" class="form-control" id="external_assignee_name" name="external_assignee_name"
+                                           value="{{ task.external_assignee_name if task else '' }}" maxlength="200"
+                                           placeholder="Sistemde olmayan kişi / dış kaynak">
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="due_date" class="form-label">Bitiş Tarihi</label>
+                                    <input type="date" class="form-control" id="due_date" name="due_date" 
+                                           value="{{ task.due_date.strftime('%Y-%m-%d') if task and task.due_date else '' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Açıklama</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">{{ task.description if task else '' }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="estimated_time" class="form-label">Tahmini Süre (saat)</label>
+                                    <input type="number" step="0.5" class="form-control" id="estimated_time" name="estimated_time" 
+                                           value="{{ task.estimated_time if task else '' }}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3" id="actualTimeContainer" style="display: {% if task and (task.status == 'Tamamlandı' or task.actual_time) %}block{% else %}none{% endif %};">
+                                    <label for="actual_time" class="form-label">Gerçekleşen Süre (saat)</label>
+                                    <input type="number" step="0.5" class="form-control" id="actual_time" name="actual_time" 
+                                           value="{{ task.actual_time if task else '' }}">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="reminder_date" class="form-label">
+                                        <i class="fas fa-bell me-1"></i>Hatırlat (Tarih/Saat)
+                                    </label>
+                                    <input type="datetime-local" class="form-control" id="reminder_date" name="reminder_date" 
+                                           value="{{ task.reminder_date.strftime('%Y-%m-%dT%H:%M') if task and task.reminder_date else '' }}"
+                                           placeholder="Görev hakkında hatırlatılmak istediğiniz tarih ve saat">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <small class="form-text text-muted d-block">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Belirtilen tarih/saat geldiğinde sistem tarafından otomatik hatırlatma yapılacaktır.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PG ve Faaliyet İlişkileri (Impact) -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">Bu Görev Hangi PG'leri Etkiliyor?</h6>
+                            <p class="text-muted small">
+                                Görev tamamlandığında, seçtiğiniz PG'lere otomatik olarak belirttiğiniz değer eklenecektir.
+                            </p>
+                            
+                            <div id="impactsContainer">
+                                <!-- Mevcut impact'ler -->
+                                {% if task_impacts %}
+                                    {% for impact in task_impacts %}
+                                    <div class="impact-row border rounded p-3 mb-3">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label">Performans Göstergesi</label>
+                                                <select class="form-select impact-pg-select" name="impact_pg_id">
+                                                    <option value="">Seçiniz...</option>
+                                                    {% for pg in bireysel_pgler %}
+                                                    <option value="{{ pg.id }}" {% if impact.related_pg_id == pg.id %}selected{% endif %}>
+                                                        {{ pg.ad }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label">İlişkili Faaliyet <small class="text-muted">(Opsiyonel)</small></label>
+                                                <select class="form-select impact-faaliyet-select" name="impact_faaliyet_id">
+                                                    <option value="">Seçiniz...</option>
+                                                    {% if bireysel_faaliyetler %}
+                                                        {% for faaliyet in bireysel_faaliyetler %}
+                                                        <option value="{{ faaliyet.id }}" {% if impact.related_faaliyet_id == faaliyet.id %}selected{% endif %}>
+                                                            {{ faaliyet.ad }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label">Etki Değeri</label>
+                                                <input type="text" class="form-control impact-value" name="impact_value" 
+                                                       value="{{ impact.impact_value }}" placeholder="Örn: 10, 15.5">
+                                            </div>
+                                            <div class="col-md-2 mb-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeImpact(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="addImpact()">
+                                <i class="fas fa-plus me-1"></i>PG İlişkisi Ekle
+                            </button>
+                        </div>
+
+                        <!-- Yorumlar/Tartışma Bölümü -->
+                        {% if task %}
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">Yorumlar ve Tartışma</h6>
+                            
+                            <!-- Yorum Listesi -->
+                            <div id="commentsContainer" class="mb-3">
+                                <div class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <p class="text-muted small mt-2">Yorumlar yükleniyor...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Yeni Yorum Formu -->
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <form id="commentForm">
+                                        <div class="mb-3">
+                                            <label for="comment_text" class="form-label">Yorum Ekle</label>
+                                            <textarea class="form-control" id="comment_text" name="comment_text" rows="3" 
+                                                      placeholder="Yorumunuzu buraya yazın... @KullanıcıAdı şeklinde etiketleme yapabilirsiniz."></textarea>
+                                            <small class="text-muted">@KullanıcıAdı ile kullanıcıları etiketleyebilirsiniz</small>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-comment me-1"></i>Yorum Ekle
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Butonlar -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>İptal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const projectId = {{ project.id }};
+const taskId = {{ task.id if task else 'null' }};
+const canEditTask = {{ 'true' if can_edit else 'false' }};
+const bireyselPGler = {{ bireysel_pgler | tojson if bireysel_pgler else '[]' }};
+const bireyselFaaliyetler = {{ bireysel_faaliyetler | tojson if bireysel_faaliyetler else '[]' }};
+
+// Düzenleme yetkisi yoksa formu salt-okunur yap
+document.addEventListener('DOMContentLoaded', function() {
+    if (canEditTask) return;
+
+    const taskForm = document.getElementById('taskForm');
+    if (!taskForm) return;
+
+    taskForm.querySelectorAll('input, select, textarea, button').forEach(el => {
+        if (el.tagName === 'BUTTON' && el.type === 'submit') {
+            el.style.display = 'none';
+            return;
+        }
+
+        // Görüntüleme için alanları kilitle
+        if (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
+            el.setAttribute('disabled', 'disabled');
+        }
+
+        // Butonları (impact ekle/sil vb.) pasifleştir
+        if (el.tagName === 'BUTTON') {
+            el.setAttribute('disabled', 'disabled');
+        }
+    });
+
+    const commentForm = document.getElementById('commentForm');
+    if (commentForm) {
+        commentForm.style.display = 'none';
+    }
+});
+
+// Sayfa yüklendiğinde varsayılan bitiş tarihini ayarla (sadece yeni görev için)
+{% if not task %}
+document.addEventListener('DOMContentLoaded', function() {
+    const dueDateInput = document.getElementById('due_date');
+    if (dueDateInput && !dueDateInput.value) {
+        const today = new Date();
+        dueDateInput.value = today.toISOString().split('T')[0];
+    }
+});
+{% endif %}
+
+// Durum değiştiğinde gerçekleşen süre alanını göster/gizle
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const actualTimeContainer = document.getElementById('actualTimeContainer');
+    
+    if (statusSelect && actualTimeContainer) {
+        function toggleActualTime() {
+            const status = statusSelect.value;
+            const isCompleted = status === 'Tamamlandı';
+            const isEditMode = taskId !== null;
+            
+            if (isCompleted || isEditMode) {
+                actualTimeContainer.style.display = 'block';
+            } else {
+                actualTimeContainer.style.display = 'none';
+                document.getElementById('actual_time').value = '';
+            }
+        }
+        
+        statusSelect.addEventListener('change', toggleActualTime);
+        toggleActualTime(); // İlk yüklemede kontrol et
+    }
+});
+
+// İç atama <-> dış sorumlu alanlarını birbirini dışlayacak şekilde yönet
+document.addEventListener('DOMContentLoaded', function() {
+    const assignedSelect = document.getElementById('assigned_to_id');
+    const externalInput = document.getElementById('external_assignee_name');
+    if (!assignedSelect || !externalInput) return;
+
+    assignedSelect.addEventListener('change', function() {
+        if (assignedSelect.value) {
+            externalInput.value = '';
+        }
+    });
+
+    externalInput.addEventListener('input', function() {
+        if (externalInput.value && externalInput.value.trim().length > 0) {
+            assignedSelect.value = '';
+        }
+    });
+});
+
+// Yorumları yükle
+{% if task %}
+document.addEventListener('DOMContentLoaded', function() {
+    loadTaskComments();
+});
+
+function loadTaskComments() {
+    fetch(`/api/projeler/${projectId}/gorevler/${taskId}/yorumlar`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('commentsContainer');
+            if (!container) return;
+            
+            if (data.success && data.yorumlar && data.yorumlar.length > 0) {
+                let html = '';
+                data.yorumlar.forEach(yorum => {
+                    const tarih = new Date(yorum.created_at).toLocaleString('tr-TR');
+                    let yorumMetni = escapeHtml(yorum.comment_text);
+                    
+                    // @etiketlemeleri vurgula
+                    yorumMetni = yorumMetni.replace(/@(\w+)/g, '<span class="badge bg-info">@$1</span>');
+                    
+                    html += `
+                        <div class="card mb-2">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>${yorum.user_name}</strong>
+                                        <small class="text-muted ms-2">${tarih}</small>
+                                    </div>
+                                </div>
+                                <div class="comment-text">${yorumMetni}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Henüz yorum yapılmamış.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Yorumlar yükleme hatası:', error);
+            document.getElementById('commentsContainer').innerHTML = '<div class="alert alert-danger">Yorumlar yüklenirken hata oluştu.</div>';
+        });
+}
+
+// Yorum formu submit
+{% if task %}
+document.getElementById('commentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const commentText = document.getElementById('comment_text').value.trim();
+    if (!commentText) {
+        if (typeof showToast !== 'undefined') {
+            showToast('warning', 'Lütfen yorum metni giriniz!', 'Eksik Bilgi');
+        }
+        document.getElementById('comment_text').focus();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/projeler/${projectId}/gorevler/${taskId}/yorumlar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+            },
+            body: JSON.stringify({
+                comment_text: commentText
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            if (typeof showToast !== 'undefined') {
+                showToast('success', 'Yorum başarıyla eklendi.', 'Başarılı');
+            }
+            document.getElementById('comment_text').value = '';
+            loadTaskComments(); // Yorumları yeniden yükle
+        } else {
+            if (typeof showToast !== 'undefined') {
+                showToast('error', result.message || 'Yorum eklenemedi.', 'Hata');
+            }
+        }
+    } catch (error) {
+        console.error('Hata:', error);
+        if (typeof showToast !== 'undefined') {
+            showToast('error', 'Yorum eklenirken bir hata oluştu!', 'Hata');
+        }
+    }
+});
+{% endif %}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+{% endif %}
+
+// Impact ekle
+function addImpact() {
+    const container = document.getElementById('impactsContainer');
+    const newRow = document.createElement('div');
+    newRow.className = 'impact-row border rounded p-3 mb-3';
+    
+    let pgOptions = '<option value="">Seçiniz...</option>';
+    bireyselPGler.forEach(pg => {
+        pgOptions += `<option value="${pg.id}">${pg.ad}</option>`;
+    });
+    
+    let faaliyetOptions = '<option value="">Seçiniz...</option>';
+    bireyselFaaliyetler.forEach(faaliyet => {
+        faaliyetOptions += `<option value="${faaliyet.id}">${faaliyet.ad}</option>`;
+    });
+    
+    newRow.innerHTML = `
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Performans Göstergesi</label>
+                <select class="form-select impact-pg-select" name="impact_pg_id">
+                    ${pgOptions}
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label">İlişkili Faaliyet <small class="text-muted">(Opsiyonel)</small></label>
+                <select class="form-select impact-faaliyet-select" name="impact_faaliyet_id">
+                    ${faaliyetOptions}
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label">Etki Değeri</label>
+                <input type="text" class="form-control impact-value" name="impact_value" placeholder="Örn: 10, 15.5">
+            </div>
+            <div class="col-md-2 mb-2 d-flex align-items-end">
+                <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeImpact(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(newRow);
+}
+
+// Impact kaldır
+function removeImpact(btn) {
+    btn.closest('.impact-row').remove();
+}
+
+// Form submit
+document.getElementById('taskForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    // Form validasyonu
+    const title = formData.get('title').trim();
+    if (!title) {
+        if (typeof showToast !== 'undefined') {
+            showToast('warning', 'Lütfen görev başlığı girin.', 'Eksik Bilgi');
+        }
+        document.getElementById('title').focus();
+        return;
+    }
+    
+    const taskData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        status: formData.get('status'),
+        priority: formData.get('priority'),
+        assigned_to_id: formData.get('assigned_to_id') ? parseInt(formData.get('assigned_to_id')) : null,
+        external_assignee_name: formData.get('external_assignee_name') ? formData.get('external_assignee_name').trim() : null,
+        due_date: formData.get('due_date'),
+        reminder_date: formData.get('reminder_date') || null,
+        estimated_time: formData.get('estimated_time') ? parseFloat(formData.get('estimated_time')) : null,
+        actual_time: formData.get('actual_time') ? parseFloat(formData.get('actual_time')) : null
+    };
+
+    // Dış sorumlu girildiyse iç atamayı kapat
+    if (taskData.external_assignee_name) {
+        taskData.assigned_to_id = null;
+    }
+    
+    // Impact'leri topla
+    const impacts = [];
+    document.querySelectorAll('.impact-row').forEach(row => {
+        const pgId = row.querySelector('.impact-pg-select').value;
+        const faaliyetId = row.querySelector('.impact-faaliyet-select') ? row.querySelector('.impact-faaliyet-select').value : null;
+        const value = row.querySelector('.impact-value').value;
+        
+        if (pgId && value) {
+            impacts.push({
+                related_pg_id: parseInt(pgId),
+                related_faaliyet_id: faaliyetId ? parseInt(faaliyetId) : null,
+                impact_value: value
+            });
+        }
+    });
+    
+    taskData.impacts = impacts;
+    
+    try {
+        const url = taskId 
+            ? `/api/projeler/${projectId}/gorevler/${taskId}`
+            : `/api/projeler/${projectId}/gorevler`;
+        const method = taskId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+            },
+            body: JSON.stringify(taskData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Submit butonunu devre dışı bırak
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Kaydediliyor...';
+            
+            // Flash message göster (eğer PG verisi işlendiyse)
+            if (result.islenen_pg_sayisi && result.islenen_pg_sayisi > 0) {
+                if (typeof showToast !== 'undefined') {
+                    showToast('success', `Görev başarıyla kaydedildi! ${result.islenen_pg_sayisi} adet performans göstergesi için otomatik veri girişi yapıldı.`, 'Başarılı');
+                }
+            } else {
+                if (typeof showToast !== 'undefined') {
+                    showToast('success', result.message || 'Görev başarıyla kaydedildi!', 'Başarılı');
+                }
+            }
+            
+            // Kısa bir gecikme sonrası yönlendir
+            setTimeout(() => {
+                window.location.href = `/projeler/${projectId}`;
+            }, 1000);
+        } else {
+            if (typeof showToast !== 'undefined') {
+                showToast('error', result.message || 'Bilinmeyen bir hata oluştu.', 'Hata');
+            }
+        }
+    } catch (error) {
+        console.error('Hata:', error);
+        if (typeof showToast !== 'undefined') {
+            showToast('error', 'Görev kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.', 'Hata');
+        }
+    }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

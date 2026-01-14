@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Monte Carlo Simülatörü{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-calculator me-2"></i>
+                Monte Carlo Simülatörü
+            </h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSimulationModal">
+                <i class="fas fa-plus me-2"></i>
+                Yeni Simülasyon Senaryosu
+            </button>
+        </div>
+    </div>
+
+    {% if scenarios %}
+    <div class="row">
+        {% for scenario in scenarios %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ scenario.scenario_name }}</h5>
+                    <span class="badge bg-{{ 'success' if scenario.status == 'completed' else 'warning' if scenario.status == 'running' else 'secondary' }}">
+                        {{ scenario.status|upper }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ scenario.description[:200] if scenario.description else '-' }}{% if scenario.description and scenario.description|length > 200 %}...{% endif %}</p>
+                    <p><small class="text-muted">Tür: {{ scenario.scenario_type }}</small></p>
+                    <p><small class="text-muted">İterasyon: {{ scenario.iterations }}</small></p>
+                    <div class="mt-3">
+                        {% if scenario.status != 'running' %}
+                        <button class="btn btn-sm btn-success" onclick="runSimulation({{ scenario.id }})">
+                            <i class="fas fa-play me-1"></i>Çalıştır
+                        </button>
+                        {% endif %}
+                        {% if scenario.status == 'completed' and scenario.results %}
+                        <button class="btn btn-sm btn-outline-primary" onclick="showResults({{ scenario.id }})">
+                            <i class="fas fa-chart-bar me-1"></i>Sonuçları Görüntüle
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSimulation({{ scenario.id }})">
+                            <i class="fas fa-trash me-1"></i>Sil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz simülasyon senaryosu bulunmuyor.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Simulation Modal -->
+<div class="modal fade" id="addSimulationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Simülasyon Senaryosu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addSimulationForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Senaryo Adı *</label>
+                        <input type="text" class="form-control" name="scenario_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Simülasyon Türü</label>
+                        <select class="form-select" name="scenario_type">
+                            <option value="financial">Finansal</option>
+                            <option value="project">Proje</option>
+                            <option value="risk">Risk</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İterasyon Sayısı</label>
+                        <input type="number" class="form-control" name="iterations" value="10000" min="1000" max="100000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Değişkenler (JSON Formatında)</label>
+                        <textarea class="form-control" name="variables" rows="5" placeholder='{"revenue": {"min": 100000, "max": 200000, "mean": 150000, "std": 20000}}'>{"revenue": {"min": 100000, "max": 200000, "mean": 150000, "std": 20000}, "costs": {"min": 80000, "max": 120000, "mean": 100000, "std": 10000}}</textarea>
+                        <small class="text-muted">Değişkenler JSON formatında olmalıdır.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Simülasyon Sonuçları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="resultsContent">
+                <!-- Sonuçlar buraya yüklenecek -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('addSimulationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('{{ url_for("main.simulation_add") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            showToast('error', 'Simülasyon eklenirken bir hata oluştu.');
+        }
+    });
+});
+
+function runSimulation(scenarioId) {
+    if (!confirm('Simülasyonu çalıştırmak istediğinize emin misiniz? Bu işlem zaman alabilir.')) {
+        return;
+    }
+    
+    fetch(`/simulation/${scenarioId}/run`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('success', 'Simülasyon başarıyla tamamlandı!');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast('error', 'Hata: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        showToast('error', 'Simülasyon çalıştırılırken bir hata oluştu.');
+    });
+}
+
+function showResults(scenarioId) {
+    // Senaryo sonuçlarını göster (AJAX ile çekilebilir)
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    document.getElementById('resultsContent').innerHTML = '<p>Sonuçlar yükleniyor...</p>';
+    modal.show();
+    // Sonuçları AJAX ile çek ve göster
+}
+
+function deleteSimulation(scenarioId) {
+    if (confirm('Bu simülasyon senaryosunu silmek istediğinize emin misiniz?')) {
+        fetch(`/simulation/${scenarioId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                showToast('error', 'Simülasyon silinirken bir hata oluştu.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+

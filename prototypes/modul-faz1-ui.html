@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 1 - UI/UX Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🎨 Faz 1 - UI/UX Tasarım (V64.1)</h1>
+            <p>Clean & Minimalist Design kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz1-ui', 'Faz 1 - UI/UX Tasarım')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz1-ui')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz1-ui';
+        const moduleTitle = 'Faz 1 - UI/UX Tasarım';
+        
+        const questions = [
+            {
+                text: 'Sistem genelinde modern ve temiz bir tasarım dili kullanılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Soft UI komponentleri (kartlar, butonlar, formlar) tutarlı bir şekilde uygulanmış mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Google Fonts (Inter) başarıyla yüklenmiş ve tüm sayfalarda kullanılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kartlar (card) yumuşak gölgeler ve border-radius ile modern görünüme sahip mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Butonlar hover efektleri ve geçiş animasyonları ile etkileşimli mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Form kontrolleri (input, select, textarea) modern ve kullanıcı dostu görünüme sahip mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Renk paleti tutarlı ve profesyonel görünüyor mu? (primary, secondary, success, danger renkleri)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Chart.js grafikleri güncellenmiş renk paleti ile görsel olarak uyumlu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sidebar menü modern, temiz ve kullanıcı dostu görünüme sahip mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Navigasyon öğeleri hover durumunda görsel geri bildirim veriyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Responsive tasarım mobil ve tablet cihazlarda düzgün çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tüm sayfalarda tutarlı spacing (padding, margin) kullanılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Iconlar (Font Awesome, Bootstrap Icons) düzgün yükleniyor ve görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Loading animasyonları ve spinner\'lar modern ve tutarlı mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Alert ve mesaj bildirimleri kullanıcı dostu ve görsel olarak çekici mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tablo görünümleri modern ve okunabilir mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Modal pencereler modern tasarıma uygun mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Dropdown menüler ve açılır listeler tutarlı görünüme sahip mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfa geçişleri ve animasyonlar yumuşak ve profesyonel mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak UI/UX tasarımı modern, profesyonel ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+
+
+
+

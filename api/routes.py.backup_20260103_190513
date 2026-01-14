@@ -1,0 +1,3703 @@
+# -*- coding: utf-8 -*-
+"""
+API Routes - Süreç Karnesi Endpoint'leri
+"""
+from flask import Blueprint, jsonify, request, current_app, send_file
+from werkzeug.utils import secure_filename
+import os
+import uuid
+from flask_login import login_required, current_user
+from extensions import csrf
+from decorators import project_access_required, project_manager_required, project_member_required
+from models import (
+    db, User, Kurum, Surec, AnaStrateji, AltStrateji,
+    BireyselFaaliyet, BireyselPerformansGostergesi,
+    PerformansGostergeVeri, PerformansGostergeVeriAudit, SurecPerformansGostergesi, SurecFaaliyet,
+    SwotAnalizi, PestleAnalizi, FaaliyetTakip, surec_liderleri, surec_uyeleri,
+    Notification, UserActivityLog, FavoriKPI, DashboardLayout,
+    Project, Task, TaskImpact, TaskComment, TaskMention, ProjectFile,  # Proje Yönetimi modelleri
+    Tag, TaskSubtask, TimeEntry, TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,  # Yeni modeller
+    ProjectRisk  # Risk yönetimi
+)
+from sqlalchemy import or_, and_
+from sqlalchemy.orm import joinedload
+from services.performance_service import (
+    generatePeriyotVerileri, calculateHedefDeger, hesapla_durum,
+    get_ceyrek_aylari, get_ay_ceyreği, get_ay_haftalari, get_ay_gunleri
+)
+from utils.karne_hesaplamalar import (
+    hesapla_basari_puani, hesapla_agirlikli_basari_puani,
+    hesapla_onceki_yil_ortalamasi, parse_basari_puani_araliklari
+)
+from datetime import datetime, timedelta
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill
+from io import BytesIO
+from werkzeug.utils import secure_filename
+import os
+import uuid
+import mimetypes
+import re
+
+api_bp = Blueprint('api', __name__, url_prefix='/api')
+
+
+@api_bp.route('/surec/<int:surec_id>/karne/performans')
+@login_required
+def api_surec_karne_performans(surec_id):
+    """Sürecin performans göstergelerini ve çeyreklik verilerini getir"""
+    import time
+    baslangic_zamani = time.time()
+    try:
+        current_app.logger.info(f"=== PERFORMANS GÖSTERGELERİ API ÇAĞRILDI ===")
+        current_app.logger.info(f"Süreç ID: {surec_id}, User: {current_user.id}, Role: {current_user.sistem_rol}")
+        
+        # Yıl, periyot ve ay parametreleri
+        yil = request.args.get('yil', datetime.now().year, type=int)
+        periyot = request.args.get('periyot', 'ceyrek', type=str)
+        ay = request.args.get('ay', None, type=int)  # Ay parametresi (haftalık/günlük için)
+        current_app.logger.info(f"Yıl: {yil}, Periyot: {periyot}, Ay: {ay}")
+        
+        # Kullanıcının bu süreçte yetkisi var mı?
+        # Admin tüm kurumlara erişebilir, kurum_yoneticileri kendi kurumlarındaki tüm süreçlere erişebilir
+        if current_user.sistem_rol == 'admin':
+            # Admin tüm süreçlere erişebilir
+            surec = Surec.query.options(db.joinedload(Surec.kurum)).get(surec_id)
+            if not surec:
+                current_app.logger.warning(f"Süreç {surec_id} bulunamadı!")
+                return jsonify({'success': False, 'message': 'Süreç bulunamadı'}), 404
+            current_app.logger.info(f"Admin - süreç {surec_id} erişimi onaylandı")
+        elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
+            # Kurum yöneticileri kendi kurumlarındaki tüm süreçlere erişebilir
+            surec = Surec.query.options(db.joinedload(Surec.kurum)).get(surec_id)
+            if not surec:
+                current_app.logger.warning(f"Süreç {surec_id} bulunamadı!")
+                return jsonify({'success': False, 'message': 'Süreç bulunamadı'}), 404
+            
+            if surec.kurum_id != current_user.kurum_id:
+                current_app.logger.warning(f"Kurum yöneticisi {current_user.id} farklı kurumun sürecine erişmeye çalışıyor!")
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+            
+            current_app.logger.info(f"Kurum yöneticisi {current_user.sistem_rol} - süreç {surec_id} erişimi onaylandı")
+        else:
+            # Normal kullanıcılar için lider/üye kontrolü
+            lider_mi = db.session.query(surec_liderleri).filter(
+                surec_liderleri.c.surec_id == surec_id,
+                surec_liderleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            uye_mi = db.session.query(surec_uyeleri).filter(
+                surec_uyeleri.c.surec_id == surec_id,
+                surec_uyeleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            current_app.logger.info(f"Normal kullanıcı - Lider mi: {lider_mi}, Üye mi: {uye_mi}")
+            
+            # Yetki kontrolü: Lider veya üye olmalı
+            if not (lider_mi or uye_mi):
+                current_app.logger.warning(f"Kullanıcı {current_user.id} süreç {surec_id}'de yetkili değil!")
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        
+        # Sürecin KENDİ performans göstergelerini getir (alt_strateji relationship ile)
+        surec_pgler = SurecPerformansGostergesi.query.options(
+            db.joinedload(SurecPerformansGostergesi.alt_strateji)
+        ).filter_by(
+            surec_id=surec_id
+        ).all()
+        
+        current_app.logger.info(f"Bulunan süreç PG sayısı: {len(surec_pgler)}")
+        
+        gostergeler = []
+        for pg in surec_pgler:
+            try:
+                current_app.logger.info(f"PG işleniyor: ID={pg.id}, Ad={pg.ad}")
+                
+                # Periyoda göre veri yapısı oluştur
+                # PG'nin hedef değeri, periyodu ve hesaplama yöntemini geç
+                hesaplama_yontemi = pg.veri_toplama_yontemi if hasattr(pg, 'veri_toplama_yontemi') else 'Ortalama'
+                current_app.logger.info(f"PG {pg.id} için hesaplama yöntemi: {hesaplama_yontemi}")
+                
+                veriler = generatePeriyotVerileri(
+                    periyot=periyot,
+                    pg_id=pg.id,
+                    yil=yil,
+                    pg_hedef_deger=pg.hedef_deger,
+                    pg_periyot=pg.periyot,
+                    hesaplama_yontemi=hesaplama_yontemi,
+                    ay=ay  # Ay parametresini ilet (haftalık/günlük için)
+                )
+                current_app.logger.info(f"PG {pg.id} için {len(veriler)} veri üretildi")
+                
+                # Gösterim periyoduna göre hesaplanmış hedef değeri de ekle
+                gosterim_hedef_deger = calculateHedefDeger(
+                    pg.hedef_deger,
+                    pg.periyot,
+                    periyot,
+                    hesaplama_yontemi
+                )
+                
+                # Alt Strateji ve Ana Strateji bilgilerini al
+                alt_strateji_kodu = None
+                ana_strateji_kodu = None
+                if pg.alt_strateji:
+                    alt_strateji_kodu = pg.alt_strateji.code if hasattr(pg.alt_strateji, 'code') else None
+                    if pg.alt_strateji.ana_strateji:
+                        ana_strateji_kodu = pg.alt_strateji.ana_strateji.code if hasattr(pg.alt_strateji.ana_strateji, 'code') else None
+                
+                # Önceki yıl ortalaması (veri varsa otomatik, yoksa manuel giriş)
+                # Not: Önceki yıl verilerini hesaplama işlemi daha sonra eklenecek
+                # Şimdilik sadece manuel giriş olan değeri kullanıyoruz
+                onceki_yil_ortalamasi = pg.onceki_yil_ortalamasi if hasattr(pg, 'onceki_yil_ortalamasi') else None
+                
+                # Başarı puanı aralıklarını parse et
+                basari_puani_araliklari = parse_basari_puani_araliklari(
+                    pg.basari_puani_araliklari if hasattr(pg, 'basari_puani_araliklari') else None
+                )
+                
+                # Yıl sonu gerçekleşen değeri hesapla (çeyrek bazlı verilerden)
+                yil_sonu_gerceklesen = None
+                if periyot == 'ceyrek' and veriler:
+                    try:
+                        # Tüm çeyreklerin gerçekleşen değerlerini topla
+                        ceyrek_degerler = []
+                        for veri in veriler:
+                            if 'gerceklesen_deger' in veri and veri['gerceklesen_deger'] is not None:
+                                try:
+                                    ceyrek_degerler.append(float(veri['gerceklesen_deger']))
+                                except (ValueError, TypeError):
+                                    pass
+                        if ceyrek_degerler:
+                            if hesaplama_yontemi == 'Toplama' or hesaplama_yontemi == 'SUM':
+                                yil_sonu_gerceklesen = sum(ceyrek_degerler)
+                            else:  # Ortalama
+                                yil_sonu_gerceklesen = sum(ceyrek_degerler) / len(ceyrek_degerler)
+                    except Exception as e:
+                        current_app.logger.warning(f"Yıl sonu gerçekleşen değeri hesaplanırken hata: {e}")
+                
+                # Başarı puanını hesapla (yıl sonu gerçekleşen değerine göre)
+                basari_puani = None
+                if yil_sonu_gerceklesen is not None and basari_puani_araliklari:
+                    direction = pg.direction if hasattr(pg, 'direction') else 'Increasing'
+                    basari_puani = hesapla_basari_puani(
+                        yil_sonu_gerceklesen,
+                        basari_puani_araliklari,
+                        direction
+                    )
+                    # Başarı puanını veritabanına kaydet
+                    try:
+                        pg.basari_puani = basari_puani
+                        db.session.commit()
+                    except Exception as e:
+                        current_app.logger.warning(f"Başarı puanı kaydedilirken hata: {e}")
+                        db.session.rollback()
+                
+                # Ağırlıklı başarı puanını hesapla
+                agirlikli_basari_puani = None
+                if basari_puani is not None:
+                    agirlik = pg.agirlik if hasattr(pg, 'agirlik') else 0
+                    agirlikli_basari_puani = hesapla_agirlikli_basari_puani(basari_puani, agirlik)
+                    # Ağırlıklı başarı puanını veritabanına kaydet
+                    try:
+                        pg.agirlikli_basari_puani = agirlikli_basari_puani
+                        db.session.commit()
+                    except Exception as e:
+                        current_app.logger.warning(f"Ağırlıklı başarı puanı kaydedilirken hata: {e}")
+                        db.session.rollback()
+                
+                pg_data = {
+                    'id': pg.id,  # Süreç PG ID'sini kullan
+                    'surec_pg_id': pg.id,
+                    'ad': pg.ad,
+                    'kodu': pg.kodu if hasattr(pg, 'kodu') else f'PG-{pg.id}',
+                    'hedef_deger': pg.hedef_deger,  # Orijinal hedef
+                    'gosterim_hedef_deger': round(gosterim_hedef_deger, 2) if gosterim_hedef_deger is not None else None,  # Hesaplanmış hedef
+                    'olcum_birimi': pg.olcum_birimi,
+                    'periyot': pg.periyot,
+                    'agirlik': pg.agirlik if hasattr(pg, 'agirlik') else 0,
+                    'onemli': pg.onemli if hasattr(pg, 'onemli') else False,
+                    'veri_toplama_yontemi': hesaplama_yontemi,
+                    'veriler': veriler,
+                    # Excel formatı için yeni alanlar
+                    'ana_strateji_kodu': ana_strateji_kodu,
+                    'alt_strateji_kodu': alt_strateji_kodu,
+                    'gosterge_turu': pg.gosterge_turu if hasattr(pg, 'gosterge_turu') else None,
+                    'target_method': pg.target_method if hasattr(pg, 'target_method') else None,  # Hedef Belirl. Yön. (DH, HKY, SH, vb.)
+                    'onceki_yil_ortalamasi': round(onceki_yil_ortalamasi, 2) if onceki_yil_ortalamasi is not None else None,
+                    'basari_puani': basari_puani,
+                    'agirlikli_basari_puani': round(agirlikli_basari_puani, 2) if agirlikli_basari_puani is not None else None,
+                    'basari_puani_araliklari': basari_puani_araliklari,
+                    'yil_sonu_gerceklesen': round(yil_sonu_gerceklesen, 2) if yil_sonu_gerceklesen is not None else None
+                }
+                gostergeler.append(pg_data)
+                current_app.logger.info(f"PG eklendi: ID={pg.id}, Ad={pg.ad}, Veri Sayısı={len(veriler)}")
+            except Exception as pg_error:
+                import traceback
+                current_app.logger.error(f"PG {pg.id} işlenirken hata: {pg_error}")
+                current_app.logger.error(f"Traceback: {traceback.format_exc()}")
+                continue
+        
+        current_app.logger.info(f"Döndürülen gösterge sayısı: {len(gostergeler)}")
+        gecen_sure = time.time() - baslangic_zamani
+        current_app.logger.info(f"API çağrısı tamamlandı, geçen süre: {gecen_sure:.2f} saniye")
+        
+        return jsonify({
+            'success': True,
+            'gostergeler': gostergeler
+        })
+    except Exception as e:
+        import traceback
+        current_app.logger.error(f'Performans verileri getirilemedi: {e}')
+        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/surec/<int:surec_id>/karne/faaliyetler')
+@login_required
+def api_surec_karne_faaliyetler(surec_id: int):
+    """
+    Sürecin faaliyetlerini ve aylık takip verilerini getirir.
+    
+    Args:
+        surec_id: Süreç ID'si
+    
+    Returns:
+        JSON response:
+        {
+            'success': bool,
+            'faaliyetler': List[Dict]  # Faaliyetler listesi
+        }
+    """
+    try:
+        yil = request.args.get('yil', datetime.now().year, type=int)
+        
+        # Yetki kontrolü
+        # Admin tüm kurumlara erişebilir, kurum_yöneticileri kendi kurumlarındaki tüm süreçlere erişebilir
+        if current_user.sistem_rol == 'admin':
+            # Admin tüm süreçlere erişebilir
+            surec = Surec.query.options(db.joinedload(Surec.kurum)).get(surec_id)
+            if not surec:
+                return jsonify({'success': False, 'message': 'Süreç bulunamadı'}), 404
+        elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
+            # Kurum yöneticileri kendi kurumlarındaki tüm süreçlere erişebilir
+            surec = Surec.query.options(db.joinedload(Surec.kurum)).get(surec_id)
+            if not surec:
+                return jsonify({'success': False, 'message': 'Süreç bulunamadı'}), 404
+            
+            if surec.kurum_id != current_user.kurum_id:
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        else:
+            # Normal kullanıcılar için lider/üye kontrolü
+            lider_mi = db.session.query(surec_liderleri).filter(
+                surec_liderleri.c.surec_id == surec_id,
+                surec_liderleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            uye_mi = db.session.query(surec_uyeleri).filter(
+                surec_uyeleri.c.surec_id == surec_id,
+                surec_uyeleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            if not (lider_mi or uye_mi):
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        
+        # Sürecin KENDİ faaliyetlerini getir
+        surec_faaliyetler = SurecFaaliyet.query.filter_by(
+            surec_id=surec_id
+        ).all()
+        
+        faaliyetler = []
+        for faaliyet in surec_faaliyetler:
+            # Şimdilik basit veri yapısı kullan (BireyselFaaliyet modeli eksik)
+            faaliyetler.append({
+                'id': faaliyet.id,  # Süreç faaliyet ID'sini kullan
+                'surec_faaliyet_id': faaliyet.id,
+                'ad': faaliyet.ad,
+                'oneri': faaliyet.aciklama,
+                'takip': []  # Şimdilik boş takip verileri
+            })
+        
+        current_app.logger.info(f"Süreç {surec_id} için {len(faaliyetler)} faaliyet bulundu")
+        
+        return jsonify({
+            'success': True,
+            'faaliyetler': faaliyetler
+        })
+    except Exception as e:
+        current_app.logger.error(f'Faaliyet verileri getirilemedi: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/surec/<int:surec_id>/karne/kaydet', methods=['POST'])
+@login_required
+@csrf.exempt
+def api_surec_karne_kaydet(surec_id):
+    """Süreç karnesi verilerini kaydet (çeyreklik PG verileri)"""
+    try:
+        data = request.json
+        yil = data.get('yil', datetime.now().year)
+        pg_verileri = data.get('pg_verileri', [])
+        
+        # Yetki kontrolü
+        lider_mi = db.session.query(surec_liderleri).filter(
+            surec_liderleri.c.surec_id == surec_id,
+            surec_liderleri.c.user_id == current_user.id
+        ).first() is not None
+        
+        uye_mi = db.session.query(surec_uyeleri).filter(
+            surec_uyeleri.c.surec_id == surec_id,
+            surec_uyeleri.c.user_id == current_user.id
+        ).first() is not None
+        
+        if not (lider_mi or uye_mi):
+            return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        
+        # Verileri kaydet
+        for veri in pg_verileri:
+            pg_id = int(veri.get('pg_id', 0))
+            surec_pg_id = int(veri.get('surec_pg_id', 0))
+            
+            # Periyot bilgileri - VGS formatından veya eski format
+            periyot_tipi = veri.get('periyot_tipi')  # 'ceyrek', 'aylik', 'yillik', 'haftalik', 'gunluk'
+            periyot_no = veri.get('periyot_no')  # Çeyrek: 1-4, Ay: 1-12, Hafta: 1-52, Gün: 1-365
+            
+            # Eski format desteği (geriye dönük uyumluluk)
+            ceyrek = int(veri.get('ceyrek', 0))
+            ay = int(veri.get('ay', 0))
+            
+            field = veri.get('field')  # 'hedef' veya 'gerceklesen'
+            value = veri.get('value')
+            aciklama = veri.get('aciklama', '')
+            
+            # Eğer pg_id yoksa veya 0 ise, önce bireysel kaydı oluştur
+            if pg_id == 0 and surec_pg_id > 0:
+                # Süreç PG'sini bul
+                surec_pg = SurecPerformansGostergesi.query.get(surec_pg_id)
+                if not surec_pg:
+                    continue
+                
+                # Bireysel kaydı oluştur
+                bireysel_pg = BireyselPerformansGostergesi(
+                    user_id=current_user.id,
+                    ad=surec_pg.ad,
+                    aciklama=surec_pg.aciklama,
+                    hedef_deger=surec_pg.hedef_deger,
+                    olcum_birimi=surec_pg.olcum_birimi,
+                    periyot=surec_pg.periyot,
+                    kaynak='Süreç',
+                    kaynak_surec_id=surec_id,
+                    kaynak_surec_pg_id=surec_pg_id,
+                    agirlik=surec_pg.agirlik if hasattr(surec_pg, 'agirlik') else 0,
+                    onemli=surec_pg.onemli if hasattr(surec_pg, 'onemli') else False,
+                    kodu=surec_pg.kodu if hasattr(surec_pg, 'kodu') else None
+                )
+                db.session.add(bireysel_pg)
+                db.session.flush()  # ID'yi al
+                pg_id = bireysel_pg.id
+            
+            if pg_id == 0:
+                continue
+            
+            # Periyot bilgilerini normalize et
+            if periyot_tipi:
+                # Yeni format (VGS)
+                if periyot_tipi == 'ceyrek':
+                    ceyrek = int(periyot_no) if periyot_no else None
+                    ay = None
+                elif periyot_tipi == 'aylik':
+                    ay = int(periyot_no) if periyot_no else None
+                    ceyrek = None
+                elif periyot_tipi == 'yillik':
+                    ceyrek = None
+                    ay = None
+                else:
+                    # Haftalık ve günlük için ay bilgisi gerekli
+                    ay = int(veri.get('ay', 0)) if veri.get('ay') else None
+            elif ceyrek > 0:
+                # Eski format - çeyrek
+                periyot_tipi = 'ceyrek'
+                periyot_no = ceyrek
+                ay = None
+            elif ay > 0:
+                # Eski format - ay
+                periyot_tipi = 'aylik'
+                periyot_no = ay
+                ceyrek = None
+            else:
+                # Varsayılan: yıllık
+                periyot_tipi = 'yillik'
+                periyot_no = None
+                ceyrek = None
+                ay = None
+            
+            # Veri tarihini hesapla - periyodun son gününe kaydet
+            from services.performance_service import (
+                get_last_friday_of_month, get_last_friday_of_quarter, 
+                get_last_friday_of_year, get_last_friday_of_week, get_last_friday_of_day
+            )
+            if periyot_tipi == 'ceyrek' and periyot_no:
+                veri_tarihi = get_last_friday_of_quarter(int(periyot_no), yil)
+            elif periyot_tipi == 'aylik' and periyot_no:
+                veri_tarihi = get_last_friday_of_month(int(periyot_no), yil)
+            elif periyot_tipi == 'yillik':
+                veri_tarihi = get_last_friday_of_year(yil)
+            elif periyot_tipi == 'haftalik' and periyot_no and ay:
+                veri_tarihi = get_last_friday_of_week(int(ay), int(periyot_no), yil)
+            elif periyot_tipi == 'gunluk' and periyot_no and ay:
+                veri_tarihi = get_last_friday_of_day(int(ay), int(periyot_no), yil)
+            else:
+                veri_tarihi = datetime.now().date()
+            
+            # Veri sahibi bilgisini al (eğer gönderilmişse)
+            veri_sahibi_id = veri.get('user_id') or veri.get('kullanici_id')
+            if not veri_sahibi_id:
+                # Eğer gönderilmemişse, süreç lideri kontrolü yap
+                bireysel_pg = BireyselPerformansGostergesi.query.get(pg_id)
+                if bireysel_pg and bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
+                    # Süreç lideri kontrolü
+                    lider_mi = db.session.query(surec_liderleri).filter(
+                        surec_liderleri.c.surec_id == bireysel_pg.kaynak_surec_id,
+                        surec_liderleri.c.user_id == current_user.id
+                    ).first() is not None
+                    
+                    if lider_mi:
+                        # Süreç lideri ise, bu tarih için tüm kullanıcıların verilerini kontrol et
+                        # Önce mevcut kullanıcının verisini bul, yoksa ilk bulunan veriyi kullan
+                        pg_veri = PerformansGostergeVeri.query.filter_by(
+                            bireysel_pg_id=pg_id,
+                            yil=yil,
+                            veri_tarihi=veri_tarihi
+                        ).first()
+                        
+                        if pg_veri:
+                            veri_sahibi_id = pg_veri.user_id
+                        else:
+                            veri_sahibi_id = current_user.id
+                    else:
+                        veri_sahibi_id = current_user.id
+                else:
+                    veri_sahibi_id = current_user.id
+            else:
+                veri_sahibi_id = int(veri_sahibi_id)
+            
+            # Mevcut veriyi bul veya oluştur
+            # Filtreleme: bireysel_pg_id, user_id, yil, veri_tarihi
+            pg_veri = PerformansGostergeVeri.query.filter_by(
+                bireysel_pg_id=pg_id,
+                user_id=veri_sahibi_id,
+                yil=yil,
+                veri_tarihi=veri_tarihi
+            ).first()
+            
+            if not pg_veri:
+                pg_veri = PerformansGostergeVeri(
+                    bireysel_pg_id=pg_id,
+                    user_id=veri_sahibi_id,
+                    yil=yil,
+                    veri_tarihi=veri_tarihi,
+                    giris_periyot_tipi=periyot_tipi,
+                    giris_periyot_no=periyot_no,
+                    giris_periyot_ay=ay,
+                    ceyrek=ceyrek if ceyrek else None,
+                    ay=ay if ay else None,
+                    created_by=current_user.id
+                )
+                db.session.add(pg_veri)
+            else:
+                # Mevcut kayıt varsa giriş bilgilerini güncelle
+                pg_veri.giris_periyot_tipi = periyot_tipi
+                pg_veri.giris_periyot_no = periyot_no
+                pg_veri.giris_periyot_ay = ay
+                pg_veri.ceyrek = ceyrek if ceyrek else None
+                pg_veri.ay = ay if ay else None
+                pg_veri.updated_by = current_user.id
+            
+            # Değeri güncelle
+            if field == 'hedef':
+                pg_veri.hedef_deger = value
+            elif field == 'gerceklesen':
+                pg_veri.gerceklesen_deger = value
+                pg_veri.veri_tarihi = veri_tarihi
+                if aciklama:
+                    pg_veri.aciklama = aciklama
+                pg_veri.updated_by = current_user.id
+                
+                # Durumu hesapla
+                if pg_veri.hedef_deger and pg_veri.gerceklesen_deger:
+                    durum, durum_yuzdesi = hesapla_durum(
+                        float(pg_veri.hedef_deger) if pg_veri.hedef_deger else None,
+                        float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None
+                    )
+                    pg_veri.durum = durum
+                    pg_veri.durum_yuzdesi = durum_yuzdesi
+        
+        db.session.commit()
+        
+        # Erken Uyarı Mekanizması: PG verisi kaydedildikten sonra performans sapması kontrolü
+        if field == 'gerceklesen' and pg_veri.id:
+            from services.notification_service import check_pg_performance_deviation
+            check_pg_performance_deviation(pg_veri.id)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Veriler başarıyla kaydedildi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Veri kaydedilemedi: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/surec/karne/pg-veri-detay', methods=['GET'])
+@login_required
+def api_surec_karne_pg_veri_detay():
+    """Süreç karnesinde bir PG'nin kullanıcı bazlı veri detaylarını getir"""
+    try:
+        surec_pg_id = request.args.get('surec_pg_id', type=int)
+        ceyrek = request.args.get('ceyrek', type=str)  # String olarak al (çeyrek, ay, hafta, gun, yillik olabilir)
+        yil = request.args.get('yil', type=int, default=datetime.now().year)
+        
+        if not surec_pg_id:
+            return jsonify({'success': False, 'message': 'Eksik parametreler'}), 400
+        
+        # Bu süreç PG'sine bağlı tüm bireysel PG'leri bul
+        bireysel_pgler = BireyselPerformansGostergesi.query.filter_by(
+            kaynak_surec_pg_id=surec_pg_id,
+            kaynak='Süreç'
+        ).all()
+        
+        if not bireysel_pgler:
+            return jsonify({'success': True, 'veriler': []})
+        
+        # Her bir bireysel PG için bu periyottaki veri girişlerini topla
+        tum_veriler = []
+        for bireysel_pg in bireysel_pgler:
+            veri_girisleri = []
+            
+            # Periyot tipine göre sorgu yap
+            if ceyrek == 'yillik':
+                # Yıllık veri
+                veri_girisleri = PerformansGostergeVeri.query.filter_by(
+                    bireysel_pg_id=bireysel_pg.id,
+                    yil=yil,
+                    ceyrek=None,
+                    ay=None
+                ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            elif ceyrek and ceyrek.isdigit() and int(ceyrek) >= 1 and int(ceyrek) <= 4:
+                # Çeyreklik veri
+                ceyrek_no = int(ceyrek)
+                # Çeyreklik kaydı ve bu çeyreğin aylarındaki veriler
+                ceyrek_aylari = get_ceyrek_aylari(ceyrek_no)
+                veri_girisleri = PerformansGostergeVeri.query.filter(
+                    PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
+                    PerformansGostergeVeri.yil == yil
+                ).filter(
+                    or_(
+                        and_(PerformansGostergeVeri.ceyrek == ceyrek_no, PerformansGostergeVeri.ay.is_(None)),  # Çeyreklik kayıt
+                        PerformansGostergeVeri.ay.in_(ceyrek_aylari)  # Bu çeyreğin aylarındaki veriler
+                    )
+                ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            elif ceyrek and ceyrek.isdigit() and int(ceyrek) >= 1 and int(ceyrek) <= 12:
+                # Aylık veri
+                ay_no = int(ceyrek)
+                # Aylık kayıt ve bu ayın tüm verileri (haftalık/günlük dahil)
+                veri_girisleri = PerformansGostergeVeri.query.filter_by(
+                    bireysel_pg_id=bireysel_pg.id,
+                    yil=yil,
+                    ay=ay_no
+                ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            
+                # Eğer bu ay için veri yoksa, çeyreklik veriyi kontrol et
+                if not veri_girisleri:
+                    ilgili_ceyrek = get_ay_ceyreği(ay_no)
+                    if ilgili_ceyrek:
+                        ceyrek_verileri = PerformansGostergeVeri.query.filter_by(
+                            bireysel_pg_id=bireysel_pg.id,
+                            yil=yil,
+                            ceyrek=ilgili_ceyrek,
+                            ay=None
+                        ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+                        if ceyrek_verileri:
+                            veri_girisleri = ceyrek_verileri
+                
+                # Eğer hala veri yoksa, yıllık veriyi kontrol et
+                if not veri_girisleri:
+                    yillik_verileri = PerformansGostergeVeri.query.filter_by(
+                        bireysel_pg_id=bireysel_pg.id,
+                        yil=yil,
+                        ceyrek=None,
+                        ay=None
+                    ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+                    if yillik_verileri:
+                        veri_girisleri = yillik_verileri
+            elif ceyrek and ceyrek.isdigit() and int(ceyrek) >= 1 and int(ceyrek) <= 5:
+                # Haftalık veri - hafta numarası
+                hafta_no = int(ceyrek)
+                # Mevcut ayın haftalarını al
+                mevcut_ay = datetime.now().month
+                haftalar = get_ay_haftalari(mevcut_ay, yil)
+                if 1 <= hafta_no <= len(haftalar):
+                    hafta_bilgi = haftalar[hafta_no - 1]
+                    hafta_baslangic = hafta_bilgi['baslangic_tarih']
+                    hafta_bitis = hafta_bilgi['bitis_tarih']
+                    veri_girisleri = PerformansGostergeVeri.query.filter(
+                        PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
+                        PerformansGostergeVeri.yil == yil,
+                        PerformansGostergeVeri.veri_tarihi >= hafta_baslangic,
+                        PerformansGostergeVeri.veri_tarihi <= hafta_bitis
+                    ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            elif ceyrek and ceyrek.isdigit() and int(ceyrek) >= 1 and int(ceyrek) <= 31:
+                # Günlük veri - gün numarası
+                gun_no = int(ceyrek)
+                # Mevcut ayın günlerini al
+                mevcut_ay = datetime.now().month
+                gunler = get_ay_gunleri(mevcut_ay, yil)
+                if 1 <= gun_no <= len(gunler):
+                    gun_tarih = gunler[gun_no - 1]['tarih']
+                    veri_girisleri = PerformansGostergeVeri.query.filter_by(
+                        bireysel_pg_id=bireysel_pg.id,
+                        yil=yil,
+                        veri_tarihi=gun_tarih
+                    ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            else:
+                # Varsayılan: çeyrek olarak kabul et
+                if ceyrek and ceyrek.isdigit():
+                    ceyrek_no = int(ceyrek)
+                    veri_girisleri = PerformansGostergeVeri.query.filter_by(
+                        bireysel_pg_id=bireysel_pg.id,
+                        yil=yil,
+                        ceyrek=ceyrek_no
+                    ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
+            
+            current_app.logger.info(f"Bireysel PG {bireysel_pg.id} için {len(veri_girisleri)} veri bulundu (Periyot: {ceyrek})")
+            
+            for veri in veri_girisleri:
+                kullanici = User.query.get(veri.user_id)
+                if kullanici:
+                    if kullanici.first_name and kullanici.last_name:
+                        kullanici_adi = f"{kullanici.first_name} {kullanici.last_name}"
+                    else:
+                        kullanici_adi = kullanici.username
+                else:
+                    kullanici_adi = 'Bilinmiyor'
+                
+                current_app.logger.info(f"Veri: user_id={veri.user_id}, kullanici={kullanici_adi}, tarih={veri.veri_tarihi}, ay={veri.ay}, ceyrek={veri.ceyrek}")
+                
+                tum_veriler.append({
+                    'id': veri.id,
+                    'kullanici_id': veri.user_id,
+                    'kullanici_adi': kullanici_adi,
+                    'hedef_deger': veri.hedef_deger,
+                    'gerceklesen_deger': veri.gerceklesen_deger,
+                    'durum': veri.durum,
+                    'durum_yuzdesi': veri.durum_yuzdesi,
+                    'veri_tarihi': veri.veri_tarihi.isoformat() if veri.veri_tarihi else None,
+                    'aciklama': veri.aciklama if veri.aciklama else None,
+                    'created_at': veri.created_at.isoformat() if veri.created_at else None
+                })
+        
+        # Tarihe göre sırala (en yeni en üstte)
+        tum_veriler.sort(key=lambda x: x['veri_tarihi'] or '', reverse=True)
+        
+        current_app.logger.info(f"Toplam {len(tum_veriler)} veri döndürülüyor")
+        
+        return jsonify({
+            'success': True,
+            'veriler': tum_veriler
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f'PG veri detay getirme hatası: {str(e)}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/export/surec_karnesi/excel', methods=['GET'])
+@login_required
+def export_surec_karnesi_excel():
+    """Süreç karnesi verilerini Excel olarak dışa aktarır."""
+    surec_id = request.args.get('surec_id', type=int)
+    yil = request.args.get('yil', type=int)
+    
+    if not surec_id or not yil:
+        return jsonify({"success": False, "message": "Süreç ID ve Yıl gereklidir."}), 400
+    
+    surec = Surec.query.get(surec_id)
+    if not surec:
+        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+    
+    # Check user permission
+    if current_user.sistem_rol == 'admin':
+        # Admin tüm süreçleri görüntüleyebilir
+        pass
+    elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
+        # Kurum yöneticileri kendi kurumlarındaki süreçleri görüntüleyebilir
+        if surec.kurum_id != current_user.kurum_id:
+            return jsonify({"success": False, "message": "Bu süreci görüntüleme yetkiniz yok."}), 403
+    else:
+        # Normal kullanıcı için lider/üye kontrolü
+        lider_mi = db.session.query(surec_liderleri).filter(
+            surec_liderleri.c.surec_id == surec_id,
+            surec_liderleri.c.user_id == current_user.id
+        ).first() is not None
+        
+        uye_mi = db.session.query(surec_uyeleri).filter(
+            surec_uyeleri.c.surec_id == surec_id,
+            surec_uyeleri.c.user_id == current_user.id
+        ).first() is not None
+        
+        if not (lider_mi or uye_mi):
+            return jsonify({"success": False, "message": "Bu süreci görüntüleme yetkiniz yok."}), 403
+    
+    try:
+        # Create workbook and sheets
+        wb = Workbook()
+        ws_pg = wb.active
+        ws_pg.title = "Performans Göstergeleri"
+        ws_faaliyet = wb.create_sheet("Faaliyetler")
+        
+        # --- Sheet 1: Performans Göstergeleri ---
+        
+        # Headers
+        pg_headers = [
+            "Kodu", "Performans Adı", "Hedef", "Periyot", "Ağırlık (%)",
+            "I. Çeyrek Hedef", "I. Çeyrek Gerç.", "I. Çeyrek Durum",
+            "II. Çeyrek Hedef", "II. Çeyrek Gerç.", "II. Çeyrek Durum",
+            "III. Çeyrek Hedef", "III. Çeyrek Gerç.", "III. Çeyrek Durum",
+            "IV. Çeyrek Hedef", "IV. Çeyrek Gerç.", "IV. Çeyrek Durum"
+        ]
+        ws_pg.append(pg_headers)
+        
+        # Style headers
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+        for cell in ws_pg[1]:
+            cell.font = header_font
+            cell.fill = header_fill
+        
+        # Fetch PG data
+        pg_query = SurecPerformansGostergesi.query.filter_by(surec_id=surec_id).order_by(SurecPerformansGostergesi.id)
+        performans_gostergeleri = pg_query.all()
+        
+        for pg in performans_gostergeleri:
+            row_data = [
+                pg.kodu if hasattr(pg, 'kodu') and pg.kodu else f"PG-{pg.id}",
+                pg.ad,
+                pg.hedef_deger,
+                pg.periyot,
+                pg.agirlik if hasattr(pg, 'agirlik') else 0,
+            ]
+            # Fetch data for each quarter
+            for ceyrek in range(1, 5):
+                # This is a simplified data fetching. A more robust implementation would query PerformansGostergeVeri
+                # and aggregate the results based on the logic in the frontend.
+                # For now, we'll leave these blank as a placeholder.
+                row_data.extend(["", "", ""]) # Hedef, Gerç., Durum
+            ws_pg.append(row_data)
+        
+        # --- Sheet 2: Faaliyetler ---
+        faaliyet_headers = ["No", "Faaliyet Adı", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
+        ws_faaliyet.append(faaliyet_headers)
+        
+        # Style headers
+        for cell in ws_faaliyet[1]:
+            cell.font = header_font
+            cell.fill = header_fill
+        
+        # Fetch Faaliyet data
+        faaliyet_query = SurecFaaliyet.query.filter_by(surec_id=surec_id).order_by(SurecFaaliyet.id)
+        faaliyetler = faaliyet_query.all()
+        
+        for i, faaliyet in enumerate(faaliyetler):
+            row_data = [i + 1, faaliyet.ad]
+            # Fetch monthly completion data
+            # Note: FaaliyetTakip modeli ile ilişki kontrol edilmeli
+            for ay in range(1, 13):
+                row_data.append("")  # Placeholder - gerçek veri için FaaliyetTakip sorgusu gerekli
+            ws_faaliyet.append(row_data)
+        
+        # Save to a memory buffer
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        filename = f"surec_karnesi_{surec.ad.replace(' ', '_')}_{yil}.xlsx"
+        
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+    except Exception as e:
+        current_app.logger.error(f'Excel export hatası: {e}')
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@api_bp.route('/pg-veri/detay/<int:veri_id>', methods=['GET'])
+@login_required
+@csrf.exempt
+def api_pg_veri_detay(veri_id):
+    """Tek bir PG verisinin detaylarını ve audit log'unu getir"""
+    try:
+        # Veriyi bul
+        pg_veri = PerformansGostergeVeri.query.get(veri_id)
+        if not pg_veri:
+            return jsonify({'success': False, 'message': 'Veri bulunamadı'}), 404
+        
+        # Yetki kontrolü - verinin ait olduğu bireysel PG'yi kontrol et
+        bireysel_pg = BireyselPerformansGostergesi.query.get(pg_veri.bireysel_pg_id)
+        if not bireysel_pg:
+            return jsonify({'success': False, 'message': 'Performans göstergesi bulunamadı'}), 404
+        
+        # Süreç bazlı PG ise süreç yetkisi kontrol et
+        if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
+            surec_id = bireysel_pg.kaynak_surec_id
+            # Kurum yöneticisi kontrolü
+            kurum_yoneticisi_mi = current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim']
+            if kurum_yoneticisi_mi:
+                surec = Surec.query.get(surec_id)
+                if not surec or surec.kurum_id != current_user.kurum_id:
+                    return jsonify({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
+            else:
+                # Normal kullanıcı için lider/üye kontrolü
+                lider_mi = db.session.query(surec_liderleri).filter(
+                    surec_liderleri.c.surec_id == surec_id,
+                    surec_liderleri.c.user_id == current_user.id
+                ).first() is not None
+                
+                uye_mi = db.session.query(surec_uyeleri).filter(
+                    surec_uyeleri.c.surec_id == surec_id,
+                    surec_uyeleri.c.user_id == current_user.id
+                ).first() is not None
+                
+                if not (lider_mi or uye_mi):
+                    return jsonify({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
+        
+        # Audit log'ları getir
+        audit_logs = PerformansGostergeVeriAudit.query.filter_by(
+            pg_veri_id=veri_id
+        ).order_by(PerformansGostergeVeriAudit.islem_tarihi.desc()).all()
+        
+        # Kullanıcı bilgilerini al
+        veri_sahibi = User.query.get(pg_veri.user_id)
+        veri_sahibi_adi = ''
+        if veri_sahibi:
+            if veri_sahibi.first_name and veri_sahibi.last_name:
+                veri_sahibi_adi = f"{veri_sahibi.first_name} {veri_sahibi.last_name}"
+            else:
+                veri_sahibi_adi = veri_sahibi.username
+        
+        # Audit log'ları formatla
+        audit_list = []
+        for audit in audit_logs:
+            islem_yapan = User.query.get(audit.islem_yapan_user_id)
+            islem_yapan_adi = ''
+            if islem_yapan:
+                if islem_yapan.first_name and islem_yapan.last_name:
+                    islem_yapan_adi = f"{islem_yapan.first_name} {islem_yapan.last_name}"
+                else:
+                    islem_yapan_adi = islem_yapan.username
+            
+            audit_list.append({
+                'id': audit.id,
+                'islem_tipi': audit.islem_tipi,
+                'eski_deger': audit.eski_deger,
+                'yeni_deger': audit.yeni_deger,
+                'degisiklik_aciklama': audit.degisiklik_aciklama,
+                'islem_yapan': islem_yapan_adi,
+                'islem_tarihi': audit.islem_tarihi.strftime('%d.%m.%Y %H:%M:%S') if audit.islem_tarihi else None
+            })
+        
+        # Son güncelleyen bilgisini audit log'dan al
+        son_guncelleyen = None
+        son_guncelleme_tarihi = None
+        if audit_list and len(audit_list) > 0:
+            son_islem = audit_list[0]  # En son işlem
+            if son_islem['islem_tipi'] == 'GUNCELLE':
+                son_guncelleyen = son_islem['islem_yapan']
+                son_guncelleme_tarihi = son_islem['islem_tarihi']
+        
+        # Veri bilgilerini formatla (frontend'in beklediği alan adlarıyla)
+        veri_data = {
+            'id': pg_veri.id,
+            'bireysel_pg_id': pg_veri.bireysel_pg_id,
+            'pg_adi': bireysel_pg.ad,
+            'yil': pg_veri.yil,
+            'veri_tarihi': pg_veri.veri_tarihi.strftime('%d.%m.%Y') if pg_veri.veri_tarihi else None,
+            'giris_periyot_tipi': pg_veri.giris_periyot_tipi,
+            'giris_periyot_no': pg_veri.giris_periyot_no,
+            'giris_periyot_ay': pg_veri.giris_periyot_ay,
+            'hedef_deger': pg_veri.hedef_deger,
+            'gerceklesen_deger': str(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger is not None else '-',
+            'durum': pg_veri.durum,
+            'durum_yuzdesi': pg_veri.durum_yuzdesi,
+            'aciklama': pg_veri.aciklama,
+            'olusturan': veri_sahibi_adi,  # Frontend'in beklediği alan adı
+            'olusturma_tarihi': pg_veri.created_at.strftime('%d.%m.%Y %H:%M:%S') if pg_veri.created_at else None,  # Frontend'in beklediği alan adı
+            'guncelleyen': son_guncelleyen,  # Son güncelleyen audit log'dan
+            'guncelleme_tarihi': son_guncelleme_tarihi,  # Son güncelleme tarihi audit log'dan
+            # Geriye dönük uyumluluk için eski alan adları da ekle
+            'veri_sahibi': veri_sahibi_adi,
+            'created_at': pg_veri.created_at.strftime('%d.%m.%Y %H:%M:%S') if pg_veri.created_at else None,
+            'updated_at': pg_veri.updated_at.strftime('%d.%m.%Y %H:%M:%S') if pg_veri.updated_at else None
+        }
+        
+        # Yetki bilgileri
+        yetki = {
+            'duzenleyebilir': True,  # Yetki kontrolü yukarıda yapıldı
+            'silebilir': True
+        }
+        
+        # Hesaplama yöntemi bilgisini ekle (bireysel PG'den)
+        hesaplama_yontemi = None
+        if bireysel_pg.kaynak_surec_pg_id:
+            surec_pg = SurecPerformansGostergesi.query.get(bireysel_pg.kaynak_surec_pg_id)
+            if surec_pg:
+                hesaplama_yontemi = surec_pg.veri_toplama_yontemi
+        
+        veri_data['hesaplama_yontemi'] = hesaplama_yontemi
+        veri_data['surec_pg_id'] = bireysel_pg.kaynak_surec_pg_id if bireysel_pg.kaynak == 'Süreç' else None
+        
+        return jsonify({
+            'success': True,
+            'veri': veri_data,
+            'audit_log': audit_list,
+            'yetki': yetki,
+            'bireysel_pg_id': bireysel_pg.id,
+            'surec_pg_id': bireysel_pg.kaynak_surec_pg_id if bireysel_pg.kaynak == 'Süreç' else None
+        })
+    except Exception as e:
+        current_app.logger.error(f'PG veri detay hatası: {e}')
+        import traceback
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/pg-veri/detay/toplu', methods=['POST'])
+@login_required
+@csrf.exempt
+def api_pg_veri_detay_toplu():
+    """Birden fazla PG verisinin detaylarını toplu olarak getir"""
+    try:
+        data = request.json
+        current_app.logger.info(f'Toplu veri detay isteği alındı: {data}')
+        
+        if not data:
+            return jsonify({'success': False, 'message': 'Request body boş'}), 400
+        
+        veri_idleri = data.get('veri_idleri', [])
+        current_app.logger.info(f'Veri ID listesi: {veri_idleri}, Tip: {type(veri_idleri)}')
+        
+        if not veri_idleri:
+            return jsonify({'success': False, 'message': 'Veri ID listesi boş'}), 400
+        
+        if not isinstance(veri_idleri, list):
+            return jsonify({'success': False, 'message': f'Veri ID listesi geçersiz tip: {type(veri_idleri)}'}), 400
+        
+        # Liste elemanlarını integer'a çevir
+        try:
+            veri_idleri = [int(vid) for vid in veri_idleri]
+        except (ValueError, TypeError) as e:
+            current_app.logger.error(f'Veri ID dönüştürme hatası: {e}')
+            return jsonify({'success': False, 'message': f'Veri ID\'leri integer\'a dönüştürülemedi: {e}'}), 400
+        
+        # Verileri getir
+        pg_veriler = PerformansGostergeVeri.query.filter(
+            PerformansGostergeVeri.id.in_(veri_idleri)
+        ).all()
+        
+        if not pg_veriler:
+            return jsonify({'success': False, 'message': 'Veriler bulunamadı'}), 404
+        
+        # Her veri için yetki kontrolü ve detayları topla
+        veriler_listesi = []
+        for pg_veri in pg_veriler:
+            # Yetki kontrolü
+            bireysel_pg = BireyselPerformansGostergesi.query.get(pg_veri.bireysel_pg_id)
+            if not bireysel_pg:
+                continue
+            
+            # Süreç bazlı PG ise süreç yetkisi kontrol et
+            erisim_var = False
+            if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
+                surec_id = bireysel_pg.kaynak_surec_id
+                kurum_yoneticisi_mi = current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim']
+                if kurum_yoneticisi_mi:
+                    surec = Surec.query.get(surec_id)
+                    if surec and surec.kurum_id == current_user.kurum_id:
+                        erisim_var = True
+                else:
+                    lider_mi = db.session.query(surec_liderleri).filter(
+                        surec_liderleri.c.surec_id == surec_id,
+                        surec_liderleri.c.user_id == current_user.id
+                    ).first() is not None
+                    
+                    uye_mi = db.session.query(surec_uyeleri).filter(
+                        surec_uyeleri.c.surec_id == surec_id,
+                        surec_uyeleri.c.user_id == current_user.id
+                    ).first() is not None
+                    
+                    erisim_var = lider_mi or uye_mi
+            else:
+                # Bireysel PG ise sahibi kontrol et
+                erisim_var = pg_veri.user_id == current_user.id
+            
+            if not erisim_var:
+                continue
+            
+            # Kullanıcı bilgilerini al
+            veri_sahibi = User.query.get(pg_veri.user_id)
+            veri_sahibi_adi = ''
+            if veri_sahibi:
+                if veri_sahibi.first_name and veri_sahibi.last_name:
+                    veri_sahibi_adi = f"{veri_sahibi.first_name} {veri_sahibi.last_name}"
+                else:
+                    veri_sahibi_adi = veri_sahibi.username
+            
+            # Audit log'ları getir (tüm geçmişi göster)
+            audit_logs = PerformansGostergeVeriAudit.query.filter_by(
+                pg_veri_id=pg_veri.id
+            ).order_by(PerformansGostergeVeriAudit.islem_tarihi.desc()).all()
+            
+            audit_list = []
+            for audit in audit_logs:
+                islem_yapan = User.query.get(audit.islem_yapan_user_id)
+                islem_yapan_adi = ''
+                if islem_yapan:
+                    if islem_yapan.first_name and islem_yapan.last_name:
+                        islem_yapan_adi = f"{islem_yapan.first_name} {islem_yapan.last_name}"
+                    else:
+                        islem_yapan_adi = islem_yapan.username
+                
+                audit_list.append({
+                    'id': audit.id,
+                    'islem_tipi': audit.islem_tipi,
+                    'eski_deger': audit.eski_deger,
+                    'yeni_deger': audit.yeni_deger,
+                    'degisiklik_aciklama': audit.degisiklik_aciklama,
+                    'islem_yapan': islem_yapan_adi,
+                    'islem_tarihi': audit.islem_tarihi.strftime('%d.%m.%Y %H:%M:%S') if audit.islem_tarihi else None
+                })
+            
+            # Frontend'in beklediği yapıya uygun formatla
+            veriler_listesi.append({
+                'veri': {
+                    'id': pg_veri.id,
+                    'bireysel_pg_id': pg_veri.bireysel_pg_id,
+                    'pg_adi': bireysel_pg.ad,
+                    'yil': pg_veri.yil,
+                    'veri_tarihi': pg_veri.veri_tarihi.strftime('%d.%m.%Y') if pg_veri.veri_tarihi else None,
+                    'giris_periyot_tipi': pg_veri.giris_periyot_tipi,
+                    'giris_periyot_no': pg_veri.giris_periyot_no,
+                    'giris_periyot_ay': pg_veri.giris_periyot_ay,
+                    'hedef_deger': pg_veri.hedef_deger,
+                    'gerceklesen_deger': str(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger is not None else '-',
+                    'durum': pg_veri.durum,
+                    'durum_yuzdesi': pg_veri.durum_yuzdesi,
+                    'aciklama': pg_veri.aciklama,
+                    'olusturan': veri_sahibi_adi,
+                    'olusturma_tarihi': pg_veri.created_at.strftime('%d.%m.%Y %H:%M:%S') if pg_veri.created_at else None,
+                    'guncelleyen': None,  # Son güncelleyen audit log'dan alınacak
+                    'guncelleme_tarihi': pg_veri.updated_at.strftime('%d.%m.%Y %H:%M:%S') if pg_veri.updated_at else None
+                },
+                'audit_log': audit_list,
+                'yetki': {
+                    'can_edit': True,
+                    'can_delete': True
+                }
+            })
+            
+            # Son güncelleyen bilgisini audit log'dan al
+            if audit_list and len(audit_list) > 0:
+                son_islem = audit_list[0]  # En son işlem
+                if son_islem['islem_tipi'] == 'GUNCELLE':
+                    veriler_listesi[-1]['veri']['guncelleyen'] = son_islem['islem_yapan']
+                    veriler_listesi[-1]['veri']['guncelleme_tarihi'] = son_islem['islem_tarihi']
+        
+        # Yetki bilgileri
+        yetki = {
+            'duzenleyebilir': True,
+            'silebilir': True
+        }
+        
+        return jsonify({
+            'success': True,
+            'veriler': veriler_listesi,
+            'yetki': yetki
+        })
+    except Exception as e:
+        current_app.logger.error(f'Toplu PG veri detay hatası: {e}')
+        import traceback
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/pg-veri/guncelle/<int:veri_id>', methods=['PUT'])
+@login_required
+@csrf.exempt
+def api_pg_veri_guncelle(veri_id):
+    """PG verisini güncelle - Süreç lideri tüm kullanıcıların verilerini güncelleyebilir"""
+    try:
+        # Veriyi bul
+        pg_veri = PerformansGostergeVeri.query.get(veri_id)
+        if not pg_veri:
+            return jsonify({'success': False, 'message': 'Veri bulunamadı'}), 404
+        
+        # Bireysel PG'yi bul
+        bireysel_pg = BireyselPerformansGostergesi.query.get(pg_veri.bireysel_pg_id)
+        if not bireysel_pg:
+            return jsonify({'success': False, 'message': 'Performans göstergesi bulunamadı'}), 404
+        
+        # Yetki kontrolü
+        # Kurum yöneticileri (admin, kurum_yoneticisi, ust_yonetim) kendi kurumlarındaki tüm verileri güncelleyebilir
+        kurum_yoneticisi_mi = current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim']
+        
+        if kurum_yoneticisi_mi:
+            # Süreç bazlı PG ise süreç yetkisi kontrol et
+            if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
+                surec = Surec.query.get(bireysel_pg.kaynak_surec_id)
+                if not surec or surec.kurum_id != current_user.kurum_id:
+                    return jsonify({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
+        else:
+            # Süreç bazlı PG ise süreç lideri kontrolü yap
+            if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
+                surec_id = bireysel_pg.kaynak_surec_id
+                
+                # Süreç lideri kontrolü
+                lider_mi = db.session.query(surec_liderleri).filter(
+                    surec_liderleri.c.surec_id == surec_id,
+                    surec_liderleri.c.user_id == current_user.id
+                ).first() is not None
+                
+                # Veri sahibi kontrolü (süreç lideri değilse sadece kendi verisini güncelleyebilir)
+                if not lider_mi and pg_veri.user_id != current_user.id:
+                    return jsonify({'success': False, 'message': 'Bu veriyi güncelleme yetkiniz yok'}), 403
+            else:
+                # Bireysel PG ise sadece veri sahibi güncelleyebilir
+                if pg_veri.user_id != current_user.id:
+                    return jsonify({'success': False, 'message': 'Bu veriyi güncelleme yetkiniz yok'}), 403
+        
+        # Güncelleme verilerini al
+        data = request.get_json()
+        gerceklesen_deger = data.get('gerceklesen_deger')
+        aciklama = data.get('aciklama')
+        
+        # Eski değerleri kaydet (audit log için)
+        eski_gerceklesen = pg_veri.gerceklesen_deger
+        eski_aciklama = pg_veri.aciklama
+        
+        # Değerleri güncelle
+        if gerceklesen_deger is not None:
+            try:
+                # String'den float'a çevir
+                pg_veri.gerceklesen_deger = float(gerceklesen_deger) if gerceklesen_deger else None
+            except (ValueError, TypeError):
+                return jsonify({'success': False, 'message': 'Geçersiz gerçekleşen değer formatı'}), 400
+        
+        if aciklama is not None:
+            pg_veri.aciklama = aciklama
+        
+        # Durumu hesapla
+        if pg_veri.hedef_deger and pg_veri.gerceklesen_deger is not None:
+            durum, durum_yuzdesi = hesapla_durum(
+                float(pg_veri.hedef_deger) if pg_veri.hedef_deger else None,
+                float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None
+            )
+            pg_veri.durum = durum
+            pg_veri.durum_yuzdesi = durum_yuzdesi
+        
+        pg_veri.updated_by = current_user.id
+        pg_veri.updated_at = datetime.utcnow()
+        
+        # Audit log oluştur
+        degisiklik_aciklama = []
+        if eski_gerceklesen != pg_veri.gerceklesen_deger:
+            degisiklik_aciklama.append(f'Gerçekleşen değer: {eski_gerceklesen} → {pg_veri.gerceklesen_deger}')
+        if eski_aciklama != pg_veri.aciklama:
+            degisiklik_aciklama.append(f'Açıklama güncellendi')
+        
+        if degisiklik_aciklama:
+            audit = PerformansGostergeVeriAudit(
+                pg_veri_id=pg_veri.id,
+                islem_tipi='GUNCELLE',
+                eski_deger=str(eski_gerceklesen) if eski_gerceklesen is not None else None,
+                yeni_deger=str(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger is not None else None,
+                degisiklik_aciklama='; '.join(degisiklik_aciklama),
+                islem_yapan_user_id=current_user.id,
+                islem_tarihi=datetime.utcnow()
+            )
+            db.session.add(audit)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Veri başarıyla güncellendi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'PG veri güncelleme hatası: {e}')
+        import traceback
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/kurum/upload-logo', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_kurum_upload_logo():
+    """Kurum logosunu yükle"""
+    try:
+        from werkzeug.utils import secure_filename
+        from utils.file_validation import validate_uploaded_file
+        import os
+        import uuid
+        
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'Dosya seçilmedi!'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'Dosya seçilmedi!'}), 400
+        
+        # Güvenli dosya validasyonu (extension + MIME type)
+        is_valid, error_msg, mime_type = validate_uploaded_file(file, max_size=5 * 1024 * 1024)  # 5MB max for logos
+        if not is_valid:
+            return jsonify({'success': False, 'message': error_msg}), 400
+        
+        # Güvenli dosya adı oluştur
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Upload klasörünü oluştur
+        upload_folder = os.path.join('static', 'uploads', 'logos')
+        os.makedirs(upload_folder, exist_ok=True)
+        
+        # Dosyayı kaydet
+        file_path = os.path.join(upload_folder, unique_filename)
+        file.save(file_path)
+        
+        # Eski logo dosyasını sil (varsa ve static klasöründeyse)
+        kurum = current_user.kurum
+        if kurum.logo_url:
+            old_logo = kurum.logo_url
+            if old_logo.startswith('/static/') or old_logo.startswith('static/'):
+                old_path = old_logo.lstrip('/')
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except Exception as e:
+                        current_app.logger.warning(f'Eski logo silinemedi: {e}')
+        
+        # Veritabanında güncelle
+        logo_url = f'/static/uploads/logos/{unique_filename}'
+        kurum.logo_url = logo_url
+        db.session.commit()
+        
+        current_app.logger.info(f'Kurum logosu güncellendi: {kurum.kisa_ad} -> {unique_filename}')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Logo başarıyla yüklendi!',
+            'logo_url': logo_url
+        }), 200, {'Content-Type': 'application/json'}
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Logo yükleme hatası: {str(e)} - Kullanıcı: {current_user.username}')
+        return jsonify({'success': False, 'message': f'Logo yüklenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
+
+
+@api_bp.route('/kurum/<int:kurum_id>/alt-stratejiler', methods=['GET'])
+@login_required
+@csrf.exempt
+def api_kurum_alt_stratejiler(kurum_id):
+    """Kurumun tüm alt stratejilerini getir (ana strateji bilgisi ile birlikte)"""
+    try:
+        current_app.logger.info(f'Kurum alt stratejileri isteği: kurum_id={kurum_id}, kullanıcı_kurum_id={current_user.kurum_id}')
+        
+        # Yetki kontrolü - kullanıcı aynı kurumda olmalı
+        if kurum_id != current_user.kurum_id:
+            current_app.logger.warning(f'Yetki hatası: kurum_id={kurum_id}, kullanıcı_kurum_id={current_user.kurum_id}')
+            return jsonify({'success': False, 'message': 'Bu kuruma erişim yetkiniz yok'}), 403
+        
+        # Kurumun ana stratejilerini getir (alt stratejileriyle birlikte)
+        ana_stratejiler = AnaStrateji.query.options(
+            joinedload(AnaStrateji.alt_stratejiler)
+        ).filter_by(kurum_id=kurum_id).all()
+        
+        current_app.logger.info(f'Bulunan ana strateji sayısı: {len(ana_stratejiler)}')
+        
+        # Tüm alt stratejileri topla
+        alt_stratejiler = []
+        for ana_strateji in ana_stratejiler:
+            current_app.logger.info(f'Ana strateji: {ana_strateji.ad} (ID: {ana_strateji.id}), alt strateji sayısı: {len(ana_strateji.alt_stratejiler)}')
+            for alt_strateji in ana_strateji.alt_stratejiler:
+                alt_stratejiler.append({
+                    'id': alt_strateji.id,
+                    'ad': alt_strateji.ad,
+                    'code': alt_strateji.code,
+                    'ana_strateji': {
+                        'id': ana_strateji.id,
+                        'ad': ana_strateji.ad,
+                        'code': ana_strateji.code
+                    }
+                })
+        
+        current_app.logger.info(f'Toplam alt strateji sayısı: {len(alt_stratejiler)}')
+        
+        return jsonify({
+            'success': True,
+            'alt_stratejiler': alt_stratejiler
+        })
+    except Exception as e:
+        current_app.logger.error(f'Kurum alt stratejileri getirme hatası: {e}')
+        import traceback
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Hata: {str(e)}'}), 500
+
+
+@api_bp.route('/kurum/update-logo', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_kurum_update_logo():
+    """Kurum logo URL'sini güncelle"""
+    try:
+        data = request.get_json()
+        logo_url = data.get('logo_url', '').strip()
+        
+        if not logo_url:
+            return jsonify({'success': False, 'message': 'Logo URL\'si boş olamaz!'}), 400
+        
+        kurum = current_user.kurum
+        kurum.logo_url = logo_url
+        db.session.commit()
+        
+        current_app.logger.info(f'Kurum logo URL\'si güncellendi: {kurum.kisa_ad} -> {logo_url}')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Logo URL\'si başarıyla güncellendi!',
+            'logo_url': logo_url
+        }), 200, {'Content-Type': 'application/json'}
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Logo URL güncelleme hatası: {str(e)} - Kullanıcı: {current_user.username}')
+        return jsonify({'success': False, 'message': f'Logo URL\'si güncellenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
+
+
+# ============================================================================
+# PROJE YÖNETİMİ API ENDPOINT'LERİ
+# ============================================================================
+
+@api_bp.route('/projeler', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def api_projeler_list():
+    """Kullanıcının kurumundaki tüm projeleri getir veya yeni proje oluştur"""
+    if request.method == 'GET':
+        try:
+            projeler = Project.query.filter_by(kurum_id=current_user.kurum_id).all()
+            return jsonify({
+                'success': True,
+                'projeler': [{
+                    'id': p.id,
+                    'name': p.name,
+                    'description': p.description,
+                    'manager_id': p.manager_id,
+                    'manager_name': f"{p.manager.first_name} {p.manager.last_name}" if p.manager else None,
+                    'created_at': p.created_at.isoformat() if p.created_at else None
+                } for p in projeler]
+            })
+        except Exception as e:
+            current_app.logger.error(f'Projeler listesi hatası: {e}')
+            return jsonify({'success': False, 'message': str(e)}), 500
+    else:  # POST
+        try:
+            if not request.is_json:
+                return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+            
+            data = request.get_json()
+            
+            # Zorunlu alan kontrolü
+            if not data.get('name') or not data.get('name').strip():
+                return jsonify({'success': False, 'message': 'Proje adı zorunludur'}), 400
+            if not data.get('manager_id'):
+                return jsonify({'success': False, 'message': 'Proje yöneticisi zorunludur'}), 400
+            if not data.get('start_date'):
+                return jsonify({'success': False, 'message': 'Başlangıç tarihi zorunludur'}), 400
+            if not data.get('end_date'):
+                return jsonify({'success': False, 'message': 'Bitiş tarihi zorunludur'}), 400
+            
+            # Tarih kontrolü
+            try:
+                from datetime import datetime
+                start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
+                end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()
+                
+                if end_date < start_date:
+                    return jsonify({'success': False, 'message': 'Bitiş tarihi başlangıç tarihinden önce olamaz'}), 400
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Geçersiz tarih formatı (YYYY-MM-DD bekleniyor)'}), 400
+            
+            # Yöneticinin kurumda olup olmadığını kontrol et
+            manager = User.query.get(data.get('manager_id'))
+            if not manager or manager.kurum_id != current_user.kurum_id:
+                return jsonify({'success': False, 'message': 'Geçersiz proje yöneticisi'}), 400
+            
+            # Yeni proje oluştur
+            new_project = Project(
+                kurum_id=current_user.kurum_id,
+                name=data.get('name', '').strip(),
+                description=data.get('description', '').strip() if data.get('description') else None,
+                manager_id=data.get('manager_id'),
+                start_date=start_date,
+                end_date=end_date,
+                priority=data.get('priority', 'Orta')
+            )
+            
+            db.session.add(new_project)
+            db.session.flush()  # ID'yi almak için
+            
+            # İlişkili süreçleri ekle (silinmiş süreç kontrolü)
+            if data.get('related_process_ids'):
+                for surec_id in data.get('related_process_ids', []):
+                    surec = Surec.query.get(surec_id)
+                    if surec and surec.kurum_id == current_user.kurum_id:
+                        new_project.related_processes.append(surec)
+                    elif not surec:
+                        current_app.logger.warning(f"Proje oluşturulurken silinmiş süreç ID'si tespit edildi: {surec_id}")
+                    elif surec.kurum_id != current_user.kurum_id:
+                        current_app.logger.warning(f"Proje oluşturulurken farklı kuruma ait süreç ID'si tespit edildi: {surec_id}")
+            
+            # Üyeleri ekle (geçersiz kullanıcı kontrolü)
+            if data.get('member_ids'):
+                for user_id in data.get('member_ids', []):
+                    user = User.query.get(user_id)
+                    if user and user.kurum_id == current_user.kurum_id:
+                        new_project.members.append(user)
+                    elif not user:
+                        current_app.logger.warning(f"Proje oluşturulurken silinmiş kullanıcı ID'si tespit edildi: {user_id}")
+                    elif user.kurum_id != current_user.kurum_id:
+                        current_app.logger.warning(f"Proje oluşturulurken farklı kuruma ait kullanıcı ID'si tespit edildi: {user_id}")
+            
+            # Gözlemcileri ekle (geçersiz kullanıcı kontrolü)
+            if data.get('observer_ids'):
+                for user_id in data.get('observer_ids', []):
+                    user = User.query.get(user_id)
+                    if user and user.kurum_id == current_user.kurum_id:
+                        new_project.observers.append(user)
+                    elif not user:
+                        current_app.logger.warning(f"Proje oluşturulurken silinmiş gözlemci kullanıcı ID'si tespit edildi: {user_id}")
+                    elif user.kurum_id != current_user.kurum_id:
+                        current_app.logger.warning(f"Proje oluşturulurken farklı kuruma ait gözlemci kullanıcı ID'si tespit edildi: {user_id}")
+            
+            db.session.commit()
+            
+            # Yeni proje oluşturulduğunda dashboard cache'i temizle
+            _invalidate_executive_dashboard_cache(current_user.kurum_id)
+            
+            return jsonify({
+                'success': True,
+                'message': 'Proje başarıyla oluşturuldu',
+                'project_id': new_project.id
+            })
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f'Proje oluşturma hatası: {e}')
+            return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>', methods=['GET', 'PUT'])
+@csrf.exempt
+@login_required
+def api_proje_detay(project_id):
+    """Proje detayını getir veya güncelle"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        if request.method == 'GET':
+            # Proje detayını getir
+            return jsonify({
+                'success': True,
+                'project': {
+                    'id': project.id,
+                    'name': project.name,
+                    'description': project.description,
+                    'manager_id': project.manager_id,
+                    'manager_name': f"{project.manager.first_name} {project.manager.last_name}" if project.manager else None,
+                    'start_date': project.start_date.isoformat() if project.start_date else None,
+                    'end_date': project.end_date.isoformat() if project.end_date else None,
+                    'priority': project.priority,
+                    'created_at': project.created_at.isoformat() if project.created_at else None,
+                    'related_process_ids': [s.id for s in project.related_processes],
+                    'member_ids': [m.id for m in project.members],
+                    'observer_ids': [o.id for o in project.observers]
+                }
+            })
+        else:  # PUT
+            if not request.is_json:
+                return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+            
+            data = request.get_json()
+            
+            # Proje bilgilerini güncelle
+            if data.get('name'):
+                project.name = data.get('name', '').strip()
+            if 'description' in data:
+                project.description = data.get('description', '').strip() if data.get('description') else None
+            if data.get('manager_id'):
+                project.manager_id = data.get('manager_id')
+            
+            # İlişkili süreçleri güncelle
+            if 'related_process_ids' in data:
+                project.related_processes = []
+                for surec_id in data.get('related_process_ids', []):
+                    surec = Surec.query.get(surec_id)
+                    if surec and surec.kurum_id == current_user.kurum_id:
+                        project.related_processes.append(surec)
+            
+            # Üyeleri güncelle
+            if 'member_ids' in data:
+                project.members = []
+                for user_id in data.get('member_ids', []):
+                    user = User.query.get(user_id)
+                    if user and user.kurum_id == current_user.kurum_id:
+                        project.members.append(user)
+            
+            # Gözlemcileri güncelle
+            if 'observer_ids' in data:
+                project.observers = []
+                for user_id in data.get('observer_ids', []):
+                    user = User.query.get(user_id)
+                    if user and user.kurum_id == current_user.kurum_id:
+                        project.observers.append(user)
+            
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Proje başarıyla güncellendi'
+            })
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Proje detay/güncelleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>', methods=['PUT'])
+@csrf.exempt
+@login_required
+def api_proje_guncelle(project_id):
+    """Proje güncelle"""
+    try:
+        if not request.is_json:
+            return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+        
+        data = request.get_json()
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeyi güncelleme yetkiniz yok'}), 403
+        
+        # Proje bilgilerini güncelle
+        if 'name' in data:
+            project.name = data['name'].strip()
+        if 'description' in data:
+            project.description = data['description'].strip() if data.get('description') else None
+        if 'manager_id' in data:
+            manager = User.query.get(data['manager_id'])
+            if manager and manager.kurum_id == current_user.kurum_id:
+                project.manager_id = data['manager_id']
+        
+        # İlişkili süreçleri güncelle
+        if 'related_process_ids' in data:
+            project.related_processes.clear()
+            for surec_id in data.get('related_process_ids', []):
+                surec = Surec.query.get(surec_id)
+                if surec and surec.kurum_id == current_user.kurum_id:
+                    project.related_processes.append(surec)
+        
+        # Üyeleri güncelle
+        if 'member_ids' in data:
+            project.members.clear()
+            for user_id in data.get('member_ids', []):
+                user = User.query.get(user_id)
+                if user and user.kurum_id == current_user.kurum_id:
+                    project.members.append(user)
+        
+        # Gözlemcileri güncelle
+        if 'observer_ids' in data:
+            project.observers.clear()
+            for user_id in data.get('observer_ids', []):
+                user = User.query.get(user_id)
+                if user and user.kurum_id == current_user.kurum_id:
+                    project.observers.append(user)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Proje başarıyla güncellendi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Proje güncelleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/gorevler', methods=['GET'])
+@login_required
+def api_proje_gorevler(project_id):
+    """Projenin görevlerini getir"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        tasks = Task.query.filter_by(project_id=project_id).all()
+        return jsonify({
+            'success': True,
+            'gorevler': [{
+                'id': t.id,
+                'title': t.title,
+                'description': t.description,
+                'status': t.status,
+                'priority': t.priority,
+                'due_date': t.due_date.isoformat() if t.due_date else None,
+                'estimated_time': t.estimated_time,
+                'actual_time': t.actual_time,
+                'parent_id': t.parent_id,
+                'created_at': t.created_at.isoformat() if t.created_at else None,
+                'assigned_to': {
+                    'id': t.assigned_to.id,
+                    'first_name': t.assigned_to.first_name,
+                    'last_name': t.assigned_to.last_name
+                } if t.assigned_to else None
+            } for t in tasks]
+        })
+    except Exception as e:
+        current_app.logger.error(f'Proje görevleri hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/gorevler', methods=['POST'])
+@csrf.exempt
+@login_required
+@project_member_required  # Üye veya yönetici yetkisi gereklidir (gözlemci görev oluşturamaz)
+def api_gorev_olustur(project_id, **kwargs):
+    """Yeni görev oluştur"""
+    try:
+        if not request.is_json:
+            return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+        
+        data = request.get_json()
+        project = kwargs.get('project')
+        
+        # Tarih dönüştürme
+        due_date = None
+        if data.get('due_date'):
+            try:
+                due_date = datetime.strptime(data.get('due_date'), '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Geçersiz tarih formatı'}), 400
+        
+        # Yeni görev oluştur
+        new_task = Task(
+            project_id=project_id,
+            parent_id=data.get('parent_id'),
+            assigned_to_id=data.get('assigned_to_id'),
+            title=data.get('title', '').strip(),
+            description=data.get('description', '').strip() if data.get('description') else None,
+            due_date=due_date,
+            priority=data.get('priority', 'Orta'),
+            status=data.get('status', 'Yapılacak'),
+            estimated_time=data.get('estimated_time'),
+            actual_time=data.get('actual_time'),
+            progress=data.get('progress', 0)
+        )
+        
+        db.session.add(new_task)
+        db.session.flush()  # ID'yi almak için
+        
+        # Aktivite log
+        from services.task_activity_service import log_task_created
+        log_task_created(new_task.id, current_user.id, new_task.title)
+        
+        # Görev atandıysa bildirim gönder
+        if new_task.assigned_to_id:
+            from services.notification_service import create_task_assigned_notification
+            create_task_assigned_notification(new_task.id, new_task.assigned_to_id, current_user.id)
+        
+        # Impact'leri ekle (eğer varsa)
+        if data.get('impacts'):
+            for impact_data in data.get('impacts', []):
+                impact = TaskImpact(
+                    task_id=new_task.id,
+                    related_pg_id=impact_data.get('related_pg_id'),
+                    related_faaliyet_id=impact_data.get('related_faaliyet_id'),
+                    impact_value=str(impact_data.get('impact_value', ''))
+                )
+                db.session.add(impact)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Görev başarıyla oluşturuldu',
+            'task_id': new_task.id
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Görev oluşturma hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['PUT'])
+@csrf.exempt
+@login_required
+def api_gorev_guncelle(project_id, task_id):
+    """Görev güncelle"""
+    try:
+        if not request.is_json:
+            return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+        
+        data = request.get_json()
+        project = Project.query.get_or_404(project_id)
+        task = Task.query.get_or_404(task_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or task.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu görevi güncelleme yetkiniz yok'}), 403
+        
+        # Görev bilgilerini güncelle
+        if 'title' in data:
+            task.title = data['title'].strip()
+        if 'description' in data:
+            task.description = data['description'].strip() if data.get('description') else None
+        
+        islenen_pg_sayisi = 0
+        status_degisti_tamamlandi = False
+        
+        if 'status' in data:
+            old_status = task.status
+            task.status = data['status']
+            # Eğer durum "Tamamlandı" olarak değiştirildiyse, tamamlanma tarihini kaydet
+            if data['status'] == 'Tamamlandı' and old_status != 'Tamamlandı':
+                from datetime import datetime
+                task.completed_at = datetime.utcnow()
+                status_degisti_tamamlandi = True
+            # Eğer durum "Tamamlandı"dan başka bir duruma değiştirildiyse, completed_at'i null yap
+            elif old_status == 'Tamamlandı' and data['status'] != 'Tamamlandı':
+                task.completed_at = None
+        if 'priority' in data:
+            task.priority = data['priority']
+        if 'due_date' in data:
+            if data['due_date']:
+                try:
+                    task.due_date = datetime.strptime(data['due_date'], '%Y-%m-%d').date()
+                except ValueError:
+                    return jsonify({'success': False, 'message': 'Geçersiz tarih formatı'}), 400
+            else:
+                task.due_date = None
+        if 'estimated_time' in data:
+            task.estimated_time = data['estimated_time']
+        if 'actual_time' in data:
+            task.actual_time = data['actual_time']
+        if 'parent_id' in data:
+            task.parent_id = data['parent_id'] if data['parent_id'] else None
+        if 'assigned_to_id' in data:
+            old_assigned_id = task.assigned_to_id
+            task.assigned_to_id = data['assigned_to_id'] if data.get('assigned_to_id') else None
+            # Atama değiştiyse bildirim ve aktivite log
+            if old_assigned_id != task.assigned_to_id:
+                from services.notification_service import create_task_assigned_notification
+                from services.task_activity_service import log_task_assigned
+                if task.assigned_to_id:
+                    create_task_assigned_notification(task.id, task.assigned_to_id, current_user.id)
+                log_task_assigned(task.id, current_user.id, old_assigned_id, task.assigned_to_id)
+        if 'progress' in data:
+            task.progress = data['progress']
+        
+        # Impact'leri güncelle (mevcut impact'leri sil ve yenilerini ekle)
+        if 'impacts' in data:
+            # Mevcut impact'leri sil
+            TaskImpact.query.filter_by(task_id=task_id).delete()
+            # Yeni impact'leri ekle
+            for impact_data in data.get('impacts', []):
+                impact = TaskImpact(
+                    task_id=task_id,
+                    related_pg_id=impact_data.get('related_pg_id'),
+                    related_faaliyet_id=impact_data.get('related_faaliyet_id'),
+                    impact_value=str(impact_data.get('impact_value', ''))
+                )
+                db.session.add(impact)
+        
+        # Önce görev güncellemelerini kaydet (flush)
+        db.session.flush()
+        
+        # Aktivite log
+        changes = {}
+        if 'title' in data:
+            changes['title'] = {'old': task.title, 'new': data['title'].strip()}
+        if 'status' in data:
+            changes['status'] = {'old': old_status, 'new': data['status']}
+        if 'assigned_to_id' in data:
+            changes['assigned_to_id'] = {'old': task.assigned_to_id, 'new': data.get('assigned_to_id')}
+        
+        if changes:
+            from services.task_activity_service import log_task_updated
+            log_task_updated(task.id, current_user.id, changes)
+        
+        if status_degisti_tamamlandi:
+            from services.task_activity_service import log_task_status_changed
+            log_task_status_changed(task.id, current_user.id, old_status, task.status)
+            
+            # Durum değişikliği bildirimi
+            from services.notification_service import create_task_status_change_notification
+            create_task_status_change_notification(task.id, old_status, task.status, current_user.id)
+        
+        # Eğer durum "Tamamlandı" olarak değiştirildiyse, PG veri girişi yap (Transaction korumalı)
+        if status_degisti_tamamlandi:
+            from services.project_service import handle_task_completion
+            try:
+                # Transaction içinde PG veri girişi yap
+                islenen_pg_sayisi = handle_task_completion(task, old_status)
+                
+                # PG verisi oluşturulduysa, dashboard cache'i temizle
+                if islenen_pg_sayisi > 0:
+                    _invalidate_executive_dashboard_cache(project.kurum_id)
+            except Exception as e:
+                current_app.logger.error(f"Görev tamamlandığında PG veri girişi hatası: {e}")
+                islenen_pg_sayisi = 0
+                # Hata durumunda rollback yapılacak (project_service içinde)
+        
+        # Gecikmiş görev kontrolü ve bildirim
+        if 'due_date' in data or 'status' in data:
+            from services.notification_service import create_task_overdue_notification
+            create_task_overdue_notification(task_id)
+        
+        # Smart Scheduling: Eğer görev tarihi geciktiyse, ardıl görevleri güncelle
+        scheduling_result = None
+        if 'due_date' in data and task.due_date:
+            from services.smart_scheduling import check_and_update_delayed_predecessors
+            try:
+                scheduling_result = check_and_update_delayed_predecessors(
+                    task.id, project_id, current_user.id
+                )
+            except Exception as e:
+                current_app.logger.error(f"Smart scheduling hatası: {e}")
+        
+        db.session.commit()
+        
+        response_message = 'Görev başarıyla güncellendi'
+        if status_degisti_tamamlandi and islenen_pg_sayisi > 0:
+            response_message = f'Görev başarıyla tamamlandı. {islenen_pg_sayisi} adet performans göstergesi için otomatik veri girişi yapıldı.'
+        elif status_degisti_tamamlandi and islenen_pg_sayisi == 0:
+            response_message = 'Görev başarıyla tamamlandı. (İlişkili performans göstergesi bulunmadı veya veri girişi yapılamadı)'
+        
+        return jsonify({
+            'success': True,
+            'message': response_message,
+            'islenen_pg_sayisi': islenen_pg_sayisi if status_degisti_tamamlandi else 0
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Görev güncelleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['DELETE'])
+@csrf.exempt
+@login_required
+def api_gorev_sil(project_id, task_id):
+    """Görev sil"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        task = Task.query.get_or_404(task_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or task.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu görevi silme yetkiniz yok'}), 403
+        
+        # Impact'leri sil (cascade ile otomatik silinecek ama emin olmak için)
+        TaskImpact.query.filter_by(task_id=task_id).delete()
+        
+        # Aktivite log
+        from services.task_activity_service import log_task_deleted
+        log_task_deleted(task_id, current_user.id, task.title)
+        
+        # Görevi sil
+        db.session.delete(task)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Görev başarıyla silindi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Görev silme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================================================
+# PROJE YÖNETİMİ - DOSYA HAVUZU API ENDPOINT'LERİ
+# ============================================================================
+
+@api_bp.route('/projeler/<int:project_id>/dosyalar', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def api_proje_dosyalar(project_id):
+    """Proje dosyalarını getir veya yeni dosya yükle"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        if request.method == 'GET':
+            # Dosyaları getir
+            # Sadece aktif dosyaları getir (soft-delete) - en son versiyonları göster
+            files = ProjectFile.query.filter_by(
+                project_id=project_id,
+                is_active=True
+            ).order_by(ProjectFile.file_name, ProjectFile.version.desc()).all()
+            
+            # Aynı isimde birden fazla versiyon varsa sadece en son versiyonu göster
+            unique_files = {}
+            for file in files:
+                if file.file_name not in unique_files:
+                    unique_files[file.file_name] = file
+            
+            files = list(unique_files.values())
+            files.sort(key=lambda x: x.created_at, reverse=True)
+            
+            file_list = []
+            for file in files:
+                user = User.query.get(file.user_id)
+                user_name = f"{user.first_name} {user.last_name}" if user and user.first_name else (user.username if user else 'Bilinmiyor')
+                
+                file_list.append({
+                    'id': file.id,
+                    'file_name': file.file_name,
+                    'file_path': file.file_path,
+                    'file_size': file.file_size,
+                    'file_type': file.file_type,
+                    'description': file.description,
+                    'version': file.version if hasattr(file, 'version') else 1,
+                    'user_name': user_name,
+                    'created_at': file.created_at.isoformat() if file.created_at else None
+                })
+            
+            return jsonify({
+                'success': True,
+                'files': file_list
+            })
+        else:  # POST
+            # Dosya yükleme
+            if 'files' not in request.files:
+                return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 400
+            
+            files = request.files.getlist('files')
+            if not files or files[0].filename == '':
+                return jsonify({'success': False, 'message': 'Dosya seçilmedi'}), 400
+            
+            # Dosya sayısı kontrolü (maksimum 10 dosya)
+            MAX_FILES = 10
+            if len(files) > MAX_FILES:
+                return jsonify({'success': False, 'message': f'Maksimum {MAX_FILES} dosya yükleyebilirsiniz'}), 400
+            
+            description = request.form.get('description', '').strip()
+            
+            # Dosya boyutu ve tip kontrolü
+            MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
+            ALLOWED_EXTENSIONS = {'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.zip', '.rar'}
+            ALLOWED_MIME_TYPES = {
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'image/jpeg',
+                'image/jpg',
+                'image/png',
+                'image/gif',
+                'text/plain',
+                'application/zip',
+                'application/x-rar-compressed'
+            }
+            
+            upload_folder = os.path.join('static', 'uploads', 'project_files')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+            
+            uploaded_count = 0
+            errors = []
+            
+            # MIME type validasyonu için import
+            from utils.file_validation import validate_uploaded_file
+            
+            for file in files:
+                if not file or not file.filename:
+                    continue
+                
+                try:
+                    # Güvenli dosya validasyonu (extension + MIME type + boyut)
+                    is_valid, error_msg, mime_type = validate_uploaded_file(file, max_size=MAX_FILE_SIZE)
+                    if not is_valid:
+                        errors.append(f"'{file.filename}': {error_msg}")
+                        continue
+                    
+                    filename = secure_filename(file.filename)
+                    
+                    # Unique filename oluştur
+                    unique_filename = f"{uuid.uuid4().hex}_{filename}"
+                    file_path = os.path.join(upload_folder, unique_filename)
+                    
+                    # Dosyayı kaydet
+                    file.save(file_path)
+                    
+                    # Dosya boyutunu al
+                    file_size = os.path.getsize(file_path)
+                    
+                    # MIME type'ı kullan (validasyon fonksiyonundan gelen)
+                    file_type = mime_type or 'application/octet-stream'
+                    
+                    # Aynı isimde dosya var mı kontrol et (versiyonlama için)
+                    existing_file = ProjectFile.query.filter_by(
+                        project_id=project_id,
+                        file_name=filename,
+                        is_active=True
+                    ).order_by(ProjectFile.version.desc()).first()
+                    
+                    # Versiyon belirle
+                    version = 1
+                    parent_file_id = None
+                    if existing_file:
+                        version = existing_file.version + 1
+                        parent_file_id = existing_file.id
+                    
+                    # Veritabanına kaydet
+                    project_file = ProjectFile(
+                        project_id=project_id,
+                        user_id=current_user.id,
+                        file_name=filename,
+                        file_path=f'/static/uploads/project_files/{unique_filename}',
+                        file_size=file_size,
+                        file_type=file_type or 'application/octet-stream',
+                        description=description if description else None,
+                        version=version,
+                        parent_file_id=parent_file_id,
+                        is_active=True,
+                        scope='PROJECT',  # Proje dosyası
+                        category=None  # Proje dosyaları için kategori yok
+                    )
+                    db.session.add(project_file)
+                    uploaded_count += 1
+                    
+                except Exception as e:
+                    current_app.logger.error(f"Dosya yükleme hatası ({filename}): {str(e)}")
+                    errors.append(f"'{filename}': {str(e)}")
+                    continue
+            
+            # Eğer hiç dosya yüklenmediyse hata döndür
+            if uploaded_count == 0:
+                error_message = 'Hiç dosya yüklenemedi. ' + '; '.join(errors) if errors else 'Dosya yükleme hatası'
+                return jsonify({'success': False, 'message': error_message}), 400
+            
+            db.session.commit()
+            
+            # Başarılı yüklemeler + hatalar varsa uyarı
+            message = f'{uploaded_count} dosya başarıyla yüklendi.'
+            if errors:
+                message += f' Bazı dosyalar yüklenemedi: {"; ".join(errors[:3])}'  # İlk 3 hatayı göster
+            
+            return jsonify({
+                'success': True,
+                'message': message,
+                'uploaded_count': uploaded_count
+            })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Proje dosyaları hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dokuman-merkezi', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def api_dokuman_merkezi():
+    """Kurumsal dosya yönetimi API"""
+    try:
+        if request.method == 'GET':
+            # Kurumsal dosyaları getir
+            from sqlalchemy import or_, and_
+            corporate_files = ProjectFile.query.filter(
+                or_(
+                    ProjectFile.scope == 'CORPORATE',
+                    and_(ProjectFile.scope == 'PROJECT', ProjectFile.project_id.is_(None))
+                ),
+                ProjectFile.is_active == True
+            ).order_by(ProjectFile.category, ProjectFile.file_name).all()
+            
+            file_list = []
+            for file in corporate_files:
+                user = User.query.get(file.user_id)
+                user_name = f"{user.first_name} {user.last_name}" if user and user.first_name else (user.username if user else 'Bilinmiyor')
+                
+                file_list.append({
+                    'id': file.id,
+                    'file_name': file.file_name,
+                    'file_path': file.file_path,
+                    'file_size': file.file_size,
+                    'file_type': file.file_type,
+                    'description': file.description,
+                    'category': file.category,
+                    'user_name': user_name,
+                    'created_at': file.created_at.isoformat() if file.created_at else None
+                })
+            
+            return jsonify({
+                'success': True,
+                'files': file_list
+            })
+        
+        else:  # POST - Dosya yükleme
+            # Yetki kontrolü - Sadece yöneticiler yükleyebilir
+            if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi']:
+                return jsonify({'success': False, 'message': 'Kurumsal dosya yüklemek için yönetici yetkisi gereklidir'}), 403
+            
+            if 'files' not in request.files:
+                return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 400
+            
+            files = request.files.getlist('files')
+            if not files or files[0].filename == '':
+                return jsonify({'success': False, 'message': 'Dosya seçilmedi'}), 400
+            
+            category = request.form.get('category', '').strip() or None
+            description = request.form.get('description', '').strip() or None
+            
+            # Dosya yükleme işlemi (proje dosyaları ile aynı mantık)
+            MAX_FILES = 10
+            MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
+            ALLOWED_EXTENSIONS = {'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.zip', '.rar'}
+            
+            upload_folder = os.path.join('static', 'uploads', 'corporate_files')
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+            
+            uploaded_count = 0
+            errors = []
+            
+            # MIME type validasyonu için import
+            from utils.file_validation import validate_uploaded_file
+            
+            for file in files[:MAX_FILES]:
+                if not file or not file.filename:
+                    continue
+                
+                try:
+                    # Güvenli dosya validasyonu (extension + MIME type + boyut)
+                    is_valid, error_msg, mime_type = validate_uploaded_file(file, max_size=MAX_FILE_SIZE)
+                    if not is_valid:
+                        errors.append(f"'{file.filename}': {error_msg}")
+                        continue
+                    
+                    filename = secure_filename(file.filename)
+                    unique_filename = f"{uuid.uuid4().hex}_{filename}"
+                    file_path = os.path.join(upload_folder, unique_filename)
+                    file.save(file_path)
+                    
+                    file_size = os.path.getsize(file_path)
+                    file_type = mime_type or 'application/octet-stream'
+                    
+                    # Kurumsal dosya kaydet
+                    corporate_file = ProjectFile(
+                        project_id=None,  # Kurumsal dosya için NULL
+                        user_id=current_user.id,
+                        file_name=filename,
+                        file_path=f'/static/uploads/corporate_files/{unique_filename}',
+                        file_size=file_size,
+                        file_type=file_type or 'application/octet-stream',
+                        description=description,
+                        version=1,
+                        is_active=True,
+                        scope='CORPORATE',
+                        category=category
+                    )
+                    db.session.add(corporate_file)
+                    uploaded_count += 1
+                
+                except Exception as e:
+                    current_app.logger.error(f"Kurumsal dosya yükleme hatası ({filename}): {str(e)}")
+                    errors.append(f"'{filename}': {str(e)}")
+                    continue
+            
+            if uploaded_count == 0:
+                error_message = 'Hiç dosya yüklenemedi. ' + '; '.join(errors) if errors else 'Dosya yükleme hatası'
+                return jsonify({'success': False, 'message': error_message}), 400
+            
+            db.session.commit()
+            
+            message = f'{uploaded_count} dosya başarıyla yüklendi.'
+            if errors:
+                message += f' Bazı dosyalar yüklenemedi: {"; ".join(errors[:3])}'
+            
+            return jsonify({
+                'success': True,
+                'message': message,
+                'uploaded_count': uploaded_count
+            })
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Doküman merkezi API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dokuman-merkezi/<int:file_id>/indir', methods=['GET'])
+@login_required
+def api_dokuman_merkezi_indir(file_id):
+    """Kurumsal dosyayı indir"""
+    try:
+        corporate_file = ProjectFile.query.get_or_404(file_id)
+        
+        # Kurumsal dosya kontrolü
+        if corporate_file.scope != 'CORPORATE' and corporate_file.project_id is not None:
+            return jsonify({'success': False, 'message': 'Bu dosya kurumsal dosya değil'}), 403
+        
+        # Dosya yolunu kontrol et
+        file_path = corporate_file.file_path.lstrip('/')
+        if not os.path.exists(file_path):
+            return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 404
+        
+        return send_file(file_path, as_attachment=True, download_name=corporate_file.file_name)
+    
+    except Exception as e:
+        current_app.logger.error(f'Kurumsal dosya indirme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dokuman-merkezi/<int:file_id>', methods=['DELETE'])
+@csrf.exempt
+@login_required
+def api_dokuman_merkezi_sil(file_id):
+    """Kurumsal dosyayı sil (soft delete)"""
+    try:
+        # Yetki kontrolü - Sadece yöneticiler silebilir
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi']:
+            return jsonify({'success': False, 'message': 'Kurumsal dosya silmek için yönetici yetkisi gereklidir'}), 403
+        
+        corporate_file = ProjectFile.query.get_or_404(file_id)
+        
+        # Kurumsal dosya kontrolü
+        if corporate_file.scope != 'CORPORATE' and corporate_file.project_id is not None:
+            return jsonify({'success': False, 'message': 'Bu dosya kurumsal dosya değil'}), 403
+        
+        # Soft delete
+        corporate_file.is_active = False
+        corporate_file.deleted_at = datetime.utcnow()
+        corporate_file.deleted_by_id = current_user.id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Dosya başarıyla silindi'
+        })
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Kurumsal dosya silme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>/indir', methods=['GET'])
+@login_required
+def api_proje_dosya_indir(project_id, file_id):
+    """Proje dosyasını indir"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        project_file = ProjectFile.query.get_or_404(file_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or project_file.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu dosyaya erişim yetkiniz yok'}), 403
+        
+        # Dosya yolunu oluştur
+        file_path = project_file.file_path.lstrip('/')
+        absolute_path = os.path.join('static', 'uploads', 'project_files', os.path.basename(project_file.file_path))
+        
+        if not os.path.exists(absolute_path):
+            return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 404
+        
+        return send_file(absolute_path, as_attachment=True, download_name=project_file.file_name)
+    except Exception as e:
+        current_app.logger.error(f'Dosya indirme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>', methods=['DELETE'])
+@csrf.exempt
+@login_required
+def api_proje_dosya_sil(project_id, file_id):
+    """Proje dosyasını soft-delete ile sil"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        project_file = ProjectFile.query.get_or_404(file_id)
+        
+        # Yetki kontrolü (sadece yönetici veya dosyayı yükleyen silebilir)
+        if project.kurum_id != current_user.kurum_id or project_file.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu dosyaya erişim yetkiniz yok'}), 403
+        
+        # Sadece yönetici veya dosyayı yükleyen silebilir
+        from decorators import _get_user_project_role
+        user_role = _get_user_project_role(project, current_user.id)
+        if user_role != 'manager' and project_file.user_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Bu dosyayı silme yetkiniz yok'}), 403
+        
+        # Soft-delete: is_active = False yap
+        project_file.is_active = False
+        project_file.deleted_at = datetime.utcnow()
+        project_file.deleted_by_id = current_user.id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Dosya başarıyla silindi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Dosya silme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/surec/<int:surec_id>/saglik-skoru', methods=['GET'])
+@login_required
+def api_surec_saglik_skoru(surec_id):
+    """Süreç sağlık skorunu hesapla ve döndür"""
+    try:
+        yil = request.args.get('yil', datetime.now().year, type=int)
+        
+        # Süreç yetki kontrolü
+        surec = Surec.query.get_or_404(surec_id)
+        kurum_yoneticisi_mi = current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim']
+        
+        if kurum_yoneticisi_mi:
+            if surec.kurum_id != current_user.kurum_id:
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        else:
+            lider_mi = db.session.query(surec_liderleri).filter(
+                surec_liderleri.c.surec_id == surec_id,
+                surec_liderleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            uye_mi = db.session.query(surec_uyeleri).filter(
+                surec_uyeleri.c.surec_id == surec_id,
+                surec_uyeleri.c.user_id == current_user.id
+            ).first() is not None
+            
+            if not (lider_mi or uye_mi):
+                return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
+        
+        # Sağlık skorunu hesapla
+        from services.project_analytics import calculate_surec_saglik_skoru
+        skor_sonucu = calculate_surec_saglik_skoru(surec_id, yil)
+        
+        if skor_sonucu is None:
+            return jsonify({'success': False, 'message': 'Sağlık skoru hesaplanamadı'}), 500
+        
+        return jsonify({
+            'success': True,
+            **skor_sonucu
+        })
+    except Exception as e:
+        current_app.logger.error(f'Süreç sağlık skoru API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Risk Yönetimi API Endpoint'leri
+@api_bp.route('/projeler/<int:project_id>/riskler', methods=['GET'])
+@login_required
+def api_proje_riskleri(project_id):
+    """Projenin risklerini getir"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        # Riskleri getir (created_by ilişkisini eager load et)
+        from sqlalchemy.orm import joinedload
+        risks = ProjectRisk.query.options(joinedload(ProjectRisk.created_by)).filter_by(project_id=project_id).all()
+        
+        # Risk skoruna göre sırala (property olduğu için Python'da sırala)
+        risks_sorted = sorted(risks, key=lambda r: (r.impact * r.probability), reverse=True)
+        
+        risks_data = []
+        for r in risks_sorted:
+            try:
+                # created_by ilişkisini güvenli şekilde al
+                created_by_name = None
+                try:
+                    if r.created_by_id and r.created_by:
+                        first_name = getattr(r.created_by, 'first_name', None) or ''
+                        last_name = getattr(r.created_by, 'last_name', None) or ''
+                        username = getattr(r.created_by, 'username', None) or ''
+                        created_by_name = f"{first_name} {last_name}".strip() or username
+                except Exception as rel_error:
+                    current_app.logger.warning(f'Risk {r.id} created_by ilişki hatası: {rel_error}')
+                    created_by_name = None
+                
+                # Risk skorunu hesapla
+                risk_score = r.impact * r.probability
+                
+                # Risk seviyesini hesapla (skor >= 20 ise Kritik)
+                if risk_score <= 6:
+                    risk_level = 'Düşük'
+                elif risk_score <= 12:
+                    risk_level = 'Orta'
+                elif risk_score < 20:
+                    risk_level = 'Yüksek'
+                else:  # risk_score >= 20
+                    risk_level = 'Kritik'
+                
+                risks_data.append({
+                    'id': r.id,
+                    'title': r.title or '',
+                    'description': r.description or '',
+                    'impact': r.impact,
+                    'probability': r.probability,
+                    'risk_score': risk_score,
+                    'risk_level': risk_level,
+                    'mitigation_plan': r.mitigation_plan or '',
+                    'status': r.status or 'Aktif',
+                    'created_by': created_by_name,
+                    'created_at': r.created_at.isoformat() if r.created_at else None
+                })
+            except Exception as e:
+                current_app.logger.error(f'Risk serialize hatası (ID: {r.id}): {e}', exc_info=True)
+                # Hatalı riski atla veya minimal bilgiyle ekle
+                try:
+                    risk_score = r.impact * r.probability
+                    if risk_score <= 6:
+                        risk_level = 'Düşük'
+                    elif risk_score <= 12:
+                        risk_level = 'Orta'
+                    elif risk_score < 20:
+                        risk_level = 'Yüksek'
+                    else:  # risk_score >= 20
+                        risk_level = 'Kritik'
+                    
+                    risks_data.append({
+                        'id': r.id,
+                        'title': r.title or 'Bilinmeyen Risk',
+                        'description': '',
+                        'impact': r.impact,
+                        'probability': r.probability,
+                        'risk_score': risk_score,
+                        'risk_level': risk_level,
+                        'mitigation_plan': '',
+                        'status': r.status or 'Aktif',
+                        'created_by': None,
+                        'created_at': None
+                    })
+                except Exception as e2:
+                    current_app.logger.error(f'Risk minimal serialize hatası (ID: {r.id}): {e2}')
+                    # Bu riski atla
+                    continue
+        
+        return jsonify({
+            'success': True,
+            'risks': risks_data
+        })
+    except Exception as e:
+        current_app.logger.error(f'Risk listesi API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/riskler', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_risk_ekle(project_id):
+    """Yeni risk ekle"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        data = request.get_json()
+        
+        risk = ProjectRisk(
+            project_id=project_id,
+            title=data.get('title', '').strip(),
+            description=data.get('description', '').strip(),
+            impact=int(data.get('impact', 1)),
+            probability=int(data.get('probability', 1)),
+            mitigation_plan=data.get('mitigation_plan', '').strip(),
+            status=data.get('status', 'Aktif'),
+            created_by_id=current_user.id
+        )
+        
+        db.session.add(risk)
+        db.session.commit()
+        
+        # Kritik risk bildirimi oluştur
+        if risk.risk_score >= 20:
+            from services.notification_service import create_critical_risk_notification
+            create_critical_risk_notification(risk.id, current_user.id)
+        
+        # Risk eklendiğinde dashboard cache'i temizle
+        _invalidate_executive_dashboard_cache(project.kurum_id)
+        
+        # Webhook tetikle (V2.0.0) - Yeni risk eklendiğinde (yüksek risk ise)
+        if risk.risk_score >= 20:  # Kritik risk
+            try:
+                from services.webhook_service import trigger_risk_increase_webhook
+                trigger_risk_increase_webhook(
+                    project.kurum_id,
+                    risk.id,
+                    0,  # Yeni risk, eski skor yok
+                    risk.risk_score
+                )
+            except Exception as webhook_error:
+                current_app.logger.warning(f'Risk webhook tetikleme hatası: {webhook_error}')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Risk başarıyla eklendi',
+            'risk': {
+                'id': risk.id,
+                'risk_score': risk.risk_score,
+                'risk_level': risk.risk_level
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Risk ekleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['PUT'])
+@csrf.exempt
+@login_required
+def api_risk_guncelle(project_id, risk_id):
+    """Risk güncelle"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        risk = ProjectRisk.query.get_or_404(risk_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or risk.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu riski güncelleme yetkiniz yok'}), 403
+        
+        data = request.get_json()
+        
+        if 'title' in data:
+            risk.title = data['title'].strip()
+        if 'description' in data:
+            risk.description = data['description'].strip()
+        if 'impact' in data:
+            risk.impact = int(data['impact'])
+        if 'probability' in data:
+            risk.probability = int(data['probability'])
+        if 'mitigation_plan' in data:
+            risk.mitigation_plan = data['mitigation_plan'].strip()
+        if 'status' in data:
+            risk.status = data['status']
+        
+        # Risk puanı değişti mi kontrol et (impact veya probability değiştiyse)
+        risk_score_changed = False
+        if 'impact' in data or 'probability' in data:
+            old_score = risk.risk_score
+            db.session.flush()  # Yeni değerleri hesapla
+            if risk.risk_score != old_score:
+                risk_score_changed = True
+        
+        db.session.commit()
+        
+        # Risk puanı değiştiyse veya durum değiştiyse dashboard cache'i temizle
+        if risk_score_changed or 'status' in data:
+            _invalidate_executive_dashboard_cache(project.kurum_id)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Risk başarıyla güncellendi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Risk güncelleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['DELETE'])
+@csrf.exempt
+@login_required
+def api_risk_sil(project_id, risk_id):
+    """Risk sil"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        risk = ProjectRisk.query.get_or_404(risk_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or risk.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu riski silme yetkiniz yok'}), 403
+        
+        db.session.delete(risk)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Risk başarıyla silindi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Risk silme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# AI Erken Uyarı API Endpoint'leri
+@api_bp.route('/projeler/<int:project_id>/ai-tahmin', methods=['GET'])
+@login_required
+def api_ai_tahmin(project_id):
+    """AI destekli gecikme olasılığı tahmini"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        from services.ai_early_warning import calculate_delay_probability
+        result = calculate_delay_probability(project_id)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                **result
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Tahmin hesaplanamadı'
+            }), 500
+    except Exception as e:
+        current_app.logger.error(f'AI tahmin API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Kaynak Planlama API Endpoint'leri
+@api_bp.route('/projeler/<int:project_id>/kaynak-isi-haritasi', methods=['GET'])
+@login_required
+def api_kaynak_isi_haritasi(project_id):
+    """Proje için kaynak ısı haritası"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+        
+        if not start_date_str or not end_date_str:
+            # Varsayılan: Bugünden itibaren 30 gün
+            from datetime import date, timedelta
+            start_date = date.today()
+            end_date = start_date + timedelta(days=30)
+        else:
+            start_date = datetime.fromisoformat(start_date_str).date()
+            end_date = datetime.fromisoformat(end_date_str).date()
+        
+        from services.resource_planning import get_resource_heatmap
+        result = get_resource_heatmap(project_id, start_date, end_date)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                **result
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Isı haritası oluşturulamadı'
+            }), 500
+    except Exception as e:
+        current_app.logger.error(f'Kaynak ısı haritası API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/klonla', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_proje_klonla(project_id):
+    """Projeyi klonla (derin kopyalama)"""
+    try:
+        if not request.is_json:
+            return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
+        
+        data = request.get_json()
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu projeye erişim yetkiniz yok'}), 403
+        
+        # Yeni proje adı ve başlangıç tarihi
+        new_name = data.get('new_name', '').strip()
+        if not new_name:
+            return jsonify({'success': False, 'message': 'Yeni proje adı gereklidir'}), 400
+        
+        new_start_date_str = data.get('new_start_date')
+        if not new_start_date_str:
+            return jsonify({'success': False, 'message': 'Yeni başlangıç tarihi gereklidir'}), 400
+        
+        try:
+            from datetime import datetime
+            new_start_date = datetime.strptime(new_start_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'success': False, 'message': 'Geçersiz tarih formatı (YYYY-MM-DD bekleniyor)'}), 400
+        
+        keep_assignments = data.get('keep_assignments', True)
+        keep_completed_tasks = data.get('keep_completed_tasks', False)
+        
+        # Proje klonlama servisini kullan
+        from services.project_cloning import clone_project
+        
+        new_project_id = clone_project(
+            project_id=project_id,
+            new_name=new_name,
+            new_start_date=new_start_date,
+            keep_assignments=keep_assignments,
+            keep_completed_tasks=keep_completed_tasks
+        )
+        
+        if new_project_id:
+            return jsonify({
+                'success': True,
+                'message': 'Proje başarıyla kopyalandı',
+                'new_project_id': new_project_id
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Proje kopyalanamadı'}), 500
+    
+    except Exception as e:
+        current_app.logger.error(f'Proje klonlama hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dashboard/ai-advisor', methods=['GET'])
+@login_required
+def api_ai_advisor():
+    """
+    AI Stratejik Danışman verilerini getir
+    """
+    try:
+        # Yetki kontrolü (Manager ve Observer rolleri)
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+            return jsonify({'success': False, 'message': 'Bu sayfaya erişim yetkiniz yok'}), 403
+        
+        from services.ai_advisor_service import generate_strategic_advice
+        advisor_data = generate_strategic_advice(current_user.kurum_id)
+        
+        return jsonify({
+            'success': True,
+            'data': advisor_data
+        })
+    
+    except Exception as e:
+        current_app.logger.error(f'AI danışman API hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dashboard/ai-advisor/notify', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_ai_advisor_notify():
+    """
+    AI tavsiyesini ilgili sorumluya bildir
+    """
+    try:
+        data = request.get_json()
+        recommendation_id = data.get('recommendation_id')
+        target_user_id = data.get('target_user_id')
+        target_role = data.get('target_role')
+        
+        if not recommendation_id:
+            return jsonify({'success': False, 'message': 'Tavsiye ID gerekli'}), 400
+        
+        from services.ai_advisor_service import notify_recommendation
+        result = notify_recommendation(recommendation_id, target_user_id, target_role)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Tavsiye bildirildi'
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Bildirim gönderilemedi'}), 500
+    
+    except Exception as e:
+        current_app.logger.error(f'AI tavsiye bildirimi hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/dashboard/executive', methods=['GET'])
+@csrf.exempt
+@login_required
+def api_executive_dashboard():
+    """Executive Dashboard verilerini getir"""
+    try:
+        # Yetki kontrolü - Sadece yönetici ve gözlemci erişebilir
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim', 'gözlemci']:
+            return jsonify({'success': False, 'message': 'Bu sayfaya erişim yetkiniz yok'}), 403
+        
+        from services.executive_dashboard import (
+            get_corporate_health_score,
+            get_critical_risks,
+            get_planning_efficiency,
+            get_task_workload_distribution,
+            get_executive_summary
+        )
+        
+        # Filtreleme parametrelerini al
+        filters = {}
+        department = request.args.get('department')
+        manager_id = request.args.get('manager_id', type=int)
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        if department:
+            filters['department'] = department
+        if manager_id:
+            filters['manager_id'] = manager_id
+        if start_date:
+            try:
+                filters['start_date'] = datetime.strptime(start_date, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        if end_date:
+            try:
+                filters['end_date'] = datetime.strptime(end_date, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
+        # Filtrelenmiş verileri topla
+        health_data = get_corporate_health_score(current_user.kurum_id, filters)
+        critical_risks = get_critical_risks(current_user.kurum_id, limit=5)
+        planning_data = get_planning_efficiency(current_user.kurum_id)
+        workload_data = get_task_workload_distribution(current_user.kurum_id)
+        executive_summary = get_executive_summary(current_user.kurum_id)
+        
+        # Personel Yükü Analizi
+        from services.executive_dashboard import get_personnel_workload_analysis
+        personnel_workload = get_personnel_workload_analysis(current_user.kurum_id)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'corporate_health': health_data,
+                'critical_risks': critical_risks,
+                'planning_efficiency': planning_data,
+                'workload_distribution': workload_data,
+                'executive_summary': executive_summary,
+                'personnel_workload': personnel_workload
+            },
+            'filters': filters
+        })
+    
+    except Exception as e:
+        current_app.logger.error(f'Executive dashboard API hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/asiri-yukleme-kontrol', methods=['GET'])
+@login_required
+def api_asiri_yukleme_kontrol(project_id, task_id):
+    """Görev atamasının aşırı yükleme yapıp yapmadığını kontrol et"""
+    try:
+        project = Project.query.get_or_404(project_id)
+        task = Task.query.get_or_404(task_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id or task.project_id != project_id:
+            return jsonify({'success': False, 'message': 'Bu göreve erişim yetkiniz yok'}), 403
+        
+        from services.resource_planning import check_task_overload
+        result = check_task_overload(task_id, task.assigned_to_id, task.due_date)
+        
+        return jsonify({
+            'success': True,
+            **result
+        })
+    except Exception as e:
+        current_app.logger.error(f'Aşırı yükleme kontrolü API hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# Kullanıcı Tercihleri API Endpoint'leri
+@api_bp.route('/user/layout', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_user_layout():
+    """Kullanıcı layout tercihini kaydet"""
+    try:
+        data = request.get_json()
+        layout = data.get('layout')
+        
+        if layout not in ['classic', 'sidebar']:
+            return jsonify({'success': False, 'message': 'Geçersiz layout seçimi'}), 400
+        
+        current_user.layout_preference = layout
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Layout tercihi kaydedildi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Layout tercihi kaydetme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/user/theme', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_user_theme():
+    """Kullanıcı tema tercihini kaydet"""
+    try:
+        data = request.get_json()
+        theme = data.get('theme')
+        
+        if theme not in ['light', 'dark']:
+            return jsonify({'success': False, 'message': 'Geçersiz tema seçimi'}), 400
+        
+        import json
+        if current_user.theme_preferences:
+            try:
+                prefs = json.loads(current_user.theme_preferences)
+            except:
+                prefs = {}
+        else:
+            prefs = {}
+        
+        prefs['theme'] = theme
+        current_user.theme_preferences = json.dumps(prefs)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Tema tercihi kaydedildi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications', methods=['GET'])
+@csrf.exempt
+@login_required
+def api_notifications():
+    """Kullanıcının bildirimlerini getir"""
+    try:
+        from models import Notification
+        notifications = Notification.query.filter_by(
+            user_id=current_user.id
+        ).order_by(
+            Notification.created_at.desc()
+        ).limit(20).all()
+        
+        notifications_data = []
+        for notif in notifications:
+            notifications_data.append({
+                'id': notif.id,
+                'tip': notif.tip,
+                'baslik': notif.baslik,
+                'mesaj': notif.mesaj,
+                'link': notif.link,
+                'okundu': notif.okundu,
+                'created_at': notif.created_at.isoformat() if notif.created_at else None,
+                'project_id': notif.project_id,
+                'task_id': notif.task_id
+            })
+        
+        return jsonify({
+            'success': True,
+            'notifications': notifications_data
+        })
+    except Exception as e:
+        current_app.logger.error(f'Bildirimler getirme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications/count', methods=['GET'])
+@csrf.exempt
+@login_required
+def api_notifications_count():
+    """Okunmamış bildirim sayısını getir"""
+    try:
+        from models import Notification
+        count = Notification.query.filter_by(
+            user_id=current_user.id,
+            okundu=False
+        ).count()
+        
+        return jsonify({
+            'success': True,
+            'count': count
+        })
+    except Exception as e:
+        current_app.logger.error(f'Bildirim sayısı getirme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications/mark-all-read', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_notifications_mark_all_read():
+    """Tüm bildirimleri okundu işaretle"""
+    try:
+        from models import Notification
+        Notification.query.filter_by(
+            user_id=current_user.id,
+            okundu=False
+        ).update({'okundu': True})
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Tüm bildirimler okundu işaretlendi'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Bildirimler okundu işaretleme hatası: {e}')
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# What-If Simülasyon API (V2.0.0)
+@api_bp.route('/simulation/what-if', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_what_if_simulation():
+    """What-If simülasyonu çalıştır"""
+    try:
+        from services.ai_advisor_service import simulate_what_if
+        
+        data = request.get_json()
+        
+        if not data or 'type' not in data:
+            return jsonify({
+                'success': False,
+                'message': 'Simülasyon tipi (type) gerekli'
+            }), 400
+        
+        # Kurum ID'yi al
+        kurum_id = current_user.kurum_id
+        if not kurum_id:
+            return jsonify({
+                'success': False,
+                'message': 'Kurum bilgisi bulunamadı'
+            }), 400
+        
+        # Simülasyonu çalıştır
+        result = simulate_what_if(kurum_id, data)
+        
+        if 'error' in result:
+            return jsonify({
+                'success': False,
+                'message': result['error']
+            }), 400
+        
+        return jsonify({
+            'success': True,
+            'simulation': result
+        })
+    
+    except Exception as e:
+        current_app.logger.error(f'What-If simülasyon hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+@api_bp.route('/project/<int:project_id>/simulate', methods=['GET'])
+@login_required
+def simulate_project(project_id):
+    """Proje bazlı What-If simülasyonu (Beta)"""
+    try:
+        # Projeyi kontrol et
+        project = Project.query.get_or_404(project_id)
+        
+        # Yetki kontrolü
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({
+                'success': False,
+                'message': 'Bu projeye erişim yetkiniz yok'
+            }), 403
+        
+        # İleride gerçek AI modeli çalışacak. Şimdilik mock data:
+        import time
+        time.sleep(1.5)  # İşlem yapıyor hissi ver
+        
+        # Proje verilerini analiz et (gerçek veriler)
+        tasks = Task.query.filter_by(project_id=project_id).all()
+        risks = ProjectRisk.query.filter_by(project_id=project_id).all()
+        
+        # Risk seviyesini hesapla
+        high_risk_count = sum(1 for r in risks if r.impact >= 4 and r.probability >= 4)
+        risk_level = 'high' if high_risk_count >= 2 else 'medium' if high_risk_count >= 1 else 'low'
+        
+        # Senaryolar oluştur
+        scenarios = []
+        if len(tasks) > 0:
+            scenarios.append({
+                "description": "Tasarım onayı 1 hafta gecikirse",
+                "impact": "+15.000 TL Maliyet"
+            })
+        if len(risks) > 0:
+            scenarios.append({
+                "description": "Backend ekibi %50 kapasiteye düşerse",
+                "impact": "3 Hafta Gecikme"
+            })
+        if len(tasks) > 3:
+            scenarios.append({
+                "description": "Kritik görevlerde kaynak yetersizliği",
+                "impact": "Proje bitiş tarihi +2 hafta"
+            })
+        
+        # Varsayılan senaryolar (eğer yeterli veri yoksa)
+        if len(scenarios) == 0:
+            scenarios = [
+                {"description": "Tasarım onayı 1 hafta gecikirse", "impact": "+15.000 TL Maliyet"},
+                {"description": "Backend ekibi %50 kapasiteye düşerse", "impact": "3 Hafta Gecikme"}
+            ]
+        
+        # Özet mesajı
+        summary = f"Projede {'kritik yol üzerinde' if len(tasks) > 0 else ''} {len(risks)} risk tespit edildi."
+        if high_risk_count > 0:
+            summary = f"Projede kritik yol üzerinde {high_risk_count} yüksek risk tespit edildi."
+        
+        # AI Önerisi
+        recommendation = "Tasarım onayı için acil toplantı set edilmeli ve kapsam daraltılmalı."
+        if high_risk_count >= 2:
+            recommendation = "Projede kritik riskler tespit edildi. Acil müdahale planı oluşturulmalı ve kaynak tahsisi gözden geçirilmeli."
+        elif len(tasks) > 5:
+            recommendation = "Görev sayısı fazla. Paralel çalışma planı yapılmalı ve kritik görevlere öncelik verilmeli."
+        
+        return jsonify({
+            "risk_level": risk_level,
+            "summary": summary,
+            "scenarios": scenarios,
+            "recommendation": recommendation
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f'Proje simülasyon hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+@api_bp.route('/task/<int:task_id>/complete', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_task_complete(task_id):
+    """Görevi tamamla ve proje ilerlemesini güncelle"""
+    try:
+        from datetime import datetime
+        
+        # Görevi bul
+        task = Task.query.get_or_404(task_id)
+        
+        # Yetki kontrolü - görevin bağlı olduğu projeye erişim yetkisi var mı?
+        project = Project.query.get_or_404(task.project_id)
+        if project.kurum_id != current_user.kurum_id:
+            return jsonify({
+                'success': False,
+                'message': 'Bu göreve erişim yetkiniz yok'
+            }), 403
+        
+        # Görev zaten tamamlanmış mı?
+        if task.status == 'Tamamlandı':
+            return jsonify({
+                'success': False,
+                'message': 'Bu görev zaten tamamlanmış'
+            }), 400
+        
+        # Görevi tamamla
+        task.status = 'Tamamlandı'
+        task.completed_at = datetime.utcnow()
+        db.session.flush()
+        
+        # OTOMASYON BAŞLANGICI: PG Verisi Oluşturma (V2.5.0)
+        pg_created = False
+        if task.is_measurable and task.related_indicator_id:
+            try:
+                # İlişkili PG'yi kontrol et
+                related_pg = BireyselPerformansGostergesi.query.get(task.related_indicator_id)
+                if related_pg:
+                    # Yeni performans değeri kaydı oluştur
+                    from datetime import date
+                    today = date.today()
+                    
+                    # Değer hesapla
+                    output_value = task.planned_output_value if task.planned_output_value is not None else 1.0
+                    
+                    # PerformansGostergeVeri kaydı oluştur
+                    new_pg_veri = PerformansGostergeVeri(
+                        bireysel_pg_id=task.related_indicator_id,
+                        yil=today.year,
+                        veri_tarihi=today,
+                        giris_periyot_tipi='gunluk',
+                        giris_periyot_no=today.day,
+                        giris_periyot_ay=today.month,
+                        ay=today.month,
+                        gun=today.day,
+                        gerceklesen_deger=str(output_value),
+                        aciklama=f"Otomatik: {task.title} tamamlandı.",
+                        user_id=current_user.id,
+                        created_by=current_user.id,
+                        updated_by=current_user.id
+                    )
+                    db.session.add(new_pg_veri)
+                    pg_created = True
+                    current_app.logger.info(f'✅ OTOMASYON: Faaliyet "{task.title}" tamamlandı, PG verisi oluşturuldu (PG ID: {task.related_indicator_id}, Değer: {output_value})')
+                    print(f"✅ OTOMASYON: Faaliyet '{task.title}' tamamlandı, PG verisi oluşturuldu (PG ID: {task.related_indicator_id}, Değer: {output_value})")
+                else:
+                    current_app.logger.warning(f'⚠️ OTOMASYON: İlişkili PG bulunamadı (ID: {task.related_indicator_id})')
+                    print(f"⚠️ OTOMASYON: İlişkili PG bulunamadı (ID: {task.related_indicator_id})")
+            except Exception as pg_error:
+                current_app.logger.error(f'❌ OTOMASYON HATASI: PG verisi oluşturulurken hata: {pg_error}', exc_info=True)
+                print(f"❌ OTOMASYON HATASI: {pg_error}")
+                # Hata olsa bile program devam etsin, görev tamamlanmış olarak işaretlensin
+        else:
+            if not task.is_measurable:
+                print(f"ℹ️ OTOMASYON: Görev ölçülebilir değil (is_measurable=False)")
+            if not task.related_indicator_id:
+                print(f"ℹ️ OTOMASYON: Görev PG'ye bağlı değil (related_indicator_id=None)")
+        # OTOMASYON BİTİŞİ
+        
+        # Proje ilerlemesini hesapla
+        all_tasks = Task.query.filter_by(project_id=project.id).all()
+        total_tasks = len(all_tasks)
+        completed_tasks = sum(1 for t in all_tasks if t.status == 'Tamamlandı')
+        
+        # İlerleme yüzdesi hesapla
+        new_progress = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
+        
+        # Proje modelinde progress alanı yok, bu yüzden hesaplanmış değeri döndüreceğiz
+        # İleride Project modeline progress alanı eklenebilir
+        
+        db.session.commit()
+        
+        current_app.logger.info(f'Görev tamamlandı: Task ID {task_id}, Proje ilerlemesi: {new_progress}%')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Görev başarıyla tamamlandı',
+            'new_progress': new_progress,
+            'completed_tasks': completed_tasks,
+            'total_tasks': total_tasks
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Görev tamamlama hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+# ============================================
+# ADMIN API ENDPOINTS
+# ============================================
+
+@api_bp.route('/admin/users')
+@login_required
+def api_admin_users():
+    """Admin panel için kullanıcı listesi"""
+    try:
+        # Sadece admin ve kurum_yoneticisi erişebilir
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi']:
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+        
+        # Sistem admini kontrolü (kurum_id=1)
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        
+        # Kullanıcıları filtrele (sadece aktif kayıtlar)
+        if is_system_admin:
+            # Sistem yöneticisi: TÜM kullanıcıları görür
+            users = User.query.options(db.joinedload(User.kurum)).filter_by(silindi=False).all()
+            kurumlar = Kurum.query.filter_by(silindi=False).all()
+            surecler = Surec.query.filter_by(silindi=False).all()
+        else:
+            # Kurum yöneticisi: Sadece kendi kurumundaki kullanıcıları görür
+            users = User.query.options(db.joinedload(User.kurum)).filter_by(kurum_id=current_user.kurum_id, silindi=False).all()
+            kurumlar = Kurum.query.filter_by(id=current_user.kurum_id, silindi=False).all()
+            surecler = Surec.query.filter_by(kurum_id=current_user.kurum_id, silindi=False).all()
+        
+        users_data = []
+        for user in users:
+            # Süreç rolleri bilgilerini topla
+            process_roles = []
+            liderlik_sayisi = db.session.query(surec_liderleri).filter_by(user_id=user.id).count()
+            uyelik_sayisi = db.session.query(surec_uyeleri).filter_by(user_id=user.id).count()
+            
+            # Encoding sorunlarını önlemek için string'leri temizle
+            try:
+                kurum_adi = user.kurum.ticari_unvan if user.kurum else None
+                if kurum_adi:
+                    kurum_adi = kurum_adi.encode('utf-8', errors='ignore').decode('utf-8')
+            except:
+                kurum_adi = None
+            
+            user_dict = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email or '',
+                'first_name': user.first_name or '',
+                'last_name': user.last_name or '',
+                'full_name': f"{user.first_name or ''} {user.last_name or ''}".strip(),
+                'sistem_rol': user.sistem_rol,
+                'kurum_id': user.kurum_id,
+                'kurum_adi': kurum_adi,
+                'profile_photo': user.profile_photo if hasattr(user, 'profile_photo') else None,
+                'process_counts': {
+                    'liderlik': liderlik_sayisi,
+                    'uyelik': uyelik_sayisi,
+                    'toplam': liderlik_sayisi + uyelik_sayisi
+                },
+                'process_summary': f'{liderlik_sayisi} liderlik, {uyelik_sayisi} üyelik' if (liderlik_sayisi + uyelik_sayisi) > 0 else 'Süreç ataması yok',
+                'can_edit': True,  # Admin herkesi düzenleyebilir
+                'can_delete': user.id != current_user.id  # Kendini silemez
+            }
+            users_data.append(user_dict)
+        
+        # Sistem rolleri listesi
+        allowed_roles = ['admin', 'kurum_yoneticisi', 'ust_yonetim', 'kurum_kullanici', 'surec_lideri', 'surec_uyesi']
+        
+        # İstatistikler
+        total_kurumlar = len(kurumlar)
+        total_surecler = len(surecler)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'users': users_data,
+                'allowed_roles': allowed_roles,
+                'is_system_admin': is_system_admin,
+                'stats': {
+                    'total_users': len(users_data),
+                    'total_kurumlar': total_kurumlar,
+                    'total_surecler': total_surecler
+                }
+            }
+        })
+    except Exception as e:
+        current_app.logger.error(f'Kullanıcı listesi hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': 'Kullanıcılar yüklenirken bir hata oluştu'
+        }), 500
+
+
+@api_bp.route('/admin/users/delete/<int:user_id>', methods=['DELETE', 'POST'])
+@login_required
+def api_admin_delete_user(user_id):
+    """Kullanıcı sil (soft delete) - Admin veya kurum yöneticisi silebilir"""
+    try:
+        # Yetki kontrolü
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi']:
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+        
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
+        
+        # Kendini silemez
+        if user.id == current_user.id:
+            return jsonify({'success': False, 'message': 'Kendi hesabınızı silemezsiniz'}), 400
+        
+        # Kurum yöneticisi sadece kendi kurumundaki kullanıcıları silebilir
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        if not is_system_admin and user.kurum_id != current_user.kurum_id:
+            return jsonify({'success': False, 'message': 'Bu kullanıcıyı silme yetkiniz yok'}), 403
+        
+        if user.silindi:
+            return jsonify({'success': False, 'message': 'Bu kullanıcı zaten silinmiş'}), 400
+        
+        # SOFT DELETE
+        user.silindi = True
+        user.deleted_at = datetime.utcnow()
+        user.deleted_by = current_user.id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{user.username} kullanıcısı arşivlendi. İsterseniz geri getirebilirsiniz.'
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Kullanıcı silme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/admin/users/<int:user_id>')
+@login_required
+def api_admin_user_detail(user_id):
+    """Kullanıcı detay bilgisi - Sadece kendi kurumundaki kullanıcılar"""
+    try:
+        if current_user.sistem_rol != 'admin':
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+        
+        # Admin kullanıcısı TÜM kullanıcıları görebilir
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
+        
+        # Süreç rolleri bilgilerini topla
+        process_roles = []
+        lider_surecler = db.session.query(surec_liderleri).filter_by(user_id=user.id).all()
+        uye_surecler = db.session.query(surec_uyeleri).filter_by(user_id=user.id).all()
+        
+        # Süreç bilgilerini al (admin tüm süreçleri görebilir)
+        for lider_surec in lider_surecler:
+            surec = Surec.query.get(lider_surec.surec_id)
+            if surec:
+                process_roles.append({
+                    'id': surec.id,
+                    'ad': surec.ad,
+                    'rol': 'surec_lideri',
+                    'kurum_adi': surec.kurum.ticari_unvan if surec.kurum else None
+                })
+        
+        for uye_surec in uye_surecler:
+            surec = Surec.query.get(uye_surec.surec_id)
+            if surec:
+                process_roles.append({
+                    'id': surec.id,
+                    'ad': surec.ad,
+                    'rol': 'surec_uyesi',
+                    'kurum_adi': surec.kurum.ticari_unvan if surec.kurum else None
+                })
+        
+        user_dict = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'full_name': f"{user.first_name or ''} {user.last_name or ''}".strip(),
+            'sistem_rol': user.sistem_rol,
+            'kurum_id': user.kurum_id,
+            'kurum_adi': user.kurum.ticari_unvan if user.kurum else None,
+            'profile_photo': user.profile_photo if hasattr(user, 'profile_photo') else None,
+            'process_roles': process_roles
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': user_dict
+        })
+    except Exception as e:
+        current_app.logger.error(f'Kullanıcı detay hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+@api_bp.route('/rol-matrisi')
+@login_required
+def api_rol_matrisi():
+    """Yetki paneli için rol matrisi"""
+    try:
+        if current_user.sistem_rol != 'admin':
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+        
+        # Kullanıcıları getir (sadece kendi kurumundaki kullanıcılar)
+        users = User.query.filter_by(kurum_id=current_user.kurum_id).options(
+            db.joinedload(User.kurum)
+        ).all()
+        
+        kullanicilar = []
+        for user in users:
+            kullanicilar.append({
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'sistem_rol': user.sistem_rol,
+                'kurum_adi': user.kurum.kisa_ad if user.kurum else None
+            })
+        
+        # Yetki kategorileri - Basit bir yapı (ileride veritabanından çekilebilir)
+        yetki_kategorileri = [
+            {
+                'grup': 'Kurum Yönetimi',
+                'yetkiler': [
+                    {'kod': 'kurum_ozluk_c', 'ad': 'Kurum Oluştur', 'aciklama': 'Yeni kurum oluşturma yetkisi'},
+                    {'kod': 'kurum_ozluk_r', 'ad': 'Kurum Oku', 'aciklama': 'Kurum bilgilerini görüntüleme yetkisi'},
+                    {'kod': 'kurum_ozluk_u', 'ad': 'Kurum Güncelle', 'aciklama': 'Kurum bilgilerini düzenleme yetkisi'},
+                    {'kod': 'kurum_ozluk_d', 'ad': 'Kurum Sil', 'aciklama': 'Kurum silme yetkisi'}
+                ]
+            },
+            {
+                'grup': 'Kullanıcı Yönetimi',
+                'yetkiler': [
+                    {'kod': 'kullanici_yonetimi_c', 'ad': 'Kullanıcı Oluştur', 'aciklama': 'Yeni kullanıcı oluşturma yetkisi'},
+                    {'kod': 'kullanici_yonetimi_r', 'ad': 'Kullanıcı Oku', 'aciklama': 'Kullanıcı bilgilerini görüntüleme yetkisi'},
+                    {'kod': 'kullanici_yonetimi_u', 'ad': 'Kullanıcı Güncelle', 'aciklama': 'Kullanıcı bilgilerini düzenleme yetkisi'},
+                    {'kod': 'kullanici_yonetimi_d', 'ad': 'Kullanıcı Sil', 'aciklama': 'Kullanıcı silme yetkisi'}
+                ]
+            },
+            {
+                'grup': 'Süreç Yönetimi',
+                'yetkiler': [
+                    {'kod': 'surec_yonetimi_c', 'ad': 'Süreç Oluştur', 'aciklama': 'Yeni süreç oluşturma yetkisi'},
+                    {'kod': 'surec_yonetimi_r', 'ad': 'Süreç Oku', 'aciklama': 'Süreç bilgilerini görüntüleme yetkisi'},
+                    {'kod': 'surec_yonetimi_u', 'ad': 'Süreç Güncelle', 'aciklama': 'Süreç bilgilerini düzenleme yetkisi'},
+                    {'kod': 'surec_yonetimi_d', 'ad': 'Süreç Sil', 'aciklama': 'Süreç silme yetkisi'}
+                ]
+            },
+            {
+                'grup': 'Stratejik Planlama',
+                'yetkiler': [
+                    {'kod': 'strateji_yonetimi_c', 'ad': 'Strateji Oluştur', 'aciklama': 'Yeni strateji oluşturma yetkisi'},
+                    {'kod': 'strateji_yonetimi_r', 'ad': 'Strateji Oku', 'aciklama': 'Strateji bilgilerini görüntüleme yetkisi'},
+                    {'kod': 'strateji_yonetimi_u', 'ad': 'Strateji Güncelle', 'aciklama': 'Strateji bilgilerini düzenleme yetkisi'},
+                    {'kod': 'strateji_yonetimi_d', 'ad': 'Strateji Sil', 'aciklama': 'Strateji silme yetkisi'}
+                ]
+            }
+        ]
+        
+        # Kullanıcıların özel yetkileri (şimdilik boş - ileride veritabanından çekilebilir)
+        yetkiler = []
+        
+        return jsonify({
+            'success': True,
+            'kullanicilar': kullanicilar,
+            'yetki_kategorileri': yetki_kategorileri,
+            'yetkiler': yetkiler  # Kullanıcı-özel yetki ilişkileri
+        })
+    except Exception as e:
+        current_app.logger.error(f'Rol matrisi hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+# ============================================
+# ADMIN USERS UPDATE ENDPOINT
+# ============================================
+
+@api_bp.route('/admin/users/update/<int:user_id>', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_admin_update_user(user_id):
+    """Admin panel aracılığıyla kullanıcı bilgilerini güncelle"""
+    try:
+        # Sadece admin rolü güncelleyebilir
+        if current_user.sistem_rol != 'admin':
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+        
+        # Kullanıcıyı bul (admin tüm kullanıcıları görebilir)
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
+        
+        # Güncelleme verilerini al
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'Geçersiz JSON verisi'}), 400
+        
+        # Zorunlu alanları kontrol et
+        if not data.get('username') or not data.get('email') or not data.get('kurum_id'):
+            return jsonify({'success': False, 'message': 'Zorunlu alanlar eksik'}), 400
+        
+        # Username benzersizliğini kontrol et (kendi username'i hariç)
+        if data.get('username') != user.username:
+            existing = User.query.filter_by(username=data.get('username')).first()
+            if existing:
+                return jsonify({'success': False, 'message': 'Bu kullanıcı adı zaten kullanılıyor'}), 400
+        
+        # Email benzersizliğini kontrol et (kendi email'i hariç)
+        if data.get('email') != user.email:
+            existing = User.query.filter_by(email=data.get('email')).first()
+            if existing:
+                return jsonify({'success': False, 'message': 'Bu email zaten kullanılıyor'}), 400
+        
+        # Kurum kontrol et
+        kurum = Kurum.query.get(data.get('kurum_id'))
+        if not kurum:
+            return jsonify({'success': False, 'message': 'Geçersiz kurum seçimi'}), 400
+        
+        # Kullanıcı bilgilerini güncelle
+        user.username = data.get('username')
+        user.email = data.get('email')
+        user.first_name = data.get('first_name', '')
+        user.last_name = data.get('last_name', '')
+        user.sistem_rol = data.get('role') or data.get('system_role', user.sistem_rol)
+        user.kurum_id = data.get('kurum_id')
+        
+        # Şifre güncelleme (opsiyonel)
+        if data.get('password') and len(data.get('password', '')) > 0:
+            if len(data.get('password')) < 6:
+                return jsonify({'success': False, 'message': 'Şifre en az 6 karakter olmalıdır'}), 400
+            from werkzeug.security import generate_password_hash
+            user.password_hash = generate_password_hash(data.get('password'))
+        
+        # Profil fotoğrafı güncelleme
+        if data.get('profile_photo'):
+            user.profile_photo = data.get('profile_photo')
+        
+        # Veritabanına kaydet
+        db.session.commit()
+        
+        current_app.logger.info(f'Admin {current_user.username} tarafından kullanıcı güncellenmiş: {user.username}')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Kullanıcı başarıyla güncellendi',
+            'data': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'sistem_rol': user.sistem_rol,
+                'kurum_id': user.kurum_id
+            }
+        })
+    
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Kullanıcı güncelleme hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': f'Güncelleme sırasında hata oluştu: {str(e)}'
+        }), 500
+

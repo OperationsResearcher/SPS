@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Süreç Karnesi Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="kontrol.html">Ana Sayfa</a> > Süreç Karnesi Modülü
+            </div>
+            <h1>📋 Süreç Karnesi Kontrol Listesi</h1>
+        </div>
+        
+        <div class="progress-section">
+            <div id="progress-text">0 / 0 soru cevaplandı (0%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <!-- Sorular buraya eklenecek -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportResults('karne', 'Süreç Karnesi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="window.location.href='kontrol.html'">Ana Sayfaya Dön</button>
+            <button class="btn btn-danger" onclick="clearResults('karne', 'Süreç Karnesi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "Süreç karnesi sayfasına erişim doğru yetki kontrolü ile yapılıyor mu? (Kullanıcı sadece kendi süreçlerini görmeli)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Süreç seçimi dropdown/select listesi düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Süreç seçildiğinde PG listesi yükleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Yıl seçimi yapılabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Periyot seçimi (Günlük, Haftalık, Aylık, Çeyreklik, Yıllık) yapılabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "PG veri girişi formu açılıyor mu? (Veri giriş butonu)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Veri girişi formunda tüm alanlar (tarih, değer, açıklama) doldurulabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Veri girişi kaydetme işlemi başarıyla tamamlanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kaydedilen veriler tabloda görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Veri düzenleme işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Veri silme işlemi çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "PG grafikleri doğru verilerle çiziliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hedef değer çizgisi grafikte görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet ekleme formunda zorunlu alanlar belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet ekleme işlemi başarıyla tamamlanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet listesi görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet düzenleme işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Faaliyet silme işlemi çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Excel export butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Excel export işlemi başarıyla tamamlanıyor ve dosya indiriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Export edilen Excel dosyasında tüm veriler doğru formatta mı?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Toplu veri girişi özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Veri giriş sihirbazı (VGS) adım adım çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hesaplama yöntemine göre (Ortalama, Toplam vb.) değerler doğru hesaplanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Form validasyonları çalışıyor mu? (Tarih kontrolü, sayısal değer kontrolü vb.)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hata durumlarında anlaşılır hata mesajları gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Süreç karnesi sayfası mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule('karne', questions);
+        initializeModule('karne', 'Süreç Karnesi', questions);
+        
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+
+
+
+

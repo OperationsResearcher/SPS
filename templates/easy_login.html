@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Kolay Giriş{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-box-arrow-in-right"></i> Kolay Giriş Sistemi
+                    </h4>
+                    <p class="mb-0 mt-2"><small>Tüm kullanıcılar için şifre: <strong>123456</strong></small></p>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Arama -->
+                    <div class="mb-4">
+                        <input type="text" id="userSearch" class="form-control form-control-lg" 
+                               placeholder="🔍 Kullanıcı ara (ad, email, rol...)">
+                    </div>
+
+                    <!-- Kullanıcı Listesi -->
+                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-hover">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th width="30%">Kullanıcı</th>
+                                    <th width="25%">Email</th>
+                                    <th width="20%">Kurum</th>
+                                    <th width="15%">Rol</th>
+                                    <th width="10%" class="text-center">Giriş</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                {% for user in users %}
+                                <tr class="user-row" 
+                                    data-search="{{ (user.username|lower) }} {{ (user.email|lower) }} {{ (user.first_name|lower if user.first_name) }} {{ (user.last_name|lower if user.last_name) }} {{ (user.sistem_rol|lower) }}">
+                                    <td>
+                                        <strong>{{ user.username }}</strong>
+                                        {% if user.first_name and user.last_name %}
+                                        <br><small class="text-muted">{{ user.first_name }} {{ user.last_name }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ user.email }}</small>
+                                    </td>
+                                    <td>
+                                        {% if user.kurum %}
+                                        <span class="badge bg-info">{{ user.kurum.kisa_ad }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.sistem_rol == 'admin' %}
+                                        <span class="badge bg-danger">Admin</span>
+                                        {% elif user.sistem_rol == 'kurum_yoneticisi' %}
+                                        <span class="badge bg-warning text-dark">Yönetici</span>
+                                        {% elif user.sistem_rol == 'ust_yonetim' %}
+                                        <span class="badge bg-primary">Üst Yönetim</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Kullanıcı</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="{{ url_for('auth.login') }}" method="POST" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <input type="hidden" name="username" value="{{ user.username }}">
+                                            <input type="hidden" name="password" value="123456">
+                                            <button type="submit" class="btn btn-sm btn-primary" title="Bu kullanıcı ile giriş yap">
+                                                <i class="bi bi-box-arrow-in-right"></i> Giriş
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- İstatistikler -->
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            Toplam <strong id="totalUsers">{{ users|length }}</strong> kullanıcı | 
+                            Gösterilen: <strong id="visibleUsers">{{ users|length }}</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bilgi Kartı -->
+            <div class="card mt-3">
+                <div class="card-body bg-light">
+                    <h6 class="card-title">
+                        <i class="bi bi-info-circle"></i> Bilgilendirme
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>Varsayılan Şifre:</strong> Tüm kullanıcılar için <code>123456</code></li>
+                        <li><strong>Admin Erişimi:</strong> <code>admin</code> kullanıcısı tüm yetkilere sahiptir</li>
+                        <li><strong>Test Amaçlı:</strong> Bu sayfa geliştirme ve test için tasarlanmıştır</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Kullanıcı Arama
+document.getElementById('userSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        const searchData = row.getAttribute('data-search');
+        if (searchData.includes(searchTerm)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('visibleUsers').textContent = visibleCount;
+});
+</script>
+
+<style>
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.user-row {
+    transition: all 0.2s;
+}
+
+.user-row:hover {
+    transform: scale(1.01);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

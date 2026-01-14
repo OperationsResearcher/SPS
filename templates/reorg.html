@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Dinamik Organizasyon Tasarımcısı{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-sitemap me-2"></i>
+                Dinamik Organizasyon Tasarımcısı
+            </h2>
+        </div>
+    </div>
+
+    {% if scenarios %}
+    <div class="row">
+        {% for scenario in scenarios %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">{{ scenario.scenario_name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ scenario.description[:200] if scenario.description else '-' }}{% if scenario.description and scenario.description|length > 200 %}...{% endif %}</p>
+                    <p><small class="text-muted">Tür: {{ scenario.scenario_type }}</small></p>
+                    <span class="badge bg-{{ 'success' if scenario.status == 'active' else 'warning' if scenario.status == 'draft' else 'secondary' }}">
+                        {{ scenario.status|upper }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz organizasyon senaryosu bulunmuyor.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

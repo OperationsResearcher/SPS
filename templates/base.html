@@ -1,0 +1,1852 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Stratejik Planlama Sistemi{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS - Loaded AFTER Bootstrap to override -->
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    
+    <!-- Lottie Player for Guide Animations -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    
+    <!-- PWA Manifest -->
+    <link href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Stratejik Plan">
+
+    <style>
+        /* Nested dropdown (Extra Araçlar) support */
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            margin-top: -0.25rem;
+        }
+
+        /* Make submenu toggle look like a regular item */
+        .dropdown-submenu > .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Slightly improve pointer affordance */
+        .dropdown-submenu > .dropdown-toggle {
+            cursor: pointer;
+        }
+    </style>
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {# Determine layout preference first #}
+    {% set layout_pref = 'classic' %}
+    {% if current_user.is_authenticated %}
+        {# Ç–ncelik: 1) URL parametresi (layout deİŸişimi için), 2) Kullanıcının kayıtlı tercihi, 3) Default classic #}
+        {% set url_layout = request.args.get('layout') %}
+        {% if url_layout and url_layout in ['classic', 'sidebar'] %}
+            {# URL parametresi varsa onu kullan (layout deİŸişimi sırasında) #}
+            {% set layout_pref = url_layout %}
+        {% elif current_user.layout_preference %}
+            {# Kullanıcının kayıtlı tercihi varsa onu kullan #}
+            {% set layout_pref = current_user.layout_preference %}
+        {% else %}
+            {# Hiçbiri yoksa default classic #}
+            {% set layout_pref = 'classic' %}
+        {% endif %}
+    {% endif %}
+    {% set use_sidebar_layout = current_user.is_authenticated and layout_pref == 'sidebar' %}
+
+    {# Render layout wrappers based on preference #}
+    {% if use_sidebar_layout %}
+        {# Modern Sidebar Layout #}
+        <div class="app-wrapper">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <a href="{{ url_for('main.dashboard') }}" class="sidebar-logo">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Stratejik Planlama</span>
+            </a>
+                    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Sidebar'ı Gizle/Göster">
+                        <i class="fas fa-bars"></i>
+            </button>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <div class="nav-section">
+                        <span class="nav-section-title">Ana Menü</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Gösterge Paneli</span>
+                        </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.projeler' %}active{% endif %}" href="{{ url_for('main.projeler') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>Proje Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                                <span>Süreç Karnesi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.redmine' %}active{% endif %}" href="{{ url_for('main.redmine') }}">
+                                <i class="bi bi-list-task"></i>
+                                <span>Faaliyetler (Redmine)</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.gorevlerim' %}active{% endif %}" href="{{ url_for('main.gorevlerim') }}">
+                                <i class="fas fa-tasks"></i>
+                                <span>Görevlerim</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <div class="nav-section">
+                        <span class="nav-section-title">Yönetim</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.kurum_yonetim_page' %}active{% endif %}" href="{{ url_for('main.kurum_yonetim_page') }}">
+                                <i class="fas fa-building"></i>
+                                <span>Kurum Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_planlama_akisi' %}active{% endif %}" href="{{ url_for('main.stratejik_planlama_akisi') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>SP Akış Diyagramı</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_asistan' %}active{% endif %}" href="{{ url_for('main.stratejik_asistan') }}">
+                                <i class="fas fa-magic"></i>
+                                <span>Stratejik Asistan</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.strategy_matrix' %}active{% endif %}" href="{{ url_for('main.strategy_matrix') }}">
+                                <i class="fas fa-table"></i>
+                                <span>Strateji Matrisi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.strategy_projects' %}active{% endif %}" href="{{ url_for('main.strategy_projects') }}">
+                                <i class="fas fa-trophy"></i>
+                                <span>Proje Portföyü</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.strategy_kpis' %}active{% endif %}" href="{{ url_for('main.strategy_kpis') }}">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>KPI Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.sistem_degisiklik_gunlugu' %}active{% endif %}" href="{{ url_for('main.sistem_degisiklik_gunlugu') }}">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Sistem Logları</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.executive_dashboard' %}active{% endif %}" href="{{ url_for('main.executive_dashboard') }}">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Yönetici Kokpiti</span>
+                            </a>
+                        </div>
+                        {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.admin_panel' %}active{% endif %}" href="{{ url_for('main.admin_panel') }}">
+                                <i class="fas fa-users-cog"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">AI & Akıllı Özellikler</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.ai_chat' %}active{% endif %}" href="{{ url_for('main.ai_chat') }}">
+                                <i class="fas fa-robot"></i>
+                                <span>AI Asistanı</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">Operasyonel Mükemmellik</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.mtbp' %}active{% endif %}" href="{{ url_for('main.mtbp') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>MTBP</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.gemba' %}active{% endif %}" href="{{ url_for('main.gemba') }}">
+                                <i class="fas fa-walking"></i>
+                                <span>Gemba Walk</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.competencies' %}active{% endif %}" href="{{ url_for('main.competencies') }}">
+                                <i class="fas fa-users-cog"></i>
+                                <span>Yetkinlik Matrisi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.risks' %}active{% endif %}" href="{{ url_for('main.risks') }}">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Risk Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.muda_hunter' %}active{% endif %}" href="{{ url_for('main.muda_hunter') }}">
+                                <i class="fas fa-search"></i>
+                                <span>Muda Hunter</span>
+                            </a>
+                        </div>
+                        {% if current_user.sistem_rol in ['admin', 'ust_yonetim', 'kurum_yoneticisi'] %}
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.executive_report' %}active{% endif %}" href="{{ url_for('main.executive_report') }}">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Yönetim Kurulu Özeti</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">İleri Seviye Modüller</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.crisis' %}active{% endif %}" href="{{ url_for('main.crisis') }}">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Kriz Komuta Merkezi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.succession' %}active{% endif %}" href="{{ url_for('main.succession') }}">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Halefiyet Planlaması</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.reorg' %}active{% endif %}" href="{{ url_for('main.reorg') }}">
+                                <i class="fas fa-sitemap"></i>
+                                <span>Organizasyon Tasarımcısı</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.ona' %}active{% endif %}" href="{{ url_for('main.ona') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>ONA Analizi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.market_watch' %}active{% endif %}" href="{{ url_for('main.market_watch') }}">
+                                <i class="fas fa-eye"></i>
+                                <span>Market Watcher</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.wellbeing' %}active{% endif %}" href="{{ url_for('main.wellbeing') }}">
+                                <i class="fas fa-heart"></i>
+                                <span>Tükenmişlik Kalkanı</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.simulation' %}active{% endif %}" href="{{ url_for('main.simulation') }}">
+                                <i class="fas fa-calculator"></i>
+                                <span>Monte Carlo Simülatörü</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.synthetic_lab' %}active{% endif %}" href="{{ url_for('main.synthetic_lab') }}">
+                                <i class="fas fa-flask"></i>
+                                <span>Sentetik Müşteri Lab</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.governance' %}active{% endif %}" href="{{ url_for('main.governance') }}">
+                                <i class="fas fa-vote-yea"></i>
+                                <span>DAO Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.metaverse' %}active{% endif %}" href="{{ url_for('main.metaverse') }}">
+                                <i class="fas fa-vr-cardboard"></i>
+                                <span>Metaverse</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.legacy_chat' %}active{% endif %}" href="{{ url_for('main.legacy_chat') }}">
+                                <i class="fas fa-book"></i>
+                                <span>Kurucu Miras AI</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">Nirvana Legacy</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.game_theory' %}active{% endif %}" href="{{ url_for('main.game_theory') }}">
+                                <i class="fas fa-chess"></i>
+                                <span>Oyun Teorisi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.knowledge_graph' %}active{% endif %}" href="{{ url_for('main.knowledge_graph') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>Bilgi Grafığı</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.black_swan' %}active{% endif %}" href="{{ url_for('main.black_swan') }}">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Siyah Kuğu Simülatörü</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.library' %}active{% endif %}" href="{{ url_for('main.library') }}">
+                                <i class="fas fa-book-open"></i>
+                                <span>Omega'nın Kitabı</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">Kişisel</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'auth.profile' %}active{% endif %}" href="{{ url_for('auth.profile') }}">
+                                <i class="fas fa-user"></i>
+                                <span>Profil</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'auth.settings' %}active{% endif %}" href="{{ url_for('auth.settings') }}">
+                                <i class="fas fa-cog"></i>
+                                <span>Ayarlar</span>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="sidebar-footer">
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Çıkış</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+            
+            <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+            
+            <main class="main-content">
+                <div class="topbar">
+                    <div class="topbar-left">
+                        <button class="theme-toggle d-md-none" onclick="toggleSidebar()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <nav class="breadcrumb-nav">
+                            {% block breadcrumb %}
+                            <i class="fas fa-home"></i> Ana Sayfa
+                            {% endblock %}
+                        </nav>
+                    </div>
+                    
+                    <div class="topbar-right">
+                        <div class="dropdown">
+                            <button class="theme-toggle position-relative" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Bildirimler">
+                                <i class="fas fa-bell"></i>
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown">
+                                <div class="px-3 py-2 border-bottom">
+                                    <strong>Bildirimler</strong>
+                                </div>
+                                <div id="notificationList" style="max-height: 360px; overflow: auto;"></div>
+                            </div>
+                        </div>
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Tema DeİŸiştir">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+                        <div class="layout-toggle">
+                            <button class="theme-toggle" onclick="toggleLayoutMenu(event, 'sidebarLayoutMenu')" title="Layout Seç">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <div class="layout-menu" id="sidebarLayoutMenu">
+                                <a href="#" class="layout-option {% if layout_pref == 'sidebar' %}active{% endif %}" onclick="setLayout('sidebar'); return false;">
+                                    <i class="fas fa-bars"></i>
+                                    <span>Sidebar Layout</span>
+                                </a>
+                                <a href="#" class="layout-option {% if layout_pref == 'classic' %}active{% endif %}" onclick="setLayout('classic'); return false;">
+                                    <i class="fas fa-window-maximize"></i>
+                                    <span>Klasik Layout</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <div class="user-dropdown" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                {% if current_user.profile_photo %}
+                                    {% set photo_url = current_user.profile_photo %}
+                                    {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                        {% if photo_url.startswith('/static/') %}
+                                            {% set photo_url = url_for('static', filename=photo_url[8:]) %}
+                                        {% else %}
+                                            {% set photo_url = url_for('static', filename=photo_url.lstrip('/')) %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <img src="{{ photo_url }}" alt="{{ current_user.username }}" class="user-avatar" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="user-avatar" style="background: var(--primary-gradient); display: none; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                        {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                    </div>
+                                {% else %}
+                                    <div class="user-avatar" style="background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                        {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="user-info d-none d-md-block">
+                                    <div class="user-name">{{ current_user.first_name or current_user.username }}</div>
+                                    <div class="user-role">{{ current_user.sistem_rol|role_name }}</div>
+                                </div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profil</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.settings') }}"><i class="fas fa-cog me-2"></i>Ayarlar</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-wrapper">
+    {% else %}
+        {# Classic Layout (for authenticated classic users and all guests) #}
+        {% if current_user.is_authenticated %}
+            <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: var(--primary-gradient);">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+                    <i class="fas fa-chart-line"></i>
+                    Stratejik Planlama
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#classicNavbar" aria-controls="classicNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="classicNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Gösterge Paneli
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_paneli' %}active{% endif %}" href="{{ url_for('main.surec_paneli') }}">
+                                <i class="fas fa-cogs me-2"></i>Süreç Paneli
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>Süreç Karnesi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.performans_kartim' %}active{% endif %}" href="{{ url_for('main.performans_kartim') }}">
+                                <i class="fas fa-tasks me-2"></i>Performans Kartım
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.kurum_paneli' %}active{% endif %}" href="{{ url_for('main.kurum_paneli') }}">
+                                <i class="fas fa-building me-2"></i>Kurum Paneli
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.help_center' %}active{% endif %}" href="{{ url_for('main.help_center') }}">
+                                <i class="fas fa-question-circle me-2"></i>Yardım
+                        </a>
+                    </li>
+                        {% if current_user.sistem_rol in ['ust_yonetim', 'kurum_yoneticisi', 'admin'] %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                <i class="fas fa-cog me-2"></i>Yönetim
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_planlama_akisi') }}"><i class="fas fa-project-diagram me-2"></i>SP Akış Diyagramı</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_asistan') }}"><i class="fas fa-magic me-2"></i>Stratejik Asistan</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.strategy_matrix') }}"><i class="fas fa-table me-2"></i>Strateji-Süreç Matrisi</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.strategy_projects') }}"><i class="fas fa-project-diagram me-2"></i>Proje Portföyü</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.strategy_kpis') }}"><i class="fas fa-chart-bar me-2"></i>KPI Yönetimi</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">AI & Akıllı Özellikler</h6></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.ai_chat') }}"><i class="fas fa-robot me-2"></i>AI Asistanı</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="dropend dropdown dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#" id="extraToolsDropdown" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" data-bs-auto-close="outside">
+                                        <span><i class="fas fa-toolbox me-2"></i>Extra Araçlar</span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="extraToolsDropdown">
+                                        <li><h6 class="dropdown-header">Operasyonel Mükemmellik</h6></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.mtbp') }}"><i class="fas fa-project-diagram me-2"></i>MTBP</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.gemba') }}"><i class="fas fa-walking me-2"></i>Gemba Walk</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.competencies') }}"><i class="fas fa-users-cog me-2"></i>Yetkinlik Matrisi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.risks') }}"><i class="fas fa-shield-alt me-2"></i>Risk Yönetimi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.muda_hunter') }}"><i class="fas fa-search me-2"></i>Muda Hunter</a></li>
+                                        {% if current_user.sistem_rol in ['admin', 'ust_yonetim', 'kurum_yoneticisi'] %}
+                                        <li><a class="dropdown-item" href="{{ url_for('main.executive_report') }}"><i class="fas fa-chart-line me-2"></i>Yönetim Kurulu Özeti</a></li>
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><h6 class="dropdown-header">İleri Seviye Modüller</h6></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.crisis') }}"><i class="fas fa-exclamation-triangle me-2"></i>Kriz Komuta Merkezi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.succession') }}"><i class="fas fa-user-tie me-2"></i>Halefiyet Planlaması</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.reorg') }}"><i class="fas fa-sitemap me-2"></i>Organizasyon Tasarımcısı</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.ona') }}"><i class="fas fa-project-diagram me-2"></i>ONA Analizi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.market_watch') }}"><i class="fas fa-eye me-2"></i>Market Watcher</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.wellbeing') }}"><i class="fas fa-heart me-2"></i>Tükenmişlik Kalkanı</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.simulation') }}"><i class="fas fa-calculator me-2"></i>Monte Carlo Simülatörü</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.synthetic_lab') }}"><i class="fas fa-flask me-2"></i>Sentetik Müşteri Lab</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.governance') }}"><i class="fas fa-vote-yea me-2"></i>DAO Yönetimi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.metaverse') }}"><i class="fas fa-vr-cardboard me-2"></i>Metaverse</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.legacy_chat') }}"><i class="fas fa-book me-2"></i>Kurucu Miras AI</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><h6 class="dropdown-header">Nirvana Legacy</h6></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.game_theory') }}"><i class="fas fa-chess me-2"></i>Oyun Teorisi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.knowledge_graph') }}"><i class="fas fa-project-diagram me-2"></i>Bilgi Grafığı</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.black_swan') }}"><i class="fas fa-exclamation-circle me-2"></i>Siyah Kuğu Simülatörü</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.library') }}"><i class="fas fa-book-open me-2"></i>Omega'nın Kitabı</a></li>
+                                    </ul>
+                                </li>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_panel') }}"><i class="fas fa-users-cog me-2"></i>Admin Panel</a></li>
+                                {% endif %}
+                            </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                    <div class="d-flex align-items-center" style="color: white;">
+                        <div class="dropdown" style="margin-right: 1rem;">
+                            <button class="theme-toggle position-relative" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Bildirimler" style="color: white; background: transparent; border: 1px solid white;">
+                                <i class="fas fa-bell"></i>
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown">
+                                <div class="px-3 py-2 border-bottom">
+                                    <strong>Bildirimler</strong>
+                                </div>
+                                <div id="notificationList" style="max-height: 360px; overflow: auto;"></div>
+                            </div>
+                        </div>
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Tema DeİŸiştir" style="color: white; background: transparent; border: 1px solid white; margin-right: 1rem;">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                                    </button>
+                        <div class="layout-toggle">
+                             <button class="theme-toggle" onclick="toggleLayoutMenu(event, 'classicLayoutMenu')" title="Layout Seç" style="color: white; background: transparent; border: 1px solid white; margin-right: 1rem;">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <div class="layout-menu" id="classicLayoutMenu">
+                                <a href="#" class="layout-option {% if layout_pref == 'sidebar' %}active{% endif %}" onclick="setLayout('sidebar'); return false;">
+                                    <i class="fas fa-bars"></i>
+                                    <span>Sidebar Layout</span>
+                                </a>
+                                <a href="#" class="layout-option {% if layout_pref == 'classic' %}active{% endif %}" onclick="setLayout('classic'); return false;">
+                                    <i class="fas fa-window-maximize"></i>
+                                    <span>Klasik Layout</span>
+                                </a>
+                                        </div>
+                                    </div>
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="true">
+                            {% if current_user.profile_photo %}
+                                {% set photo_url = current_user.profile_photo %}
+                                {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                    {% if photo_url.startswith('/static/') %}
+                                        {% set photo_url = url_for('static', filename=photo_url[8:]) %}
+                                    {% else %}
+                                        {% set photo_url = url_for('static', filename=photo_url.lstrip('/')) %}
+                                    {% endif %}
+                                {% endif %}
+                                <img src="{{ photo_url }}" alt="{{ current_user.username }}" width="32" height="32" class="rounded-circle me-2" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="rounded-circle me-2" style="width: 32px; height: 32px; background: var(--bg-tertiary); display: none; align-items: center; justify-content: center; color: var(--text-primary); font-weight: 600;">
+                                    {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                </div>
+                            {% else %}
+                                <div class="rounded-circle me-2" style="width: 32px; height: 32px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-weight: 600;">
+                                    {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                </div>
+                            {% endif %}
+                                <strong>{{ current_user.first_name or current_user.username }}</strong>
+                        </a>
+                            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profil</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.settings') }}"><i class="fas fa-cog me-2"></i>Ayarlar</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></li>
+                </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+            </nav>
+        {% endif %}
+        <main class="container-fluid py-4">
+    {% endif %}
+
+    {# Common content area for all layouts #}
+    <div id="appContextData"
+         data-layout-pref="{{ (layout_pref or '') | e }}"
+         data-user-layout-pref="{{ (current_user.layout_preference or '') if current_user.is_authenticated else '' }}"
+         data-is-auth="{{ '1' if current_user.is_authenticated else '0' }}"
+         data-theme-prefs="{{ (current_user.theme_preferences if current_user.is_authenticated and current_user.theme_preferences else None) | tojson | e }}"
+         style="display:none"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flashMessagesData" data-messages="{{ messages | tojson | e }}" style="display:none"></div>
+        {% endif %}
+    {% endwith %}
+    
+    {# The one and only content block #}
+    {% block content %}{% endblock %}
+
+    {# Close the layout wrappers #}
+    {% if use_sidebar_layout %}
+                </div>
+            </main>
+        </div>
+    {% else %}
+        </main>
+    {% endif %}
+    
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header" id="toastHeader">
+                <i class="bi me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastBaşlık">Bildirim</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Mesaj içeriİŸi
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (loading-handler.js için gerekli) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+    // Toast gösterme fonksiyonu
+    function showToast(type, message, title = null) {
+        const toastEl = document.getElementById('liveToast');
+        const toastHeader = document.getElementById('toastHeader');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastBaşlık = document.getElementById('toastBaşlık');
+        const toastBody = document.getElementById('toastBody');
+        
+        // Renk ve ikon ayarları
+        const configs = {
+            success: {
+                bg: 'bg-success',
+                icon: 'bi-check-circle-fill',
+                title: title || 'Başarılı',
+                textColor: 'text-white'
+            },
+            error: {
+                bg: 'bg-danger',
+                icon: 'bi-x-circle-fill',
+                title: title || 'Hata',
+                textColor: 'text-white'
+            },
+            warning: {
+                bg: 'bg-warning',
+                icon: 'bi-exclamation-triangle-fill',
+                title: title || 'Uyarı',
+                textColor: 'text-dark'
+            },
+            info: {
+                bg: 'bg-info',
+                icon: 'bi-info-circle-fill',
+                title: title || 'Bilgi',
+                textColor: 'text-white'
+            }
+        };
+        
+        const config = configs[type] || configs.info;
+        
+        // Header'ı temizle ve yeniden ayarla
+        toastHeader.className = 'toast-header ' + config.bg + ' ' + config.textColor;
+        toastIcon.className = 'bi me-2 ' + config.icon;
+        toastBaşlık.textContent = config.title;
+        toastBody.textContent = message;
+        
+        // Toast süreleri - tutarlı kullanım
+        const TOAST_DURATIONS = {
+            success: 3000,
+            error: 5000,
+            warning: 4000,
+            info: 3000
+        };
+        
+        // Toast'ı göster
+        const toast = new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: TOAST_DURATIONS[type] || 3000
+        });
+        toast.show();
+    }
+    
+    // Global olarak kullanılabilir yap
+    window.showToast = showToast;
+
+    // Flask flash mesajlarını toaster'a çevir
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashEl = document.getElementById('flashMessagesData');
+        let flashes = [];
+        if (flashEl && flashEl.dataset && flashEl.dataset.messages) {
+            try {
+                flashes = JSON.parse(flashEl.dataset.messages);
+            } catch (e) {
+                flashes = [];
+            }
+        }
+        if (!Array.isArray(flashes) || flashes.length === 0) return;
+
+        const mapCategory = (cat) => {
+            const c = (cat || '').toString().toLowerCase();
+            if (c === 'error' || c === 'danger') return 'error';
+            if (c === 'success') return 'success';
+            if (c === 'warning') return 'warning';
+            return 'info';
+        };
+
+        flashes.forEach(([category, message]) => {
+            showToast(mapCategory(category), message);
+        });
+    });
+    
+    // Form validasyon fonksiyonları
+    window.validateEmail = function(email) {
+        if (!email) return true; // Boş ise geçerli (zorunlu deİŸilse)
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    };
+    
+    window.validatePhone = function(phone) {
+        if (!phone) return true; // Boş ise geçerli (zorunlu deİŸilse)
+        // Türkiye telefon formatı: +90 veya 0 ile başlayan 10-11 haneli
+        const cleaned = phone.replace(/\s/g, '').replace(/[()-]/g, '');
+        const re = /^(\+90|0)?[0-9]{10}$/;
+        return re.test(cleaned);
+    };
+    
+    window.showValidationError = function(fieldAd, message) {
+        showToast('error', message, 'Validasyon Hatası');
+        const field = document.getElementById(fieldAd);
+        if (field) {
+            field.classList.add('is-invalid');
+            field.focus();
+            setTimeout(() => field.classList.remove('is-invalid'), 3000);
+        }
+    };
+    
+    // Global AJAX Helper Fonksiyonu - Hata yönetimi ve loading state
+    window.ajaxRequest = async function(url, options = {}) {
+        const defaultOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        const finalOptions = { ...defaultOptions, ...options };
+        
+        try {
+            const response = await fetch(url, finalOptions);
+            
+            // HTTP hata durumlarını kontrol et
+            if (!response.ok) {
+                let errorMessage = 'Bir hata oluştu';
+                
+                if (response.status === 404) {
+                    errorMessage = 'İstenen kaynak bulunamadı. Lütfen sayfayı yenileyin.';
+                } else if (response.status === 403) {
+                    errorMessage = 'Bu işlem için yetkiniz bulunmuyor.';
+                } else if (response.status === 500) {
+                    errorMessage = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+                } else if (response.status >= 400) {
+                    errorMessage = `İstek hatası (${response.status}). Lütfen tekrar deneyin.`;
+                }
+                
+                // JSON response varsa mesajı al
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    // JSON parse edilemezse default mesaj kullan
+                }
+                
+                throw new Error(errorMessage);
+            }
+            
+            // Response'u JSON olarak parse et
+            const contentTip = response.headers.get('content-type');
+            if (contentTip && contentTip.includes('application/json')) {
+                return await response.json();
+            } else {
+                // JSON deİŸilse text olarak döndür
+                return { success: true, data: await response.text() };
+            }
+        } catch (error) {
+            // Network hataları
+            if (error.name === 'TipError' && error.message.includes('fetch')) {
+                showToast('error', 'Sunucuya baİŸlanılamıyor. Lütfen internet baİŸlantınızı kontrol edin.');
+            } else if (error.name === 'AbortError') {
+                showToast('warning', 'İstek iptal edildi.');
+            } else {
+                // DiİŸer hatalar
+                showToast('error', error.message || 'Beklenmedik bir hata oluştu.');
+            }
+            throw error;
+        }
+    };
+    
+    // Loading state helper
+    window.showLoading = function(elementId, message = 'Yükleniyor...') {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">${message}</span>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">${message}</p>
+                </div>
+            `;
+        }
+    };
+    
+    window.hideLoading = function(elementId, content = '') {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = content;
+        }
+    };
+    
+    // Sayfa yenileme helper - tutarlı kullanım için
+    window.reloadPage = function(delay = 1500, showMessage = true) {
+        if (showMessage) {
+            showToast('info', 'Sayfa yenileniyor...', 'Bilgi');
+        }
+        setTimeout(() => {
+            location.reload();
+        }, delay);
+    };
+    </script>
+    
+    <!-- Bildirim Sistemi -->
+    <script>
+    // Bildirimleri yükle
+    function loadNotifications() {
+        fetch('/api/notifications')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.success) {
+                    updateNotificationBadge(data.okunmamis_sayisi || 0);
+                    renderNotifications(data.bildirimler || []);
+                }
+            })
+            .catch(err => {
+                console.warn('Bildirimler yüklenemedi:', err);
+                // Sessizce devam et, sayfa çalışmaya devam etsin
+            })
+            .catch(error => {
+                console.error('Bildirim yükleme hatası:', error);
+            });
+    }
+    
+    // Bildirim badge'ini güncelle
+    function updateNotificationBadge(count) {
+        const badge = document.getElementById('notificationBadge');
+        if (!badge) return; // Badge elementi yoksa çık
+        
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    
+    // Bildirimleri render et
+    function renderNotifications(bildirimler) {
+        const container = document.getElementById('notificationList');
+        if (!container) return; // Container yoksa çık
+        if (!bildirimler || !Array.isArray(bildirimler)) bildirimler = []; // Güvenli varsayılan
+        
+        if (bildirimler.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted small mb-0">Henüz bildirim bulunmuyor.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<ul class="list-unstyled mb-0">';
+        bildirimler.forEach(bildirim => {
+            const tipIcon = bildirim.tip === 'pg_veri_girisi' ? 'fa-chart-line' : 
+                           bildirim.tip === 'faaliyet_guncelleme' ? 'fa-tasks' : 
+                           bildirim.tip === 'yeni_pg_eklendi' ? 'fa-plus-circle' : 
+                           'fa-info-circle';
+            const tipColor = bildirim.tip === 'pg_veri_girisi' ? 'text-primary' : 
+                            bildirim.tip === 'faaliyet_guncelleme' ? 'text-success' : 
+                            bildirim.tip === 'yeni_pg_eklendi' ? 'text-warning' : 
+                            'text-info';
+            const okunduClass = bildirim.okundu ? '' : 'bg-light';
+            const okunduIcon = bildirim.okundu ? '' : '<span class="badge bg-primary ms-1">Yeni</span>';
+            
+            const tarih = bildirim.created_at ? new Date(bildirim.created_at).toLocaleString('tr-TR', {
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : '';
+            
+            html += `
+                <li>
+                    <a class="dropdown-item ${okunduClass}" href="${bildirim.link || '#'}" onclick="markNotificationRead(${bildirim.id}); event.stopPropagation();">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas ${tipIcon} ${tipColor} me-2"></i>
+                                    <strong class="small">${bildirim.baslik}</strong>
+                                    ${okunduIcon}
+                                </div>
+                                <p class="small mb-1">${bildirim.mesaj}</p>
+                                <small class="text-muted">${tarih}</small>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        
+        container.innerHTML = html;
+    }
+    
+    // Bildirimi okundu olarak işaretle
+    function markNotificationRead(notificationId) {
+        fetch(`/api/notifications/${notificationId}/mark-read`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadNotifications();
+            }
+        })
+        .catch(error => {
+            console.error('Bildirim işaretleme hatası:', error);
+        });
+    }
+    
+    // Tüm bildirimleri okundu olarak işaretle
+    function markAllNotificationsRead() {
+        fetch('/api/notifications/mark-all-read', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadNotifications();
+            }
+        })
+        .catch(error => {
+            console.error('Tüm bildirimleri işaretleme hatası:', error);
+        });
+    }
+    
+    // Sayfa yüklendiİŸinde bildirimleri yükle
+    document.addEventListener('DOMContentLoaded', function() {
+        loadNotifications();
+        // Her 30 saniyede bir bildirimleri yenile
+        setInterval(loadNotifications, 30000);
+    });
+    
+    // Dropdown açıldıİŸında bildirimleri yenile
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    if (notificationDropdown) {
+        notificationDropdown.addEventListener('shown.bs.dropdown', function() {
+            loadNotifications();
+        });
+    }
+    
+    // Layout Yönetimi
+    function setLayout(layout) {
+        if (!['classic', 'sidebar'].includes(layout)) {
+            showToast('error', 'Geçersiz layout seçimi', 'Hata');
+            return;
+        }
+        
+        fetch('/api/user/layout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({layout: layout})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem('layout', layout);
+                showToast('success', 'Layout tercihiniz kaydedildi. Sayfa yenileniyor...', 'Başarılı');
+                // Layout parametresi ile sayfayı yenile - böylece doİŸru layout açılır
+                setTimeout(() => {
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('layout', layout);
+                    window.location.href = currentUrl.toString();
+                }, 800);
+            } else {
+                showToast('error', data.message || 'Layout deİŸiştirilemedi', 'Hata');
+            }
+        })
+        .catch(err => {
+            console.error('Layout save error:', err);
+            showToast('error', 'Layout kaydedilirken hata oluştu. Lütfen tekrar deneyin.', 'Hata');
+        });
+    }
+    
+    // Tema Yönetimi
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        let theme = savedTheme;
+        try {
+            const contextEl = document.getElementById('appContextData');
+            if (contextEl && contextEl.dataset && contextEl.dataset.themePrefs) {
+                const userTheme = JSON.parse(contextEl.dataset.themePrefs);
+                if (userTheme && userTheme.theme) theme = userTheme.theme;
+            }
+        } catch(e) {}
+        setTheme(theme, false);
+    }
+    
+    function setTheme(theme, save = true) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+        if (save) {
+            localStorage.setItem('theme', theme);
+            saveThemePreference(theme);
+        }
+    }
+    
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme, true);
+    }
+    
+    function saveThemePreference(theme) {
+        fetch('/api/user/theme', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({theme: theme})
+        }).catch(err => console.log('Theme save error:', err));
+    }
+    
+    // Sidebar Yönetimi
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        
+        if (sidebar) {
+            sidebar.classList.toggle('collapsed');
+            if (overlay) overlay.classList.toggle('show');
+            
+            // Mobilde göster/gizle
+            if (window.innerWidth <= 992) {
+                sidebar.classList.toggle('show');
+            }
+        }
+    }
+    
+    function toggleLayoutMenu(event, menuId) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+        
+        document.querySelectorAll('.layout-menu').forEach(otherMenu => {
+            if (otherMenu.id !== menuId) {
+                otherMenu.classList.remove('show');
+            }
+        });
+        
+        menu.classList.toggle('show');
+    }
+    
+    // Dışarı tıklayınca tüm layout menülerini kapat
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.layout-toggle')) {
+            document.querySelectorAll('.layout-menu').forEach(menu => menu.classList.remove('show'));
+        }
+    });
+    
+    // Sayfa yüklendiİŸinde tema yükle
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+        
+        // Layout kontrolü ve URL temizleme
+        const contextEl = document.getElementById('appContextData');
+        const layoutPref = (contextEl && contextEl.dataset && contextEl.dataset.layoutPref) ? contextEl.dataset.layoutPref : '';
+        const userPref = (contextEl && contextEl.dataset && contextEl.dataset.userLayoutPref) ? contextEl.dataset.userLayoutPref : '';
+        const isAuthenticated = (contextEl && contextEl.dataset && contextEl.dataset.isAuth) ? (contextEl.dataset.isAuth === '1') : false;
+        const currentUrl = new URL(window.location.href);
+        const urlLayout = currentUrl.searchParams.get('layout');
+        
+        console.log('Layout Debug:', {
+            layoutPref: layoutPref,
+            urlLayout: urlLayout,
+            userPreference: isAuthenticated ? (userPref || '') : 'N/A',
+            isAuthenticated: isAuthenticated
+        });
+        
+        // EİŸer kullanıcı tercihi varsa ve URL parametresi ile eşleşiyorsa, URL parametresini temizle
+        if (isAuthenticated && userPref && urlLayout && userPref === urlLayout) {
+            // Layout tercihi veritabanında kayıtlı ve URL parametresi ile eşleşiyor, URL parametresini kaldır
+            currentUrl.searchParams.delete('layout');
+            // Sadece URL deİŸiştiyse yeniden yönlendir (sonsuz döngüyü önlemek için)
+            if (window.location.href !== currentUrl.toString()) {
+                window.history.replaceState({}, '', currentUrl.toString());
+            }
+        }
+        
+        if (layoutPref === 'sidebar') {
+            // Modern sidebar layout aktif
+            console.log('Sidebar layout aktif');
+        } else {
+            console.log('Classic layout aktif');
+        }
+        
+        // (Geriye uyumluluk) Eski alert tabanlı flash'lar varsa 3sn sonra kapat
+        const autoDismissAlerts = document.querySelectorAll('.auto-dismiss-alert');
+        autoDismissAlerts.forEach(function(alert) {
+            setTimeout(function() {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            }, 3000);
+        });
+    });
+    </script>
+    
+    <!-- Enhanced UX Scripts -->
+    <!-- Not: Bu dosyalar mevcut değilse hata vermeyecek şekilde yorum satırına alındı -->
+    <!--
+    <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api-response-handler.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/loading-handler.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/confirm-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form-validator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin-user-manager.js') }}"></script>
+    -->
+    
+    <!-- Bootstrap Dropdown Başlatma - Sayfanın En Sonunda -->
+    <script>
+    (function() {
+        function toggleDropdown(element) {
+            var menu = null;
+            
+            // Menu'yu bul
+            if (element.id === 'navbarDropdown') {
+                menu = document.querySelector('[aria-labelledby="navbarDropdown"]');
+            } else if (element.id === 'dropdownUser1') {
+                menu = document.querySelector('[aria-labelledby="dropdownUser1"]');
+            } else if (element.id === 'userDropdown') {
+                menu = document.querySelector('[aria-labelledby="userDropdown"]');
+            } else {
+                // Genel yöntem: parent dropdown içinde menu'yu bul
+                var dropdownParent = element.closest('.dropdown');
+                if (dropdownParent) {
+                    menu = dropdownParent.querySelector('.dropdown-menu');
+                }
+                if (!menu) {
+                    menu = element.nextElementSibling;
+                    if (!menu || !menu.classList.contains('dropdown-menu')) {
+                        menu = document.querySelector('[aria-labelledby="' + element.id + '"]');
+                    }
+                }
+            }
+            
+            if (menu && menu.classList.contains('dropdown-menu')) {
+                var isOpen = menu.classList.contains('show');
+                
+                // Tüm dropdown'ları kapat
+                document.querySelectorAll('.dropdown-menu.show').forEach(function(m) {
+                    if (m !== menu) {
+                        m.classList.remove('show');
+                        var toggleId = m.getAttribute('aria-labelledby');
+                        if (toggleId) {
+                            var toggle = document.getElementById(toggleId) || document.querySelector('[aria-labelledby="' + toggleId + '"]');
+                            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+                
+                // Bu dropdown'ı toggle et
+                if (isOpen) {
+                    menu.classList.remove('show');
+                    element.setAttribute('aria-expanded', 'false');
+                } else {
+                    menu.classList.add('show');
+                    element.setAttribute('aria-expanded', 'true');
+                }
+                
+                console.log('Dropdown toggled:', element.id, 'isOpen:', !isOpen);
+                return true;
+            } else {
+                console.error('Dropdown menu bulunamadı:', element.id, 'menu:', menu);
+                return false;
+            }
+        }
+        
+        function initDropdowns() {
+            console.log('Dropdown başlatılıyor...');
+            
+            // Tüm dropdown toggle elementlerini bul
+            var dropdowns = document.querySelectorAll('[data-bs-toggle="dropdown"], .dropdown-toggle');
+            console.log('Bulunan dropdown sayısı:', dropdowns.length);
+            
+            dropdowns.forEach(function(element) {
+                // Click handler ekle
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Dropdown clicked:', element.id);
+                    
+                    // Önce Bootstrap'i dene
+                    if (typeof bootstrap !== 'undefined' && typeof bootstrap.Dropdown !== 'undefined') {
+                        try {
+                            var instance = bootstrap.Dropdown.getInstance(element);
+                            if (!instance) {
+                                instance = new bootstrap.Dropdown(element);
+                            }
+                            instance.toggle();
+                            console.log('Bootstrap toggle başarılı');
+                            return;
+                        } catch (err) {
+                            console.warn('Bootstrap toggle hatası, fallback kullanılıyor:', err);
+                        }
+                    }
+                    
+                    // Fallback: Manuel toggle
+                    toggleDropdown(element);
+                });
+                
+                console.log('Dropdown handler eklendi:', element.id);
+            });
+            
+            // Dışarı tıklandığında dropdown'ları kapat
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+                        menu.classList.remove('show');
+                        var toggleId = menu.getAttribute('aria-labelledby');
+                        if (toggleId) {
+                            var toggle = document.getElementById(toggleId) || document.querySelector('[aria-labelledby="' + toggleId + '"]');
+                            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Sayfa yüklendiğinde başlat
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initDropdowns, 100);
+            });
+        } else {
+            setTimeout(initDropdowns, 100);
+        }
+        
+        // Window load event'inde de dene
+        window.addEventListener('load', function() {
+            setTimeout(initDropdowns, 50);
+        });
+    })();
+    </script>
+    
+    <!-- Sidebar Toggle Fix -->
+    <script>
+        document.addEventListener('DOMContentLoaded', event => {
+            const sidebarToggle = document.body.querySelector('#sidebarToggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', event => {
+                    event.preventDefault();
+                    document.body.classList.toggle('sb-sidenav-toggled');
+                    localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
+                });
+            }
+        });
+    </script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}')
+                    .then((registration) => {
+                        console.log('Service Worker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+    
+    <!-- Interactive Guide System -->
+    {% if current_user.is_authenticated and current_user.show_page_guides and current_user.kurum and current_user.kurum.show_guide_system %}
+    <div id="guideWidget" class="guide-widget">
+        <div class="guide-avatar" id="guideAvatar">
+            <div id="guideIcon" class="guide-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="guide-pulse"></div>
+        </div>
+        
+        <div class="guide-panel" id="guidePanel">
+            <div class="guide-header">
+                <div class="guide-title" id="guideTitle">Yardım</div>
+                <button class="guide-close" id="guideClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="guide-content" id="guideContent">
+                <div class="guide-intro" id="guideIntro"></div>
+                <div class="guide-steps" id="guideSteps"></div>
+                <div class="guide-shortcuts" id="guideShortcuts"></div>
+            </div>
+            <div class="guide-footer">
+                <button class="btn btn-sm btn-outline-secondary" id="guidePrevBtn">
+                    <i class="fas fa-chevron-left me-1"></i>Önceki
+                </button>
+                <button class="btn btn-sm btn-primary" id="guideNextBtn">
+                    Sonraki<i class="fas fa-chevron-right ms-1"></i>
+                </button>
+                <div class="form-check form-check-inline ms-auto">
+                    <input class="form-check-input" type="checkbox" id="guideDontShow">
+                    <label class="form-check-label small" for="guideDontShow">
+                        Bir daha gösterme
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .guide-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .guide-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .guide-avatar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
+        }
+        
+        .guide-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            animation: float 3s ease-in-out infinite;
+            z-index: 2;
+        }
+        
+        .guide-icon i {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .guide-avatar[data-style="friendly"] {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.4);
+        }
+        
+        .guide-avatar[data-style="friendly"]:hover {
+            box-shadow: 0 15px 50px rgba(6, 182, 212, 0.5);
+        }
+        
+        .guide-avatar[data-style="minimal"] {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+        }
+        
+        .guide-avatar[data-style="minimal"]:hover {
+            box-shadow: 0 15px 50px rgba(107, 114, 128, 0.5);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .guide-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: pulse 2s ease-in-out infinite;
+            opacity: 0.5;
+            z-index: 1;
+            z-index: -1;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.2;
+            }
+        }
+        
+        .guide-panel {
+            position: absolute;
+            bottom: 100px;
+            right: 0;
+            width: 400px;
+            max-height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .guide-panel.active {
+            display: flex;
+        }
+        
+        .guide-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .guide-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .guide-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .guide-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .guide-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .guide-intro {
+            font-size: 1rem;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+        
+        .guide-steps {
+            margin-bottom: 1.5rem;
+        }
+        
+        .guide-step {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .guide-step:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .guide-step-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .guide-step-description {
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .guide-step-tip {
+            background: #fef3c7;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #92400e;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .guide-step-tip::before {
+            content: "💡 ";
+        }
+        
+        .guide-shortcuts {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+        
+        .guide-shortcuts-title {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .guide-shortcut {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .guide-shortcut:last-child {
+            border-bottom: none;
+        }
+        
+        .guide-shortcut-key {
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #667eea;
+            border: 2px solid #667eea;
+            font-size: 0.85rem;
+        }
+        
+        .guide-shortcut-action {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .guide-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .guide-highlight {
+            position: relative;
+            z-index: 10000;
+            box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.7) !important;
+        }
+        
+        @media (max-width: 768px) {
+            .guide-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            .guide-avatar {
+                width: 60px;
+                height: 60px;
+            }
+            .guide-panel {
+                width: calc(100vw - 40px);
+                bottom: 80px;
+                right: 20px;
+                max-height: 70vh;
+            }
+        }
+    </style>
+    
+    <script>
+        // Interactive Guide System
+        (function() {
+            {% if not current_user.show_page_guides %}
+            return;
+            {% endif %}
+            
+            const pageId = '{{ request.endpoint.split(".")[-1] if request.endpoint else "dashboard" }}';
+            const characterStyle = '{{ current_user.guide_character_style or "professional" }}';
+            let completedWalkthroughs = {};
+            try {
+                const walkthroughsStr = '{{ current_user.completed_walkthroughs or "{}" }}';
+                completedWalkthroughs = JSON.parse(walkthroughsStr);
+            } catch(e) {
+                completedWalkthroughs = {};
+            }
+            
+            let guideData = null;
+            let currentStep = 0;
+            
+            // Character icon map
+            const characterIcons = {
+                'professional': 'fa-user-tie',
+                'friendly': 'fa-smile',
+                'minimal': 'fa-robot'
+            };
+            
+            // Update guide character style
+            window.updateGuideCharacter = function(style) {
+                const avatar = document.getElementById('guideAvatar');
+                const icon = document.getElementById('guideIcon');
+                if (avatar && icon) {
+                    avatar.setAttribute('data-style', style);
+                    icon.innerHTML = '<i class="fas ' + characterIcons[style] + '"></i>';
+                }
+            };
+            
+            // Load guide data
+            fetch('{{ url_for("static", filename="guide_data.json") }}')
+                .then(r => r.json())
+                .then(data => {
+                    guideData = data[pageId];
+                    if (guideData && !completedWalkthroughs[pageId]) {
+                        setTimeout(() => showGuide(), 2000);
+                    }
+                    setupGuideWidget();
+                })
+                .catch(e => console.error('Guide data load error:', e));
+            
+            function setupGuideWidget() {
+                const avatar = document.getElementById('guideAvatar');
+                const panel = document.getElementById('guidePanel');
+                const closeBtn = document.getElementById('guideClose');
+                const nextBtn = document.getElementById('guideNextBtn');
+                const prevBtn = document.getElementById('guidePrevBtn');
+                const dontShow = document.getElementById('guideDontShow');
+                
+                if (!avatar || !panel) return;
+                
+                // Set character style
+                avatar.setAttribute('data-style', characterStyle);
+                const icon = document.getElementById('guideIcon');
+                if (icon) {
+                    icon.innerHTML = '<i class="fas ' + characterIcons[characterStyle] + '"></i>';
+                }
+                
+                avatar.addEventListener('click', () => {
+                    if (guideData) {
+                        panel.classList.toggle('active');
+                        if (panel.classList.contains('active')) {
+                            renderGuide();
+                        }
+                    }
+                });
+                
+                closeBtn?.addEventListener('click', () => {
+                    panel.classList.remove('active');
+                    if (dontShow?.checked) {
+                        markWalkthroughCompleted();
+                    }
+                });
+                
+                nextBtn?.addEventListener('click', () => {
+                    if (guideData && currentStep < guideData.steps.length - 1) {
+                        currentStep++;
+                        renderGuide();
+                    } else {
+                        panel.classList.remove('active');
+                        markWalkthroughCompleted();
+                    }
+                });
+                
+                prevBtn?.addEventListener('click', () => {
+                    if (currentStep > 0) {
+                        currentStep--;
+                        renderGuide();
+                    }
+                });
+            }
+            
+            function showGuide() {
+                const panel = document.getElementById('guidePanel');
+                if (panel && guideData) {
+                    panel.classList.add('active');
+                    renderGuide();
+                }
+            }
+            
+            function renderGuide() {
+                if (!guideData) return;
+                
+                const title = document.getElementById('guideTitle');
+                const intro = document.getElementById('guideIntro');
+                const stepsContainer = document.getElementById('guideSteps');
+                const shortcutsContainer = document.getElementById('guideShortcuts');
+                const nextBtn = document.getElementById('guideNextBtn');
+                const prevBtn = document.getElementById('guidePrevBtn');
+                
+                if (title) title.textContent = guideData.title;
+                if (intro) intro.textContent = guideData.character_greeting || guideData.intro;
+                
+                // Render current step
+                if (stepsContainer && guideData.steps) {
+                    const step = guideData.steps[currentStep];
+                    stepsContainer.innerHTML = `
+                        <div class="guide-step">
+                            <div class="guide-step-title">${currentStep + 1}. ${step.title}</div>
+                            <div class="guide-step-description">${step.description}</div>
+                            ${step.tip ? `<div class="guide-step-tip">${step.tip}</div>` : ''}
+                        </div>
+                        <div class="text-center text-muted small">
+                            Adım ${currentStep + 1} / ${guideData.steps.length}
+                        </div>
+                    `;
+                }
+                
+                // Render shortcuts
+                if (shortcutsContainer && guideData.shortcuts && currentStep === 0) {
+                    shortcutsContainer.innerHTML = `
+                        <div class="guide-shortcuts-title">Klavye Kısayolları</div>
+                        ${guideData.shortcuts.map(s => `
+                            <div class="guide-shortcut">
+                                <span class="guide-shortcut-key">${s.key}</span>
+                                <span class="guide-shortcut-action">${s.action}</span>
+                            </div>
+                        `).join('')}
+                    `;
+                    shortcutsContainer.style.display = 'block';
+                } else if (shortcutsContainer) {
+                    shortcutsContainer.style.display = 'none';
+                }
+                
+                // Update buttons
+                if (prevBtn) prevBtn.disabled = currentStep === 0;
+                if (nextBtn) {
+                    nextBtn.textContent = currentStep === guideData.steps.length - 1 ? 
+                        'Tamamla' : 'Sonraki';
+                    nextBtn.innerHTML = currentStep === guideData.steps.length - 1 ?
+                        '<i class="fas fa-check me-1"></i>Tamamla' :
+                        'Sonraki<i class="fas fa-chevron-right ms-1"></i>';
+                }
+            }
+            
+            function markWalkthroughCompleted() {
+                fetch('{{ url_for("main.update_guide_preferences") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
+                    },
+                    body: JSON.stringify({
+                        page_id: pageId,
+                        completed: true
+                    })
+                }).catch(e => console.error('Guide preference update error:', e));
+            }
+        })();
+    </script>
+    {% endif %}
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+
+

@@ -1,0 +1,5707 @@
+{% extends "base.html" %}
+
+<!-- GERIGEL21 RESTORE POINT: Alt strateji formatı düzenlendi, div tabanlı sistem eklendi -->
+
+
+
+{% block title %}Süreç Paneli{% endblock %}
+
+
+
+{% block content %}
+
+<style>
+
+    .action-btn {
+
+        position: relative;
+
+        overflow: hidden;
+
+    }
+
+    .action-btn:hover {
+
+        transform: translateY(-3px);
+
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+
+    }
+
+    .action-btn:active {
+
+        transform: translateY(-1px);
+
+    }
+
+    
+
+    /* Yeni Süreç Form Animasyonu */
+
+    #yeni-surec-form-container {
+
+        max-height: 0;
+
+        overflow: hidden;
+
+        transition: max-height 0.5s ease-out;
+
+    }
+
+    
+
+    #yeni-surec-form-container.show {
+
+        max-height: 2500px;
+
+        transition: max-height 0.8s ease-in;
+
+    }
+
+    
+
+    .new-process-btn {
+
+        transition: all 0.3s ease;
+
+    }
+
+    
+
+    .new-process-btn:hover {
+
+        transform: translateY(-2px);
+
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+
+    }
+
+    
+
+    /* Ekle/Çıkar Butonları Stilleri */
+
+    .action-transfer-btn {
+
+        min-width: 80px;
+
+        height: 36px;
+
+        font-size: 0.875rem;
+
+        font-weight: 500;
+
+        border-radius: 8px;
+
+        transition: all 0.3s ease;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 4px;
+
+    }
+
+    
+
+    .action-transfer-btn:hover {
+
+        transform: translateY(-1px);
+
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+    }
+
+    
+
+    .action-transfer-btn.btn-success {
+
+        background: linear-gradient(135deg, #28a745, #20c997);
+
+        border: none;
+
+    }
+
+    
+
+    .action-transfer-btn.btn-danger {
+
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
+
+        border: none;
+
+    }
+
+    
+
+    .action-transfer-btn.btn-primary {
+
+        background: linear-gradient(135deg, #007bff, #0056b3);
+
+        border: none;
+
+    }
+
+    
+
+    .action-transfer-btn.btn-info {
+
+        background: linear-gradient(135deg, #17a2b8, #138496);
+
+        border: none;
+
+    }
+
+    
+
+    .action-transfer-btn.btn-secondary {
+
+        background: linear-gradient(135deg, #6c757d, #495057);
+
+        border: none;
+
+    }
+
+    
+
+    /* Alt Strateji Görünümü */
+
+    .strategy-item {
+
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+
+        border-left: 3px solid #007bff;
+
+        margin: 4px 0;
+
+        padding: 8px 12px;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+
+        transition: all 0.3s ease;
+
+    }
+
+    
+
+    .strategy-item:hover {
+
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+
+        transform: translateX(2px);
+
+    }
+
+    
+
+    .strategy-item.selected {
+
+        background: linear-gradient(135deg, #007bff, #0056b3);
+
+        color: white;
+
+    }
+
+    
+
+    .strategy-main {
+
+        font-weight: bold;
+
+        color: #2c3e50;
+
+        font-size: 0.95rem;
+
+        margin-bottom: 4px;
+
+        display: block;
+
+    }
+
+    
+
+    .strategy-sub {
+
+        font-weight: normal;
+
+        color: #34495e;
+
+        font-size: 0.9rem;
+
+        font-style: normal;
+
+        display: block;
+
+        margin-top: 2px;
+
+        padding-left: 8px;
+
+    }
+
+    
+
+.strategy-item.selected .strategy-main,
+
+.strategy-item.selected .strategy-sub {
+
+    color: white;
+
+}
+
+
+
+/* Strateji Grup Stilleri */
+
+.strategy-group {
+
+    margin-bottom: 8px;
+
+    border: 1px solid #dee2e6;
+
+    border-radius: 4px;
+
+    overflow: hidden;
+
+}
+
+
+
+.strategy-group-header {
+
+    background: #f8f9fa;
+
+    color: #495057;
+
+    padding: 6px 12px;
+
+    font-weight: bold;
+
+    font-size: 0.9rem;
+
+    border-bottom: 1px solid #dee2e6;
+
+}
+
+
+
+.strategy-group .strategy-item {
+
+    margin: 0;
+
+    background: white;
+
+    border-left: 3px solid #007bff;
+
+    border-radius: 0;
+
+}
+
+
+
+.strategy-group .strategy-item:hover {
+
+    background: #e9ecef;
+
+    transform: none;
+
+}
+
+
+
+.strategy-group .strategy-item.selected {
+
+    background: #007bff;
+
+    color: white;
+
+}
+
+
+
+/* Süreç Detay Modal Strateji Grupları */
+
+.strategy-group-content {
+
+    max-height: 200px;
+
+    overflow-y: auto;
+
+}
+
+
+
+.strategy-group-content .strategy-item {
+
+    transition: all 0.2s ease;
+
+}
+
+
+
+.strategy-group-content .strategy-item:hover {
+
+    background: #e9ecef !important;
+
+    transform: translateX(2px);
+
+}
+
+</style>
+
+
+
+<div class="container-fluid mt-4">
+    <!-- Debug Bilgisi -->
+
+    <div class="alert alert-info">
+
+        <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} | 
+
+        Rol: {{ current_user.sistem_rol }} | 
+
+        Kurum: {{ current_user.kurum.kisa_ad if current_user.kurum else 'Yok' }} |
+
+        Toplam Süreç: {{ surecler|length }}
+
+    </div>
+
+    
+
+    <!-- Başlık ve Yeni Süreç Butonu -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-8">
+
+            <h2 class="text-primary mb-2">
+
+                <i class="bi bi-diagram-3-fill"></i> Süreç Yönetim Paneli
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                <i class="bi bi-building"></i> 
+
+                <strong>{{ current_user.kurum.kisa_ad if current_user.kurum else 'Kurum' }}</strong> - 
+
+                Süreçlerinizi buradan yönetebilirsiniz
+
+            </p>
+
+        </div>
+
+        <div class="col-md-4 text-end">
+
+            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+
+            <button class="btn btn-success btn-lg new-process-btn shadow" data-bs-toggle="modal" data-bs-target="#newProcessModal">
+
+                <i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur
+
+            </button>
+
+            {% else %}
+
+            <div class="alert alert-info mb-0 py-2">
+
+                <i class="bi bi-info-circle"></i> Süreçlerinizi görüntüleyebilir ve karne verilerinizi girebilirsiniz
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- Kullanıcı Süreç Rolleri Bilgi Kartı -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-info text-white">
+
+            <h6 class="mb-0">
+
+                <i class="bi bi-person-badge me-2"></i>Süreç Rolleriniz
+
+            </h6>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <h6 class="text-primary">Lider Olduğunuz Süreçler:</h6>
+
+                    {% set lider_surecler = [] %}
+
+                    {% for surec in surecler %}
+
+                        {% if current_user in surec.liderler %}
+
+                            {% set _ = lider_surecler.append(surec) %}
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if lider_surecler %}
+
+                        {% for surec in lider_surecler %}
+
+                        <span class="badge bg-primary me-1 mb-1">{{ surec.ad }}</span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <span class="text-muted">Lider olduğunuz süreç yok</span>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h6 class="text-secondary">Üye Olduğunuz Süreçler:</h6>
+
+                    {% set uye_surecler = [] %}
+
+                    {% for surec in surecler %}
+
+                        {% if current_user in surec.uyeler %}
+
+                            {% set _ = uye_surecler.append(surec) %}
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if uye_surecler %}
+
+                        {% for surec in uye_surecler %}
+
+                        <span class="badge bg-secondary me-1 mb-1">{{ surec.ad }}</span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <span class="text-muted">Üye olduğunuz süreç yok</span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Debug Bilgisi -->
+
+            <div class="mt-3">
+
+                <small class="text-muted">
+
+                    <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} | 
+
+                    Rol: {{ current_user.sistem_rol }} | 
+
+                    Toplam Süreç: {{ surecler|length }} |
+
+                    Lider Süreç: {{ lider_surecler|length }} |
+
+                    Üye Süreç: {{ uye_surecler|length }}
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+    <!--Mevcut Süreçler Kartı (İlk Açılışta Görünür) -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-diagram-3"></i> Mevcut Süreçler
+
+                <span class="badge bg-light text-primary ms-2">{{ surecler|length }}</span>
+
+            </h5>
+
+            <small>
+
+                <i class="bi bi-building-fill"></i> {{ current_user.kurum.ticari_unvan if current_user.kurum else 'Tüm Kurumlar' }}
+
+            </small>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if surecler %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th><i class="bi bi-diagram-2"></i> Süreç Adı</th>
+
+                            <th><i class="bi bi-file-text"></i> Doküman</th>
+
+                            <th><i class="bi bi-info-circle"></i> Durum</th>
+
+                            <th><i class="bi bi-graph-up"></i> İlerleme</th>
+
+                            <th><i class="bi bi-star"></i> Liderler</th>
+
+                            <th><i class="bi bi-people"></i> Üyeler</th>
+
+                            <th><i class="bi bi-bullseye"></i> Stratejiler</th>
+
+                            <th><i class="bi bi-building"></i> Kurum</th>
+
+                            <th class="text-center"><i class="bi bi-gear"></i> İşlemler</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for surec in surecler %}
+
+                    <tr>
+
+                        <td>
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+
+                                    <i class="bi bi-diagram-2 text-primary fs-5"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <strong class="text-primary">{{ surec.ad }}</strong>
+
+                                    {% if surec.aciklama %}
+
+                                    <br><small class="text-muted">{{ surec.aciklama[:50] }}{% if surec.aciklama|length > 50 %}...{% endif %}</small>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            {% if surec.dokuman_no %}
+
+                            <span class="badge bg-light text-dark border">{{ surec.dokuman_no }}</span>
+
+                            {% if surec.rev_no %}
+
+                            <br><small class="text-muted">Rev: {{ surec.rev_no }}</small>
+
+                            {% endif %}
+
+                            {% else %}
+
+                            <span class="text-muted">-</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Pasif' %}secondary{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}info{% endif %} px-3 py-2">
+
+                                <i class="bi bi-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Pasif' %}x-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}info-circle{% endif %}"></i>
+
+                                {{ surec.durum }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="progress flex-grow-1" style="height: 20px; min-width: 60px;">
+
+                                    <div class="progress-bar 
+
+                                        {% if surec.ilerleme >= 75 %}bg-success
+
+                                        {% elif surec.ilerleme >= 50 %}bg-info
+
+                                        {% elif surec.ilerleme >= 25 %}bg-warning
+
+                                        {% else %}bg-danger
+
+                                        {% endif %}"
+
+                                        role="progressbar" 
+
+                                        style="width: {{ surec.ilerleme }}%;" 
+
+                                        aria-valuenow="{{ surec.ilerleme }}" 
+
+                                        aria-valuemin="0" 
+
+                                        aria-valuemax="100">
+
+                                    </div>
+
+                                </div>
+
+                                <span class="ms-2 fw-bold">{{ surec.ilerleme }}%</span>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            {% if surec.liderler %}
+
+                                <div class="d-flex flex-wrap gap-1">
+
+                                {% for lider in surec.liderler %}
+
+                                    <span class="badge bg-primary bg-gradient px-2 py-1">
+
+                                        <i class="bi bi-star-fill"></i> {{ lider.username }}
+
+                                        {% if lider == current_user %}
+
+                                            <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin liderisiniz"></i>
+
+                                        {% endif %}
+
+                                    </span>
+
+                                {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="text-muted fst-italic">-</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if surec.uyeler %}
+
+                                <div class="d-flex flex-wrap gap-1">
+
+                                {% for uye in surec.uyeler %}
+
+                                    <span class="badge bg-secondary bg-gradient px-2 py-1">
+
+                                        <i class="bi bi-person-fill"></i> {{uye.username }}
+
+                                        {% if uye == current_user %}
+
+                                            <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin üyesisiniz"></i>
+
+                                        {% endif %}
+
+                                    </span>
+
+                                {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="text-muted fst-italic">-</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if surec.alt_stratejiler %}
+
+                                <div class="d-flex flex-wrap gap-1">
+
+                                {% for alt in surec.alt_stratejiler %}
+
+                                    <span class="badge bg-info bg-gradient text-dark px-2 py-1">
+
+                                        <i class="bi bi-bullseye"></i> {{ alt.ad[:15] }}{% if alt.ad|length > 15 %}...{% endif %}
+
+                                    </span>
+
+                                {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="text-muted fst-italic">-</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-secondary">{{ surec.kurum.kisa_ad if surec.kurum else '-' }}</span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex gap-2 justify-content-center">
+
+                                <button class="btn btn-primary shadow-sm action-btn" onclick="viewSurec({{ surec.id }})" 
+
+                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
+
+                                    <i class="bi bi-eye-fill d-block mb-1" style="font-size: 1.2rem;"></i>
+
+                                    <small style="font-size: 0.75rem; display: block;">Detaylar</small>
+
+                                </button>
+
+                                
+
+                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+
+                                <button class="btn btn-warning text-white shadow-sm action-btn" onclick="editProcess({{ surec.id }})" 
+
+                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
+
+                                    <i class="bi bi-pencil-fill d-block mb-1" style="font-size: 1.2rem;"></i>
+
+                                    <small style="font-size: 0.75rem; display: block;">Düzenle</small>
+
+                                </button>
+
+                                {% endif %}
+
+                                
+
+                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+
+                                <button class="btn btn-danger shadow-sm action-btn" onclick="deleteSurec({{ surec.id }}, '{{ surec.ad }}')" 
+
+                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
+
+                                    <i class="bi bi-trash-fill d-block mb-1" style="font-size: 1.2rem;"></i>
+
+                                    <small style="font-size: 0.75rem; display: block;">Sil</small>
+
+                                </button>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc; opacity: 0.3;"></i>
+
+                <h5 class="text-muted mt-3 mb-3">
+
+                    {% if current_user.sistem_rol == 'kurum_kullanici' %}
+
+                        Henüz Size Atanmış Süreç Bulunmuyor
+
+                    {% else %}
+
+                        Henüz Süreç Eklenmemiş
+
+                    {% endif %}
+
+                </h5>
+
+                <p class="text-muted mb-4">
+
+                    {% if current_user.sistem_rol == 'kurum_kullanici' %}
+
+                        Henüz lideri veya üyesi olduğunuz bir süreç bulunmuyor.<br>
+
+                        Süreç yöneticinizden sizi bir sürece atamasını isteyebilirsiniz.
+
+                    {% else %}
+
+                        Kurumunuz için ilk süreci oluşturarak başlayabilirsiniz.<br>
+
+                        Süreçler, iş akışlarınızı ve operasyonlarınızı yönetmenize yardımcı olur.
+
+                    {% endif %}
+
+                </p>
+
+                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+
+                <button class="btn btn-success btn-lg" onclick="toggleYeniSurecForm()">
+
+                    <i class="bi bi-plus-circle me-2"></i>İlk Süreci Oluştur
+
+                </button>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- Yeni Süreç Oluştur Formu (Başlangıçta Gizli) -->
+
+    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+
+    <div id="yeni-surec-form-container" class="mb-4">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0"><i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur</h5>
+
+                <button class="btn btn-sm btn-light" onclick="toggleYeniSurecForm()">
+
+                    <i class="bi bi-x-lg"></i> Kapat
+
+                </button>
+
+            </div>
+
+            <div class="card-body bg-light">
+
+                <form id="surec-form">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-bookmark-fill text-primary"></i> Süreç Adı *
+
+                            </label>
+
+                            <input type="text" class="form-control form-control-lg" id="ad" placeholder="Ç–rn: Satın Alma Süreci" required>
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-file-earmark-text"></i> Doküman No
+
+                            </label>
+
+                            <input type="text" class="form-control" id="dokuman_no" placeholder="Ç–rn: DOK-001">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-journal-text"></i> Revizyon No
+
+                            </label>
+
+                            <input type="text" class="form-control" id="rev_no" placeholder="Ç–rn: Rev-1">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Revizyon Tarihi</label>
+
+                            <input type="date" class="form-control" id="rev_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">İlk Yayın Tarihi</label>
+
+                            <input type="date" class="form-control" id="ilk_yayin_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Başlangıç Tarihi</label>
+
+                            <input type="date" class="form-control" id="baslangic_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Bitiş Tarihi</label>
+
+                            <input type="date" class="form-control" id="bitis_tarihi">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Durum</label>
+
+                            <select class="form-select" id="durum">
+
+                                <option value="Aktif">Aktif</option>
+
+                                <option value="Pasif">Pasif</option>
+
+                                <option value="Beklemede">Beklemede</option>
+
+                                <option value="Tamamlandı">Tamamlandı</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">İlerleme (%)</label>
+
+                            <input type="number" class="form-control" id="ilerleme" min="0" max="100" value="0">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Başlangıç ve Bitiş Sınırları -->
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-box-arrow-right text-success"></i> Başlangıç Sınırı
+
+                            </label>
+
+                            <textarea class="form-control" id="baslangic_siniri" rows="2" placeholder="Sürecin başlangıç noktası ve sınırları..."></textarea>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-box-arrow-in-left text-danger"></i> Bitiş Sınırı
+
+                            </label>
+
+                            <textarea class="form-control" id="bitis_siniri" rows="2" placeholder="Sürecin bitiş noktası ve sınırları..."></textarea>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Süreç Liderleri Seçimi (Çoklu) -->
+
+                    <div class="card bg-warning bg-opacity-10 mb-3">
+
+                        <div class="card-header bg-warning">
+
+                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)</strong>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Kullanıcılar</label>
+
+                                    <select class="form-select" id="lider_source" multiple size="6">
+
+                                        {% for user in kullanicilar %}
+
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                    <div>
+
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addLiderler()">
+
+                                            <i class="bi bi-arrow-right"></i> Ekle
+
+                                        </button><br>
+
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeLiderler()">
+
+                                            <i class="bi bi-arrow-left"></i> Çıkar
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Seçilen Liderler</label>
+
+                                    <select class="form-select" id="lider_ids" multiple size="6">
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Süreç Üyeleri Seçimi -->
+
+                    <div class="card bg-light mb-3">
+
+                        <div class="card-header"><strong>Süreç Üyeleri</strong></div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Kullanıcılar</label>
+
+                                    <select class="form-select" id="uye_source" multiple size="6">
+
+                                        {% for user in kullanicilar %}
+
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                    <div>
+
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addUyeler()">
+
+                                            <i class="bi bi-arrow-right"></i> Ekle
+
+                                        </button><br>
+
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeUyeler()">
+
+                                            <i class="bi bi-arrow-left"></i> Çıkar
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Seçilen Üyeler</label>
+
+                                    <select class="form-select" id="uye_ids" multiple size="6">
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Alt Stratejiler Seçimi -->
+
+                    <div class="card bg-light mb-3">
+
+                        <div class="card-header"><strong>Alt Stratejiler</strong></div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Stratejiler</label>
+
+                                    <select class="form-select" id="strateji_source" multiple size="6">
+
+                                        {% for strateji in ana_stratejiler %}
+
+                                            <optgroup label="{{ strateji.ad }}">
+
+                                                {% for alt in strateji.alt_stratejiler %}
+
+                                                <option value="{{ alt.id }}">{{ alt.ad }}</option>
+
+                                                {% endfor %}
+
+                                            </optgroup>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                    <div>
+
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addStratejiler()">
+
+                                            <i class="bi bi-arrow-right"></i> Ekle
+
+                                        </button><br>
+
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeStratejiler()">
+
+                                            <i class="bi bi-arrow-left"></i> Çıkar
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Seçilen Stratejiler</label>
+
+                                    <select class="form-select" id="alt_strateji_ids" multiple size="6" style="max-height: 200px; overflow-y: auto;">
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-textarea-t"></i> Açıklama
+
+                        </label>
+
+                        <textarea class="form-control" id="aciklama" rows="3" placeholder="Süreç hakkında detaylı bilgi..."></textarea>
+
+                    </div>
+
+                    
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+
+                            <i class="bi bi-check-circle-fill"></i> Kaydet
+
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="document.getElementById('surec-form').reset(); resetSelections();">
+
+                            <i class="bi bi-x-circle"></i> Temizle
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    
+
+</div>
+
+
+
+<!-- Süreç Detay Modal -->
+
+<div class="modal fade" id="surecDetayModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title"><i class="bi bi-diagram-3-fill"></i> Süreç Detayları</h5>
+
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div id="surec-detay-icerik">
+
+                    <div class="text-center">
+
+                        <div class="spinner-border text-primary" role="status">
+
+                            <span class="visually-hidden">Yükleniyor...</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Düzenleme Modal -->
+
+<div class="modal fade" id="editSurecModal" tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning text-dark">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-pencil-fill"></i> Süreç Düzenle
+
+                    <small class="ms-3">v2.1.4</small>
+
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="edit-surec-form" onsubmit="updateSurec(event); return false;">
+
+                    <input type="hidden" id="edit_surec_id">
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">Süreç Adı *</label>
+
+                            <input type="text" class="form-control" id="edit_ad" required>
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Doküman No</label>
+
+                            <input type="text" class="form-control" id="edit_dokuman_no">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Revizyon No</label>
+
+                            <input type="text" class="form-control" id="edit_rev_no">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Revizyon Tarihi</label>
+
+                            <input type="date" class="form-control" id="edit_rev_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">İlk Yayın Tarihi</label>
+
+                            <input type="date" class="form-control" id="edit_ilk_yayin_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Başlangıç Tarihi</label>
+
+                            <input type="date" class="form-control" id="edit_baslangic_tarihi">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Bitiş Tarihi</label>
+
+                            <input type="date" class="form-control" id="edit_bitis_tarihi">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">Durum</label>
+
+                            <select class="form-select" id="edit_durum">
+
+                                <option value="Aktif">Aktif</option>
+
+                                <option value="Pasif">Pasif</option>
+
+                                <option value="Beklemede">Beklemede</option>
+
+                                <option value="Tamamlandı">Tamamlandı</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">İlerleme (%)</label>
+
+                            <input type="number" class="form-control" id="edit_ilerleme" min="0" max="100">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Başlangıç Sınırı</label>
+
+                            <textarea class="form-control" id="edit_baslangic_siniri" rows="2"></textarea>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Bitiş Sınırı</label>
+
+                            <textarea class="form-control" id="edit_bitis_siniri" rows="2"></textarea>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="mb-3">
+
+                        <label class="form-label">Açıklama</label>
+
+                        <textarea class="form-control" id="edit_aciklama" rows="3"></textarea>
+
+                    </div>
+
+
+
+                    <!-- Süreç Liderleri Seçimi (Çoklu) -->
+
+                    <div class="card bg-warning bg-opacity-10 mb-3">
+
+                        <div class="card-header bg-warning">
+
+                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)</strong>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                    <select class="form-select" id="edit_lider_source" multiple size="6" style="min-height: 150px;" ondblclick="addDüzenleLiderler()">
+
+                                        {% for user in kullanicilar %}
+
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                    <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                    <div class="text-center">
+
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleLiderler()">
+
+                                            <i class="bi bi-arrow-right"></i> Ekle
+
+                                        </button><br>
+
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleLiderler()">
+
+                                            <i class="bi bi-arrow-left"></i> Çıkar
+
+                                        </button>
+
+                                        <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Süreç Liderleri</label>
+
+                                    <select class="form-select" id="edit_lider_ids" multiple size="6" style="min-height: 150px;" ondblclick="removeDüzenleLiderler()">
+
+                                    </select>
+
+                                    <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Süreç Üyeleri Seçimi -->
+
+                    <div class="card bg-light mb-3">
+
+                        <div class="card-header"><strong>Süreç Üyeleri</strong></div>
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Kullanıcılar</label>
+
+                                    <select class="form-select" id="edit_uye_source" multiple size="6">
+
+                                        {% for user in kullanicilar %}
+
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                    <div>
+
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleUyeler()">
+
+                                            <i class="bi bi-arrow-right"></i> Ekle
+
+                                        </button><br>
+
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleUyeler()">
+
+                                            <i class="bi bi-arrow-left"></i> Çıkar
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-5">
+
+                                    <label class="form-label">Seçilen Üyeler</label>
+
+                                    <select class="form-select" id="edit_uye_ids" multiple size="6">
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Alt Strateji Seçimi -->
+
+                    <div class="row mb-3">
+
+                        <div class="col-12">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-diagram-3 text-info"></i> Alt Stratejiler (İsteğe Bağlı)
+
+                            </label>
+
+                            <div class="card bg-info bg-opacity-10">
+
+                                <div class="card-body p-2">
+
+                                    <div class="row g-1">
+
+                                        <div class="col">
+
+                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                            <select class="form-select" id="edit_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
+
+                                                {% for ana_strateji in ana_stratejiler %}
+
+                                                    <optgroup label="{{ ana_strateji.ad }}">
+
+                                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
+
+                                                            <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+
+                                                        {% endfor %}
+
+                                                    </optgroup>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                        </div>
+
+                                        <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                            <div class="text-center">
+
+                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleStratejiler()">
+
+                                                    <i class="bi bi-arrow-right"></i> Ekle
+
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleStratejiler()">
+
+                                                    <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                </button>
+
+                                                <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col">
+
+                                            <label class="form-label">Seçilen Alt Stratejiler</label>
+
+                                            <div class="form-control" id="edit_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
+
+                                            </div>
+
+                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="d-flex gap-2 justify-content-end">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+
+                        <button type="submit" class="btn btn-warning text-white">
+
+                            <i class="bi bi-check-circle-fill"></i> Güncelle
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+// Yeni Süreç Formu Göster/Gizle
+
+function toggleYeniSurecForm() {
+
+    const container = document.getElementById('yeni-surec-form-container');
+
+    const btn = document.getElementById('toggleBtn');
+
+    
+
+    if (container.classList.contains('show')) {
+
+        // Gizle
+
+        container.classList.remove('show');
+
+        btn.innerHTML = '<i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur';
+
+        // Yukarı scroll
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } else {
+
+        // Göster
+
+        container.classList.add('show');
+
+        btn.innerHTML = '<i class="bi bi-x-lg"></i> Formu Kapat';
+
+        // Forma scroll
+
+        setSaatout(() => {
+
+            container.scrollIntoGörüntüle({ behavior: 'smooth', block: 'start' });
+
+        }, 300);
+
+    }
+
+}
+
+
+
+// Lider ekleme/çıkarma fonksiyonları (Çoklu)
+
+function addLiderler() {
+
+    const source = document.getElementById('lider_source');
+
+    const target = document.getElementById('lider_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+    
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+        }
+
+    });
+
+}
+
+
+
+function removeLiderler() {
+
+    const target = document.getElementById('lider_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+    selected.forEach(opt => opt.remove());
+
+}
+
+
+
+// Düzenleme formu lider ekleme/çıkarma fonksiyonları
+
+function addDüzenleLiderler() {
+
+    const source = document.getElementById('edit_lider_source');
+
+    const target = document.getElementById('edit_lider_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    console.log('Lider ekleme işlemi başladı');
+
+    console.log('Seçilen liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+            console.log(`Lider eklendi: ${opt.text}`);
+
+        } else {
+
+            console.log(`Lider zaten mevcut: ${opt.text}`);
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+
+    } else {
+
+        showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+
+    }
+
+
+
+    console.log('Lider ekleme tamamlandı');
+
+}
+
+
+
+function removeDüzenleLiderler() {
+
+    const target = document.getElementById('edit_lider_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+
+
+    console.log('Lider çıkarma işlemi başladı');
+
+    console.log('Çıkarılacak liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => {
+
+        opt.remove();
+
+        console.log(`Lider çıkarıldı: ${opt.text}`);
+
+    });
+
+
+
+        showToast('success', `${removedCount} lider çıkarıldı!`, 'Başarılı');
+
+    console.log('Lider çıkarma tamamlandı');
+
+}
+
+
+
+function addDüzenleUyeler() {
+
+    const source = document.getElementById('edit_uye_source');
+
+    const target = document.getElementById('edit_uye_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+    let addedCount = 0;
+
+
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+function removeDüzenleUyeler() {
+
+    const target = document.getElementById('edit_uye_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => opt.remove());
+
+    
+
+    if (removedCount > 0) {
+
+        const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+/**
+
+ * Düzenleme formunda mevcut liderleri yükle
+
+ */
+
+function loadDüzenleSurecLiderler(surec) {
+
+    const target = document.getElementById('edit_lider_ids');
+
+    target.innerHTML = '';
+
+
+
+    console.log('Lider yükleme işlemi başladı:', surec.liderler);
+
+
+
+    if (surec.liderler && surec.liderler.length > 0) {
+
+        console.log('Lider sayısı:', surec.liderler.length);
+
+        surec.liderler.forEach((lider, index) => {
+
+            console.log(`Lider ${index + 1}:`, lider);
+
+            const option = new Option(lider.username, lider.id);
+
+            target.add(option);
+
+        });
+
+    } else {
+
+        console.log('Lider bulunamadı');
+
+    }
+
+
+
+    console.log('Lider yükleme tamamlandı');
+
+}
+
+
+
+/**
+
+ * Düzenleme formunda mevcut üyeleri yükle
+
+ */
+
+function loadDüzenleSurecUyeler(surec) {
+
+    const target = document.getElementById('edit_uye_ids');
+
+    target.innerHTML = '';
+
+
+
+    console.log('Üye yükleme işlemi başladı:', surec.uyeler);
+
+
+
+    if (surec.uyeler && surec.uyeler.length > 0) {
+
+        console.log('Üye sayısı:', surec.uyeler.length);
+
+        surec.uyeler.forEach((uye, index) => {
+
+            console.log(`Üye ${index + 1}:`, uye);
+
+            const option = new Option(uye.username, uye.id);
+
+            target.add(option);
+
+        });
+
+    } else {
+
+        console.log('Üye bulunamadı');
+
+    }
+
+
+
+    console.log('Üye yükleme tamamlandı');
+
+}
+
+
+
+/**
+
+ * Düzenleme formunda mevcut alt stratejileri yükle
+
+ */
+
+function loadDüzenleSurecStratejiler(surec) {
+
+    const target = document.getElementById('edit_strateji_ids');
+
+    target.innerHTML = '';
+
+
+
+    console.log('Alt strateji yükleme işlemi başladı:', surec.alt_stratejiler);
+
+
+
+    if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
+
+        console.log('Alt strateji sayısı:', surec.alt_stratejiler.length);
+
+        
+
+        // Ana stratejilere göre grupla
+
+        const groupedStrategies = {};
+
+        surec.alt_stratejiler.forEach((strateji, index) => {
+
+            console.log(`Alt Strateji ${index + 1}:`, strateji);
+
+            const mainStrategyAd = strateji.ana_strateji ? strateji.ana_strateji.ad : 'Bilinmiyor';
+
+            
+
+            if (!groupedStrategies[mainStrategyAd]) {
+
+                groupedStrategies[mainStrategyAd] = [];
+
+            }
+
+            groupedStrategies[mainStrategyAd].push({
+
+                id: strateji.id,
+
+                name: strateji.ad
+
+            });
+
+        });
+
+
+
+        // Her ana strateji için grup oluştur
+
+        Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+            const strategies = groupedStrategies[mainStrategyAd];
+
+            
+
+            // Ana strateji başlığı (optgroup benzeri)
+
+            const mainStrategyDiv = document.createElement('div');
+
+            mainStrategyDiv.className = 'strategy-group';
+
+            mainStrategyDiv.innerHTML = `
+
+                <div class="strategy-group-header">
+
+                    <strong>${mainStrategyAd}</strong>
+
+                </div>
+
+            `;
+
+            
+
+            // Alt stratejileri ekle
+
+            strategies.forEach(strategy => {
+
+                const strategyDiv = document.createElement('div');
+
+                strategyDiv.className = 'strategy-item';
+
+                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+
+                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+
+                mainStrategyDiv.appendChild(strategyDiv);
+
+            });
+
+            
+
+            target.appendChild(mainStrategyDiv);
+
+        });
+
+    } else {
+
+        console.log('Alt strateji bulunamadı');
+
+    }
+
+
+
+    console.log('Alt strateji yükleme tamamlandı');
+
+}
+
+
+
+// Düzenleme formu için strateji ekleme fonksiyonu
+
+function addDüzenleStratejiler() {
+
+    const source = document.getElementById('edit_strateji_source');
+
+    const target = document.getElementById('edit_strateji_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    
+
+    // Ana stratejilere göre grupla
+
+    const groupedStrategies = {};
+
+    selected.forEach(opt => {
+
+        const mainStrategyAd = opt.dataset.mainStrategyAd;
+
+        const subStrategyAd = opt.text;
+
+        
+
+        if (!groupedStrategies[mainStrategyAd]) {
+
+            groupedStrategies[mainStrategyAd] = [];
+
+        }
+
+        groupedStrategies[mainStrategyAd].push({
+
+            id: opt.value,
+
+            name: subStrategyAd
+
+        });
+
+    });
+
+
+
+    // Her ana strateji için grup oluştur
+
+    Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+        const strategies = groupedStrategies[mainStrategyAd];
+
+        
+
+        // Ana strateji başlığı (optgroup benzeri)
+
+        const mainStrategyDiv = document.createElement('div');
+
+        mainStrategyDiv.classAd = 'strategy-group';
+
+        mainStrategyDiv.innerHTML = `
+
+            <div class="strategy-group-header">
+
+                <strong>${mainStrategyAd}</strong>
+
+            </div>
+
+        `;
+
+        
+
+        // Alt stratejileri ekle
+
+        strategies.forEach(strategy => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
+
+                const strategyDiv = document.createElement('div');
+
+                strategyDiv.className = 'strategy-item';
+
+                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+
+                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+
+                mainStrategyDiv.appendChild(strategyDiv);
+
+                addedCount++;
+
+            }
+
+        });
+
+        
+
+        // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
+
+        if (mainStrategyDiv.children.length > 1) { // header + items
+
+            target.appendChild(mainStrategyDiv);
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
+
+    } else {
+
+        showToast('warning', 'Seçilen stratejiler zaten ekli!', 'Uyarı');
+
+    }
+
+}
+
+
+
+// Düzenleme formu için strateji çıkarma fonksiyonu
+
+function removeDüzenleStratejiler() {
+
+    const target = document.getElementById('edit_strateji_ids');
+
+    const selectedItems = target.querySelectorAll('.strategy-item.selected');
+
+
+
+    if (selectedItems.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    selectedItems.forEach(item => {
+
+        item.remove();
+
+    });
+
+
+
+    showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
+
+}
+
+
+
+// Düzenleme formu için strateji item çıkarma fonksiyonu
+
+function removeDüzenleStrategyItem(strategyId) {
+
+    const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+
+    if (item) {
+
+        item.remove();
+
+        showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
+
+    }
+
+}
+
+
+
+// Düzenleme formu için strateji seçim toggle fonksiyonu
+
+function toggleDüzenleStrategySelection(strategyId) {
+
+    const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+
+    if (item) {
+
+        item.classList.toggle('selected');
+
+    }
+
+}
+
+
+
+// Üye ekleme/çıkarma fonksiyonları
+
+function addUyeler() {
+
+    const source = document.getElementById('uye_source');
+
+    const target = document.getElementById('uye_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+    let addedCount = 0;
+
+    
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+function removeUyeler() {
+
+    const target = document.getElementById('uye_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => opt.remove());
+
+    
+
+    if (removedCount > 0) {
+
+        const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+// Strateji ekleme/çıkarma fonksiyonları
+
+function addStratejiler() {
+
+    const source = document.getElementById('strateji_source');
+
+    const target = document.getElementById('alt_strateji_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+    let addedCount = 0;
+
+    
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            // Ana strateji bilgisini al
+
+            const optgroup = opt.parentElement;
+
+            const anaStratejiAdi = optgroup.label;
+
+            const altStratejiAdi = opt.text;
+
+            
+
+            // Basit text formatında option oluştur
+
+            const newOpt = new Option();
+
+            newOpt.value = opt.value;
+
+            newOpt.text = `${anaStratejiAdi} →†’ ${altStratejiAdi}`;
+
+            target.add(newOpt);
+
+            addedCount++;
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        const message = addedCount > 1 ? `${addedCount} strateji eklendi.` : `'${selected[0].text}' stratejisi eklendi.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+function removeStratejiler() {
+
+    const target = document.getElementById('alt_strateji_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => opt.remove());
+
+    
+
+    if (removedCount > 0) {
+
+        const message = removedCount > 1 ? `${removedCount} strateji çıkarıldı.` : `Strateji çıkarıldı.`;
+
+        showToast('success', message, 'Başarılı');
+
+    }
+
+}
+
+
+
+// Seçimleri temizle
+
+function resetSelections() {
+
+    document.getElementById('lider_ids').innerHTML = '';
+
+    document.getElementById('uye_ids').innerHTML = '';
+
+    document.getElementById('alt_strateji_ids').innerHTML = '';
+
+}
+
+
+
+// Form submit
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.getElementById('surec-form').addEventListener('submit', function(e) {
+
+        e.preventDefault();
+
+        
+
+        // Tüm seçimleri array'e çevir
+
+        const liderIds = Array.from(document.getElementById('lider_ids').options).map(opt => opt.value);
+
+        const uyeIds = Array.from(document.getElementById('uye_ids').options).map(opt => opt.value);
+
+        const altStratejiIds = Array.from(document.getElementById('alt_strateji_ids').options).map(opt => opt.value);
+
+        
+
+        // İşlem başladı mesajı
+
+        showToast('info', 'Yeni süreç oluşturuluyor...', '→³ İşlem Devam Ediyor');
+
+        
+
+        fetch('/surec/add-simple', {
+
+            method: 'POST',
+
+            headers: {'Content-Type': 'application/json'},
+
+            body: JSON.stringify({
+
+                surec_adi: document.getElementById('ad').value,
+
+                dokuman_no: document.getElementById('dokuman_no').value,
+
+                rev_no: document.getElementById('rev_no').value,
+
+                rev_tarihi: document.getElementById('rev_tarihi').value,
+
+                ilk_yayin_tarihi: document.getElementById('ilk_yayin_tarihi').value,
+
+                baslangic_tarihi: document.getElementById('baslangic_tarihi').value,
+
+                bitis_tarihi: document.getElementById('bitis_tarihi').value,
+
+                durum: document.getElementById('durum').value,
+
+                ilerleme: document.getElementById('ilerleme').value,
+
+                lider_ids: liderIds,
+
+                uye_ids: uyeIds,
+
+                alt_strateji_ids: altStratejiIds,
+
+                baslangic_siniri: document.getElementById('baslangic_siniri').value,
+
+                bitis_siniri: document.getElementById('bitis_siniri').value,
+
+                aciklama: document.getElementById('aciklama').value
+
+            })
+
+        })
+
+        .then(r => r.json())
+
+        .then(data => {
+
+            if(data.success) {
+
+                // Başarı mesajı
+
+                showToast('success', data.message, 'Başarılı');
+
+                // Formu temizle
+
+                document.getElementById('surec-form').reset();
+
+                resetSelections();
+
+                // Sayfayı yenile
+
+                setTimeout(() => location.reload(), 1500);
+
+            } else {
+
+                showToast('error', data.message, '→Œ Hata');
+
+            }
+
+        })
+
+        .catch(err => {
+
+            showToast('error', 'Hata: ' + err.message, '→Œ Bağlantı Hatası');
+
+        });
+
+    });
+
+});
+
+
+
+// Süreç detaylarını görüntüle
+
+function viewSurec(id) {
+
+    const modal = new bootstrap.Modal(document.getElementById('surecDetayModal'));
+
+    modal.show();
+
+    
+
+    fetch(`/surec/${id}`)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        const surec = data.surec;
+
+        const gostergeler = data.performans_gostergeleri || [];
+
+        
+
+        // Faaliyetleri yükle
+
+        fetch(`/surec/${id}/faaliyetler`)
+
+        .then(r => r.json())
+
+        .then(faaliyetData => {
+
+            const faaliyetler = faaliyetData.faaliyetler || [];
+
+            
+
+            // Detay HTML'ini oluştur
+
+            document.getElementById('surec-detay-icerik').innerHTML = `
+
+                <div class="row">
+
+                    <div class="col-12">
+
+                        <h4 class="text-primary mb-4">
+
+                            <i class="bi bi-diagram-3-fill me-2"></i>${surec.ad}
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+                
+
+                <!-- Temel Bilgiler -->
+
+                <div class="row mb-4">
+
+                    <div class="col-md-6">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-primary text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Temel Bilgiler</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <p><strong>Doküman No:</strong> ${surec.dokuman_no || '-'}</p>
+
+                                <p><strong>Revizyon No:</strong> ${surec.rev_no || '-'}</p>
+
+                                <p><strong>Revizyon Tarihi:</strong> ${surec.rev_tarihi || '-'}</p>
+
+                                <p><strong>İlk Yayın Tarihi:</strong> ${surec.ilk_yayin_tarihi || '-'}</p>
+
+                                <p><strong>Durum:</strong> <span class="badge bg-${surec.durum === 'Aktif' ? 'success' : surec.durum === 'Pasif' ? 'secondary' : 'warning'}">${surec.durum}</span></p>
+
+                                <p><strong>İlerleme:</strong> 
+
+                                    <div class="progress mt-1" style="height: 20px;">
+
+                                        <div class="progress-bar bg-${surec.ilerleme >= 75 ? 'success' : surec.ilerleme >= 50 ? 'info' : surec.ilerleme >= 25 ? 'warning' : 'danger'}" 
+
+                                             style="width: ${surec.ilerleme}%">${surec.ilerleme}%</div>
+
+                                    </div>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-success text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Tarih Bilgileri</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <p><strong>Başlangıç Tarihi:</strong> ${surec.baslangic_tarihi || '-'}</p>
+
+                                <p><strong>Bitiş Tarihi:</strong> ${surec.bitis_tarihi || '-'}</p>
+
+                                <p><strong>Kurum:</strong> ${surec.kurum || '-'}</p>
+
+                                <p><strong>Başlangıç Sınırı:</strong> ${surec.baslangic_siniri || '-'}</p>
+
+                                <p><strong>Bitiş Sınırı:</strong> ${surec.bitis_siniri || '-'}</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <!-- Ekip ve Stratejiler -->
+
+                <div class="row mb-4">
+
+                    <div class="col-md-4">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-warning text-dark">
+
+                                <h6 class="mb-0"><i class="bi bi-star-fill me-2"></i>Süreç Liderleri</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                ${surec.liderler && surec.liderler.length > 0 ? 
+
+                                    surec.liderler.map(lider => `<span class="badge bg-primary me-1 mb-1">${lider.username}</span>`).join('') : 
+
+                                    '<span class="text-muted">Lider atanmamış</span>'
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-info text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-people-fill me-2"></i>Süreç Üyeleri</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                ${surec.uyeler && surec.uyeler.length > 0 ? 
+
+                                    surec.uyeler.map(uye => `<span class="badge bg-secondary me-1 mb-1">${uye.username}</span>`).join('') : 
+
+                                    '<span class="text-muted">Üye atanmamış</span>'
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-dark text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-bullseye me-2"></i>Alt Stratejiler</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                ${surec.alt_stratejiler && surec.alt_stratejiler.length > 0 ? 
+
+                                    (() => {
+
+                                        // Ana stratejilere göre grupla
+
+                                        const groupedStrategies = {};
+
+                                        surec.alt_stratejiler.forEach(strateji => {
+
+                                            const mainStrategyAd = strateji.ana_strateji.ad;
+
+                                            if (!groupedStrategies[mainStrategyAd]) {
+
+                                                groupedStrategies[mainStrategyAd] = [];
+
+                                            }
+
+                                            groupedStrategies[mainStrategyAd].push(strateji);
+
+                                        });
+
+                                        
+
+                                        // Grupları HTML olarak oluştur
+
+                                        return Object.keys(groupedStrategies).map(mainStrategyAd => {
+
+                                            const strategies = groupedStrategies[mainStrategyAd];
+
+                                            return `
+
+                                                <div class="strategy-group mb-3">
+
+                                                    <div class="strategy-group-header bg-primary text-white p-2 rounded-top">
+
+                                                        <strong><i class="bi bi-diagram-2 me-1"></i>${mainStrategyAd}</strong>
+
+                                                    </div>
+
+                                                    <div class="strategy-group-content bg-light p-2 rounded-bottom border border-top-0">
+
+                                                        ${strategies.map(strateji => `
+
+                                                            <div class="strategy-item mb-1 p-2 bg-white rounded border-start border-primary border-3">
+
+                                                                <small class="text-dark fw-medium">${strateji.ad}</small>
+
+                                                            </div>
+
+                                                        `).join('')}
+
+                                                    </div>
+
+                                                </div>
+
+                                            `;
+
+                                        }).join('');
+
+                                    })() : 
+
+                                    '<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Strateji atanmamış</span>'
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+
+                <!-- Açıklama -->
+
+                ${surec.aciklama ? `
+
+                <div class="row mb-4">
+
+                    <div class="col-12">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-secondary text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-chat-text me-2"></i>Açıklama</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <p class="mb-0">${surec.aciklama}</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                ` : ''}
+
+                
+
+                <!-- Performans Göstergeleri -->
+
+                ${gostergeler && gostergeler.length > 0 ? `
+
+                <div class="row mb-4">
+
+                    <div class="col-12">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-primary text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Performans Göstergeleri</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+
+                                    <table class="table table-sm">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>Gösterge Adı</th>
+
+                                                <th>Hedef Değer</th>
+
+                                                <th>Ç–lçüm Birimi</th>
+
+                                                <th>Periyot</th>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            ${gostergeler.map(gosterge => `
+
+                                                <tr>
+
+                                                    <td>${gosterge.ad}</td>
+
+                                                    <td>${gosterge.hedef_deger || '-'}</td>
+
+                                                    <td>${gosterge.olcum_birimi || '-'}</td>
+
+                                                    <td>${gosterge.periyot || '-'}</td>
+
+                                                </tr>
+
+                                            `).join('')}
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                ` : ''}
+
+                
+
+                <!-- Faaliyetler -->
+
+                ${faaliyetler && faaliyetler.length > 0 ? `
+
+                <div class="row mb-4">
+
+                    <div class="col-12">
+
+                        <div class="card bg-light">
+
+                            <div class="card-header bg-success text-white">
+
+                                <h6 class="mb-0"><i class="bi bi-list-task me-2"></i>Faaliyetler</h6>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+
+                                    <table class="table table-sm">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>Faaliyet Adı</th>
+
+                                                <th>Durum</th>
+
+                                                <th>İlerleme</th>
+
+                                                <th>Başlangıç</th>
+
+                                                <th>Bitiş</th>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            ${faaliyetler.map(faaliyet => `
+
+                                                <tr>
+
+                                                    <td>${faaliyet.ad}</td>
+
+                                                    <td><span class="badge bg-${faaliyet.durum === 'Tamamlandı' ? 'success' : faaliyet.durum === 'Devam Ediyor' ? 'primary' : 'warning'}">${faaliyet.durum}</span></td>
+
+                                                    <td>${faaliyet.ilerleme}%</td>
+
+                                                    <td>${faaliyet.baslangic_tarihi || '-'}</td>
+
+                                                    <td>${faaliyet.bitis_tarihi || '-'}</td>
+
+                                                </tr>
+
+                                            `).join('')}
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                ` : ''}
+
+            `;
+
+        });
+
+    });
+
+}
+
+
+
+// Düzenleme fonksiyonu
+
+function editSurec(id) {
+
+    // Süreç bilgilerini getir
+
+    fetch(`/surec/get/${id}`)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        if(data.success) {
+
+            const surec = data.surec;
+
+            console.log('Süreç verileri yüklendi:', surec);
+
+
+
+            // Form alanlarını güvenli şekilde doldur
+
+            const elements = {
+
+                'edit_surec_id': surec.id,
+
+                'edit_ad': surec.ad,
+
+                'edit_dokuman_no': surec.dokuman_no || '',
+
+                'edit_rev_no': surec.rev_no || '',
+
+                'edit_rev_tarihi': surec.rev_tarihi || '',
+
+                'edit_ilk_yayin_tarihi': surec.ilk_yayin_tarihi || '',
+
+                'edit_baslangic_tarihi': surec.baslangic_tarihi || '',
+
+                'edit_bitis_tarihi': surec.bitis_tarihi || '',
+
+                'edit_durum': surec.durum,
+
+                'edit_ilerleme': surec.ilerleme,
+
+                'edit_baslangic_siniri': surec.baslangic_siniri || '',
+
+                'edit_bitis_siniri': surec.bitis_siniri || '',
+
+                'edit_aciklama': surec.aciklama || ''
+
+            };
+
+
+
+            // Tüm alanları güvenli şekilde doldur
+
+            Object.keys(elements).forEach(key => {
+
+                const element = document.getElementById(key);
+
+                if (element) {
+
+                    element.value = elements[key];
+
+                }
+
+            });
+
+
+
+            // Liderleri yükle
+
+            loadDüzenleSurecLiderler(surec);
+
+
+
+            // Üyeleri yükle
+
+            loadDüzenleSurecUyeler(surec);
+
+
+
+            // Alt stratejileri yükle
+
+            loadDüzenleSurecStratejiler(surec);
+
+
+
+            // Modalı göster
+
+            const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
+
+            modal.show();
+
+        } else {
+
+            showToast('error', data.message);
+
+        }
+
+    })
+
+    .catch(err => {
+
+        showToast('error', 'Süreç bilgileri yüklenirken hata: ' + err.message);
+
+    });
+
+}
+
+
+
+// Düzenleme formu submit fonksiyonu
+
+function updateSurec(e) {
+
+    e.preventDefault();
+
+    
+
+    const surecId = document.getElementById('edit_surec_id').value;
+
+    
+
+    // İşlem başladı mesajı
+
+    showToast('info', 'Süreç güncelleniyor...', 'İşlem Devam Ediyor');
+
+    
+
+    // Lider, üye ve strateji bilgilerini topla
+
+    const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => parseInt(opt.value));
+
+    const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => parseInt(opt.value));
+
+    const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => parseInt(item.getAttribute('data-strategy-id')));
+
+
+
+    fetch(`/surec/update/${surecId}`, {
+
+        method: 'POST',
+
+        headers: {'Content-Type': 'application/json'},
+
+        body: JSON.stringify({
+
+            surec_adi: document.getElementById('edit_ad').value,
+
+            dokuman_no: document.getElementById('edit_dokuman_no').value,
+
+            rev_no: document.getElementById('edit_rev_no').value,
+
+            rev_tarihi: document.getElementById('edit_rev_tarihi').value,
+
+            ilk_yayin_tarihi: document.getElementById('edit_ilk_yayin_tarihi').value,
+
+            baslangic_tarihi: document.getElementById('edit_baslangic_tarihi').value,
+
+            bitis_tarihi: document.getElementById('edit_bitis_tarihi').value,
+
+            durum: document.getElementById('edit_durum').value,
+
+            ilerleme: document.getElementById('edit_ilerleme').value,
+
+            baslangic_siniri: document.getElementById('edit_baslangic_siniri').value,
+
+            bitis_siniri: document.getElementById('edit_bitis_siniri').value,
+
+            aciklama: document.getElementById('edit_aciklama').value,
+
+            lider_ids: liderIds,
+
+            uye_ids: uyeIds,
+
+            strateji_ids: stratejiIds
+
+        })
+
+    })
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        if(data.success) {
+
+            showToast('success', data.message, 'Başarılı');
+
+            // Modalı kapat
+
+            const modalElement = document.getElementById('editSurecModal');
+
+            const modal = bootstrap.Modal.getInstance(modalElement);
+
+            if(modal) modal.hide();
+
+            // Sayfayı yenile
+
+            setTimeout(() => location.reload(), 1500);
+
+        } else {
+
+            showToast('error', data.message, '→Œ Hata');
+
+        }
+
+    })
+
+    .catch(err => {
+
+        showToast('error', 'Güncelleme hatası: ' + err.message, '→Œ Bağlantı Hatası');
+
+    });
+
+}
+
+
+
+// Silme fonksiyonu
+
+function deleteSurec(id, name) {
+
+    if(confirm('Silmek istediğinizden emin misiniz?\n\nSüreç: ' + name)) {
+
+        showToast('info', 'Süreç siliniyor...', 'İşlem Devam Ediyor');
+
+        
+
+        fetch('/surec/delete/' + id, {method: 'DELETE'})
+
+        .then(r => r.json())
+
+        .then(data => {
+
+            if(data.success) {
+
+                showToast('success', data.message, 'Başarılı');
+
+                setTimeout(() => location.reload(), 1500);
+
+            } else {
+
+                showToast('error', data.message, 'Hata');
+
+            }
+
+        })
+
+        .catch(err => {
+
+            showToast('error', 'Silme işlemi başarısız: ' + err.message, 'Hata');
+
+        });
+
+    }
+
+}
+
+
+
+// Yeni süreç formu için lider ekleme fonksiyonu
+
+function addNewLiderler() {
+
+    const source = document.getElementById('new_lider_source');
+
+    const target = document.getElementById('new_lider_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    selected.forEach(opt => {
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+
+    } else {
+
+        showToast('info', 'Seçilen liderler zaten mevcut!', 'Bilgi');
+
+    }
+
+}
+
+
+
+// Yeni süreç formu için lider çıkarma fonksiyonu
+
+function removeNewLiderler() {
+
+    const target = document.getElementById('new_lider_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan lider seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    selected.forEach(opt => {
+
+        target.removeChild(opt);
+
+    });
+
+
+
+    showToast('success', `${selected.length} lider çıkarıldı!`, 'Başarılı');
+
+}
+
+
+
+// Yeni süreç formu için üye ekleme fonksiyonu
+
+function addNewUyeler() {
+
+    const source = document.getElementById('new_uye_source');
+
+    const target = document.getElementById('new_uye_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    console.log('Yeni süreç üye ekleme işlemi başladı');
+
+    console.log('Seçilen üyeler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan üye seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+        showToast('success', message, 'Başarılı');
+
+    } else {
+
+        showToast('warning', 'Seçilen üyeler zaten mevcut!', 'Uyarı');
+
+    }
+
+}
+
+
+
+// Yeni süreç formu için üye çıkarma fonksiyonu
+
+function removeNewUyeler() {
+
+    const target = document.getElementById('new_uye_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+
+
+    console.log('Yeni süreç üye çıkarma işlemi başladı');
+
+    console.log('Çıkarılacak üyeler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan üye seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => {
+
+        target.removeChild(opt);
+
+    });
+
+
+
+    const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+
+    showToast('success', message, 'Başarılı');
+
+}
+
+
+
+// Yeni süreç formu için strateji ekleme fonksiyonu
+
+function addNewStratejiler() {
+
+    const source = document.getElementById('new_strateji_source');
+
+    const target = document.getElementById('new_strateji_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    
+
+    // Ana stratejilere göre grupla
+
+    const groupedStrategies = {};
+
+    selected.forEach(opt => {
+
+        const mainStrategyAd = opt.dataset.mainStrategyAd;
+
+        const subStrategyAd = opt.text;
+
+        
+
+        if (!groupedStrategies[mainStrategyAd]) {
+
+            groupedStrategies[mainStrategyAd] = [];
+
+        }
+
+        groupedStrategies[mainStrategyAd].push({
+
+            id: opt.value,
+
+            name: subStrategyAd
+
+        });
+
+    });
+
+
+
+    // Her ana strateji için grup oluştur
+
+    Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+        const strategies = groupedStrategies[mainStrategyAd];
+
+        
+
+        // Ana strateji başlığı (optgroup benzeri)
+
+        const mainStrategyDiv = document.createElement('div');
+
+        mainStrategyDiv.className = 'strategy-group';
+
+        mainStrategyDiv.innerHTML = `
+
+            <div class="strategy-group-header">
+
+                <strong>${mainStrategyAd}</strong>
+
+            </div>
+
+        `;
+
+        
+
+        // Alt stratejileri ekle
+
+        strategies.forEach(strategy => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
+
+                const strategyDiv = document.createElement('div');
+
+                strategyDiv.className = 'strategy-item';
+
+                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                strategyDiv.onclick = () => toggleStrategySelection(strategy.id);
+
+                strategyDiv.ondblclick = () => removeStrategyItem(strategy.id);
+
+                mainStrategyDiv.appendChild(strategyDiv);
+
+                addedCount++;
+
+            }
+
+        });
+
+        
+
+        // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
+
+        if (mainStrategyDiv.children.length > 1) { // header + items
+
+            target.appendChild(mainStrategyDiv);
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
+
+    } else {
+
+        showToast('info', 'Seçilen stratejiler zaten mevcut!', 'Bilgi');
+
+    }
+
+}
+
+
+
+// Yeni süreç formu için strateji çıkarma fonksiyonu
+
+function removeNewStratejiler() {
+
+    const target = document.getElementById('new_strateji_ids');
+
+    const selectedItems = target.querySelectorAll('.strategy-item.selected');
+
+    
+
+    if (selectedItems.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    selectedItems.forEach(item => {
+
+        item.remove();
+
+    });
+
+
+
+    showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
+
+}
+
+
+
+// Strateji seçimini toggle etme fonksiyonu
+
+function toggleStrategySelection(strategyId) {
+
+    const target = document.getElementById('new_strateji_ids');
+
+    const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
+
+    if (item) {
+
+        item.classList.toggle('selected');
+
+    }
+
+}
+
+
+
+// Strateji öğesini çıkarma fonksiyonu
+
+function removeStrategyItem(strategyId) {
+
+    const target = document.getElementById('new_strateji_ids');
+
+    const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
+
+    if (item) {
+
+        item.remove();
+
+        showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
+
+    }
+
+}
+
+
+
+// Yeni Süreç Oluşturma Fonksiyonu
+
+const IS_ADMIN = {{ 'true' if current_user.sistem_rol == 'admin' else 'false' }};
+
+function onNewProcessKurumChange(kurumId) {
+
+    filterUsersByKurum(kurumId, 'new_lider_source');
+
+    filterUsersByKurum(kurumId, 'new_uye_source');
+
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const kurumSelect = document.getElementById('newProcessKurum');
+
+    if (kurumSelect && kurumSelect.value) {
+
+        onNewProcessKurumChange(kurumSelect.value);
+
+    }
+
+});
+
+function createNewProcess() {
+
+    // Çoklu lider seçimi için lider ID'lerini topla
+
+    const liderIds = Array.from(document.getElementById('new_lider_ids').options).map(opt => opt.value);
+
+    const uyeIds = Array.from(document.getElementById('new_uye_ids').options).map(opt => opt.value);
+
+    const stratejiIds = Array.from(document.querySelectorAll('#new_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
+
+    
+
+    const formData = {
+
+        ad: document.getElementById('newProcessAd').value.trim(),
+
+        lider_ids: liderIds, // Çoklu lider seçimi
+
+        uye_ids: uyeIds, // Çoklu üye seçimi
+
+        strateji_ids: stratejiIds, // Çoklu strateji seçimi
+
+        dokuman_no: document.getElementById('newProcessDokuman').value.trim(),
+
+        rev_no: document.getElementById('newProcessRevizyon').value.trim(),
+
+        rev_tarihi: document.getElementById('newProcessRevTarihi').value,
+
+        ilk_yayin_tarihi: document.getElementById('newProcessIlkYayinTarihi').value,
+
+        durum: document.getElementById('newProcessDurum').value,
+
+        ilerleme: document.getElementById('newProcessIlerleme').value,
+
+        baslangic_tarihi: document.getElementById('newProcessBaslangic').value,
+
+        bitis_tarihi: document.getElementById('newProcessBitis').value,
+
+        baslangic_siniri: document.getElementById('newProcessBaslangicSiniri').value.trim(),
+
+        bitis_siniri: document.getElementById('newProcessBitisSiniri').value.trim(),
+
+        aciklama: document.getElementById('newProcessAciklama').value.trim()
+
+    };
+
+    if (IS_ADMIN) {
+
+        const kurumSelect = document.getElementById('newProcessKurum');
+
+        formData.kurum_id = kurumSelect ? kurumSelect.value : '';
+
+    }
+
+    
+
+    // Zorunlu alan kontrolü
+
+    if (!formData.ad || (IS_ADMIN && !formData.kurum_id) || liderIds.length === 0) {
+
+        const msg = IS_ADMIN
+
+            ? 'Lütfen süreç adı, kurum ve en az bir lider seçin!'
+
+            : 'Lütfen süreç adı ve en az bir lider seçin!';
+
+        showToast('warning', msg, 'Uyarı');
+
+        return;
+
+    }
+
+    
+
+    const submitBtn = document.querySelector('button[onclick="createNewProcess()"]');
+
+    submitBtn.disabled = true;
+
+    submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Oluşturuluyor...';
+
+    
+
+    fetch('/admin/create-process', {
+
+        method: 'POST',
+
+        headers: {
+
+            'Content-Type': 'application/json',
+
+        },
+
+        body: JSON.stringify(formData)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            showToast('success', 'Süreç başarıyla oluşturuldu!', 'Başarılı');
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newProcessModal'));
+
+            if (modal) modal.hide();
+
+            setTimeout(() => location.reload(), 1500);
+
+        } else {
+
+            showToast('error', data.message, '→Œ Hata');
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error('Error:', error);
+
+        showToast('error', 'Süreç oluşturulurken hata oluştu!', '→Œ Bağlantı Hatası');
+
+    })
+
+    .finally(() => {
+
+        submitBtn.disabled = false;
+
+        submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Süreç Oluştur';
+
+    });
+
+}
+
+
+
+// Kurum seçimine göre kullanıcıları filtrele
+
+function filterUsersByKurum(kurumId, selectId) {
+
+    const select = document.getElementById(selectId);
+
+    if (!select) return;
+
+    const options = select.querySelectorAll('option');
+
+    
+
+    options.forEach(option => {
+
+        if (option.value === '') return; // Boş seçenek her zaman görünür
+
+        
+
+        const userKurumId = option.getAttribute('data-kurum-id');
+
+        if (!kurumId || userKurumId === kurumId) {
+
+            option.style.display = 'block';
+
+        } else {
+
+            option.style.display = 'none';
+
+        }
+
+    });
+
+    
+
+    // Seçimi sıfırla (multiple select'lerde güvenli)
+
+    Array.from(select.options).forEach(opt => {
+
+        opt.selected = false;
+
+    });
+
+}
+
+
+
+// Süreç düzenleme fonksiyonu
+
+function editProcess(processId) {
+
+    console.log('Süreç düzenleme başladı, ID:', processId);
+
+    
+
+    // Süreç bilgilerini al
+
+    fetch(`/admin/get-process/${processId}`)
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            console.log('Süreç verileri yüklendi:', data);
+
+            
+
+            if (data.success) {
+
+                const surec = data.surec;
+
+                console.log('Süreç liderleri:', surec.liderler);
+
+                console.log('Süreç üyeleri:', surec.uyeler);
+
+                console.log('Süreç alt stratejileri:', surec.alt_stratejiler);
+
+                document.getElementById('edit_surec_id').value = surec.id;
+
+                document.getElementById('edit_ad').value = surec.ad;
+
+                document.getElementById('edit_dokuman_no').value = surec.dokuman_no || '';
+
+                document.getElementById('edit_rev_no').value = surec.rev_no || '';
+
+                document.getElementById('edit_rev_tarihi').value = surec.rev_tarihi || '';
+
+                document.getElementById('edit_ilk_yayin_tarihi').value = surec.ilk_yayin_tarihi || '';
+
+                document.getElementById('edit_baslangic_tarihi').value = surec.baslangic_tarihi || '';
+
+                document.getElementById('edit_bitis_tarihi').value = surec.bitis_tarihi || '';
+
+                document.getElementById('edit_durum').value = surec.durum;
+
+                document.getElementById('edit_ilerleme').value = surec.ilerleme || 0;
+
+                document.getElementById('edit_baslangic_siniri').value = surec.baslangic_siniri || '';
+
+                document.getElementById('edit_bitis_siniri').value = surec.bitis_siniri || '';
+
+                document.getElementById('edit_aciklama').value = surec.aciklama || '';
+
+                
+
+                // Çoklu lider seçimi için verileri yükle
+
+                loadDüzenleSurecLiderler(surec);
+
+                
+
+                // Çoklu üye seçimi için verileri yükle
+
+                loadDüzenleSurecUyeler(surec);
+
+                
+
+                // Alt strateji seçimi için verileri yükle
+
+                loadDüzenleProcessStratejiler(surec);
+
+                
+
+                const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
+
+                modal.show();
+
+            } else {
+
+                showToast('error', data.message || 'Süreç bilgileri yüklenirken bir hata oluştu', 'Hata');
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error('Error:', error);
+
+            handleAjaxError(error, 'Süreç bilgileri yüklenirken bir hata oluştu');
+
+        });
+
+}
+
+
+
+// Düzenleme formunda mevcut liderleri yükle
+
+function loadDüzenleProcessLiderler(surec) {
+
+    console.log('loadDüzenleProcessLiderler çağrıldı');
+
+    const target = document.getElementById('edit_lider_ids');
+
+    console.log('edit_lider_ids elementi:', target);
+
+    if (!target) {
+
+        console.error('edit_lider_ids elementi bulunamadı!');
+
+        return;
+
+    }
+
+    target.innerHTML = '';
+
+
+
+    console.log('Lider yükleme işlemi başladı:', surec.liderler);
+
+
+
+    if (surec.liderler && surec.liderler.length > 0) {
+
+        console.log('Lider sayısı:', surec.liderler.length);
+
+        surec.liderler.forEach((lider, index) => {
+
+            console.log(`Lider ${index + 1}:`, lider);
+
+            const option = new Option(lider.username, lider.id);
+
+            console.log('Oluşturulan option:', option);
+
+            console.log('Option eklenmeden önce target.options.length:', target.options.length);
+
+            target.add(option);
+
+            console.log('Option eklendikten sonra target.options.length:', target.options.length);
+
+        });
+
+    } else {
+
+        console.log('Lider bulunamadı');
+
+    }
+
+
+
+    console.log('Lider yükleme tamamlandı');
+
+}
+
+
+
+// Düzenleme formunda mevcut üyeleri yükle
+
+function loadDüzenleProcessUyeler(surec) {
+
+    console.log('loadDüzenleProcessUyeler çağrıldı');
+
+    const target = document.getElementById('edit_uye_ids');
+
+    console.log('edit_uye_ids elementi:', target);
+
+    if (!target) {
+
+        console.error('edit_uye_ids elementi bulunamadı!');
+
+        return;
+
+    }
+
+    target.innerHTML = '';
+
+
+
+    console.log('Üye yükleme işlemi başladı:', surec.uyeler);
+
+
+
+    if (surec.uyeler && surec.uyeler.length > 0) {
+
+        console.log('Üye sayısı:', surec.uyeler.length);
+
+        surec.uyeler.forEach((uye, index) => {
+
+            console.log(`Üye ${index + 1}:`, uye);
+
+            const option = new Option(uye.username, uye.id);
+
+            target.add(option);
+
+        });
+
+    } else {
+
+        console.log('Üye bulunamadı');
+
+    }
+
+
+
+    console.log('Üye yükleme tamamlandı');
+
+}
+
+
+
+// Düzenleme formunda mevcut stratejileri yükle
+
+function loadDüzenleProcessStratejiler(surec) {
+
+    const target = document.getElementById('edit_strateji_ids');
+
+    target.innerHTML = '';
+
+
+
+    console.log('Strateji yükleme işlemi başladı:', surec.alt_stratejiler);
+
+
+
+    if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
+
+        console.log('Strateji sayısı:', surec.alt_stratejiler.length);
+
+        
+
+        // Ana stratejilere göre grupla
+
+        const groupedStrategies = {};
+
+        surec.alt_stratejiler.forEach((strateji, index) => {
+
+            console.log(`Strateji ${index + 1}:`, strateji);
+
+            
+
+            const mainStrategyAd = strateji.ana_strateji.ad;
+
+            if (!groupedStrategies[mainStrategyAd]) {
+
+                groupedStrategies[mainStrategyAd] = [];
+
+            }
+
+            groupedStrategies[mainStrategyAd].push({
+
+                id: strateji.id,
+
+                name: strateji.ad
+
+            });
+
+        });
+
+
+
+        // Her ana strateji için grup oluştur
+
+        Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+            const strategies = groupedStrategies[mainStrategyAd];
+
+            
+
+            // Ana strateji başlığı (optgroup benzeri)
+
+            const mainStrategyDiv = document.createElement('div');
+
+            mainStrategyDiv.className = 'strategy-group';
+
+            mainStrategyDiv.innerHTML = `
+
+                <div class="strategy-group-header">
+
+                    <strong>${mainStrategyAd}</strong>
+
+                </div>
+
+            `;
+
+            
+
+            // Alt stratejileri ekle
+
+            strategies.forEach(strategy => {
+
+                const strategyDiv = document.createElement('div');
+
+                strategyDiv.className = 'strategy-item';
+
+                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+
+                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+
+                mainStrategyDiv.appendChild(strategyDiv);
+
+            });
+
+            
+
+            target.appendChild(mainStrategyDiv);
+
+        });
+
+    } else {
+
+        console.log('Strateji bulunamadı');
+
+    }
+
+
+
+    console.log('Strateji yükleme tamamlandı');
+
+}
+
+
+
+// Lider ekleme fonksiyonu
+
+function addDüzenleLiderler() {
+
+    const source = document.getElementById('edit_lider_source');
+
+    const target = document.getElementById('edit_lider_ids');
+
+    const selected = Array.from(source.selectedOptions);
+
+
+
+    console.log('Lider ekleme işlemi başladı');
+
+    console.log('Seçilen liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    let addedCount = 0;
+
+    selected.forEach(opt => {
+
+        // Zaten eklenmemiş ise ekle
+
+        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+            const newOpt = new Option(opt.text, opt.value);
+
+            target.add(newOpt);
+
+            addedCount++;
+
+            console.log(`Lider eklendi: ${opt.text}`);
+
+        } else {
+
+            console.log(`Lider zaten mevcut: ${opt.text}`);
+
+        }
+
+    });
+
+
+
+    if (addedCount > 0) {
+
+        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+
+    } else {
+
+        showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+
+    }
+
+
+
+    console.log('Lider ekleme tamamlandı');
+
+}
+
+
+
+// Lider çıkarma fonksiyonu
+
+function removeDüzenleLiderler() {
+
+    const target = document.getElementById('edit_lider_ids');
+
+    const selected = Array.from(target.selectedOptions);
+
+
+
+    console.log('Lider çıkarma işlemi başladı');
+
+    console.log('Çıkarılacak liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
+
+    if (selected.length === 0) {
+
+        showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
+
+        return;
+
+    }
+
+
+
+    const removedCount = selected.length;
+
+    selected.forEach(opt => {
+
+        opt.remove();
+
+        console.log(`Lider çıkarıldı: ${opt.text}`);
+
+    });
+
+
+
+        showToast('success', `${removedCount} lider çıkarıldı!`, 'Başarılı');
+
+    console.log('Lider çıkarma tamamlandı');
+
+}
+
+
+
+// Süreç güncelleme fonksiyonu
+
+function updateProcess() {
+
+    const processId = document.getElementById('editProcessId').value;
+
+    
+
+    // Çoklu lider seçimi için lider ID'lerini topla
+
+    const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => opt.value);
+
+    const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => opt.value);
+
+    const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
+
+    
+
+    console.log('Güncelleme işlemi başladı');
+
+    console.log('Seçilen liderler:', liderIds);
+
+    console.log('Seçilen üyeler:', uyeIds);
+
+    
+
+    const formData = {
+
+        ad: document.getElementById('editProcessAd').value.trim(),
+
+        lider_ids: liderIds, // Çoklu lider seçimi
+
+        uye_ids: uyeIds, // Çoklu üye seçimi
+
+        strateji_ids: stratejiIds, // Çoklu strateji seçimi
+
+        dokuman_no: document.getElementById('editProcessDokuman').value.trim(),
+
+        rev_no: document.getElementById('editProcessRevizyon').value.trim(),
+
+        rev_tarihi: document.getElementById('editProcessRevTarihi').value,
+
+        ilk_yayin_tarihi: document.getElementById('editProcessIlkYayinTarihi').value,
+
+        durum: document.getElementById('editProcessDurum').value,
+
+        ilerleme: document.getElementById('editProcessIlerleme').value,
+
+        baslangic_tarihi: document.getElementById('editProcessBaslangic').value,
+
+        bitis_tarihi: document.getElementById('editProcessBitis').value,
+
+        baslangic_siniri: document.getElementById('editProcessBaslangicSiniri').value.trim(),
+
+        bitis_siniri: document.getElementById('editProcessBitisSiniri').value.trim(),
+
+        aciklama: document.getElementById('editProcessAciklama').value.trim()
+
+    };
+
+    
+
+    // Zorunlu alan kontrolü
+
+    if (!formData.ad || liderIds.length === 0) {
+
+        showToast('warning', 'Lütfen süreç adı ve en az bir lider seçin!', 'Eksik Bilgi');
+
+        return;
+
+    }
+
+    
+
+    const submitBtn = document.querySelector('button[onclick="updateProcess()"]');
+
+    submitBtn.disabled = true;
+
+    submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Güncelleniyor...';
+
+    
+
+    fetch(`/admin/update-process/${processId}`, {
+
+        method: 'PUT',
+
+        headers: {
+
+            'Content-Type': 'application/json',
+
+        },
+
+        body: JSON.stringify(formData)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            showToast('success', 'Süreç başarıyla güncellendi!', 'Başarılı');
+
+            setTimeout(() => location.reload(), 1500);
+
+        } else {
+
+            showToast('error', data.message, 'Hata');
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error('Error:', error);
+
+        showToast('error', 'Süreç güncellenirken hata oluştu!', 'Hata');
+
+    })
+
+    .finally(() => {
+
+        submitBtn.disabled = false;
+
+        submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Güncelle';
+
+    });
+
+}
+
+
+
+// Toast bildirim fonksiyonu
+
+function showToast(type, message, title = '') {
+
+    // Bootstrap toast container oluştur
+
+    let toastContainer = document.getElementById('toast-container');
+
+    if (!toastContainer) {
+
+        toastContainer = document.createElement('div');
+
+        toastContainer.id = 'toast-container';
+
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+
+        toastContainer.style.zIndex = '9999';
+
+        document.body.appendChild(toastContainer);
+
+    }
+
+    
+
+    // Toast ID oluştur
+
+    const toastId = 'toast-' + Tarih.now();
+
+    
+
+    // Toast HTML oluştur
+
+    const toastHTML = `
+
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+
+            <div class="toast-header bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'info' ? 'info' : 'primary'} text-white">
+
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'bell'} me-2"></i>
+
+                <strong class="me-auto">${title || (type === 'success' ? 'Başarılı' : type === 'error' ? 'Hata' : type === 'info' ? 'Bilgi' : 'Bildirim')}</strong>
+
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+
+            </div>
+
+            <div class="toast-body">
+
+                ${message}
+
+            </div>
+
+        </div>
+
+    `;
+
+    
+
+    // Toast'u container'a ekle
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+    
+
+    // Toast'u göster
+
+    const toastElement = document.getElementById(toastId);
+
+    const toast = new bootstrap.Toast(toastElement, {
+
+        autohide: true,
+
+        delay: type === 'error' ? 5000 : 3000
+
+    });
+
+    
+
+    toast.show();
+
+    
+
+    // Toast kapandığında DOM'dan kaldır
+
+    toastElement.addEventListener('hidden.bs.toast', function() {
+
+        toastElement.remove();
+
+    });
+
+}
+
+</script>
+
+
+
+<!-- Yeni Süreç Oluştur Modal -->
+
+<div class="modal fade" id="newProcessModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-plus-circle-fill me-2"></i>Yeni Süreç Ekle
+
+                    <small class="ms-3">v2.1.4</small>
+
+                </h5>
+
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="newProcessForm">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">Süreç Adı <span class="text-danger">*</span></label>
+
+                            <input type="text" class="form-control" id="newProcessAd" required placeholder="Ç–rn: Yazılım Geliştirme Süreci">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            {% if current_user.sistem_rol == 'admin' %}
+
+                            <label class="form-label">Kurum <span class="text-danger">*</span></label>
+
+                            <select class="form-control" id="newProcessKurum" required onchange="onNewProcessKurumChange(this.value)">
+
+                                <option value="">Kurum seçiniz...</option>
+
+                                {% for kurum in kurumlar %}
+
+                                <option value="{{ kurum.id }}" {% if kurum.id == current_user.kurum_id %}selected{% endif %}>{{ kurum.kisa_ad }}</option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            {% else %}
+
+                            <label class="form-label">Kurum</label>
+
+                            <input type="text" class="form-control" value="{{ current_user.kurum.kisa_ad if current_user.kurum else '' }}" disabled>
+
+                            <small class="text-muted">Süreç mevcut kurumunuza eklenecektir.</small>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Süreç Liderleri Seçimi (Çoklu) -->
+
+                    <div class="row mb-3">
+
+                        <div class="col-12">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-star-fill text-primary"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)
+
+                            </label>
+
+                            <div class="card bg-primary bg-opacity-10">
+
+                                <div class="card-body p-2">
+
+                                    <div class="row g-1">
+
+                                        <div class="col">
+
+                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                            <select class="form-select" id="new_lider_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewLiderler()">
+
+                                                {% for user in kullanicilar %}
+
+                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{ user.username }} ({{ user.email }})</option>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                        </div>
+
+                                        <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                            <div class="text-center">
+
+                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewLiderler()">
+
+                                                    <i class="bi bi-arrow-right"></i> Ekle
+
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewLiderler()">
+
+                                                    <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                </button>
+
+                                                <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col">
+
+                                            <label class="form-label">Süreç Liderleri</label>
+
+                                            <select class="form-select" id="new_lider_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeNewLiderler()">
+
+                                            </select>
+
+                                            <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Süreç Üyeleri Seçimi (Çoklu) -->
+
+                    <div class="row mb-3">
+
+                        <div class="col-12">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-person-fill text-secondary"></i> Süreç Üyeleri (İsteğe Bağlı)
+
+                            </label>
+
+                            <div class="card bg-secondary bg-opacity-10">
+
+                                <div class="card-body p-2">
+
+                                    <div class="row g-1">
+
+                                        <div class="col">
+
+                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                            <select class="form-select" id="new_uye_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewUyeler()">
+
+                                                {% for user in kullanicilar %}
+
+                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{ user.username }} ({{ user.email }})</option>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                        </div>
+
+                                        <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                            <div class="text-center">
+
+                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewUyeler()">
+
+                                                    <i class="bi bi-arrow-right"></i> Ekle
+
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewUyeler()">
+
+                                                    <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                </button>
+
+                                                <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col">
+
+                                            <label class="form-label">Süreç Üyeleri</label>
+
+                                            <select class="form-select" id="new_uye_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeNewUyeler()">
+
+                                            </select>
+
+                                            <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Alt Strateji Seçimi (Çoklu) -->
+
+                    <div class="row mb-3">
+
+                        <div class="col-12">
+
+                            <label class="form-label fw-bold">
+
+                                <i class="bi bi-diagram-3 text-info"></i> Alt Stratejiler (İsteğe Bağlı)
+
+                            </label>
+
+                            <div class="card bg-info bg-opacity-10">
+
+                                <div class="card-body p-2">
+
+                                    <div class="row g-1">
+
+                                        <div class="col">
+
+                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                            <select class="form-select" id="new_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewStratejiler()">
+
+                                                {% for ana_strateji in ana_stratejiler %}
+
+                                                    <optgroup label="{{ ana_strateji.ad }}">
+
+                                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
+
+                                                            <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+
+                                                        {% endfor %}
+
+                                                    </optgroup>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                        </div>
+
+                                        <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                            <div class="text-center">
+
+                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewStratejiler()">
+
+                                                    <i class="bi bi-arrow-right"></i> Ekle
+
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewStratejiler()">
+
+                                                    <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                </button>
+
+                                                <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col">
+
+                                            <label class="form-label">Seçilen Alt Stratejiler</label>
+
+                                            <div class="form-control" id="new_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 120px; padding: 8px;">
+
+                                            </div>
+
+                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Doküman ve Tarih Bilgileri -->
+
+                    <div class="row mt-4">
+
+                        <div class="col-12">
+
+                            <h6 class="text-primary mb-3">
+
+                                <i class="bi bi-file-text"></i> Doküman ve Tarih Bilgileri
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Doküman No</label>
+
+                            <input type="text" class="form-control" id="newProcessDokuman" placeholder="YG-001">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Revizyon No</label>
+
+                            <input type="text" class="form-control" id="newProcessRevizyon" placeholder="1.0">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Durum</label>
+
+                            <select class="form-control" id="newProcessDurum">
+
+                                <option value="Aktif">Aktif</option>
+
+                                <option value="Pasif">Pasif</option>
+
+                                <option value="Beklemede">Beklemede</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Başlangıç Tarihi</label>
+
+                            <input type="date" class="form-control" id="newProcessBaslangic">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Bitiş Tarihi</label>
+
+                            <input type="date" class="form-control" id="newProcessBitis">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">Revizyon Tarihi</label>
+
+                            <input type="date" class="form-control" id="newProcessRevTarihi">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">İlk Yayın Tarihi</label>
+
+                            <input type="date" class="form-control" id="newProcessIlkYayinTarihi">
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="row">
+
+                        <div class="col-12 mb-3">
+
+                            <label class="form-label">İlerleme (%)</label>
+
+                            <input type="range" class="form-range" id="newProcessIlerleme" min="0" max="100" value="0" oninput="document.getElementById('newProcessIlerlemeValue').textContent = this.value + '%'" >
+
+                            <div class="text-center">
+
+                                <span class="badge bg-primary" id="newProcessIlerlemeValue">0%</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">Başlangıç Sınırı</label>
+
+                            <textarea class="form-control" id="newProcessBaslangicSiniri" rows="2" placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">Bitiş Sınırı</label>
+
+                            <textarea class="form-control" id="newProcessBitisSiniri" rows="2" placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
+
+                        </div>
+
+                        <div class="col-12 mb-3">
+
+                            <label class="form-label">Açıklama</label>
+
+                            <textarea class="form-control" id="newProcessAciklama" rows="3" placeholder="Süreç hakkında detaylı bilgi..."></textarea>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+
+                <button type="button" class="btn btn-success" onclick="createNewProcess()">
+
+                    <i class="bi bi-save-fill me-2"></i>Süreç Oluştur
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Süreç Düzenle Modal -->
+
+<div class="modal fade" id="editProcessModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning text-dark">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-pencil-fill me-2"></i>Süreç Düzenle
+
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="editProcessForm">
+
+                    <input type="hidden" id="editProcessId">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Süreç Adı <span class="text-danger">*</span></label>
+
+                                <input type="text" class="form-control" id="editProcessAd" required>
+
+                            </div>
+
+                            <!-- Süreç Liderleri Seçimi (Çoklu) -->
+
+                            <div class="col-12">
+
+                                <label class="form-label fw-bold">
+
+                                    <i class="bi bi-star-fill text-warning"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)
+
+                                </label>
+
+                                <div class="card bg-warning bg-opacity-10">
+
+                                    <div class="card-body p-2">
+
+                                        <div class="row g-1">
+
+                                            <div class="col">
+
+                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                                <select class="form-select" id="edit_lider_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleLiderler()">
+
+                                                    {% for user in kullanicilar %}
+
+                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+
+                                                    {% endfor %}
+
+                                                </select>
+
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                            </div>
+
+                                            <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                                <div class="text-center">
+
+                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleLiderler()">
+
+                                                        <i class="bi bi-arrow-right"></i> Ekle
+
+                                                    </button>
+
+                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleLiderler()">
+
+                                                        <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                    </button>
+
+                                                    <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label class="form-label">Süreç Liderleri</label>
+
+                                                <select class="form-select" id="edit_lider_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeDüzenleLiderler()">
+
+                                                </select>
+
+                                                <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+
+                            <!-- Süreç Üyeleri Seçimi (Çoklu) -->
+
+                            <div class="col-12">
+
+                                <label class="form-label fw-bold">
+
+                                    <i class="bi bi-person-fill text-secondary"></i> Süreç Üyeleri (İsteğe Bağlı)
+
+                                </label>
+
+                                <div class="card bg-secondary bg-opacity-10">
+
+                                    <div class="card-body p-2">
+
+                                        <div class="row g-1">
+
+                                            <div class="col">
+
+                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                                <select class="form-select" id="edit_uye_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleUyeler()">
+
+                                                    {% for user in kullanicilar %}
+
+                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+
+                                                    {% endfor %}
+
+                                                </select>
+
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                            </div>
+
+                                            <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                                <div class="text-center">
+
+                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleUyeler()">
+
+                                                        <i class="bi bi-arrow-right"></i> Ekle
+
+                                                    </button>
+
+                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleUyeler()">
+
+                                                        <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                    </button>
+
+                                                    <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label class="form-label">Süreç Üyeleri</label>
+
+                                                <select class="form-select" id="edit_uye_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeDüzenleUyeler()">
+
+                                                </select>
+
+                                                <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+
+                            <!-- Alt Strateji Seçimi (Çoklu) -->
+
+                            <div class="col-12">
+
+                                <label class="form-label fw-bold">
+
+                                    <i class="bi bi-diagram-3 text-info"></i> Alt Stratejiler (İsteğe Bağlı)
+
+                                </label>
+
+                                <div class="card bg-info bg-opacity-10">
+
+                                    <div class="card-body p-2">
+
+                                        <div class="row g-1">
+
+                                            <div class="col">
+
+                                                <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+
+                                                <select class="form-select" id="edit_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
+
+                                                    {% for ana_strateji in ana_stratejiler %}
+
+                                                        <optgroup label="{{ ana_strateji.ad }}">
+
+                                                            {% for alt_strateji in ana_strateji.alt_stratejiler %}
+
+                                                                <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+
+                                                            {% endfor %}
+
+                                                        </optgroup>
+
+                                                    {% endfor %}
+
+                                                </select>
+
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+
+                                            </div>
+
+                                            <div class="col-auto d-flex align-items-center justify-content-center">
+
+                                                <div class="text-center">
+
+                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleStratejiler()">
+
+                                                        <i class="bi bi-arrow-right"></i> Ekle
+
+                                                    </button>
+
+                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleStratejiler()">
+
+                                                        <i class="bi bi-arrow-left"></i> Çıkar
+
+                                                    </button>
+
+                                                    <small class="text-muted d-block mt-2">veya çift tıklayın</small>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label class="form-label">Seçilen Alt Stratejiler</label>
+
+                                                <div class="form-control" id="edit_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
+
+                                                </div>
+
+                                                <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Durum</label>
+
+                                <select class="form-control" id="editProcessDurum">
+
+                                    <option value="Aktif">Aktif</option>
+
+                                    <option value="Pasif">Pasif</option>
+
+                                    <option value="Beklemede">Beklemede</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <!-- Doküman ve Tarih Bilgileri -->
+
+                    <div class="row mt-4">
+
+                        <div class="col-12">
+
+                            <h6 class="text-primary mb-3">
+
+                                <i class="bi bi-file-text"></i> Doküman ve Tarih Bilgileri
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Doküman No</label>
+
+                                <input type="text" class="form-control" id="editProcessDokuman">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Revizyon No</label>
+
+                                <input type="text" class="form-control" id="editProcessRevizyon">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Başlangıç Tarihi</label>
+
+                                <input type="date" class="form-control" id="editProcessBaslangic">
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Bitiş Tarihi</label>
+
+                                <input type="date" class="form-control" id="editProcessBitis">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Revizyon Tarihi</label>
+
+                                <input type="date" class="form-control" id="editProcessRevTarihi">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">İlk Yayın Tarihi</label>
+
+                                <input type="date" class="form-control" id="editProcessIlkYayinTarihi">
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">İlerleme (%)</label>
+
+                                <input type="range" class="form-range" id="editProcessIlerleme" min="0" max="100" value="0" oninput="document.getElementById('editProcessIlerlemeValue').textContent = this.value + '%'" >
+
+                                <div class="text-center">
+
+                                    <span class="badge bg-primary" id="editProcessIlerlemeValue">0%</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Başlangıç Sınırı</label>
+
+                                <textarea class="form-control" id="editProcessBaslangicSiniri" rows="2" placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Bitiş Sınırı</label>
+
+                                <textarea class="form-control" id="editProcessBitisSiniri" rows="2" placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">Açıklama</label>
+
+                                <textarea class="form-control" id="editProcessAciklama" rows="3"></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+
+                <button type="button" class="btn btn-warning" onclick="updateProcess()">
+
+                    <i class="bi bi-save-fill me-2"></i>Güncelle
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+
+

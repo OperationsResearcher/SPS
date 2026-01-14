@@ -1,0 +1,716 @@
+{% extends "base.html" %}
+
+{% block title %}Stratejik Planlama Asistanı{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-1">Stratejik Planlama Asistanı</h2>
+            <p class="text-muted mb-0">
+                Kurum profilinizi tanımlayın, yapay zekÇ¢ destekli amaç, vizyon ve strateji önerileri alın.
+            </p>
+        </div>
+        <div class="text-md-end mt-3 mt-md-0">
+            <span class="badge bg-secondary">
+                Durum: {{ (kurum.stratejik_durum or 'eksik')|upper }}
+            </span>
+            {% if kurum.stratejik_son_guncelleme %}
+            <small class="text-muted d-block mt-1">
+                Güncellendi: {{ kurum.stratejik_son_guncelleme.strftime('%d.%m.%Y %H:%M') }}
+            </small>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0">1. Kurumu Tanıyalım</h5>
+                    <small class="text-muted">Kısa cevaplar bile yeterli.</small>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Kurum Adı</label>
+                            <input type="text" class="form-control" id="kurum_adi" name="kurum_adi" value="{{ kurum.kisa_ad }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sektör / Faaliyet Alanı</label>
+                            <input type="text" class="form-control" id="sektor" name="sektor" value="{{ kurum.sektor }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kurum Ç–zeti</label>
+                            <textarea class="form-control" id="kurum_aciklamasi" name="kurum_aciklamasi" rows="2" placeholder="Kısa tarihçe, hedefi..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedef Kitle / Paydaşlar</label>
+                            <textarea class="form-control" id="hedef_kitle" name="hedef_kitle" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Güçlü Yönler</label>
+                            <textarea class="form-control" id="guclu_yonler" name="guclu_yonler" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fırsatlar</label>
+                            <textarea class="form-control" id="firsatlar" name="firsatlar" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Zorluklar / Riskler</label>
+                            <textarea class="form-control" id="zorluklar" name="zorluklar" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Stratejik Ç–ncelikler</label>
+                            <textarea class="form-control" id="stratejik_oncelikler" name="stratejik_oncelikler" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kilit Projeler / Girişimler</label>
+                            <textarea class="form-control" id="kilit_projeler" name="kilit_projeler" rows="2"></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" type="button" id="saveProfilBtn">
+                                <i class="fas fa-save me-2"></i>Profil Cevaplarını Kaydet
+                            </button>
+                            <button class="btn btn-primary" type="button" id="generateBtn">
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="generateSpinner"></span>
+                                <span class="btn-text"><i class="fas fa-magic me-2"></i>AI Önerisi Oluştur</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">2. Yapay ZekÇ¢ Önerileri</h5>
+                        <small class="text-muted">Önerileri düzenleyebilir veya kopyalayabilirsiniz.</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" id="refreshSuggestionsBtn">
+                        <i class="fas fa-sync-alt me-1"></i>Son kaydı yükle
+                    </button>
+                </div>
+                <div class="card-body" id="suggestionsContainer">
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-magic fa-2x mb-3 text-primary"></i>
+                        <p class="mb-0">Ç–nce kurum bilgilerini kaydedin, ardından yapay zekÇ¢ önerilerini oluşturun.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const kurumId = {{ current_user.kurum_id }};
+let profileState = {{ profil_json | safe }};
+
+function getFormData() {
+    const form = document.getElementById('profileForm');
+    const formData = new FormData(form);
+    const payload = {};
+    formData.forEach((value, key) => payload[key] = value.trim());
+    return payload;
+}
+
+function fillFormFromState() {
+    const inputs = (profileState && profileState.inputs) ? profileState.inputs : {};
+    Object.entries(inputs).forEach(([key, value]) => {
+        const el = document.getElementById(key);
+        if (el) el.value = value || '';
+    });
+    if (profileState && profileState.ai_suggestions) {
+        renderSuggestions(profileState.ai_suggestions);
+    }
+}
+
+async function saveProfil(showToastMessage = true) {
+    const inputs = getFormData();
+    profileState.inputs = inputs;
+    try {
+        const response = await fetch(`/api/kurum/${kurumId}/stratejik-profil`, {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({inputs, status: 'taslak'})
+        });
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.message || 'Profil kaydedilemedi');
+        }
+        if (showToastMessage) {
+            showToast('success', 'Profil cevaplarınız kaydedildi.', 'Kayıt');
+        }
+        return true;
+    } catch (error) {
+        showToast('error', error.message || 'Profil kaydedilemedi');
+        return false;
+    }
+}
+
+function buildListMarkup(items = [], category = '') {
+    // Array kontrolü - eİer array deİilse boş array'e çevir
+    if (!Array.isArray(items)) {
+        console.warn(`buildListMarkup: ${category} için items array deİil:`, items);
+        return '<p class="text-muted mb-0">Veri bulunamadı.</p>';
+    }
+    if (!items || !items.length) return '<p class="text-muted mb-0">Veri bulunamadı.</p>';
+    return items.map((item, index) => {
+        const descEscaped = (item.description || '').replace(/`/g, '\\`').replace(/'/g, "\\'");
+        return `
+        <div class="border rounded-3 p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <strong>${item.title || ('Öneri ' + (index + 1))}</strong>
+                    <p class="mb-0 text-muted mt-1">${item.description || ''}</p>
+                </div>
+                <div class="ms-2">
+                    <button class="btn btn-sm btn-link text-decoration-none" onclick="copyText(\`${descEscaped}\`)">
+                        <i class="fas fa-copy me-1"></i>Kopyala
+                    </button>
+                    <button class="btn btn-sm btn-info text-white" onclick="generateNewSuggestion('${category}')">
+                        <i class="fas fa-sync-alt me-1"></i>Yeni Öneri
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="acceptItem('${category}', ${index})">
+                        <i class="fas fa-check me-1"></i>Kabul Et
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    }).join('');
+}
+
+function renderStrategies(strategies = []) {
+    // Array kontrolü - eİer array deİilse boş array'e çevir
+    if (!Array.isArray(strategies)) {
+        console.warn('renderStrategies: strategies array deİil:', strategies);
+        return '<p class="text-muted">Öneri bulunamadı.</p>';
+    }
+    if (!strategies.length) return '<p class="text-muted">Öneri bulunamadı.</p>';
+    return strategies.map((strategy, idx) => {
+        const descEscaped = (strategy.description || '').replace(/`/g, '\\`').replace(/'/g, "\\'");
+        return `
+        <div class="border rounded-3 p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <strong>${strategy.title || ('Strateji ' + (idx + 1))}</strong>
+                    <p class="mb-1 text-muted">${strategy.description || ''}</p>
+                </div>
+                <div class="ms-2">
+                    <button class="btn btn-sm btn-link text-decoration-none" onclick="copyText(\`${descEscaped}\`)">
+                        <i class="fas fa-copy me-1"></i>Kopyala
+                    </button>
+                    <button class="btn btn-sm btn-info text-white" onclick="generateNewSuggestion('main_strategies')">
+                        <i class="fas fa-sync-alt me-1"></i>Yeni Öneri
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="acceptStrategy(${idx})">
+                        <i class="fas fa-check me-1"></i>Kabul Et
+                    </button>
+                </div>
+            </div>
+            ${strategy.sub_strategies && Array.isArray(strategy.sub_strategies) && strategy.sub_strategies.length ? `
+                <div class="mt-2">
+                    <small class="text-uppercase text-muted">Alt Stratejiler</small>
+                    ${buildListMarkup(strategy.sub_strategies, 'sub_strategies')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+    }).join('');
+}
+
+function renderSuggestions(suggestions) {
+    if (!suggestions) return;
+    const container = document.getElementById('suggestionsContainer');
+    
+    // Array kontrolü - eİer array deİilse boş array'e çevir
+    if (!Array.isArray(suggestions.values)) {
+        console.warn('renderSuggestions: values array deİil:', suggestions.values);
+        suggestions.values = [];
+    }
+    if (!Array.isArray(suggestions.ethics)) {
+        console.warn('renderSuggestions: ethics array deİil:', suggestions.ethics);
+        suggestions.ethics = [];
+    }
+    if (!Array.isArray(suggestions.quality_policies)) {
+        console.warn('renderSuggestions: quality_policies array deİil:', suggestions.quality_policies);
+        suggestions.quality_policies = [];
+    }
+    if (!Array.isArray(suggestions.main_strategies)) {
+        console.warn('renderSuggestions: main_strategies array deİil:', suggestions.main_strategies);
+        suggestions.main_strategies = [];
+    }
+    
+    const purposeEscaped = (suggestions.purpose || '').replace(/`/g, '\\`').replace(/'/g, "\\'");
+    const visionEscaped = (suggestions.vision || '').replace(/`/g, '\\`').replace(/'/g, "\\'");
+    
+    container.innerHTML = `
+        <div class="row g-4">
+            <div class="col-12 mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">AI Önerileri</h5>
+                    <button class="btn btn-success" onclick="acceptAllSuggestions()">
+                        <i class="fas fa-check-double me-2"></i>Tümünü Kabul Et
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded-3 p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Amaç</strong>
+                        <div>
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="copyText(\`${purposeEscaped}\`)">
+                                <i class="fas fa-copy me-1"></i>Kopyala
+                            </button>
+                            <button class="btn btn-sm btn-info text-white" onclick="generateNewSuggestion('purpose')">
+                                <i class="fas fa-sync-alt me-1"></i>Yeni Öneri
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="acceptPurpose()">
+                                <i class="fas fa-check me-1"></i>Kabul Et
+                            </button>
+                        </div>
+                    </div>
+                    <div data-field="purpose">
+                        <p class="mb-0 text-muted">${suggestions.purpose || 'Öneri oluşturulmadı.'}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded-3 p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Vizyon</strong>
+                        <div>
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="copyText(\`${visionEscaped}\`)">
+                                <i class="fas fa-copy me-1"></i>Kopyala
+                            </button>
+                            <button class="btn btn-sm btn-info text-white" onclick="generateNewSuggestion('vision')">
+                                <i class="fas fa-sync-alt me-1"></i>Yeni Öneri
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="acceptVision()">
+                                <i class="fas fa-check me-1"></i>Kabul Et
+                            </button>
+                        </div>
+                    </div>
+                    <div data-field="vision">
+                        <p class="mb-0 text-muted">${suggestions.vision || 'Öneri oluşturulmadı.'}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <h6 class="mt-3">Değerler</h6>
+                ${buildListMarkup(suggestions.values, 'values')}
+            </div>
+            <div class="col-12">
+                <h6>Etik Kurallar</h6>
+                ${buildListMarkup(suggestions.ethics, 'ethics')}
+            </div>
+            <div class="col-12">
+                <h6>Kalite Politikaları</h6>
+                ${buildListMarkup(suggestions.quality_policies, 'quality_policies')}
+            </div>
+            <div class="col-12">
+                <h6>Ana & Alt Stratejiler</h6>
+                ${renderStrategies(suggestions.main_strategies)}
+            </div>
+        </div>
+    `;
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text || '').then(() => {
+        showToast('success', 'Metin panoya kopyalandı.', 'Kopyalandı');
+    }).catch(() => {
+        showToast('error', 'Kopyalama başarısız oldu.');
+    });
+}
+
+async function generateSuggestions() {
+    const btn = document.getElementById('generateBtn');
+    const spinner = document.getElementById('generateSpinner');
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    
+    // Loading mesajını hemen göster
+    showToast('info', 'AI önerileri oluşturuluyor, lütfen bekleyin...', 'İşlem Devam Ediyor');
+    
+    try {
+        const saved = await saveProfil(false);
+        if (!saved) {
+            throw new Error('Profil kaydedilemediİi için öneri oluşturulamadı.');
+        }
+        
+        const response = await fetch('/api/ai/stratejik-oneri', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({profil: profileState.inputs})
+        });
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.message || 'Öneri oluşturulamadı.');
+        }
+        profileState.ai_suggestions = data.suggestions;
+        renderSuggestions(data.suggestions);
+        
+        // API key durumunu kontrol et
+        if (data.is_fallback) {
+            showToast('warning', 'Basit öneriler oluşturuldu. Gerçek AI önerileri için Gemini API anahtarı gerekli. Lütfen sistem yöneticisine başvurun.', 'Bilgi');
+        } else {
+            showToast('success', 'AI önerileri hazır!', 'Başarılı');
+        }
+    } catch (error) {
+        showToast('error', error.message || 'Öneriler alınamadı.');
+    } finally {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+    }
+}
+
+async function generateNewSuggestion(field) {
+    if (!profileState.inputs || Object.keys(profileState.inputs).length === 0) {
+        showToast('warning', 'Ç–nce kurum profil bilgilerini kaydedin.', 'Uyarı');
+        return;
+    }
+    
+    // Field adını Türkçe'ye çevir
+    const fieldAds = {
+        'purpose': 'Amaç',
+        'vision': 'Vizyon',
+        'values': 'Değerler',
+        'ethics': 'Etik Kurallar',
+        'quality_policies': 'Kalite Politikaları',
+        'main_strategies': 'Ana Stratejiler'
+    };
+    const fieldAd = fieldAds[field] || field;
+    
+    // Loading mesajını hemen göster
+    showToast('info', `${fieldAd} için yeni öneri oluşturuluyor, lütfen bekleyin...`, 'İşlem Devam Ediyor');
+    
+    try {
+        const response = await fetch('/api/ai/yeni-oneri', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({
+                field: field,
+                profil: profileState.inputs
+            })
+        });
+        
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.message || 'Yeni öneri oluşturulamadı.');
+        }
+        
+        // Mevcut önerileri güncelle
+        if (!profileState.ai_suggestions) {
+            profileState.ai_suggestions = {};
+        }
+        profileState.ai_suggestions[field] = data.suggestion;
+        
+        // Sadece ilgili field'ı güncelle, tüm sayfayı yeniden render etme
+        updateFieldSuggestion(field, data.suggestion);
+        
+        // API key durumunu kontrol et
+        if (data.is_fallback) {
+            showToast('warning', `${fieldAd} için basit öneri oluşturuldu. Gerçek AI önerileri için Gemini API anahtarı gerekli.`, 'Bilgi');
+        } else {
+            showToast('success', `${fieldAd} için yeni AI önerisi oluşturuldu!`, 'Başarılı');
+        }
+        
+    } catch (error) {
+        showToast('error', error.message || 'Yeni öneri oluşturulamadı.');
+    }
+}
+
+// Sadece belirli bir field'ı güncelle
+function updateFieldSuggestion(field, newSuggestion) {
+    const container = document.getElementById('suggestionsContainer');
+    if (!container) return;
+    
+    // Mevcut önerileri güncelle
+    if (!profileState.ai_suggestions) {
+        profileState.ai_suggestions = {};
+    }
+    profileState.ai_suggestions[field] = newSuggestion;
+    
+    // Sadece ilgili field'ın DOM'unu güncelle
+    if (field === 'purpose') {
+        const purposeElement = container.querySelector('[data-field="purpose"]');
+        if (purposeElement) {
+            const purposeText = newSuggestion || 'Öneri oluşturulmadı.';
+            purposeElement.querySelector('p').textContent = purposeText;
+            
+            // Copy butonunu güncelle
+            const copyBtn = purposeElement.closest('.border').querySelector('button[onclick*="copyText"]');
+            if (copyBtn) {
+                const purposeEscaped = purposeText.replace(/`/g, '\\`').replace(/'/g, "\\'");
+                copyBtn.setAttribute('onclick', `copyText(\`${purposeEscaped}\`)`);
+            }
+        } else {
+            // Eİer element yoksa tüm sayfayı render et
+            renderSuggestions(profileState.ai_suggestions);
+        }
+    } else if (field === 'vision') {
+        const visionElement = container.querySelector('[data-field="vision"]');
+        if (visionElement) {
+            const visionText = newSuggestion || 'Öneri oluşturulmadı.';
+            visionElement.querySelector('p').textContent = visionText;
+            
+            // Copy butonunu güncelle
+            const copyBtn = visionElement.closest('.border').querySelector('button[onclick*="copyText"]');
+            if (copyBtn) {
+                const visionEscaped = visionText.replace(/`/g, '\\`').replace(/'/g, "\\'");
+                copyBtn.setAttribute('onclick', `copyText(\`${visionEscaped}\`)`);
+            }
+        } else {
+            renderSuggestions(profileState.ai_suggestions);
+        }
+    } else {
+        // Array field'lar için (values, ethics, quality_policies, main_strategies)
+        // Tüm sayfayı yeniden render et (çünkü liste yapısı karmaşık)
+        renderSuggestions(profileState.ai_suggestions);
+    }
+}
+
+async function refreshProfilFromServer() {
+    try {
+        const response = await fetch(`/api/kurum/${kurumId}/stratejik-profil`);
+        const data = await response.json();
+        if (data.success) {
+            profileState = data.data || {};
+            fillFormFromState();
+            showToast('info', 'Son kayıtlar yüklendi.', 'Bilgi');
+        }
+    } catch (error) {
+        showToast('error', 'Kayıtlar yüklenemedi.');
+    }
+}
+
+// Modern onay modalı göster
+function showConfirmModal(title, message, onConfirm, onİptal = null) {
+    // Eİer modal zaten varsa kaldır
+    const existingModal = document.getElementById('confirmModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Modal HTML'i oluştur
+    const modalHTML = `
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                    <div class="modal-header bg-warning text-dark border-0">
+                        <h5 class="modal-title d-flex align-items-center" id="confirmModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${title}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-4">
+                        <p class="mb-0">${message}</p>
+                    </div>
+                    <div class="modal-footer border-0 bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>İptal
+                        </button>
+                        <button type="button" class="btn btn-warning text-dark" id="confirmBtn">
+                            <i class="fas fa-check me-2"></i>Onayla
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Modal'ı body'ye ekle
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Modal'ı göster
+    const modalElement = document.getElementById('confirmModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+    // Onay butonuna event listener ekle
+    const confirmBtn = document.getElementById('confirmBtn');
+    confirmBtn.addEventListener('click', () => {
+        modal.hide();
+        if (onConfirm) {
+            onConfirm();
+        }
+    });
+    
+    // Modal kapandıİında temizle
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        modalElement.remove();
+        if (onİptal) {
+            onİptal();
+        }
+    });
+}
+
+async function acceptAllSuggestions() {
+    if (!profileState.ai_suggestions) {
+        showToast('warning', 'Ç–nce AI önerileri oluşturun.', 'Uyarı');
+        return;
+    }
+    
+    // Modern onay modalı göster
+    showConfirmModal(
+        'Onay Gerekli',
+        'Tüm AI önerilerini veritabanına kaydetmek istediİinize emin misiniz?',
+        async () => {
+            // Onaylandı - işlemi gerçekleştir
+            try {
+                showToast('info', 'Öneriler kaydediliyor, lütfen bekleyin...', 'İşlem Devam Ediyor');
+                
+                const response = await fetch('/api/ai/kabul-et', {
+                    method: 'POST',
+                    headers: {'Content-Tip': 'application/json'},
+                    body: JSON.stringify({suggestions: profileState.ai_suggestions})
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', data.message || 'Tüm öneriler başarıyla kaydedildi!', 'Başarılı');
+                    setSaatout(() => location.reload(), 2000);
+                } else {
+                    throw new Error(data.message || 'Kayıt başarısız oldu.');
+                }
+            } catch (error) {
+                showToast('error', error.message || 'Öneriler kaydedilemedi.');
+            }
+        }
+    );
+}
+
+async function acceptPurpose() {
+    if (!profileState.ai_suggestions || !profileState.ai_suggestions.purpose) {
+        showToast('warning', 'Amaç önerisi bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/ai/kabul-et', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({
+                suggestions: {purpose: profileState.ai_suggestions.purpose}
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            showToast('success', 'Amaç başarıyla kaydedildi!', 'Başarılı');
+        } else {
+            throw new Error(data.message || 'Kayıt başarısız oldu.');
+        }
+    } catch (error) {
+        showToast('error', error.message || 'Amaç kaydedilemedi.');
+    }
+}
+
+async function acceptVision() {
+    if (!profileState.ai_suggestions || !profileState.ai_suggestions.vision) {
+        showToast('warning', 'Vizyon önerisi bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/ai/kabul-et', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({
+                suggestions: {vision: profileState.ai_suggestions.vision}
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            showToast('success', 'Vizyon başarıyla kaydedildi!', 'Başarılı');
+        } else {
+            throw new Error(data.message || 'Kayıt başarısız oldu.');
+        }
+    } catch (error) {
+        showToast('error', error.message || 'Vizyon kaydedilemedi.');
+    }
+}
+
+async function acceptItem(category, index) {
+    if (!profileState.ai_suggestions || !profileState.ai_suggestions[category]) {
+        showToast('warning', 'Öneri bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    const items = profileState.ai_suggestions[category];
+    if (!items || !items[index]) {
+        showToast('warning', 'Seçilen öİe bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    const item = items[index];
+    const suggestions = {};
+    suggestions[category] = [item];
+    
+    try {
+        const response = await fetch('/api/ai/kabul-et', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({suggestions})
+        });
+        const data = await response.json();
+        if (data.success) {
+            showToast('success', `${item.title || 'Ç–İe'} başarıyla kaydedildi!`, 'Başarılı');
+        } else {
+            throw new Error(data.message || 'Kayıt başarısız oldu.');
+        }
+    } catch (error) {
+        showToast('error', error.message || 'Ç–İe kaydedilemedi.');
+    }
+}
+
+async function acceptStrategy(index) {
+    if (!profileState.ai_suggestions || !profileState.ai_suggestions.main_strategies) {
+        showToast('warning', 'Strateji önerisi bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    const strategies = profileState.ai_suggestions.main_strategies;
+    if (!strategies || !strategies[index]) {
+        showToast('warning', 'Seçilen strateji bulunamadı.', 'Uyarı');
+        return;
+    }
+    
+    const strategy = strategies[index];
+    const suggestions = {
+        main_strategies: [strategy]
+    };
+    
+    try {
+        const response = await fetch('/api/ai/kabul-et', {
+            method: 'POST',
+            headers: {'Content-Tip': 'application/json'},
+            body: JSON.stringify({suggestions})
+        });
+        const data = await response.json();
+        if (data.success) {
+            showToast('success', `${strategy.title || 'Strateji'} başarıyla kaydedildi!`, 'Başarılı');
+        } else {
+            throw new Error(data.message || 'Kayıt başarısız oldu.');
+        }
+    } catch (error) {
+        showToast('error', error.message || 'Strateji kaydedilemedi.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fillFormFromState();
+    document.getElementById('saveProfilBtn').addEventListener('click', () => saveProfil(true));
+    document.getElementById('generateBtn').addEventListener('click', generateSuggestions);
+    document.getElementById('refreshSuggestionsBtn').addEventListener('click', refreshProfilFromServer);
+});
+</script>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-3">
+  <div class="d-flex align-items-center mb-3">
+    <h3 class="me-3">Kanban — {{ project.name }}</h3>
+    <a class="btn btn-outline-secondary me-2" href="/projeler/{{ project.id }}/takvim">Takvim</a>
+    <a class="btn btn-outline-secondary" href="/projeler/{{ project.id }}/gantt">Gantt</a>
+  </div>
+  <div class="row g-3" id="kanban-board">
+    <div class="col-12 col-md-4">
+      <div class="card">
+        <div class="card-header bg-light fw-bold">Yapılacak</div>
+        <div class="card-body" id="col-todo">
+          {% for t in tasks %}
+            {% if t.status in ['To Do','Yapılacak'] %}
+              <div class="card mb-2 kanban-item" data-id="{{ t.id }}">
+                <div class="card-body p-2">
+                  <div class="fw-semibold">{{ t.title }}</div>
+                  {% if t.due_date %}<div class="text-muted small">Bitiş: {{ t.due_date }}</div>{% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card">
+        <div class="card-header bg-light fw-bold">Devam Ediyor</div>
+        <div class="card-body" id="col-inprogress">
+          {% for t in tasks %}
+            {% if t.status in ['In Progress','Devam Ediyor'] %}
+              <div class="card mb-2 kanban-item" data-id="{{ t.id }}">
+                <div class="card-body p-2">
+                  <div class="fw-semibold">{{ t.title }}</div>
+                  {% if t.due_date %}<div class="text-muted small">Bitiş: {{ t.due_date }}</div>{% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card">
+        <div class="card-header bg-light fw-bold">Tamamlandı</div>
+        <div class="card-body" id="col-done">
+          {% for t in tasks %}
+            {% if t.status in ['Done','Tamamlandı'] %}
+              <div class="card mb-2 kanban-item" data-id="{{ t.id }}">
+                <div class="card-body p-2">
+                  <div class="fw-semibold">{{ t.title }}</div>
+                  {% if t.completed_at %}<div class="text-muted small">Tamam: {{ t.completed_at.date() }}</div>{% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  function initSortable(colId) {
+    const el = document.getElementById(colId);
+    new Sortable(el, {
+      group: 'kanban',
+      animation: 150,
+      onAdd: async function (evt) {
+        const taskId = evt.item?.getAttribute('data-id');
+        let newStatus = 'Yapılacak';
+        if (colId === 'col-inprogress') newStatus = 'Devam Ediyor';
+        if (colId === 'col-done') newStatus = 'Tamamlandı';
+        try {
+          const res = await fetch(`/api/projeler/{{ project.id }}/gorevler/${taskId}`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+          if (window.showToast) showToast('success', 'Durum güncellendi', 'Başarılı');
+        } catch (e) {
+          if (window.showToast) showToast('error', e.message || 'Güncelleme hatası', 'Hata');
+        }
+      }
+    });
+  }
+  initSortable('col-todo');
+  initSortable('col-inprogress');
+  initSortable('col-done');
+</script>
+{% endblock %}

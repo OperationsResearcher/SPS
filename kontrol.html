@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratejik Planlama Sistemi - UX Kontrol Listesi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            color: #999;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .module-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .module-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .module-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .module-card .progress {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #999;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .actions {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Stratejik Planlama Sistemi</h1>
+            <p>Kullanıcı Deneyimi Kontrol Listesi</p>
+            <p class="subtitle">Sistemin tüm özelliklerini baştan sona test edin ve değerlendirin</p>
+        </div>
+        
+        <div class="modules-grid">
+            <a href="modul-kurum.html" class="module-card">
+                <span class="icon">🏢</span>
+                <h2>Kurum Yönetimi</h2>
+                <p>Kurum ekleme, düzenleme, silme, logo yükleme ve kurumsal kimlik ayarları</p>
+                <div class="progress">
+                    <span id="kurum-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="kurum-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-kullanici.html" class="module-card">
+                <span class="icon">👥</span>
+                <h2>Kullanıcı Yönetimi</h2>
+                <p>Kullanıcı ekleme, düzenleme, silme, rol atama ve yetkilendirme işlemleri</p>
+                <div class="progress">
+                    <span id="kullanici-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="kullanici-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-strateji.html" class="module-card">
+                <span class="icon">🎯</span>
+                <h2>Strateji Yönetimi</h2>
+                <p>Ana strateji ve alt strateji ekleme, düzenleme, strateji-süreç matrisi yönetimi</p>
+                <div class="progress">
+                    <span id="strateji-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="strateji-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-surec.html" class="module-card">
+                <span class="icon">⚙️</span>
+                <h2>Süreç Yönetimi</h2>
+                <p>Süreç ekleme, düzenleme, silme, lider/üye atama, süreç durumu yönetimi</p>
+                <div class="progress">
+                    <span id="surec-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="surec-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-pg.html" class="module-card">
+                <span class="icon">📊</span>
+                <h2>Performans Göstergesi (PG)</h2>
+                <p>PG ekleme, düzenleme, silme, hedef değer belirleme, ölçüm birimi seçimi</p>
+                <div class="progress">
+                    <span id="pg-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="pg-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-karne.html" class="module-card">
+                <span class="icon">📋</span>
+                <h2>Süreç Karnesi</h2>
+                <p>Veri girişi, performans takibi, faaliyet yönetimi, Excel export, periyot bazlı raporlama</p>
+                <div class="progress">
+                    <span id="karne-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="karne-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-proje.html" class="module-card">
+                <span class="icon">📁</span>
+                <h2>Proje Yönetimi</h2>
+                <p>Proje oluşturma, görev yönetimi, Gantt görünümü, proje analitiği, risk yönetimi</p>
+                <div class="progress">
+                    <span id="proje-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="proje-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-dashboard.html" class="module-card">
+                <span class="icon">📈</span>
+                <h2>Dashboard ve Raporlama</h2>
+                <p>Gösterge paneli, istatistikler, grafikler, filtreleme, özelleştirilebilir görünümler</p>
+                <div class="progress">
+                    <span id="dashboard-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="dashboard-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-redmine.html" class="module-card">
+                <span class="icon">📋</span>
+                <h2>Redmine / Faaliyetler</h2>
+                <p>Faaliyet akışı, merkezi veri, filtreleme, detay modalı</p>
+                <div class="progress">
+                    <span id="redmine-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="redmine-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz1-ui.html" class="module-card" style="border: 2px solid #667eea;">
+                <span class="icon">🎨</span>
+                <h2>Faz 1 - UI/UX Tasarım</h2>
+                <p>Clean & Minimalist Design, Soft UI komponentleri, modern tasarım kontrolleri</p>
+                <div class="progress">
+                    <span id="faz1-ui-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz1-ui-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz1-pwa.html" class="module-card" style="border: 2px solid #667eea;">
+                <span class="icon">📱</span>
+                <h2>Faz 1 - PWA Entegrasyonu</h2>
+                <p>Progressive Web App, Service Worker, manifest.json, offline çalışma kontrolleri</p>
+                <div class="progress">
+                    <span id="faz1-pwa-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz1-pwa-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz1-ai.html" class="module-card" style="border: 2px solid #667eea;">
+                <span class="icon">🤖</span>
+                <h2>Faz 1 - AI Servisleri</h2>
+                <p>AI Karar Destek Asistanı, AI Insight widget, AI Chat arayüzü kontrolleri</p>
+                <div class="progress">
+                    <span id="faz1-ai-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz1-ai-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz2-hoshin.html" class="module-card" style="border: 2px solid #28a745;">
+                <span class="icon">🎯</span>
+                <h2>Faz 2 - Hoshin Kanri</h2>
+                <p>MTBP, Gemba Walk, Hoshin Catchball kontrolleri</p>
+                <div class="progress">
+                    <span id="faz2-hoshin-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz2-hoshin-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz2-talent-risk.html" class="module-card" style="border: 2px solid #28a745;">
+                <span class="icon">👥</span>
+                <h2>Faz 2 - Talent & Risk</h2>
+                <p>Yetkinlik Matrisi, Risk Yönetimi, Yönetim Kurulu Özeti kontrolleri</p>
+                <div class="progress">
+                    <span id="faz2-talent-risk-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz2-talent-risk-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz2-muda.html" class="module-card" style="border: 2px solid #28a745;">
+                <span class="icon">🔍</span>
+                <h2>Faz 2 - Muda Hunter</h2>
+                <p>Süreç Verimsizlik Analizi, verimlilik skoru kontrolleri</p>
+                <div class="progress">
+                    <span id="faz2-muda-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz2-muda-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz3-titan.html" class="module-card" style="border: 2px solid #ffc107;">
+                <span class="icon">🚀</span>
+                <h2>Faz 3 - Titan & Zenith</h2>
+                <p>Kriz Komuta Merkezi, Halefiyet, Organizasyon Tasarımcısı, ONA, Market Watcher kontrolleri</p>
+                <div class="progress">
+                    <span id="faz3-titan-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz3-titan-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz3-consciousness.html" class="module-card" style="border: 2px solid #ffc107;">
+                <span class="icon">🧠</span>
+                <h2>Faz 3 - Corporate Consciousness</h2>
+                <p>Tükenmişlik Kalkanı, Monte Carlo Simülatörü, Deep Work kontrolleri</p>
+                <div class="progress">
+                    <span id="faz3-consciousness-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz3-consciousness-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz3-transcendence.html" class="module-card" style="border: 2px solid #ffc107;">
+                <span class="icon">🌟</span>
+                <h2>Faz 3 - Transcendence Pack</h2>
+                <p>Sentetik Müşteri Lab, DAO Yönetimi, Metaverse, Kurucu Miras AI kontrolleri</p>
+                <div class="progress">
+                    <span id="faz3-transcendence-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz3-transcendence-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz4-nirvana.html" class="module-card" style="border: 2px solid #dc3545;">
+                <span class="icon">✨</span>
+                <h2>Faz 4 - Nirvana Legacy</h2>
+                <p>Oyun Teorisi, Bilgi Grafığı, Siyah Kuğu Simülatörü, Omega'nın Kitabı kontrolleri</p>
+                <div class="progress">
+                    <span id="faz4-nirvana-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz4-nirvana-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz5-seeder.html" class="module-card" style="border: 2px solid #6f42c1;">
+                <span class="icon">🌱</span>
+                <h2>Faz 5 - Veri Simülasyonu</h2>
+                <p>Seeder servisi, demo veri üretimi, admin panel entegrasyonu kontrolleri</p>
+                <div class="progress">
+                    <span id="faz5-seeder-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz5-seeder-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-faz5-audit.html" class="module-card" style="border: 2px solid #6f42c1;">
+                <span class="icon">📋</span>
+                <h2>Faz 5 - Audit Log Otomasyonu</h2>
+                <p>SQLAlchemy event listener'ları, otomatik audit log kayıtları kontrolleri</p>
+                <div class="progress">
+                    <span id="faz5-audit-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="faz5-audit-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-kod-kalitesi.html" class="module-card" style="border: 2px solid #17a2b8;">
+                <span class="icon">🔧</span>
+                <h2>Kod Kalitesi ve Performans</h2>
+                <p>Type Hints, Docstring, N+1 Query, Kod Organizasyonu kontrolleri</p>
+                <div class="progress">
+                    <span id="kod-kalitesi-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="kod-kalitesi-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-v67-plan.html" class="module-card" style="border: 2px solid #e83e8c;">
+                <span class="icon">🚀</span>
+                <h2>V67 Master Planı - Trinity Update</h2>
+                <p>Mock Data → Gerçek Veritabanı, İş Zekası Algoritması, Görselleştirme</p>
+                <div class="progress">
+                    <span id="v67-plan-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="v67-plan-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportAllResults()">Tüm Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearAllResults()">Tüm Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script>
+        const modules = [
+            'kurum', 'kullanici', 'strateji', 'surec', 
+            'pg', 'karne', 'proje', 'dashboard',
+            'faz1-ui', 'faz1-pwa', 'faz1-ai',
+            'faz2-hoshin', 'faz2-talent-risk', 'faz2-muda',
+            'faz3-titan', 'faz3-consciousness', 'faz3-transcendence',
+            'faz4-nirvana', 'faz5-seeder', 'faz5-audit',
+            'kod-kalitesi', 'v67-plan'
+        ];
+        
+        function updateProgress() {
+            modules.forEach(module => {
+                const key = `modul_${module}`;
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        const total = data.questions ? data.questions.length : 0;
+                        const answered = data.questions ? data.questions.filter(q => q.answer && q.answer !== '').length : 0;
+                        const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
+                        
+                        const progressEl = document.getElementById(`${module}-progress`);
+                        const progressFillEl = document.getElementById(`${module}-progress-fill`);
+                        
+                        if (progressEl) {
+                            progressEl.textContent = `${percentage}% tamamlandı`;
+                        }
+                        if (progressFillEl) {
+                            progressFillEl.style.width = `${percentage}%`;
+                        }
+                    } catch (e) {
+                        console.error(`Progress update error for ${module}:`, e);
+                    }
+                }
+            });
+        }
+        
+        function exportAllResults() {
+            const moduleTitles = {
+                'kurum': 'Kurum Yönetimi',
+                'kullanici': 'Kullanıcı Yönetimi',
+                'strateji': 'Strateji Yönetimi',
+                'surec': 'Süreç Yönetimi',
+                'pg': 'Performans Göstergesi (PG)',
+                'karne': 'Süreç Karnesi',
+                'proje': 'Proje Yönetimi',
+                'dashboard': 'Dashboard ve Raporlama',
+                'redmine': 'Redmine / Faaliyetler',
+                'faz1-ui': 'Faz 1 - UI/UX Tasarım',
+                'faz1-pwa': 'Faz 1 - PWA Entegrasyonu',
+                'faz1-ai': 'Faz 1 - AI Servisleri',
+                'faz2-hoshin': 'Faz 2 - Hoshin Kanri Paketi',
+                'faz2-talent-risk': 'Faz 2 - Talent & Risk Paketi',
+                'faz2-muda': 'Faz 2 - Muda Hunter',
+                'faz3-titan': 'Faz 3 - Titan & Zenith Paketi',
+                'faz3-consciousness': 'Faz 3 - Corporate Consciousness',
+                'faz3-transcendence': 'Faz 3 - Transcendence Pack',
+                'faz4-nirvana': 'Faz 4 - Nirvana Legacy',
+                'faz5-seeder': 'Faz 5 - Veri Simülasyonu',
+                'faz5-audit': 'Faz 5 - Audit Log Otomasyonu',
+                'kod-kalitesi': 'Kod Kalitesi ve Performans',
+                'v67-plan': 'V67 Master Planı - Trinity Update'
+            };
+            
+            const tarih = new Date().toISOString().split('T')[0];
+            const saat = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            
+            let mdContent = `# Stratejik Planlama Sistemi - UX Kontrol Listesi Raporu\n\n`;
+            mdContent += `**Tarih:** ${tarih} ${saat}\n\n`;
+            mdContent += `---\n\n`;
+            mdContent += `## Genel Özet\n\n`;
+            
+            const allResults = {};
+            let totalQuestions = 0;
+            let totalAnswered = 0;
+            let totalEvet = 0;
+            let totalHayir = 0;
+            let totalKısmen = 0;
+            
+            modules.forEach(module => {
+                const key = `modul_${module}`;
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        allResults[module] = data;
+                        
+                        if (data.questions) {
+                            const moduleTotal = data.questions.length;
+                            const moduleAnswered = data.questions.filter(q => q.answer && q.answer !== '').length;
+                            const moduleEvet = data.questions.filter(q => q.answer === 'evet').length;
+                            const moduleHayir = data.questions.filter(q => q.answer === 'hayir').length;
+                            const moduleKısmen = data.questions.filter(q => q.answer === 'kısmen').length;
+                            
+                            totalQuestions += moduleTotal;
+                            totalAnswered += moduleAnswered;
+                            totalEvet += moduleEvet;
+                            totalHayir += moduleHayir;
+                            totalKısmen += moduleKısmen;
+                        }
+                    } catch (e) {
+                        console.error(`Export error for ${module}:`, e);
+                    }
+                }
+            });
+            
+            const overallPercentage = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
+            
+            mdContent += `- **Toplam Soru:** ${totalQuestions}\n`;
+            mdContent += `- **Cevaplanan:** ${totalAnswered} (${overallPercentage}%)\n`;
+            mdContent += `- **Evet:** ${totalEvet}\n`;
+            mdContent += `- **Hayır:** ${totalHayir}\n`;
+            mdContent += `- **Kısmen:** ${totalKısmen}\n`;
+            mdContent += `- **Cevaplanmamış:** ${totalQuestions - totalAnswered}\n\n`;
+            mdContent += `---\n\n`;
+            
+            // Her modül için özet
+            mdContent += `## Modül Özetleri\n\n`;
+            modules.forEach(module => {
+                if (allResults[module] && allResults[module].questions) {
+                    const data = allResults[module];
+                    const moduleTotal = data.questions.length;
+                    const moduleAnswered = data.questions.filter(q => q.answer && q.answer !== '').length;
+                    const moduleEvet = data.questions.filter(q => q.answer === 'evet').length;
+                    const moduleHayir = data.questions.filter(q => q.answer === 'hayir').length;
+                    const moduleKısmen = data.questions.filter(q => q.answer === 'kısmen').length;
+                    const modulePercentage = moduleTotal > 0 ? Math.round((moduleAnswered / moduleTotal) * 100) : 0;
+                    
+                    mdContent += `### ${moduleTitles[module]}\n\n`;
+                    mdContent += `- **Toplam:** ${moduleTotal} soru\n`;
+                    mdContent += `- **Tamamlanma:** ${modulePercentage}% (${moduleAnswered}/${moduleTotal})\n`;
+                    mdContent += `- **Evet:** ${moduleEvet} | **Hayır:** ${moduleHayir} | **Kısmen:** ${moduleKısmen}\n\n`;
+                }
+            });
+            
+            mdContent += `---\n\n`;
+            
+            // Her modül için detaylı sonuçlar
+            mdContent += `## Detaylı Sonuçlar\n\n`;
+            
+            modules.forEach(module => {
+                if (allResults[module] && allResults[module].questions) {
+                    const data = allResults[module];
+                    const moduleTotal = data.questions.length;
+                    const moduleAnswered = data.questions.filter(q => q.answer && q.answer !== '').length;
+                    
+                    if (moduleAnswered > 0) {
+                        mdContent += `## ${moduleTitles[module]}\n\n`;
+                        
+                        data.questions.forEach((q, index) => {
+                            if (q.answer && q.answer !== '') {
+                                const num = index + 1;
+                                let answerEmoji = '⚪';
+                                let answerText = 'Cevaplanmadı';
+                                
+                                if (q.answer === 'evet') {
+                                    answerEmoji = '✅';
+                                    answerText = 'Evet';
+                                } else if (q.answer === 'hayir') {
+                                    answerEmoji = '❌';
+                                    answerText = 'Hayır';
+                                } else if (q.answer === 'kısmen') {
+                                    answerEmoji = '🟡';
+                                    answerText = 'Kısmen';
+                                }
+                                
+                                mdContent += `### ${num}. ${q.text}\n\n`;
+                                mdContent += `**Cevap:** ${answerEmoji} ${answerText}\n\n`;
+                                
+                                if (q.explanation && q.explanation.trim()) {
+                                    mdContent += `**Açıklama:**\n\n${q.explanation}\n\n`;
+                                }
+                                
+                                mdContent += `---\n\n`;
+                            }
+                        });
+                    }
+                }
+            });
+            
+            mdContent += `\n---\n\n`;
+            mdContent += `*Bu rapor ${tarih} tarihinde oluşturulmuştur.*\n`;
+            
+            const dataBlob = new Blob([mdContent], {type: 'text/markdown;charset=utf-8'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `stratejik-planlama-ux-kontrol-listesi-${tarih}.md`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function clearAllResults() {
+            if (confirm('Tüm kaydedilmiş sonuçları silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+                modules.forEach(module => {
+                    localStorage.removeItem(`modul_${module}`);
+                });
+                updateProgress();
+                if (typeof window.showToast === 'function') {
+                    window.showToast('success', 'Tüm sonuçlar temizlendi.', 'Başarılı');
+                } else {
+                    console.log('Tüm sonuçlar temizlendi.');
+                }
+            }
+        }
+        
+        // Sayfa yüklendiğinde progress'i güncelle
+        updateProgress();
+    </script>
+</body>
+</html>

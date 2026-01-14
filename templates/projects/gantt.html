@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-3">
+  <div class="d-flex align-items-center mb-3">
+    <h3 class="me-3">Gantt — {{ project.name }}</h3>
+    <a class="btn btn-outline-secondary me-2" href="/projeler/{{ project.id }}/kanban">Kanban</a>
+    <a class="btn btn-outline-secondary" href="/projeler/{{ project.id }}/takvim">Takvim</a>
+  </div>
+  <svg id="gantt"></svg>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+<style>
+  .bar.critical-task { stroke: #e74c3c; fill: #e74c3c; }
+</style>
+<script>
+  function parseDate(d) {
+    if (!d) return null;
+    try { return new Date(d); } catch(e) { return null; }
+  }
+  (async function init() {
+    try {
+      const baseTasks = [
+        {% for t in tasks %}
+          {
+            id: '{{ t.id }}',
+            name: '{{ t.title|e }}',
+            start: '{{ (t.start_date or t.due_date)|string }}',
+            end: '{{ (t.due_date or t.start_date)|string }}',
+            progress: {{ t.progress or 0 }},
+            custom_class: ''
+          },
+        {% endfor %}
+      ].filter(t => t.start && t.end);
+
+      let critical = [];
+      try {
+        const res = await fetch(`/api/projeler/{{ project.id }}/cpm`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.critical_task_ids)) critical = data.critical_task_ids.map(String);
+      } catch (e) { /* sessiz */ }
+
+      const tasks = baseTasks.map(t => ({
+        ...t,
+        custom_class: critical.includes(String(t.id)) ? 'critical-task' : ''
+      }));
+
+      const gantt = new Gantt('#gantt', tasks, {
+        view_mode: 'Week',
+        on_click: (task) => {
+          window.location.href = '/projeler/{{ project.id }}#task-' + task.id;
+        },
+        on_date_change: async (task, start, end) => {
+          try {
+            const body = { start_date: start.toISOString().slice(0,10), due_date: end.toISOString().slice(0,10) };
+            const res = await fetch(`/api/projeler/{{ project.id }}/gorevler/${task.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+            if (window.showToast) showToast('success', 'Tarih güncellendi', 'Başarılı');
+          } catch (e) { if (window.showToast) showToast('error', e.message || 'Güncelleme hatası', 'Hata'); }
+        }
+      });
+    } catch (e) {
+      if (window.showToast) showToast('error', e.message || 'Gantt yüklenemedi', 'Hata');
+    }
+  })();
+</script>
+{% endblock %}

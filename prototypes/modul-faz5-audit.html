@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 5 - Audit Log Otomasyonu Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>📋 Faz 5 - Audit Log Otomasyonu (V58.0)</h1>
+            <p>SQLAlchemy event listener'ları, otomatik audit log kayıtları kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz5-audit', 'Faz 5 - Audit Log Otomasyonu')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz5-audit')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz5-audit';
+        const moduleTitle = 'Faz 5 - Audit Log Otomasyonu';
+        
+        const questions = [
+            {
+                text: 'Performans göstergesi verisi eklediğimde, bu değişiklik otomatik olarak audit log\'a kaydediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Performans göstergesi verisini güncellediğimde, eski ve yeni değerler audit log\'a kaydediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Performans göstergesi verisini sildiğimde, bu silme işlemi audit log\'a kaydediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarında kim yaptı (changed_by) bilgisi doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarında ne zaman yapıldı (changed_at) bilgisi doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarında işlem tipi (oluştur, güncelle, sil) doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarını görüntüleyebiliyor muyum? (Değişiklik geçmişi sayfası)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir veriyi güncellediğimde, audit log\'da eski değer doğru görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir veriyi güncellediğimde, audit log\'da yeni değer doğru görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log sistemi, normal kullanıcı işlemlerini engelliyor mu? (Engellememeli)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log sayfası veya bölümünde filtreleme yapabiliyor muyum? (Kullanıcı, tarih, işlem tipi)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarında hangi alanın değiştiği bilgisi görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sistem performansı audit log nedeniyle yavaşlıyor mu? (Performans kontrolü)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Hata durumlarında (örn: veritabanı hatası) audit log sistemi uygulamayı durduruyor mu? (Durdurmamalı)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Birden fazla veriyi aynı anda değiştirdiğimde, her biri için ayrı audit log kaydı oluşuyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtları silinebiliyor mu? (Genelde silinememeli, sadece admin)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Audit log kayıtlarını dışa aktarabiliyor muyum? (Excel, PDF vb.)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir kullanıcının yaptığı tüm değişiklikleri audit log\'dan görebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Belirli bir tarih aralığındaki audit log kayıtlarını görebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Audit Log sistemi kullanıcı deneyimi açısından başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

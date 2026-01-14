@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Stratejik Risk Yönetimi{% endblock %}
+
+{% block styles %}
+<style>
+    .risk-card {
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+    }
+    
+    .risk-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .risk-critical { border-left-color: #dc3545; }
+    .risk-high { border-left-color: #fd7e14; }
+    .risk-medium { border-left-color: #ffc107; }
+    .risk-low { border-left-color: #198754; }
+    
+    .risk-matrix {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .matrix-cell {
+        padding: 15px;
+        text-align: center;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .matrix-cell:hover {
+        transform: scale(1.05);
+    }
+    
+    .matrix-cell.low { background-color: #d4edda; }
+    .matrix-cell.medium { background-color: #fff3cd; }
+    .matrix-cell.high { background-color: #f8d7da; }
+    .matrix-cell.critical { background-color: #dc3545; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Stratejik Risk Yönetimi
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRiskModal">
+                    <i class="fas fa-plus me-2"></i>
+                    Yeni Risk Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-danger">
+                <div class="card-body">
+                    <h3 class="text-danger">{{ risk_levels['Kritik']|length }}</h3>
+                    <p class="mb-0">Kritik Risk</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ risk_levels['Yüksek']|length }}</h3>
+                    <p class="mb-0">Yüksek Risk</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h3 class="text-info">{{ risk_levels['Orta']|length }}</h3>
+                    <p class="mb-0">Orta Risk</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ risk_levels['Düşük']|length }}</h3>
+                    <p class="mb-0">Düşük Risk</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5x5 Risk Matrix -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">5x5 Risk Matrisi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="risk-matrix">
+                        {% for impact in range(5, 0, -1) %}
+                            {% for probability in range(1, 6) %}
+                                {% set score = impact * probability %}
+                                {% set level = 'low' if score <= 6 else 'medium' if score <= 12 else 'high' if score <= 20 else 'critical' %}
+                                <div class="matrix-cell {{ level }}" 
+                                     data-impact="{{ impact }}" 
+                                     data-probability="{{ probability }}"
+                                     title="Impact: {{ impact }}, Probability: {{ probability }}, Score: {{ score }} (Tıklayarak yeni risk ekleyebilirsiniz)">
+                                    <small>{{ score }}</small>
+                                    {% set risk_count = risks|selectattr('impact', 'equalto', impact)|selectattr('probability', 'equalto', probability)|list|length %}
+                                    {% if risk_count > 0 %}
+                                    <div class="small mt-1">{{ risk_count }} risk</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <small><strong>Düşük (1-6):</strong> Yeşil</small><br>
+                            <small><strong>Orta (7-12):</strong> Sarı</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small><strong>Yüksek (13-20):</strong> Kırmızı</small><br>
+                            <small><strong>Kritik (21-25):</strong> Koyu Kırmızı</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk List -->
+    {% if risks %}
+    <div class="row">
+        {% for risk in risks %}
+        <div class="col-md-6 mb-4">
+            <div class="card risk-card risk-{{ risk.risk_level.lower() }} h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ risk.risk_name }}</h5>
+                    <span class="badge bg-{{ 'danger' if risk.risk_level == 'Kritik' else 'warning' if risk.risk_level == 'Yüksek' else 'info' if risk.risk_level == 'Orta' else 'success' }}">
+                        {{ risk.risk_level }} ({{ risk.risk_score }})
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ risk.description[:200] }}{% if risk.description|length > 200 %}...{% endif %}</p>
+                    <div class="mb-2">
+                        <strong>Olasılık:</strong> {{ risk.probability }}/5
+                        <strong class="ms-3">Etki:</strong> {{ risk.impact }}/5
+                    </div>
+                    {% if risk.mitigation_strategy %}
+                    <div class="mb-2">
+                        <strong>Azaltma Stratejisi:</strong>
+                        <p class="small">{{ risk.mitigation_strategy[:150] }}{% if risk.mitigation_strategy|length > 150 %}...{% endif %}</p>
+                    </div>
+                    {% endif %}
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewRiskDetail({{ risk.id }})">Detayları Görüntüle</button>
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteRisk({{ risk.id }})">Sil</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz risk kaydı bulunmuyor. Yeni risk eklemek için yukarıdaki butona tıklayın.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Risk Modal -->
+<div class="modal fade" id="addRiskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Risk Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addRiskForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Risk Adı *</label>
+                        <input type="text" class="form-control" name="risk_name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Olasılık (1-5) *</label>
+                            <input type="number" class="form-control" name="probability" min="1" max="5" value="3" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Etki (1-5) *</label>
+                            <input type="number" class="form-control" name="impact" min="1" max="5" value="3" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="risk_category">
+                            <option value="strategic">Stratejik</option>
+                            <option value="operational">Operasyonel</option>
+                            <option value="financial">Finansal</option>
+                            <option value="compliance">Uyumluluk</option>
+                            <option value="reputation">İtibar</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama *</label>
+                        <textarea class="form-control" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Azaltma Stratejisi</label>
+                        <textarea class="form-control" name="mitigation_strategy" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Risk matrisi interaktif hale getir
+document.querySelectorAll('.matrix-cell').forEach(cell => {
+    cell.addEventListener('click', function() {
+        const impact = Math.ceil(this.dataset.impact || 3);
+        const probability = Math.ceil(this.dataset.probability || 3);
+        
+        // Form aç ve değerleri doldur
+        const modal = new bootstrap.Modal(document.getElementById('addRiskModal'));
+        document.querySelector('[name="impact"]').value = impact;
+        document.querySelector('[name="probability"]').value = probability;
+        modal.show();
+    });
+});
+
+// Form submit
+document.getElementById('addRiskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('{{ url_for("main.risks_add") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            showToast('error', 'Risk eklenirken bir hata oluştu.', 'Hata');
+        }
+    });
+});
+
+function deleteRisk(riskId) {
+    if (confirm('Bu riski silmek istediğinize emin misiniz?')) {
+        fetch(`/risks/${riskId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                showToast('error', 'Risk silinirken bir hata oluştu.', 'Hata');
+            }
+        });
+    }
+}
+
+function viewRiskDetail(riskId) {
+    // Detay sayfası veya modal göster
+    window.location.href = `/risks/${riskId}`;
+}
+</script>
+{% endblock %}
+

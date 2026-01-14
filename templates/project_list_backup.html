@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Proje Yönetimi{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}">Ana Sayfa</a> / Proje Yönetimi
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h4><i class="fas fa-project-diagram me-2"></i>Projeler</h4>
+            <a href="{{ url_for('main.proje_yeni') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Yeni Proje
+            </a>
+        </div>
+    </div>
+
+    {% if projeler %}
+    <div class="row">
+        {% for proje in projeler %}
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 hover-shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ proje.name }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if proje.description %}
+                    <p class="text-muted mb-3">{{ proje.description[:150] }}{% if proje.description|length > 150 %}...{% endif %}</p>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-user-tie me-2"></i>Proje Yöneticisi:</strong><br>
+                        {% if proje.manager %}
+                        <span class="ms-4">{{ proje.manager.first_name }} {{ proje.manager.last_name }}</span>
+                        {% else %}
+                        <span class="ms-4 text-muted">Atanmamış</span>
+                        {% endif %}
+                    </div>
+
+                    {% if proje.related_processes %}
+                    <div class="mb-3">
+                        <strong><i class="fas fa-cogs me-2"></i>İlişkili Süreçler:</strong><br>
+                        <div class="ms-4 mt-2">
+                            {% for surec in proje.related_processes %}
+                            <span class="badge bg-info me-1 mb-1">{{ surec.ad }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="mb-3">
+                        <strong><i class="fas fa-cogs me-2"></i>İlişkili Süreçler:</strong><br>
+                        <span class="ms-4 text-muted">İlişkili süreç bulunmamaktadır</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="text-muted small">
+                        <i class="fas fa-calendar me-1"></i>
+                        Oluşturulma: {{ proje.created_at.strftime('%d.%m.%Y') if proje.created_at else '-' }}
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('main.proje_detay', project_id=proje.id) }}" class="btn btn-primary btn-sm flex-fill">
+                            <i class="fas fa-eye me-1"></i>Görüntüle
+                        </a>
+                        <button class="btn btn-secondary btn-sm" onclick="showCloneProjectModal({{ proje.id }}, '{{ proje.name }}')" title="Projeyi Kopyala">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Henüz proje bulunmamaktadır</h5>
+            <p class="text-muted">İlk projenizi oluşturmak için yukarıdaki "Yeni Proje" butonuna tıklayın.</p>
+            <a href="{{ url_for('main.proje_yeni') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-1"></i>Yeni Proje Oluştur
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Proje Klonlama Modal -->
+<div class="modal fade" id="cloneProjectModal" tabindex="-1" aria-labelledby="cloneProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cloneProjectModalLabel">
+                    <i class="fas fa-copy me-2"></i>Projeyi Kopyala / Şablon Olarak Kullan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cloneProjectForm">
+                    <input type="hidden" id="cloneProjectId" name="project_id">
+                    
+                    <div class="mb-3">
+                        <label for="cloneProjectName" class="form-label">Yeni Proje Adı <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cloneProjectName" name="new_name" required>
+                        <small class="text-muted">Kopyalanan projenin yeni adını girin</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cloneStartDate" class="form-label">Yeni Başlangıç Tarihi <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="cloneStartDate" name="new_start_date" required>
+                        <small class="text-muted">Yeni projenin başlangıç tarihi. Tüm görev tarihleri bu tarihe göre kaydırılacaktır.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="keepAssignments" name="keep_assignments" checked>
+                            <label class="form-check-label" for="keepAssignments">
+                                Atanan kişileri koru
+                            </label>
+                            <small class="d-block text-muted">İşaretlenirse, görevlerdeki atamalar korunur</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="keepCompletedTasks" name="keep_completed_tasks">
+                            <label class="form-check-label" for="keepCompletedTasks">
+                                Tamamlanan görevleri de kopyala
+                            </label>
+                            <small class="d-block text-muted">İşaretlenirse, tamamlanan görevler de kopyalanır (varsayılan: sadece aktif görevler)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Not:</strong> Proje kopyalanırken:
+                        <ul class="mb-0 mt-2">
+                            <li>Tüm görevler ve alt görevler kopyalanır</li>
+                            <li>Riskler kopyalanır</li>
+                            <li>Dosya referansları kopyalanır</li>
+                            <li>Görev durumları "Yapılacak" olarak sıfırlanır</li>
+                            <li>Gerçekleşen süreler temizlenir</li>
+                            <li>Tarihler yeni başlangıç tarihine göre kaydırılır</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>İptal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cloneProject()">
+                    <i class="fas fa-copy me-1"></i>Kopyala
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCloneProjectModal(projectId, projectName) {
+    document.getElementById('cloneProjectId').value = projectId;
+    document.getElementById('cloneProjectName').value = projectName + ' (Kopya)';
+    
+    // Varsayılan başlangıç tarihi: bugünden 1 hafta sonra
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 7);
+    document.getElementById('cloneStartDate').value = defaultDate.toISOString().split('T')[0];
+    
+    const modal = new bootstrap.Modal(document.getElementById('cloneProjectModal'));
+    modal.show();
+}
+
+function cloneProject() {
+    const form = document.getElementById('cloneProjectForm');
+    const formData = new FormData(form);
+    
+    const projectId = formData.get('project_id');
+    const newName = formData.get('new_name').trim();
+    const newStartDate = formData.get('new_start_date');
+    const keepAssignments = document.getElementById('keepAssignments').checked;
+    const keepCompletedTasks = document.getElementById('keepCompletedTasks').checked;
+    
+    // Validasyon
+    if (!newName) {
+        if (typeof showToast !== 'undefined') {
+            showToast('warning', 'Lütfen yeni proje adını girin.', 'Eksik Bilgi');
+        }
+        document.getElementById('cloneProjectName').focus();
+        return;
+    }
+    
+    if (!newStartDate) {
+        if (typeof showToast !== 'undefined') {
+            showToast('warning', 'Lütfen yeni başlangıç tarihini seçin.', 'Eksik Bilgi');
+        }
+        document.getElementById('cloneStartDate').focus();
+        return;
+    }
+    
+    // Submit butonunu devre dışı bırak
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Kopyalanıyor...';
+    
+    fetch(`/api/projeler/${projectId}/klonla`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+        },
+        body: JSON.stringify({
+            new_name: newName,
+            new_start_date: newStartDate,
+            keep_assignments: keepAssignments,
+            keep_completed_tasks: keepCompletedTasks
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof showToast !== 'undefined') {
+                    showToast('success', 'Proje başarıyla kopyalandı!', 'Başarılı');
+                }
+                // Modal'ı kapat
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cloneProjectModal'));
+                modal.hide();
+                // Sayfayı yenile
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                if (typeof showToast !== 'undefined') {
+                    showToast('error', data.message || 'Proje kopyalanamadı.', 'Hata');
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            if (typeof showToast !== 'undefined') {
+                showToast('error', 'Proje kopyalanırken bir hata oluştu!', 'Hata');
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

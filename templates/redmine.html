@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0"><i class="fas fa-stream text-warning me-2"></i>Faaliyet Akışı</h4>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary active" onclick="filterTable('all')">Tümü</button>
+            <button type="button" class="btn btn-outline-danger" onclick="filterTable('High')">Kritik 🔥</button>
+            <button type="button" class="btn btn-outline-success" onclick="filterTable('Açık')">Açık İşler</button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Durum</th>
+                        <th>Konu / Başlık</th>
+                        <th>Kaynak & Proje</th>
+                        <th>Tarih</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="activityTable">
+                    {% for activity in activities %}
+                    <tr class="activity-row" data-priority="{{ activity.priority }}" data-status="{{ activity.status }}">
+                        <td>
+                            {% if activity.priority == 'High' %}
+                                <span class="badge bg-danger"><i class="fas fa-fire"></i> Kritik</span>
+                            {% elif activity.priority == 'Normal' %}
+                                <span class="badge bg-primary">Normal</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Düşük</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ activity.subject }}</div>
+                            <small class="text-muted">ID: #{{ activity.id }}</small>
+                        </td>
+                        <td>
+                            <div class="small"><i class="fas fa-folder text-warning"></i> {{ activity.project }}</div>
+                            <div class="small text-muted">{{ activity.source }}</div>
+                        </td>
+                        <td>{{ activity.date }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal{{ activity.id }}">
+                                <i class="fas fa-eye"></i> İncele
+                            </button>
+                        </td>
+                    </tr>
+
+                    <div class="modal fade" id="detailModal{{ activity.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">#{{ activity.id }} Detayları</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Konu:</strong> {{ activity.subject }}</p>
+                                    <p><strong>Proje:</strong> {{ activity.project }}</p>
+                                    <p><strong>Durum:</strong> {{ activity.status }}</p>
+                                    <p><strong>Öncelik:</strong> {{ activity.priority }}</p>
+                                    <hr>
+                                    <div class="alert alert-light border">
+                                        <small>Bu veri {{ activity.source }} kaynağından <strong>{{ activity.date }}</strong> tarihinde çekilmiştir.</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                    <button type="button" class="btn btn-primary">Kaynağa Git ↗</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterTable(criteria) {
+    const rows = document.querySelectorAll('.activity-row');
+    const buttons = document.querySelectorAll('.btn-group button');
+    
+    // Buton aktif durumunu güncelle
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if ((criteria === 'all' && btn.textContent.includes('Tümü')) ||
+            (criteria === 'High' && btn.textContent.includes('Kritik')) ||
+            (criteria === 'Açık' && btn.textContent.includes('Açık'))) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Satırları filtrele
+    rows.forEach(row => {
+        const priority = row.getAttribute('data-priority');
+        const status = row.getAttribute('data-status');
+        
+        if (criteria === 'all') {
+            row.style.display = '';
+        } else if (criteria === 'High') {
+            row.style.display = (priority === 'High') ? '' : 'none';
+        } else if (criteria === 'Açık') {
+            row.style.display = (status === 'Açık' || status === 'Beklemede' || status === 'Devam') ? '' : 'none';
+        }
+    });
+}
+</script>
+{% endblock %}
+
+
+

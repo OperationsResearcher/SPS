@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Muda Hunter - Süreç Verimsizlik Analizi{% endblock %}
+
+{% block styles %}
+<style>
+    .efficiency-score {
+        font-size: 4rem;
+        font-weight: bold;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .score-excellent { color: #198754; }
+    .score-good { color: #0dcaf0; }
+    .score-fair { color: #ffc107; }
+    .score-poor { color: #dc3545; }
+    
+    .muda-card {
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+    }
+    
+    .muda-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .muda-critical { border-left-color: #dc3545; }
+    .muda-high { border-left-color: #fd7e14; }
+    .muda-medium { border-left-color: #ffc107; }
+    .muda-low { border-left-color: #198754; }
+    
+    .muda-type-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-search me-2"></i>
+                Muda Hunter - Süreç Verimsizlik Analizi
+            </h2>
+            <p class="text-muted">Süreçlerinizdeki israf kaynaklarını tespit edin ve optimize edin</p>
+        </div>
+    </div>
+
+    <!-- Efficiency Score -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Genel Verimlilik Skoru</h5>
+                </div>
+                <div class="card-body">
+                    <div class="efficiency-score score-{{ 'excellent' if efficiency_score >= 80 else 'good' if efficiency_score >= 60 else 'fair' if efficiency_score >= 40 else 'poor' }}">
+                        {{ efficiency_score }}/100
+                    </div>
+                    <p class="text-center text-muted">
+                        {% if efficiency_score >= 80 %}
+                            Mükemmel! Süreçleriniz çok verimli çalışıyor.
+                        {% elif efficiency_score >= 60 %}
+                            İyi! Bazı iyileştirmeler yapılabilir.
+                        {% elif efficiency_score >= 40 %}
+                            Orta. Verimsizlik kaynaklarını tespit edin.
+                        {% else %}
+                            Dikkat! Süreçlerinizde önemli verimsizlikler var.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Süreç Analizi</h5>
+                </div>
+                <div class="card-body">
+                    <label class="form-label">Süreç Seçiniz:</label>
+                    <select id="surecSelect" class="form-select mb-3" onchange="loadSurec()">
+                        <option value="">-- Süreç Seçiniz --</option>
+                        {% for surec in surecler %}
+                        <option value="{{ surec.id }}">{{ surec.surec_adi }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary w-100" onclick="analyzeProcess()">
+                        <i class="fas fa-search me-2"></i>
+                        Analiz Et
+                    </button>
+                    <div id="analysisResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Muda Findings -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Muda Bulguları
+                    </h5>
+                    <button class="btn btn-light btn-sm" onclick="refreshFindings()">
+                        <i class="fas fa-sync me-2"></i>
+                        Yenile
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if findings %}
+                    <div class="row">
+                        {% for finding in findings %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card muda-card muda-{{ finding.severity.lower() }} h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">{{ finding.title }}</h6>
+                                    <span class="badge bg-{{ 'danger' if finding.severity == 'critical' else 'warning' if finding.severity == 'high' else 'info' if finding.severity == 'medium' else 'success' }}">
+                                        {{ finding.severity|upper }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <span class="muda-type-badge bg-secondary text-white">
+                                        {{ finding.muda_type|upper }}
+                                    </span>
+                                    <p class="card-text mt-2">{{ finding.description }}</p>
+                                    {% if finding.improvement_plan %}
+                                    <div class="mt-2">
+                                        <strong>İyileştirme Planı:</strong>
+                                        <p class="small">{{ finding.improvement_plan[:150] }}{% if finding.improvement_plan|length > 150 %}...{% endif %}</p>
+                                    </div>
+                                    {% endif %}
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            Tespit Tarihi: {{ finding.identified_date.strftime('%d.%m.%Y') }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz muda bulgusu kaydı bulunmuyor. Süreç analizi yaparak başlayabilirsiniz.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Muda Types Legend -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">7 Muda Tipi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="list-unstyled">
+                                <li><strong>Aşırı Üretim (Overproduction):</strong> Gereksiz çıktılar</li>
+                                <li><strong>Bekleme (Waiting):</strong> İş akışında gecikmeler</li>
+                                <li><strong>Taşıma (Transport):</strong> Gereksiz hareket</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled">
+                                <li><strong>Aşırı İşleme (Overprocessing):</strong> Gereksiz karmaşıklık</li>
+                                <li><strong>Stok (Inventory):</strong> Aşırı envanter</li>
+                                <li><strong>Hareket (Motion):</strong> İnefficient hareket</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled">
+                                <li><strong>Hata/Kusur (Defects):</strong> Kalite sorunları</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedSurecId = null;
+
+function loadSurec() {
+    selectedSurecId = document.getElementById('surecSelect').value;
+}
+
+function analyzeProcess() {
+    if (!selectedSurecId) {
+        showToast('warning', 'Lütfen bir süreç seçiniz.');
+        return;
+    }
+    
+    const resultDiv = document.getElementById('analysisResult');
+    resultDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p>Analiz ediliyor...</p></div>';
+    
+    fetch(`/api/muda-hunter/analyze/${selectedSurecId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let html = '<h6>Analiz Sonuçları:</h6>';
+            if (data.findings && data.findings.length > 0) {
+                html += `<p>${data.findings.length} adet verimsizlik bulundu:</p><ul>`;
+                data.findings.forEach(f => {
+                    html += `<li><strong>${f.title}:</strong> ${f.description}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p class="text-success">Bu süreçte önemli bir verimsizlik bulunamadı.</p>';
+            }
+            resultDiv.innerHTML = html;
+        } else {
+            resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultDiv.innerHTML = '<div class="alert alert-danger">Analiz sırasında bir hata oluştu.</div>';
+    });
+}
+
+function refreshFindings() {
+    location.reload();
+}
+</script>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}ONA - Organizasyonel Ağ Analizi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-project-diagram me-2"></i>
+                ONA - Organizasyonel Ağ Analizi
+            </h2>
+        </div>
+    </div>
+
+    {% if influence_scores %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı</th>
+                            <th>Etki Skoru</th>
+                            <th>Hesaplama Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for score in influence_scores %}
+                        <tr>
+                            <td>{{ score.user.first_name or score.user.username }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'danger' if score.score >= 80 else 'warning' if score.score >= 60 else 'info' if score.score >= 40 else 'success' }}">
+                                    {{ score.score }}
+                                </span>
+                            </td>
+                            <td>{{ score.calculation_date.strftime('%d.%m.%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz etki skoru hesaplanmamış.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

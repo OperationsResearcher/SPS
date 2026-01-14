@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Sentetik Müşteri Laboratuvarı{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-flask me-2"></i>
+                Sentetik Müşteri Laboratuvarı
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Personalar</h5>
+                </div>
+                <div class="card-body">
+                    {% if personas %}
+                    <ul class="list-group">
+                        {% for persona in personas %}
+                        <li class="list-group-item">{{ persona.persona_name }} ({{ persona.persona_type }})</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Henüz persona tanımlanmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Simülasyonlar</h5>
+                </div>
+                <div class="card-body">
+                    {% if simulations %}
+                    <ul class="list-group">
+                        {% for sim in simulations %}
+                        <li class="list-group-item">{{ sim.simulation_name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Henüz simülasyon yapılmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+

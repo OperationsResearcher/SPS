@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Akıllı Planlama{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>
+                    Akıllı Planlama
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Geciken Görevler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        Aşağıdaki görevlerin bitiş tarihleri geçmiş durumda. 
+                        Bu görevlere bağlı ardıl görevlerin tarihlerini otomatik olarak güncelleyebilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Geciken Görevler Listesi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if geciken_gorevler %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Görev</th>
+                                    <th>Proje</th>
+                                    <th>Bitiş Tarihi</th>
+                                    <th>Gecikme (Gün)</th>
+                                    <th>Durum</th>
+                                    <th>Öncelik</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gorev in geciken_gorevler %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ gorev.title }}</strong>
+                                        {% if gorev.description %}
+                                        <br><small class="text-muted">{{ gorev.description[:50] }}{% if gorev.description|length > 50 %}...{% endif %}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if gorev.project %}
+                                        <a href="{{ url_for('main.proje_detay', project_id=gorev.project_id) }}">
+                                            {{ gorev.project.name }}
+                                        </a>
+                                        {% else %}
+                                        Proje #{{ gorev.project_id }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-danger">
+                                            {{ gorev.due_date.strftime('%d.%m.%Y') if gorev.due_date else '-' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if gorev.due_date %}
+                                        {% set gecikme = (bugun - gorev.due_date).days %}
+                                        {% if gecikme > 0 %}
+                                        <span class="badge bg-danger">{{ gecikme }} gün</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Zamanında</span>
+                                        {% endif %}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if gorev.status == 'Yapılacak' %}
+                                        <span class="badge bg-secondary">Yapılacak</span>
+                                        {% elif gorev.status == 'Devam Ediyor' %}
+                                        <span class="badge bg-info">Devam Ediyor</span>
+                                        {% elif gorev.status == 'Beklemede' %}
+                                        <span class="badge bg-warning">Beklemede</span>
+                                        {% elif gorev.status == 'Tamamlandı' %}
+                                        <span class="badge bg-success">Tamamlandı</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ gorev.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if gorev.priority == 'Acil' %}
+                                        <span class="badge bg-danger">Acil</span>
+                                        {% elif gorev.priority == 'Yüksek' %}
+                                        <span class="badge bg-warning">Yüksek</span>
+                                        {% elif gorev.priority == 'Orta' %}
+                                        <span class="badge bg-info">Orta</span>
+                                        {% elif gorev.priority == 'Düşük' %}
+                                        <span class="badge bg-secondary">Düşük</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ gorev.priority or 'Orta' }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" 
+                                                onclick="updateDependentTasks({{ gorev.id }}, {{ gorev.project_id }})">
+                                            <i class="fas fa-sync me-1"></i>
+                                            Ardıl Görevleri Güncelle
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Geciken görev bulunmamaktadır. Tüm görevler zamanında!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateDependentTasks(taskId, projectId) {
+    if (confirm('Bu göreve bağlı ardıl görevlerin tarihlerini otomatik olarak güncellemek istediğinize emin misiniz?')) {
+        fetch(`/api/projeler/${projectId}/gorevler/${taskId}/update-dependent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('success', `Başarılı! ${data.updated_count} görev güncellendi.`);
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast('error', 'Hata: ' + (data.message || 'Güncelleme yapılamadı'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'Bir hata oluştu');
+        });
+    }
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

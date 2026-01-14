@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 1 - AI Servisleri Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🤖 Faz 1 - AI Servisleri (V51.0)</h1>
+            <p>AI Karar Destek Asistanı kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz1-ai', 'Faz 1 - AI Servisleri')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz1-ai')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz1-ai';
+        const moduleTitle = 'Faz 1 - AI Servisleri';
+        
+        const questions = [
+            {
+                text: 'Dashboard sayfasında "AI Önerileri ve Uyarılar" widget\'ı görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Dashboard\'daki AI widget\'ı yüklendiğinde öneriler ve uyarılar gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında performans göstergeleri ile ilgili öneriler görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında görevler ve projeler ile ilgili uyarılar görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında yükleme animasyonu (spinner) görünüyor mu? (Veriler yüklenirken)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında hata durumunda kullanıcıya anlaşılır bir mesaj gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sol menüden "AI Chat" veya "AI Asistan" sayfasına erişilebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat sayfası açıldığında chat arayüzü görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat arayüzü görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te mesaj yazıp "Gönder" butonuna bastığımda mesaj gönderiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Mesaj gönderildikten sonra AI\'dan yanıt geliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI yanıt verirken "AI düşünüyor..." veya benzeri bir gösterge görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te daha önceki mesajlar (konuşma geçmişi) görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te birden fazla mesaj gönderdiğimde, tüm konuşma geçmişi doğru sırada gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te öneri etiketleri (suggestions) gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında süreç performansı ile ilgili öneriler görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında görevler (tasks) ile ilgili uyarılar görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında projeler ile ilgili öneriler görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI önerileri öncelik sırasına göre (en önemliden en az önemliye) sıralanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ında genel öneriler bölümü görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI servisinde hata olduğunda kullanıcıya anlaşılır bir hata mesajı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI widget\'ı veya AI Chat\'i kullanırken yanıt süresi makul bir sürede mi? (Performans kontrolü)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te Enter tuşuna basarak mesaj gönderebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Dashboard\'daki AI widget\'ında "AI Asistanına Sor" veya benzeri bir buton var mı ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'AI Chat\'te örnek sorular (suggestion chips) görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Örnek sorulardan birine tıkladığımda o soru otomatik olarak gönderiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak AI servisleri başarılı ve kullanıcı deneyimi açısından uygun mu?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

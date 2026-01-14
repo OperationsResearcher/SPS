@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Gemba Walk - Dijital Gemba{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-walking me-2"></i>
+                    Gemba Walk - Dijital Gemba
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGembaModal">
+                    <i class="fas fa-plus me-2"></i>
+                    Yeni Gemba Walk Kaydı
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if walks %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Süreç</th>
+                                    <th>Lokasyon</th>
+                                    <th>Gözlemler</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for walk in walks %}
+                                <tr>
+                                    <td>{{ walk.walk_date.strftime('%d.%m.%Y') }}</td>
+                                    <td>{{ walk.surec.surec_adi if walk.surec else '-' }}</td>
+                                    <td>{{ walk.location or '-' }}</td>
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ walk.observations }}">
+                                            {{ walk.observations[:100] }}{% if walk.observations|length > 100 %}...{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if walk.status == 'completed' else 'warning' }}">
+                                            {{ 'Tamamlandı' if walk.status == 'completed' else walk.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewGemba({{ walk.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz Gemba Walk kaydı bulunmuyor. Yeni kayıt eklemek için yukarıdaki butona tıklayın.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Gemba Modal -->
+<div class="modal fade" id="addGembaModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Gemba Walk Kaydı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addGembaForm" method="POST" action="{{ url_for('main.gemba_add') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tarih *</label>
+                            <input type="date" class="form-control" name="walk_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Süreç</label>
+                            <select class="form-select" name="surec_id">
+                                <option value="">Süreç Seçiniz</option>
+                                {% for surec in surecler %}
+                                <option value="{{ surec.id }}">{{ surec.surec_adi }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lokasyon</label>
+                        <input type="text" class="form-control" name="location" placeholder="Fiziksel veya dijital lokasyon">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gözlemler *</label>
+                        <textarea class="form-control" name="observations" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bulgular</label>
+                        <textarea class="form-control" name="findings" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İyileştirme Önerileri</label>
+                        <textarea class="form-control" name="improvements" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewGemba(walkId) {
+    // Gemba Walk detaylarını göster
+    showToast('info', 'Gemba Walk detayları gösterilecek (ID: ' + walkId + ')');
+}
+</script>
+{% endblock %}
+

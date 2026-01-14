@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Görev Aktivite Log{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Görev Aktivite Log
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Son Aktiviteler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                    <div class="timeline">
+                        {% for activity in activities %}
+                        <div class="timeline-item mb-3 p-3 border-start border-3 
+                            {% if activity.action == 'created' %}border-success
+                            {% elif activity.action == 'updated' %}border-info
+                            {% elif activity.action == 'deleted' %}border-danger
+                            {% elif activity.action == 'status_changed' %}border-warning
+                            {% else %}border-secondary{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas 
+                                            {% if activity.action == 'created' %}fa-plus-circle text-success
+                                            {% elif activity.action == 'updated' %}fa-edit text-info
+                                            {% elif activity.action == 'deleted' %}fa-trash text-danger
+                                            {% elif activity.action == 'status_changed' %}fa-exchange-alt text-warning
+                                            {% else %}fa-info-circle text-secondary{% endif %} me-2"></i>
+                                        <strong>{{ activity.description or activity.action|title }}</strong>
+                                    </div>
+                                    
+                                    {% if activity.task %}
+                                    <div class="mb-2">
+                                        <i class="fas fa-tasks me-1 text-muted"></i>
+                                        <a href="{{ url_for('main.proje_detay', project_id=activity.task.project_id) }}">
+                                            {{ activity.task.title }}
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if activity.field_name %}
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <strong>Alan:</strong> {{ activity.field_name }}
+                                            {% if activity.old_value and activity.new_value %}
+                                            <br>
+                                            <strong>Eski:</strong> {{ activity.old_value|replace('"', '')|replace('null', '-') }}
+                                            <strong class="ms-2">Yeni:</strong> {{ activity.new_value|replace('"', '')|replace('null', '-') }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            {% if activity.user %}
+                                            {{ activity.user.first_name or activity.user.username }}
+                                            {% else %}
+                                            Sistem
+                                            {% endif %}
+                                            <i class="fas fa-clock ms-2 me-1"></i>
+                                            {{ activity.created_at.strftime('%d.%m.%Y %H:%M') if activity.created_at else '-' }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz aktivite kaydı bulunmamaktadır.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-left: 20px;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 15px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

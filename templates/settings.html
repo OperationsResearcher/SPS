@@ -1,0 +1,565 @@
+{% extends "base.html" %}
+
+{% block title %}Ayarlar - Stratejik Planlama Sistemi{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-cog me-2"></i>
+            Ayarlar
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Tema Ayarları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-palette me-2"></i>
+                <strong>Tema Ayarları</strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Uygulamanın görünümünü özelleştirin
+                </p>
+                
+                <!-- Tema Seçimi -->
+                <div class="mb-4">
+                    <label class="form-label"><strong>Tema Modu</strong></label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card theme-option" onclick="setTheme('light')" style="cursor: pointer;">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-sun fa-3x text-warning mb-2"></i>
+                                    <h5>Aydınlık Tema</h5>
+                                    <small class="text-muted">Klasik beyaz arka plan</small>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="theme" id="themeLight" value="light" checked>
+                                        <label class="form-check-label" for="themeLight">Seçili</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card theme-option" onclick="setTheme('dark')" style="cursor: pointer;">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-moon fa-3x text-primary mb-2"></i>
+                                    <h5>Karanlık Tema</h5>
+                                    <small class="text-muted">Göz yormayan koyu tema</small>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="theme" id="themeDark" value="dark">
+                                        <label class="form-check-label" for="themeDark">Seçili</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Renk Şeması -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Ana Renk</strong></label>
+                    <div class="row g-2">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-primary" onclick="setColor('primary')" style="width: 50px; height: 50px;">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-success" onclick="setColor('success')" style="width: 50px; height: 50px;"></button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-info" onclick="setColor('info')" style="width: 50px; height: 50px;"></button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-warning" onclick="setColor('warning')" style="width: 50px; height: 50px;"></button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-danger" onclick="setColor('danger')" style="width: 50px; height: 50px;"></button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-dark" onclick="setColor('dark')" style="width: 50px; height: 50px;"></button>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-2">Seçilen renk: <span id="currentColor" class="badge bg-primary">Mavi (Varsayılan)</span></small>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Yakında:</strong> Karanlık tema desteİi gelecek güncellemede eklenecektir.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bildirim Ayarları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-bell me-2"></i>
+                <strong>Bildirim Ayarları</strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Hangi bildirimleri almak istediİinizi seçin
+                </p>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyEmail" checked>
+                    <label class="form-check-label" for="notifyEmail">
+                        <i class="fas fa-envelope me-2 text-primary"></i>
+                        <strong>E-posta Bildirimleri</strong>
+                        <br>
+                        <small class="text-muted">Ç–nemli güncellemeler için e-posta gönder</small>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyProcess" checked>
+                    <label class="form-check-label" for="notifyProcess">
+                        <i class="fas fa-project-diagram me-2 text-success"></i>
+                        <strong>Süreç Bildirimleri</strong>
+                        <br>
+                        <small class="text-muted">Süreç güncellemeleri hakkında bildir</small>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyTask" checked>
+                    <label class="form-check-label" for="notifyTask">
+                        <i class="fas fa-tasks me-2 text-warning"></i>
+                        <strong>Görev Bildirimleri</strong>
+                        <br>
+                        <small class="text-muted">Yeni görevler atandıİında bildir</small>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifyDeadline" checked>
+                    <label class="form-check-label" for="notifyDeadline">
+                        <i class="fas fa-clock me-2 text-danger"></i>
+                        <strong>Son Tarih Hatırlatmaları</strong>
+                        <br>
+                        <small class="text-muted">Yaklaşan son tarihler için hatırlatıcı</small>
+                    </label>
+                </div>
+                
+                <button type="button" class="btn btn-success w-100 mt-3" onclick="saveNotificationAyarlar()">
+                    <i class="fas fa-save me-2"></i>Bildirim Ayarlarını Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Güvenlik Ayarları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Güvenlik Ayarları</strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Hesap güvenliİinizi artırın
+                </p>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="fas fa-key me-2 text-primary"></i>
+                            <strong>Şifre Deİiştir</strong>
+                            <br>
+                            <small class="text-muted">Son deİişiklik: Bugün</small>
+                        </div>
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Deİiştir
+                        </a>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-sign-out-alt me-2 text-danger"></i>
+                            <strong>Tüm Cihazlardan Çıkış</strong>
+                            <br>
+                            <small class="text-muted">Diİer cihazlardaki oturumları kapat</small>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="logoutAllDevices()">
+                            <i class="fas fa-power-off me-1"></i>Çıkış Yap
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Yakında:</strong> İki faktörlü kimlik doİrulama özelliİi eklenecektir.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dil ve Bölge Ayarları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-globe me-2"></i>
+                <strong>Dil ve Bölge</strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Dil ve bölge tercihlerinizi ayarlayın
+                </p>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Dil</strong></label>
+                    <select class="form-select" id="language">
+                        <option value="tr" selected>ğ‡¹ğ‡· Türkçe</option>
+                        <option value="en">ğ‡¬ğ‡§ English</option>
+                        <option value="de">ğ‡©ğ‡ª Deutsch</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Saat Dilimi</strong></label>
+                    <select class="form-select" id="timezone">
+                        <option value="Europe/Istanbul" selected>İstanbul (GMT+3)</option>
+                        <option value="Europe/London">Londra (GMT+0)</option>
+                        <option value="America/New_York">New York (GMT-5)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Tarih Formatı</strong></label>
+                    <select class="form-select" id="dateFormat">
+                        <option value="dd.mm.yyyy" selected>GG.AA.YYYY (04.10.2025)</option>
+                        <option value="mm/dd/yyyy">AA/GG/YYYY (10/04/2025)</option>
+                        <option value="yyyy-mm-dd">YYYY-AA-GG (2025-10-04)</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn btn-info w-100" onclick="saveRegionAyarlar()">
+                    <i class="fas fa-save me-2"></i>Dil Ayarlarını Kaydet
+                </button>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Yakında:</strong> Çoklu dil desteİi eklenecektir.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Yardım Asistanı Ayarları -->
+    <div class="col-lg-6 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <i class="fas fa-robot me-2"></i>
+                <strong>Yardım Asistanı</strong>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    İnteraktif rehber karakterini özelleştirin
+                </p>
+                
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="showPageGuides" 
+                           {{ 'checked' if current_user.show_page_guides else '' }}>
+                    <label class="form-check-label" for="showPageGuides">
+                        <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                        <strong>Sayfa Rehberlerini Göster</strong>
+                        <br>
+                        <small class="text-muted">Her sayfada yardım asistanını göster</small>
+                    </label>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><strong>Karakter Stili</strong></label>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="characterStyle" id="styleProfessional" 
+                                       value="professional" {{ 'checked' if current_user.guide_character_style == 'professional' else '' }}>
+                                <label class="form-check-label d-flex align-items-center" for="styleProfessional">
+                                    <div class="me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user-tie text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Profesyonel</strong>
+                                        <br>
+                                        <small class="text-muted">İş odaklı, ciddi ve bilgili asistan</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="characterStyle" id="styleFriendly" 
+                                       value="friendly" {{ 'checked' if current_user.guide_character_style == 'friendly' else '' }}>
+                                <label class="form-check-label d-flex align-items-center" for="styleFriendly">
+                                    <div class="me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-smile text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Arkadaş Canlısı</strong>
+                                        <br>
+                                        <small class="text-muted">Samimi, neşeli ve yakın asistan</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="characterStyle" id="styleMinimal" 
+                                       value="minimal" {{ 'checked' if current_user.guide_character_style == 'minimal' else '' }}>
+                                <label class="form-check-label d-flex align-items-center" for="styleMinimal">
+                                    <div class="me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-robot text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Minimal</strong>
+                                        <br>
+                                        <small class="text-muted">Sade, kısa ve öz asistan</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary" onclick="saveGuideAyarlar()">
+                        <i class="fas fa-save me-2"></i>Asistan Ayarlarını Kaydet
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetWalkthroughs()">
+                        <i class="fas fa-redo me-2"></i>Tüm Rehberleri Sıfırla
+                    </button>
+                </div>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <small><strong>İpucu:</strong> Sağ alt köşedeki karaktere tıklayarak rehberi açabilirsiniz.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="settingsToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Bildirim</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Ayarlar kaydedildi!
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Tema deİiştirme
+function setTheme(theme) {
+    document.getElementById('theme' + (theme === 'light' ? 'Light' : 'Dark')).checked = true;
+    
+    if (theme === 'dark') {
+        showToast('Karanlık tema yakında eklenecektir!', 'info');
+    } else {
+        showToast('Aydınlık tema aktif!', 'success');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Renk deİiştirme
+function setColor(color) {
+    const colorAds = {
+        'primary': 'Mavi',
+        'success': 'Yeşil',
+        'info': 'Turkuaz',
+        'warning': 'Turuncu',
+        'danger': 'Kırmızı',
+        'dark': 'Koyu'
+    };
+    
+    document.getElementById('currentColor').textContent = colorAds[color];
+    document.getElementById('currentColor').classAd = 'badge bg-' + color;
+    
+    showToast(colorAds[color] + ' renk seçildi!', 'success');
+    localStorage.setItem('primaryColor', color);
+}
+
+// Bildirim ayarlarını kaydet
+function saveNotificationAyarlar() {
+    const settings = {
+        email: document.getElementById('notifyEmail').checked,
+        process: document.getElementById('notifyProcess').checked,
+        task: document.getElementById('notifyTask').checked,
+        deadline: document.getElementById('notifyDeadline').checked
+    };
+    
+    fetch('/settings/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Tip': 'application/json',
+        },
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Bildirim ayarları kaydedildi!', 'success');
+        } else {
+            showToast('Hata: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Ayarlar kaydedildi! (Yakında sunucu desteİi eklenecek)', 'info');
+        localStorage.setItem('notifications', JSON.stringify(settings));
+    });
+}
+
+// Bölge ayarlarını kaydet
+function saveRegionAyarlar() {
+    const settings = {
+        language: document.getElementById('language').value,
+        timezone: document.getElementById('timezone').value,
+        dateFormat: document.getElementById('dateFormat').value
+    };
+    
+    showToast('Dil ayarları kaydedildi! (Yakında uygulanacak)', 'info');
+    localStorage.setItem('region', JSON.stringify(settings));
+}
+
+// Tüm cihazlardan çıkış
+function logoutAllDevices() {
+    if (confirm('Tüm cihazlardaki oturumlarınızı kapatmak istediİinizden emin misiniz?')) {
+        showToast('Bu özellik yakında eklenecektir!', 'info');
+    }
+}
+
+// Toast gösterme
+function showToast(message, type) {
+    const toastEl = document.getElementById('settingsToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastHeader = toastEl.querySelector('.toast-header i');
+    
+    toastMessage.textContent = message;
+    
+    // İkon ve renk deİiştir
+    if (type === 'error') {
+        toastHeader.classAd = 'fas fa-exclamation-circle text-danger me-2';
+    } else if (type === 'info') {
+        toastHeader.classAd = 'fas fa-info-circle text-info me-2';
+    } else {
+        toastHeader.classAd = 'fas fa-check-circle text-success me-2';
+    }
+    
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
+
+// Sayfa yüklendiİinde kaydedilmiş ayarları yükle
+document.addEventListener('DOMContentLoaded', function() {
+    const theme = localStorage.getItem('theme') || 'light';
+    const color = localStorage.getItem('primaryColor') || 'primary';
+    
+    document.getElementById('theme' + (theme === 'light' ? 'Light' : 'Dark')).checked = true;
+    
+    // Kaydedilmiş bildirimleri yükle
+    const notifications = localStorage.getItem('notifications');
+    if (notifications) {
+        const settings = JSON.parse(notifications);
+        document.getElementById('notifyEmail').checked = settings.email;
+        document.getElementById('notifyProcess').checked = settings.process;
+        document.getElementById('notifyTask').checked = settings.task;
+        document.getElementById('notifyDeadline').checked = settings.deadline;
+    }
+    
+    // Kaydedilmiş bölge ayarlarını yükle
+    const region = localStorage.getItem('region');
+    if (region) {
+        const settings = JSON.parse(region);
+        document.getElementById('language').value = settings.language;
+        document.getElementById('timezone').value = settings.timezone;
+        document.getElementById('dateFormat').value = settings.dateFormat;
+    }
+});
+</script>
+
+<script>
+// Guide Ayarlarını Kaydet
+function saveGuideAyarlar() {
+    const showGuides = document.getElementById('showPageGuides').checked;
+    const characterStyle = document.querySelector('input[name="characterStyle"]:checked').value;
+    
+    fetch('{{ url_for("main.update_guide_settings") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            show_page_guides: showGuides,
+            guide_character_style: characterStyle
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Asistan ayarları kaydedildi! Değişiklikler hemen geçerli.', 'success');
+            // Reload guide widget if it exists
+            if (typeof window.updateGuideCharacter === 'function') {
+                window.updateGuideCharacter(characterStyle);
+            }
+        } else {
+            showToast('Hata: ' + (data.message || 'Ayarlar kaydedilemedi'), 'error');
+        }
+    })
+    .catch(e => {
+        console.error('Guide ayar hatası:', e);
+        showToast('Ayarlar kaydedilirken bir hata oluştu.', 'error');
+    });
+}
+
+// Walkthroughs Sıfırla
+function resetWalkthroughs() {
+    if (!confirm('Tüm sayfa rehberlerini sıfırlamak istediğinizden emin misiniz? İlk giriş rehberleri tekrar gösterilecektir.')) {
+        return;
+    }
+    
+    fetch('{{ url_for("main.reset_walkthroughs") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Tüm rehberler sıfırlandı! Sayfaları ziyaret ettiğinizde rehberler tekrar gösterilecek.', 'success');
+        } else {
+            showToast('Hata: ' + (data.message || 'Sıfırlama başarısız'), 'error');
+        }
+    })
+    .catch(e => {
+        console.error('Reset hatası:', e);
+        showToast('Sıfırlama sırasında bir hata oluştu.', 'error');
+    });
+}
+</script>
+{% endblock %}
+
+
+

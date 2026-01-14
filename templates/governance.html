@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}DAO Yönetimi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-vote-yea me-2"></i>
+                DAO Yönetimi
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Akıllı Sözleşmeler</h5>
+                </div>
+                <div class="card-body">
+                    {% if contracts %}
+                    <ul class="list-group">
+                        {% for contract in contracts %}
+                        <li class="list-group-item">{{ contract.contract_name }} ({{ contract.contract_type }})</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Henüz akıllı sözleşme tanımlanmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Öneriler</h5>
+                </div>
+                <div class="card-body">
+                    {% if proposals %}
+                    <ul class="list-group">
+                        {% for proposal in proposals %}
+                        <li class="list-group-item">
+                            {{ proposal.proposal_title }}
+                            <span class="badge bg-{{ 'success' if proposal.status == 'passed' else 'danger' if proposal.status == 'rejected' else 'warning' }}">
+                                {{ proposal.status|upper }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Henüz öneri bulunmuyor.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+

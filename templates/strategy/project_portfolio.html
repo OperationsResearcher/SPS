@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}Stratejik Proje Portföyü{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>Stratejik Proje Portföyü
+                    </h4>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+                        <i class="fas fa-plus me-1"></i>Yeni Proje Ekle
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if projects_with_scores|length == 0 %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz proje tanımlanmamış.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped" id="projectPortfolioTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="text-center" style="width: 60px;">Sıra</th>
+                                        <th>Proje Adı</th>
+                                        <th>Bağlı Süreçler</th>
+                                        <th class="text-center" style="width: 150px;">Stratejik Puan</th>
+                                        <th class="text-center" style="width: 120px;">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in projects_with_scores %}
+                                    {% set project = item.project %}
+                                    {% set rank = loop.index %}
+                                    <tr {% if rank <= 3 %}class="table-{% if rank == 1 %}warning{% elif rank == 2 %}secondary{% else %}info{% endif %}"{% endif %}>
+                                        <td class="text-center align-middle">
+                                            {% if rank == 1 %}
+                                                <span class="badge bg-warning text-dark" style="font-size: 1.2rem; padding: 8px 12px;">
+                                                    <i class="fas fa-medal"></i> 1
+                                                </span>
+                                            {% elif rank == 2 %}
+                                                <span class="badge bg-secondary text-white" style="font-size: 1.1rem; padding: 7px 10px;">
+                                                    <i class="fas fa-medal"></i> 2
+                                                </span>
+                                            {% elif rank == 3 %}
+                                                <span class="badge bg-info text-white" style="font-size: 1rem; padding: 6px 9px;">
+                                                    <i class="fas fa-medal"></i> 3
+                                                </span>
+                                            {% else %}
+                                                <strong class="text-muted">{{ rank }}</strong>
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="text-decoration-none">
+                                                <strong>{{ project.name }}</strong>
+                                            </a>
+                                            <br>
+                                            <a href="{{ url_for('main.strategy_project_detail', id=project.id) }}" class="small text-muted text-decoration-none">
+                                                <i class="fas fa-chart-line me-1"></i>Stratejik analiz
+                                            </a>
+                                            {% if project.description %}
+                                            <br><small class="text-muted">{{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}</small>
+                                            {% endif %}
+                                            {% if project.priority %}
+                                            <br><span class="badge bg-{% if project.priority == 'Kritik' %}danger{% elif project.priority == 'Yüksek' %}warning{% elif project.priority == 'Orta' %}info{% else %}secondary{% endif %} mt-1">
+                                                {{ project.priority }}
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle">
+                                            {% if item.related_processes %}
+                                                {% for proc in item.related_processes %}
+                                                <span class="badge bg-light text-dark me-1 mb-1" data-bs-toggle="tooltip" title="Puan: {{ proc.score }}">
+                                                    {{ proc.code }} ({{ proc.score }})
+                                                </span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Süreç bağlantısı yok</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="badge {% if item.strategic_score >= 50 %}bg-success{% elif item.strategic_score >= 30 %}bg-warning{% elif item.strategic_score >= 15 %}bg-info{% else %}bg-secondary{% endif %} text-white" 
+                                                  style="font-size: 1.3rem; padding: 10px 15px; font-weight: bold;">
+                                                {{ item.strategic_score }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                                <button type="button" class="btn btn-sm btn-outline-primary me-1" 
+                                                    onclick='editProject({{ project.id }}, {{ project.name|tojson }}, {{ (project.description or "")|tojson }}, {{ (project.start_date.strftime('%Y-%m-%d') if project.start_date else "")|tojson }}, {{ (project.end_date.strftime('%Y-%m-%d') if project.end_date else "")|tojson }}, {{ (project.priority or "Orta")|tojson }}, {{ project.get_notification_settings()|tojson }})'
+                                                    title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info me-1" 
+                                                    onclick="cloneProject({{ project.id }}, '{{ project.name|e }}', '{{ project.description|e if project.description else '' }}')"
+                                                    title="Klonla">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <form method="POST" action="{{ url_for('main.strategy_project_delete', id=project.id) }}" 
+                                                  style="display: inline;" 
+                                                  onsubmit="return confirm('Bu projeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6><i class="fas fa-info-circle me-2"></i>Açıklama:</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <span class="badge bg-warning text-dark me-2"><i class="fas fa-medal"></i> 1</span>
+                                            <strong>Altın</strong> - En yüksek stratejik puana sahip proje
+                                        </li>
+                                        <li>
+                                            <span class="badge bg-secondary text-white me-2"><i class="fas fa-medal"></i> 2</span>
+                                            <strong>Gümüş</strong> - İkinci en yüksek puan
+                                        </li>
+                                        <li>
+                                            <span class="badge bg-info text-white me-2"><i class="fas fa-medal"></i> 3</span>
+                                            <strong>Bronz</strong> - Üçüncü en yüksek puan
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-muted small">
+                                        <strong>Stratejik Puan Hesaplama:</strong><br>
+                                        Projenin bağlı olduğu süreçlerin matris puanları toplanarak hesaplanır. 
+                                        Süreçlerin üzerine gelerek detaylı puan bilgisini görebilirsiniz.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Proje düzenleme fonksiyonu
+function editProject(id, name, description, startDate, endDate, priority, notificationSettings) {
+    // Form alanlarını doldur
+    document.getElementById('edit_project_id').value = id;
+    document.getElementById('edit_project_name').value = name;
+    document.getElementById('edit_project_description').value = description || '';
+    document.getElementById('edit_project_start_date').value = startDate || '';
+    document.getElementById('edit_project_end_date').value = endDate || '';
+    document.getElementById('edit_project_priority').value = priority || 'Orta';
+
+    // Bildirim ayarları (varsa)
+    const notif = notificationSettings || {};
+    const reminderDays = Array.isArray(notif.reminder_days) ? notif.reminder_days.join(',') : '7,3,1';
+    const overdueFreq = notif.overdue_frequency || 'daily';
+    const notifyManager = (notif.notify_manager !== false);
+    const notifyObservers = (notif.notify_observers === true);
+    const emailEnabled = !!(notif.channels && notif.channels.email);
+
+    const rd = document.getElementById('edit_notification_reminder_days');
+    const of = document.getElementById('edit_notification_overdue_frequency');
+    const nm = document.getElementById('edit_notification_notify_manager');
+    const no = document.getElementById('edit_notification_notify_observers');
+    const ce = document.getElementById('edit_notification_channel_email');
+    if (rd) rd.value = reminderDays;
+    if (of) of.value = overdueFreq;
+    if (nm) nm.checked = notifyManager;
+    if (no) no.checked = notifyObservers;
+    if (ce) ce.checked = emailEnabled;
+    
+    // Form action'ını ayarla
+    const editForm = document.getElementById('editProjectForm');
+    editForm.action = '/strategy/project/' + id + '/edit';
+    
+    // Modal'ı aç
+    var editModal = new bootstrap.Modal(document.getElementById('editProjectModal'));
+    editModal.show();
+}
+
+// Bootstrap tooltip'leri aktif et
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+
+<!-- Proje Düzenleme Modalı -->
+<div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" id="editProjectForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" id="edit_project_id" name="project_id">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="editProjectModalLabel">
+                        <i class="fas fa-edit me-2"></i>Proje Düzenle
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_project_name" class="form-label">
+                            <strong>Proje Adı <span class="text-danger">*</span></strong>
+                        </label>
+                        <input type="text" class="form-control" id="edit_project_name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_project_description" class="form-label">
+                            <strong>Açıklama</strong>
+                        </label>
+                        <textarea class="form-control" id="edit_project_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_project_start_date" class="form-label">
+                                <strong>Başlangıç Tarihi</strong>
+                            </label>
+                            <input type="date" class="form-control" id="edit_project_start_date" name="start_date">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_project_end_date" class="form-label">
+                                <strong>Bitiş Tarihi</strong>
+                            </label>
+                            <input type="date" class="form-control" id="edit_project_end_date" name="end_date">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_project_priority" class="form-label">
+                            <strong>Öncelik</strong>
+                        </label>
+                        <select class="form-select" id="edit_project_priority" name="priority">
+                            <option value="Düşük">Düşük</option>
+                            <option value="Orta">Orta</option>
+                            <option value="Yüksek">Yüksek</option>
+                            <option value="Kritik">Kritik</option>
+                        </select>
+                    </div>
+
+                    <hr>
+                    <h6 class="mb-2">Bildirim ve Uyarı Ayarları</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_notification_reminder_days" class="form-label"><strong>Hatırlatma Günleri</strong></label>
+                            <input type="text" class="form-control" id="edit_notification_reminder_days" name="notification_reminder_days" placeholder="7,3,1">
+                            <div class="form-text">Örn: 7,3,1 (gün)</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_notification_overdue_frequency" class="form-label"><strong>Gecikme Bildirimi</strong></label>
+                            <select class="form-select" id="edit_notification_overdue_frequency" name="notification_overdue_frequency">
+                                <option value="daily">Günlük</option>
+                                <option value="off">Kapalı</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_notification_notify_manager" name="notification_notify_manager" checked>
+                                <label class="form-check-label" for="edit_notification_notify_manager">Yöneticiye bildir</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_notification_notify_observers" name="notification_notify_observers">
+                                <label class="form-check-label" for="edit_notification_notify_observers">Gözlemcilere bildir</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_notification_channel_email" name="notification_channel_email">
+                                <label class="form-check-label" for="edit_notification_channel_email">E-posta (ops.)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-1"></i>Güncelle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Proje Ekleme Modalı -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('main.strategy_project_add') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addProjectModalLabel">
+                        <i class="fas fa-plus-circle me-2"></i>Yeni Proje Ekle
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="project_name" class="form-label">
+                            <strong>Proje Adı <span class="text-danger">*</span></strong>
+                        </label>
+                        <input type="text" class="form-control" id="project_name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="project_description" class="form-label">
+                            <strong>Açıklama</strong>
+                        </label>
+                        <textarea class="form-control" id="project_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="project_start_date" class="form-label">
+                                <strong>Başlangıç Tarihi</strong>
+                            </label>
+                            <input type="date" class="form-control" id="project_start_date" name="start_date">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="project_end_date" class="form-label">
+                                <strong>Bitiş Tarihi</strong>
+                            </label>
+                            <input type="date" class="form-control" id="project_end_date" name="end_date">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="project_priority" class="form-label">
+                            <strong>Öncelik</strong>
+                        </label>
+                        <select class="form-select" id="project_priority" name="priority">
+                            <option value="Düşük">Düşük</option>
+                            <option value="Orta" selected>Orta</option>
+                            <option value="Yüksek">Yüksek</option>
+                            <option value="Kritik">Kritik</option>
+                        </select>
+                    </div>
+
+                    <hr>
+                    <h6 class="mb-2">Bildirim ve Uyarı Ayarları</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="notification_reminder_days" class="form-label"><strong>Hatırlatma Günleri</strong></label>
+                            <input type="text" class="form-control" id="notification_reminder_days" name="notification_reminder_days" value="7,3,1" placeholder="7,3,1">
+                            <div class="form-text">Örn: 7,3,1 (gün)</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="notification_overdue_frequency" class="form-label"><strong>Gecikme Bildirimi</strong></label>
+                            <select class="form-select" id="notification_overdue_frequency" name="notification_overdue_frequency">
+                                <option value="daily" selected>Günlük</option>
+                                <option value="off">Kapalı</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notification_notify_manager" name="notification_notify_manager" checked>
+                                <label class="form-check-label" for="notification_notify_manager">Yöneticiye bildir</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notification_notify_observers" name="notification_notify_observers">
+                                <label class="form-check-label" for="notification_notify_observers">Gözlemcilere bildir</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notification_channel_email" name="notification_channel_email">
+                                <label class="form-check-label" for="notification_channel_email">E-posta (ops.)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Proje Klonlama Modalı -->
+<div class="modal fade" id="cloneProjectModal" tabindex="-1" aria-labelledby="cloneProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" id="cloneProjectForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" id="clone_project_id" name="source_project_id">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="cloneProjectModalLabel">
+                        <i class="fas fa-copy me-2"></i>Projeyi Kopyala
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="clone_project_name" class="form-label">
+                            <strong>Yeni Proje Adı <span class="text-danger">*</span></strong>
+                        </label>
+                        <input type="text" class="form-control" id="clone_project_name" name="name" required>
+                        <small class="text-muted">Yeni proje için bir isim belirleyin.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clone_processes" name="copy_processes" value="1" checked>
+                            <label class="form-check-label" for="clone_processes">
+                                <strong>Süreç İlişkilerini de Kopyala</strong>
+                            </label>
+                            <small class="d-block text-muted">Projenin bağlı olduğu süreçler yeni projeye de eklenecek.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clone_description" name="copy_description" value="1" checked>
+                            <label class="form-check-label" for="clone_description">
+                                <strong>Açıklamayı Kopyala</strong>
+                            </label>
+                            <small class="d-block text-muted">Proje açıklaması yeni projeye de eklenecek.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clone_priority" name="copy_priority" value="1" checked>
+                            <label class="form-check-label" for="clone_priority">
+                                <strong>Öncelik Seviyesini Kopyala</strong>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Not:</strong> Yeni proje bugünün tarihiyle başlayacak ve başlangıç/bitiş tarihleri otomatik ayarlanacak.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-copy me-1"></i>Kopyala
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+#projectPortfolioTable tbody tr:hover {
+    transform: scale(1.01);
+    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-project-diagram"></i> CPM / Kritik Yol Analizi — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('cpm')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Proje Özeti</h5>
+      <div id="project-summary" class="row">
+        <div class="col-md-3">
+          <label class="text-muted small">Proje Bitiş Tarihi</label>
+          <div id="finish-date" class="fs-5 fw-bold">—</div>
+        </div>
+        <div class="col-md-3">
+          <label class="text-muted small">Toplam Görev</label>
+          <div id="total-tasks" class="fs-5 fw-bold">—</div>
+        </div>
+        <div class="col-md-3">
+          <label class="text-muted small">Kritik Görevler</label>
+          <div id="critical-count" class="fs-5 fw-bold text-danger">—</div>
+        </div>
+        <div class="col-md-3">
+          <label class="text-muted small">Toplam Float</label>
+          <div id="total-float" class="fs-5 fw-bold">— gün</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Görev Zamanlama Tablosu</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="schedule-table">
+          <thead class="table-light">
+            <tr>
+              <th>Görev</th>
+              <th>Süre (gün)</th>
+              <th>ES</th>
+              <th>EF</th>
+              <th>LS</th>
+              <th>LF</th>
+              <th>Slack</th>
+              <th>Kritik?</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Kritik Yol Görselleştirme</h5>
+    </div>
+    <div class="card-body">
+      <div id="critical-path-viz" style="min-height: 300px;">
+        <p class="text-center text-muted py-5">Kritik yol hesaplanıyor...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function loadCPM() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/cpm');
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message || 'CPM verileri alınamadı');
+
+    // Özet bilgiler
+    document.getElementById('finish-date').textContent = data.project_finish || '—';
+    document.getElementById('total-tasks').textContent = data.schedule.length;
+    document.getElementById('critical-count').textContent = data.critical_task_ids.length;
+    
+    const totalFloat = data.schedule.reduce((sum, t) => sum + (t.slack || 0), 0);
+    document.getElementById('total-float').textContent = totalFloat.toFixed(1) + ' gün';
+
+    // Tablo doldur
+    const tbody = document.querySelector('#schedule-table tbody');
+    tbody.innerHTML = '';
+    
+    data.schedule.forEach(row => {
+      const tr = document.createElement('tr');
+      if (row.is_critical) tr.classList.add('table-danger');
+      
+      const duration = row.duration != null ? row.duration : 0;
+      const es = row.es != null ? row.es : 0;
+      const ef = row.ef != null ? row.ef : 0;
+      const ls = row.ls != null ? row.ls : 0;
+      const lf = row.lf != null ? row.lf : 0;
+      const slack = row.slack != null ? row.slack : 0;
+      
+      tr.innerHTML = `
+        <td><a href="/projeler/{{ project.id }}#task-${row.task_id}">${row.title || row.task_name || 'N/A'}</a></td>
+        <td>${duration.toFixed(1)}</td>
+        <td>${es.toFixed(1)}</td>
+        <td>${ef.toFixed(1)}</td>
+        <td>${ls.toFixed(1)}</td>
+        <td>${lf.toFixed(1)}</td>
+        <td><span class="badge ${row.slack === 0 ? 'bg-danger' : 'bg-secondary'}">${slack.toFixed(1)}</span></td>
+        <td>${row.is_critical ? '<i class="fas fa-exclamation-triangle text-danger"></i>' : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Kritik yol görselleştirme
+    const criticalTasks = data.schedule.filter(t => t.is_critical).map(t => t.title || t.task_name || 'N/A');
+    const vizDiv = document.getElementById('critical-path-viz');
+    if (criticalTasks.length > 0) {
+      vizDiv.innerHTML = `
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          ${criticalTasks.map((name, i) => `
+            <span class="badge bg-danger fs-6 py-2 px-3">${name}</span>
+            ${i < criticalTasks.length - 1 ? '<i class="fas fa-arrow-right text-danger"></i>' : ''}
+          `).join('')}
+        </div>
+      `;
+    } else {
+      vizDiv.innerHTML = '<p class="text-muted text-center">Kritik yol bulunamadı.</p>';
+    }
+
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'CPM Yükleme Hatası');
+  }
+})();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

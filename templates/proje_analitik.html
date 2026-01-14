@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Proje Analitik{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Proje Analitik
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>
+                        Süreç Sağlık Skorları
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if surec_skorlari %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Süreç Adı</th>
+                                    <th>Sağlık Skoru</th>
+                                    <th>Durum</th>
+                                    <th>Proje Tamamlama</th>
+                                    <th>Geciken Görev</th>
+                                    <th>PG Hedef Ulaşma</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in surec_skorlari %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.surec.ad }}</strong>
+                                        {% if item.surec.kurum %}
+                                        <br><small class="text-muted">{{ item.surec.kurum.ad }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 25px;">
+                                                <div class="progress-bar 
+                                                    {% if item.skor.durum == 'iyi' %}bg-success
+                                                    {% elif item.skor.durum == 'orta' %}bg-warning
+                                                    {% else %}bg-danger{% endif %}" 
+                                                    role="progressbar" 
+                                                    style="width: {{ item.skor.skor }}%"
+                                                    aria-valuenow="{{ item.skor.skor }}" 
+                                                    aria-valuemin="0" 
+                                                    aria-valuemax="100">
+                                                    <strong>{{ item.skor.skor }}%</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item.skor.durum == 'iyi' %}
+                                        <span class="badge bg-success">İyi</span>
+                                        {% elif item.skor.durum == 'orta' %}
+                                        <span class="badge bg-warning">Orta</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Kötü</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.skor.detaylar.proje_tamamlama_orani }}%</td>
+                                    <td>{{ item.skor.detaylar.geciken_gorev_orani }}%</td>
+                                    <td>{{ item.skor.detaylar.pg_hedef_ulasma_orani }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Henüz analiz edilecek süreç bulunmamaktadır.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Skor Hesaplama Bilgisi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p>Sağlık skoru aşağıdaki kriterlere göre hesaplanmaktadır:</p>
+                    <ul>
+                        <li><strong>Proje Tamamlama Oranı:</strong> %30 ağırlık</li>
+                        <li><strong>Geciken Görev Oranı:</strong> %30 ağırlık (düşük = iyi)</li>
+                        <li><strong>PG Hedef Ulaşma Oranı:</strong> %40 ağırlık</li>
+                    </ul>
+                    <p class="mb-0">
+                        <strong>Durum Kriterleri:</strong><br>
+                        - 80 ve üzeri: <span class="badge bg-success">İyi</span><br>
+                        - 50-79 arası: <span class="badge bg-warning">Orta</span><br>
+                        - 50'nin altı: <span class="badge bg-danger">Kötü</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

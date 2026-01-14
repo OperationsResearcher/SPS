@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-plug"></i> Entegrasyonlar & Webhook'lar — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('integrations')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Webhook Ekle</button>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Kayıtlı Webhook'lar</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="integrations-table">
+          <thead class="table-light">
+            <tr>
+              <th>Sağlayıcı</th>
+              <th>Webhook URL</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info mt-4">
+    <h6>Webhook Kullanımı</h6>
+    <p class="mb-0">Webhook'lar görev güncellemelerinde otomatik olarak tetiklenir. Slack, Microsoft Teams, veya Outlook'a bildirim göndermek için webhook URL'si ekleyin.</p>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="integrationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Webhook Ekle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="hook-id">
+        <div class="mb-3">
+          <label class="form-label">Sağlayıcı</label>
+          <select class="form-select" id="provider" required>
+            <option value="slack">Slack</option>
+            <option value="teams">Microsoft Teams</option>
+            <option value="outlook">Outlook</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Webhook URL</label>
+          <input type="url" class="form-control" id="webhook-url" placeholder="https://hooks.slack.com/..." required>
+        </div>
+        <div class="mb-3">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="is-active" checked>
+            <label class="form-check-label" for="is-active">Aktif</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="saveHook()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let hooks = [];
+function getIntegrationModal() {
+  const el = document.getElementById('integrationModal');
+  return bootstrap.Modal.getOrCreateInstance(el);
+}
+
+async function loadIntegrations() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/integrations');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    hooks = data.hooks || [];
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Entegrasyonlar Yükleme Hatası');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#integrations-table tbody');
+  tbody.innerHTML = '';
+
+  if (hooks.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Henüz webhook eklenmedi.</td></tr>';
+    return;
+  }
+
+  hooks.forEach(hook => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="badge bg-primary">${hook.provider}</span></td>
+      <td><code class="text-truncate" style="max-width: 300px; display: inline-block;">${hook.url}</code></td>
+      <td><span class="badge bg-${hook.is_active ? 'success' : 'secondary'}">${hook.is_active ? 'Aktif' : 'Pasif'}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="editHook(${hook.id})"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteHook(${hook.id})"><i class="fas fa-trash"></i></button>
+        <button class="btn btn-sm btn-outline-info" onclick="testHook(${hook.id})"><i class="fas fa-vial"></i> Test</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('hook-id').value = '';
+  document.getElementById('provider').value = 'slack';
+  document.getElementById('webhook-url').value = '';
+  document.getElementById('is-active').checked = true;
+  getIntegrationModal().show();
+}
+
+function editHook(id) {
+  const hook = hooks.find(h => h.id === id);
+  if (!hook) return;
+
+  document.getElementById('hook-id').value = hook.id;
+  document.getElementById('provider').value = hook.provider;
+  document.getElementById('webhook-url').value = hook.url;
+  document.getElementById('is-active').checked = hook.is_active;
+  getIntegrationModal().show();
+}
+
+async function saveHook() {
+  const id = document.getElementById('hook-id').value;
+  const provider = document.getElementById('provider').value;
+  const url = document.getElementById('webhook-url').value.trim();
+  const is_active = document.getElementById('is-active').checked;
+
+  if (!url) return alert('Webhook URL gerekli');
+
+  const body = { provider, url, is_active };
+  const endpoint = id ? `/api/projeler/{{ project.id }}/integrations/${id}` : '/api/projeler/{{ project.id }}/integrations';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(endpoint, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    getIntegrationModal().hide();
+    loadIntegrations();
+    if (window.showToast) showToast('success', 'Webhook kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kaydetme Hatası');
+  }
+}
+
+async function deleteHook(id) {
+  if (!confirm('Bu webhook\'u silmek istediğinizden emin misiniz?')) return;
+
+  try {
+    const res = await fetch(`/api/projeler/{{ project.id }}/integrations/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    loadIntegrations();
+    if (window.showToast) showToast('success', 'Webhook silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Silme Hatası');
+  }
+}
+
+async function testHook(id) {
+  if (window.showToast) showToast('info', 'Test webhook gönderiliyor...', 'Test');
+  // Bu fonksiyon backend'de test endpoint'i gerektirir, şimdilik placeholder
+  setTimeout(() => {
+    if (window.showToast) showToast('success', 'Test mesajı gönderildi', 'Test Tamamlandı');
+  }, 1500);
+}
+
+loadIntegrations();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

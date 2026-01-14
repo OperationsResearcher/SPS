@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Gantt Şeması{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}">Ana Sayfa</a> / 
+<a href="{{ url_for('main.projeler') }}">Proje Yönetimi</a> / 
+<a href="{{ url_for('main.proje_detay', project_id=project.id) }}">{{ project.name }}</a> / Gantt Şeması
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Proje Bilgileri -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>{{ project.name }} - Gantt Şeması</h5>
+            <div>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-columns me-1"></i>Kanban
+                    </a>
+                    <a href="{{ url_for('main.proje_gantt', project_id=project.id) }}" class="btn btn-sm btn-primary active">
+                        <i class="fas fa-project-diagram me-1"></i>Gantt
+                    </a>
+                </div>
+                <a href="{{ url_for('main.gorev_yeni', project_id=project.id) }}" class="btn btn-primary btn-sm ms-2">
+                    <i class="fas fa-plus me-1"></i>Yeni Görev
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gantt Chart -->
+    <div class="card">
+        <div class="card-body">
+            <div id="gantt-container" style="overflow-x: auto;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Frappe Gantt CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+
+<script>
+const ganttData = {{ gantt_data | tojson }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Frappe Gantt veri formatına dönüştür
+    const tasks = ganttData.map(item => ({
+        id: String(item.id),
+        name: item.name,
+        start: item.start,
+        end: item.end,
+        progress: item.progress || 0,
+        dependencies: item.dependencies || []
+    }));
+    
+    // Gantt chart oluştur
+    const gantt = new Gantt('#gantt-container', tasks, {
+        header_height: 50,
+        column_width: 30,
+        step: 24,
+        view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+        bar_height: 20,
+        bar_corner_radius: 3,
+        arrow_curve: 5,
+        padding: 18,
+        date_format: 'YYYY-MM-DD',
+        language: 'tr',
+        on_click: function (task) {
+            // Görev tıklandığında detay sayfasına yönlendir
+            window.location.href = `/projeler/{{ project.id }}/gorevler/${task.id}`;
+        },
+        on_date_change: function(task, start, end) {
+            // Tarih değiştiğinde API'ye güncelleme gönder
+            updateTaskDate(task.id, start, end);
+        },
+        on_progress_change: function(task, progress) {
+            // İlerleme değiştiğinde API'ye güncelleme gönder
+            updateTaskProgress(task.id, progress);
+        }
+    });
+    
+    // Gantt chart'ı görüntülemek için container'a ekle
+    window.gantt = gantt;
+});
+
+function updateTaskDate(taskId, start, end) {
+    // Görev tarihini güncelle (opsiyonel - şimdilik sadece log)
+    console.log('Task date updated:', taskId, start, end);
+}
+
+function updateTaskProgress(taskId, progress) {
+    // Görev ilerlemesini güncelle (opsiyonel - şimdilik sadece log)
+    console.log('Task progress updated:', taskId, progress);
+}
+</script>
+
+<style>
+#gantt-container {
+    margin: 20px 0;
+}
+
+.gantt-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Strateji-Süreç Matrisi{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-table me-2"></i>Strateji-Süreç Matrisi
+                    </h4>
+                    <a href="{{ url_for('main.strategy_projects') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-trophy me-1"></i>Proje Portföyü
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if processes|length == 0 %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz süreç tanımlanmamış.
+                        </div>
+                    {% elif sub_strategies|length == 0 %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz strateji tanımlanmamış.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm" id="strategyMatrixTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center align-middle" style="min-width: 120px; position: sticky; left: 0; background-color: #f8f9fa; z-index: 10;">
+                                            <strong>Ana Strateji</strong>
+                                        </th>
+                                        <th class="text-center align-middle" style="min-width: 200px; position: sticky; left: 120px; background-color: #f8f9fa; z-index: 10;">
+                                            <strong>Alt Strateji</strong>
+                                        </th>
+                                        {% for process in processes %}
+                                        <th class="text-center" style="writing-mode: vertical-rl; text-orientation: mixed; min-width: 50px; max-width: 50px; height: 150px; vertical-align: middle;">
+                                            <div class="d-flex align-items-center justify-content-center h-100">
+                                                <div>
+                                                    <small><strong>{{ process.code }}</strong></small><br>
+                                                    <small style="font-size: 0.7rem;">{{ process.ad[:20] }}{% if process.ad|length > 20 %}...{% endif %}</small>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for main_id, main_data in main_strategies.items() %}
+                                        {% set main_strategy = main_data.strategy %}
+                                        {% set subs = main_data.subs %}
+                                        
+                                        {% for sub_strategy in subs %}
+                                        <tr>
+                                            {% if loop.first %}
+                                            <td class="align-middle text-center" style="position: sticky; left: 0; background-color: white; z-index: 5; min-width: 120px;" rowspan="{{ subs|length }}">
+                                                <strong>{{ main_strategy.code }}</strong><br>
+                                                <small class="text-muted">{{ main_strategy.ad[:25] }}{% if main_strategy.ad|length > 25 %}...{% endif %}</small>
+                                            </td>
+                                            {% endif %}
+                                            
+                                            <td class="align-middle" style="position: sticky; left: 120px; background-color: white; z-index: 5; min-width: 200px;">
+                                                <strong>{{ sub_strategy.code }}</strong><br>
+                                                <small class="text-muted">{{ sub_strategy.ad[:30] }}{% if sub_strategy.ad|length > 30 %}...{% endif %}</small>
+                                                {% if sub_strategy.target_method %}
+                                                <br><span class="badge bg-info-subtle text-info-emphasis" style="font-size: 0.7rem;">{{ sub_strategy.target_method }}</span>
+                                                {% endif %}
+                                            </td>
+                                            
+                                            {% for process in processes %}
+                                            {% set relation_key = (sub_strategy.id, process.id) %}
+                                            {% set score = relations_map.get(relation_key, None) %}
+                                            <td class="text-center align-middle matrix-cell" 
+                                                style="min-width: 50px; cursor: pointer;"
+                                                data-sub-id="{{ sub_strategy.id }}"
+                                                data-proc-id="{{ process.id }}">
+                                                {% if score is not none %}
+                                                    {% if score == 9 %}
+                                                        <span class="badge bg-success-subtle text-success-emphasis matrix-badge" 
+                                                              style="font-size: 1.2rem; padding: 8px 12px;"
+                                                              data-bs-toggle="tooltip" 
+                                                              data-bs-placement="top" 
+                                                              title="Puan: 9 (Güçlü İlişki - A)">
+                                                            <strong>A</strong>
+                                                        </span>
+                                                    {% elif score == 3 %}
+                                                        <span class="badge bg-warning-subtle text-warning-emphasis matrix-badge" 
+                                                              style="font-size: 1.2rem; padding: 8px 12px;"
+                                                              data-bs-toggle="tooltip" 
+                                                              data-bs-placement="top" 
+                                                              title="Puan: 3 (Zayıf İlişki - B)">
+                                                            <strong>B</strong>
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary-subtle text-secondary-emphasis matrix-badge" 
+                                                              style="font-size: 1rem; padding: 6px 10px;"
+                                                              data-bs-toggle="tooltip" 
+                                                              data-bs-placement="top" 
+                                                              title="Puan: {{ score }}">
+                                                            {{ score }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted matrix-badge">-</span>
+                                                {% endif %}
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <th class="text-center align-middle" style="position: sticky; left: 0; background-color: #6c757d; z-index: 10; color: white;">
+                                            <strong>TOPLAM PUAN</strong>
+                                        </th>
+                                        <th class="text-center align-middle" style="position: sticky; left: 120px; background-color: #6c757d; z-index: 10; color: white;">
+                                            <small>Stratejik Uygunluk</small>
+                                        </th>
+                                        {% for process in processes %}
+                                        <td class="text-center align-middle" style="min-width: 50px; font-weight: bold; font-size: 1.1rem;">
+                                            {% set total_score = process_totals.get(process.id, 0) %}
+                                            {% if process.id in top_3_process_ids %}
+                                                <span class="badge bg-success text-white" style="padding: 8px 12px; font-size: 1rem;">
+                                                    {{ total_score }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-dark">
+                                                    {{ total_score }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6><i class="fas fa-info-circle me-2"></i>Gösterge Açıklaması:</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <span class="badge bg-success-subtle text-success-emphasis me-2" style="font-size: 1rem; padding: 6px 10px;"><strong>A</strong></span>
+                                            <strong>Güçlü İlişki</strong> (Puan: 9)
+                                        </li>
+                                        <li>
+                                            <span class="badge bg-warning-subtle text-warning-emphasis me-2" style="font-size: 1rem; padding: 6px 10px;"><strong>B</strong></span>
+                                            <strong>Zayıf İlişki</strong> (Puan: 3)
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <span class="badge bg-success text-white me-2" style="font-size: 1rem; padding: 6px 10px;">Yüksek</span>
+                                            <strong>En Kritik 3 Süreç</strong> (En yüksek toplam puana sahip)
+                                        </li>
+                                    </ul>
+                                    <p class="text-muted small mt-2">
+                                        <i class="fas fa-mouse-pointer me-1"></i>
+                                        Hücrelere tıklayarak ilişki puanlarını değiştirebilirsiniz (Yok → A → B → Sil).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bootstrap tooltip'leri aktif et ve matris hücrelerine tıklama olayı ekle
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Matris hücrelerine tıklama olayı ekle
+    const matrixCells = document.querySelectorAll('.matrix-cell');
+    matrixCells.forEach(function(cell) {
+        cell.addEventListener('click', function() {
+            const subId = this.getAttribute('data-sub-id');
+            const procId = this.getAttribute('data-proc-id');
+            
+            if (!subId || !procId) return;
+            
+            // Loading göster
+            const badge = this.querySelector('.matrix-badge');
+            const originalContent = badge ? badge.innerHTML : '-';
+            if (badge) {
+                badge.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+            
+            // CSRF token al
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            
+            // Backend'e istek at
+            fetch('/strategy/update_cell', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    sub_strategy_id: parseInt(subId),
+                    process_id: parseInt(procId)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hücreyi güncelle
+                    if (data.new_score === null) {
+                        // İlişki silindi
+                        badge.className = 'text-muted matrix-badge';
+                        badge.innerHTML = '-';
+                        badge.removeAttribute('data-bs-toggle');
+                        badge.removeAttribute('title');
+                    } else {
+                        // Yeni badge oluştur
+                        badge.className = 'badge matrix-badge ' + data.class;
+                        badge.style.fontSize = data.new_score === 9 || data.new_score === 3 ? '1.2rem' : '1rem';
+                        badge.style.padding = data.new_score === 9 || data.new_score === 3 ? '8px 12px' : '6px 10px';
+                        badge.innerHTML = '<strong>' + data.text + '</strong>';
+                        badge.setAttribute('data-bs-toggle', 'tooltip');
+                        badge.setAttribute('title', data.title);
+                        
+                        // Tooltip'i yeniden başlat
+                        const newTooltip = new bootstrap.Tooltip(badge);
+                    }
+                    
+                    // Toplam puanları güncellemek için sayfayı yenile
+                    setTimeout(function() {
+                        location.reload();
+                    }, 300);
+                } else {
+                    // Hata durumu
+                    showToast('error', 'Hata: ' + (data.error || 'Bilinmeyen hata'));
+                    if (badge) {
+                        badge.innerHTML = originalContent;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                showToast('error', 'İşlem sırasında bir hata oluştu.');
+                if (badge) {
+                    badge.innerHTML = originalContent;
+                }
+            });
+        });
+    });
+});
+</script>
+
+<style>
+/* Sticky header ve ilk sütun için özel stiller */
+#strategyMatrixTable thead th:first-child,
+#strategyMatrixTable tbody td:first-child,
+#strategyMatrixTable tfoot th:first-child {
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+#strategyMatrixTable tbody td:nth-child(2),
+#strategyMatrixTable tfoot th:nth-child(2) {
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Tfoot için özel stil */
+#strategyMatrixTable tfoot {
+    background-color: #6c757d;
+    color: white;
+}
+
+#strategyMatrixTable tfoot th {
+    background-color: #6c757d !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Hover efekti */
+#strategyMatrixTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+#strategyMatrixTable tbody td:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Matris hücreleri için hover efekti */
+.matrix-cell {
+    transition: background-color 0.2s;
+}
+
+.matrix-cell:hover {
+    background-color: #e9ecef !important;
+}
+
+.matrix-cell:active {
+    background-color: #dee2e6 !important;
+}
+</style>
+{% endblock %}
+

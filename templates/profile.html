@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+
+{% block title %}Profilim - Stratejik Planlama Sistemi{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-user-circle me-2"></i>
+            Profilim
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sol Kolon - Profil Bilgileri -->
+    <div class="col-lg-4 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-user me-2"></i>
+                <strong>Profil Bilgileri</strong>
+            </div>
+            <div class="card-body text-center">
+                <!-- Profil Fotoğrafı -->
+                <div class="mb-4 position-relative">
+                    <div id="profilePhotoContainer">
+                        {% if current_user.profile_photo %}
+                            {% set photo_url = current_user.profile_photo %}
+                            {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                {% if photo_url.startswith('/static/') %}
+                                    {% set photo_url = url_for('static', filename=photo_url[8:]) %}
+                                {% else %}
+                                    {% set photo_url = url_for('static', filename=photo_url.lstrip('/static/').lstrip('/')) %}
+                                {% endif %}
+                            {% endif %}
+                            <img id="profilePhotoImg" src="{{ photo_url }}" alt="Profil" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #007bff; cursor: pointer;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" onclick="document.getElementById('profilePhotoInput').click();">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px; font-size: 60px; display: none; cursor: pointer;" onclick="document.getElementById('profilePhotoInput').click();">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px; font-size: 60px; cursor: pointer;" onclick="document.getElementById('profilePhotoInput').click();">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- Fotoğraf Yükleme Input (Gizli) -->
+                    <input type="file" id="profilePhotoInput" accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp" style="display: none;">
+                    <!-- Yükleme Butonu -->
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('profilePhotoInput').click();">
+                            <i class="fas fa-camera me-2"></i>Fotoğraf Yükle
+                        </button>
+                    </div>
+                    <!-- Yükleme Progress -->
+                    <div id="photoUploadProgress" class="mt-2" style="display: none;">
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <small class="text-muted d-block mt-1">Fotoğraf yükleniyor...</small>
+                    </div>
+                </div>
+                
+                <!-- Kullanıcı Adı -->
+                <h4 class="mb-2">{{ current_user.username }}</h4>
+                <p class="text-muted mb-3">{{ current_user.email }}</p>
+                
+                <!-- Rol Badge -->
+                <div class="mb-3">
+                    <span class="badge bg-primary px-3 py-2" style="font-size: 0.9rem;">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        {{ current_user.sistem_rol|role_name }}
+                    </span>
+                </div>
+                
+                <!-- Kurum Bilgisi -->
+                <div class="alert alert-info">
+                    <i class="fas fa-building me-2"></i>
+                    <strong>{{ current_user.kurum.kisa_ad }}</strong>
+                    <br>
+                    <small class="text-muted">{{ current_user.kurum.ad }}</small>
+                </div>
+                
+                <!-- İstatistikler -->
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <div class="border rounded p-2">
+                            <h5 class="mb-0 text-primary">{{ current_user.liderlik_yaptigi_surecler|length }}</h5>
+                            <small class="text-muted">Lider Olunan Süreç</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-2">
+                            <h5 class="mb-0 text-success">{{ current_user.uye_oldugu_surecler|length }}</h5>
+                            <small class="text-muted">Üye Olunan Süreç</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sağ Kolon - Profil Düzenleme -->
+    <div class="col-lg-8 mb-4">
+        <div class="card fade-in-up">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-edit me-2"></i>
+                <strong>Profili Düzenle</strong>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="row">
+                        <!-- Kullanıcı Adı (Read-only) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" value="{{ current_user.username }}" readonly>
+                            <small class="text-muted">Kullanıcı adı değiştirilemez</small>
+                        </div>
+                        
+                        <!-- E-posta -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">E-posta <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="profileEmail" value="{{ current_user.email }}" required>
+                        </div>
+                        
+                        <!-- Ad -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ad</label>
+                            <input type="text" class="form-control" id="profileFirstAd" value="{{ current_user.first_name or '' }}">
+                        </div>
+                        
+                        <!-- Soyad -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Soyad</label>
+                            <input type="text" class="form-control" id="profileLastAd" value="{{ current_user.last_name or '' }}">
+                        </div>
+                        
+                        <!-- Telefon -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Telefon</label>
+                            <input type="tel" class="form-control" id="profilePhone" value="{{ current_user.phone or '' }}" placeholder="0555 123 45 67">
+                        </div>
+                        
+                        <!-- Unvan -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unvan</label>
+                            <input type="text" class="form-control" id="profileBaslik" value="{{ current_user.title or '' }}" placeholder="Yazılım Geliştirici">
+                        </div>
+                        
+                        <!-- Departman -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Departman</label>
+                            <input type="text" class="form-control" id="profileDepartment" value="{{ current_user.department or '' }}" placeholder="Bilgi İşlem">
+                        </div>
+                        
+                        <!-- Profil Fotoğrafı URL -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Profil Fotoğrafı URL</label>
+                            <input type="text" class="form-control" id="profilePhotoUrl" value="{{ current_user.profile_photo or '' }}" placeholder="https://... veya /static/uploads/...">
+                            <small class="text-muted">Tam URL (https://...) veya static dosya yolu (/static/uploads/...)</small>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Şifre Değiştirme -->
+                    <h5 class="mb-3"><i class="fas fa-key me-2"></i>Şifre Değiştir</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Mevcut Şifre</label>
+                            <input type="password" class="form-control" id="currentPassword" placeholder="Mevcut şifreniz">
+                            <small class="text-muted">Şifre değiştirmek için zorunlu</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Yeni Şifre</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Yeni şifre">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Yeni Şifre (Tekrar)</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Yeni şifre tekrar">
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Not:</strong> Şifre değiştirmek istemiyorsanız şifre alanlarını boş bırakın.
+                    </div>
+                    
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                            <i class="fas fa-times me-2"></i>İptal
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="profileToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Bildirim</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            İşlem başarılı!
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Email ve telefon validasyon fonksiyonları
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    // Türk telefon numarası formatları: +90 212 555 0123, 0212 555 0123, 555 123 4567, 5551234567
+    const re = /^(\+90\s?)?(\(?\d{3}\)?\s?)?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/;
+    return re.test(phone.replace(/\s/g, ''));
+}
+
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Şifre değişikliği kontrolü
+    if (newPassword || confirmPassword || currentPassword) {
+        if (!currentPassword) {
+            showToast('Şifre değiştirmek için mevcut şifrenizi girmelisiniz!', 'error');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showToast('Yeni şifreler eşleşmiyor!', 'error');
+            return;
+        }
+        if (newPassword.length < 6) {
+            showToast('Yeni şifre en az 6 karakter olmalıdır!', 'error');
+            return;
+        }
+    }
+    
+    // E-posta validasyonu
+    const email = document.getElementById('profileEmail').value.trim();
+    if (email && !validateEmail(email)) {
+        showToast('Lütfen geçerli bir e-posta adresi girin!', 'error');
+        document.getElementById('profileEmail').classList.add('is-invalid');
+        return;
+    }
+    document.getElementById('profileEmail').classList.remove('is-invalid');
+    
+    // Telefon validasyonu
+    const phone = document.getElementById('profilePhone').value.trim();
+    if (phone && !validatePhone(phone)) {
+        showToast('Lütfen geçerli bir telefon numarası girin! (Örn: +90 212 555 0123 veya 0212 555 0123)', 'error');
+        document.getElementById('profilePhone').classList.add('is-invalid');
+        return;
+    }
+    document.getElementById('profilePhone').classList.remove('is-invalid');
+    
+    // Profil fotoğrafı URL validasyonu (opsiyonel - boş bırakılabilir)
+    const profilePhotoUrl = document.getElementById('profilePhotoUrl').value.trim();
+    if (profilePhotoUrl) {
+        // URL veya relative path kontrolü
+        const isValidUrl = profilePhotoUrl.startsWith('http://') || 
+                          profilePhotoUrl.startsWith('https://') || 
+                          profilePhotoUrl.startsWith('/static/') ||
+                          profilePhotoUrl.startsWith('static/');
+        if (!isValidUrl) {
+            showToast('Profil fotoğrafı URL\'si geçerli bir format değil! (http://, https:// veya /static/ ile başlamalı)', 'error');
+            document.getElementById('profilePhotoUrl').classList.add('is-invalid');
+            return;
+        }
+    }
+    document.getElementById('profilePhotoUrl').classList.remove('is-invalid');
+    
+    const formData = {
+        email: email,
+        first_name: document.getElementById('profileFirstAd').value.trim(),
+        last_name: document.getElementById('profileLastAd').value.trim(),
+        phone: phone,
+        title: document.getElementById('profileBaslik').value.trim(),
+        department: document.getElementById('profileDepartment').value.trim(),
+        profile_photo: profilePhotoUrl,
+        current_password: currentPassword,
+        new_password: newPassword
+    };
+    
+    // CSRF token'ı al
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    fetch('/profile/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken || ''
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        // Response'un JSON olup olmadığını kontrol et
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            return response.text().then(text => {
+                console.error('Beklenmeyen response:', text.substring(0, 200));
+                throw new Error('Sunucudan JSON yanıt alınamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            // Şifre alanlarını temizle
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            // Sayfayı yenile (profil fotoğrafı güncellemesi için)
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast('Hata: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Profil güncelleme hatası:', error);
+        let errorMessage = 'Beklenmedik hata oluştu.';
+        if (error.message) {
+            errorMessage += ' ' + error.message;
+        }
+        showToast(errorMessage, 'error');
+    });
+});
+
+function showToast(message, type) {
+    const toastEl = document.getElementById('profileToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastHeader = toastEl.querySelector('.toast-header i');
+    
+    toastMessage.textContent = message;
+    
+    // İkon ve renk değiştir
+    if (type === 'error') {
+        toastHeader.className = 'fas fa-exclamation-circle text-danger me-2';
+    } else {
+        toastHeader.className = 'fas fa-check-circle text-success me-2';
+    }
+    
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
+
+// Profil fotoğrafı yükleme
+document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Dosya tipini kontrol et
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showToast('Geçersiz dosya tipi! Lütfen PNG, JPG, GIF, SVG veya WEBP formatında bir resim seçin.', 'error');
+        e.target.value = '';
+        return;
+    }
+    
+    // Dosya boyutunu kontrol et (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Dosya boyutu çok büyük! Maksimum 5MB boyutunda dosya yükleyebilirsiniz.', 'error');
+        e.target.value = '';
+        return;
+    }
+    
+    // FormData oluştur
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // CSRF token'ı ekle
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
+    
+    // Progress göster
+    const progressDiv = document.getElementById('photoUploadProgress');
+    progressDiv.style.display = 'block';
+    
+    // Yükleme butonunu devre dışı bırak
+    const uploadBtn = document.querySelector('button[onclick*="profilePhotoInput"]');
+    if (uploadBtn) uploadBtn.disabled = true;
+    
+    // AJAX ile yükle
+    fetch('/profile/upload-photo', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken || ''
+        }
+    })
+    .then(response => {
+        // Response'un JSON olup olmadığını kontrol et
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            return response.text().then(text => {
+                console.error('Beklenmeyen response:', text);
+                throw new Error('Sunucudan JSON yanıt alınamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        progressDiv.style.display = 'none';
+        if (uploadBtn) uploadBtn.disabled = false;
+        
+        if (data.success) {
+            showToast(data.message, 'success');
+            
+            // URL alanını güncelle
+            const urlInput = document.getElementById('profilePhotoUrl');
+            if (urlInput) {
+                urlInput.value = data.photo_url;
+            }
+            
+            // Profil fotoğrafını güncelle - URL'i Flask static formatına çevir
+            const photoContainer = document.getElementById('profilePhotoContainer');
+            let photoUrl = data.photo_url;
+            
+            // Relative URL ise Flask static formatına çevir
+            if (!photoUrl.startsWith('http://') && !photoUrl.startsWith('https://')) {
+                if (photoUrl.startsWith('/static/')) {
+                    // /static/uploads/profiles/... -> /static/uploads/profiles/... (zaten doğru format)
+                    photoUrl = photoUrl;
+                } else {
+                    // static/ veya /static/ ile başlamıyorsa ekle
+                    photoUrl = photoUrl.replace(/^\/?static\//, '').replace(/^\//, '');
+                    photoUrl = '/static/' + photoUrl;
+                }
+            }
+            
+            // Mevcut fotoğrafı güncelle veya yeni oluştur
+            const existingImg = photoContainer.querySelector('#profilePhotoImg');
+            const existingDiv = photoContainer.querySelector('.rounded-circle.bg-primary');
+            
+            if (existingImg) {
+                existingImg.src = photoUrl;
+                existingImg.style.display = 'block';
+                if (existingDiv) {
+                    existingDiv.style.display = 'none';
+                }
+            } else {
+                // Yeni img elementi oluştur
+                const newImg = document.createElement('img');
+                newImg.id = 'profilePhotoImg';
+                newImg.src = photoUrl;
+                newImg.alt = 'Profil';
+                newImg.className = 'rounded-circle';
+                newImg.style.cssText = 'width: 150px; height: 150px; object-fit: cover; border: 4px solid #007bff; cursor: pointer;';
+                newImg.onclick = function() { document.getElementById('profilePhotoInput').click(); };
+                newImg.onerror = function() {
+                    this.style.display = 'none';
+                    if (existingDiv) {
+                        existingDiv.style.display = 'flex';
+                    }
+                };
+                
+                if (existingDiv) {
+                    existingDiv.style.display = 'none';
+                }
+                photoContainer.insertBefore(newImg, photoContainer.firstChild);
+            }
+            
+            // Sayfayı kısa bir süre sonra yenile (tüm yerlerde güncellenmesi için)
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('Hata: ' + data.message, 'error');
+            e.target.value = '';
+        }
+    })
+    .catch(error => {
+        progressDiv.style.display = 'none';
+        if (uploadBtn) uploadBtn.disabled = false;
+        showToast('Fotoğraf yüklenirken bir hata oluştu: ' + error.message, 'error');
+        e.target.value = '';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-3">
+  <div class="d-flex align-items-center mb-3">
+    <h3 class="me-3">Takvim — {{ project.name }}</h3>
+    <a class="btn btn-outline-secondary me-2" href="/projeler/{{ project.id }}/kanban">Kanban</a>
+    <a class="btn btn-outline-secondary" href="/projeler/{{ project.id }}/gantt">Gantt</a>
+  </div>
+  <div id='calendar'></div>
+</div>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+
+    async function updateTaskDates(id, start, end) {
+      const body = { start_date: start, due_date: end };
+      const res = await fetch(`/api/projeler/{{ project.id }}/gorevler/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      editable: true,
+      eventDurationEditable: true,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: async function(fetchInfo, success, fail) {
+        try {
+          const res = await fetch(`/api/projeler/{{ project.id }}/gorevler`);
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message || 'Listeleme hatası');
+          const evts = (data.gorevler || []).filter(t => t.due_date || t.start_date).map(t => ({
+            id: t.id,
+            title: t.title,
+            start: t.start_date || t.due_date,
+            end: t.due_date || t.start_date,
+            color: t.status === 'Tamamlandı' ? '#2ecc71' : undefined
+          }));
+          success(evts);
+        } catch (e) {
+          if (window.showToast) showToast('error', e.message || 'Takvim yüklenemedi', 'Hata');
+          fail(e);
+        }
+      },
+      eventClick: function(info) {
+        const taskId = info.event.id;
+        window.location.href = '/projeler/{{ project.id }}#task-' + taskId;
+      },
+      eventDrop: async function(info) {
+        try {
+          const start = info.event.startStr.slice(0,10);
+          const end = info.event.endStr ? info.event.endStr.slice(0,10) : start;
+          await updateTaskDates(info.event.id, start, end);
+          if (window.showToast) showToast('success', 'Tarih güncellendi', 'Takvim');
+        } catch (e) {
+          info.revert();
+          if (window.showToast) showToast('error', e.message || 'Güncellenemedi', 'Hata');
+        }
+      },
+      eventResize: async function(info) {
+        try {
+          const start = info.event.startStr.slice(0,10);
+          const end = info.event.endStr ? info.event.endStr.slice(0,10) : start;
+          await updateTaskDates(info.event.id, start, end);
+          if (window.showToast) showToast('success', 'Süre güncellendi', 'Takvim');
+        } catch (e) {
+          info.revert();
+          if (window.showToast) showToast('error', e.message || 'Güncellenemedi', 'Hata');
+        }
+      }
+    });
+    calendar.render();
+  });
+</script>
+{% endblock %}

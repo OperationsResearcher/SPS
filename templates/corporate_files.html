@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Doküman Merkezi{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}">Ana Sayfa</a> / Doküman Merkezi
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h4><i class="fas fa-folder-open me-2"></i>Kurumsal Dosyalar</h4>
+            {% if can_upload %}
+            <button class="btn btn-primary" onclick="showUploadCorporateFileModal()">
+                <i class="fas fa-upload me-1"></i>Dosya Yükle
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if files_by_category %}
+        {% for category, files in files_by_category.items() %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-folder me-2"></i>{{ category }}
+                    <span class="badge bg-light text-dark ms-2">{{ files|length }} dosya</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Dosya Adı</th>
+                                <th>Boyut</th>
+                                <th>Yükleyen</th>
+                                <th>Açıklama</th>
+                                <th>Yüklenme Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-file me-2"></i>
+                                    <strong>{{ file.file_name }}</strong>
+                                    {% if file.version > 1 %}
+                                    <span class="badge bg-secondary">v{{ file.version }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if file.file_size %}
+                                        {% if file.file_size < 1024 %}
+                                            {{ file.file_size }} B
+                                        {% elif file.file_size < 1024 * 1024 %}
+                                            {{ (file.file_size / 1024)|round(2) }} KB
+                                        {% else %}
+                                            {{ (file.file_size / (1024 * 1024))|round(2) }} MB
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if file.user %}
+                                        {{ file.user.first_name }} {{ file.user.last_name }}
+                                    {% else %}
+                                        Bilinmiyor
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if file.description %}
+                                        <small class="text-muted">{{ file.description[:50] }}{% if file.description|length > 50 %}...{% endif %}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if file.created_at %}
+                                        {{ file.created_at.strftime('%d.%m.%Y') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/api/dokuman-merkezi/{{ file.id }}/indir" class="btn btn-sm btn-primary" title="İndir">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    {% if can_upload %}
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCorporateFile({{ file.id }}, '{{ file.file_name }}')" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Henüz kurumsal dosya bulunmamaktadır</h5>
+            {% if can_upload %}
+            <p class="text-muted">İlk dosyanızı yüklemek için yukarıdaki "Dosya Yükle" butonuna tıklayın.</p>
+            {% else %}
+            <p class="text-muted">Dosya yüklemek için yönetici yetkisine sahip olmanız gerekmektedir.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Kurumsal Dosya Yükleme Modal -->
+<div class="modal fade" id="uploadCorporateFileModal" tabindex="-1" aria-labelledby="uploadCorporateFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadCorporateFileModalLabel">
+                    <i class="fas fa-upload me-2"></i>Kurumsal Dosya Yükle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadCorporateFileForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="corporateFiles" class="form-label">Dosyalar <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" id="corporateFiles" name="files" multiple required>
+                        <small class="text-muted">Maksimum 10 dosya, her dosya maksimum 50 MB</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="corporateFileCategory" class="form-label">Kategori</label>
+                        <select class="form-select" id="corporateFileCategory" name="category">
+                            <option value="">Kategori Seçiniz...</option>
+                            <option value="Yönetmelik">Yönetmelik</option>
+                            <option value="Şablon">Şablon</option>
+                            <option value="Rapor">Rapor</option>
+                            <option value="IT Politikaları">IT Politikaları</option>
+                            <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+                            <option value="Proje Şablonları">Proje Şablonları</option>
+                            <option value="Eğitim Materyalleri">Eğitim Materyalleri</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="corporateFileDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="corporateFileDescription" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>İptal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="uploadCorporateFiles()">
+                    <i class="fas fa-upload me-1"></i>Yükle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showUploadCorporateFileModal() {
+    const modal = new bootstrap.Modal(document.getElementById('uploadCorporateFileModal'));
+    modal.show();
+}
+
+function uploadCorporateFiles() {
+    const form = document.getElementById('uploadCorporateFileForm');
+    const formData = new FormData(form);
+    
+    const files = document.getElementById('corporateFiles').files;
+    if (!files || files.length === 0) {
+        if (typeof showToast !== 'undefined') {
+            showToast('warning', 'Lütfen en az bir dosya seçin.', 'Eksik Bilgi');
+        }
+        return;
+    }
+    
+    // Submit butonunu devre dışı bırak
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Yükleniyor...';
+    
+    fetch('/api/dokuman-merkezi', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+        },
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof showToast !== 'undefined') {
+                    showToast('success', data.message || 'Dosyalar başarıyla yüklendi!', 'Başarılı');
+                }
+                // Modal'ı kapat
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadCorporateFileModal'));
+                modal.hide();
+                // Formu temizle
+                form.reset();
+                // Sayfayı yenile
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                if (typeof showToast !== 'undefined') {
+                    showToast('error', data.message || 'Dosyalar yüklenemedi.', 'Hata');
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            if (typeof showToast !== 'undefined') {
+                showToast('error', 'Dosyalar yüklenirken bir hata oluştu!', 'Hata');
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+}
+
+function deleteCorporateFile(fileId, fileName) {
+    if (!confirm(`"${fileName}" dosyasını silmek istediğinizden emin misiniz?`)) {
+        return;
+    }
+    
+    fetch(`/api/dokuman-merkezi/${fileId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof showToast !== 'undefined') {
+                    showToast('success', 'Dosya başarıyla silindi.', 'Başarılı');
+                }
+                // Sayfayı yenile
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                if (typeof showToast !== 'undefined') {
+                    showToast('error', data.message || 'Dosya silinemedi.', 'Hata');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            if (typeof showToast !== 'undefined') {
+                showToast('error', 'Dosya silinirken bir hata oluştu!', 'Hata');
+            }
+        });
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

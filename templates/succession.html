@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Halefiyet Planlaması{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-user-tie me-2"></i>
+                Halefiyet Planlaması
+            </h2>
+        </div>
+    </div>
+
+    {% if plans %}
+    <div class="row">
+        {% for plan in plans %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ plan.position_name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Mevcut Sahip:</strong> {{ plan.current_holder.first_name if plan.current_holder else '-' }}</p>
+                    <p><strong>Halef:</strong> {{ plan.successor.first_name if plan.successor else '-' }}</p>
+                    <p><strong>Hazırlık Seviyesi:</strong> {{ plan.readiness_level }}/5</p>
+                    {% if plan.timeline %}
+                    <p><strong>Tahmini Geçiş Tarihi:</strong> {{ plan.timeline.strftime('%d.%m.%Y') }}</p>
+                    {% endif %}
+                    <span class="badge bg-{{ 'success' if plan.status == 'active' else 'secondary' }}">
+                        {{ 'Aktif' if plan.status == 'active' else plan.status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Henüz halefiyet planı bulunmuyor.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

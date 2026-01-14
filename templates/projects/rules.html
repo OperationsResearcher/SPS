@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-cogs"></i> Kural Motoru (Otomasyon) — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('rules')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Kural Motoru Nedir?</strong> Görevlerdeki belirli değişimlere (durum, atanan kişi, vb.) tepki olarak otomatik aksiyonlar tanımlayabilirsiniz.
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Yeni Kural Ekle</button>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Tanımlı Kurallar</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="rules-table">
+          <thead class="table-light">
+            <tr>
+              <th>Kural Adı</th>
+              <th>Tetikleyici</th>
+              <th>Koşul</th>
+              <th>Aksiyon</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="ruleModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kural Ekle/Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="rule-id">
+        <div class="mb-3">
+          <label class="form-label">Kural Adı</label>
+          <input type="text" class="form-control" id="rule-name" placeholder="Örn: Tamamlanan görevleri bildir" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tetikleyici</label>
+          <select class="form-select" id="trigger" required>
+            <option value="status_change">Durum Değişikliği</option>
+            <option value="assignee_change">Atanan Kişi Değişikliği</option>
+            <option value="due_date_change">Bitiş Tarihi Değişikliği</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Koşul (JSON)</label>
+          <textarea class="form-control font-monospace" id="condition-json" rows="3" placeholder='{"status": "Done"}'></textarea>
+          <small class="text-muted">Örn: {"status": "Done"} veya {"assignee_id": 5}</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Aksiyon (JSON)</label>
+          <textarea class="form-control font-monospace" id="action-json" rows="3" placeholder='{"send_notification": true, "message": "Görev tamamlandı"}'></textarea>
+          <small class="text-muted">Örn: {"send_notification": true, "message": "..."}</small>
+        </div>
+        <div class="mb-3">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="is-active" checked>
+            <label class="form-check-label" for="is-active">Aktif</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="saveRule()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let rules = [];
+function getRuleModal() {
+  const el = document.getElementById('ruleModal');
+  return bootstrap.Modal.getOrCreateInstance(el);
+}
+
+async function loadRules() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/kurallar');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    rules = (data.rules || []).map(r => ({
+      id: r.id,
+      name: r.name,
+      trigger: r.trigger,
+      condition: r.condition,
+      actions: r.actions,
+      is_active: r.is_active
+    }));
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kurallar Yükleme Hatası');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#rules-table tbody');
+  tbody.innerHTML = '';
+
+  if (rules.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Henüz kural eklenmedi.</td></tr>';
+    return;
+  }
+
+  rules.forEach(rule => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${rule.name || 'Adsız Kural'}</strong></td>
+      <td><span class="badge bg-secondary">${rule.trigger}</span></td>
+      <td><code>${JSON.stringify(rule.condition)}</code></td>
+      <td><code>${JSON.stringify(rule.actions)}</code></td>
+      <td><span class="badge bg-${rule.is_active ? 'success' : 'secondary'}">${rule.is_active ? 'Aktif' : 'Pasif'}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="editRule(${rule.id})"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteRule(${rule.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('rule-id').value = '';
+  document.getElementById('rule-name').value = '';
+  document.getElementById('trigger').value = 'status_change';
+  document.getElementById('condition-json').value = '{"status": "Done"}';
+  document.getElementById('action-json').value = '{"send_notification": true}';
+  document.getElementById('is-active').checked = true;
+  getRuleModal().show();
+}
+
+function editRule(id) {
+  const rule = rules.find(r => r.id === id);
+  if (!rule) return;
+
+  document.getElementById('rule-id').value = rule.id;
+  document.getElementById('rule-name').value = rule.name || '';
+  document.getElementById('trigger').value = rule.trigger;
+  document.getElementById('condition-json').value = JSON.stringify(rule.condition || {}, null, 2);
+  document.getElementById('action-json').value = JSON.stringify(rule.actions || {}, null, 2);
+  document.getElementById('is-active').checked = rule.is_active;
+  getRuleModal().show();
+}
+
+async function saveRule() {
+  const id = document.getElementById('rule-id').value;
+  const name = document.getElementById('rule-name').value.trim();
+  const trigger = document.getElementById('trigger').value;
+  const conditionText = document.getElementById('condition-json').value.trim();
+  const actionText = document.getElementById('action-json').value.trim();
+  const is_active = document.getElementById('is-active').checked;
+
+  if (!name || !trigger) return alert('Kural adı ve tetikleyici gerekli');
+
+  let condition, actions;
+  try {
+    condition = JSON.parse(conditionText);
+    actions = JSON.parse(actionText);
+  } catch (e) {
+    return alert('Geçersiz JSON formatı: ' + e.message);
+  }
+
+  const body = { name, trigger, condition, actions, is_active };
+  const url = id ? `/api/projeler/{{ project.id }}/kurallar/${id}` : '/api/projeler/{{ project.id }}/kurallar';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    getRuleModal().hide();
+    loadRules();
+    if (window.showToast) showToast('success', 'Kural kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kaydetme Hatası');
+  }
+}
+
+async function deleteRule(id) {
+  if (!confirm('Bu kuralı silmek istediğinizden emin misiniz?')) return;
+
+  try {
+    const res = await fetch(`/api/projeler/{{ project.id }}/kurallar/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    loadRules();
+    if (window.showToast) showToast('success', 'Kural silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Silme Hatası');
+  }
+}
+
+loadRules();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

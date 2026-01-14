@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proje Yönetimi Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="kontrol.html">Ana Sayfa</a> > Proje Yönetimi Modülü
+            </div>
+            <h1>📁 Proje Yönetimi Kontrol Listesi</h1>
+        </div>
+        
+        <div class="progress-section">
+            <div id="progress-text">0 / 0 soru cevaplandı (0%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <!-- Sorular buraya eklenecek -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportResults('proje', 'Proje Yönetimi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="window.location.href='kontrol.html'">Ana Sayfaya Dön</button>
+            <button class="btn btn-danger" onclick="clearResults('proje', 'Proje Yönetimi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "Proje listesi sayfasına erişim sağlanabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Yeni proje ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje ekleme formunda zorunlu alanlar (ad, başlangıç tarihi) belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje adı, açıklama, başlangıç-bitiş tarihleri doldurulabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje durumu (Aktif, Tamamlandı, İptal vb.) seçilebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje üyesi (member) atama işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje gözlemcisi (observer) atama işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "İlişkili süreç atama işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje ekleme işlemi başarıyla tamamlandığında onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje listesi düzgün görüntüleniyor mu? (Ad, durum, tarih bilgileri)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje düzenleme butonu çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje silme butonu çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje detay sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje detay sayfasında tüm bilgiler görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Yeni görev ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev ekleme formunda zorunlu alanlar belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev adı, açıklama, atanan kişi, durum, öncelik doldurulabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev başlangıç-bitiş tarihleri seçilebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev ekleme işlemi başarıyla tamamlanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev listesi proje detay sayfasında görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev düzenleme işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev silme işlemi çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev detay sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Gantt görünümü sayfası açılıyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Gantt görünümünde görevler doğru zaman çizelgesinde görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje analitik sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje analitik sayfasında grafikler ve istatistikler görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Risk yönetimi özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev bağımlılıkları (predecessors) ayarlanabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev yorumları eklenebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dosya yükleme özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Form validasyonları çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hata durumlarında anlaşılır hata mesajları gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje yönetimi sayfaları mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule('proje', questions);
+        initializeModule('proje', 'Proje Yönetimi', questions);
+        
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 3 - Transcendence Pack Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🌟 Faz 3 - Transcendence Pack (V63.0)</h1>
+            <p>Sentetik Müşteri Lab, DAO Yönetimi, Metaverse, Kurucu Miras AI kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz3-transcendence', 'Faz 3 - Transcendence Pack')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz3-transcendence')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz3-transcendence';
+        const moduleTitle = 'Faz 3 - Transcendence Pack';
+        
+        const questions = [
+            {
+                text: 'Sentetik Müşteri Laboratuvarı sayfası (/synthetic-lab) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Persona listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Ürün simülasyonları listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni persona eklediğimde, persona kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni ürün simülasyonu oluşturduğumda, simülasyon kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'DAO Yönetimi sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Akıllı sözleşmeler listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'DAO önerileri listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni akıllı sözleşme eklediğimde, sözleşme kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni DAO önerisi oluşturduğumda, öneri kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir DAO önerisine oy verebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Metaverse Departman İkizi sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Metaverse departmanları listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni metaverse departmanı eklediğimde, departman kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kurucu Miras AI sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Miras bilgisi listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni miras bilgisi eklediğimde, bilgi kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfalar görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kart görünümleri ve listeler düzenli mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Transcendence paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 3 - Titan & Zenith Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🚀 Faz 3 - Titan & Zenith Paketi (V61.0)</h1>
+            <p>Kriz Komuta Merkezi, Halefiyet Planlaması, Organizasyon Tasarımcısı, ONA, Market Watcher kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz3-titan', 'Faz 3 - Titan & Zenith Paketi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz3-titan')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz3-titan';
+        const moduleTitle = 'Faz 3 - Titan & Zenith Paketi';
+        
+        const questions = [
+            {
+                text: 'Kriz Komuta Merkezi sayfası (/crisis) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kriz listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni kriz bildirme formu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Yeni Kriz Bildir" butonuna basıp kriz bilgilerini doldurduğumda kriz kaydediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bildirdiğim kriz listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Halefiyet Planlaması sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Halefiyet planları listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni halefiyet planı ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Organizasyon Tasarımcısı sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Organizasyon senaryoları listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni organizasyon senaryosu oluşturabiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Organizasyon senaryosu üzerinde değişiklik yapabiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'ONA Analizi sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'ONA sayfasında kullanıcıların etki skorları tablosu görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Etki skorları doğru hesaplanıyor ve gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Market Watcher sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Pazar istihbaratı listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni pazar istihbaratı kaydı ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfalar görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Titan & Zenith paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+
