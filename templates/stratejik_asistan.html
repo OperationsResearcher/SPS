@@ -134,7 +134,7 @@ async function saveProfil(showToastMessage = true) {
     try {
         const response = await fetch(`/api/kurum/${kurumId}/stratejik-profil`, {
             method: 'POST',
-            headers: {'Content-Tip': 'application/json'},
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({inputs, status: 'taslak'})
         });
         const data = await response.json();

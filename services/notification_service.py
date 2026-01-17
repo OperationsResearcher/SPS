@@ -6,6 +6,7 @@ Görev ve proje bildirimleri için servis fonksiyonları
 from datetime import datetime, timedelta, date
 from flask import current_app, url_for
 from models import db, Notification, Task, Project, User
+from utils.task_status import COMPLETED_STATUSES, normalize_task_status
 
 
 def create_task_assigned_notification(task_id, assigned_user_id, assigned_by_user_id):
@@ -274,7 +275,7 @@ def check_and_send_deadline_reminders():
             Task.due_date.isnot(None),
             Task.due_date >= today,
             Task.due_date <= window_end,
-            Task.status != 'Tamamlandı',
+            Task.status.notin_(COMPLETED_STATUSES),
             Task.assigned_to_id.isnot(None)
         ).all()
         
@@ -396,7 +397,8 @@ def create_task_overdue_notification(task_id):
             pass
 
         # Gecikmiş görev kontrolü
-        if task.due_date < date.today() and task.status != 'Tamamlandı':
+        normalized_status = normalize_task_status(task.status) or task.status
+        if task.due_date < date.today() and normalized_status != 'Tamamlandı':
             if not project:
                 return None
             
@@ -568,7 +570,7 @@ def check_and_send_overdue_notifications():
         # Gecikmiş ve tamamlanmamış görevler
         overdue_tasks = Task.query.filter(
             Task.due_date < today,
-            Task.status != 'Tamamlandı'
+            Task.status.notin_(COMPLETED_STATUSES)
         ).all()
         
         notifications_created = 0
@@ -685,6 +687,7 @@ def check_pg_performance_deviation(pg_veri_id):
         if current_app:
             current_app.logger.error(f'PG performans sapması kontrolü hatası: {e}')
         return None
+
 
 
 

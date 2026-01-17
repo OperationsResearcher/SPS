@@ -188,6 +188,31 @@
         </div>
     </div>
 
+    <!-- Widget: Stratejik İlerleme Durumu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Stratejik İlerleme Durumu</h5>
+                </div>
+                <div class="card-body">
+                    <div id="strategicImpactList">
+                        {% if strategic_impact is defined and strategic_impact|length == 0 %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>No Strategies Defined
+                            </div>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <p class="text-muted small mt-2">Stratejik ilerleme yükleniyor...</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Widget 5: Personel Yükü Analizi (Workload Heatmap) -->
     <div class="row mb-4">
         <div class="col-12">
@@ -346,6 +371,7 @@ function loadExecutiveDashboard() {
                 renderPlanningEfficiency(data.data.planning_efficiency);
                 renderWorkloadDistribution(data.data.workload_distribution);
                 renderSummaryStats(data.data);
+                renderStrategicImpact(data.data.strategic_impact);
                 renderPersonnelWorkload(data.data.personnel_workload);
             } else {
                 if (typeof showToast !== 'undefined') {
@@ -1123,6 +1149,61 @@ function renderSummaryStats(data) {
     container.innerHTML = html;
 }
 
+// Widget: Stratejik İlerleme Durumu
+function renderStrategicImpact(impactData) {
+    const container = document.getElementById('strategicImpactList');
+    if (!container) return;
+    
+    if (!impactData || impactData.length === 0) {
+        container.innerHTML = `
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-2"></i>No Strategies Defined
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    impactData.forEach(item => {
+        const percent = Math.max(0, Math.min(100, item.health_percent || 0));
+        const isOrphaned = item.orphaned === true;
+        
+        let color = 'success';
+        let statusLabel = item.status || 'İyi';
+        if (isOrphaned || percent < 50) {
+            color = 'danger';
+            statusLabel = 'Orphaned / Risk';
+        } else if (percent < 75) {
+            color = 'warning';
+            statusLabel = 'Dikkat';
+        }
+        
+        const safeName = escapeHtml(item.strategy_name || 'Bilinmeyen Strateji');
+        const safeCode = escapeHtml(item.strategy_code || '');
+        const projectCount = item.project_count || 0;
+        
+        html += `
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div>
+                        <strong>${safeCode ? `${safeCode} - ` : ''}${safeName}</strong>
+                        ${isOrphaned ? '<span class="badge bg-danger ms-2">Bağlı Proje Yok</span>' : ''}
+                    </div>
+                    <small class="text-muted">
+                        ${percent.toFixed(1)}% • ${projectCount} proje
+                    </small>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-${color}" role="progressbar" style="width: ${percent}%" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small class="text-${color}">${statusLabel}</small>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
 // Sayfa yenileme butonu (opsiyonel)
 function refreshDashboard() {
     if (corporateHealthGauge) corporateHealthGauge.destroy();
@@ -1133,6 +1214,7 @@ function refreshDashboard() {
 }
 </script>
 {% endblock %}
+
 
 
 

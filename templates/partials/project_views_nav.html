@@ -1,0 +1,18 @@
+{% set active_view = active_view or '' %}
+{% set btn_style = btn_style or 'btn-outline-secondary' %}
+{% set active_btn_style = active_btn_style or 'btn-primary' %}
+
+<div class="btn-group btn-group-sm" role="group" aria-label="Planlama görünümleri">
+    <a class="btn {{ active_btn_style if active_view == 'kanban' else btn_style }}"
+       href="{{ url_for('main.proje_detay', project_id=project.id) }}">
+        <i class="fas fa-columns me-1"></i>Kanban
+    </a>
+    <a class="btn {{ active_btn_style if active_view == 'calendar' else btn_style }}"
+       href="{{ url_for('main.project_calendar', project_id=project.id) }}">
+        <i class="fas fa-calendar-day me-1"></i>Takvim
+    </a>
+    <a class="btn {{ active_btn_style if active_view == 'gantt' else btn_style }}"
+       href="{{ url_for('main.proje_gantt', project_id=project.id) }}">
+        <i class="fas fa-chart-gantt me-1"></i>Gantt
+    </a>
+</div>

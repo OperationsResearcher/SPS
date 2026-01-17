@@ -473,3 +473,4 @@ def get_executive_summary(kurum_id):
 
 
 
+

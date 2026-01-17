@@ -24,6 +24,7 @@ def check_task_reminders():
     """
     from models.project import Task
     from services.notification_service import create_task_reminder_notification
+    from utils.task_status import COMPLETED_STATUSES
     from extensions import db
     
     try:
@@ -37,7 +38,7 @@ def check_task_reminders():
             Task.reminder_date.isnot(None),
             Task.reminder_date >= check_window_start,
             Task.reminder_date <= check_window_end,
-            Task.status != 'Tamamlandı',
+            Task.status.notin_(COMPLETED_STATUSES),
             Task.is_archived == False
         ).all()
         

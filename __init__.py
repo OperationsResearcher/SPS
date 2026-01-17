@@ -156,248 +156,123 @@ def create_app(config_name=None):
         # Proje Yönetimi servisini import et (event listener'lar için)
         from services import project_service
         
+        # -------------------------------------------------------------------------
+        # ÖNEMLİ: MIGRATION İŞLEMİ İÇİN OTOMATİK TABLO OLUŞTURMA KAPATILDI
+        # Supabase geçişi tamamlanana kadar bu bloğu kapalı tutuyoruz.
+        # -------------------------------------------------------------------------
         # Development ortamında tabloları otomatik oluştur (sadece eksik tablolar için)
-        if app.debug or app.config.get('ENV') == 'development':
-            try:
-                # Sadece eksik tabloları oluştur (mevcut tabloları silmez)
-                db.create_all()
-                app.logger.info('Veritabanı tabloları kontrol edildi ve güncellendi.')
+        # if app.debug or app.config.get('ENV') == 'development':
+        #     try:
+        #         # Sadece eksik tabloları oluştur (mevcut tabloları silmez)
+        #         db.create_all()
+        #         app.logger.info('Veritabanı tabloları kontrol edildi ve güncellendi.')
                 
-                # Project tablosuna eksik kolonları ekle (eğer yoksa)
-                try:
-                    from sqlalchemy import text, inspect
-                    inspector = inspect(db.engine)
-                    columns = [col['name'] for col in inspector.get_columns('project')]
+        #         # Project tablosuna eksik kolonları ekle (eğer yoksa)
+        #         try:
+        #             from sqlalchemy import text, inspect
+        #             inspector = inspect(db.engine)
+        #             columns = [col['name'] for col in inspector.get_columns('project')]
 
-                    db_url = str(db.engine.url)
-                    is_sqlite = 'sqlite' in db_url.lower()
+        #             db_url = str(db.engine.url)
+        #             is_sqlite = 'sqlite' in db_url.lower()
                     
-                    if 'start_date' not in columns:
-                        db.session.execute(text("ALTER TABLE project ADD start_date DATE NULL"))
-                        app.logger.info('start_date kolonu eklendi.')
+        #             if 'start_date' not in columns:
+        #                 db.session.execute(text("ALTER TABLE project ADD start_date DATE NULL"))
+        #                 app.logger.info('start_date kolonu eklendi.')
                     
-                    if 'end_date' not in columns:
-                        db.session.execute(text("ALTER TABLE project ADD end_date DATE NULL"))
-                        app.logger.info('end_date kolonu eklendi.')
+        #             if 'end_date' not in columns:
+        #                 db.session.execute(text("ALTER TABLE project ADD end_date DATE NULL"))
+        #                 app.logger.info('end_date kolonu eklendi.')
                     
-                    if 'priority' not in columns:
-                        db.session.execute(text("ALTER TABLE project ADD priority NVARCHAR(50) DEFAULT 'Orta'"))
-                        app.logger.info('priority kolonu eklendi.')
+        #             if 'priority' not in columns:
+        #                 db.session.execute(text("ALTER TABLE project ADD priority NVARCHAR(50) DEFAULT 'Orta'"))
+        #                 app.logger.info('priority kolonu eklendi.')
 
-                    if 'notification_settings' not in columns:
-                        # JSON olarak saklanır
-                        if is_sqlite:
-                            db.session.execute(text("ALTER TABLE project ADD COLUMN notification_settings TEXT NULL"))
-                        else:
-                            db.session.execute(text("ALTER TABLE project ADD notification_settings NVARCHAR(MAX) NULL"))
-                        app.logger.info('project.notification_settings kolonu eklendi.')
+        #             if 'notification_settings' not in columns:
+        #                 # JSON olarak saklanır
+        #                 if is_sqlite:
+        #                     db.session.execute(text("ALTER TABLE project ADD COLUMN notification_settings TEXT NULL"))
+        #                 else:
+        #                     db.session.execute(text("ALTER TABLE project ADD notification_settings NVARCHAR(MAX) NULL"))
+        #                 app.logger.info('project.notification_settings kolonu eklendi.')
                     
-                    db.session.commit()
-                except Exception as col_error:
-                    db.session.rollback()
-                    app.logger.warning(f'Kolon ekleme hatası (normal olabilir): {str(col_error)}')
+        #             db.session.commit()
+        #         except Exception as col_error:
+        #             db.session.rollback()
+        #             app.logger.warning(f'Kolon ekleme hatası (normal olabilir): {str(col_error)}')
                 
-                # TaskImpact tablosuna eksik kolonları ekle (eğer yoksa)
-                try:
-                    from sqlalchemy import text, inspect
-                    inspector = inspect(db.engine)
-                    task_impact_columns = [col['name'] for col in inspector.get_columns('task_impact')]
+        #         # TaskImpact tablosuna eksik kolonları ekle (eğer yoksa)
+        #         try:
+        #             from sqlalchemy import text, inspect
+        #             inspector = inspect(db.engine)
+        #             task_impact_columns = [col['name'] for col in inspector.get_columns('task_impact')]
                     
-                    if 'is_processed' not in task_impact_columns:
-                        db.session.execute(text("ALTER TABLE task_impact ADD is_processed BIT DEFAULT 0"))
-                        db.session.execute(text("CREATE INDEX idx_task_impact_is_processed ON task_impact(is_processed)"))
-                        app.logger.info('task_impact.is_processed kolonu eklendi.')
+        #             if 'is_processed' not in task_impact_columns:
+        #                 db.session.execute(text("ALTER TABLE task_impact ADD is_processed BIT DEFAULT 0"))
+        #                 db.session.execute(text("CREATE INDEX idx_task_impact_is_processed ON task_impact(is_processed)"))
+        #                 app.logger.info('task_impact.is_processed kolonu eklendi.')
                     
-                    if 'processed_at' not in task_impact_columns:
-                        db.session.execute(text("ALTER TABLE task_impact ADD processed_at DATETIME NULL"))
-                        app.logger.info('task_impact.processed_at kolonu eklendi.')
+        #             if 'processed_at' not in task_impact_columns:
+        #                 db.session.execute(text("ALTER TABLE task_impact ADD processed_at DATETIME NULL"))
+        #                 app.logger.info('task_impact.processed_at kolonu eklendi.')
                     
-                    # Project tablosuna is_archived, health_score, health_status kolonlarını ekle (eğer yoksa)
-                    try:
-                        project_columns = [col['name'] for col in inspector.get_columns('project')]
-                        if 'is_archived' not in project_columns:
-                            db.session.execute(text("ALTER TABLE project ADD is_archived BIT DEFAULT 0"))
-                            db.session.execute(text("CREATE INDEX idx_project_is_archived ON project(is_archived)"))
-                            app.logger.info('project.is_archived kolonu eklendi.')
+        #             # Project tablosuna is_archived, health_score, health_status kolonlarını ekle (eğer yoksa)
+        #             try:
+        #                 project_columns = [col['name'] for col in inspector.get_columns('project')]
+        #                 if 'is_archived' not in project_columns:
+        #                     db.session.execute(text("ALTER TABLE project ADD is_archived BIT DEFAULT 0"))
+        #                     db.session.execute(text("CREATE INDEX idx_project_is_archived ON project(is_archived)"))
+        #                     app.logger.info('project.is_archived kolonu eklendi.')
                         
-                        # V67: Proje Sağlık Skoru kolonları
-                        db_url = str(db.engine.url)
-                        is_sqlite = 'sqlite' in db_url.lower()
+        #                 # V67: Proje Sağlık Skoru kolonları
+        #                 db_url = str(db.engine.url)
+        #                 is_sqlite = 'sqlite' in db_url.lower()
                         
-                        if 'health_score' not in project_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE project ADD COLUMN health_score INTEGER DEFAULT 100"))
-                            else:
-                                db.session.execute(text("ALTER TABLE project ADD health_score INT DEFAULT 100"))
-                            app.logger.info('project.health_score kolonu eklendi.')
+        #                 if 'health_score' not in project_columns:
+        #                     if is_sqlite:
+        #                         db.session.execute(text("ALTER TABLE project ADD COLUMN health_score INTEGER DEFAULT 100"))
+        #                     else:
+        #                         db.session.execute(text("ALTER TABLE project ADD health_score INT DEFAULT 100"))
+        #                     app.logger.info('project.health_score kolonu eklendi.')
                         
-                        if 'health_status' not in project_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE project ADD COLUMN health_status VARCHAR(50) DEFAULT 'İyi'"))
-                            else:
-                                db.session.execute(text("ALTER TABLE project ADD health_status NVARCHAR(50) DEFAULT 'İyi'"))
-                            app.logger.info('project.health_status kolonu eklendi.')
+        #                 if 'health_status' not in project_columns:
+        #                     if is_sqlite:
+        #                         db.session.execute(text("ALTER TABLE project ADD COLUMN health_status VARCHAR(50) DEFAULT 'İyi'"))
+        #                     else:
+        #                         db.session.execute(text("ALTER TABLE project ADD health_status NVARCHAR(50) DEFAULT 'İyi'"))
+        #                     app.logger.info('project.health_status kolonu eklendi.')
                         
-                        db.session.commit()
-                    except Exception as col_error:
-                        db.session.rollback()
-                        app.logger.warning(f'Project kolon ekleme hatası (normal olabilir): {str(col_error)}')
+        #                 db.session.commit()
+        #             except Exception as col_error:
+        #                 db.session.rollback()
+        #                 app.logger.warning(f'Project kolon ekleme hatası (normal olabilir): {str(col_error)}')
                     
-                    # Task tablosuna is_archived kolonu ekle (eğer yoksa)
-                    try:
-                        task_columns = [col['name'] for col in inspector.get_columns('task')]
+        #             # Task tablosuna is_archived kolonu ekle (eğer yoksa)
+        #             try:
+        #                 task_columns = [col['name'] for col in inspector.get_columns('task')]
 
-                        db_url = str(db.engine.url)
-                        is_sqlite = 'sqlite' in db_url.lower()
-                        if 'is_archived' not in task_columns:
-                            db.session.execute(text("ALTER TABLE task ADD is_archived BIT DEFAULT 0"))
-                            db.session.execute(text("CREATE INDEX idx_task_is_archived ON task(is_archived)"))
-                            app.logger.info('task.is_archived kolonu eklendi.')
+        #                 db_url = str(db.engine.url)
+        #                 is_sqlite = 'sqlite' in db_url.lower()
+        #                 if 'is_archived' not in task_columns:
+        #                     db.session.execute(text("ALTER TABLE task ADD is_archived BIT DEFAULT 0"))
+        #                     db.session.execute(text("CREATE INDEX idx_task_is_archived ON task(is_archived)"))
+        #                     app.logger.info('task.is_archived kolonu eklendi.')
 
-                        # Task planlama kolonları (UI/API uyumu)
-                        # Not: SQLite'da ADD COLUMN ile eklenir
-                        if 'parent_id' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN parent_id INTEGER NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD parent_id INT NULL"))
-                            try:
-                                db.session.execute(text("CREATE INDEX idx_task_parent_id ON task(parent_id)"))
-                            except Exception:
-                                pass
-                            app.logger.info('task.parent_id kolonu eklendi.')
+        #                 # Task planlama kolonları (UI/API uyumu)
+        #                 # Not: SQLite'da ADD COLUMN ile eklenir
+        #                 if 'parent_id' not in task_columns:
+        #                     if is_sqlite:
+        #                         db.session.execute(text("ALTER TABLE task ADD COLUMN parent_id INTEGER NULL"))
+        #                     else:
+        #                         db.session.execute(text("ALTER TABLE task ADD parent_id INT NULL"))
+        #                     try:
+        #                         db.session.execute(text("CREATE INDEX idx_task_parent_id ON task(parent_id)"))
+        #                     except Exception:
+        #                         pass
+        #                     app.logger.info('task.parent_id kolonu eklendi.')
 
-                        if 'estimated_time' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN estimated_time REAL NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD estimated_time FLOAT NULL"))
-                            app.logger.info('task.estimated_time kolonu eklendi.')
-
-                        if 'actual_time' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN actual_time REAL NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD actual_time FLOAT NULL"))
-                            app.logger.info('task.actual_time kolonu eklendi.')
-
-                        if 'progress' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN progress INTEGER DEFAULT 0"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD progress INT DEFAULT 0"))
-                            app.logger.info('task.progress kolonu eklendi.')
-
-                        if 'completed_at' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN completed_at DATETIME NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD completed_at DATETIME NULL"))
-                            app.logger.info('task.completed_at kolonu eklendi.')
-
-                        if 'external_assignee_name' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN external_assignee_name TEXT NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD external_assignee_name NVARCHAR(200) NULL"))
-                            app.logger.info('task.external_assignee_name kolonu eklendi.')
-
-                        if 'is_measurable' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN is_measurable INTEGER DEFAULT 0"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD is_measurable BIT DEFAULT 0"))
-                            app.logger.info('task.is_measurable kolonu eklendi.')
-
-                        if 'planned_output_value' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN planned_output_value REAL NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD planned_output_value FLOAT NULL"))
-                            app.logger.info('task.planned_output_value kolonu eklendi.')
-
-                        if 'related_indicator_id' not in task_columns:
-                            if is_sqlite:
-                                db.session.execute(text("ALTER TABLE task ADD COLUMN related_indicator_id INTEGER NULL"))
-                            else:
-                                db.session.execute(text("ALTER TABLE task ADD related_indicator_id INT NULL"))
-                            app.logger.info('task.related_indicator_id kolonu eklendi.')
-                    except Exception as col_error:
-                        db.session.rollback()
-                        app.logger.warning(f'Task is_archived kolon ekleme hatası (normal olabilir): {str(col_error)}')
-                    
-                    db.session.commit()
-                except Exception as col_error:
-                    db.session.rollback()
-                    app.logger.warning(f'TaskImpact kolon ekleme hatası (normal olabilir): {str(col_error)}')
-                    
-            except Exception as e:
-                app.logger.warning(f'Tablo oluşturma hatası (normal olabilir): {str(e)}')
-
-    # 4.5. Health Check Endpoint (Blueprint'lerden önce)
-    @app.route('/health')
-    def health_check():
-        """Health check endpoint - DB ve Cache bağlantısını kontrol eder"""
-        from flask import jsonify
-        from datetime import datetime
-        from sqlalchemy import text
-        
-        health_status = {
-            'status': 'healthy',
-            'timestamp': datetime.utcnow().isoformat(),
-            'version': '1.9.0',
-            'checks': {}
-        }
-        
-        # Database check
-        try:
-            db.session.execute(text('SELECT 1'))
-            health_status['checks']['database'] = 'connected'
-        except Exception as e:
-            health_status['status'] = 'unhealthy'
-            health_status['checks']['database'] = f'error: {str(e)}'
-        
-        # Cache check (if available)
-        try:
-            from extensions import cache
-            if hasattr(cache, 'get'):
-                cache.get('health_check_test')
-                health_status['checks']['cache'] = 'connected'
-            else:
-                health_status['checks']['cache'] = 'not_configured'
-        except Exception as e:
-            health_status['checks']['cache'] = f'error: {str(e)}'
-        
-        status_code = 200 if health_status['status'] == 'healthy' else 503
-        return jsonify(health_status), status_code
-    
-    # 5. Blueprint'leri kaydet
-    from main.routes import main_bp
-    from api.routes import api_bp
-    from auth.routes import auth_bp
-    from api.swagger_docs import swagger_bp
-    
-    app.register_blueprint(main_bp)
-    app.register_blueprint(api_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(swagger_bp)  # Swagger/OpenAPI docs
-    
-    # Audit event listener'ları kaydet (sadece production modunda)
-    if not app.config.get('DEBUG'):
-        from services.audit_service import register_audit_listeners
-        register_audit_listeners(db)
-    
-    # Jinja2 custom filters
-    @app.template_filter('role_name')
-    def role_name_filter(role):
-        """Rol adını Türkçe'ye çevir"""
-        role_map = {
-            'admin': 'Yönetici',
-            'kurum_yoneticisi': 'Kurum Yöneticisi',
-            'ust_yonetim': 'Üst Yönetim',
-            'kurum_kullanici': 'Kullanıcı'
-        }
-        return role_map.get(role, role)
+        #                 if 'estimated_time' not in task_columns:
+        #                     if is_sqlite:
+        #                         db.session.execute(text("ALTER TABLE task ADD COLUMN estimated
 
     return app
-

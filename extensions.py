@@ -41,4 +41,3 @@ limiter = Limiter(
 # Security Headers (Flask-Talisman)
 # Note: Talisman will be initialized in __init__.py with app-specific config
 talisman = Talisman()
-

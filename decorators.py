@@ -151,6 +151,28 @@ def project_observer_allowed(f):
     return project_access_required(allowed_roles=['manager', 'member', 'observer'])(f)
 
 
+def role_required(allowed_roles=None):
+    """
+    Sistem rolü bazlı erişim kontrolü
+
+    Args:
+        allowed_roles: ['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri', 'kurum_kullanici', ...]
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return jsonify({'success': False, 'message': 'Oturum gerekli'}), 401
+
+            if allowed_roles and current_user.sistem_rol not in allowed_roles:
+                return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+
 
 
 

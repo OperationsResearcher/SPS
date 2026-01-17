@@ -7,6 +7,8 @@ Proje, Görev (Task), Dosya ve Proje Ekibi ile ilgili modelleri içerir.
 from extensions import db
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
+from utils.task_status import normalize_task_status
 import json
 
 # Association Tables
@@ -129,7 +131,7 @@ class Task(db.Model):
     related_indicator_id = db.Column(db.Integer, nullable=True)
     
     # Durum
-    status = db.Column(db.String(50), default='To Do')
+    status = db.Column(db.String(50), default='Yapılacak')
     priority = db.Column(db.String(50), default='Medium')
     is_archived = db.Column(db.Boolean, default=False)
     
@@ -184,6 +186,13 @@ class Task(db.Model):
     @assigned_to.setter
     def assigned_to(self, value):
         self.assignee = value
+
+    @validates('status')
+    def _normalize_status(self, key, value):
+        if value is None:
+            return None
+        normalized = normalize_task_status(value)
+        return normalized or 'Yapılacak'
     
     def __repr__(self):
         return f'<Task {self.title}>'

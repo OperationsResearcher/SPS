@@ -25,6 +25,8 @@
                     </h5>
                 </div>
                 <div class="card-body">
+                    <input type="text" class="form-control mb-3" id="activitySearchInput"
+                           placeholder="Aktivitelerde ara (görev, kullanıcı, işlem)...">
                     {% if activities %}
                     <div class="timeline">
                         {% for activity in activities %}
@@ -33,7 +35,8 @@
                             {% elif activity.action == 'updated' %}border-info
                             {% elif activity.action == 'deleted' %}border-danger
                             {% elif activity.action == 'status_changed' %}border-warning
-                            {% else %}border-secondary{% endif %}">
+                            {% else %}border-secondary{% endif %}"
+                            data-activity-text="{{ (activity.description or activity.action or '') ~ ' ' ~ (activity.task.title if activity.task else '') ~ ' ' ~ (activity.user.first_name if activity.user else '') ~ ' ' ~ (activity.user.username if activity.user else '') | lower }}">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="flex-grow-1">
                                     <div class="d-flex align-items-center mb-2">
@@ -97,6 +100,21 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('activitySearchInput');
+    if (!input) return;
+
+    input.addEventListener('input', function() {
+        const query = input.value.trim().toLowerCase();
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            const text = item.dataset.activityText || '';
+            item.style.display = !query || text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
+
 <style>
 .timeline-item {
     background: #f8f9fa;
@@ -118,6 +136,7 @@
 }
 </style>
 {% endblock %}
+
 
 
 

@@ -17,14 +17,19 @@
                     Yeni Proje
                 </a>
             </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="projectSearchInput"
+                       placeholder="Projelerde ara (ad, açıklama, yönetici)...">
+            </div>
         </div>
     </div>
 
     {% if projeler %}
     <!-- Project Cards Grid -->
-    <div class="row g-4">
+    <div class="row g-4" id="projectCardList">
         {% for proje in projeler %}
-        <div class="col-xl-4 col-lg-6 col-md-6">
+        <div class="col-xl-4 col-lg-6 col-md-6"
+             data-project-text="{{ (proje.name ~ ' ' ~ (proje.description or '') ~ ' ' ~ (proje.manager.first_name if proje.manager else '') ~ ' ' ~ (proje.manager.last_name if proje.manager else '')) | lower }}">
             <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-start mb-3">
@@ -171,6 +176,22 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('projectSearchInput');
+    const list = document.getElementById('projectCardList');
+    if (!input || !list) return;
+
+    input.addEventListener('input', function() {
+        const query = input.value.trim().toLowerCase();
+        Array.from(list.children).forEach(card => {
+            const text = (card.dataset.projectText || '');
+            card.style.display = !query || text.includes(query) ? '' : 'none';
+        });
+    });
+});
+</script>
 {% endblock %}
 
 

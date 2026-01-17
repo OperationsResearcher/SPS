@@ -145,6 +145,8 @@
                             <h6 class="border-bottom pb-2">İlişkili Süreçler</h6>
                             <p class="text-muted small mb-3">Bu projeyle ilişkilendirmek istediğiniz süreçleri seçiniz.</p>
                             
+                            <input type="text" class="form-control mb-2" id="related_processes_filter"
+                                   placeholder="Süreçlerde ara...">
                             <select class="form-select" id="related_processes" name="related_processes" multiple style="max-height: 150px; overflow-y: auto;">
                                 {% for surec in surecler %}
                                 <option value="{{ surec.id }}" 
@@ -161,6 +163,8 @@
                             <h6 class="border-bottom pb-2">Proje Üyeleri</h6>
                             <p class="text-muted small mb-3">Bu projeye dahil olacak kullanıcıları seçiniz.</p>
                             
+                            <input type="text" class="form-control mb-2" id="members_filter"
+                                   placeholder="Üyelerde ara...">
                             <select class="form-select" id="members" name="members" multiple style="max-height: 150px; overflow-y: auto;">
                                 {% for kullanici in kullanicilar %}
                                 <option value="{{ kullanici.id }}"
@@ -177,6 +181,8 @@
                             <h6 class="border-bottom pb-2">Gözlemciler</h6>
                             <p class="text-muted small mb-3">Bu projeyi gözlemleyecek (salt okunur erişim) kullanıcıları seçiniz.</p>
                             
+                            <input type="text" class="form-control mb-2" id="observers_filter"
+                                   placeholder="Gözlemcilerde ara...">
                             <select class="form-select" id="observers" name="observers" multiple style="max-height: 150px; overflow-y: auto;">
                                 {% for kullanici in kullanicilar %}
                                 <option value="{{ kullanici.id }}"
@@ -289,6 +295,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 {% endif %}
+
+function bindSelectFilter(inputId, selectId) {
+    const input = document.getElementById(inputId);
+    const select = document.getElementById(selectId);
+    if (!input || !select) return;
+
+    input.addEventListener('input', function() {
+        const query = input.value.trim().toLowerCase();
+        Array.from(select.options).forEach(option => {
+            const text = option.textContent.toLowerCase();
+            option.hidden = query && !text.includes(query);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    bindSelectFilter('related_processes_filter', 'related_processes');
+    bindSelectFilter('members_filter', 'members');
+    bindSelectFilter('observers_filter', 'observers');
+});
 
 document.getElementById('projectForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -420,6 +446,7 @@ document.getElementById('projectForm').addEventListener('submit', async function
 });
 </script>
 {% endblock %}
+
 
 
 

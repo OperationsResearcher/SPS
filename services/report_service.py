@@ -362,3 +362,4 @@ def generate_executive_dashboard_pdf(kurum_id, filters=None):
 
 
 
+

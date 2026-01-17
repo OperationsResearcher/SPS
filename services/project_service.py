@@ -376,3 +376,4 @@ def _get_periyot_bilgileri(pg_periyot: str, tamamlanma_tarihi: date, yil: int, a
 
 
 
+

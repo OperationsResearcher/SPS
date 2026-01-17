@@ -121,3 +121,4 @@
 - Önceki yıl ortalaması hesaplama ve saklama
 
 
+

@@ -31,6 +31,8 @@ from io import BytesIO, StringIO
 import json
 import os
 import re
+from utils.task_status import COMPLETED_STATUSES, normalize_task_status
+from decorators import role_required
 
 main_bp = Blueprint('main', __name__)
 
@@ -162,6 +164,7 @@ def dashboard():
     from models import Activity, Project
     from sqlalchemy.orm import joinedload
     from services.cache_service import get_cached_dashboard_stats, set_cached_dashboard_stats
+    from services.strategic_impact_service import get_strategic_impact_summary
     
     try:
         # Cache'den dashboard istatistiklerini getirmeye çalış
@@ -170,27 +173,35 @@ def dashboard():
         
         if cached_data:
             current_app.logger.info(f"Dashboard cache'den yüklendi: {cache_key}")
+            if 'strategic_impact' not in cached_data:
+                cached_data['strategic_impact'] = get_strategic_impact_summary(current_user.kurum_id)
+                set_cached_dashboard_stats(current_user.id, cached_data)
             return render_template('dashboard.html', 
                                  stats=cached_data['stats'], 
-                                 recent_activities=cached_data['recent_activities'])
+                                 recent_activities=cached_data['recent_activities'],
+                                 strategic_impact=cached_data.get('strategic_impact', []))
         
         # Cache'de yoksa hesapla
         # 1. Veritabanından faaliyetleri çek (eager loading ile N+1 çözümü)
         db_activities = Activity.query.options(joinedload(Activity.project)).all()
         
         # 2. Temel İstatistikler
+        total_tasks = len(db_activities)
+        completed_tasks = len([a for a in db_activities if a.status == 'Tamamlandı'])
+        performance_score = round((completed_tasks / total_tasks) * 100, 1) if total_tasks else 0
+
         stats = {
-            'total_tasks': len(db_activities),
+            'total_tasks': total_tasks,
             'critical_tasks': len([a for a in db_activities if a.priority == 'High' and a.status not in ['Tamamlandı', 'Kapalı']]),
-            'completed_tasks': len([a for a in db_activities if a.status == 'Tamamlandı']),
+            'completed_tasks': completed_tasks,
             # Mevcut istatistikleri koru (geriye uyumluluk için)
             'total_projects': db.session.query(db.func.count(Project.id)).scalar() or 0,
             'pending_tasks': len([a for a in db_activities if a.status not in ['Tamamlandı', 'Kapalı']]),
-            'performance_score': 94,
+            'performance_score': performance_score,
             # V67: Grafik Verileri (Chart.js için)
             'source_counts': {},
             'priority_counts': {'High': 0, 'Normal': 0, 'Low': 0},
-            'process_performance': []  # Template'in beklediği key
+            'process_performance': {'Genel': performance_score}  # Template'in beklediği key
         }
         
         # 3. Grafik verilerini döngüyle doldur
@@ -215,10 +226,13 @@ def dashboard():
                 'date': activity.date.strftime('%Y-%m-%d') if activity.date else None
             })
         
+        strategic_impact = get_strategic_impact_summary(current_user.kurum_id)
+
         # Cache'e kaydet (5 dakika)
         dashboard_data = {
             'stats': stats,
-            'recent_activities': recent_activities
+            'recent_activities': recent_activities,
+            'strategic_impact': strategic_impact
         }
         set_cached_dashboard_stats(current_user.id, dashboard_data)
         current_app.logger.info(f"Dashboard verileri cache'e kaydedildi: {cache_key}")
@@ -226,7 +240,8 @@ def dashboard():
         # 5. Verileri Template'e Gönder
         return render_template('dashboard.html', 
                              stats=stats, 
-                             recent_activities=recent_activities)
+                             recent_activities=recent_activities,
+                             strategic_impact=strategic_impact)
     except Exception as e:
         import traceback
         current_app.logger.error(f'Dashboard sayfası render hatası: {str(e)}')
@@ -244,7 +259,8 @@ def dashboard():
                                  'priority_counts': {'High': 0, 'Normal': 0, 'Low': 0},
                                  'process_performance': []
                              },
-                             recent_activities=[])
+                             recent_activities=[],
+                             strategic_impact=[])
 
 
 @main_bp.route('/surec-karnesi')
@@ -1551,6 +1567,7 @@ def surec_delete(surec_id):
 @main_bp.route('/admin/create-process', methods=['POST'])
 @login_required
 @csrf.exempt
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def admin_create_process():
     """Süreç ekle - admin panel / surec panel modal için"""
     try:
@@ -1617,6 +1634,15 @@ def admin_create_process():
         db.session.rollback()
         current_app.logger.error(f'Admin süreç oluşturma hatası: {e}', exc_info=True)
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@main_bp.route('/admin/add-process', methods=['POST'])
+@login_required
+@csrf.exempt
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def admin_add_process():
+    """Admin panel için uyumlu süreç ekleme endpoint'i."""
+    return admin_create_process()
 
 
 @main_bp.route('/admin/delete-process/<int:process_id>', methods=['DELETE'])
@@ -3458,6 +3484,7 @@ def update_strategy_cell():
 
 @main_bp.route('/strategy/projects')
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_projects():
     """Stratejik Proje Portföyü - Projeleri stratejik puana göre sırala"""
     try:
@@ -3528,6 +3555,7 @@ def strategy_projects():
 
 @main_bp.route('/strategy/project/<int:id>')
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_detail(id):
     """Stratejik Proje Detay Sayfası - Projenin stratejik uyum analizi"""
     try:
@@ -3610,6 +3638,7 @@ def strategy_project_detail(id):
 
 @main_bp.route('/strategy/project/<int:id>/update_processes', methods=['POST'])
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_update_processes(id):
     """Proje-Süreç ilişkilerini güncelle"""
     try:
@@ -3649,6 +3678,7 @@ def strategy_project_update_processes(id):
 
 @main_bp.route('/strategy/project/add', methods=['POST'])
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_add():
     """Yeni proje oluştur"""
     try:
@@ -3741,6 +3771,7 @@ def strategy_project_add():
 
 @main_bp.route('/strategy/project/<int:id>/edit', methods=['POST'])
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_edit(id):
     """Proje bilgilerini güncelle"""
     try:
@@ -3834,6 +3865,7 @@ def strategy_project_edit(id):
 
 @main_bp.route('/strategy/project/<int:id>/delete', methods=['POST'])
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_delete(id):
     """Projeyi sil"""
     try:
@@ -3863,6 +3895,7 @@ def strategy_project_delete(id):
 
 @main_bp.route('/strategy/project/<int:id>/clone', methods=['POST'])
 @login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
 def strategy_project_clone(id):
     """Projeyi klonla (kopyala)"""
     try:
@@ -4126,6 +4159,42 @@ def proje_yeni():
         return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
 
 
+@main_bp.route('/projeler/<int:project_id>/duzenle')
+@login_required
+def proje_duzenle(project_id):
+    """Proje düzenleme sayfası"""
+    try:
+        project = Project.query.get_or_404(project_id)
+
+        if project.kurum_id != current_user.kurum_id:
+            flash('Bu projeye erişim yetkiniz yok.', 'danger')
+            return redirect(url_for('main.projeler'))
+
+        user_project_role = _get_user_project_role_for_page(project)
+        if user_project_role not in ['manager', 'member']:
+            flash('Bu projeyi düzenleme yetkiniz yok.', 'danger')
+            return redirect(url_for('main.proje_detay', project_id=project_id))
+
+        surecler = Surec.query.all()
+        kullanicilar = User.query.all()
+        sablon_projeler = Project.query.filter_by(
+            kurum_id=current_user.kurum_id
+        ).order_by(Project.created_at.desc()).limit(20).all()
+
+        return render_template(
+            'project_form.html',
+            project=project,
+            surecler=surecler,
+            kullanicilar=kullanicilar,
+            sablon_projeler=sablon_projeler
+        )
+    except Exception as e:
+        import traceback
+        current_app.logger.error(f'Proje düzenleme sayfası hatası: {str(e)}')
+        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
+        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+
+
 @main_bp.route('/projeler/<int:project_id>')
 @login_required
 def proje_detay(project_id):
@@ -4155,11 +4224,14 @@ def proje_detay(project_id):
         ).filter_by(project_id=project_id).order_by(Task.created_at.desc()).all()
         
         # Durumlara göre görevleri grupla (Kanban için)
+        def _normalized_status(task):
+            return normalize_task_status(task.status) or task.status
+
         tasks_by_status = {
-            'Yapılacak': [t for t in tasks if t.status == 'Yapılacak'],
-            'Devam Ediyor': [t for t in tasks if t.status == 'Devam Ediyor'],
-            'Beklemede': [t for t in tasks if t.status == 'Beklemede'],
-            'Tamamlandı': [t for t in tasks if t.status == 'Tamamlandı']
+            'Yapılacak': [t for t in tasks if _normalized_status(t) == 'Yapılacak'],
+            'Devam Ediyor': [t for t in tasks if _normalized_status(t) == 'Devam Ediyor'],
+            'Beklemede': [t for t in tasks if _normalized_status(t) == 'Beklemede'],
+            'Tamamlandı': [t for t in tasks if _normalized_status(t) == 'Tamamlandı']
         }
         
         # Gecikme analizi için bugünün tarihini al
@@ -4167,7 +4239,10 @@ def proje_detay(project_id):
         today = date.today()
         
         # Geciken görevleri işaretle
-        geciken_gorevler = [t for t in tasks if t.due_date and t.due_date < today and t.status != 'Tamamlandı']
+        geciken_gorevler = [
+            t for t in tasks
+            if t.due_date and t.due_date < today and _normalized_status(t) != 'Tamamlandı'
+        ]
         
         return render_template('project_detail.html', 
                              project=project, 
@@ -4366,7 +4441,12 @@ def executive_dashboard():
         if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim', 'gözlemci']:
             return "Bu sayfaya erişim yetkiniz yok", 403
         
-        return render_template('executive_dashboard.html')
+        from services.strategic_impact_service import get_strategic_impact_summary
+
+        strategic_impact = get_strategic_impact_summary(current_user.kurum_id)
+
+        return render_template('executive_dashboard.html',
+                             strategic_impact=strategic_impact)
     except Exception as e:
         import traceback
         current_app.logger.error(f'Executive dashboard sayfası hatası: {str(e)}')
@@ -4392,21 +4472,24 @@ def proje_gantt(project_id):
         # Gantt verisi için görevleri hazırla
         gantt_data = []
         for task in tasks:
+            start_date = task.start_date or task.due_date
+            end_date = task.due_date or task.start_date
             gantt_item = {
                 'id': task.id,
                 'name': task.title,
-                'start': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
-                'end': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
+                'start': start_date.strftime('%Y-%m-%d') if start_date else None,
+                'end': end_date.strftime('%Y-%m-%d') if end_date else None,
                 'progress': 0,
                 'dependencies': []
             }
             
             # Tamamlanmış görevler için progress %100
-            if task.status == 'Tamamlandı':
+            normalized_status = normalize_task_status(task.status) or task.status
+            if normalized_status == 'Tamamlandı':
                 gantt_item['progress'] = 100
-            elif task.status == 'Devam Ediyor':
+            elif normalized_status == 'Devam Ediyor':
                 gantt_item['progress'] = 50
-            elif task.status == 'Beklemede':
+            elif normalized_status == 'Beklemede':
                 gantt_item['progress'] = 25
             
             # Predecessor'ları (bağımlılıkları) ekle
@@ -4645,7 +4728,7 @@ def akilli_planlama():
         bugun = date.today()
         geciken_gorevler = Task.query.filter(
             Task.project_id.in_(project_ids),
-            Task.status != 'Tamamlandı',
+            Task.status.notin_(COMPLETED_STATUSES),
             Task.due_date < bugun,
             Task.due_date.isnot(None)
         ).order_by(Task.due_date.asc()).all()

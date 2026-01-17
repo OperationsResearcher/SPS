@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-3">
-  <div class="d-flex align-items-center mb-3">
-    <h3 class="me-3">Kanban — {{ project.name }}</h3>
-    <a class="btn btn-outline-secondary me-2" href="/projeler/{{ project.id }}/takvim">Takvim</a>
-    <a class="btn btn-outline-secondary" href="/projeler/{{ project.id }}/gantt">Gantt</a>
+  <div class="d-flex align-items-center mb-3 justify-content-between">
+    <h3 class="me-3 mb-0">Kanban — {{ project.name }}</h3>
+    {% set active_view = 'kanban' %}
+    {% include 'partials/project_views_nav.html' %}
   </div>
   <div class="row g-3" id="kanban-board">
     <div class="col-12 col-md-4">

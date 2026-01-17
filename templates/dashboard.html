@@ -110,6 +110,33 @@
     </div>
     {% endif %}
 
+    {% if stats %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-lightbulb me-2 text-warning"></i>Karar Destek Özeti</h6>
+                </div>
+                <div class="card-body">
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <ul class="mb-0">
+                        <li>Kritik iş sayısı: <strong>{{ stats.critical_tasks or 0 }}</strong></li>
+                        <li>Açık toplam iş: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0) }}</strong></li>
+                        <li>Kurumsal performans ortalaması: <strong>%{{ stats.performance_score or 0 }}</strong></li>
+                    </ul>
+                    {% else %}
+                    <ul class="mb-0">
+                        <li>Bugünkü öncelik: <strong>Kritik işleri tamamla</strong></li>
+                        <li>Devam eden görevler: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0) }}</strong></li>
+                        <li>Tamamlanan görevler: <strong>{{ stats.completed_tasks or 0 }}</strong></li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- V67: Grafikler (Chart.js) -->
     {% if stats %}
     <div class="row mb-4">
@@ -145,6 +172,60 @@
                 </div>
                 <div class="card-body">
                     <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stratejik İlerleme Durumu -->
+    {% if strategic_impact is defined %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-bullseye me-2"></i>Stratejik İlerleme Durumu</h6>
+                </div>
+                <div class="card-body">
+                    {% if strategic_impact|length == 0 %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>No Strategies Defined
+                        </div>
+                    {% else %}
+                        {% for item in strategic_impact %}
+                            {% set percent = item.health_percent or 0 %}
+                            {% set orphaned = item.orphaned %}
+                            {% if orphaned or percent < 50 %}
+                                {% set color = 'danger' %}
+                                {% set status = 'Orphaned / Risk' %}
+                            {% elif percent < 75 %}
+                                {% set color = 'warning' %}
+                                {% set status = 'Dikkat' %}
+                            {% else %}
+                                {% set color = 'success' %}
+                                {% set status = item.status or 'İyi' %}
+                            {% endif %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div>
+                                        <strong>
+                                            {% if item.strategy_code %}{{ item.strategy_code }} - {% endif %}{{ item.strategy_name }}
+                                        </strong>
+                                        {% if orphaned %}
+                                            <span class="badge bg-danger ms-2">Bağlı Proje Yok</span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ percent | round(1) }}% • {{ item.project_count or 0 }} proje
+                                    </small>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-{{ color }}" role="progressbar" style="width: {{ percent }}%" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-{{ color }}">{{ status }}</small>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>

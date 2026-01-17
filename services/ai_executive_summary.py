@@ -130,3 +130,4 @@ def generate_executive_summary(kurum_id):
 
 
 
+

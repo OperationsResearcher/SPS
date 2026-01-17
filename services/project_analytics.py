@@ -331,3 +331,4 @@ def calculate_surec_saglik_skoru(surec_id, yil=None):
 
 
 
+

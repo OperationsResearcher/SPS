@@ -15,14 +15,10 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>{{ project.name }} - Gantt Şeması</h5>
             <div>
-                <div class="btn-group" role="group">
-                    <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-columns me-1"></i>Kanban
-                    </a>
-                    <a href="{{ url_for('main.proje_gantt', project_id=project.id) }}" class="btn btn-sm btn-primary active">
-                        <i class="fas fa-project-diagram me-1"></i>Gantt
-                    </a>
-                </div>
+                {% set active_view = 'gantt' %}
+                {% set btn_style = 'btn-outline-primary' %}
+                {% set active_btn_style = 'btn-primary' %}
+                {% include 'partials/project_views_nav.html' %}
                 <a href="{{ url_for('main.gorev_yeni', project_id=project.id) }}" class="btn btn-primary btn-sm ms-2">
                     <i class="fas fa-plus me-1"></i>Yeni Görev
                 </a>
@@ -86,14 +82,44 @@ document.addEventListener('DOMContentLoaded', function() {
     window.gantt = gantt;
 });
 
-function updateTaskDate(taskId, start, end) {
-    // Görev tarihini güncelle (opsiyonel - şimdilik sadece log)
-    console.log('Task date updated:', taskId, start, end);
+async function updateTaskDate(taskId, start, end) {
+    try {
+        const payload = {
+            start_date: start ? start.toISOString().slice(0, 10) : null,
+            due_date: end ? end.toISOString().slice(0, 10) : null
+        };
+        const res = await fetch(`/api/projeler/{{ project.id }}/gorevler/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+        if (window.showToast) showToast('success', 'Tarih güncellendi', 'Başarılı');
+    } catch (e) {
+        if (window.showToast) showToast('error', e.message || 'Güncelleme hatası', 'Hata');
+    }
 }
 
-function updateTaskProgress(taskId, progress) {
-    // Görev ilerlemesini güncelle (opsiyonel - şimdilik sadece log)
-    console.log('Task progress updated:', taskId, progress);
+async function updateTaskProgress(taskId, progress) {
+    try {
+        const res = await fetch(`/api/projeler/{{ project.id }}/gorevler/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({ progress: progress })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+        if (window.showToast) showToast('success', 'İlerleme güncellendi', 'Başarılı');
+    } catch (e) {
+        if (window.showToast) showToast('error', e.message || 'Güncelleme hatası', 'Hata');
+    }
 }
 </script>
 
@@ -107,6 +133,7 @@ function updateTaskProgress(taskId, progress) {
 }
 </style>
 {% endblock %}
+
 
 
 

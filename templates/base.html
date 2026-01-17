@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -179,18 +179,14 @@
                     </div>
                     {% endif %}
                     
-                    <div class="nav-section">
-                        <span class="nav-section-title">AI & Akıllı Özellikler</span>
+                    <details class="nav-section" {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}open{% endif %}>
+                        <summary class="nav-section-title">Diğer Modüller</summary>
                         <div class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'main.ai_chat' %}active{% endif %}" href="{{ url_for('main.ai_chat') }}">
                                 <i class="fas fa-robot"></i>
                                 <span>AI Asistanı</span>
                             </a>
                         </div>
-                    </div>
-                    
-                    <div class="nav-section">
-                        <span class="nav-section-title">Operasyonel Mükemmellik</span>
                         <div class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'main.mtbp' %}active{% endif %}" href="{{ url_for('main.mtbp') }}">
                                 <i class="fas fa-project-diagram"></i>
@@ -229,10 +225,6 @@
                             </a>
                         </div>
                         {% endif %}
-                    </div>
-                    
-                    <div class="nav-section">
-                        <span class="nav-section-title">İleri Seviye Modüller</span>
                         <div class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'main.crisis' %}active{% endif %}" href="{{ url_for('main.crisis') }}">
                                 <i class="fas fa-exclamation-triangle"></i>
@@ -299,10 +291,6 @@
                                 <span>Kurucu Miras AI</span>
                             </a>
                         </div>
-                    </div>
-                    
-                    <div class="nav-section">
-                        <span class="nav-section-title">Nirvana Legacy</span>
                         <div class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'main.game_theory' %}active{% endif %}" href="{{ url_for('main.game_theory') }}">
                                 <i class="fas fa-chess"></i>
@@ -327,7 +315,7 @@
                                 <span>Omega'nın Kitabı</span>
                             </a>
                         </div>
-                    </div>
+                    </details>
                     
                     <div class="nav-section">
                         <span class="nav-section-title">Kişisel</span>
@@ -495,14 +483,14 @@
                                 <li><a class="dropdown-item" href="{{ url_for('main.strategy_projects') }}"><i class="fas fa-project-diagram me-2"></i>Proje Portföyü</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('main.strategy_kpis') }}"><i class="fas fa-chart-bar me-2"></i>KPI Yönetimi</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">AI & Akıllı Özellikler</h6></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.ai_chat') }}"><i class="fas fa-robot me-2"></i>AI Asistanı</a></li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li class="dropend dropdown dropdown-submenu">
                                     <a class="dropdown-item dropdown-toggle" href="#" id="extraToolsDropdown" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" data-bs-auto-close="outside">
-                                        <span><i class="fas fa-toolbox me-2"></i>Extra Araçlar</span>
+                                        <span><i class="fas fa-layer-group me-2"></i>Diğer Modüller</span>
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="extraToolsDropdown">
+                                        <li><h6 class="dropdown-header">AI & Akıllı Özellikler</h6></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('main.ai_chat') }}"><i class="fas fa-robot me-2"></i>AI Asistanı</a></li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li><h6 class="dropdown-header">Operasyonel Mükemmellik</h6></li>
                                         <li><a class="dropdown-item" href="{{ url_for('main.mtbp') }}"><i class="fas fa-project-diagram me-2"></i>MTBP</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('main.gemba') }}"><i class="fas fa-walking me-2"></i>Gemba Walk</a></li>
@@ -1009,156 +997,12 @@
         });
     }
     
-    // Layout Yönetimi
-    function setLayout(layout) {
-        if (!['classic', 'sidebar'].includes(layout)) {
-            showToast('error', 'Geçersiz layout seçimi', 'Hata');
-            return;
-        }
-        
-        fetch('/api/user/layout', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({layout: layout})
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem('layout', layout);
-                showToast('success', 'Layout tercihiniz kaydedildi. Sayfa yenileniyor...', 'Başarılı');
-                // Layout parametresi ile sayfayı yenile - böylece doİŸru layout açılır
-                setTimeout(() => {
-                    const currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('layout', layout);
-                    window.location.href = currentUrl.toString();
-                }, 800);
-            } else {
-                showToast('error', data.message || 'Layout deİŸiştirilemedi', 'Hata');
-            }
-        })
-        .catch(err => {
-            console.error('Layout save error:', err);
-            showToast('error', 'Layout kaydedilirken hata oluştu. Lütfen tekrar deneyin.', 'Hata');
-        });
-    }
-    
-    // Tema Yönetimi
-    function loadTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        let theme = savedTheme;
-        try {
-            const contextEl = document.getElementById('appContextData');
-            if (contextEl && contextEl.dataset && contextEl.dataset.themePrefs) {
-                const userTheme = JSON.parse(contextEl.dataset.themePrefs);
-                if (userTheme && userTheme.theme) theme = userTheme.theme;
-            }
-        } catch(e) {}
-        setTheme(theme, false);
-    }
-    
-    function setTheme(theme, save = true) {
-        document.documentElement.setAttribute('data-theme', theme);
-        const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) {
-            themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-        }
-        if (save) {
-            localStorage.setItem('theme', theme);
-            saveThemePreference(theme);
-        }
-    }
-    
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme, true);
-    }
-    
-    function saveThemePreference(theme) {
-        fetch('/api/user/theme', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({theme: theme})
-        }).catch(err => console.log('Theme save error:', err));
-    }
-    
-    // Sidebar Yönetimi
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobileOverlay');
-        
-        if (sidebar) {
-            sidebar.classList.toggle('collapsed');
-            if (overlay) overlay.classList.toggle('show');
-            
-            // Mobilde göster/gizle
-            if (window.innerWidth <= 992) {
-                sidebar.classList.toggle('show');
-            }
-        }
-    }
-    
-    function toggleLayoutMenu(event, menuId) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        const menu = document.getElementById(menuId);
-        if (!menu) return;
-        
-        document.querySelectorAll('.layout-menu').forEach(otherMenu => {
-            if (otherMenu.id !== menuId) {
-                otherMenu.classList.remove('show');
-            }
-        });
-        
-        menu.classList.toggle('show');
-    }
-    
-    // Dışarı tıklayınca tüm layout menülerini kapat
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.layout-toggle')) {
-            document.querySelectorAll('.layout-menu').forEach(menu => menu.classList.remove('show'));
-        }
-    });
-    
-    // Sayfa yüklendiİŸinde tema yükle
+    // Layout/Tema Yönetimi (harici dosya)
+    </script>
+    <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+    <script>
+    // (Geriye uyumluluk) Eski alert tabanlı flash'lar varsa 3sn sonra kapat
     document.addEventListener('DOMContentLoaded', function() {
-        loadTheme();
-        
-        // Layout kontrolü ve URL temizleme
-        const contextEl = document.getElementById('appContextData');
-        const layoutPref = (contextEl && contextEl.dataset && contextEl.dataset.layoutPref) ? contextEl.dataset.layoutPref : '';
-        const userPref = (contextEl && contextEl.dataset && contextEl.dataset.userLayoutPref) ? contextEl.dataset.userLayoutPref : '';
-        const isAuthenticated = (contextEl && contextEl.dataset && contextEl.dataset.isAuth) ? (contextEl.dataset.isAuth === '1') : false;
-        const currentUrl = new URL(window.location.href);
-        const urlLayout = currentUrl.searchParams.get('layout');
-        
-        console.log('Layout Debug:', {
-            layoutPref: layoutPref,
-            urlLayout: urlLayout,
-            userPreference: isAuthenticated ? (userPref || '') : 'N/A',
-            isAuthenticated: isAuthenticated
-        });
-        
-        // EİŸer kullanıcı tercihi varsa ve URL parametresi ile eşleşiyorsa, URL parametresini temizle
-        if (isAuthenticated && userPref && urlLayout && userPref === urlLayout) {
-            // Layout tercihi veritabanında kayıtlı ve URL parametresi ile eşleşiyor, URL parametresini kaldır
-            currentUrl.searchParams.delete('layout');
-            // Sadece URL deİŸiştiyse yeniden yönlendir (sonsuz döngüyü önlemek için)
-            if (window.location.href !== currentUrl.toString()) {
-                window.history.replaceState({}, '', currentUrl.toString());
-            }
-        }
-        
-        if (layoutPref === 'sidebar') {
-            // Modern sidebar layout aktif
-            console.log('Sidebar layout aktif');
-        } else {
-            console.log('Classic layout aktif');
-        }
-        
-        // (Geriye uyumluluk) Eski alert tabanlı flash'lar varsa 3sn sonra kapat
         const autoDismissAlerts = document.querySelectorAll('.auto-dismiss-alert');
         autoDismissAlerts.forEach(function(alert) {
             setTimeout(function() {

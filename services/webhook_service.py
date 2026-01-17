@@ -203,3 +203,4 @@ def trigger_risk_increase_webhook(kurum_id: int, risk_id: int, old_score: int, n
 
 
 
+

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-3">
-  <div class="d-flex align-items-center mb-3">
-    <h3 class="me-3">Takvim — {{ project.name }}</h3>
-    <a class="btn btn-outline-secondary me-2" href="/projeler/{{ project.id }}/kanban">Kanban</a>
-    <a class="btn btn-outline-secondary" href="/projeler/{{ project.id }}/gantt">Gantt</a>
+  <div class="d-flex align-items-center mb-3 justify-content-between">
+    <h3 class="me-3 mb-0">Takvim — {{ project.name }}</h3>
+    {% set active_view = 'calendar' %}
+    {% include 'partials/project_views_nav.html' %}
   </div>
   <div id='calendar'></div>
 </div>

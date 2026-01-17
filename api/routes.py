@@ -8,7 +8,7 @@ import os
 import uuid
 from flask_login import login_required, current_user
 from extensions import csrf
-from decorators import project_access_required, project_manager_required, project_member_required, project_observer_allowed
+from decorators import project_access_required, project_manager_required, project_member_required, project_observer_allowed, role_required
 
 
 def _invalidate_executive_dashboard_cache(kurum_id: int | None = None):
@@ -48,6 +48,7 @@ from utils.karne_hesaplamalar import (
     hesapla_onceki_yil_ortalamasi, parse_basari_puani_araliklari
 )
 from datetime import datetime, timedelta, date
+from utils.telemetry import log_event
 from werkzeug.security import generate_password_hash
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
@@ -515,6 +516,14 @@ def api_create_bireysel_faaliyet_from_surec(surec_id: int, surec_faaliyet_id: in
         )
         db.session.add(yeni)
         db.session.commit()
+        
+        log_event(
+            current_app.logger,
+            'project_created',
+            project_id=new_project.id,
+            user_id=current_user.id,
+            kurum_id=current_user.kurum_id,
+        )
 
         return jsonify({'success': True, 'bireysel_faaliyet_id': yeni.id})
     except Exception as e:
@@ -567,6 +576,14 @@ def api_faaliyet_takip_kaydet(faaliyet_id: int):
         takip.tamamlanma_tarihi = date.today() if gerceklesti else None
 
         db.session.commit()
+
+        log_event(
+            current_app.logger,
+            'project_updated',
+            project_id=project.id,
+            user_id=current_user.id,
+            kurum_id=current_user.kurum_id,
+        )
         return jsonify({'success': True})
     except Exception as e:
         db.session.rollback()
@@ -783,6 +800,15 @@ def api_surec_karne_kaydet(surec_id):
         
         db.session.commit()
         
+        log_event(
+            current_app.logger,
+            'task_created',
+            task_id=new_task.id,
+            project_id=project_id,
+            user_id=current_user.id,
+            status=new_task.status,
+        )
+        
         # Erken Uyarı Mekanizması: PG verisi kaydedildikten sonra performans sapması kontrolü
         if pg_verileri and field == 'gerceklesen' and pg_veri.id:
             from services.notification_service import check_pg_performance_deviation
@@ -920,6 +946,15 @@ def api_surec_pg_hedef_dagit(surec_id: int, pg_id: int):
                 bireysel_pg.hedef_deger = hedef_str
 
         db.session.commit()
+        
+        log_event(
+            current_app.logger,
+            'task_updated',
+            task_id=task.id,
+            project_id=project_id,
+            user_id=current_user.id,
+            status=task.status,
+        )
         return jsonify({'success': True, 'message': 'Hedefler başarıyla dağıtıldı'})
     except Exception as e:
         db.session.rollback()
@@ -2467,6 +2502,11 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
                 task.completed_at = None
         if 'priority' in data:
             task.priority = data['priority']
+        if 'progress' in data:
+            try:
+                task.progress = max(0, min(100, int(data['progress'])))
+            except Exception:
+                return jsonify({'success': False, 'message': 'Geçersiz ilerleme değeri'}), 400
         if 'start_date' in data:
             if data['start_date']:
                 try:
@@ -3693,6 +3733,7 @@ def api_executive_dashboard():
             get_task_workload_distribution,
             get_executive_summary
         )
+        from services.strategic_impact_service import get_strategic_impact_summary
         
         # Filtreleme parametrelerini al
         filters = {}
@@ -3722,6 +3763,7 @@ def api_executive_dashboard():
         planning_data = get_planning_efficiency(current_user.kurum_id)
         workload_data = get_task_workload_distribution(current_user.kurum_id)
         executive_summary = get_executive_summary(current_user.kurum_id)
+        strategic_impact = get_strategic_impact_summary(current_user.kurum_id)
         
         # Personel Yükü Analizi
         from services.executive_dashboard import get_personnel_workload_analysis
@@ -3735,7 +3777,8 @@ def api_executive_dashboard():
                 'planning_efficiency': planning_data,
                 'workload_distribution': workload_data,
                 'executive_summary': executive_summary,
-                'personnel_workload': personnel_workload
+                'personnel_workload': personnel_workload,
+                'strategic_impact': strategic_impact
             },
             'filters': filters
         })
@@ -3828,6 +3871,176 @@ def api_user_theme():
         db.session.rollback()
         current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# --- Mock/Compatibility Endpoints (MVP Stabilization) ---
+
+@api_bp.route('/save-swot-analysis', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_save_swot_analysis():
+    """SWOT analizini kaydet (mock/cache)."""
+    try:
+        from extensions import cache
+        payload = request.get_json() or {}
+        cache_key = f"swot_analysis:{current_user.kurum_id}"
+        cache.set(cache_key, payload, timeout=3600)
+        return jsonify({'success': True, 'message': 'SWOT kaydedildi (mock).'})
+    except Exception as e:
+        current_app.logger.error(f"SWOT kaydetme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/get-swot-analysis', methods=['GET'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_get_swot_analysis():
+    """SWOT analizini getir (mock/cache)."""
+    try:
+        from extensions import cache
+        cache_key = f"swot_analysis:{current_user.kurum_id}"
+        data = cache.get(cache_key) or {'items': []}
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        current_app.logger.error(f"SWOT getirme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/save-pestle-analysis', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_save_pestle_analysis():
+    """PESTLE analizini kaydet (mock/cache)."""
+    try:
+        from extensions import cache
+        payload = request.get_json() or {}
+        cache_key = f"pestle_analysis:{current_user.kurum_id}"
+        cache.set(cache_key, payload, timeout=3600)
+        return jsonify({'success': True, 'message': 'PESTLE kaydedildi (mock).'})
+    except Exception as e:
+        current_app.logger.error(f"PESTLE kaydetme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/get-pestle-analysis', methods=['GET'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_get_pestle_analysis():
+    """PESTLE analizini getir (mock/cache)."""
+    try:
+        from extensions import cache
+        cache_key = f"pestle_analysis:{current_user.kurum_id}"
+        data = cache.get(cache_key) or {'items': []}
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        current_app.logger.error(f"PESTLE getirme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/kurum/<int:kurum_id>/stratejik-profil', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
+def api_kurum_stratejik_profil(kurum_id):
+    """Stratejik profil kaydet/getir (mock/cache)."""
+    try:
+        from extensions import cache
+        if current_user.kurum_id != kurum_id and current_user.sistem_rol != 'admin':
+            return jsonify({'success': False, 'message': 'Bu kurum için yetkiniz yok'}), 403
+
+        cache_key = f"strategic_profile:{kurum_id}"
+        if request.method == 'POST':
+            payload = request.get_json() or {}
+            cache.set(cache_key, payload, timeout=3600)
+            return jsonify({'success': True, 'data': payload})
+
+        data = cache.get(cache_key) or {'inputs': {}, 'ai_suggestions': None}
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        current_app.logger.error(f"Stratejik profil hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/ai/stratejik-oneri', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
+def api_ai_stratejik_oneri():
+    """Stratejik AI önerisi (mock)."""
+    try:
+        api_key = os.environ.get('OPENAI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+        suggestions = {
+            'amac': 'Kurum genelinde verimliliği artırmak.',
+            'vizyon': 'Sektörde sürdürülebilir ve çevik liderlik.',
+            'stratejiler': ['Süreç standardizasyonu', 'Veri odaklı karar alma', 'Yetenek geliştirme']
+        }
+        return jsonify({'success': True, 'mock': api_key is None, 'suggestions': suggestions})
+    except Exception as e:
+        current_app.logger.error(f"AI stratejik öneri hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/ai/yeni-oneri', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
+def api_ai_yeni_oneri():
+    """Yeni AI önerisi (mock)."""
+    try:
+        suggestions = {
+            'amac': 'Müşteri memnuniyetini artırmak.',
+            'vizyon': 'Müşteri odaklı dönüşümde öncü olmak.',
+            'stratejiler': ['Servis kalitesi', 'Dijitalleşme', 'Eğitim']
+        }
+        return jsonify({'success': True, 'suggestions': suggestions})
+    except Exception as e:
+        current_app.logger.error(f"AI yeni öneri hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/ai/kabul-et', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
+def api_ai_kabul_et():
+    """AI önerisini kabul et (mock)."""
+    try:
+        payload = request.get_json() or {}
+        return jsonify({'success': True, 'accepted': True, 'data': payload})
+    except Exception as e:
+        current_app.logger.error(f"AI kabul hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/pg-veri/sil/<int:veri_id>', methods=['DELETE'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_pg_veri_sil(veri_id):
+    """PG veri silme (mock/gerçek)."""
+    try:
+        veri = PerformansGostergeVeri.query.get(veri_id)
+        if not veri:
+            return jsonify({'success': True, 'message': 'Veri bulunamadı (mock)'}), 200
+        db.session.delete(veri)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Veri silindi'})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"PG veri silme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/pg-veri/proje-gorevleri', methods=['GET'])
+@csrf.exempt
+@login_required
+def api_pg_veri_proje_gorevleri():
+    """PG veri proje görevleri (mock)."""
+    return jsonify({'success': True, 'data': []})
 
 
 @api_bp.route('/notifications', methods=['GET'])

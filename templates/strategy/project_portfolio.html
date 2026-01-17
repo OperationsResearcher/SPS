@@ -11,9 +11,11 @@
                     <h4 class="mb-0">
                         <i class="fas fa-trophy me-2"></i>Stratejik Proje Portföyü
                     </h4>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addProjectModal">
                         <i class="fas fa-plus me-1"></i>Yeni Proje Ekle
                     </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if projects_with_scores|length == 0 %}
@@ -89,24 +91,28 @@
                                             </span>
                                         </td>
                                         <td class="text-center align-middle">
-                                                <button type="button" class="btn btn-sm btn-outline-primary me-1" 
-                                                    onclick='editProject({{ project.id }}, {{ project.name|tojson }}, {{ (project.description or "")|tojson }}, {{ (project.start_date.strftime('%Y-%m-%d') if project.start_date else "")|tojson }}, {{ (project.end_date.strftime('%Y-%m-%d') if project.end_date else "")|tojson }}, {{ (project.priority or "Orta")|tojson }}, {{ project.get_notification_settings()|tojson }})'
-                                                    title="Düzenle">
+                                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                            <button type="button" class="btn btn-sm btn-outline-primary me-1" 
+                                                onclick='editProject({{ project.id }}, {{ project.name|tojson }}, {{ (project.description or "")|tojson }}, {{ (project.start_date.strftime('%Y-%m-%d') if project.start_date else "")|tojson }}, {{ (project.end_date.strftime('%Y-%m-%d') if project.end_date else "")|tojson }}, {{ (project.priority or "Orta")|tojson }}, {{ project.get_notification_settings()|tojson }})'
+                                                title="Düzenle">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-info me-1" 
-                                                    onclick="cloneProject({{ project.id }}, '{{ project.name|e }}', '{{ project.description|e if project.description else '' }}')"
-                                                    title="Klonla">
+                                                onclick="cloneProject({{ project.id }}, '{{ project.name|e }}', '{{ project.description|e if project.description else '' }}')"
+                                                title="Klonla">
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                             <form method="POST" action="{{ url_for('main.strategy_project_delete', id=project.id) }}" 
-                                                  style="display: inline;" 
-                                                  onsubmit="return confirm('Bu projeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');">
+                                                style="display: inline;" 
+                                                onsubmit="return confirm('Bu projeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
+                                            {% else %}
+                                            <span class="text-muted small">Yetki yok</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}

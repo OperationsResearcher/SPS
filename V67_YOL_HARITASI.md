@@ -137,3 +137,4 @@ Risk almamak için bu plan **3 ayrı prompt** ile sırayla devreye alınacaktır
 
 
 
+

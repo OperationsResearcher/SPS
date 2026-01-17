@@ -255,3 +255,4 @@ def hesapla_onceki_yil_ortalamasi(
         return None
 
 
+
