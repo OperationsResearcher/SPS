@@ -1948,6 +1948,198 @@
             opacity: 1;
         }
     }
+
+    /* ==========================================================================
+       MODERN PREMIUM DASHBOARD STYLES (Glassmorphism & Neon)
+       ========================================================================== */
+    :root {
+        --glass-bg: rgba(23, 25, 35, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        --neon-blue: #00f3ff;
+        --neon-purple: #bc13fe;
+        --neon-green: #00ff9d;
+        --neon-red: #ff0055;
+        --neon-orange: #ff9100;
+        --neon-yellow: #f9f871;
+        --dark-bg: #0f172a;
+        --card-bg-dark: rgba(30, 41, 59, 0.7);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+    }
+
+    /* Modal Dark Theme Override */
+    .modal-content.premium-dark {
+        background-color: var(--dark-bg);
+        background-image: 
+            radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+            radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+            radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+        color: var(--text-primary);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .premium-dark .modal-header {
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .premium-dark .modal-footer {
+        border-top: 1px solid var(--glass-border);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .premium-dark .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    /* Glass Cards */
+    .glass-card {
+        background: var(--card-bg-dark);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glass-shadow);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Typography */
+    .premium-title {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .premium-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    /* Neon Accents */
+    .neon-border-green { box-shadow: 0 0 15px rgba(0, 255, 157, 0.1); border-top: 3px solid var(--neon-green); }
+    .neon-border-red { box-shadow: 0 0 15px rgba(255, 0, 85, 0.1); border-top: 3px solid var(--neon-red); }
+    .neon-border-blue { box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); border-top: 3px solid var(--neon-blue); }
+    .neon-border-orange { box-shadow: 0 0 15px rgba(255, 145, 0, 0.1); border-top: 3px solid var(--neon-orange); }
+    .neon-border-purple { box-shadow: 0 0 15px rgba(188, 19, 254, 0.1); border-top: 3px solid var(--neon-purple); }
+
+    .neon-text-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 157, 0.5); }
+    .neon-text-red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
+    .neon-text-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+    .neon-text-orange { color: var(--neon-orange); text-shadow: 0 0 10px rgba(255, 145, 0, 0.5); }
+    
+    /* Layouts */
+    .premium-grid-2x2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    .premium-grid-hex {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    /* Action Buttons */
+    .btn-premium {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        backdrop-filter: blur(4px);
+        transition: all 0.3s;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+    }
+
+    .btn-premium:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 10px 20px -10px rgba(0,0,0,0.5);
+    }
+
+    .btn-premium-primary {
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        border: none;
+        color: white;
+    }
+    
+    .btn-premium-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+    }
+
+    /* List Items */
+    .premium-list-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s;
+    }
+
+    .premium-list-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateX(4px);
+    }
+
+    .tows-cell {
+        min-height: 200px;
+        position: relative;
+    }
+
+    .tows-connector-line {
+        position: absolute;
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        z-index: 0;
+        pointer-events: none;
+    }
+
 </style>
 {% endblock %}
 
@@ -2156,6 +2348,26 @@
                 {% endif %}
                 <h4>PESTLE</h4>
                 {% if pestle_analizleri|length > 0 %}
+                <div class="content-large" style="color: #27ae60; font-weight: 600;" title="Analiz Tamamlandı">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Analiz Tamamlandı
+                </div>
+                {% else %}
+                <div class="content-large" style="font-size: 1rem; opacity: 0.6; font-style: italic;" title="Analiz yapılmadı">
+                    Analiz yapılmadı
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="side-box">
+            <div class="flow-box green" onclick="openModal('tows')">
+                <i class="info-icon fas fa-compress-arrows-alt"></i>
+                {% if tows_analizleri|length > 0 %}
+                <span class="badge-count">{{ tows_analizleri|length }}</span>
+                {% endif %}
+                <h4>TOWS</h4>
+                {% if tows_analizleri|length > 0 %}
                 <div class="content-large" style="color: #27ae60; font-weight: 600;" title="Analiz Tamamlandı">
                     <i class="fas fa-check-circle me-2"></i>
                     Analiz Tamamlandı
@@ -2517,6 +2729,15 @@ function showDüzenleModal(type, category, itemId, currentText) {
     } else if (type === 'pestle') {
         categoryAd = getPestleKategoriAd(category);
         headerClass = 'info';
+    } else if (type === 'tows') {
+        categoryAd = getTowsKategoriAd(category);
+        const colorMap = {
+            'SO': 'success',
+            'WO': 'warning',
+            'ST': 'info',
+            'WT': 'danger'
+        };
+        headerClass = colorMap[category] || 'primary';
     }
     
     console.log('Modal kategori:', categoryAd, 'header class:', headerClass);
@@ -2584,6 +2805,15 @@ function showEkleModal(type, category) {
     } else if (type === 'pestle') {
         categoryAd = getPestleKategoriAd(category);
         headerClass = 'info';
+    } else if (type === 'tows') {
+        categoryAd = getTowsKategoriAd(category);
+        const colorMap = {
+            'SO': 'success',
+            'WO': 'warning',
+            'ST': 'info',
+            'WT': 'danger'
+        };
+        headerClass = colorMap[category] || 'primary';
     }
     
     // Modal içeriğini ayarla
@@ -2762,6 +2992,53 @@ function saveDüzenleModal() {
                 showToast('error', 'PESTLE öğesi bulunamadı');
             }
         }
+    } else if (type === 'tows') {
+        if (isNew) {
+            // Yeni öğe ekle
+            const container = document.getElementById(`${category}-content`);
+            if (container) {
+                const newId = Date.now();
+                const newItem = createTowsItem(newId, newText, category);
+                container.appendChild(newItem);
+                
+                // Animasyon ekle
+                newItem.style.opacity = '0';
+                newItem.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    newItem.style.transition = 'all 0.3s ease';
+                    newItem.style.opacity = '1';
+                    newItem.style.transform = 'translateY(0)';
+                }, 100);
+                
+                showToast('success', `${getTowsKategoriAd(category)} eklendi`);
+                
+                // Backend'e kaydet
+                console.log('Backend kayıt (TOWS) işlemi başlatılıyor...');
+                saveTowsAnalysis();
+            }
+        } else {
+            console.log('Mevcut TOWS öğesi güncelleniyor...');
+            // Mevcut öğeyi güncelle
+            const item = document.querySelector(`div.swot-item[data-category="${category}"][data-id="${itemId}"]`);
+            
+            if (item) {
+                const textElement = item.querySelector('.swot-item-text p');
+                
+                if (textElement) {
+                    textElement.textContent = newText;
+                    showToast('success', `${getTowsKategoriAd(category)} güncellendi`);
+                     
+                    // Backend'e kaydet
+                    console.log('Backend kayıt (TOWS) işlemi başlatılıyor...');
+                    saveTowsAnalysis();
+                } else {
+                    showToast('error', 'Güncelleme hatası: Metin alanı bulunamadı');
+                }
+            } else {
+                 showToast('error', 'Öğe bulunamadı');
+            }
+        }
+    }
     }
     
     hideDüzenleModal();
@@ -2811,6 +3088,8 @@ function showSilConfirm(type, category, itemId) {
         categoryAd = getKategoriAd(category);
     } else if (type === 'pestle') {
         categoryAd = getPestleKategoriAd(category);
+    } else if (type === 'tows') {
+        categoryAd = getTowsKategoriAd(category);
     }
     
     message.innerHTML = `<strong>${categoryAd}</strong> öğesini silmek istediğinizden emin misiniz?<br><small class="text-muted">Bu işlem geri alınamaz.</small>`;
@@ -2862,6 +3141,22 @@ function confirmSil() {
                 
                 // Backend'e kaydet
                 savePestleAnalysis();
+            }, 300);
+        }
+    } else if (type === 'tows') {
+        const item = document.querySelector(`[data-category="${category}"][data-id="${itemId}"]`);
+        if (item) {
+            // Animasyon ile sil
+            item.style.transition = 'all 0.3s ease';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-100px)';
+            
+            setTimeout(() => {
+                item.remove();
+                showToast('warning', `${getTowsKategoriAd(category)} silindi`);
+                
+                // Backend'e kaydet
+                saveTowsAnalysis();
             }, 300);
         }
     }
@@ -3115,107 +3410,89 @@ function loadModalContent(section, container) {
             
         case 'swot':
             container.innerHTML = `
-                <div class="swot-analysis-container">
-                    <!-- SWOT Analizi Başlıİı -->
-                    <div class="text-center mb-5">
-                        <h3 class="swot-main-title">
-                            <i class="fas fa-chart-line text-primary me-3"></i>
-                            SWOT Analizi
-                        </h3>
-                        <p class="text-muted">Kurumunuzun güçlü ve zayıf yönlerini, fırsat ve tehditlerini analiz edin</p>
-                    </div>
-                    
-                    <div class="row">
-                        <!-- Strengths (Güçlü Yönler) -->
-                        <div class="col-md-6 mb-4">
-                            <div class="swot-box strengths">
-                                <div class="swot-header">
-                                    <div class="swot-icon">
-                                        <i class="fas fa-rocket"></i>
-                                    </div>
-                                    <div class="swot-title">
-                                        <h5>Güçlü Yönler</h5>
-                                        <small class="text-muted">Strengths</small>
-                                    </div>
+                <div class="p-4" style="background: transparent;">
+                    <h2 class="premium-title text-center mb-5">SWOT Analizi</h2>
+                    <div class="premium-grid-2x2">
+                        <!-- Strengths -->
+                        <div class="glass-card neon-border-green">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3 p-3 rounded-circle" style="background: rgba(0,255,157,0.1)">
+                                    <i class="fas fa-dumbbell fa-2x neon-text-green"></i>
                                 </div>
-                                <div class="swot-content" id="strengths-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
+                                <div>
+                                    <h4 class="text-white mb-0">Güçlü Yönler</h4>
+                                    <span class="premium-subtitle">Strengths</span>
                                 </div>
-                                <button class="btn btn-success btn-sm w-100 mt-3" onclick="addSwotItem('strengths')">
-                                    <i class="fas fa-plus-circle me-2"></i> Yeni Güçlü Yön Ekle
-                                </button>
                             </div>
+                            <div class="swot-content mb-4" id="strengths-content" style="min-height: 150px;">
+                                <!-- Veriler JavaScript ile yüklenecek -->
+                            </div>
+                            <button class="btn-premium w-100" onclick="addSwotItem('strengths')">
+                                <i class="fas fa-plus neon-text-green"></i> Yeni Güçlü Yön Ekle
+                            </button>
                         </div>
 
-                        <!-- Weaknesses (Zayıf Yönler) -->
-                        <div class="col-md-6 mb-4">
-                            <div class="swot-box weaknesses">
-                                <div class="swot-header">
-                                    <div class="swot-icon">
-                                        <i class="fas fa-tools"></i>
-                                    </div>
-                                    <div class="swot-title">
-                                        <h5>Zayıf Yönler</h5>
-                                        <small class="text-muted">Weaknesses</small>
-                                    </div>
+                        <!-- Weaknesses -->
+                        <div class="glass-card neon-border-red">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3 p-3 rounded-circle" style="background: rgba(255,0,85,0.1)">
+                                    <i class="fas fa-heart-broken fa-2x neon-text-red"></i>
                                 </div>
-                                <div class="swot-content" id="weaknesses-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
+                                <div>
+                                    <h4 class="text-white mb-0">Zayıf Yönler</h4>
+                                    <span class="premium-subtitle">Weaknesses</span>
                                 </div>
-                                <button class="btn btn-warning btn-sm w-100 mt-3" onclick="addSwotItem('weaknesses')">
-                                    <i class="fas fa-plus-circle me-2"></i> Yeni Zayıf Yön Ekle
-                                </button>
                             </div>
+                            <div class="swot-content mb-4" id="weaknesses-content" style="min-height: 150px;">
+                                <!-- Veriler JavaScript ile yüklenecek -->
+                            </div>
+                            <button class="btn-premium w-100" onclick="addSwotItem('weaknesses')">
+                                <i class="fas fa-plus neon-text-red"></i> Yeni Zayıf Yön Ekle
+                            </button>
                         </div>
 
-                        <!-- Opportunities (Fırsatlar) -->
-                        <div class="col-md-6 mb-4">
-                            <div class="swot-box opportunities">
-                                <div class="swot-header">
-                                    <div class="swot-icon">
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                    <div class="swot-title">
-                                        <h5>Fırsatlar</h5>
-                                        <small class="text-muted">Opportunities</small>
-                                    </div>
+                        <!-- Opportunities -->
+                        <div class="glass-card neon-border-blue">
+                             <div class="d-flex align-items-center mb-4">
+                                <div class="me-3 p-3 rounded-circle" style="background: rgba(0,243,255,0.1)">
+                                    <i class="fas fa-lightbulb fa-2x neon-text-blue"></i>
                                 </div>
-                                <div class="swot-content" id="opportunities-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
+                                <div>
+                                    <h4 class="text-white mb-0">Fırsatlar</h4>
+                                    <span class="premium-subtitle">Opportunities</span>
                                 </div>
-                                <button class="btn btn-info btn-sm w-100 mt-3" onclick="addSwotItem('opportunities')">
-                                    <i class="fas fa-plus-circle me-2"></i> Yeni Fırsat Ekle
-                                </button>
                             </div>
+                            <div class="swot-content mb-4" id="opportunities-content" style="min-height: 150px;">
+                                <!-- Veriler JavaScript ile yüklenecek -->
+                            </div>
+                            <button class="btn-premium w-100" onclick="addSwotItem('opportunities')">
+                                <i class="fas fa-plus neon-text-blue"></i> Yeni Fırsat Ekle
+                            </button>
                         </div>
 
-                        <!-- Threats (Tehditler) -->
-                        <div class="col-md-6 mb-4">
-                            <div class="swot-box threats">
-                                <div class="swot-header">
-                                    <div class="swot-icon">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <div class="swot-title">
-                                        <h5>Tehditler</h5>
-                                        <small class="text-muted">Threats</small>
-                                    </div>
+                        <!-- Threats -->
+                        <div class="glass-card neon-border-orange">
+                             <div class="d-flex align-items-center mb-4">
+                                <div class="me-3 p-3 rounded-circle" style="background: rgba(255,145,0,0.1)">
+                                    <i class="fas fa-shield-alt fa-2x neon-text-orange"></i>
                                 </div>
-                                <div class="swot-content" id="threats-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
+                                <div>
+                                    <h4 class="text-white mb-0">Tehditler</h4>
+                                    <span class="premium-subtitle">Threats</span>
                                 </div>
-                                <button class="btn btn-danger btn-sm w-100 mt-3" onclick="addSwotItem('threats')">
-                                    <i class="fas fa-plus-circle me-2"></i> Yeni Tehdit Ekle
-                                </button>
                             </div>
+                            <div class="swot-content mb-4" id="threats-content" style="min-height: 150px;">
+                                <!-- Veriler JavaScript ile yüklenecek -->
+                            </div>
+                            <button class="btn-premium w-100" onclick="addSwotItem('threats')">
+                                <i class="fas fa-plus neon-text-orange"></i> Yeni Tehdit Ekle
+                            </button>
                         </div>
                     </div>
 
-
-                    <!-- Kaydet Butonu -->
-                    <div class="text-center mt-4">
-                        <button class="btn btn-primary btn-lg" onclick="saveSwotAnalysis()">
-                            <i class="fas fa-save"></i> SWOT Analizini Kaydet
+                    <div class="text-center mt-5">
+                        <button class="btn-premium btn-premium-primary btn-lg px-5 py-3" onclick="saveSwotAnalysis()">
+                            <i class="fas fa-save me-2"></i> SWOT Analizini Kaydet
                         </button>
                     </div>
                 </div>
@@ -3227,143 +3504,179 @@ function loadModalContent(section, container) {
             
         case 'pestle':
             container.innerHTML = `
-                <div class="pestle-analysis-container">
-                    <div class="row">
+                <div class="p-4" style="background: transparent;">
+                    <h2 class="premium-title text-center mb-5">PESTLE Analizi</h2>
+                    <div class="row g-4">
                         <!-- Political (Politik) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box political">
-                                <div class="pestle-header">
-                                    <i class="fas fa-landmark"></i>
-                                    <h5>Political (Politik)</h5>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-red h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-landmark fa-lg neon-text-red me-3"></i>
+                                    <div>
+                                        <h5 class="text-white mb-0">Political</h5>
+                                        <small class="text-white-50">Politik</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="political-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-primary btn-sm w-100 mt-2" onclick="addPestleItem('political')">
-                                    <i class="fas fa-plus"></i> Yeni Politik Faktör Ekle
+                                <div class="pestle-content mb-3" id="political-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('political')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
 
                         <!-- Economic (Ekonomik) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box economic">
-                                <div class="pestle-header">
-                                    <i class="fas fa-chart-line"></i>
-                                    <h5>Economic (Ekonomik)</h5>
+                         <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-blue h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-chart-line fa-lg neon-text-blue me-3"></i>
+                                    <div>
+                                        <h5 class="text-white mb-0">Economic</h5>
+                                        <small class="text-white-50">Ekonomik</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="economic-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-success btn-sm w-100 mt-2" onclick="addPestleItem('economic')">
-                                    <i class="fas fa-plus"></i> Yeni Ekonomik Faktör Ekle
+                                <div class="pestle-content mb-3" id="economic-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('economic')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
 
                         <!-- Social (Sosyal) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box social">
-                                <div class="pestle-header">
-                                    <i class="fas fa-users"></i>
-                                    <h5>Social (Sosyal)</h5>
+                         <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-purple h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-users fa-lg neon-text-purple me-3"></i>
+                                     <div>
+                                        <h5 class="text-white mb-0">Social</h5>
+                                        <small class="text-white-50">Sosyal</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="social-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-info btn-sm w-100 mt-2" onclick="addPestleItem('social')">
-                                    <i class="fas fa-plus"></i> Yeni Sosyal Faktör Ekle
+                                <div class="pestle-content mb-3" id="social-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('social')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
 
                         <!-- Technological (Teknolojik) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box technological">
-                                <div class="pestle-header">
-                                    <i class="fas fa-microchip"></i>
-                                    <h5>Technological (Teknolojik)</h5>
+                         <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-green h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-microchip fa-lg neon-text-green me-3"></i>
+                                    <div>
+                                        <h5 class="text-white mb-0">Technological</h5>
+                                        <small class="text-white-50">Teknolojik</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="technological-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-warning btn-sm w-100 mt-2" onclick="addPestleItem('technological')">
-                                    <i class="fas fa-plus"></i> Yeni Teknolojik Faktör Ekle
+                                <div class="pestle-content mb-3" id="technological-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('technological')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
 
                         <!-- Legal (Yasal) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box legal">
-                                <div class="pestle-header">
-                                    <i class="fas fa-gavel"></i>
-                                    <h5>Legal (Yasal)</h5>
+                         <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-orange h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-gavel fa-lg neon-text-orange me-3"></i>
+                                     <div>
+                                        <h5 class="text-white mb-0">Legal</h5>
+                                        <small class="text-white-50">Yasal</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="legal-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-danger btn-sm w-100 mt-2" onclick="addPestleItem('legal')">
-                                    <i class="fas fa-plus"></i> Yeni Yasal Faktör Ekle
+                                <div class="pestle-content mb-3" id="legal-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('legal')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
 
                         <!-- Environmental (Çevresel) -->
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="pestle-box environmental">
-                                <div class="pestle-header">
-                                    <i class="fas fa-leaf"></i>
-                                    <h5>Environmental (Çevresel)</h5>
+                         <div class="col-md-6 col-lg-4">
+                            <div class="glass-card neon-border-green h-100">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-leaf fa-lg neon-text-green me-3"></i>
+                                     <div>
+                                        <h5 class="text-white mb-0">Environmental</h5>
+                                        <small class="text-white-50">Çevresel</small>
+                                    </div>
                                 </div>
-                                <div class="pestle-content" id="environmental-content">
-                                    <!-- Veriler JavaScript ile yüklenecek -->
-                                </div>
-                                <button class="btn btn-secondary btn-sm w-100 mt-2" onclick="addPestleItem('environmental')">
-                                    <i class="fas fa-plus"></i> Yeni Çevresel Faktör Ekle
+                                <div class="pestle-content mb-3" id="environmental-content"></div>
+                                <button class="btn-premium w-100 mt-auto" onclick="addPestleItem('environmental')">
+                                    <i class="fas fa-plus"></i> Ekle
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- PESTLE Etki Matrisi -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="pestle-matrix">
-                                <h5 class="text-center mb-3">
-                                    <i class="fas fa-chart-pie"></i> PESTLE Etki Analizi (Şiddet x Olasılık)
-                                </h5>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered pestle-matrix-table">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">Kategori</th>
-                                                <th class="text-center">Faktör Sayısı</th>
-                                                <th class="text-center">Toplam Etki Puanı</th>
-                                                <th class="text-center">Ortalama Etki</th>
-                                                <th class="text-center">Risk Seviyesi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="pestle-matrix-body">
-                                            <!-- Dinamik olarak doldurulacak -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Kaydet Butonu -->
-                    <div class="text-center mt-4">
-                        <button class="btn btn-primary btn-lg" onclick="savePestleAnalysis()">
-                            <i class="fas fa-save"></i> PESTLE Analizini Kaydet
+                     <div class="text-center mt-5">
+                        <button class="btn-premium btn-premium-primary btn-lg px-5 py-3" onclick="savePestleAnalysis()">
+                            <i class="fas fa-save me-2"></i> PESTLE Analizini Kaydet
                         </button>
                     </div>
                 </div>
             `;
-            
-            // PESTLE verilerini yükle
             loadPestleData();
+            break;
+            
+        case 'tows':
+            container.innerHTML = `
+                                    </div>
+                                </div>
+                                <div class="swot-content" id="WO-content"></div>
+                                <button class="btn btn-warning btn-sm w-100 mt-3" onclick="addTowsItem('WO')">
+                                    <i class="fas fa-plus-circle me-2"></i> Yeni WO Stratejisi Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ST (Güçlü-Tehdit) -->
+                        <div class="col-md-6 mb-4">
+                            <div class="swot-box" style="border-color: #2196f3;">
+                                <div class="swot-header">
+                                    <div class="swot-icon" style="background: linear-gradient(135deg, #2196f3, #64b5f6);">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="swot-title">
+                                        <h5>ST Stratejileri</h5>
+                                        <small class="text-muted">Güçlü Yönler - Tehditler</small>
+                                    </div>
+                                </div>
+                                <div class="swot-content" id="ST-content"></div>
+                                <button class="btn btn-info btn-sm w-100 mt-3" onclick="addTowsItem('ST')">
+                                    <i class="fas fa-plus-circle me-2"></i> Yeni ST Stratejisi Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- WT (Zayıf-Tehdit) -->
+                        <div class="col-md-6 mb-4">
+                            <div class="swot-box" style="border-color: #f44336;">
+                                <div class="swot-header">
+                                    <div class="swot-icon" style="background: linear-gradient(135deg, #f44336, #e57373);">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="swot-title">
+                                        <h5>WT Stratejileri</h5>
+                                        <small class="text-muted">Zayıf Yönler - Tehditler</small>
+                                    </div>
+                                </div>
+                                <div class="swot-content" id="WT-content"></div>
+                                <button class="btn btn-danger btn-sm w-100 mt-3" onclick="addTowsItem('WT')">
+                                    <i class="fas fa-plus-circle me-2"></i> Yeni WT Stratejisi Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kaydet Butonu -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary btn-lg" onclick="saveTowsAnalysis()">
+                            <i class="fas fa-save"></i> TOWS Analizini Kaydet
+                        </button>
+                    </div>
+                </div>
+            `;
+            loadTowsData();
             break;
             
         case 'altStratejiler':
@@ -3649,44 +3962,29 @@ function deleteSwotItem(category, itemId) {
  */
 function createSwotItem(id, text, category) {
     const item = document.createElement('div');
-    item.className = 'swot-item';
+    item.className = 'premium-list-item';
     item.setAttribute('data-id', String(id));
     item.setAttribute('data-category', category);
-    console.log('createSwotItem - ID:', id, 'Tip:', typeof id, 'String:', String(id));
     
-    // Kategori ikonları
-    const categoryIcons = {
-        'strengths': 'fas fa-rocket',
-        'weaknesses': 'fas fa-tools', 
-        'opportunities': 'fas fa-star',
-        'threats': 'fas fa-shield-alt'
-    };
-    
-    // Yetki kontrolü - sadece admin, kurum_yoneticisi, ust_yonetim düzenleyebilir
+    // Yetki kontrolü
     const canDüzenle = {{ 'true' if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] else 'false' }};
     
-    // Butonları ekle
     const editButton = canDüzenle ? `
-        <button class="btn btn-sm btn-outline-primary swot-edit-btn" data-category="${category}" data-id="${id}" title="Düzenle">
+        <button class="btn btn-sm btn-link text-info swot-edit-btn" data-category="${category}" data-id="${id}" title="Düzenle">
             <i class="fas fa-edit"></i>
         </button>
     ` : '';
     
     const deleteButton = canDüzenle ? `
-        <button class="btn btn-sm btn-outline-danger swot-delete-btn" data-category="${category}" data-id="${id}" title="Sil">
+        <button class="btn btn-sm btn-link text-danger swot-delete-btn" data-category="${category}" data-id="${id}" title="Sil">
             <i class="fas fa-trash"></i>
         </button>
     ` : '';
     
     item.innerHTML = `
-        <div class="swot-item-content">
-            <div class="swot-item-icon">
-                <i class="${categoryIcons[category]}"></i>
-            </div>
-            <div class="swot-item-text">
-                <p>${text}</p>
-            </div>
-            <div class="swot-item-actions">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="item-text text-white flex-grow-1 me-2">${text}</div>
+            <div class="action-buttons flex-shrink-0">
                 ${editButton}
                 ${deleteButton}
             </div>
@@ -3696,35 +3994,26 @@ function createSwotItem(id, text, category) {
     // Event listener'ları ekle
     const editBtn = item.querySelector('.swot-edit-btn');
     if (editBtn) {
-        console.log('SWOT Düzenle butonu event listener ekleniyor:', category, id);
         editBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('SWOT Düzenle butonu tıklandı!', category, id);
             const cat = this.getAttribute('data-category');
             const itemId = this.getAttribute('data-id');
-            const textElement = item.querySelector('.swot-item-text p');
+            const textElement = item.querySelector('.item-text');
             const currentText = textElement ? textElement.textContent : '';
-            console.log('Düzenle parametreleri:', cat, itemId, currentText);
             editSwotItem(cat, itemId, currentText);
         });
-    } else {
-        console.warn('SWOT Düzenle butonu bulunamadı!', category, id);
     }
     
     const deleteBtn = item.querySelector('.swot-delete-btn');
     if (deleteBtn) {
-        console.log('SWOT Sil butonu event listener ekleniyor:', category, id);
         deleteBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('SWOT Sil butonu tıklandı!', category, id);
             const cat = this.getAttribute('data-category');
             const itemId = this.getAttribute('data-id');
             deleteSwotItem(cat, itemId);
         });
-    } else {
-        console.warn('SWOT Sil butonu bulunamadı!', category, id);
     }
     
     return item;
@@ -3762,7 +4051,7 @@ function saveSwotAnalysis() {
         console.log(`${category} için ${items.length} öğe bulundu`);
         
         items.forEach(item => {
-            const textElement = item.querySelector('.swot-item-text p');
+            const textElement = item.querySelector('.item-text');
             if (textElement) {
                 const text = textElement.textContent;
                 if (text.trim()) {
@@ -4228,35 +4517,34 @@ function deletePestleItem(category, itemId) {
  */
 function createPestleItem(id, text, category, severity = null, probability = null, impact = null) {
     const item = document.createElement('div');
-    item.className = 'pestle-item';
+    item.className = 'premium-list-item';
     item.setAttribute('data-id', String(id));
     item.setAttribute('data-category', category);
     item.setAttribute('data-severity', severity || '');
     item.setAttribute('data-probability', probability || '');
     item.setAttribute('data-impact', impact || '');
-    console.log('createPestleItem - ID:', id, 'Tip:', typeof id);
     
-    const severityText = severity ? `Şiddet: ${severity}` : '';
+    const severityText = severity ? `Şiddet: ${severity}` : '';
     const probabilityText = probability ? `Olasılık: ${probability}` : '';
     const impactText = impact ? `Etki: ${impact}` : '';
     
     item.innerHTML = `
-        <div class="pestle-item-content">
-            <div class="pestle-item-text">
-                <p>${text}</p>
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <div class="item-text text-white mb-2">${text}</div>
                 ${severity || probability || impact ? `
-                    <div class="pestle-metrics">
-                        ${severity ? `<span class="badge bg-primary me-1">${severityText}</span>` : ''}
-                        ${probability ? `<span class="badge bg-info me-1">${probabilityText}</span>` : ''}
-                        ${impact ? `<span class="badge bg-warning">${impactText}</span>` : ''}
+                    <div class="pestle-metrics d-flex flex-wrap gap-2">
+                        ${severity ? `<span class="badge bg-primary bg-opacity-25 text-primary border border-primary">${severityText}</span>` : ''}
+                        ${probability ? `<span class="badge bg-info bg-opacity-25 text-info border border-info">${probabilityText}</span>` : ''}
+                        ${impact ? `<span class="badge bg-warning bg-opacity-25 text-warning border border-warning">${impactText}</span>` : ''}
                     </div>
                 ` : ''}
             </div>
-            <div class="pestle-item-actions">
-                <button class="btn btn-sm btn-outline-primary pestle-edit-btn" data-category="${category}" data-id="${id}" title="Düzenle">
+            <div class="action-buttons ms-2 flex-shrink-0">
+                <button class="btn btn-sm btn-link text-info pestle-edit-btn" data-category="${category}" data-id="${id}" title="Düzenle">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger pestle-delete-btn" data-category="${category}" data-id="${id}" title="Sil">
+                <button class="btn btn-sm btn-link text-danger pestle-delete-btn" data-category="${category}" data-id="${id}" title="Sil">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -4271,9 +4559,8 @@ function createPestleItem(id, text, category, severity = null, probability = nul
             e.stopPropagation();
             const cat = this.getAttribute('data-category');
             const itemId = this.getAttribute('data-id');
-            const textElement = item.querySelector('.pestle-item-text p');
+            const textElement = item.querySelector('.item-text');
             const currentText = textElement ? textElement.textContent : '';
-            console.log('PESTLE edit:', cat, itemId, currentText);
             editPestleItem(cat, itemId, currentText);
         });
     }
@@ -4579,7 +4866,7 @@ function savePestleAnalysis() {
     ['political', 'economic', 'social', 'technological', 'legal', 'environmental'].forEach(category => {
         const items = document.querySelectorAll(`[data-category="${category}"]`);
         items.forEach(item => {
-            const textElement = item.querySelector('.pestle-item-text p');
+            const textElement = item.querySelector('.item-text');
             if (textElement) {
                 const text = textElement.textContent;
                 const severity = parseInt(item.getAttribute('data-severity')) || 3;
@@ -4718,6 +5005,224 @@ function updateMatrixCell(selector, strategies) {
             cell.appendChild(li);
         });
     }
+}
+
+// ==========================================
+// TOWS ANALİZİ FONKSİYONLARI
+// ==========================================
+
+/**
+ * TOWS analizi için yeni öğe ekle
+ */
+function addTowsItem(category) {
+    showEkleModal('tows', category);
+}
+
+/**
+ * TOWS öğesi oluştur
+ */
+function createTowsItem(id, text, category) {
+    const item = document.createElement('div');
+    item.className = 'premium-list-item';
+    item.setAttribute('data-id', String(id));
+    item.setAttribute('data-category', category);
+    
+    // Yetki kontrolü
+    const canDüzenle = {{ 'true' if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] else 'false' }};
+    
+    const editButton = canDüzenle ? `
+        <button class="btn btn-sm btn-link text-info swot-edit-btn" data-category="${category}" data-id="${id}" title="Düzenle">
+            <i class="fas fa-edit"></i>
+        </button>
+    ` : '';
+    
+    const deleteButton = canDüzenle ? `
+        <button class="btn btn-sm btn-link text-danger swot-delete-btn" data-category="${category}" data-id="${id}" title="Sil">
+            <i class="fas fa-trash"></i>
+        </button>
+    ` : '';
+    
+    item.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="item-text text-white flex-grow-1 me-2">${text}</div>
+            <div class="action-buttons flex-shrink-0">
+                ${editButton}
+                ${deleteButton}
+            </div>
+        </div>
+    `;
+    
+    // Event listener'ları ekle
+    const editBtn = item.querySelector('.swot-edit-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const cat = this.getAttribute('data-category');
+            const itemId = this.getAttribute('data-id');
+            const textElement = item.querySelector('.item-text');
+            const currentText = textElement ? textElement.textContent : '';
+            showDüzenleModal('tows', cat, itemId, currentText);
+        });
+    }
+    
+    const deleteBtn = item.querySelector('.swot-delete-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const cat = this.getAttribute('data-category');
+            const itemId = this.getAttribute('data-id');
+            showSilConfirm('tows', cat, itemId);
+        });
+    }
+    
+    return item;
+}
+
+/**
+ * TOWS Kategori adını döndür
+ */
+function getTowsKategoriAd(category) {
+    const names = {
+        'SO': 'SO Stratejisi (Güçlü Yön - Fırsat)',
+        'WO': 'WO Stratejisi (Zayıf Yön - Fırsat)',
+        'ST': 'ST Stratejisi (Güçlü Yön - Tehdit)',
+        'WT': 'WT Stratejisi (Zayıf Yön - Tehdit)'
+    };
+    return names[category] || category;
+}
+
+/**
+ * TOWS analizini kaydet
+ */
+function saveTowsAnalysis() {
+    const towsData = {
+        SO: [],
+        WO: [],
+        ST: [],
+        WT: []
+    };
+    
+    ['SO', 'WO', 'ST', 'WT'].forEach(category => {
+        const items = document.querySelectorAll(`[data-category="${category}"]`);
+        items.forEach(item => {
+            const textElement = item.querySelector('.item-text');
+            if (textElement) {
+                const text = textElement.textContent;
+                if (text.trim()) {
+                    towsData[category].push({
+                        id: item.getAttribute('data-id'),
+                        text: text.trim()
+                    });
+                }
+            }
+        });
+    });
+    
+    // CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    };
+    if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+    
+    fetch('/api/save-tows-analysis', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(towsData)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('success', 'TOWS analizi kaydedildi');
+        } else {
+            showToast('error', data.message || 'Hata oluştu');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('error', 'Kaydetme hatası oluştu');
+    });
+}
+
+/**
+ * TOWS verilerini yükle
+ */
+function loadTowsData() {
+    console.log('TOWS verileri yükleniyor...');
+    fetch('/api/get-tows-analysis')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                ['SO', 'WO', 'ST', 'WT'].forEach(category => {
+                    const container = document.getElementById(`${category}-content`);
+                    if (container) {
+                        container.innerHTML = '';
+                        const items = data.data[category] || [];
+                        if (items.length === 0) {
+                            const sampleData = getSampleTowsData(category);
+                            sampleData.forEach(item => {
+                                container.appendChild(createTowsItem(item.id, item.text, category));
+                            });
+                        } else {
+                            items.forEach(item => {
+                                container.appendChild(createTowsItem(item.id, item.text, category));
+                            });
+                        }
+                    }
+                });
+            } else {
+                console.error('TOWS veri hatası:', data.message);
+                loadSampleTowsData();
+            }
+        })
+        .catch(error => {
+            console.error('TOWS fetch hatası:', error);
+            loadSampleTowsData();
+        });
+}
+
+/**
+ * Örnek TOWS verisi yükle
+ */
+function loadSampleTowsData() {
+    ['SO', 'WO', 'ST', 'WT'].forEach(category => {
+        const container = document.getElementById(`${category}-content`);
+        if (container) {
+            container.innerHTML = '';
+            const sampleData = getSampleTowsData(category);
+            sampleData.forEach(item => {
+                container.appendChild(createTowsItem(item.id, item.text, category));
+            });
+        }
+    });
+}
+
+/**
+ * Örnek TOWS verisi getir
+ */
+function getSampleTowsData(category) {
+    const sampleData = {
+        'SO': [
+            {id: 1, text: 'Güçlü finansal yapıyı yeni pazarlara girmek için kullanma'},
+            {id: 2, text: 'Ar-Ge kapasitesi ile dijital dönüşüm fırsatlarını değerlendirme'}
+        ],
+        'WO': [
+            {id: 1, text: 'Stratejik ortaklıklarla teknoloji eksikliğini giderme'},
+            {id: 2, text: 'Promosyonlarla pazar payını artırma'}
+        ],
+        'ST': [
+            {id: 1, text: 'Marka gücü ile rekabet tehditlerini azaltma'},
+            {id: 2, text: 'Verimlilik artışı ile ekonomik belirsizliklere karşı korunma'}
+        ],
+        'WT': [
+            {id: 1, text: 'Maliyetleri düşürerek ekonomik riskleri yönetme'},
+            {id: 2, text: 'Zayıf alanlardan çekilerek tehditleri minimize etme'}
+        ]
+    };
+    return sampleData[category] || [];
 }
 
 /**

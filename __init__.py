@@ -138,6 +138,30 @@ def create_app(config_name=None):
         app.logger.error(f'500 Hatası: {error}', exc_info=True)
         return render_template('errors/500.html'), 500
 
+    # 4.5 Blueprints Kaydı
+    from main.routes import main_bp
+    from auth.routes import auth_bp
+    
+    app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    from api.routes import api_bp
+    app.register_blueprint(api_bp)
+
+    # 4.6 Custom Filters
+    @app.template_filter('role_name')
+    def role_name_filter(role):
+        roles = {
+            'admin': 'Sistem Yöneticisi',
+            'kurum_yoneticisi': 'Kurum Yöneticisi',
+            'ust_yonetim': 'Üst Yönetim',
+            'yonetici': 'Yönetici',
+            'calisan': 'Çalışan',
+            'kurum_kullanici': 'Kurum Kullanıcısı',
+            'izleyici': 'İzleyici'
+        }
+        return roles.get(role, role)
+
     # 5. Modelleri import et (veritabanı şeması için)
     with app.app_context():
         # Tüm modelleri import et

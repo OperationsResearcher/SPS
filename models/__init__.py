@@ -16,7 +16,7 @@ from .user import (
 from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix
 from .process import (
     Surec, SurecPerformansGostergesi, SurecFaaliyet, 
-    SwotAnalizi, PestleAnalizi,
+    SwotAnalizi, PestleAnalizi, TowsAnalizi,
     BireyselPerformansGostergesi, BireyselFaaliyet,
     PerformansGostergeVeri, PerformansGostergeVeriAudit,
     FaaliyetTakip, FavoriKPI,
@@ -87,7 +87,7 @@ __all__ = [
     
     # Process
     'Surec', 'SurecPerformansGostergesi', 'SurecFaaliyet', 
-    'SwotAnalizi', 'PestleAnalizi',
+    'SwotAnalizi', 'PestleAnalizi', 'TowsAnalizi',
     'BireyselPerformansGostergesi', 'BireyselFaaliyet',
     'PerformansGostergeVeri', 'PerformansGostergeVeriAudit',
     'FaaliyetTakip', 'FavoriKPI',

@@ -2,308 +2,320 @@
 
 {% block title %}Kurum Paneli - Stratejik Planlama Sistemi{% endblock %}
 
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}" class="text-decoration-none text-muted"><i class="fas fa-home"></i> Ana
+    Sayfa</a>
+<span class="mx-2">/</span>
+<span class="text-dark">Kurum Paneli</span>
+{% endblock %}
+
 {% block content %}
 
 <style>
-/* Modern Kart Animasyonları */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+    /* Modern Kart Animasyonları */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
-}
 
-@keyframes slideIn {
-    from {
-        transform: translateX(-20px);
-        opacity: 0;
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
     }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-/* Kart Stilleri */
-.modern-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeInUp 0.6s ease-out;
-    overflow: hidden;
-}
-
-.modern-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-/* Gradient Header Stilleri */
-.gradient-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.gradient-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.6s;
-}
-
-.modern-card:hover .gradient-header::before {
-    transform: translateX(100%);
-}
-
-.gradient-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
-
-.gradient-info {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.gradient-warning {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.gradient-danger {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-
-/* İkon Stilleri */
-.icon-box {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-right: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.icon-box-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.icon-box-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    color: white;
-}
-
-.icon-box-info {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-}
-
-.icon-box-warning {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-}
-
-/* İstatistik Kartları */
-.stat-card {
-    background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    border-left: 4px solid;
-    transition: all 0.3s ease;
-    animation: slideIn 0.5s ease-out;
-}
-
-.stat-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.stat-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1;
-}
-
-/* Liste Kartları */
-.list-card-item {
-    border-left: 3px solid transparent;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-}
-
-.list-card-item:hover {
-    border-left-color: #667eea;
-    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
-    transform: translateX(5px);
-}
-
-/* Accordion Stilleri */
-.custom-accordion .accordion-item {
-    border: none;
-    margin-bottom: 1rem;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.custom-accordion .accordion-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    padding: 1.25rem;
-}
-
-.custom-accordion .accordion-button:not(.collapsed) {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    color: white;
-}
-
-.custom-accordion .accordion-button::after {
-    filter: brightness(0) invert(1);
-}
-
-/* Saatline Stilleri */
-.timeline {
-    position: relative;
-    padding: 20px 0;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 30px;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-}
-
-.timeline-item {
-    position: relative;
-    padding-left: 70px;
-    margin-bottom: 2rem;
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: 16px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: white;
-    border: 4px solid #667eea;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: #667eea;
-    font-weight: bold;
-}
-
-.timeline-content {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    transition: all 0.3s ease;
-}
-
-.timeline-content:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Buton Stilleri */
-.modern-btn {
-    padding: 0.625rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.modern-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Badge Stilleri */
-.modern-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Ç–zel Scroll */
-.custom-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.custom-scroll::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
+    /* Kart Stilleri */
     .modern-card {
-        margin-bottom: 1rem;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.6s ease-out;
+        overflow: hidden;
     }
-    
+
+    .modern-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Gradient Header Stilleri */
+    .gradient-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gradient-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+    }
+
+    .modern-card:hover .gradient-header::before {
+        transform: translateX(100%);
+    }
+
+    .gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .gradient-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .gradient-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .gradient-danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    /* İkon Stilleri */
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-box-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .icon-box-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+
+    .icon-box-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .icon-box-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    /* İstatistik Kartları */
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    .stat-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
     .stat-value {
-        font-size: 2rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
     }
-}
 
-/* Collapse Animasyonu */
-.card-body-collapsible {
-    transition: all 0.3s ease;
-    max-height: 1000px;
-    overflow: hidden;
-}
+    /* Liste Kartları */
+    .list-card-item {
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+    }
 
-.card-body-collapsible.collapsed {
-    max-height: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    opacity: 0;
-}
+    .list-card-item:hover {
+        border-left-color: #667eea;
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+        transform: translateX(5px);
+    }
+
+    /* Accordion Stilleri */
+    .custom-accordion .accordion-item {
+        border: none;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .custom-accordion .accordion-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        padding: 1.25rem;
+    }
+
+    .custom-accordion .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        color: white;
+    }
+
+    .custom-accordion .accordion-button::after {
+        filter: brightness(0) invert(1);
+    }
+
+    /* Saatline Stilleri */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 30px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 70px;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 16px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: white;
+        border: 4px solid #667eea;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .timeline-content {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+    }
+
+    .timeline-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Buton Stilleri */
+    .modern-btn {
+        padding: 0.625rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Badge Stilleri */
+    .modern-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Ç–zel Scroll */
+    .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .modern-card {
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+    }
+
+    /* Collapse Animasyonu */
+    .card-body-collapsible {
+        transition: all 0.3s ease;
+        max-height: 1000px;
+        overflow: hidden;
+    }
+
+    .card-body-collapsible.collapsed {
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        opacity: 0;
+    }
 </style>
 
 <div class="row mb-4">
@@ -335,7 +347,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card" style="border-left-color: #11998e;">
             <div class="d-flex align-items-center">
@@ -349,7 +361,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card" style="border-left-color: #4facfe;">
             <div class="d-flex align-items-center">
@@ -363,7 +375,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card" style="border-left-color: #f093fb;">
             <div class="d-flex align-items-center">
@@ -487,29 +499,34 @@
                     <i class="fas fa-image me-3" style="font-size: 1.5rem;"></i>
                     <h5 class="mb-0">Kurum Logosu</h5>
                 </div>
+                <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-4 card-body-collapsible">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="text-center mb-3">
                             <h6 class="text-muted mb-3">Mevcut Logo</h6>
                             {% if current_user.kurum.logo_url %}
-                                {% set logo_url = current_user.kurum.logo_url %}
-                                {% if not logo_url.startswith('http://') and not logo_url.startswith('https://') %}
-                                    {% if logo_url.startswith('/static/') %}
-                                        {% set logo_url = url_for('static', filename=logo_url[8:]) %}
-                                    {% else %}
-                                        {% set logo_url = url_for('static', filename=logo_url.lstrip('/static/').lstrip('/')) %}
-                                    {% endif %}
-                                {% endif %}
-                                <img id="currentLogo" src="{{ logo_url }}" alt="Kurum Logosu" class="img-fluid rounded" style="max-height: 200px; max-width: 100%; border: 2px solid #dee2e6; padding: 10px;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="alert alert-info" style="display: none;">
-                                    <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
-                                </div>
+                            {% set logo_url = current_user.kurum.logo_url %}
+                            {% if not logo_url.startswith('http://') and not logo_url.startswith('https://') %}
+                            {% if logo_url.startswith('/static/') %}
+                            {% set logo_url = url_for('static', filename=logo_url[8:]) %}
                             {% else %}
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
-                                </div>
+                            {% set logo_url = url_for('static', filename=logo_url.lstrip('/static/').lstrip('/')) %}
+                            {% endif %}
+                            {% endif %}
+                            <img id="currentLogo" src="{{ logo_url }}" alt="Kurum Logosu" class="img-fluid rounded"
+                                style="max-height: 200px; max-width: 100%; border: 2px solid #dee2e6; padding: 10px;"
+                                onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div class="alert alert-info" style="display: none;">
+                                <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Logo yüklenmemiş
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -519,17 +536,23 @@
                             <label class="form-label">
                                 <i class="fas fa-upload me-1"></i>Bilgisayardan Logo Yükle
                             </label>
-                            <input type="file" class="form-control" id="logoFileInput" accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp" onchange="handleLogoFileSelect(this)">
-                            <small class="text-muted">PNG, JPG, JPEG, GIF, SVG, WEBP formatları desteklenir. Maksimum 5MB.</small>
+                            <input type="file" class="form-control" id="logoFileInput"
+                                accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp"
+                                onchange="handleLogoFileSelect(this)">
+                            <small class="text-muted">PNG, JPG, JPEG, GIF, SVG, WEBP formatları desteklenir. Maksimum
+                                5MB.</small>
                             <div class="progress mt-2" id="logoUploadProgress" style="display: none;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                    style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="fas fa-link me-1"></i>Logo URL'si (Alternatif)
                             </label>
-                            <input type="text" class="form-control" id="logoUrlInput" placeholder="https://example.com/logo.png veya /static/uploads/logos/logo.png" value="{{ current_user.kurum.logo_url or '' }}">
+                            <input type="text" class="form-control" id="logoUrlInput"
+                                placeholder="https://example.com/logo.png veya /static/uploads/logos/logo.png"
+                                value="{{ current_user.kurum.logo_url or '' }}">
                             <small class="text-muted">Harici bir URL veya sistem içi dosya yolu girebilirsiniz.</small>
                         </div>
                         <button type="button" class="btn btn-primary" onclick="saveLogo()" id="saveLogoBtn">
@@ -568,7 +591,8 @@
                                             <h6 class="mb-0 fw-bold">İnteraktif Rehber Sistemi</h6>
                                         </div>
                                         <p class="text-muted mb-0 small">
-                                            Sağ altta görünen avatarlı yardımcı sistem, kullanıcılarınıza sayfa kullanımı konusunda 
+                                            Sağ altta görünen avatarlı yardımcı sistem, kullanıcılarınıza sayfa
+                                            kullanımı konusunda
                                             adım adım rehberlik sağlar. Bu ayar tüm kurum çalışanları için geçerlidir.
                                         </p>
                                         <div class="mt-2">
@@ -584,10 +608,9 @@
                                         </div>
                                     </div>
                                     <div class="form-check form-switch" style="font-size: 1.5rem;">
-                                        <input class="form-check-input" type="checkbox" role="switch" 
-                                               id="guideSystemSwitch" 
-                                               {% if current_user.kurum.show_guide_system %}checked{% endif %}
-                                               onchange="toggleGuideSystem(this.checked)">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="guideSystemSwitch" {% if current_user.kurum.show_guide_system
+                                            %}checked{% endif %} onchange="toggleGuideSystem(this.checked)">
                                         <label class="form-check-label visually-hidden" for="guideSystemSwitch">
                                             Rehber Sistemi
                                         </label>
@@ -649,7 +672,8 @@
                 <!-- Amaç -->
                 <div class="mb-4 p-3 bg-white rounded-3 shadow-sm">
                     <div class="d-flex align-items-start mb-3">
-                        <div class="icon-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 50px; height: 50px; font-size: 1.2rem;">
+                        <div class="icon-box"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 50px; height: 50px; font-size: 1.2rem;">
                             <i class="fas fa-target text-white"></i>
                         </div>
                         <div class="ms-3 flex-grow-1">
@@ -662,11 +686,12 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Vizyon -->
                 <div class="p-3 bg-white rounded-3 shadow-sm">
                     <div class="d-flex align-items-start">
-                        <div class="icon-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); width: 50px; height: 50px; font-size: 1.2rem;">
+                        <div class="icon-box"
+                            style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); width: 50px; height: 50px; font-size: 1.2rem;">
                             <i class="fas fa-eye text-white"></i>
                         </div>
                         <div class="ms-3 flex-grow-1">
@@ -682,7 +707,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Değerler - Saatline Stili -->
     <div class="col-lg-6 mb-4">
         <div class="card modern-card">
@@ -702,40 +727,43 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="degerler-container">
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;"
+                id="degerler-container">
                 {% if degerler %}
-                    <div class="timeline">
-                        {% for deger in degerler %}
-                        <div class="timeline-item" data-id="{{ deger.id }}">
-                            <div class="timeline-marker">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-2 text-primary">{{ deger.baslik }}</h6>
-                                        <p class="mb-0 text-muted small">{{ deger.aciklama }}</p>
-                                    </div>
-                                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                                    <div class="btn-group btn-group-sm ms-2">
-                                        <button class="btn btn-outline-primary modern-btn" onclick="editDeger({{ deger.id }}, '{{ deger.baslik }}', '{{ deger.aciklama }}')">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger modern-btn" onclick="deleteDeger({{ deger.id }}, '{{ deger.baslik }}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    {% endif %}
+                <div class="timeline">
+                    {% for deger in degerler %}
+                    <div class="timeline-item" data-id="{{ deger.id }}">
+                        <div class="timeline-marker">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-2 text-primary">{{ deger.baslik }}</h6>
+                                    <p class="mb-0 text-muted small">{{ deger.aciklama }}</p>
                                 </div>
+                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                <div class="btn-group btn-group-sm ms-2">
+                                    <button class="btn btn-outline-primary modern-btn"
+                                        onclick="editDeger({{ deger.id }}, '{{ deger.baslik }}', '{{ deger.aciklama }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger modern-btn"
+                                        onclick="deleteDeger({{ deger.id }}, '{{ deger.baslik }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
+                </div>
                 {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-heart text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <p class="text-muted">Henüz değer tanımlanmamış.</p>
-                    </div>
+                <div class="text-center py-5">
+                    <i class="fas fa-heart text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p class="text-muted">Henüz değer tanımlanmamış.</p>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -763,41 +791,44 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="etik-kurallari-container">
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;"
+                id="etik-kurallari-container">
                 {% if etik_kurallari %}
-                    {% for kural in etik_kurallari %}
-                    <div class="list-card-item p-3 bg-light mb-2" data-id="{{ kural.id }}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="modern-badge bg-warning text-dark me-2">{{ loop.index }}</span>
-                                    <h6 class="mb-0">{{ kural.baslik }}</h6>
-                                </div>
-                                <p class="mb-0 text-muted small ms-4">{{ kural.aciklama }}</p>
+                {% for kural in etik_kurallari %}
+                <div class="list-card-item p-3 bg-light mb-2" data-id="{{ kural.id }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="modern-badge bg-warning text-dark me-2">{{ loop.index }}</span>
+                                <h6 class="mb-0">{{ kural.baslik }}</h6>
                             </div>
-                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                            <div class="btn-group btn-group-sm ms-2">
-                                <button class="btn btn-outline-primary modern-btn" onclick="editEtikKural({{ kural.id }}, '{{ kural.baslik }}', '{{ kural.aciklama }}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline-danger modern-btn" onclick="deleteEtikKural({{ kural.id }}, '{{ kural.baslik }}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            {% endif %}
+                            <p class="mb-0 text-muted small ms-4">{{ kural.aciklama }}</p>
                         </div>
+                        {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                        <div class="btn-group btn-group-sm ms-2">
+                            <button class="btn btn-outline-primary modern-btn"
+                                onclick="editEtikKural({{ kural.id }}, '{{ kural.baslik }}', '{{ kural.aciklama }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger modern-btn"
+                                onclick="deleteEtikKural({{ kural.id }}, '{{ kural.baslik }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
+                </div>
+                {% endfor %}
                 {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-gavel text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <p class="text-muted">Henüz etik kuralı tanımlanmamış.</p>
-                    </div>
+                <div class="text-center py-5">
+                    <i class="fas fa-gavel text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p class="text-muted">Henüz etik kuralı tanımlanmamış.</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
+
     <!-- Kalite Politikaları - Liste Kartları -->
     <div class="col-lg-6 mb-4">
         <div class="card modern-card">
@@ -817,37 +848,179 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;" id="kalite-politikalari-container">
+            <div class="card-body custom-scroll card-body-collapsible" style="max-height: 400px; overflow-y: auto;"
+                id="kalite-politikalari-container">
                 {% if kalite_politikalari %}
-                    {% for politika in kalite_politikalari %}
-                    <div class="list-card-item p-3 bg-light mb-2" data-id="{{ politika.id }}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="modern-badge bg-danger text-white me-2">{{ loop.index }}</span>
-                                    <h6 class="mb-0">{{ politika.baslik }}</h6>
+                {% for politika in kalite_politikalari %}
+                <div class="list-card-item p-3 bg-light mb-2" data-id="{{ politika.id }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="modern-badge bg-danger text-white me-2">{{ loop.index }}</span>
+                                <h6 class="mb-0">{{ politika.baslik }}</h6>
+                            </div>
+                            <p class="mb-0 text-muted small ms-4">{{ politika.aciklama }}</p>
+                        </div>
+                        {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                        <div class="btn-group btn-group-sm ms-2">
+                            <button class="btn btn-outline-primary modern-btn"
+                                onclick="editKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}', '{{ politika.aciklama }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger modern-btn"
+                                onclick="deleteKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-award text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p class="text-muted">Henüz kalite politikası tanımlanmamış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Analizler -->
+<div class="row mb-4" id="analizPanel" data-kurum-id="{{ current_user.kurum_id }}">
+    <div class="col-12">
+        <div class="card fade-in-up">
+            <div class="card-header gradient-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-chart-pie me-3" style="font-size: 1.5rem;"></i>
+                    <h5 class="mb-0">Analizler</h5>
+                </div>
+                <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="card-body p-4 card-body-collapsible">
+                <ul class="nav nav-pills mb-3" id="analizTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="swot-tab" data-bs-toggle="tab" data-bs-target="#swot-pane"
+                            type="button" role="tab">SWOT Analizi</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pestle-tab" data-bs-toggle="tab" data-bs-target="#pestle-pane"
+                            type="button" role="tab">PESTLE Analizi</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tows-tab" data-bs-toggle="tab" data-bs-target="#tows-pane"
+                            type="button" role="tab">TOWS Analizi</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="analizTabContent">
+                    <!-- SWOT Pane -->
+                    <div class="tab-pane fade show active" id="swot-pane" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-primary btn-sm" onclick="showAddSwotModal()">
+                                <i class="fas fa-plus me-1"></i>Yeni Ekle
+                            </button>
+                        </div>
+                        <div class="row g-3" id="swot-list">
+                            {% for item in kurum.swot_analizleri %}
+                            <div class="col-md-6">
+                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-{{ 'success' if item.kategori == 'strengths' else 'warning' if item.kategori == 'weaknesses' else 'info' if item.kategori == 'opportunities' else 'danger' }}"
+                                    data-id="{{ item.id }}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h6 class="card-title fw-bold mb-1">{{ item.baslik }}</h6>
+                                                <p class="card-text small text-muted mb-2">{{ item.aciklama }}</p>
+                                                <span class="badge bg-{{ 'success' if item.kategori == 'strengths' else 'warning' if item.kategori == 'weaknesses' else 'info' if item.kategori == 'opportunities' else 'danger' }}">
+                                                    {% if item.kategori == 'strengths' %}Güçlü Yön
+                                                    {% elif item.kategori == 'weaknesses' %}Zayıf Yön
+                                                    {% elif item.kategori == 'opportunities' %}Fırsat
+                                                    {% else %}Tehdit{% endif %}
+                                                </span>
+                                            </div>
+                                            <button class="btn btn-link text-danger p-0 delete-btn" onclick="deleteSwot({{ item.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="mb-0 text-muted small ms-4">{{ politika.aciklama }}</p>
                             </div>
-                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                            <div class="btn-group btn-group-sm ms-2">
-                                <button class="btn btn-outline-primary modern-btn" onclick="editKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}', '{{ politika.aciklama }}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline-danger modern-btn" onclick="deleteKalitePolitikasi({{ politika.id }}, '{{ politika.baslik }}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            {% endif %}
+                            {% else %}
+                            <div class="col-12 text-center text-muted">Henüz SWOT analizi eklenmemiş.</div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-award text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <p class="text-muted">Henüz kalite politikası tanımlanmamış.</p>
+
+                    <!-- PESTLE Pane -->
+                    <div class="tab-pane fade" id="pestle-pane" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-primary btn-sm" onclick="showAddPestleModal()">
+                                <i class="fas fa-plus me-1"></i>Yeni Ekle
+                            </button>
+                        </div>
+                        <div class="row g-3" id="pestle-list">
+                            {% for item in kurum.pestle_analizleri %}
+                            <div class="col-md-6">
+                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-info" data-id="{{ item.id }}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="card-title fw-bold">{{ item.baslik }}</h6>
+                                            <button class="btn btn-link text-danger p-0 delete-btn"
+                                                onclick="deletePestle({{ item.id }})"><i
+                                                    class="fas fa-trash"></i></button>
+                                        </div>
+                                        <p class="card-text small text-muted">{{ item.aciklama }}</p>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <span class="badge bg-info">{{ item.kategori }}</span>
+                                            <span class="badge bg-warning text-dark">{{ item.etki }} Etki</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-12 text-center text-muted">Henüz PESTLE analizi eklenmemiş.</div>
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endif %}
+
+                    <!-- TOWS Pane -->
+                    <div class="tab-pane fade" id="tows-pane" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-primary btn-sm" onclick="showAddTowsModal()">
+                                <i class="fas fa-plus me-1"></i>Yeni Ekle
+                            </button>
+                        </div>
+                        <div class="row g-3" id="tows-list">
+                            {% for item in kurum.tows_analizleri %}
+                            <div class="col-md-6">
+                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-primary" data-id="{{ item.id }}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="card-title fw-bold">{{ item.baslik }}</h6>
+                                            <button class="btn btn-link text-danger p-0 delete-btn"
+                                                onclick="deleteTows({{ item.id }})"><i
+                                                    class="fas fa-trash"></i></button>
+                                        </div>
+                                        <p class="card-text small text-muted">{{ item.aciklama }}</p>
+                                        <span class="badge bg-primary">
+                                            {% if item.kategori == 'SO' %}SO - Güçlü/Fırsat
+                                            {% elif item.kategori == 'WO' %}WO - Zayıf/Fırsat
+                                            {% elif item.kategori == 'ST' %}ST - Güçlü/Tehdit
+                                            {% else %}WT - Zayıf/Tehdit{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-12 text-center text-muted">Henüz TOWS analizi eklenmemiş.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -863,18 +1036,24 @@
                     <strong>Stratejik Planlama</strong>
                     <span class="badge bg-light text-primary ms-2">{{ ana_stratejiler|length }} Ana Strateji</span>
                 </span>
-                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                <button class="btn btn-light btn-sm" onclick="showEkleAnaStratejiModal()">
-                    <i class="fas fa-plus me-1"></i>Yeni Ana Strateji
-                </button>
-                {% endif %}
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <button class="btn btn-light btn-sm" onclick="showEkleAnaStratejiModal()">
+                        <i class="fas fa-plus me-1"></i>Yeni Ana Strateji
+                    </button>
+                    {% endif %}
+                </div>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-4 card-body-collapsible">
                 {% if ana_stratejiler %}
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     {% for ana_strateji in ana_stratejiler %}
                     <div class="col" data-id="{{ ana_strateji.id }}">
-                        <div class="card h-100 shadow-sm border-0 strategy-card" style="border-left: 4px solid #0d6efd !important;">
+                        <div class="card h-100 shadow-sm border-0 strategy-card"
+                            style="border-left: 4px solid #0d6efd !important;">
                             <div class="card-body">
                                 <!-- Ana Strateji Başlık -->
                                 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -900,83 +1079,85 @@
                                 <!-- Alt Stratejiler Listesi -->
                                 <div class="alt-stratejiler-container mb-3" id="alt-container-{{ ana_strateji.id }}">
                                     {% if ana_strateji.alt_stratejiler %}
-                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
-                                        <div class="alt-strateji-item mb-2 p-2 bg-light rounded-3 border border-success-subtle" 
-                                             data-id="{{ alt_strateji.id }}"
-                                             style="transition: all 0.3s ease;">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <div class="flex-grow-1" style="min-width: 0;">
-                                                    <div class="d-flex align-items-center mb-1">
-                                                        <i class="fas fa-angle-double-right text-success me-2" style="font-size: 0.8rem;"></i>
-                                                        <strong class="text-truncate" style="font-size: 0.9rem;">{{ alt_strateji.ad }}</strong>
-                                                    </div>
-                                                    {% if alt_strateji.aciklama %}
-                                                    <p class="text-muted mb-0 ms-4" style="font-size: 0.75rem; line-height: 1.3;">
-                                                        {{ alt_strateji.aciklama[:80] }}{% if alt_strateji.aciklama|length > 80 %}...{% endif %}
-                                                    </p>
-                                                    {% endif %}
+                                    {% for alt_strateji in ana_strateji.alt_stratejiler %}
+                                    <div class="alt-strateji-item mb-2 p-2 bg-light rounded-3 border border-success-subtle"
+                                        data-id="{{ alt_strateji.id }}" style="transition: all 0.3s ease;">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="flex-grow-1" style="min-width: 0;">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <i class="fas fa-angle-double-right text-success me-2"
+                                                        style="font-size: 0.8rem;"></i>
+                                                    <strong class="text-truncate" style="font-size: 0.9rem;">{{
+                                                        alt_strateji.ad }}</strong>
                                                 </div>
-                                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                                                <div class="btn-group btn-group-sm ms-2" role="group">
-                                                    <button class="btn btn-sm btn-outline-primary" 
-                                                            data-id="{{ alt_strateji.id }}"
-                                                            data-ana-strateji-id="{{ ana_strateji.id }}"
-                                                            data-ad="{{ alt_strateji.ad|e }}"
-                                                            data-aciklama="{{ alt_strateji.aciklama|e }}"
-                                                            onclick="editAltStrateji(this.dataset.id, this.dataset.anaStratejiId, this.dataset.ad, this.dataset.aciklama)"
-                                                            title="Düzenle">
-                                                        <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-danger" 
-                                                            data-id="{{ alt_strateji.id }}"
-                                                            data-ad="{{ alt_strateji.ad|e }}"
-                                                            onclick="deleteAltStrateji(this.dataset.id, this.dataset.ad)"
-                                                            title="Sil">
-                                                        <i class="fas fa-trash" style="font-size: 0.75rem;"></i>
-                                                    </button>
-                                                </div>
+                                                {% if alt_strateji.aciklama %}
+                                                <p class="text-muted mb-0 ms-4"
+                                                    style="font-size: 0.75rem; line-height: 1.3;">
+                                                    {{ alt_strateji.aciklama[:80] }}{% if alt_strateji.aciklama|length >
+                                                    80 %}...{% endif %}
+                                                </p>
                                                 {% endif %}
                                             </div>
+                                            {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi',
+                                            'ust_yonetim'] %}
+                                            <div class="btn-group btn-group-sm ms-2" role="group">
+                                                <button class="btn btn-sm btn-outline-primary"
+                                                    data-id="{{ alt_strateji.id }}"
+                                                    data-ana-strateji-id="{{ ana_strateji.id }}"
+                                                    data-ad="{{ alt_strateji.ad|e }}"
+                                                    data-aciklama="{{ alt_strateji.aciklama|e }}"
+                                                    onclick="editAltStrateji(this.dataset.id, this.dataset.anaStratejiId, this.dataset.ad, this.dataset.aciklama)"
+                                                    title="Düzenle">
+                                                    <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger"
+                                                    data-id="{{ alt_strateji.id }}" data-ad="{{ alt_strateji.ad|e }}"
+                                                    onclick="deleteAltStrateji(this.dataset.id, this.dataset.ad)"
+                                                    title="Sil">
+                                                    <i class="fas fa-trash" style="font-size: 0.75rem;"></i>
+                                                </button>
+                                            </div>
+                                            {% endif %}
                                         </div>
-                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
                                     {% else %}
-                                        <div class="text-center py-3 bg-light rounded-3 border border-dashed">
-                                            <i class="fas fa-inbox text-muted mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
-                                            <p class="text-muted small mb-0">Henüz alt strateji yok</p>
-                                            <small class="text-muted" style="font-size: 0.7rem;">Alt strateji eklemek için aşağıdaki butona tıklayın</small>
-                                        </div>
+                                    <div class="text-center py-3 bg-light rounded-3 border border-dashed">
+                                        <i class="fas fa-inbox text-muted mb-2"
+                                            style="font-size: 1.5rem; opacity: 0.5;"></i>
+                                        <p class="text-muted small mb-0">Henüz alt strateji yok</p>
+                                        <small class="text-muted" style="font-size: 0.7rem;">Alt strateji eklemek için
+                                            aşağıdaki butona tıklayın</small>
+                                    </div>
                                     {% endif %}
                                 </div>
 
                                 <!-- Aksiyon Butonları -->
                                 {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
                                 <div class="d-flex gap-2 mt-3 pt-3 border-top">
-                                    <button class="btn btn-sm btn-success flex-fill" 
-                                            data-ana-strateji-id="{{ ana_strateji.id }}"
-                                            data-ana-strateji-ad="{{ ana_strateji.ad|e }}"
-                                            onclick="showEkleAltStratejiModal(this.dataset.anaStratejiId, this.dataset.anaStratejiAd)"
-                                            title="Alt Strateji Ekle">
+                                    <button class="btn btn-sm btn-success flex-fill"
+                                        data-ana-strateji-id="{{ ana_strateji.id }}"
+                                        data-ana-strateji-ad="{{ ana_strateji.ad|e }}"
+                                        onclick="showEkleAltStratejiModal(this.dataset.anaStratejiId, this.dataset.anaStratejiAd)"
+                                        title="Alt Strateji Ekle">
                                         <i class="fas fa-plus me-1"></i>Alt Strateji
                                     </button>
-                                    <button class="btn btn-sm btn-outline-primary" 
-                                            data-id="{{ ana_strateji.id }}"
-                                            data-ad="{{ ana_strateji.ad|e }}"
-                                            data-aciklama="{{ ana_strateji.aciklama|e }}"
-                                            onclick="editAnaStrateji(this.dataset.id, this.dataset.ad, this.dataset.aciklama)"
-                                            title="Ana Stratejiyi Düzenle">
+                                    <button class="btn btn-sm btn-outline-primary" data-id="{{ ana_strateji.id }}"
+                                        data-ad="{{ ana_strateji.ad|e }}" data-aciklama="{{ ana_strateji.aciklama|e }}"
+                                        onclick="editAnaStrateji(this.dataset.id, this.dataset.ad, this.dataset.aciklama)"
+                                        title="Ana Stratejiyi Düzenle">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger" 
-                                            data-id="{{ ana_strateji.id }}"
-                                            data-ad="{{ ana_strateji.ad|e }}"
-                                            onclick="deleteAnaStrateji(this.dataset.id, this.dataset.ad)"
-                                            title="Ana Stratejiyi Sil">
+                                    <button class="btn btn-sm btn-outline-danger" data-id="{{ ana_strateji.id }}"
+                                        data-ad="{{ ana_strateji.ad|e }}"
+                                        onclick="deleteAnaStrateji(this.dataset.id, this.dataset.ad)"
+                                        title="Ana Stratejiyi Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                                 {% endif %}
                             </div>
-                            
+
                             <!-- Kart Alt Kısmı - Görsel Bağlantı Göstergesi -->
                             <div class="card-footer bg-primary-subtle border-0 text-center py-2">
                                 <small class="text-muted">
@@ -1014,43 +1195,44 @@
 
 <!-- Ek CSS Stilleri -->
 <style>
-.strategy-card {
-    transition: all 0.3s ease;
-}
+    .strategy-card {
+        transition: all 0.3s ease;
+    }
 
-.strategy-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
-}
+    .strategy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    }
 
-.alt-strateji-item:hover {
-    background-color: #e7f5ff !important;
-    border-color: #0d6efd !important;
-    transform: translateX(5px);
-}
+    .alt-strateji-item:hover {
+        background-color: #e7f5ff !important;
+        border-color: #0d6efd !important;
+        transform: translateX(5px);
+    }
 
-.border-dashed {
-    border-style: dashed !important;
-}
+    .border-dashed {
+        border-style: dashed !important;
+    }
 
-.bg-success-subtle {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-}
+    .bg-success-subtle {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
 
-.bg-primary-subtle {
-    background-color: rgba(13, 110, 253, 0.1) !important;
-}
+    .bg-primary-subtle {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
 
-.border-success-subtle {
-    border-color: rgba(25, 135, 84, 0.3) !important;
-}
+    .border-success-subtle {
+        border-color: rgba(25, 135, 84, 0.3) !important;
+    }
 </style>
 
 <!-- Süreçler ve Üyeler -->
 <div class="row">
     <div class="col-lg-8 mb-4">
         <div class="card modern-card">
-            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-cogs me-3" style="font-size: 1.5rem;"></i>
@@ -1078,7 +1260,8 @@
                             <tr class="list-card-item">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="icon-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 35px; height: 35px; font-size: 0.9rem; margin-right: 0.75rem;">
+                                        <div class="icon-box"
+                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 35px; height: 35px; font-size: 0.9rem; margin-right: 0.75rem;">
                                             <i class="fas fa-folder text-white"></i>
                                         </div>
                                         <strong>{{ surec.ad }}</strong>
@@ -1087,26 +1270,29 @@
                                 <td>
                                     {% if surec.lider %}
                                     <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.75rem;">
+                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-2"
+                                            style="width: 30px; height: 30px; font-size: 0.75rem;">
                                             {% if surec.lider.first_name and surec.lider.last_name %}
-                                                {{ surec.lider.first_name[0]|upper }}{{ surec.lider.last_name[0]|upper }}
+                                            {{ surec.lider.first_name[0]|upper }}{{ surec.lider.last_name[0]|upper }}
                                             {% elif surec.lider.first_name %}
-                                                {{ surec.lider.first_name[0]|upper }}{{ surec.lider.first_name[1]|upper if surec.lider.first_name|length > 1 else surec.lider.first_name[0]|upper }}
+                                            {{ surec.lider.first_name[0]|upper }}{{ surec.lider.first_name[1]|upper if
+                                            surec.lider.first_name|length > 1 else surec.lider.first_name[0]|upper }}
                                             {% elif surec.lider.username %}
-                                                {{ surec.lider.username[0]|upper }}{{ surec.lider.username[1]|upper if surec.lider.username|length > 1 else surec.lider.username[0]|upper }}
+                                            {{ surec.lider.username[0]|upper }}{{ surec.lider.username[1]|upper if
+                                            surec.lider.username|length > 1 else surec.lider.username[0]|upper }}
                                             {% else %}
-                                                <i class="fas fa-user"></i>
+                                            <i class="fas fa-user"></i>
                                             {% endif %}
                                         </div>
                                         <span>
                                             {% if surec.lider.first_name and surec.lider.last_name %}
-                                                {{ surec.lider.first_name }} {{ surec.lider.last_name }}
+                                            {{ surec.lider.first_name }} {{ surec.lider.last_name }}
                                             {% elif surec.lider.first_name %}
-                                                {{ surec.lider.first_name }}
+                                            {{ surec.lider.first_name }}
                                             {% elif surec.lider.username %}
-                                                {{ surec.lider.username }}
+                                            {{ surec.lider.username }}
                                             {% else %}
-                                                Kullanıcı
+                                            Kullanıcı
                                             {% endif %}
                                         </span>
                                     </div>
@@ -1115,19 +1301,22 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
-                                    <span class="modern-badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}secondary{% endif %}">
-                                        <i class="fas fa-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}pause-circle{% endif %} me-1"></i>
+                                    <span
+                                        class="modern-badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}secondary{% endif %}">
+                                        <i
+                                            class="fas fa-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}pause-circle{% endif %} me-1"></i>
                                         {{ surec.durum }}
                                     </span>
                                 </td>
                                 <td style="min-width: 120px;">
                                     <div class="d-flex align-items-center">
                                         <div class="progress flex-grow-1 me-2" style="height: 22px;">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                                 style="width: {{ surec.ilerleme or 0 }}%; background: linear-gradient(90deg, {% if surec.ilerleme >= 75 %}#11998e, #38ef7d{% elif surec.ilerleme >= 50 %}#4facfe, #00f2fe{% elif surec.ilerleme >= 25 %}#f093fb, #f5576c{% else %}#fa709a, #fee140{% endif %});">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                style="width: {{ surec.ilerleme or 0 }}%; background: linear-gradient(90deg, {% if surec.ilerleme >= 75 %}#11998e, #38ef7d{% elif surec.ilerleme >= 50 %}#4facfe, #00f2fe{% elif surec.ilerleme >= 25 %}#f093fb, #f5576c{% else %}#fa709a, #fee140{% endif %});">
                                             </div>
                                         </div>
-                                        <strong class="text-muted" style="font-size: 0.85rem; min-width: 35px;">{{ surec.ilerleme or 0 }}%</strong>
+                                        <strong class="text-muted" style="font-size: 0.85rem; min-width: 35px;">{{
+                                            surec.ilerleme or 0 }}%</strong>
                                     </div>
                                 </td>
                             </tr>
@@ -1153,10 +1342,11 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4 mb-4">
         <div class="card modern-card">
-            <div class="card-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-users me-3" style="font-size: 1.5rem;"></i>
@@ -1175,42 +1365,43 @@
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
                                 {% if uye.profile_photo %}
-                                <img src="{{ '/' + uye.profile_photo if not uye.profile_photo.startswith('static/') else url_for('static', filename=uye.profile_photo.replace('static/', '')) }}" 
-                                     alt="{{ uye.first_name or uye.username }}" 
-                                     class="rounded-circle shadow-sm" 
-                                     width="45" 
-                                     height="45"
-                                     style="border: 3px solid #11998e; object-fit: cover;"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <img src="{{ '/' + uye.profile_photo if not uye.profile_photo.startswith('static/') else url_for('static', filename=uye.profile_photo.replace('static/', '')) }}"
+                                    alt="{{ uye.first_name or uye.username }}" class="rounded-circle shadow-sm"
+                                    width="45" height="45" style="border: 3px solid #11998e; object-fit: cover;"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 {% endif %}
-                                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-                                     style="width: 45px; height: 45px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold; font-size: 1rem; {% if uye.profile_photo %}display: none;{% endif %}">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 45px; height: 45px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold; font-size: 1rem; {% if uye.profile_photo %}display: none;{% endif %}">
                                     {% if uye.first_name and uye.last_name %}
-                                        {{ uye.first_name[0]|upper }}{{ uye.last_name[0]|upper }}
+                                    {{ uye.first_name[0]|upper }}{{ uye.last_name[0]|upper }}
                                     {% elif uye.first_name %}
-                                        {{ uye.first_name[0]|upper }}{{ uye.first_name[1]|upper if uye.first_name|length > 1 else uye.first_name[0]|upper }}
+                                    {{ uye.first_name[0]|upper }}{{ uye.first_name[1]|upper if uye.first_name|length > 1
+                                    else uye.first_name[0]|upper }}
                                     {% elif uye.username %}
-                                        {{ uye.username[0]|upper }}{{ uye.username[1]|upper if uye.username|length > 1 else uye.username[0]|upper }}
+                                    {{ uye.username[0]|upper }}{{ uye.username[1]|upper if uye.username|length > 1 else
+                                    uye.username[0]|upper }}
                                     {% else %}
-                                        <i class="fas fa-user"></i>
+                                    <i class="fas fa-user"></i>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <h6 class="mb-1 fw-bold">
                                     {% if uye.first_name and uye.last_name %}
-                                        {{ uye.first_name }} {{ uye.last_name }}
+                                    {{ uye.first_name }} {{ uye.last_name }}
                                     {% elif uye.first_name %}
-                                        {{ uye.first_name }}
+                                    {{ uye.first_name }}
                                     {% elif uye.username %}
-                                        {{ uye.username }}
+                                    {{ uye.username }}
                                     {% else %}
-                                        Kullanıcı
+                                    Kullanıcı
                                     {% endif %}
                                 </h6>
                                 <small class="text-muted d-flex align-items-center">
-                                    <span class="modern-badge bg-light text-dark border" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
-                                        <i class="fas fa-{% if uye.role == 'sistem_admin' %}crown{% elif uye.role == 'kurum_yetkilisi' %}shield-alt{% elif uye.role == 'ust_yonetim' %}user-tie{% elif uye.role == 'surec_lideri' %}user-cog{% else %}user{% endif %} me-1"></i>
+                                    <span class="modern-badge bg-light text-dark border"
+                                        style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                        <i
+                                            class="fas fa-{% if uye.role == 'sistem_admin' %}crown{% elif uye.role == 'kurum_yetkilisi' %}shield-alt{% elif uye.role == 'ust_yonetim' %}user-tie{% elif uye.role == 'surec_lideri' %}user-cog{% else %}user{% endif %} me-1"></i>
                                         {% if uye.role == 'sistem_admin' %}Sistem Admin
                                         {% elif uye.role == 'kurum_yetkilisi' %}Kurum Yetkilisi
                                         {% elif uye.role == 'ust_yonetim' %}Üst Yönetim
@@ -1252,11 +1443,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label"><i class="fas fa-target me-2"></i>Amaç</label>
-                        <textarea class="form-control" name="amac" rows="4" placeholder="Kurumun amacını yazın...">{{ current_user.kurum.amac or '' }}</textarea>
+                        <textarea class="form-control" name="amac" rows="4"
+                            placeholder="Kurumun amacını yazın...">{{ current_user.kurum.amac or '' }}</textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label"><i class="fas fa-eye me-2"></i>Vizyon</label>
-                        <textarea class="form-control" name="vizyon" rows="4" placeholder="Kurumun vizyonunu yazın...">{{ current_user.kurum.vizyon or '' }}</textarea>
+                        <textarea class="form-control" name="vizyon" rows="4"
+                            placeholder="Kurumun vizyonunu yazın...">{{ current_user.kurum.vizyon or '' }}</textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1285,11 +1478,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" id="deger_baslik" required placeholder="Örn: Dürüstlük">
+                        <input type="text" class="form-control" name="baslik" id="deger_baslik" required
+                            placeholder="Örn: Dürüstlük">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" id="deger_aciklama" rows="3" placeholder="Değer açıklaması..."></textarea>
+                        <textarea class="form-control" name="aciklama" id="deger_aciklama" rows="3"
+                            placeholder="Değer açıklaması..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1318,11 +1513,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" id="etik_kural_baslik" required placeholder="Örn: İş Etiği">
+                        <input type="text" class="form-control" name="baslik" id="etik_kural_baslik" required
+                            placeholder="Örn: İş Etiği">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" id="etik_kural_aciklama" rows="3" placeholder="Etik kural açıklaması..."></textarea>
+                        <textarea class="form-control" name="aciklama" id="etik_kural_aciklama" rows="3"
+                            placeholder="Etik kural açıklaması..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1342,7 +1539,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-award me-2"></i><span id="kalitePolitikasiModalBaşlık">Kalite Politikası Ekle</span>
+                    <i class="fas fa-award me-2"></i><span id="kalitePolitikasiModalBaşlık">Kalite Politikası
+                        Ekle</span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -1351,11 +1549,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" id="kalite_politikasi_baslik" required placeholder="Örn: Müşteri Memnuniyeti">
+                        <input type="text" class="form-control" name="baslik" id="kalite_politikasi_baslik" required
+                            placeholder="Örn: Müşteri Memnuniyeti">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" id="kalite_politikasi_aciklama" rows="3" placeholder="Kalite politikası açıklaması..."></textarea>
+                        <textarea class="form-control" name="aciklama" id="kalite_politikasi_aciklama" rows="3"
+                            placeholder="Kalite politikası açıklaması..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1384,11 +1584,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Strateji Adı</label>
-                        <input type="text" class="form-control" name="ad" id="ana_strateji_ad" required placeholder="Örn: İnsan Kaynakları Gelişimi">
+                        <input type="text" class="form-control" name="ad" id="ana_strateji_ad" required
+                            placeholder="Örn: İnsan Kaynakları Gelişimi">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" id="ana_strateji_aciklama" rows="3" placeholder="Strateji açıklaması..."></textarea>
+                        <textarea class="form-control" name="aciklama" id="ana_strateji_aciklama" rows="3"
+                            placeholder="Strateji açıklaması..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1422,11 +1624,13 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Alt Strateji Adı</label>
-                        <input type="text" class="form-control" name="ad" id="alt_strateji_ad" required placeholder="Örn: Çalışan Eğitimi">
+                        <input type="text" class="form-control" name="ad" id="alt_strateji_ad" required
+                            placeholder="Örn: Çalışan Eğitimi">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" id="alt_strateji_aciklama" rows="3" placeholder="Alt strateji açıklaması..."></textarea>
+                        <textarea class="form-control" name="aciklama" id="alt_strateji_aciklama" rows="3"
+                            placeholder="Alt strateji açıklaması..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1440,13 +1644,134 @@
     </div>
 </div>
 
+<!-- SWOT Ekle Modal -->
+<div class="modal fade" id="swotModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">SWOT Analizi Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="swotForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="kategori" required>
+                            <option value="strengths">Güçlü Yön (Strength)</option>
+                            <option value="weaknesses">Zayıf Yön (Weakness)</option>
+                            <option value="opportunities">Fırsat (Opportunity)</option>
+                            <option value="threats">Tehdit (Threat)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- PESTLE Ekle Modal -->
+<div class="modal fade" id="pestleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">PESTLE Analizi Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="pestleForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="kategori" required>
+                            <option value="Political">Politik</option>
+                            <option value="Economic">Ekonomik</option>
+                            <option value="Social">Sosyal</option>
+                            <option value="Technological">Teknolojik</option>
+                            <option value="Legal">Yasal</option>
+                            <option value="Environmental">Çevresel</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Etki Düzeyi</label>
+                        <select class="form-select" name="etki">
+                            <option value="Yüksek">Yüksek</option>
+                            <option value="Orta" selected>Orta</option>
+                            <option value="Düşük">Düşük</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- TOWS Ekle Modal -->
+<div class="modal fade" id="towsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">TOWS Analizi Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="towsForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="kategori" required>
+                            <option value="SO">Güçlü Yönler - Fırsatlar (SO)</option>
+                            <option value="WO">Zayıf Yönler - Fırsatlar (WO)</option>
+                            <option value="ST">Güçlü Yönler - Tehditler (ST)</option>
+                            <option value="WT">Zayıf Yönler - Tehditler (WT)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" class="form-control" name="baslik" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
+<script>
+    // Global değişkenler
+    window.KURUM_ID = {{ current_user.kurum_id }};
+</script>
 <script src="{{ url_for('static', filename='js/kurum_panel.js') }}"></script>
-
 {% endblock %}
-
-
-

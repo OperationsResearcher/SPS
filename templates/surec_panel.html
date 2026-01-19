@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-<!-- GERIGEL21 RESTORE POINT: Alt strateji formatı düzenlendi, div tabanlı sistem eklendi -->
-
-
-
 {% block title %}Süreç Paneli{% endblock %}
 
-
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}" class="text-decoration-none text-muted"><i class="fas fa-home"></i> Ana
+    Sayfa</a>
+<span class="mx-2">/</span>
+<span class="text-dark">Süreç Paneli</span>
+{% endblock %}
 
 {% block content %}
 
 <style>
-
     .action-btn {
 
         position: relative;
@@ -24,7 +24,7 @@
 
         transform: translateY(-3px);
 
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
 
     }
 
@@ -34,7 +34,7 @@
 
     }
 
-    
+
 
     /* Yeni Süreç Form Animasyonu */
 
@@ -48,7 +48,7 @@
 
     }
 
-    
+
 
     #yeni-surec-form-container.show {
 
@@ -58,7 +58,7 @@
 
     }
 
-    
+
 
     .new-process-btn {
 
@@ -66,7 +66,7 @@
 
     }
 
-    
+
 
     .new-process-btn:hover {
 
@@ -76,7 +76,7 @@
 
     }
 
-    
+
 
     /* Ekle/Çıkar Butonları Stilleri */
 
@@ -104,17 +104,17 @@
 
     }
 
-    
+
 
     .action-transfer-btn:hover {
 
         transform: translateY(-1px);
 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
     }
 
-    
+
 
     .action-transfer-btn.btn-success {
 
@@ -124,7 +124,7 @@
 
     }
 
-    
+
 
     .action-transfer-btn.btn-danger {
 
@@ -134,7 +134,7 @@
 
     }
 
-    
+
 
     .action-transfer-btn.btn-primary {
 
@@ -144,7 +144,7 @@
 
     }
 
-    
+
 
     .action-transfer-btn.btn-info {
 
@@ -154,7 +154,7 @@
 
     }
 
-    
+
 
     .action-transfer-btn.btn-secondary {
 
@@ -164,7 +164,7 @@
 
     }
 
-    
+
 
     /* Alt Strateji Görünümü */
 
@@ -186,7 +186,7 @@
 
     }
 
-    
+
 
     .strategy-item:hover {
 
@@ -196,7 +196,7 @@
 
     }
 
-    
+
 
     .strategy-item.selected {
 
@@ -206,7 +206,7 @@
 
     }
 
-    
+
 
     .strategy-main {
 
@@ -222,7 +222,7 @@
 
     }
 
-    
+
 
     .strategy-sub {
 
@@ -242,114 +242,113 @@
 
     }
 
-    
-
-.strategy-item.selected .strategy-main,
-
-.strategy-item.selected .strategy-sub {
-
-    color: white;
-
-}
 
 
+    .strategy-item.selected .strategy-main,
 
-/* Strateji Grup Stilleri */
+    .strategy-item.selected .strategy-sub {
 
-.strategy-group {
+        color: white;
 
-    margin-bottom: 8px;
-
-    border: 1px solid #dee2e6;
-
-    border-radius: 4px;
-
-    overflow: hidden;
-
-}
+    }
 
 
 
-.strategy-group-header {
+    /* Strateji Grup Stilleri */
 
-    background: #f8f9fa;
+    .strategy-group {
 
-    color: #495057;
+        margin-bottom: 8px;
 
-    padding: 6px 12px;
+        border: 1px solid #dee2e6;
 
-    font-weight: bold;
+        border-radius: 4px;
 
-    font-size: 0.9rem;
+        overflow: hidden;
 
-    border-bottom: 1px solid #dee2e6;
-
-}
+    }
 
 
 
-.strategy-group .strategy-item {
+    .strategy-group-header {
 
-    margin: 0;
+        background: #f8f9fa;
 
-    background: white;
+        color: #495057;
 
-    border-left: 3px solid #007bff;
+        padding: 6px 12px;
 
-    border-radius: 0;
+        font-weight: bold;
 
-}
+        font-size: 0.9rem;
 
+        border-bottom: 1px solid #dee2e6;
 
-
-.strategy-group .strategy-item:hover {
-
-    background: #e9ecef;
-
-    transform: none;
-
-}
+    }
 
 
 
-.strategy-group .strategy-item.selected {
+    .strategy-group .strategy-item {
 
-    background: #007bff;
+        margin: 0;
 
-    color: white;
+        background: white;
 
-}
+        border-left: 3px solid #007bff;
 
+        border-radius: 0;
 
-
-/* Süreç Detay Modal Strateji Grupları */
-
-.strategy-group-content {
-
-    max-height: 200px;
-
-    overflow-y: auto;
-
-}
+    }
 
 
 
-.strategy-group-content .strategy-item {
+    .strategy-group .strategy-item:hover {
 
-    transition: all 0.2s ease;
+        background: #e9ecef;
 
-}
+        transform: none;
+
+    }
 
 
 
-.strategy-group-content .strategy-item:hover {
+    .strategy-group .strategy-item.selected {
 
-    background: #e9ecef !important;
+        background: #007bff;
 
-    transform: translateX(2px);
+        color: white;
 
-}
+    }
 
+
+
+    /* Süreç Detay Modal Strateji Grupları */
+
+    .strategy-group-content {
+
+        max-height: 200px;
+
+        overflow-y: auto;
+
+    }
+
+
+
+    .strategy-group-content .strategy-item {
+
+        transition: all 0.2s ease;
+
+    }
+
+
+
+    .strategy-group-content .strategy-item:hover {
+
+        background: #e9ecef !important;
+
+        transform: translateX(2px);
+
+    }
 </style>
 
 
@@ -359,9 +358,9 @@
 
     <div class="alert alert-info">
 
-        <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} | 
+        <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} |
 
-        Rol: {{ current_user.sistem_rol }} | 
+        Rol: {{ current_user.sistem_rol }} |
 
         Kurum: {{ current_user.kurum.kisa_ad if current_user.kurum else 'Yok' }} |
 
@@ -369,7 +368,7 @@
 
     </div>
 
-    
+
 
     <!-- Başlık ve Yeni Süreç Butonu -->
 
@@ -385,9 +384,9 @@
 
             <p class="text-muted mb-0">
 
-                <i class="bi bi-building"></i> 
+                <i class="bi bi-building"></i>
 
-                <strong>{{ current_user.kurum.kisa_ad if current_user.kurum else 'Kurum' }}</strong> - 
+                <strong>{{ current_user.kurum.kisa_ad if current_user.kurum else 'Kurum' }}</strong> -
 
                 Süreçlerinizi buradan yönetebilirsiniz
 
@@ -399,7 +398,8 @@
 
             {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
 
-            <button class="btn btn-success btn-lg new-process-btn shadow" data-bs-toggle="modal" data-bs-target="#newProcessModal">
+            <button class="btn btn-success btn-lg new-process-btn shadow" data-bs-toggle="modal"
+                data-bs-target="#newProcessModal">
 
                 <i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur
 
@@ -419,7 +419,7 @@
 
     </div>
 
-    
+
 
     <!-- Kullanıcı Süreç Rolleri Bilgi Kartı -->
 
@@ -447,25 +447,25 @@
 
                     {% for surec in surecler %}
 
-                        {% if current_user in surec.liderler %}
+                    {% if current_user in surec.liderler %}
 
-                            {% set _ = lider_surecler.append(surec) %}
+                    {% set _ = lider_surecler.append(surec) %}
 
-                        {% endif %}
+                    {% endif %}
 
                     {% endfor %}
 
                     {% if lider_surecler %}
 
-                        {% for surec in lider_surecler %}
+                    {% for surec in lider_surecler %}
 
-                        <span class="badge bg-primary me-1 mb-1">{{ surec.ad }}</span>
+                    <span class="badge bg-primary me-1 mb-1">{{ surec.ad }}</span>
 
-                        {% endfor %}
+                    {% endfor %}
 
                     {% else %}
 
-                        <span class="text-muted">Lider olduğunuz süreç yok</span>
+                    <span class="text-muted">Lider olduğunuz süreç yok</span>
 
                     {% endif %}
 
@@ -479,25 +479,25 @@
 
                     {% for surec in surecler %}
 
-                        {% if current_user in surec.uyeler %}
+                    {% if current_user in surec.uyeler %}
 
-                            {% set _ = uye_surecler.append(surec) %}
+                    {% set _ = uye_surecler.append(surec) %}
 
-                        {% endif %}
+                    {% endif %}
 
                     {% endfor %}
 
                     {% if uye_surecler %}
 
-                        {% for surec in uye_surecler %}
+                    {% for surec in uye_surecler %}
 
-                        <span class="badge bg-secondary me-1 mb-1">{{ surec.ad }}</span>
+                    <span class="badge bg-secondary me-1 mb-1">{{ surec.ad }}</span>
 
-                        {% endfor %}
+                    {% endfor %}
 
                     {% else %}
 
-                        <span class="text-muted">Üye olduğunuz süreç yok</span>
+                    <span class="text-muted">Üye olduğunuz süreç yok</span>
 
                     {% endif %}
 
@@ -511,9 +511,9 @@
 
                 <small class="text-muted">
 
-                    <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} | 
+                    <strong>Debug:</strong> Kullanıcı: {{ current_user.username }} |
 
-                    Rol: {{ current_user.sistem_rol }} | 
+                    Rol: {{ current_user.sistem_rol }} |
 
                     Toplam Süreç: {{ surecler|length }} |
 
@@ -529,7 +529,7 @@
 
     </div>
 
-    
+
 
     <!--Mevcut Süreçler Kartı (İlk Açılışta Görünür) -->
 
@@ -547,7 +547,8 @@
 
             <small>
 
-                <i class="bi bi-building-fill"></i> {{ current_user.kurum.ticari_unvan if current_user.kurum else 'Tüm Kurumlar' }}
+                <i class="bi bi-building-fill"></i> {{ current_user.kurum.ticari_unvan if current_user.kurum else 'Tüm
+                Kurumlar' }}
 
             </small>
 
@@ -589,75 +590,79 @@
 
                     <tbody>
 
-                    {% for surec in surecler %}
+                        {% for surec in surecler %}
 
-                    <tr>
+                        <tr>
 
-                        <td>
+                            <td>
 
-                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center">
 
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
+                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
 
-                                    <i class="bi bi-diagram-2 text-primary fs-5"></i>
+                                        <i class="bi bi-diagram-2 text-primary fs-5"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong class="text-primary">{{ surec.ad }}</strong>
+
+                                        {% if surec.aciklama %}
+
+                                        <br><small class="text-muted">{{ surec.aciklama[:50] }}{% if
+                                            surec.aciklama|length > 50 %}...{% endif %}</small>
+
+                                        {% endif %}
+
+                                    </div>
 
                                 </div>
 
-                                <div>
+                            </td>
 
-                                    <strong class="text-primary">{{ surec.ad }}</strong>
+                            <td>
 
-                                    {% if surec.aciklama %}
+                                {% if surec.dokuman_no %}
 
-                                    <br><small class="text-muted">{{ surec.aciklama[:50] }}{% if surec.aciklama|length > 50 %}...{% endif %}</small>
+                                <span class="badge bg-light text-dark border">{{ surec.dokuman_no }}</span>
 
-                                    {% endif %}
+                                {% if surec.rev_no %}
 
-                                </div>
+                                <br><small class="text-muted">Rev: {{ surec.rev_no }}</small>
 
-                            </div>
+                                {% endif %}
 
-                        </td>
+                                {% else %}
 
-                        <td>
+                                <span class="text-muted">-</span>
 
-                            {% if surec.dokuman_no %}
+                                {% endif %}
 
-                            <span class="badge bg-light text-dark border">{{ surec.dokuman_no }}</span>
+                            </td>
 
-                            {% if surec.rev_no %}
+                            <td>
 
-                            <br><small class="text-muted">Rev: {{ surec.rev_no }}</small>
+                                <span
+                                    class="badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Pasif' %}secondary{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}info{% endif %} px-3 py-2">
 
-                            {% endif %}
+                                    <i
+                                        class="bi bi-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Pasif' %}x-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}info-circle{% endif %}"></i>
 
-                            {% else %}
+                                    {{ surec.durum }}
 
-                            <span class="text-muted">-</span>
+                                </span>
 
-                            {% endif %}
+                            </td>
 
-                        </td>
+                            <td>
 
-                        <td>
+                                <div class="d-flex align-items-center">
 
-                            <span class="badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Pasif' %}secondary{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}info{% endif %} px-3 py-2">
+                                    <div class="progress flex-grow-1" style="height: 20px; min-width: 60px;">
 
-                                <i class="bi bi-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Pasif' %}x-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}info-circle{% endif %}"></i>
-
-                                {{ surec.durum }}
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            <div class="d-flex align-items-center">
-
-                                <div class="progress flex-grow-1" style="height: 20px; min-width: 60px;">
-
-                                    <div class="progress-bar 
+                                        <div class="progress-bar 
 
                                         {% if surec.ilerleme >= 75 %}bg-success
 
@@ -667,35 +672,26 @@
 
                                         {% else %}bg-danger
 
-                                        {% endif %}"
+                                        {% endif %}" role="progressbar" style="width: {{ surec.ilerleme }}%;"
+                                            aria-valuenow="{{ surec.ilerleme }}" aria-valuemin="0" aria-valuemax="100">
 
-                                        role="progressbar" 
-
-                                        style="width: {{ surec.ilerleme }}%;" 
-
-                                        aria-valuenow="{{ surec.ilerleme }}" 
-
-                                        aria-valuemin="0" 
-
-                                        aria-valuemax="100">
+                                        </div>
 
                                     </div>
 
+                                    <span class="ms-2 fw-bold">{{ surec.ilerleme }}%</span>
+
                                 </div>
 
-                                <span class="ms-2 fw-bold">{{ surec.ilerleme }}%</span>
+                            </td>
 
-                            </div>
+                            <td>
 
-                        </td>
-
-                        <td>
-
-                            {% if surec.liderler %}
+                                {% if surec.liderler %}
 
                                 <div class="d-flex flex-wrap gap-1">
 
-                                {% for lider in surec.liderler %}
+                                    {% for lider in surec.liderler %}
 
                                     <span class="badge bg-primary bg-gradient px-2 py-1">
 
@@ -703,31 +699,31 @@
 
                                         {% if lider == current_user %}
 
-                                            <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin liderisiniz"></i>
+                                        <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin liderisiniz"></i>
 
                                         {% endif %}
 
                                     </span>
 
-                                {% endfor %}
+                                    {% endfor %}
 
                                 </div>
 
-                            {% else %}
+                                {% else %}
 
                                 <span class="text-muted fst-italic">-</span>
 
-                            {% endif %}
+                                {% endif %}
 
-                        </td>
+                            </td>
 
-                        <td>
+                            <td>
 
-                            {% if surec.uyeler %}
+                                {% if surec.uyeler %}
 
                                 <div class="d-flex flex-wrap gap-1">
 
-                                {% for uye in surec.uyeler %}
+                                    {% for uye in surec.uyeler %}
 
                                     <span class="badge bg-secondary bg-gradient px-2 py-1">
 
@@ -735,109 +731,86 @@
 
                                         {% if uye == current_user %}
 
-                                            <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin üyesisiniz"></i>
+                                        <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin üyesisiniz"></i>
 
                                         {% endif %}
 
                                     </span>
 
-                                {% endfor %}
+                                    {% endfor %}
 
                                 </div>
 
-                            {% else %}
+                                {% else %}
 
                                 <span class="text-muted fst-italic">-</span>
 
-                            {% endif %}
+                                {% endif %}
 
-                        </td>
+                            </td>
 
-                        <td>
+                            <td>
 
-                            {% if surec.alt_stratejiler %}
+                                {% if surec.alt_stratejiler %}
 
                                 <div class="d-flex flex-wrap gap-1">
 
-                                {% for alt in surec.alt_stratejiler %}
+                                    {% for alt in surec.alt_stratejiler %}
 
                                     <span class="badge bg-info bg-gradient text-dark px-2 py-1">
 
-                                        <i class="bi bi-bullseye"></i> {{ alt.ad[:15] }}{% if alt.ad|length > 15 %}...{% endif %}
+                                        <i class="bi bi-bullseye"></i> {{ alt.ad[:15] }}{% if alt.ad|length > 15 %}...{%
+                                        endif %}
 
                                     </span>
 
-                                {% endfor %}
+                                    {% endfor %}
 
                                 </div>
 
-                            {% else %}
+                                {% else %}
 
                                 <span class="text-muted fst-italic">-</span>
 
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-secondary">{{ surec.kurum.kisa_ad if surec.kurum else '-' }}</span>
-
-                        </td>
-
-                        <td>
-
-                            <div class="d-flex gap-2 justify-content-center">
-
-                                <button class="btn btn-primary shadow-sm action-btn" onclick="viewSurec({{ surec.id }})" 
-
-                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
-
-                                    <i class="bi bi-eye-fill d-block mb-1" style="font-size: 1.2rem;"></i>
-
-                                    <small style="font-size: 0.75rem; display: block;">Detaylar</small>
-
-                                </button>
-
-                                
-
-                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-
-                                <button class="btn btn-warning text-white shadow-sm action-btn" onclick="editProcess({{ surec.id }})" 
-
-                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
-
-                                    <i class="bi bi-pencil-fill d-block mb-1" style="font-size: 1.2rem;"></i>
-
-                                    <small style="font-size: 0.75rem; display: block;">Düzenle</small>
-
-                                </button>
-
                                 {% endif %}
 
-                                
+                            </td>
 
-                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                            <td>
 
-                                <button class="btn btn-danger shadow-sm action-btn" onclick="deleteSurec({{ surec.id }}, '{{ surec.ad }}')" 
+                                <span class="badge bg-secondary">{{ surec.kurum.kisa_ad if surec.kurum else '-'
+                                    }}</span>
 
-                                        style="padding: 10px 16px; border-radius: 12px; font-weight: 500; transition: all 0.3s;">
+                            </td>
 
-                                    <i class="bi bi-trash-fill d-block mb-1" style="font-size: 1.2rem;"></i>
+                            <td>
 
-                                    <small style="font-size: 0.75rem; display: block;">Sil</small>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-outline-primary" onclick="viewSurec({{ surec.id }})"
+                                        title="Detaylar" data-bs-toggle="tooltip">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
 
-                                </button>
+                                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                    <button class="btn btn-outline-warning text-dark"
+                                        onclick="editProcess({{ surec.id }})" title="Düzenle" data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
 
-                                {% endif %}
+                                    <button class="btn btn-outline-danger"
+                                        onclick="deleteSurec({{ surec.id }}, '{{ surec.ad }}')" title="Sil"
+                                        data-bs-toggle="tooltip">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
 
-                            </div>
+                                    {% endif %}
+                                </div>
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                    {% endfor %}
+                        {% endfor %}
 
                     </tbody>
 
@@ -855,11 +828,11 @@
 
                     {% if current_user.sistem_rol == 'kurum_kullanici' %}
 
-                        Henüz Size Atanmış Süreç Bulunmuyor
+                    Henüz Size Atanmış Süreç Bulunmuyor
 
                     {% else %}
 
-                        Henüz Süreç Eklenmemiş
+                    Henüz Süreç Eklenmemiş
 
                     {% endif %}
 
@@ -869,15 +842,15 @@
 
                     {% if current_user.sistem_rol == 'kurum_kullanici' %}
 
-                        Henüz lideri veya üyesi olduğunuz bir süreç bulunmuyor.<br>
+                    Henüz lideri veya üyesi olduğunuz bir süreç bulunmuyor.<br>
 
-                        Süreç yöneticinizden sizi bir sürece atamasını isteyebilirsiniz.
+                    Süreç yöneticinizden sizi bir sürece atamasını isteyebilirsiniz.
 
                     {% else %}
 
-                        Kurumunuz için ilk süreci oluşturarak başlayabilirsiniz.<br>
+                    Kurumunuz için ilk süreci oluşturarak başlayabilirsiniz.<br>
 
-                        Süreçler, iş akışlarınızı ve operasyonlarınızı yönetmenize yardımcı olur.
+                    Süreçler, iş akışlarınızı ve operasyonlarınızı yönetmenize yardımcı olur.
 
                     {% endif %}
 
@@ -901,7 +874,7 @@
 
     </div>
 
-    
+
 
     <!-- Yeni Süreç Oluştur Formu (Başlangıçta Gizli) -->
 
@@ -937,7 +910,8 @@
 
                             </label>
 
-                            <input type="text" class="form-control form-control-lg" id="ad" placeholder="Ç–rn: Satın Alma Süreci" required>
+                            <input type="text" class="form-control form-control-lg" id="ad"
+                                placeholder="Ç–rn: Satın Alma Süreci" required>
 
                         </div>
 
@@ -967,7 +941,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="row">
 
@@ -1005,7 +979,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="row">
 
@@ -1037,7 +1011,7 @@
 
                     </div>
 
-                    
+
 
                     <!-- Başlangıç ve Bitiş Sınırları -->
 
@@ -1051,7 +1025,8 @@
 
                             </label>
 
-                            <textarea class="form-control" id="baslangic_siniri" rows="2" placeholder="Sürecin başlangıç noktası ve sınırları..."></textarea>
+                            <textarea class="form-control" id="baslangic_siniri" rows="2"
+                                placeholder="Sürecin başlangıç noktası ve sınırları..."></textarea>
 
                         </div>
 
@@ -1063,13 +1038,14 @@
 
                             </label>
 
-                            <textarea class="form-control" id="bitis_siniri" rows="2" placeholder="Sürecin bitiş noktası ve sınırları..."></textarea>
+                            <textarea class="form-control" id="bitis_siniri" rows="2"
+                                placeholder="Sürecin bitiş noktası ve sınırları..."></textarea>
 
                         </div>
 
                     </div>
 
-                    
+
 
                     <!-- Süreç Liderleri Seçimi (Çoklu) -->
 
@@ -1077,7 +1053,8 @@
 
                         <div class="card-header bg-warning">
 
-                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)</strong>
+                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla
+                                Seçebilirsiniz)</strong>
 
                         </div>
 
@@ -1105,13 +1082,15 @@
 
                                     <div>
 
-                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addLiderler()">
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                            onclick="addLiderler()">
 
                                             <i class="bi bi-arrow-right"></i> Ekle
 
                                         </button><br>
 
-                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeLiderler()">
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                            onclick="removeLiderler()">
 
                                             <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1137,7 +1116,7 @@
 
                     </div>
 
-                    
+
 
                     <!-- Süreç Üyeleri Seçimi -->
 
@@ -1169,13 +1148,15 @@
 
                                     <div>
 
-                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addUyeler()">
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                            onclick="addUyeler()">
 
                                             <i class="bi bi-arrow-right"></i> Ekle
 
                                         </button><br>
 
-                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeUyeler()">
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                            onclick="removeUyeler()">
 
                                             <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1201,7 +1182,7 @@
 
                     </div>
 
-                    
+
 
                     <!-- Alt Stratejiler Seçimi -->
 
@@ -1221,15 +1202,15 @@
 
                                         {% for strateji in ana_stratejiler %}
 
-                                            <optgroup label="{{ strateji.ad }}">
+                                        <optgroup label="{{ strateji.ad }}">
 
-                                                {% for alt in strateji.alt_stratejiler %}
+                                            {% for alt in strateji.alt_stratejiler %}
 
-                                                <option value="{{ alt.id }}">{{ alt.ad }}</option>
+                                            <option value="{{ alt.id }}">{{ alt.ad }}</option>
 
-                                                {% endfor %}
+                                            {% endfor %}
 
-                                            </optgroup>
+                                        </optgroup>
 
                                         {% endfor %}
 
@@ -1241,13 +1222,15 @@
 
                                     <div>
 
-                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addStratejiler()">
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                            onclick="addStratejiler()">
 
                                             <i class="bi bi-arrow-right"></i> Ekle
 
                                         </button><br>
 
-                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeStratejiler()">
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                            onclick="removeStratejiler()">
 
                                             <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1261,7 +1244,8 @@
 
                                     <label class="form-label">Seçilen Stratejiler</label>
 
-                                    <select class="form-select" id="alt_strateji_ids" multiple size="6" style="max-height: 200px; overflow-y: auto;">
+                                    <select class="form-select" id="alt_strateji_ids" multiple size="6"
+                                        style="max-height: 200px; overflow-y: auto;">
 
                                     </select>
 
@@ -1273,7 +1257,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="mb-3">
 
@@ -1283,11 +1267,12 @@
 
                         </label>
 
-                        <textarea class="form-control" id="aciklama" rows="3" placeholder="Süreç hakkında detaylı bilgi..."></textarea>
+                        <textarea class="form-control" id="aciklama" rows="3"
+                            placeholder="Süreç hakkında detaylı bilgi..."></textarea>
 
                     </div>
 
-                    
+
 
                     <div class="d-flex gap-2">
 
@@ -1297,7 +1282,8 @@
 
                         </button>
 
-                        <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="document.getElementById('surec-form').reset(); resetSelections();">
+                        <button type="button" class="btn btn-outline-secondary btn-lg px-4"
+                            onclick="document.getElementById('surec-form').reset(); resetSelections();">
 
                             <i class="bi bi-x-circle"></i> Temizle
 
@@ -1315,7 +1301,7 @@
 
     {% endif %}
 
-    
+
 
 </div>
 
@@ -1391,7 +1377,7 @@
 
                     <input type="hidden" id="edit_surec_id">
 
-                    
+
 
                     <div class="row">
 
@@ -1421,7 +1407,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="row">
 
@@ -1459,7 +1445,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="row">
 
@@ -1491,7 +1477,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="row mb-3">
 
@@ -1513,7 +1499,7 @@
 
                     </div>
 
-                    
+
 
                     <div class="mb-3">
 
@@ -1531,7 +1517,8 @@
 
                         <div class="card-header bg-warning">
 
-                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)</strong>
+                            <strong><i class="bi bi-star-fill"></i> Süreç Liderleri (Birden Fazla
+                                Seçebilirsiniz)</strong>
 
                         </div>
 
@@ -1543,7 +1530,8 @@
 
                                     <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
 
-                                    <select class="form-select" id="edit_lider_source" multiple size="6" style="min-height: 150px;" ondblclick="addDüzenleLiderler()">
+                                    <select class="form-select" id="edit_lider_source" multiple size="6"
+                                        style="min-height: 150px;" ondblclick="addDüzenleLiderler()">
 
                                         {% for user in kullanicilar %}
 
@@ -1553,7 +1541,8 @@
 
                                     </select>
 
-                                    <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                    <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac)
+                                        tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
 
                                 </div>
 
@@ -1561,13 +1550,15 @@
 
                                     <div class="text-center">
 
-                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleLiderler()">
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                            onclick="addDüzenleLiderler()">
 
                                             <i class="bi bi-arrow-right"></i> Ekle
 
                                         </button><br>
 
-                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleLiderler()">
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                            onclick="removeDüzenleLiderler()">
 
                                             <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1583,11 +1574,13 @@
 
                                     <label class="form-label">Süreç Liderleri</label>
 
-                                    <select class="form-select" id="edit_lider_ids" multiple size="6" style="min-height: 150px;" ondblclick="removeDüzenleLiderler()">
+                                    <select class="form-select" id="edit_lider_ids" multiple size="6"
+                                        style="min-height: 150px;" ondblclick="removeDüzenleLiderler()">
 
                                     </select>
 
-                                    <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                    <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile
+                                        çıkarabilirsiniz.</small>
 
                                 </div>
 
@@ -1629,13 +1622,15 @@
 
                                     <div>
 
-                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleUyeler()">
+                                        <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                            onclick="addDüzenleUyeler()">
 
                                             <i class="bi bi-arrow-right"></i> Ekle
 
                                         </button><br>
 
-                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleUyeler()">
+                                        <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                            onclick="removeDüzenleUyeler()">
 
                                             <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1683,27 +1678,32 @@
 
                                         <div class="col">
 
-                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                ile)</label>
 
-                                            <select class="form-select" id="edit_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
+                                            <select class="form-select" id="edit_strateji_source" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
 
                                                 {% for ana_strateji in ana_stratejiler %}
 
-                                                    <optgroup label="{{ ana_strateji.ad }}">
+                                                <optgroup label="{{ ana_strateji.ad }}">
 
-                                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
+                                                    {% for alt_strateji in ana_strateji.alt_stratejiler %}
 
-                                                            <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+                                                    <option value="{{ alt_strateji.id }}"
+                                                        data-main-strategy-name="{{ ana_strateji.ad }}">{{
+                                                        alt_strateji.ad }}</option>
 
-                                                        {% endfor %}
+                                                    {% endfor %}
 
-                                                    </optgroup>
+                                                </optgroup>
 
                                                 {% endfor %}
 
                                             </select>
 
-                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd
+                                                (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
 
                                         </div>
 
@@ -1711,13 +1711,16 @@
 
                                             <div class="text-center">
 
-                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleStratejiler()">
+                                                <button type="button"
+                                                    class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                    onclick="addDüzenleStratejiler()">
 
                                                     <i class="bi bi-arrow-right"></i> Ekle
 
                                                 </button>
 
-                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleStratejiler()">
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                                    onclick="removeDüzenleStratejiler()">
 
                                                     <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -1733,11 +1736,13 @@
 
                                             <label class="form-label">Seçilen Alt Stratejiler</label>
 
-                                            <div class="form-control" id="edit_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
+                                            <div class="form-control" id="edit_strateji_ids"
+                                                style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
 
                                             </div>
 
-                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama
+                                                ile çıkarabilirsiniz.</small>
 
                                         </div>
 
@@ -1779,401 +1784,527 @@
 
 <script>
 
-// Yeni Süreç Formu Göster/Gizle
+    // Yeni Süreç Formu Göster/Gizle
 
-function toggleYeniSurecForm() {
+    function toggleYeniSurecForm() {
 
-    const container = document.getElementById('yeni-surec-form-container');
+        const container = document.getElementById('yeni-surec-form-container');
 
-    const btn = document.getElementById('toggleBtn');
+        const btn = document.getElementById('toggleBtn');
 
-    
 
-    if (container.classList.contains('show')) {
 
-        // Gizle
+        if (container.classList.contains('show')) {
 
-        container.classList.remove('show');
+            // Gizle
 
-        btn.innerHTML = '<i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur';
+            container.classList.remove('show');
 
-        // Yukarı scroll
+            btn.innerHTML = '<i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur';
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Yukarı scroll
 
-    } else {
-
-        // Göster
-
-        container.classList.add('show');
-
-        btn.innerHTML = '<i class="bi bi-x-lg"></i> Formu Kapat';
-
-        // Forma scroll
-
-        setSaatout(() => {
-
-            container.scrollIntoGörüntüle({ behavior: 'smooth', block: 'start' });
-
-        }, 300);
-
-    }
-
-}
-
-
-
-// Lider ekleme/çıkarma fonksiyonları (Çoklu)
-
-function addLiderler() {
-
-    const source = document.getElementById('lider_source');
-
-    const target = document.getElementById('lider_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-    
-
-    selected.forEach(opt => {
-
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            const newOpt = new Option(opt.text, opt.value);
-
-            target.add(newOpt);
-
-        }
-
-    });
-
-}
-
-
-
-function removeLiderler() {
-
-    const target = document.getElementById('lider_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-    selected.forEach(opt => opt.remove());
-
-}
-
-
-
-// Düzenleme formu lider ekleme/çıkarma fonksiyonları
-
-function addDüzenleLiderler() {
-
-    const source = document.getElementById('edit_lider_source');
-
-    const target = document.getElementById('edit_lider_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    console.log('Lider ekleme işlemi başladı');
-
-    console.log('Seçilen liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    let addedCount = 0;
-
-    selected.forEach(opt => {
-
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            const newOpt = new Option(opt.text, opt.value);
-
-            target.add(newOpt);
-
-            addedCount++;
-
-            console.log(`Lider eklendi: ${opt.text}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } else {
 
-            console.log(`Lider zaten mevcut: ${opt.text}`);
+            // Göster
+
+            container.classList.add('show');
+
+            btn.innerHTML = '<i class="bi bi-x-lg"></i> Formu Kapat';
+
+            // Forma scroll
+
+            setSaatout(() => {
+
+                container.scrollIntoGörüntüle({ behavior: 'smooth', block: 'start' });
+
+            }, 300);
 
         }
 
-    });
+    }
 
 
 
-    if (addedCount > 0) {
+    // Lider ekleme/çıkarma fonksiyonları (Çoklu)
 
-        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+    function addLiderler() {
 
-    } else {
+        const source = document.getElementById('lider_source');
 
-        showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+        const target = document.getElementById('lider_ids');
+
+        const selected = Array.from(source.selectedOptions);
+
+
+
+        selected.forEach(opt => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+                const newOpt = new Option(opt.text, opt.value);
+
+                target.add(newOpt);
+
+            }
+
+        });
 
     }
 
 
 
-    console.log('Lider ekleme tamamlandı');
+    function removeLiderler() {
 
-}
+        const target = document.getElementById('lider_ids');
 
+        const selected = Array.from(target.selectedOptions);
 
-
-function removeDüzenleLiderler() {
-
-    const target = document.getElementById('edit_lider_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-
-
-    console.log('Lider çıkarma işlemi başladı');
-
-    console.log('Çıkarılacak liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
-
-        return;
+        selected.forEach(opt => opt.remove());
 
     }
 
 
 
-    const removedCount = selected.length;
+    // Düzenleme formu lider ekleme/çıkarma fonksiyonları
 
-    selected.forEach(opt => {
+    function addDüzenleLiderler() {
 
-        opt.remove();
+        const source = document.getElementById('edit_lider_source');
 
-        console.log(`Lider çıkarıldı: ${opt.text}`);
+        const target = document.getElementById('edit_lider_ids');
 
-    });
+        const selected = Array.from(source.selectedOptions);
+
+
+
+        console.log('Lider ekleme işlemi başladı');
+
+        console.log('Seçilen liderler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
+
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        let addedCount = 0;
+
+        selected.forEach(opt => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+                const newOpt = new Option(opt.text, opt.value);
+
+                target.add(newOpt);
+
+                addedCount++;
+
+                console.log(`Lider eklendi: ${opt.text}`);
+
+            } else {
+
+                console.log(`Lider zaten mevcut: ${opt.text}`);
+
+            }
+
+        });
+
+
+
+        if (addedCount > 0) {
+
+            showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+
+        } else {
+
+            showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+
+        }
+
+
+
+        console.log('Lider ekleme tamamlandı');
+
+    }
+
+
+
+    function removeDüzenleLiderler() {
+
+        const target = document.getElementById('edit_lider_ids');
+
+        const selected = Array.from(target.selectedOptions);
+
+
+
+        console.log('Lider çıkarma işlemi başladı');
+
+        console.log('Çıkarılacak liderler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
+
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        const removedCount = selected.length;
+
+        selected.forEach(opt => {
+
+            opt.remove();
+
+            console.log(`Lider çıkarıldı: ${opt.text}`);
+
+        });
 
 
 
         showToast('success', `${removedCount} lider çıkarıldı!`, 'Başarılı');
 
-    console.log('Lider çıkarma tamamlandı');
+        console.log('Lider çıkarma tamamlandı');
 
-}
-
-
-
-function addDüzenleUyeler() {
-
-    const source = document.getElementById('edit_uye_source');
-
-    const target = document.getElementById('edit_uye_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-    let addedCount = 0;
+    }
 
 
 
-    selected.forEach(opt => {
+    function addDüzenleUyeler() {
 
-        // Zaten eklenmemiş ise ekle
+        const source = document.getElementById('edit_uye_source');
 
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+        const target = document.getElementById('edit_uye_ids');
 
-            const newOpt = new Option(opt.text, opt.value);
+        const selected = Array.from(source.selectedOptions);
 
-            target.add(newOpt);
+        let addedCount = 0;
 
-            addedCount++;
+
+
+        selected.forEach(opt => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+                const newOpt = new Option(opt.text, opt.value);
+
+                target.add(newOpt);
+
+                addedCount++;
+
+            }
+
+        });
+
+
+
+        if (addedCount > 0) {
+
+            const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+            showToast('success', message, 'Başarılı');
 
         }
 
-    });
+    }
 
 
 
-    if (addedCount > 0) {
+    function removeDüzenleUyeler() {
 
-        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+        const target = document.getElementById('edit_uye_ids');
 
-        showToast('success', message, 'Başarılı');
+        const selected = Array.from(target.selectedOptions);
+
+        const removedCount = selected.length;
+
+        selected.forEach(opt => opt.remove());
+
+
+
+        if (removedCount > 0) {
+
+            const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+
+            showToast('success', message, 'Başarılı');
+
+        }
 
     }
 
-}
 
 
-
-function removeDüzenleUyeler() {
-
-    const target = document.getElementById('edit_uye_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-    const removedCount = selected.length;
-
-    selected.forEach(opt => opt.remove());
-
+    /**
     
+     * Düzenleme formunda mevcut liderleri yükle
+    
+     */
 
-    if (removedCount > 0) {
+    function loadDüzenleSurecLiderler(surec) {
 
-        const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+        const target = document.getElementById('edit_lider_ids');
 
-        showToast('success', message, 'Başarılı');
-
-    }
-
-}
-
-
-
-/**
-
- * Düzenleme formunda mevcut liderleri yükle
-
- */
-
-function loadDüzenleSurecLiderler(surec) {
-
-    const target = document.getElementById('edit_lider_ids');
-
-    target.innerHTML = '';
+        target.innerHTML = '';
 
 
 
-    console.log('Lider yükleme işlemi başladı:', surec.liderler);
+        console.log('Lider yükleme işlemi başladı:', surec.liderler);
 
 
 
-    if (surec.liderler && surec.liderler.length > 0) {
+        if (surec.liderler && surec.liderler.length > 0) {
 
-        console.log('Lider sayısı:', surec.liderler.length);
+            console.log('Lider sayısı:', surec.liderler.length);
 
-        surec.liderler.forEach((lider, index) => {
+            surec.liderler.forEach((lider, index) => {
 
-            console.log(`Lider ${index + 1}:`, lider);
+                console.log(`Lider ${index + 1}:`, lider);
 
-            const option = new Option(lider.username, lider.id);
+                const option = new Option(lider.username, lider.id);
 
-            target.add(option);
+                target.add(option);
 
-        });
+            });
 
-    } else {
+        } else {
 
-        console.log('Lider bulunamadı');
+            console.log('Lider bulunamadı');
+
+        }
+
+
+
+        console.log('Lider yükleme tamamlandı');
 
     }
 
 
 
-    console.log('Lider yükleme tamamlandı');
+    /**
+    
+     * Düzenleme formunda mevcut üyeleri yükle
+    
+     */
 
-}
+    function loadDüzenleSurecUyeler(surec) {
 
+        const target = document.getElementById('edit_uye_ids');
 
-
-/**
-
- * Düzenleme formunda mevcut üyeleri yükle
-
- */
-
-function loadDüzenleSurecUyeler(surec) {
-
-    const target = document.getElementById('edit_uye_ids');
-
-    target.innerHTML = '';
+        target.innerHTML = '';
 
 
 
-    console.log('Üye yükleme işlemi başladı:', surec.uyeler);
+        console.log('Üye yükleme işlemi başladı:', surec.uyeler);
 
 
 
-    if (surec.uyeler && surec.uyeler.length > 0) {
+        if (surec.uyeler && surec.uyeler.length > 0) {
 
-        console.log('Üye sayısı:', surec.uyeler.length);
+            console.log('Üye sayısı:', surec.uyeler.length);
 
-        surec.uyeler.forEach((uye, index) => {
+            surec.uyeler.forEach((uye, index) => {
 
-            console.log(`Üye ${index + 1}:`, uye);
+                console.log(`Üye ${index + 1}:`, uye);
 
-            const option = new Option(uye.username, uye.id);
+                const option = new Option(uye.username, uye.id);
 
-            target.add(option);
+                target.add(option);
 
-        });
+            });
 
-    } else {
+        } else {
 
-        console.log('Üye bulunamadı');
+            console.log('Üye bulunamadı');
+
+        }
+
+
+
+        console.log('Üye yükleme tamamlandı');
 
     }
 
 
 
-    console.log('Üye yükleme tamamlandı');
+    /**
+    
+     * Düzenleme formunda mevcut alt stratejileri yükle
+    
+     */
 
-}
+    function loadDüzenleSurecStratejiler(surec) {
 
+        const target = document.getElementById('edit_strateji_ids');
 
-
-/**
-
- * Düzenleme formunda mevcut alt stratejileri yükle
-
- */
-
-function loadDüzenleSurecStratejiler(surec) {
-
-    const target = document.getElementById('edit_strateji_ids');
-
-    target.innerHTML = '';
+        target.innerHTML = '';
 
 
 
-    console.log('Alt strateji yükleme işlemi başladı:', surec.alt_stratejiler);
+        console.log('Alt strateji yükleme işlemi başladı:', surec.alt_stratejiler);
 
 
 
-    if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
+        if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
 
-        console.log('Alt strateji sayısı:', surec.alt_stratejiler.length);
+            console.log('Alt strateji sayısı:', surec.alt_stratejiler.length);
 
-        
+
+
+            // Ana stratejilere göre grupla
+
+            const groupedStrategies = {};
+
+            surec.alt_stratejiler.forEach((strateji, index) => {
+
+                console.log(`Alt Strateji ${index + 1}:`, strateji);
+
+                const mainStrategyAd = strateji.ana_strateji ? strateji.ana_strateji.ad : 'Bilinmiyor';
+
+
+
+                if (!groupedStrategies[mainStrategyAd]) {
+
+                    groupedStrategies[mainStrategyAd] = [];
+
+                }
+
+                groupedStrategies[mainStrategyAd].push({
+
+                    id: strateji.id,
+
+                    name: strateji.ad
+
+                });
+
+            });
+
+
+
+            // Her ana strateji için grup oluştur
+
+            Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+                const strategies = groupedStrategies[mainStrategyAd];
+
+
+
+                // Ana strateji başlığı (optgroup benzeri)
+
+                const mainStrategyDiv = document.createElement('div');
+
+                mainStrategyDiv.className = 'strategy-group';
+
+                mainStrategyDiv.innerHTML = `
+
+                <div class="strategy-group-header">
+
+                    <strong>${mainStrategyAd}</strong>
+
+                </div>
+
+            `;
+
+
+
+                // Alt stratejileri ekle
+
+                strategies.forEach(strategy => {
+
+                    const strategyDiv = document.createElement('div');
+
+                    strategyDiv.className = 'strategy-item';
+
+                    strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                    strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                    strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+
+                    strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+
+                    mainStrategyDiv.appendChild(strategyDiv);
+
+                });
+
+
+
+                target.appendChild(mainStrategyDiv);
+
+            });
+
+        } else {
+
+            console.log('Alt strateji bulunamadı');
+
+        }
+
+
+
+        console.log('Alt strateji yükleme tamamlandı');
+
+    }
+
+
+
+    // Düzenleme formu için strateji ekleme fonksiyonu
+
+    function addDüzenleStratejiler() {
+
+        const source = document.getElementById('edit_strateji_source');
+
+        const target = document.getElementById('edit_strateji_ids');
+
+        const selected = Array.from(source.selectedOptions);
+
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        let addedCount = 0;
+
+
 
         // Ana stratejilere göre grupla
 
         const groupedStrategies = {};
 
-        surec.alt_stratejiler.forEach((strateji, index) => {
+        selected.forEach(opt => {
 
-            console.log(`Alt Strateji ${index + 1}:`, strateji);
+            const mainStrategyAd = opt.dataset.mainStrategyAd;
 
-            const mainStrategyAd = strateji.ana_strateji ? strateji.ana_strateji.ad : 'Bilinmiyor';
+            const subStrategyAd = opt.text;
 
-            
+
 
             if (!groupedStrategies[mainStrategyAd]) {
 
@@ -2183,9 +2314,9 @@ function loadDüzenleSurecStratejiler(surec) {
 
             groupedStrategies[mainStrategyAd].push({
 
-                id: strateji.id,
+                id: opt.value,
 
-                name: strateji.ad
+                name: subStrategyAd
 
             });
 
@@ -2199,141 +2330,15 @@ function loadDüzenleSurecStratejiler(surec) {
 
             const strategies = groupedStrategies[mainStrategyAd];
 
-            
+
 
             // Ana strateji başlığı (optgroup benzeri)
 
             const mainStrategyDiv = document.createElement('div');
 
-            mainStrategyDiv.className = 'strategy-group';
+            mainStrategyDiv.classAd = 'strategy-group';
 
             mainStrategyDiv.innerHTML = `
-
-                <div class="strategy-group-header">
-
-                    <strong>${mainStrategyAd}</strong>
-
-                </div>
-
-            `;
-
-            
-
-            // Alt stratejileri ekle
-
-            strategies.forEach(strategy => {
-
-                const strategyDiv = document.createElement('div');
-
-                strategyDiv.className = 'strategy-item';
-
-                strategyDiv.setAttribute('data-strategy-id', strategy.id);
-
-                strategyDiv.innerHTML = `
-
-                    <div class="strategy-sub">${strategy.name}</div>
-
-                `;
-
-                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
-
-                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
-
-                mainStrategyDiv.appendChild(strategyDiv);
-
-            });
-
-            
-
-            target.appendChild(mainStrategyDiv);
-
-        });
-
-    } else {
-
-        console.log('Alt strateji bulunamadı');
-
-    }
-
-
-
-    console.log('Alt strateji yükleme tamamlandı');
-
-}
-
-
-
-// Düzenleme formu için strateji ekleme fonksiyonu
-
-function addDüzenleStratejiler() {
-
-    const source = document.getElementById('edit_strateji_source');
-
-    const target = document.getElementById('edit_strateji_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    let addedCount = 0;
-
-    
-
-    // Ana stratejilere göre grupla
-
-    const groupedStrategies = {};
-
-    selected.forEach(opt => {
-
-        const mainStrategyAd = opt.dataset.mainStrategyAd;
-
-        const subStrategyAd = opt.text;
-
-        
-
-        if (!groupedStrategies[mainStrategyAd]) {
-
-            groupedStrategies[mainStrategyAd] = [];
-
-        }
-
-        groupedStrategies[mainStrategyAd].push({
-
-            id: opt.value,
-
-            name: subStrategyAd
-
-        });
-
-    });
-
-
-
-    // Her ana strateji için grup oluştur
-
-    Object.keys(groupedStrategies).forEach(mainStrategyAd => {
-
-        const strategies = groupedStrategies[mainStrategyAd];
-
-        
-
-        // Ana strateji başlığı (optgroup benzeri)
-
-        const mainStrategyDiv = document.createElement('div');
-
-        mainStrategyDiv.classAd = 'strategy-group';
-
-        mainStrategyDiv.innerHTML = `
 
             <div class="strategy-group-header">
 
@@ -2343,33 +2348,159 @@ function addDüzenleStratejiler() {
 
         `;
 
-        
 
-        // Alt stratejileri ekle
 
-        strategies.forEach(strategy => {
+            // Alt stratejileri ekle
 
-            // Zaten eklenmemiş ise ekle
+            strategies.forEach(strategy => {
 
-            if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
+                // Zaten eklenmemiş ise ekle
 
-                const strategyDiv = document.createElement('div');
+                if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
 
-                strategyDiv.className = 'strategy-item';
+                    const strategyDiv = document.createElement('div');
 
-                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+                    strategyDiv.className = 'strategy-item';
 
-                strategyDiv.innerHTML = `
+                    strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                    strategyDiv.innerHTML = `
 
                     <div class="strategy-sub">${strategy.name}</div>
 
                 `;
 
-                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+                    strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
 
-                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+                    strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
 
-                mainStrategyDiv.appendChild(strategyDiv);
+                    mainStrategyDiv.appendChild(strategyDiv);
+
+                    addedCount++;
+
+                }
+
+            });
+
+
+
+            // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
+
+            if (mainStrategyDiv.children.length > 1) { // header + items
+
+                target.appendChild(mainStrategyDiv);
+
+            }
+
+        });
+
+
+
+        if (addedCount > 0) {
+
+            showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
+
+        } else {
+
+            showToast('warning', 'Seçilen stratejiler zaten ekli!', 'Uyarı');
+
+        }
+
+    }
+
+
+
+    // Düzenleme formu için strateji çıkarma fonksiyonu
+
+    function removeDüzenleStratejiler() {
+
+        const target = document.getElementById('edit_strateji_ids');
+
+        const selectedItems = target.querySelectorAll('.strategy-item.selected');
+
+
+
+        if (selectedItems.length === 0) {
+
+            showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        selectedItems.forEach(item => {
+
+            item.remove();
+
+        });
+
+
+
+        showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
+
+    }
+
+
+
+    // Düzenleme formu için strateji item çıkarma fonksiyonu
+
+    function removeDüzenleStrategyItem(strategyId) {
+
+        const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+
+        if (item) {
+
+            item.remove();
+
+            showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
+
+        }
+
+    }
+
+
+
+    // Düzenleme formu için strateji seçim toggle fonksiyonu
+
+    function toggleDüzenleStrategySelection(strategyId) {
+
+        const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+
+        if (item) {
+
+            item.classList.toggle('selected');
+
+        }
+
+    }
+
+
+
+    // Üye ekleme/çıkarma fonksiyonları
+
+    function addUyeler() {
+
+        const source = document.getElementById('uye_source');
+
+        const target = document.getElementById('uye_ids');
+
+        const selected = Array.from(source.selectedOptions);
+
+        let addedCount = 0;
+
+
+
+        selected.forEach(opt => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+                const newOpt = new Option(opt.text, opt.value);
+
+                target.add(newOpt);
 
                 addedCount++;
 
@@ -2377,413 +2508,287 @@ function addDüzenleStratejiler() {
 
         });
 
-        
 
-        // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
 
-        if (mainStrategyDiv.children.length > 1) { // header + items
+        if (addedCount > 0) {
 
-            target.appendChild(mainStrategyDiv);
+            const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+            showToast('success', message, 'Başarılı');
 
         }
 
-    });
-
-
-
-    if (addedCount > 0) {
-
-        showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
-
-    } else {
-
-        showToast('warning', 'Seçilen stratejiler zaten ekli!', 'Uyarı');
-
-    }
-
-}
-
-
-
-// Düzenleme formu için strateji çıkarma fonksiyonu
-
-function removeDüzenleStratejiler() {
-
-    const target = document.getElementById('edit_strateji_ids');
-
-    const selectedItems = target.querySelectorAll('.strategy-item.selected');
-
-
-
-    if (selectedItems.length === 0) {
-
-        showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
-
-        return;
-
     }
 
 
 
-    selectedItems.forEach(item => {
+    function removeUyeler() {
 
-        item.remove();
+        const target = document.getElementById('uye_ids');
 
-    });
+        const selected = Array.from(target.selectedOptions);
 
+        const removedCount = selected.length;
 
-
-    showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
-
-}
+        selected.forEach(opt => opt.remove());
 
 
 
-// Düzenleme formu için strateji item çıkarma fonksiyonu
+        if (removedCount > 0) {
 
-function removeDüzenleStrategyItem(strategyId) {
+            const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
 
-    const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
-
-    if (item) {
-
-        item.remove();
-
-        showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
-
-    }
-
-}
-
-
-
-// Düzenleme formu için strateji seçim toggle fonksiyonu
-
-function toggleDüzenleStrategySelection(strategyId) {
-
-    const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
-
-    if (item) {
-
-        item.classList.toggle('selected');
-
-    }
-
-}
-
-
-
-// Üye ekleme/çıkarma fonksiyonları
-
-function addUyeler() {
-
-    const source = document.getElementById('uye_source');
-
-    const target = document.getElementById('uye_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-    let addedCount = 0;
-
-    
-
-    selected.forEach(opt => {
-
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            const newOpt = new Option(opt.text, opt.value);
-
-            target.add(newOpt);
-
-            addedCount++;
+            showToast('success', message, 'Başarılı');
 
         }
 
-    });
-
-
-
-    if (addedCount > 0) {
-
-        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
-
-        showToast('success', message, 'Başarılı');
-
     }
 
-}
 
 
+    // Strateji ekleme/çıkarma fonksiyonları
 
-function removeUyeler() {
+    function addStratejiler() {
 
-    const target = document.getElementById('uye_ids');
+        const source = document.getElementById('strateji_source');
 
-    const selected = Array.from(target.selectedOptions);
+        const target = document.getElementById('alt_strateji_ids');
 
-    const removedCount = selected.length;
+        const selected = Array.from(source.selectedOptions);
 
-    selected.forEach(opt => opt.remove());
+        let addedCount = 0;
 
-    
 
-    if (removedCount > 0) {
 
-        const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
+        selected.forEach(opt => {
 
-        showToast('success', message, 'Başarılı');
+            // Zaten eklenmemiş ise ekle
 
-    }
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
 
-}
+                // Ana strateji bilgisini al
 
+                const optgroup = opt.parentElement;
 
+                const anaStratejiAdi = optgroup.label;
 
-// Strateji ekleme/çıkarma fonksiyonları
+                const altStratejiAdi = opt.text;
 
-function addStratejiler() {
 
-    const source = document.getElementById('strateji_source');
 
-    const target = document.getElementById('alt_strateji_ids');
+                // Basit text formatında option oluştur
 
-    const selected = Array.from(source.selectedOptions);
+                const newOpt = new Option();
 
-    let addedCount = 0;
+                newOpt.value = opt.value;
 
-    
+                newOpt.text = `${anaStratejiAdi} →†’ ${altStratejiAdi}`;
 
-    selected.forEach(opt => {
+                target.add(newOpt);
 
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            // Ana strateji bilgisini al
-
-            const optgroup = opt.parentElement;
-
-            const anaStratejiAdi = optgroup.label;
-
-            const altStratejiAdi = opt.text;
-
-            
-
-            // Basit text formatında option oluştur
-
-            const newOpt = new Option();
-
-            newOpt.value = opt.value;
-
-            newOpt.text = `${anaStratejiAdi} →†’ ${altStratejiAdi}`;
-
-            target.add(newOpt);
-
-            addedCount++;
-
-        }
-
-    });
-
-
-
-    if (addedCount > 0) {
-
-        const message = addedCount > 1 ? `${addedCount} strateji eklendi.` : `'${selected[0].text}' stratejisi eklendi.`;
-
-        showToast('success', message, 'Başarılı');
-
-    }
-
-}
-
-
-
-function removeStratejiler() {
-
-    const target = document.getElementById('alt_strateji_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-    const removedCount = selected.length;
-
-    selected.forEach(opt => opt.remove());
-
-    
-
-    if (removedCount > 0) {
-
-        const message = removedCount > 1 ? `${removedCount} strateji çıkarıldı.` : `Strateji çıkarıldı.`;
-
-        showToast('success', message, 'Başarılı');
-
-    }
-
-}
-
-
-
-// Seçimleri temizle
-
-function resetSelections() {
-
-    document.getElementById('lider_ids').innerHTML = '';
-
-    document.getElementById('uye_ids').innerHTML = '';
-
-    document.getElementById('alt_strateji_ids').innerHTML = '';
-
-}
-
-
-
-// Form submit
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    document.getElementById('surec-form').addEventListener('submit', function(e) {
-
-        e.preventDefault();
-
-        
-
-        // Tüm seçimleri array'e çevir
-
-        const liderIds = Array.from(document.getElementById('lider_ids').options).map(opt => opt.value);
-
-        const uyeIds = Array.from(document.getElementById('uye_ids').options).map(opt => opt.value);
-
-        const altStratejiIds = Array.from(document.getElementById('alt_strateji_ids').options).map(opt => opt.value);
-
-        
-
-        // İşlem başladı mesajı
-
-        showToast('info', 'Yeni süreç oluşturuluyor...', '→³ İşlem Devam Ediyor');
-
-        
-
-        fetch('/surec/add-simple', {
-
-            method: 'POST',
-
-            headers: {'Content-Type': 'application/json'},
-
-            body: JSON.stringify({
-
-                surec_adi: document.getElementById('ad').value,
-
-                dokuman_no: document.getElementById('dokuman_no').value,
-
-                rev_no: document.getElementById('rev_no').value,
-
-                rev_tarihi: document.getElementById('rev_tarihi').value,
-
-                ilk_yayin_tarihi: document.getElementById('ilk_yayin_tarihi').value,
-
-                baslangic_tarihi: document.getElementById('baslangic_tarihi').value,
-
-                bitis_tarihi: document.getElementById('bitis_tarihi').value,
-
-                durum: document.getElementById('durum').value,
-
-                ilerleme: document.getElementById('ilerleme').value,
-
-                lider_ids: liderIds,
-
-                uye_ids: uyeIds,
-
-                alt_strateji_ids: altStratejiIds,
-
-                baslangic_siniri: document.getElementById('baslangic_siniri').value,
-
-                bitis_siniri: document.getElementById('bitis_siniri').value,
-
-                aciklama: document.getElementById('aciklama').value
-
-            })
-
-        })
-
-        .then(r => r.json())
-
-        .then(data => {
-
-            if(data.success) {
-
-                // Başarı mesajı
-
-                showToast('success', data.message, 'Başarılı');
-
-                // Formu temizle
-
-                document.getElementById('surec-form').reset();
-
-                resetSelections();
-
-                // Sayfayı yenile
-
-                setTimeout(() => location.reload(), 1500);
-
-            } else {
-
-                showToast('error', data.message, '→Œ Hata');
+                addedCount++;
 
             }
 
-        })
+        });
 
-        .catch(err => {
 
-            showToast('error', 'Hata: ' + err.message, '→Œ Bağlantı Hatası');
+
+        if (addedCount > 0) {
+
+            const message = addedCount > 1 ? `${addedCount} strateji eklendi.` : `'${selected[0].text}' stratejisi eklendi.`;
+
+            showToast('success', message, 'Başarılı');
+
+        }
+
+    }
+
+
+
+    function removeStratejiler() {
+
+        const target = document.getElementById('alt_strateji_ids');
+
+        const selected = Array.from(target.selectedOptions);
+
+        const removedCount = selected.length;
+
+        selected.forEach(opt => opt.remove());
+
+
+
+        if (removedCount > 0) {
+
+            const message = removedCount > 1 ? `${removedCount} strateji çıkarıldı.` : `Strateji çıkarıldı.`;
+
+            showToast('success', message, 'Başarılı');
+
+        }
+
+    }
+
+
+
+    // Seçimleri temizle
+
+    function resetSelections() {
+
+        document.getElementById('lider_ids').innerHTML = '';
+
+        document.getElementById('uye_ids').innerHTML = '';
+
+        document.getElementById('alt_strateji_ids').innerHTML = '';
+
+    }
+
+
+
+    // Form submit
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.getElementById('surec-form').addEventListener('submit', function (e) {
+
+            e.preventDefault();
+
+
+
+            // Tüm seçimleri array'e çevir
+
+            const liderIds = Array.from(document.getElementById('lider_ids').options).map(opt => opt.value);
+
+            const uyeIds = Array.from(document.getElementById('uye_ids').options).map(opt => opt.value);
+
+            const altStratejiIds = Array.from(document.getElementById('alt_strateji_ids').options).map(opt => opt.value);
+
+
+
+            // İşlem başladı mesajı
+
+            showToast('info', 'Yeni süreç oluşturuluyor...', '→³ İşlem Devam Ediyor');
+
+
+
+            fetch('/surec/add-simple', {
+
+                method: 'POST',
+
+                headers: { 'Content-Type': 'application/json' },
+
+                body: JSON.stringify({
+
+                    surec_adi: document.getElementById('ad').value,
+
+                    dokuman_no: document.getElementById('dokuman_no').value,
+
+                    rev_no: document.getElementById('rev_no').value,
+
+                    rev_tarihi: document.getElementById('rev_tarihi').value,
+
+                    ilk_yayin_tarihi: document.getElementById('ilk_yayin_tarihi').value,
+
+                    baslangic_tarihi: document.getElementById('baslangic_tarihi').value,
+
+                    bitis_tarihi: document.getElementById('bitis_tarihi').value,
+
+                    durum: document.getElementById('durum').value,
+
+                    ilerleme: document.getElementById('ilerleme').value,
+
+                    lider_ids: liderIds,
+
+                    uye_ids: uyeIds,
+
+                    alt_strateji_ids: altStratejiIds,
+
+                    baslangic_siniri: document.getElementById('baslangic_siniri').value,
+
+                    bitis_siniri: document.getElementById('bitis_siniri').value,
+
+                    aciklama: document.getElementById('aciklama').value
+
+                })
+
+            })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        // Başarı mesajı
+
+                        showToast('success', data.message, 'Başarılı');
+
+                        // Formu temizle
+
+                        document.getElementById('surec-form').reset();
+
+                        resetSelections();
+
+                        // Sayfayı yenile
+
+                        setTimeout(() => location.reload(), 1500);
+
+                    } else {
+
+                        showToast('error', data.message, '→Œ Hata');
+
+                    }
+
+                })
+
+                .catch(err => {
+
+                    showToast('error', 'Hata: ' + err.message, '→Œ Bağlantı Hatası');
+
+                });
 
         });
 
     });
 
-});
+
+
+    // Süreç detaylarını görüntüle
+
+    function viewSurec(id) {
+
+        const modal = new bootstrap.Modal(document.getElementById('surecDetayModal'));
+
+        modal.show();
 
 
 
-// Süreç detaylarını görüntüle
+        fetch(`/surec/${id}`)
 
-function viewSurec(id) {
+            .then(r => r.json())
 
-    const modal = new bootstrap.Modal(document.getElementById('surecDetayModal'));
+            .then(data => {
 
-    modal.show();
+                const surec = data.surec;
 
-    
+                const gostergeler = data.performans_gostergeleri || [];
 
-    fetch(`/surec/${id}`)
 
-    .then(r => r.json())
 
-    .then(data => {
+                // Faaliyetleri yükle
 
-        const surec = data.surec;
+                fetch(`/surec/${id}/faaliyetler`)
 
-        const gostergeler = data.performans_gostergeleri || [];
+                    .then(r => r.json())
 
-        
+                    .then(faaliyetData => {
 
-        // Faaliyetleri yükle
+                        const faaliyetler = faaliyetData.faaliyetler || [];
 
-        fetch(`/surec/${id}/faaliyetler`)
 
-        .then(r => r.json())
 
-        .then(faaliyetData => {
+                        // Detay HTML'ini oluştur
 
-            const faaliyetler = faaliyetData.faaliyetler || [];
-
-            
-
-            // Detay HTML'ini oluştur
-
-            document.getElementById('surec-detay-icerik').innerHTML = `
+                        document.getElementById('surec-detay-icerik').innerHTML = `
 
                 <div class="row">
 
@@ -2893,13 +2898,13 @@ function viewSurec(id) {
 
                             <div class="card-body">
 
-                                ${surec.liderler && surec.liderler.length > 0 ? 
+                                ${surec.liderler && surec.liderler.length > 0 ?
 
-                                    surec.liderler.map(lider => `<span class="badge bg-primary me-1 mb-1">${lider.username}</span>`).join('') : 
+                                surec.liderler.map(lider => `<span class="badge bg-primary me-1 mb-1">${lider.username}</span>`).join('') :
 
-                                    '<span class="text-muted">Lider atanmamış</span>'
+                                '<span class="text-muted">Lider atanmamış</span>'
 
-                                }
+                            }
 
                             </div>
 
@@ -2919,13 +2924,13 @@ function viewSurec(id) {
 
                             <div class="card-body">
 
-                                ${surec.uyeler && surec.uyeler.length > 0 ? 
+                                ${surec.uyeler && surec.uyeler.length > 0 ?
 
-                                    surec.uyeler.map(uye => `<span class="badge bg-secondary me-1 mb-1">${uye.username}</span>`).join('') : 
+                                surec.uyeler.map(uye => `<span class="badge bg-secondary me-1 mb-1">${uye.username}</span>`).join('') :
 
-                                    '<span class="text-muted">Üye atanmamış</span>'
+                                '<span class="text-muted">Üye atanmamış</span>'
 
-                                }
+                            }
 
                             </div>
 
@@ -2945,37 +2950,37 @@ function viewSurec(id) {
 
                             <div class="card-body">
 
-                                ${surec.alt_stratejiler && surec.alt_stratejiler.length > 0 ? 
+                                ${surec.alt_stratejiler && surec.alt_stratejiler.length > 0 ?
 
-                                    (() => {
+                                (() => {
 
-                                        // Ana stratejilere göre grupla
+                                    // Ana stratejilere göre grupla
 
-                                        const groupedStrategies = {};
+                                    const groupedStrategies = {};
 
-                                        surec.alt_stratejiler.forEach(strateji => {
+                                    surec.alt_stratejiler.forEach(strateji => {
 
-                                            const mainStrategyAd = strateji.ana_strateji.ad;
+                                        const mainStrategyAd = strateji.ana_strateji.ad;
 
-                                            if (!groupedStrategies[mainStrategyAd]) {
+                                        if (!groupedStrategies[mainStrategyAd]) {
 
-                                                groupedStrategies[mainStrategyAd] = [];
+                                            groupedStrategies[mainStrategyAd] = [];
 
-                                            }
+                                        }
 
-                                            groupedStrategies[mainStrategyAd].push(strateji);
+                                        groupedStrategies[mainStrategyAd].push(strateji);
 
-                                        });
+                                    });
 
-                                        
 
-                                        // Grupları HTML olarak oluştur
 
-                                        return Object.keys(groupedStrategies).map(mainStrategyAd => {
+                                    // Grupları HTML olarak oluştur
 
-                                            const strategies = groupedStrategies[mainStrategyAd];
+                                    return Object.keys(groupedStrategies).map(mainStrategyAd => {
 
-                                            return `
+                                        const strategies = groupedStrategies[mainStrategyAd];
+
+                                        return `
 
                                                 <div class="strategy-group mb-3">
 
@@ -3003,13 +3008,13 @@ function viewSurec(id) {
 
                                             `;
 
-                                        }).join('');
+                                    }).join('');
 
-                                    })() : 
+                                })() :
 
-                                    '<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Strateji atanmamış</span>'
+                                '<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Strateji atanmamış</span>'
 
-                                }
+                            }
 
                             </div>
 
@@ -3205,579 +3210,307 @@ function viewSurec(id) {
 
             `;
 
-        });
-
-    });
-
-}
-
-
-
-// Düzenleme fonksiyonu
-
-function editSurec(id) {
-
-    // Süreç bilgilerini getir
-
-    fetch(`/surec/get/${id}`)
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        if(data.success) {
-
-            const surec = data.surec;
-
-            console.log('Süreç verileri yüklendi:', surec);
-
-
-
-            // Form alanlarını güvenli şekilde doldur
-
-            const elements = {
-
-                'edit_surec_id': surec.id,
-
-                'edit_ad': surec.ad,
-
-                'edit_dokuman_no': surec.dokuman_no || '',
-
-                'edit_rev_no': surec.rev_no || '',
-
-                'edit_rev_tarihi': surec.rev_tarihi || '',
-
-                'edit_ilk_yayin_tarihi': surec.ilk_yayin_tarihi || '',
-
-                'edit_baslangic_tarihi': surec.baslangic_tarihi || '',
-
-                'edit_bitis_tarihi': surec.bitis_tarihi || '',
-
-                'edit_durum': surec.durum,
-
-                'edit_ilerleme': surec.ilerleme,
-
-                'edit_baslangic_siniri': surec.baslangic_siniri || '',
-
-                'edit_bitis_siniri': surec.bitis_siniri || '',
-
-                'edit_aciklama': surec.aciklama || ''
-
-            };
-
-
-
-            // Tüm alanları güvenli şekilde doldur
-
-            Object.keys(elements).forEach(key => {
-
-                const element = document.getElementById(key);
-
-                if (element) {
-
-                    element.value = elements[key];
-
-                }
+                    });
 
             });
 
-
-
-            // Liderleri yükle
-
-            loadDüzenleSurecLiderler(surec);
+    }
 
 
 
-            // Üyeleri yükle
+    // Düzenleme fonksiyonu
 
-            loadDüzenleSurecUyeler(surec);
+    function editSurec(id) {
 
+        // Süreç bilgilerini getir
 
+        fetch(`/surec/get/${id}`)
 
-            // Alt stratejileri yükle
+            .then(r => r.json())
 
-            loadDüzenleSurecStratejiler(surec);
+            .then(data => {
 
+                if (data.success) {
 
+                    const surec = data.surec;
 
-            // Modalı göster
-
-            const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
-
-            modal.show();
-
-        } else {
-
-            showToast('error', data.message);
-
-        }
-
-    })
-
-    .catch(err => {
-
-        showToast('error', 'Süreç bilgileri yüklenirken hata: ' + err.message);
-
-    });
-
-}
+                    console.log('Süreç verileri yüklendi:', surec);
 
 
 
-// Düzenleme formu submit fonksiyonu
+                    // Form alanlarını güvenli şekilde doldur
 
-function updateSurec(e) {
+                    const elements = {
 
-    e.preventDefault();
+                        'edit_surec_id': surec.id,
 
-    
+                        'edit_ad': surec.ad,
 
-    const surecId = document.getElementById('edit_surec_id').value;
+                        'edit_dokuman_no': surec.dokuman_no || '',
 
-    
+                        'edit_rev_no': surec.rev_no || '',
 
-    // İşlem başladı mesajı
+                        'edit_rev_tarihi': surec.rev_tarihi || '',
 
-    showToast('info', 'Süreç güncelleniyor...', 'İşlem Devam Ediyor');
+                        'edit_ilk_yayin_tarihi': surec.ilk_yayin_tarihi || '',
 
-    
+                        'edit_baslangic_tarihi': surec.baslangic_tarihi || '',
 
-    // Lider, üye ve strateji bilgilerini topla
+                        'edit_bitis_tarihi': surec.bitis_tarihi || '',
 
-    const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => parseInt(opt.value));
+                        'edit_durum': surec.durum,
 
-    const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => parseInt(opt.value));
+                        'edit_ilerleme': surec.ilerleme,
 
-    const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => parseInt(item.getAttribute('data-strategy-id')));
+                        'edit_baslangic_siniri': surec.baslangic_siniri || '',
+
+                        'edit_bitis_siniri': surec.bitis_siniri || '',
+
+                        'edit_aciklama': surec.aciklama || ''
+
+                    };
 
 
 
-    fetch(`/surec/update/${surecId}`, {
+                    // Tüm alanları güvenli şekilde doldur
 
-        method: 'POST',
+                    Object.keys(elements).forEach(key => {
 
-        headers: {'Content-Type': 'application/json'},
+                        const element = document.getElementById(key);
 
-        body: JSON.stringify({
+                        if (element) {
 
-            surec_adi: document.getElementById('edit_ad').value,
+                            element.value = elements[key];
 
-            dokuman_no: document.getElementById('edit_dokuman_no').value,
+                        }
 
-            rev_no: document.getElementById('edit_rev_no').value,
+                    });
 
-            rev_tarihi: document.getElementById('edit_rev_tarihi').value,
 
-            ilk_yayin_tarihi: document.getElementById('edit_ilk_yayin_tarihi').value,
 
-            baslangic_tarihi: document.getElementById('edit_baslangic_tarihi').value,
+                    // Liderleri yükle
 
-            bitis_tarihi: document.getElementById('edit_bitis_tarihi').value,
+                    loadDüzenleSurecLiderler(surec);
 
-            durum: document.getElementById('edit_durum').value,
 
-            ilerleme: document.getElementById('edit_ilerleme').value,
 
-            baslangic_siniri: document.getElementById('edit_baslangic_siniri').value,
+                    // Üyeleri yükle
 
-            bitis_siniri: document.getElementById('edit_bitis_siniri').value,
+                    loadDüzenleSurecUyeler(surec);
 
-            aciklama: document.getElementById('edit_aciklama').value,
 
-            lider_ids: liderIds,
 
-            uye_ids: uyeIds,
+                    // Alt stratejileri yükle
 
-            strateji_ids: stratejiIds
+                    loadDüzenleSurecStratejiler(surec);
+
+
+
+                    // Modalı göster
+
+                    const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
+
+                    modal.show();
+
+                } else {
+
+                    showToast('error', data.message);
+
+                }
+
+            })
+
+            .catch(err => {
+
+                showToast('error', 'Süreç bilgileri yüklenirken hata: ' + err.message);
+
+            });
+
+    }
+
+
+
+    // Düzenleme formu submit fonksiyonu
+
+    function updateSurec(e) {
+
+        e.preventDefault();
+
+
+
+        const surecId = document.getElementById('edit_surec_id').value;
+
+
+
+        // İşlem başladı mesajı
+
+        showToast('info', 'Süreç güncelleniyor...', 'İşlem Devam Ediyor');
+
+
+
+        // Lider, üye ve strateji bilgilerini topla
+
+        const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => parseInt(opt.value));
+
+        const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => parseInt(opt.value));
+
+        const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => parseInt(item.getAttribute('data-strategy-id')));
+
+
+
+        fetch(`/surec/update/${surecId}`, {
+
+            method: 'POST',
+
+            headers: { 'Content-Type': 'application/json' },
+
+            body: JSON.stringify({
+
+                surec_adi: document.getElementById('edit_ad').value,
+
+                dokuman_no: document.getElementById('edit_dokuman_no').value,
+
+                rev_no: document.getElementById('edit_rev_no').value,
+
+                rev_tarihi: document.getElementById('edit_rev_tarihi').value,
+
+                ilk_yayin_tarihi: document.getElementById('edit_ilk_yayin_tarihi').value,
+
+                baslangic_tarihi: document.getElementById('edit_baslangic_tarihi').value,
+
+                bitis_tarihi: document.getElementById('edit_bitis_tarihi').value,
+
+                durum: document.getElementById('edit_durum').value,
+
+                ilerleme: document.getElementById('edit_ilerleme').value,
+
+                baslangic_siniri: document.getElementById('edit_baslangic_siniri').value,
+
+                bitis_siniri: document.getElementById('edit_bitis_siniri').value,
+
+                aciklama: document.getElementById('edit_aciklama').value,
+
+                lider_ids: liderIds,
+
+                uye_ids: uyeIds,
+
+                strateji_ids: stratejiIds
+
+            })
 
         })
 
-    })
+            .then(r => r.json())
 
-    .then(r => r.json())
+            .then(data => {
 
-    .then(data => {
+                if (data.success) {
 
-        if(data.success) {
+                    showToast('success', data.message, 'Başarılı');
 
-            showToast('success', data.message, 'Başarılı');
+                    // Modalı kapat
 
-            // Modalı kapat
+                    const modalElement = document.getElementById('editSurecModal');
 
-            const modalElement = document.getElementById('editSurecModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
 
-            const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
 
-            if(modal) modal.hide();
+                    // Sayfayı yenile
 
-            // Sayfayı yenile
+                    setTimeout(() => location.reload(), 1500);
 
-            setTimeout(() => location.reload(), 1500);
+                } else {
 
-        } else {
+                    showToast('error', data.message, '→Œ Hata');
 
-            showToast('error', data.message, '→Œ Hata');
+                }
+
+            })
+
+            .catch(err => {
+
+                showToast('error', 'Güncelleme hatası: ' + err.message, '→Œ Bağlantı Hatası');
+
+            });
+
+    }
+
+
+
+    // Silme fonksiyonu
+
+    function deleteSurec(id, name) {
+
+        if (confirm('Silmek istediğinizden emin misiniz?\n\nSüreç: ' + name)) {
+
+            showToast('info', 'Süreç siliniyor...', 'İşlem Devam Ediyor');
+
+
+
+            fetch('/surec/delete/' + id, { method: 'DELETE' })
+
+                .then(r => r.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        showToast('success', data.message, 'Başarılı');
+
+                        setTimeout(() => location.reload(), 1500);
+
+                    } else {
+
+                        showToast('error', data.message, 'Hata');
+
+                    }
+
+                })
+
+                .catch(err => {
+
+                    showToast('error', 'Silme işlemi başarısız: ' + err.message, 'Hata');
+
+                });
 
         }
 
-    })
-
-    .catch(err => {
-
-        showToast('error', 'Güncelleme hatası: ' + err.message, '→Œ Bağlantı Hatası');
-
-    });
-
-}
-
-
-
-// Silme fonksiyonu
-
-function deleteSurec(id, name) {
-
-    if(confirm('Silmek istediğinizden emin misiniz?\n\nSüreç: ' + name)) {
-
-        showToast('info', 'Süreç siliniyor...', 'İşlem Devam Ediyor');
-
-        
-
-        fetch('/surec/delete/' + id, {method: 'DELETE'})
-
-        .then(r => r.json())
-
-        .then(data => {
-
-            if(data.success) {
-
-                showToast('success', data.message, 'Başarılı');
-
-                setTimeout(() => location.reload(), 1500);
-
-            } else {
-
-                showToast('error', data.message, 'Hata');
-
-            }
-
-        })
-
-        .catch(err => {
-
-            showToast('error', 'Silme işlemi başarısız: ' + err.message, 'Hata');
-
-        });
-
-    }
-
-}
-
-
-
-// Yeni süreç formu için lider ekleme fonksiyonu
-
-function addNewLiderler() {
-
-    const source = document.getElementById('new_lider_source');
-
-    const target = document.getElementById('new_lider_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
-
-        return;
-
     }
 
 
 
-    let addedCount = 0;
+    // Yeni süreç formu için lider ekleme fonksiyonu
 
-    selected.forEach(opt => {
+    function addNewLiderler() {
 
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
+        const source = document.getElementById('new_lider_source');
 
-            const newOpt = new Option(opt.text, opt.value);
+        const target = document.getElementById('new_lider_ids');
 
-            target.add(newOpt);
+        const selected = Array.from(source.selectedOptions);
 
-            addedCount++;
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
+
+            return;
 
         }
 
-    });
 
 
+        let addedCount = 0;
 
-    if (addedCount > 0) {
+        selected.forEach(opt => {
 
-        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
 
-    } else {
+                const newOpt = new Option(opt.text, opt.value);
 
-        showToast('info', 'Seçilen liderler zaten mevcut!', 'Bilgi');
-
-    }
-
-}
-
-
-
-// Yeni süreç formu için lider çıkarma fonksiyonu
-
-function removeNewLiderler() {
-
-    const target = document.getElementById('new_lider_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sağ taraftan lider seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    selected.forEach(opt => {
-
-        target.removeChild(opt);
-
-    });
-
-
-
-    showToast('success', `${selected.length} lider çıkarıldı!`, 'Başarılı');
-
-}
-
-
-
-// Yeni süreç formu için üye ekleme fonksiyonu
-
-function addNewUyeler() {
-
-    const source = document.getElementById('new_uye_source');
-
-    const target = document.getElementById('new_uye_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    console.log('Yeni süreç üye ekleme işlemi başladı');
-
-    console.log('Seçilen üyeler:', selected.map(opt => ({value: opt.value, text: opt.text})));
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan üye seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    let addedCount = 0;
-
-    selected.forEach(opt => {
-
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            const newOpt = new Option(opt.text, opt.value);
-
-            target.add(newOpt);
-
-            addedCount++;
-
-        }
-
-    });
-
-
-
-    if (addedCount > 0) {
-
-        const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
-
-        showToast('success', message, 'Başarılı');
-
-    } else {
-
-        showToast('warning', 'Seçilen üyeler zaten mevcut!', 'Uyarı');
-
-    }
-
-}
-
-
-
-// Yeni süreç formu için üye çıkarma fonksiyonu
-
-function removeNewUyeler() {
-
-    const target = document.getElementById('new_uye_ids');
-
-    const selected = Array.from(target.selectedOptions);
-
-
-
-    console.log('Yeni süreç üye çıkarma işlemi başladı');
-
-    console.log('Çıkarılacak üyeler:', selected.map(opt => ({value: opt.value, text: opt.text})));
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sağ taraftan üye seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    const removedCount = selected.length;
-
-    selected.forEach(opt => {
-
-        target.removeChild(opt);
-
-    });
-
-
-
-    const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
-
-    showToast('success', message, 'Başarılı');
-
-}
-
-
-
-// Yeni süreç formu için strateji ekleme fonksiyonu
-
-function addNewStratejiler() {
-
-    const source = document.getElementById('new_strateji_source');
-
-    const target = document.getElementById('new_strateji_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    let addedCount = 0;
-
-    
-
-    // Ana stratejilere göre grupla
-
-    const groupedStrategies = {};
-
-    selected.forEach(opt => {
-
-        const mainStrategyAd = opt.dataset.mainStrategyAd;
-
-        const subStrategyAd = opt.text;
-
-        
-
-        if (!groupedStrategies[mainStrategyAd]) {
-
-            groupedStrategies[mainStrategyAd] = [];
-
-        }
-
-        groupedStrategies[mainStrategyAd].push({
-
-            id: opt.value,
-
-            name: subStrategyAd
-
-        });
-
-    });
-
-
-
-    // Her ana strateji için grup oluştur
-
-    Object.keys(groupedStrategies).forEach(mainStrategyAd => {
-
-        const strategies = groupedStrategies[mainStrategyAd];
-
-        
-
-        // Ana strateji başlığı (optgroup benzeri)
-
-        const mainStrategyDiv = document.createElement('div');
-
-        mainStrategyDiv.className = 'strategy-group';
-
-        mainStrategyDiv.innerHTML = `
-
-            <div class="strategy-group-header">
-
-                <strong>${mainStrategyAd}</strong>
-
-            </div>
-
-        `;
-
-        
-
-        // Alt stratejileri ekle
-
-        strategies.forEach(strategy => {
-
-            // Zaten eklenmemiş ise ekle
-
-            if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
-
-                const strategyDiv = document.createElement('div');
-
-                strategyDiv.className = 'strategy-item';
-
-                strategyDiv.setAttribute('data-strategy-id', strategy.id);
-
-                strategyDiv.innerHTML = `
-
-                    <div class="strategy-sub">${strategy.name}</div>
-
-                `;
-
-                strategyDiv.onclick = () => toggleStrategySelection(strategy.id);
-
-                strategyDiv.ondblclick = () => removeStrategyItem(strategy.id);
-
-                mainStrategyDiv.appendChild(strategyDiv);
+                target.add(newOpt);
 
                 addedCount++;
 
@@ -3785,559 +3518,201 @@ function addNewStratejiler() {
 
         });
 
-        
 
-        // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
 
-        if (mainStrategyDiv.children.length > 1) { // header + items
+        if (addedCount > 0) {
 
-            target.appendChild(mainStrategyDiv);
-
-        }
-
-    });
-
-
-
-    if (addedCount > 0) {
-
-        showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
-
-    } else {
-
-        showToast('info', 'Seçilen stratejiler zaten mevcut!', 'Bilgi');
-
-    }
-
-}
-
-
-
-// Yeni süreç formu için strateji çıkarma fonksiyonu
-
-function removeNewStratejiler() {
-
-    const target = document.getElementById('new_strateji_ids');
-
-    const selectedItems = target.querySelectorAll('.strategy-item.selected');
-
-    
-
-    if (selectedItems.length === 0) {
-
-        showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    selectedItems.forEach(item => {
-
-        item.remove();
-
-    });
-
-
-
-    showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
-
-}
-
-
-
-// Strateji seçimini toggle etme fonksiyonu
-
-function toggleStrategySelection(strategyId) {
-
-    const target = document.getElementById('new_strateji_ids');
-
-    const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
-
-    if (item) {
-
-        item.classList.toggle('selected');
-
-    }
-
-}
-
-
-
-// Strateji öğesini çıkarma fonksiyonu
-
-function removeStrategyItem(strategyId) {
-
-    const target = document.getElementById('new_strateji_ids');
-
-    const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
-
-    if (item) {
-
-        item.remove();
-
-        showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
-
-    }
-
-}
-
-
-
-// Yeni Süreç Oluşturma Fonksiyonu
-
-const IS_ADMIN = {{ 'true' if current_user.sistem_rol == 'admin' else 'false' }};
-
-function onNewProcessKurumChange(kurumId) {
-
-    filterUsersByKurum(kurumId, 'new_lider_source');
-
-    filterUsersByKurum(kurumId, 'new_uye_source');
-
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    const kurumSelect = document.getElementById('newProcessKurum');
-
-    if (kurumSelect && kurumSelect.value) {
-
-        onNewProcessKurumChange(kurumSelect.value);
-
-    }
-
-});
-
-function createNewProcess() {
-
-    // Çoklu lider seçimi için lider ID'lerini topla
-
-    const liderIds = Array.from(document.getElementById('new_lider_ids').options).map(opt => opt.value);
-
-    const uyeIds = Array.from(document.getElementById('new_uye_ids').options).map(opt => opt.value);
-
-    const stratejiIds = Array.from(document.querySelectorAll('#new_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
-
-    
-
-    const formData = {
-
-        ad: document.getElementById('newProcessAd').value.trim(),
-
-        lider_ids: liderIds, // Çoklu lider seçimi
-
-        uye_ids: uyeIds, // Çoklu üye seçimi
-
-        strateji_ids: stratejiIds, // Çoklu strateji seçimi
-
-        dokuman_no: document.getElementById('newProcessDokuman').value.trim(),
-
-        rev_no: document.getElementById('newProcessRevizyon').value.trim(),
-
-        rev_tarihi: document.getElementById('newProcessRevTarihi').value,
-
-        ilk_yayin_tarihi: document.getElementById('newProcessIlkYayinTarihi').value,
-
-        durum: document.getElementById('newProcessDurum').value,
-
-        ilerleme: document.getElementById('newProcessIlerleme').value,
-
-        baslangic_tarihi: document.getElementById('newProcessBaslangic').value,
-
-        bitis_tarihi: document.getElementById('newProcessBitis').value,
-
-        baslangic_siniri: document.getElementById('newProcessBaslangicSiniri').value.trim(),
-
-        bitis_siniri: document.getElementById('newProcessBitisSiniri').value.trim(),
-
-        aciklama: document.getElementById('newProcessAciklama').value.trim()
-
-    };
-
-    if (IS_ADMIN) {
-
-        const kurumSelect = document.getElementById('newProcessKurum');
-
-        formData.kurum_id = kurumSelect ? kurumSelect.value : '';
-
-    }
-
-    
-
-    // Zorunlu alan kontrolü
-
-    if (!formData.ad || (IS_ADMIN && !formData.kurum_id) || liderIds.length === 0) {
-
-        const msg = IS_ADMIN
-
-            ? 'Lütfen süreç adı, kurum ve en az bir lider seçin!'
-
-            : 'Lütfen süreç adı ve en az bir lider seçin!';
-
-        showToast('warning', msg, 'Uyarı');
-
-        return;
-
-    }
-
-    
-
-    const submitBtn = document.querySelector('button[onclick="createNewProcess()"]');
-
-    submitBtn.disabled = true;
-
-    submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Oluşturuluyor...';
-
-    
-
-    fetch('/admin/create-process', {
-
-        method: 'POST',
-
-        headers: {
-
-            'Content-Type': 'application/json',
-
-        },
-
-        body: JSON.stringify(formData)
-
-    })
-
-    .then(response => response.json())
-
-    .then(data => {
-
-        if (data.success) {
-
-            showToast('success', 'Süreç başarıyla oluşturuldu!', 'Başarılı');
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newProcessModal'));
-
-            if (modal) modal.hide();
-
-            setTimeout(() => location.reload(), 1500);
+            showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
 
         } else {
 
-            showToast('error', data.message, '→Œ Hata');
+            showToast('info', 'Seçilen liderler zaten mevcut!', 'Bilgi');
 
         }
 
-    })
-
-    .catch(error => {
-
-        console.error('Error:', error);
-
-        showToast('error', 'Süreç oluşturulurken hata oluştu!', '→Œ Bağlantı Hatası');
-
-    })
-
-    .finally(() => {
-
-        submitBtn.disabled = false;
-
-        submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Süreç Oluştur';
-
-    });
-
-}
+    }
 
 
 
-// Kurum seçimine göre kullanıcıları filtrele
+    // Yeni süreç formu için lider çıkarma fonksiyonu
 
-function filterUsersByKurum(kurumId, selectId) {
+    function removeNewLiderler() {
 
-    const select = document.getElementById(selectId);
+        const target = document.getElementById('new_lider_ids');
 
-    if (!select) return;
+        const selected = Array.from(target.selectedOptions);
 
-    const options = select.querySelectorAll('option');
 
-    
 
-    options.forEach(option => {
+        if (selected.length === 0) {
 
-        if (option.value === '') return; // Boş seçenek her zaman görünür
+            showToast('warning', 'Lütfen önce sağ taraftan lider seçin!', 'Uyarı');
 
-        
-
-        const userKurumId = option.getAttribute('data-kurum-id');
-
-        if (!kurumId || userKurumId === kurumId) {
-
-            option.style.display = 'block';
-
-        } else {
-
-            option.style.display = 'none';
+            return;
 
         }
 
-    });
 
-    
 
-    // Seçimi sıfırla (multiple select'lerde güvenli)
+        selected.forEach(opt => {
 
-    Array.from(select.options).forEach(opt => {
+            target.removeChild(opt);
 
-        opt.selected = false;
-
-    });
-
-}
+        });
 
 
 
-// Süreç düzenleme fonksiyonu
+        showToast('success', `${selected.length} lider çıkarıldı!`, 'Başarılı');
 
-function editProcess(processId) {
+    }
 
-    console.log('Süreç düzenleme başladı, ID:', processId);
 
-    
 
-    // Süreç bilgilerini al
+    // Yeni süreç formu için üye ekleme fonksiyonu
 
-    fetch(`/admin/get-process/${processId}`)
+    function addNewUyeler() {
 
-        .then(response => response.json())
+        const source = document.getElementById('new_uye_source');
 
-        .then(data => {
+        const target = document.getElementById('new_uye_ids');
 
-            console.log('Süreç verileri yüklendi:', data);
+        const selected = Array.from(source.selectedOptions);
 
-            
 
-            if (data.success) {
 
-                const surec = data.surec;
+        console.log('Yeni süreç üye ekleme işlemi başladı');
 
-                console.log('Süreç liderleri:', surec.liderler);
+        console.log('Seçilen üyeler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
 
-                console.log('Süreç üyeleri:', surec.uyeler);
 
-                console.log('Süreç alt stratejileri:', surec.alt_stratejiler);
 
-                document.getElementById('edit_surec_id').value = surec.id;
+        if (selected.length === 0) {
 
-                document.getElementById('edit_ad').value = surec.ad;
+            showToast('warning', 'Lütfen önce sol taraftan üye seçin!', 'Uyarı');
 
-                document.getElementById('edit_dokuman_no').value = surec.dokuman_no || '';
+            return;
 
-                document.getElementById('edit_rev_no').value = surec.rev_no || '';
+        }
 
-                document.getElementById('edit_rev_tarihi').value = surec.rev_tarihi || '';
 
-                document.getElementById('edit_ilk_yayin_tarihi').value = surec.ilk_yayin_tarihi || '';
 
-                document.getElementById('edit_baslangic_tarihi').value = surec.baslangic_tarihi || '';
+        let addedCount = 0;
 
-                document.getElementById('edit_bitis_tarihi').value = surec.bitis_tarihi || '';
+        selected.forEach(opt => {
 
-                document.getElementById('edit_durum').value = surec.durum;
+            // Zaten eklenmemiş ise ekle
 
-                document.getElementById('edit_ilerleme').value = surec.ilerleme || 0;
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
 
-                document.getElementById('edit_baslangic_siniri').value = surec.baslangic_siniri || '';
+                const newOpt = new Option(opt.text, opt.value);
 
-                document.getElementById('edit_bitis_siniri').value = surec.bitis_siniri || '';
+                target.add(newOpt);
 
-                document.getElementById('edit_aciklama').value = surec.aciklama || '';
-
-                
-
-                // Çoklu lider seçimi için verileri yükle
-
-                loadDüzenleSurecLiderler(surec);
-
-                
-
-                // Çoklu üye seçimi için verileri yükle
-
-                loadDüzenleSurecUyeler(surec);
-
-                
-
-                // Alt strateji seçimi için verileri yükle
-
-                loadDüzenleProcessStratejiler(surec);
-
-                
-
-                const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
-
-                modal.show();
-
-            } else {
-
-                showToast('error', data.message || 'Süreç bilgileri yüklenirken bir hata oluştu', 'Hata');
+                addedCount++;
 
             }
 
-        })
+        });
 
-        .catch(error => {
 
-            console.error('Error:', error);
 
-            handleAjaxError(error, 'Süreç bilgileri yüklenirken bir hata oluştu');
+        if (addedCount > 0) {
+
+            const message = addedCount > 1 ? `${addedCount} üye eklendi.` : `'${selected[0].text}' ekibe eklendi.`;
+
+            showToast('success', message, 'Başarılı');
+
+        } else {
+
+            showToast('warning', 'Seçilen üyeler zaten mevcut!', 'Uyarı');
+
+        }
+
+    }
+
+
+
+    // Yeni süreç formu için üye çıkarma fonksiyonu
+
+    function removeNewUyeler() {
+
+        const target = document.getElementById('new_uye_ids');
+
+        const selected = Array.from(target.selectedOptions);
+
+
+
+        console.log('Yeni süreç üye çıkarma işlemi başladı');
+
+        console.log('Çıkarılacak üyeler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
+
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sağ taraftan üye seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        const removedCount = selected.length;
+
+        selected.forEach(opt => {
+
+            target.removeChild(opt);
 
         });
 
-}
 
 
+        const message = removedCount > 1 ? `${removedCount} üye çıkarıldı.` : `Üye çıkarıldı.`;
 
-// Düzenleme formunda mevcut liderleri yükle
-
-function loadDüzenleProcessLiderler(surec) {
-
-    console.log('loadDüzenleProcessLiderler çağrıldı');
-
-    const target = document.getElementById('edit_lider_ids');
-
-    console.log('edit_lider_ids elementi:', target);
-
-    if (!target) {
-
-        console.error('edit_lider_ids elementi bulunamadı!');
-
-        return;
-
-    }
-
-    target.innerHTML = '';
-
-
-
-    console.log('Lider yükleme işlemi başladı:', surec.liderler);
-
-
-
-    if (surec.liderler && surec.liderler.length > 0) {
-
-        console.log('Lider sayısı:', surec.liderler.length);
-
-        surec.liderler.forEach((lider, index) => {
-
-            console.log(`Lider ${index + 1}:`, lider);
-
-            const option = new Option(lider.username, lider.id);
-
-            console.log('Oluşturulan option:', option);
-
-            console.log('Option eklenmeden önce target.options.length:', target.options.length);
-
-            target.add(option);
-
-            console.log('Option eklendikten sonra target.options.length:', target.options.length);
-
-        });
-
-    } else {
-
-        console.log('Lider bulunamadı');
+        showToast('success', message, 'Başarılı');
 
     }
 
 
 
-    console.log('Lider yükleme tamamlandı');
+    // Yeni süreç formu için strateji ekleme fonksiyonu
 
-}
+    function addNewStratejiler() {
 
+        const source = document.getElementById('new_strateji_source');
 
+        const target = document.getElementById('new_strateji_ids');
 
-// Düzenleme formunda mevcut üyeleri yükle
-
-function loadDüzenleProcessUyeler(surec) {
-
-    console.log('loadDüzenleProcessUyeler çağrıldı');
-
-    const target = document.getElementById('edit_uye_ids');
-
-    console.log('edit_uye_ids elementi:', target);
-
-    if (!target) {
-
-        console.error('edit_uye_ids elementi bulunamadı!');
-
-        return;
-
-    }
-
-    target.innerHTML = '';
+        const selected = Array.from(source.selectedOptions);
 
 
 
-    console.log('Üye yükleme işlemi başladı:', surec.uyeler);
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sol taraftan strateji seçin!', 'Uyarı');
+
+            return;
+
+        }
 
 
 
-    if (surec.uyeler && surec.uyeler.length > 0) {
-
-        console.log('Üye sayısı:', surec.uyeler.length);
-
-        surec.uyeler.forEach((uye, index) => {
-
-            console.log(`Üye ${index + 1}:`, uye);
-
-            const option = new Option(uye.username, uye.id);
-
-            target.add(option);
-
-        });
-
-    } else {
-
-        console.log('Üye bulunamadı');
-
-    }
+        let addedCount = 0;
 
 
-
-    console.log('Üye yükleme tamamlandı');
-
-}
-
-
-
-// Düzenleme formunda mevcut stratejileri yükle
-
-function loadDüzenleProcessStratejiler(surec) {
-
-    const target = document.getElementById('edit_strateji_ids');
-
-    target.innerHTML = '';
-
-
-
-    console.log('Strateji yükleme işlemi başladı:', surec.alt_stratejiler);
-
-
-
-    if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
-
-        console.log('Strateji sayısı:', surec.alt_stratejiler.length);
-
-        
 
         // Ana stratejilere göre grupla
 
         const groupedStrategies = {};
 
-        surec.alt_stratejiler.forEach((strateji, index) => {
+        selected.forEach(opt => {
 
-            console.log(`Strateji ${index + 1}:`, strateji);
+            const mainStrategyAd = opt.dataset.mainStrategyAd;
 
-            
+            const subStrategyAd = opt.text;
 
-            const mainStrategyAd = strateji.ana_strateji.ad;
+
 
             if (!groupedStrategies[mainStrategyAd]) {
 
@@ -4347,9 +3722,9 @@ function loadDüzenleProcessStratejiler(surec) {
 
             groupedStrategies[mainStrategyAd].push({
 
-                id: strateji.id,
+                id: opt.value,
 
-                name: strateji.ad
+                name: subStrategyAd
 
             });
 
@@ -4363,7 +3738,7 @@ function loadDüzenleProcessStratejiler(surec) {
 
             const strategies = groupedStrategies[mainStrategyAd];
 
-            
+
 
             // Ana strateji başlığı (optgroup benzeri)
 
@@ -4373,6 +3748,636 @@ function loadDüzenleProcessStratejiler(surec) {
 
             mainStrategyDiv.innerHTML = `
 
+            <div class="strategy-group-header">
+
+                <strong>${mainStrategyAd}</strong>
+
+            </div>
+
+        `;
+
+
+
+            // Alt stratejileri ekle
+
+            strategies.forEach(strategy => {
+
+                // Zaten eklenmemiş ise ekle
+
+                if (!target.querySelector(`[data-strategy-id="${strategy.id}"]`)) {
+
+                    const strategyDiv = document.createElement('div');
+
+                    strategyDiv.className = 'strategy-item';
+
+                    strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                    strategyDiv.innerHTML = `
+
+                    <div class="strategy-sub">${strategy.name}</div>
+
+                `;
+
+                    strategyDiv.onclick = () => toggleStrategySelection(strategy.id);
+
+                    strategyDiv.ondblclick = () => removeStrategyItem(strategy.id);
+
+                    mainStrategyDiv.appendChild(strategyDiv);
+
+                    addedCount++;
+
+                }
+
+            });
+
+
+
+            // Eğer bu ana strateji için yeni alt strateji eklendiyse, grubu ekle
+
+            if (mainStrategyDiv.children.length > 1) { // header + items
+
+                target.appendChild(mainStrategyDiv);
+
+            }
+
+        });
+
+
+
+        if (addedCount > 0) {
+
+            showToast('success', `${addedCount} strateji eklendi!`, 'Başarılı');
+
+        } else {
+
+            showToast('info', 'Seçilen stratejiler zaten mevcut!', 'Bilgi');
+
+        }
+
+    }
+
+
+
+    // Yeni süreç formu için strateji çıkarma fonksiyonu
+
+    function removeNewStratejiler() {
+
+        const target = document.getElementById('new_strateji_ids');
+
+        const selectedItems = target.querySelectorAll('.strategy-item.selected');
+
+
+
+        if (selectedItems.length === 0) {
+
+            showToast('warning', 'Lütfen önce sağ taraftan strateji seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        selectedItems.forEach(item => {
+
+            item.remove();
+
+        });
+
+
+
+        showToast('success', `${selectedItems.length} strateji çıkarıldı!`, 'Başarılı');
+
+    }
+
+
+
+    // Strateji seçimini toggle etme fonksiyonu
+
+    function toggleStrategySelection(strategyId) {
+
+        const target = document.getElementById('new_strateji_ids');
+
+        const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
+
+        if (item) {
+
+            item.classList.toggle('selected');
+
+        }
+
+    }
+
+
+
+    // Strateji öğesini çıkarma fonksiyonu
+
+    function removeStrategyItem(strategyId) {
+
+        const target = document.getElementById('new_strateji_ids');
+
+        const item = target.querySelector(`[data-strategy-id="${strategyId}"]`);
+
+        if (item) {
+
+            item.remove();
+
+            showToast('success', 'Strateji çıkarıldı!', 'Başarılı');
+
+        }
+
+    }
+
+
+
+    // Yeni Süreç Oluşturma Fonksiyonu
+
+    const IS_ADMIN = {{ 'true' if current_user.sistem_rol == 'admin' else 'false' }};
+
+    function onNewProcessKurumChange(kurumId) {
+
+        filterUsersByKurum(kurumId, 'new_lider_source');
+
+        filterUsersByKurum(kurumId, 'new_uye_source');
+
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const kurumSelect = document.getElementById('newProcessKurum');
+
+        if (kurumSelect && kurumSelect.value) {
+
+            onNewProcessKurumChange(kurumSelect.value);
+
+        }
+
+    });
+
+    function createNewProcess() {
+
+        // Çoklu lider seçimi için lider ID'lerini topla
+
+        const liderIds = Array.from(document.getElementById('new_lider_ids').options).map(opt => opt.value);
+
+        const uyeIds = Array.from(document.getElementById('new_uye_ids').options).map(opt => opt.value);
+
+        const stratejiIds = Array.from(document.querySelectorAll('#new_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
+
+
+
+        const formData = {
+
+            ad: document.getElementById('newProcessAd').value.trim(),
+
+            lider_ids: liderIds, // Çoklu lider seçimi
+
+            uye_ids: uyeIds, // Çoklu üye seçimi
+
+            strateji_ids: stratejiIds, // Çoklu strateji seçimi
+
+            dokuman_no: document.getElementById('newProcessDokuman').value.trim(),
+
+            rev_no: document.getElementById('newProcessRevizyon').value.trim(),
+
+            rev_tarihi: document.getElementById('newProcessRevTarihi').value,
+
+            ilk_yayin_tarihi: document.getElementById('newProcessIlkYayinTarihi').value,
+
+            durum: document.getElementById('newProcessDurum').value,
+
+            ilerleme: document.getElementById('newProcessIlerleme').value,
+
+            baslangic_tarihi: document.getElementById('newProcessBaslangic').value,
+
+            bitis_tarihi: document.getElementById('newProcessBitis').value,
+
+            baslangic_siniri: document.getElementById('newProcessBaslangicSiniri').value.trim(),
+
+            bitis_siniri: document.getElementById('newProcessBitisSiniri').value.trim(),
+
+            aciklama: document.getElementById('newProcessAciklama').value.trim()
+
+        };
+
+        if (IS_ADMIN) {
+
+            const kurumSelect = document.getElementById('newProcessKurum');
+
+            formData.kurum_id = kurumSelect ? kurumSelect.value : '';
+
+        }
+
+
+
+        // Zorunlu alan kontrolü
+
+        if (!formData.ad || (IS_ADMIN && !formData.kurum_id) || liderIds.length === 0) {
+
+            const msg = IS_ADMIN
+
+                ? 'Lütfen süreç adı, kurum ve en az bir lider seçin!'
+
+                : 'Lütfen süreç adı ve en az bir lider seçin!';
+
+            showToast('warning', msg, 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        const submitBtn = document.querySelector('button[onclick="createNewProcess()"]');
+
+        submitBtn.disabled = true;
+
+        submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Oluşturuluyor...';
+
+
+
+        fetch('/admin/create-process', {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+
+            },
+
+            body: JSON.stringify(formData)
+
+        })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.success) {
+
+                    showToast('success', 'Süreç başarıyla oluşturuldu!', 'Başarılı');
+
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('newProcessModal'));
+
+                    if (modal) modal.hide();
+
+                    setTimeout(() => location.reload(), 1500);
+
+                } else {
+
+                    showToast('error', data.message, '→Œ Hata');
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error('Error:', error);
+
+                showToast('error', 'Süreç oluşturulurken hata oluştu!', '→Œ Bağlantı Hatası');
+
+            })
+
+            .finally(() => {
+
+                submitBtn.disabled = false;
+
+                submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Süreç Oluştur';
+
+            });
+
+    }
+
+
+
+    // Kurum seçimine göre kullanıcıları filtrele
+
+    function filterUsersByKurum(kurumId, selectId) {
+
+        const select = document.getElementById(selectId);
+
+        if (!select) return;
+
+        const options = select.querySelectorAll('option');
+
+
+
+        options.forEach(option => {
+
+            if (option.value === '') return; // Boş seçenek her zaman görünür
+
+
+
+            const userKurumId = option.getAttribute('data-kurum-id');
+
+            if (!kurumId || userKurumId === kurumId) {
+
+                option.style.display = 'block';
+
+            } else {
+
+                option.style.display = 'none';
+
+            }
+
+        });
+
+
+
+        // Seçimi sıfırla (multiple select'lerde güvenli)
+
+        Array.from(select.options).forEach(opt => {
+
+            opt.selected = false;
+
+        });
+
+    }
+
+
+
+    // Süreç düzenleme fonksiyonu
+
+    function editProcess(processId) {
+
+        console.log('Süreç düzenleme başladı, ID:', processId);
+
+
+
+        // Süreç bilgilerini al
+
+        fetch(`/admin/get-process/${processId}`)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                console.log('Süreç verileri yüklendi:', data);
+
+
+
+                if (data.success) {
+
+                    const surec = data.surec;
+
+                    console.log('Süreç liderleri:', surec.liderler);
+
+                    console.log('Süreç üyeleri:', surec.uyeler);
+
+                    console.log('Süreç alt stratejileri:', surec.alt_stratejiler);
+
+                    document.getElementById('edit_surec_id').value = surec.id;
+
+                    document.getElementById('edit_ad').value = surec.ad;
+
+                    document.getElementById('edit_dokuman_no').value = surec.dokuman_no || '';
+
+                    document.getElementById('edit_rev_no').value = surec.rev_no || '';
+
+                    document.getElementById('edit_rev_tarihi').value = surec.rev_tarihi || '';
+
+                    document.getElementById('edit_ilk_yayin_tarihi').value = surec.ilk_yayin_tarihi || '';
+
+                    document.getElementById('edit_baslangic_tarihi').value = surec.baslangic_tarihi || '';
+
+                    document.getElementById('edit_bitis_tarihi').value = surec.bitis_tarihi || '';
+
+                    document.getElementById('edit_durum').value = surec.durum;
+
+                    document.getElementById('edit_ilerleme').value = surec.ilerleme || 0;
+
+                    document.getElementById('edit_baslangic_siniri').value = surec.baslangic_siniri || '';
+
+                    document.getElementById('edit_bitis_siniri').value = surec.bitis_siniri || '';
+
+                    document.getElementById('edit_aciklama').value = surec.aciklama || '';
+
+
+
+                    // Çoklu lider seçimi için verileri yükle
+
+                    loadDüzenleSurecLiderler(surec);
+
+
+
+                    // Çoklu üye seçimi için verileri yükle
+
+                    loadDüzenleSurecUyeler(surec);
+
+
+
+                    // Alt strateji seçimi için verileri yükle
+
+                    loadDüzenleProcessStratejiler(surec);
+
+
+
+                    const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
+
+                    modal.show();
+
+                } else {
+
+                    showToast('error', data.message || 'Süreç bilgileri yüklenirken bir hata oluştu', 'Hata');
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error('Error:', error);
+
+                handleAjaxError(error, 'Süreç bilgileri yüklenirken bir hata oluştu');
+
+            });
+
+    }
+
+
+
+    // Düzenleme formunda mevcut liderleri yükle
+
+    function loadDüzenleProcessLiderler(surec) {
+
+        console.log('loadDüzenleProcessLiderler çağrıldı');
+
+        const target = document.getElementById('edit_lider_ids');
+
+        console.log('edit_lider_ids elementi:', target);
+
+        if (!target) {
+
+            console.error('edit_lider_ids elementi bulunamadı!');
+
+            return;
+
+        }
+
+        target.innerHTML = '';
+
+
+
+        console.log('Lider yükleme işlemi başladı:', surec.liderler);
+
+
+
+        if (surec.liderler && surec.liderler.length > 0) {
+
+            console.log('Lider sayısı:', surec.liderler.length);
+
+            surec.liderler.forEach((lider, index) => {
+
+                console.log(`Lider ${index + 1}:`, lider);
+
+                const option = new Option(lider.username, lider.id);
+
+                console.log('Oluşturulan option:', option);
+
+                console.log('Option eklenmeden önce target.options.length:', target.options.length);
+
+                target.add(option);
+
+                console.log('Option eklendikten sonra target.options.length:', target.options.length);
+
+            });
+
+        } else {
+
+            console.log('Lider bulunamadı');
+
+        }
+
+
+
+        console.log('Lider yükleme tamamlandı');
+
+    }
+
+
+
+    // Düzenleme formunda mevcut üyeleri yükle
+
+    function loadDüzenleProcessUyeler(surec) {
+
+        console.log('loadDüzenleProcessUyeler çağrıldı');
+
+        const target = document.getElementById('edit_uye_ids');
+
+        console.log('edit_uye_ids elementi:', target);
+
+        if (!target) {
+
+            console.error('edit_uye_ids elementi bulunamadı!');
+
+            return;
+
+        }
+
+        target.innerHTML = '';
+
+
+
+        console.log('Üye yükleme işlemi başladı:', surec.uyeler);
+
+
+
+        if (surec.uyeler && surec.uyeler.length > 0) {
+
+            console.log('Üye sayısı:', surec.uyeler.length);
+
+            surec.uyeler.forEach((uye, index) => {
+
+                console.log(`Üye ${index + 1}:`, uye);
+
+                const option = new Option(uye.username, uye.id);
+
+                target.add(option);
+
+            });
+
+        } else {
+
+            console.log('Üye bulunamadı');
+
+        }
+
+
+
+        console.log('Üye yükleme tamamlandı');
+
+    }
+
+
+
+    // Düzenleme formunda mevcut stratejileri yükle
+
+    function loadDüzenleProcessStratejiler(surec) {
+
+        const target = document.getElementById('edit_strateji_ids');
+
+        target.innerHTML = '';
+
+
+
+        console.log('Strateji yükleme işlemi başladı:', surec.alt_stratejiler);
+
+
+
+        if (surec.alt_stratejiler && surec.alt_stratejiler.length > 0) {
+
+            console.log('Strateji sayısı:', surec.alt_stratejiler.length);
+
+
+
+            // Ana stratejilere göre grupla
+
+            const groupedStrategies = {};
+
+            surec.alt_stratejiler.forEach((strateji, index) => {
+
+                console.log(`Strateji ${index + 1}:`, strateji);
+
+
+
+                const mainStrategyAd = strateji.ana_strateji.ad;
+
+                if (!groupedStrategies[mainStrategyAd]) {
+
+                    groupedStrategies[mainStrategyAd] = [];
+
+                }
+
+                groupedStrategies[mainStrategyAd].push({
+
+                    id: strateji.id,
+
+                    name: strateji.ad
+
+                });
+
+            });
+
+
+
+            // Her ana strateji için grup oluştur
+
+            Object.keys(groupedStrategies).forEach(mainStrategyAd => {
+
+                const strategies = groupedStrategies[mainStrategyAd];
+
+
+
+                // Ana strateji başlığı (optgroup benzeri)
+
+                const mainStrategyDiv = document.createElement('div');
+
+                mainStrategyDiv.className = 'strategy-group';
+
+                mainStrategyDiv.innerHTML = `
+
                 <div class="strategy-group-header">
 
                     <strong>${mainStrategyAd}</strong>
@@ -4381,337 +4386,337 @@ function loadDüzenleProcessStratejiler(surec) {
 
             `;
 
-            
 
-            // Alt stratejileri ekle
 
-            strategies.forEach(strategy => {
+                // Alt stratejileri ekle
 
-                const strategyDiv = document.createElement('div');
+                strategies.forEach(strategy => {
 
-                strategyDiv.className = 'strategy-item';
+                    const strategyDiv = document.createElement('div');
 
-                strategyDiv.setAttribute('data-strategy-id', strategy.id);
+                    strategyDiv.className = 'strategy-item';
 
-                strategyDiv.innerHTML = `
+                    strategyDiv.setAttribute('data-strategy-id', strategy.id);
+
+                    strategyDiv.innerHTML = `
 
                     <div class="strategy-sub">${strategy.name}</div>
 
                 `;
 
-                strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
+                    strategyDiv.onclick = () => toggleDüzenleStrategySelection(strategy.id);
 
-                strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
+                    strategyDiv.ondblclick = () => removeDüzenleStrategyItem(strategy.id);
 
-                mainStrategyDiv.appendChild(strategyDiv);
+                    mainStrategyDiv.appendChild(strategyDiv);
+
+                });
+
+
+
+                target.appendChild(mainStrategyDiv);
 
             });
 
-            
-
-            target.appendChild(mainStrategyDiv);
-
-        });
-
-    } else {
-
-        console.log('Strateji bulunamadı');
-
-    }
-
-
-
-    console.log('Strateji yükleme tamamlandı');
-
-}
-
-
-
-// Lider ekleme fonksiyonu
-
-function addDüzenleLiderler() {
-
-    const source = document.getElementById('edit_lider_source');
-
-    const target = document.getElementById('edit_lider_ids');
-
-    const selected = Array.from(source.selectedOptions);
-
-
-
-    console.log('Lider ekleme işlemi başladı');
-
-    console.log('Seçilen liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
-
-
-
-    if (selected.length === 0) {
-
-        showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
-
-        return;
-
-    }
-
-
-
-    let addedCount = 0;
-
-    selected.forEach(opt => {
-
-        // Zaten eklenmemiş ise ekle
-
-        if (!Array.from(target.options).find(o => o.value === opt.value)) {
-
-            const newOpt = new Option(opt.text, opt.value);
-
-            target.add(newOpt);
-
-            addedCount++;
-
-            console.log(`Lider eklendi: ${opt.text}`);
-
         } else {
 
-            console.log(`Lider zaten mevcut: ${opt.text}`);
+            console.log('Strateji bulunamadı');
 
         }
 
-    });
 
 
-
-    if (addedCount > 0) {
-
-        showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
-
-    } else {
-
-        showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+        console.log('Strateji yükleme tamamlandı');
 
     }
 
 
 
-    console.log('Lider ekleme tamamlandı');
+    // Lider ekleme fonksiyonu
 
-}
+    function addDüzenleLiderler() {
 
+        const source = document.getElementById('edit_lider_source');
 
+        const target = document.getElementById('edit_lider_ids');
 
-// Lider çıkarma fonksiyonu
-
-function removeDüzenleLiderler() {
-
-    const target = document.getElementById('edit_lider_ids');
-
-    const selected = Array.from(target.selectedOptions);
+        const selected = Array.from(source.selectedOptions);
 
 
 
-    console.log('Lider çıkarma işlemi başladı');
+        console.log('Lider ekleme işlemi başladı');
 
-    console.log('Çıkarılacak liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+        console.log('Seçilen liderler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
 
 
 
-    if (selected.length === 0) {
+        if (selected.length === 0) {
 
-        showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
+            showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
 
-        return;
+            return;
+
+        }
+
+
+
+        let addedCount = 0;
+
+        selected.forEach(opt => {
+
+            // Zaten eklenmemiş ise ekle
+
+            if (!Array.from(target.options).find(o => o.value === opt.value)) {
+
+                const newOpt = new Option(opt.text, opt.value);
+
+                target.add(newOpt);
+
+                addedCount++;
+
+                console.log(`Lider eklendi: ${opt.text}`);
+
+            } else {
+
+                console.log(`Lider zaten mevcut: ${opt.text}`);
+
+            }
+
+        });
+
+
+
+        if (addedCount > 0) {
+
+            showToast('success', `${addedCount} lider eklendi!`, 'Başarılı');
+
+        } else {
+
+            showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
+
+        }
+
+
+
+        console.log('Lider ekleme tamamlandı');
 
     }
 
 
 
-    const removedCount = selected.length;
+    // Lider çıkarma fonksiyonu
 
-    selected.forEach(opt => {
+    function removeDüzenleLiderler() {
 
-        opt.remove();
+        const target = document.getElementById('edit_lider_ids');
 
-        console.log(`Lider çıkarıldı: ${opt.text}`);
+        const selected = Array.from(target.selectedOptions);
 
-    });
+
+
+        console.log('Lider çıkarma işlemi başladı');
+
+        console.log('Çıkarılacak liderler:', selected.map(opt => ({ value: opt.value, text: opt.text })));
+
+
+
+        if (selected.length === 0) {
+
+            showToast('warning', 'Lütfen önce sağ taraftan çıkarılacak lideri seçin!', 'Uyarı');
+
+            return;
+
+        }
+
+
+
+        const removedCount = selected.length;
+
+        selected.forEach(opt => {
+
+            opt.remove();
+
+            console.log(`Lider çıkarıldı: ${opt.text}`);
+
+        });
 
 
 
         showToast('success', `${removedCount} lider çıkarıldı!`, 'Başarılı');
 
-    console.log('Lider çıkarma tamamlandı');
-
-}
-
-
-
-// Süreç güncelleme fonksiyonu
-
-function updateProcess() {
-
-    const processId = document.getElementById('editProcessId').value;
-
-    
-
-    // Çoklu lider seçimi için lider ID'lerini topla
-
-    const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => opt.value);
-
-    const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => opt.value);
-
-    const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
-
-    
-
-    console.log('Güncelleme işlemi başladı');
-
-    console.log('Seçilen liderler:', liderIds);
-
-    console.log('Seçilen üyeler:', uyeIds);
-
-    
-
-    const formData = {
-
-        ad: document.getElementById('editProcessAd').value.trim(),
-
-        lider_ids: liderIds, // Çoklu lider seçimi
-
-        uye_ids: uyeIds, // Çoklu üye seçimi
-
-        strateji_ids: stratejiIds, // Çoklu strateji seçimi
-
-        dokuman_no: document.getElementById('editProcessDokuman').value.trim(),
-
-        rev_no: document.getElementById('editProcessRevizyon').value.trim(),
-
-        rev_tarihi: document.getElementById('editProcessRevTarihi').value,
-
-        ilk_yayin_tarihi: document.getElementById('editProcessIlkYayinTarihi').value,
-
-        durum: document.getElementById('editProcessDurum').value,
-
-        ilerleme: document.getElementById('editProcessIlerleme').value,
-
-        baslangic_tarihi: document.getElementById('editProcessBaslangic').value,
-
-        bitis_tarihi: document.getElementById('editProcessBitis').value,
-
-        baslangic_siniri: document.getElementById('editProcessBaslangicSiniri').value.trim(),
-
-        bitis_siniri: document.getElementById('editProcessBitisSiniri').value.trim(),
-
-        aciklama: document.getElementById('editProcessAciklama').value.trim()
-
-    };
-
-    
-
-    // Zorunlu alan kontrolü
-
-    if (!formData.ad || liderIds.length === 0) {
-
-        showToast('warning', 'Lütfen süreç adı ve en az bir lider seçin!', 'Eksik Bilgi');
-
-        return;
+        console.log('Lider çıkarma tamamlandı');
 
     }
 
-    
 
-    const submitBtn = document.querySelector('button[onclick="updateProcess()"]');
 
-    submitBtn.disabled = true;
+    // Süreç güncelleme fonksiyonu
 
-    submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Güncelleniyor...';
+    function updateProcess() {
 
-    
+        const processId = document.getElementById('editProcessId').value;
 
-    fetch(`/admin/update-process/${processId}`, {
 
-        method: 'PUT',
 
-        headers: {
+        // Çoklu lider seçimi için lider ID'lerini topla
 
-            'Content-Type': 'application/json',
+        const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => opt.value);
 
-        },
+        const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => opt.value);
 
-        body: JSON.stringify(formData)
+        const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
 
-    })
 
-    .then(response => response.json())
 
-    .then(data => {
+        console.log('Güncelleme işlemi başladı');
 
-        if (data.success) {
+        console.log('Seçilen liderler:', liderIds);
 
-            showToast('success', 'Süreç başarıyla güncellendi!', 'Başarılı');
+        console.log('Seçilen üyeler:', uyeIds);
 
-            setTimeout(() => location.reload(), 1500);
 
-        } else {
 
-            showToast('error', data.message, 'Hata');
+        const formData = {
+
+            ad: document.getElementById('editProcessAd').value.trim(),
+
+            lider_ids: liderIds, // Çoklu lider seçimi
+
+            uye_ids: uyeIds, // Çoklu üye seçimi
+
+            strateji_ids: stratejiIds, // Çoklu strateji seçimi
+
+            dokuman_no: document.getElementById('editProcessDokuman').value.trim(),
+
+            rev_no: document.getElementById('editProcessRevizyon').value.trim(),
+
+            rev_tarihi: document.getElementById('editProcessRevTarihi').value,
+
+            ilk_yayin_tarihi: document.getElementById('editProcessIlkYayinTarihi').value,
+
+            durum: document.getElementById('editProcessDurum').value,
+
+            ilerleme: document.getElementById('editProcessIlerleme').value,
+
+            baslangic_tarihi: document.getElementById('editProcessBaslangic').value,
+
+            bitis_tarihi: document.getElementById('editProcessBitis').value,
+
+            baslangic_siniri: document.getElementById('editProcessBaslangicSiniri').value.trim(),
+
+            bitis_siniri: document.getElementById('editProcessBitisSiniri').value.trim(),
+
+            aciklama: document.getElementById('editProcessAciklama').value.trim()
+
+        };
+
+
+
+        // Zorunlu alan kontrolü
+
+        if (!formData.ad || liderIds.length === 0) {
+
+            showToast('warning', 'Lütfen süreç adı ve en az bir lider seçin!', 'Eksik Bilgi');
+
+            return;
 
         }
 
-    })
 
-    .catch(error => {
 
-        console.error('Error:', error);
+        const submitBtn = document.querySelector('button[onclick="updateProcess()"]');
 
-        showToast('error', 'Süreç güncellenirken hata oluştu!', 'Hata');
+        submitBtn.disabled = true;
 
-    })
-
-    .finally(() => {
-
-        submitBtn.disabled = false;
-
-        submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Güncelle';
-
-    });
-
-}
+        submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>Güncelleniyor...';
 
 
 
-// Toast bildirim fonksiyonu
+        fetch(`/admin/update-process/${processId}`, {
 
-function showToast(type, message, title = '') {
+            method: 'PUT',
 
-    // Bootstrap toast container oluştur
+            headers: {
 
-    let toastContainer = document.getElementById('toast-container');
+                'Content-Type': 'application/json',
 
-    if (!toastContainer) {
+            },
 
-        toastContainer = document.createElement('div');
+            body: JSON.stringify(formData)
 
-        toastContainer.id = 'toast-container';
+        })
 
-        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            .then(response => response.json())
 
-        toastContainer.style.zIndex = '9999';
+            .then(data => {
 
-        document.body.appendChild(toastContainer);
+                if (data.success) {
+
+                    showToast('success', 'Süreç başarıyla güncellendi!', 'Başarılı');
+
+                    setTimeout(() => location.reload(), 1500);
+
+                } else {
+
+                    showToast('error', data.message, 'Hata');
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error('Error:', error);
+
+                showToast('error', 'Süreç güncellenirken hata oluştu!', 'Hata');
+
+            })
+
+            .finally(() => {
+
+                submitBtn.disabled = false;
+
+                submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Güncelle';
+
+            });
 
     }
 
-    
 
-    // Toast ID oluştur
 
-    const toastId = 'toast-' + Tarih.now();
+    // Toast bildirim fonksiyonu
 
-    
+    function showToast(type, message, title = '') {
 
-    // Toast HTML oluştur
+        // Bootstrap toast container oluştur
 
-    const toastHTML = `
+        let toastContainer = document.getElementById('toast-container');
+
+        if (!toastContainer) {
+
+            toastContainer = document.createElement('div');
+
+            toastContainer.id = 'toast-container';
+
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+
+            toastContainer.style.zIndex = '9999';
+
+            document.body.appendChild(toastContainer);
+
+        }
+
+
+
+        // Toast ID oluştur
+
+        const toastId = 'toast-' + Tarih.now();
+
+
+
+        // Toast HTML oluştur
+
+        const toastHTML = `
 
         <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
 
@@ -4735,41 +4740,41 @@ function showToast(type, message, title = '') {
 
     `;
 
-    
 
-    // Toast'u container'a ekle
 
-    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        // Toast'u container'a ekle
 
-    
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
 
-    // Toast'u göster
 
-    const toastElement = document.getElementById(toastId);
 
-    const toast = new bootstrap.Toast(toastElement, {
+        // Toast'u göster
 
-        autohide: true,
+        const toastElement = document.getElementById(toastId);
 
-        delay: type === 'error' ? 5000 : 3000
+        const toast = new bootstrap.Toast(toastElement, {
 
-    });
+            autohide: true,
 
-    
+            delay: type === 'error' ? 5000 : 3000
 
-    toast.show();
+        });
 
-    
 
-    // Toast kapandığında DOM'dan kaldır
 
-    toastElement.addEventListener('hidden.bs.toast', function() {
+        toast.show();
 
-        toastElement.remove();
 
-    });
 
-}
+        // Toast kapandığında DOM'dan kaldır
+
+        toastElement.addEventListener('hidden.bs.toast', function () {
+
+            toastElement.remove();
+
+        });
+
+    }
 
 </script>
 
@@ -4807,7 +4812,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Süreç Adı <span class="text-danger">*</span></label>
 
-                            <input type="text" class="form-control" id="newProcessAd" required placeholder="Ç–rn: Yazılım Geliştirme Süreci">
+                            <input type="text" class="form-control" id="newProcessAd" required
+                                placeholder="Ç–rn: Yazılım Geliştirme Süreci">
 
                         </div>
 
@@ -4817,13 +4823,15 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Kurum <span class="text-danger">*</span></label>
 
-                            <select class="form-control" id="newProcessKurum" required onchange="onNewProcessKurumChange(this.value)">
+                            <select class="form-control" id="newProcessKurum" required
+                                onchange="onNewProcessKurumChange(this.value)">
 
                                 <option value="">Kurum seçiniz...</option>
 
                                 {% for kurum in kurumlar %}
 
-                                <option value="{{ kurum.id }}" {% if kurum.id == current_user.kurum_id %}selected{% endif %}>{{ kurum.kisa_ad }}</option>
+                                <option value="{{ kurum.id }}" {% if kurum.id==current_user.kurum_id %}selected{% endif
+                                    %}>{{ kurum.kisa_ad }}</option>
 
                                 {% endfor %}
 
@@ -4833,7 +4841,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Kurum</label>
 
-                            <input type="text" class="form-control" value="{{ current_user.kurum.kisa_ad if current_user.kurum else '' }}" disabled>
+                            <input type="text" class="form-control"
+                                value="{{ current_user.kurum.kisa_ad if current_user.kurum else '' }}" disabled>
 
                             <small class="text-muted">Süreç mevcut kurumunuza eklenecektir.</small>
 
@@ -4853,7 +4862,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label fw-bold">
 
-                                <i class="bi bi-star-fill text-primary"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)
+                                <i class="bi bi-star-fill text-primary"></i> Süreç Liderleri (Birden Fazla
+                                Seçebilirsiniz)
 
                             </label>
 
@@ -4865,19 +4875,23 @@ function showToast(type, message, title = '') {
 
                                         <div class="col">
 
-                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                ile)</label>
 
-                                            <select class="form-select" id="new_lider_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewLiderler()">
+                                            <select class="form-select" id="new_lider_source" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="addNewLiderler()">
 
                                                 {% for user in kullanicilar %}
 
-                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{ user.username }} ({{ user.email }})</option>
+                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{
+                                                    user.username }} ({{ user.email }})</option>
 
                                                 {% endfor %}
 
                                             </select>
 
-                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd
+                                                (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
 
                                         </div>
 
@@ -4885,13 +4899,16 @@ function showToast(type, message, title = '') {
 
                                             <div class="text-center">
 
-                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewLiderler()">
+                                                <button type="button"
+                                                    class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                    onclick="addNewLiderler()">
 
                                                     <i class="bi bi-arrow-right"></i> Ekle
 
                                                 </button>
 
-                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewLiderler()">
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                                    onclick="removeNewLiderler()">
 
                                                     <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -4907,11 +4924,13 @@ function showToast(type, message, title = '') {
 
                                             <label class="form-label">Süreç Liderleri</label>
 
-                                            <select class="form-select" id="new_lider_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeNewLiderler()">
+                                            <select class="form-select" id="new_lider_ids" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="removeNewLiderler()">
 
                                             </select>
 
-                                            <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                            <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile
+                                                çıkarabilirsiniz.</small>
 
                                         </div>
 
@@ -4925,7 +4944,7 @@ function showToast(type, message, title = '') {
 
                     </div>
 
-                    
+
 
                     <!-- Süreç Üyeleri Seçimi (Çoklu) -->
 
@@ -4947,19 +4966,23 @@ function showToast(type, message, title = '') {
 
                                         <div class="col">
 
-                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                            <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                ile)</label>
 
-                                            <select class="form-select" id="new_uye_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewUyeler()">
+                                            <select class="form-select" id="new_uye_source" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="addNewUyeler()">
 
                                                 {% for user in kullanicilar %}
 
-                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{ user.username }} ({{ user.email }})</option>
+                                                <option value="{{ user.id }}" data-kurum-id="{{ user.kurum_id }}">{{
+                                                    user.username }} ({{ user.email }})</option>
 
                                                 {% endfor %}
 
                                             </select>
 
-                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd
+                                                (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
 
                                         </div>
 
@@ -4967,13 +4990,16 @@ function showToast(type, message, title = '') {
 
                                             <div class="text-center">
 
-                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewUyeler()">
+                                                <button type="button"
+                                                    class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                    onclick="addNewUyeler()">
 
                                                     <i class="bi bi-arrow-right"></i> Ekle
 
                                                 </button>
 
-                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewUyeler()">
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                                    onclick="removeNewUyeler()">
 
                                                     <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -4989,11 +5015,13 @@ function showToast(type, message, title = '') {
 
                                             <label class="form-label">Süreç Üyeleri</label>
 
-                                            <select class="form-select" id="new_uye_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeNewUyeler()">
+                                            <select class="form-select" id="new_uye_ids" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="removeNewUyeler()">
 
                                             </select>
 
-                                            <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                            <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama ile
+                                                çıkarabilirsiniz.</small>
 
                                         </div>
 
@@ -5007,7 +5035,7 @@ function showToast(type, message, title = '') {
 
                     </div>
 
-                    
+
 
                     <!-- Alt Strateji Seçimi (Çoklu) -->
 
@@ -5029,27 +5057,32 @@ function showToast(type, message, title = '') {
 
                                         <div class="col">
 
-                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                            <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                ile)</label>
 
-                                            <select class="form-select" id="new_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addNewStratejiler()">
+                                            <select class="form-select" id="new_strateji_source" multiple size="8"
+                                                style="min-height: 200px;" ondblclick="addNewStratejiler()">
 
                                                 {% for ana_strateji in ana_stratejiler %}
 
-                                                    <optgroup label="{{ ana_strateji.ad }}">
+                                                <optgroup label="{{ ana_strateji.ad }}">
 
-                                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
+                                                    {% for alt_strateji in ana_strateji.alt_stratejiler %}
 
-                                                            <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+                                                    <option value="{{ alt_strateji.id }}"
+                                                        data-main-strategy-name="{{ ana_strateji.ad }}">{{
+                                                        alt_strateji.ad }}</option>
 
-                                                        {% endfor %}
+                                                    {% endfor %}
 
-                                                    </optgroup>
+                                                </optgroup>
 
                                                 {% endfor %}
 
                                             </select>
 
-                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                            <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd
+                                                (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
 
                                         </div>
 
@@ -5057,13 +5090,16 @@ function showToast(type, message, title = '') {
 
                                             <div class="text-center">
 
-                                                <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addNewStratejiler()">
+                                                <button type="button"
+                                                    class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                    onclick="addNewStratejiler()">
 
                                                     <i class="bi bi-arrow-right"></i> Ekle
 
                                                 </button>
 
-                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeNewStratejiler()">
+                                                <button type="button" class="btn btn-danger btn-sm action-transfer-btn"
+                                                    onclick="removeNewStratejiler()">
 
                                                     <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -5079,11 +5115,13 @@ function showToast(type, message, title = '') {
 
                                             <label class="form-label">Seçilen Alt Stratejiler</label>
 
-                                            <div class="form-control" id="new_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 120px; padding: 8px;">
+                                            <div class="form-control" id="new_strateji_ids"
+                                                style="max-height: 200px; overflow-y: auto; min-height: 120px; padding: 8px;">
 
                                             </div>
 
-                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                            <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama
+                                                ile çıkarabilirsiniz.</small>
 
                                         </div>
 
@@ -5097,7 +5135,7 @@ function showToast(type, message, title = '') {
 
                     </div>
 
-                    
+
 
                     <!-- Doküman ve Tarih Bilgileri -->
 
@@ -5179,7 +5217,7 @@ function showToast(type, message, title = '') {
 
                     </div>
 
-                    
+
 
                     <div class="row">
 
@@ -5187,7 +5225,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">İlerleme (%)</label>
 
-                            <input type="range" class="form-range" id="newProcessIlerleme" min="0" max="100" value="0" oninput="document.getElementById('newProcessIlerlemeValue').textContent = this.value + '%'" >
+                            <input type="range" class="form-range" id="newProcessIlerleme" min="0" max="100" value="0"
+                                oninput="document.getElementById('newProcessIlerlemeValue').textContent = this.value + '%'">
 
                             <div class="text-center">
 
@@ -5201,7 +5240,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Başlangıç Sınırı</label>
 
-                            <textarea class="form-control" id="newProcessBaslangicSiniri" rows="2" placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
+                            <textarea class="form-control" id="newProcessBaslangicSiniri" rows="2"
+                                placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
 
                         </div>
 
@@ -5209,7 +5249,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Bitiş Sınırı</label>
 
-                            <textarea class="form-control" id="newProcessBitisSiniri" rows="2" placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
+                            <textarea class="form-control" id="newProcessBitisSiniri" rows="2"
+                                placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
 
                         </div>
 
@@ -5217,7 +5258,8 @@ function showToast(type, message, title = '') {
 
                             <label class="form-label">Açıklama</label>
 
-                            <textarea class="form-control" id="newProcessAciklama" rows="3" placeholder="Süreç hakkında detaylı bilgi..."></textarea>
+                            <textarea class="form-control" id="newProcessAciklama" rows="3"
+                                placeholder="Süreç hakkında detaylı bilgi..."></textarea>
 
                         </div>
 
@@ -5291,7 +5333,8 @@ function showToast(type, message, title = '') {
 
                                 <label class="form-label fw-bold">
 
-                                    <i class="bi bi-star-fill text-warning"></i> Süreç Liderleri (Birden Fazla Seçebilirsiniz)
+                                    <i class="bi bi-star-fill text-warning"></i> Süreç Liderleri (Birden Fazla
+                                    Seçebilirsiniz)
 
                                 </label>
 
@@ -5303,19 +5346,24 @@ function showToast(type, message, title = '') {
 
                                             <div class="col">
 
-                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                    ile)</label>
 
-                                                <select class="form-select" id="edit_lider_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleLiderler()">
+                                                <select class="form-select" id="edit_lider_source" multiple size="8"
+                                                    style="min-height: 200px;" ondblclick="addDüzenleLiderler()">
 
                                                     {% for user in kullanicilar %}
 
-                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})
+                                                    </option>
 
                                                     {% endfor %}
 
                                                 </select>
 
-                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya
+                                                    Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de
+                                                    ekleyebilirsiniz.</small>
 
                                             </div>
 
@@ -5323,13 +5371,17 @@ function showToast(type, message, title = '') {
 
                                                 <div class="text-center">
 
-                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleLiderler()">
+                                                    <button type="button"
+                                                        class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                        onclick="addDüzenleLiderler()">
 
                                                         <i class="bi bi-arrow-right"></i> Ekle
 
                                                     </button>
 
-                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleLiderler()">
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm action-transfer-btn"
+                                                        onclick="removeDüzenleLiderler()">
 
                                                         <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -5345,11 +5397,13 @@ function showToast(type, message, title = '') {
 
                                                 <label class="form-label">Süreç Liderleri</label>
 
-                                                <select class="form-select" id="edit_lider_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeDüzenleLiderler()">
+                                                <select class="form-select" id="edit_lider_ids" multiple size="8"
+                                                    style="min-height: 200px;" ondblclick="removeDüzenleLiderler()">
 
                                                 </select>
 
-                                                <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                                <small class="text-muted">Seçilen liderler burada görünür. Çift tıklama
+                                                    ile çıkarabilirsiniz.</small>
 
                                             </div>
 
@@ -5361,7 +5415,7 @@ function showToast(type, message, title = '') {
 
                             </div>
 
-                            
+
 
                             <!-- Süreç Üyeleri Seçimi (Çoklu) -->
 
@@ -5381,19 +5435,24 @@ function showToast(type, message, title = '') {
 
                                             <div class="col">
 
-                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                                <label class="form-label">Kullanıcılar (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                    ile)</label>
 
-                                                <select class="form-select" id="edit_uye_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleUyeler()">
+                                                <select class="form-select" id="edit_uye_source" multiple size="8"
+                                                    style="min-height: 200px;" ondblclick="addDüzenleUyeler()">
 
                                                     {% for user in kullanicilar %}
 
-                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})
+                                                    </option>
 
                                                     {% endfor %}
 
                                                 </select>
 
-                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya
+                                                    Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de
+                                                    ekleyebilirsiniz.</small>
 
                                             </div>
 
@@ -5401,13 +5460,17 @@ function showToast(type, message, title = '') {
 
                                                 <div class="text-center">
 
-                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleUyeler()">
+                                                    <button type="button"
+                                                        class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                        onclick="addDüzenleUyeler()">
 
                                                         <i class="bi bi-arrow-right"></i> Ekle
 
                                                     </button>
 
-                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleUyeler()">
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm action-transfer-btn"
+                                                        onclick="removeDüzenleUyeler()">
 
                                                         <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -5423,11 +5486,13 @@ function showToast(type, message, title = '') {
 
                                                 <label class="form-label">Süreç Üyeleri</label>
 
-                                                <select class="form-select" id="edit_uye_ids" multiple size="8" style="min-height: 200px;" ondblclick="removeDüzenleUyeler()">
+                                                <select class="form-select" id="edit_uye_ids" multiple size="8"
+                                                    style="min-height: 200px;" ondblclick="removeDüzenleUyeler()">
 
                                                 </select>
 
-                                                <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                                <small class="text-muted">Seçilen üyeler burada görünür. Çift tıklama
+                                                    ile çıkarabilirsiniz.</small>
 
                                             </div>
 
@@ -5439,7 +5504,7 @@ function showToast(type, message, title = '') {
 
                             </div>
 
-                            
+
 
                             <!-- Alt Strateji Seçimi (Çoklu) -->
 
@@ -5459,27 +5524,33 @@ function showToast(type, message, title = '') {
 
                                             <div class="col">
 
-                                                <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu ile)</label>
+                                                <label class="form-label">Alt Stratejiler (Çoklu Seçim - Ctrl/Cmd tuşu
+                                                    ile)</label>
 
-                                                <select class="form-select" id="edit_strateji_source" multiple size="8" style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
+                                                <select class="form-select" id="edit_strateji_source" multiple size="8"
+                                                    style="min-height: 200px;" ondblclick="addDüzenleStratejiler()">
 
                                                     {% for ana_strateji in ana_stratejiler %}
 
-                                                        <optgroup label="{{ ana_strateji.ad }}">
+                                                    <optgroup label="{{ ana_strateji.ad }}">
 
-                                                            {% for alt_strateji in ana_strateji.alt_stratejiler %}
+                                                        {% for alt_strateji in ana_strateji.alt_stratejiler %}
 
-                                                                <option value="{{ alt_strateji.id }}" data-main-strategy-name="{{ ana_strateji.ad }}">{{ alt_strateji.ad }}</option>
+                                                        <option value="{{ alt_strateji.id }}"
+                                                            data-main-strategy-name="{{ ana_strateji.ad }}">{{
+                                                            alt_strateji.ad }}</option>
 
-                                                            {% endfor %}
+                                                        {% endfor %}
 
-                                                        </optgroup>
+                                                    </optgroup>
 
                                                     {% endfor %}
 
                                                 </select>
 
-                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de ekleyebilirsiniz.</small>
+                                                <small class="text-muted">Birden fazla seçim için Ctrl (Windows) veya
+                                                    Cmd (Mac) tuşunu basılı tutun. Çift tıklama ile de
+                                                    ekleyebilirsiniz.</small>
 
                                             </div>
 
@@ -5487,13 +5558,17 @@ function showToast(type, message, title = '') {
 
                                                 <div class="text-center">
 
-                                                    <button type="button" class="btn btn-success btn-sm mb-2 action-transfer-btn" onclick="addDüzenleStratejiler()">
+                                                    <button type="button"
+                                                        class="btn btn-success btn-sm mb-2 action-transfer-btn"
+                                                        onclick="addDüzenleStratejiler()">
 
                                                         <i class="bi bi-arrow-right"></i> Ekle
 
                                                     </button>
 
-                                                    <button type="button" class="btn btn-danger btn-sm action-transfer-btn" onclick="removeDüzenleStratejiler()">
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm action-transfer-btn"
+                                                        onclick="removeDüzenleStratejiler()">
 
                                                         <i class="bi bi-arrow-left"></i> Çıkar
 
@@ -5509,11 +5584,13 @@ function showToast(type, message, title = '') {
 
                                                 <label class="form-label">Seçilen Alt Stratejiler</label>
 
-                                                <div class="form-control" id="edit_strateji_ids" style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
+                                                <div class="form-control" id="edit_strateji_ids"
+                                                    style="max-height: 200px; overflow-y: auto; min-height: 200px; padding: 8px;">
 
                                                 </div>
 
-                                                <small class="text-muted">Seçilen stratejiler burada görünür. Çift tıklama ile çıkarabilirsiniz.</small>
+                                                <small class="text-muted">Seçilen stratejiler burada görünür. Çift
+                                                    tıklama ile çıkarabilirsiniz.</small>
 
                                             </div>
 
@@ -5525,7 +5602,7 @@ function showToast(type, message, title = '') {
 
                             </div>
 
-                            
+
 
                             <div class="mb-3">
 
@@ -5547,7 +5624,7 @@ function showToast(type, message, title = '') {
 
                     </div>
 
-                    
+
 
                     <!-- Doküman ve Tarih Bilgileri -->
 
@@ -5625,7 +5702,9 @@ function showToast(type, message, title = '') {
 
                                 <label class="form-label">İlerleme (%)</label>
 
-                                <input type="range" class="form-range" id="editProcessIlerleme" min="0" max="100" value="0" oninput="document.getElementById('editProcessIlerlemeValue').textContent = this.value + '%'" >
+                                <input type="range" class="form-range" id="editProcessIlerleme" min="0" max="100"
+                                    value="0"
+                                    oninput="document.getElementById('editProcessIlerlemeValue').textContent = this.value + '%'">
 
                                 <div class="text-center">
 
@@ -5643,7 +5722,8 @@ function showToast(type, message, title = '') {
 
                                 <label class="form-label">Başlangıç Sınırı</label>
 
-                                <textarea class="form-control" id="editProcessBaslangicSiniri" rows="2" placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
+                                <textarea class="form-control" id="editProcessBaslangicSiniri" rows="2"
+                                    placeholder="Süreç ne zaman başlar? Hangi koşullarda başlar?"></textarea>
 
                             </div>
 
@@ -5655,7 +5735,8 @@ function showToast(type, message, title = '') {
 
                                 <label class="form-label">Bitiş Sınırı</label>
 
-                                <textarea class="form-control" id="editProcessBitisSiniri" rows="2" placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
+                                <textarea class="form-control" id="editProcessBitisSiniri" rows="2"
+                                    placeholder="Süreç ne zaman biter? Hangi koşullarda biter?"></textarea>
 
                             </div>
 
@@ -5700,8 +5781,3 @@ function showToast(type, message, title = '') {
 
 
 {% endblock %}
-
-
-
-
-

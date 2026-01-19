@@ -199,6 +199,23 @@ class PestleAnalizi(db.Model):
     
     kurum = db.relationship('Kurum', backref=db.backref('pestle_analizleri', lazy=True, cascade='all, delete-orphan'))
 
+class TowsAnalizi(db.Model):
+    """TOWS Analizi (Fırsat-Güç, Tehdit-Güç, Fırsat-Zayıflık, Tehdit-Zayıflık)"""
+    __tablename__ = 'tows_analizi'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
+    
+    # Kategoler: 'SO' (Güçlü-Fırsat), 'ST' (Güçlü-Tehdit), 'WO' (Zayıf-Fırsat), 'WT' (Zayıf-Tehdit)
+    kategori = db.Column(db.String(20), nullable=False) 
+    baslik = db.Column(db.String(200), nullable=False)
+    aciklama = db.Column(db.Text)
+    oncelik = db.Column(db.Integer, default=1) # 1: Düşük, 2: Orta, 3: Yüksek
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    kurum = db.relationship('Kurum', backref=db.backref('tows_analizleri', lazy=True, cascade='all, delete-orphan'))
+
 class BireyselPerformansGostergesi(db.Model):
     """
     Bireysel Performans Göstergesi Modeli

@@ -39,8 +39,16 @@ def login():
         if not username:
             flash('Lütfen bir kullanıcı seçin.', 'danger')
             kurumlar = Kurum.query.order_by(Kurum.kisa_ad).all()
-            kullanicilar = User.query.order_by(User.kurum_id, User.first_name, User.username).all()
-            return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar)
+            kullanicilar = User.query.options(db.joinedload(User.kurum)).order_by(User.kurum_id, User.first_name, User.username).all()
+            
+            kurum_groups = {}
+            for user in kullanicilar:
+                k_ad = user.kurum.kisa_ad if user.kurum else "Diğer"
+                if k_ad not in kurum_groups: kurum_groups[k_ad] = []
+                kurum_groups[k_ad].append(user)
+            kurum_groups = dict(sorted(kurum_groups.items()))
+            
+            return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar, kurum_groups=kurum_groups)
         
         # Kurum ID varsa önce hem username hem kurum_id ile ara
         # Bulunamazsa sadece username ile ara (kurum_id yanlış olabilir)
@@ -78,8 +86,16 @@ def login():
         if not password:
             flash('Lütfen kullanıcı adı ve şifre girin veya kolay giriş seçeneğini kullanın.', 'danger')
             kurumlar = Kurum.query.order_by(Kurum.kisa_ad).all()
-            kullanicilar = User.query.order_by(User.kurum_id, User.first_name, User.username).all()
-            return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar)
+            kullanicilar = User.query.options(db.joinedload(User.kurum)).order_by(User.kurum_id, User.first_name, User.username).all()
+            
+            kurum_groups = {}
+            for user in kullanicilar:
+                k_ad = user.kurum.kisa_ad if user.kurum else "Diğer"
+                if k_ad not in kurum_groups: kurum_groups[k_ad] = []
+                kurum_groups[k_ad].append(user)
+            kurum_groups = dict(sorted(kurum_groups.items()))
+
+            return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar, kurum_groups=kurum_groups)
         
         if user and check_password_hash(user.password_hash, password):
             login_user(user, remember=True)
@@ -107,8 +123,16 @@ def login():
     
     # Kurumları ve tüm kullanıcıları getir
     kurumlar = Kurum.query.order_by(Kurum.kisa_ad).all()
-    kullanicilar = User.query.order_by(User.kurum_id, User.first_name, User.username).all()
-    return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar)
+    kullanicilar = User.query.options(db.joinedload(User.kurum)).order_by(User.kurum_id, User.first_name, User.username).all()
+    
+    kurum_groups = {}
+    for user in kullanicilar:
+        k_ad = user.kurum.kisa_ad if user.kurum else "Diğer"
+        if k_ad not in kurum_groups: kurum_groups[k_ad] = []
+        kurum_groups[k_ad].append(user)
+    kurum_groups = dict(sorted(kurum_groups.items()))
+
+    return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar, kurum_groups=kurum_groups)
 
 
 @auth_bp.route('/easy-login')
@@ -117,13 +141,32 @@ def easy_login():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
     
-    users = User.query.order_by(
-        User.sistem_rol.desc(),  # Admin önce
+    users = User.query.options(db.joinedload(User.kurum)).order_by(
         User.kurum_id,
+        User.sistem_rol.desc(),  # Admin önce
         User.username
     ).all()
     
-    return render_template('easy_login.html', users=users, form=None)
+    # Gruplama mantığı
+    kurum_groups = {}
+    
+    # Her ihtimale karşı "Tümü" listesini de ayrı tutalım (zaten users var ama)
+    
+    for user in users:
+        # Kurum adı yoksa 'Diğer' olarak grupla
+        kurum_ad = user.kurum.kisa_ad if user.kurum else "Diğer / Kurumsuz"
+        
+        if kurum_ad not in kurum_groups:
+            kurum_groups[kurum_ad] = []
+        
+        kurum_groups[kurum_ad].append(user)
+    
+    # Grupları alfabetik sırala
+    kurum_groups = dict(sorted(kurum_groups.items()))
+    
+    return render_template('easy_login.html', users=users, kurum_groups=kurum_groups, form=None)
+    
+
 
 
 @auth_bp.route('/logout')

@@ -26,7 +26,7 @@ from models import (
     db, User, Kurum, Surec, AnaStrateji, AltStrateji,
     BireyselFaaliyet, BireyselPerformansGostergesi,
     PerformansGostergeVeri, PerformansGostergeVeriAudit, SurecPerformansGostergesi, SurecFaaliyet,
-    SwotAnalizi, PestleAnalizi, FaaliyetTakip, surec_liderleri, surec_uyeleri,
+    SwotAnalizi, PestleAnalizi, TowsAnalizi, FaaliyetTakip, surec_liderleri, surec_uyeleri,
     Notification, UserActivityLog, FavoriKPI, DashboardLayout,
     KullaniciYetki, Project, Task, TaskImpact, TaskComment, TaskMention, ProjectFile,  # Proje Yönetimi modelleri
     Tag, TaskSubtask, TimeEntry, TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,  # Yeni modeller
@@ -3941,6 +3941,80 @@ def api_get_pestle_analysis():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
+@api_bp.route('/save-tows-analysis', methods=['POST'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_save_tows_analysis():
+    """TOWS analizini veritabanına kaydet (Bulk Update)."""
+    try:
+        kurum_id = current_user.kurum_id
+        if not kurum_id:
+             return jsonify({'success': False, 'message': 'Kurum bilgisi bulunamadı'}), 400
+             
+        data = request.get_json() or {}
+        # data format expects: { 'SO': [{text: ..}, ...], 'WO': [...], ... }
+        
+        # Mevcut analizleri temizle 
+        TowsAnalizi.query.filter_by(kurum_id=kurum_id).delete()
+        
+        for category, items in data.items():
+            # category: SO, WO, ST, WT
+            # items: list of objects with 'text'
+            if not items:
+                continue
+            for item in items:
+                text = item.get('text')
+                if text:
+                    tows = TowsAnalizi(
+                        kurum_id=kurum_id,
+                        kategori=category,
+                        baslik=text[:100],  # Başlık için karakter sınırı
+                        aciklama=text,
+                        created_by=current_user.id
+                    )
+                    db.session.add(tows)
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'TOWS analizi kaydedildi.'})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"TOWS kaydetme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/get-tows-analysis', methods=['GET'])
+@csrf.exempt
+@login_required
+@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
+def api_get_tows_analysis():
+    """TOWS analizini veritabanından getir."""
+    try:
+        kurum_id = current_user.kurum_id
+        if not kurum_id:
+             return jsonify({'success': False, 'message': 'Kurum bilgisi bulunamadı'}), 400
+             
+        analizler = TowsAnalizi.query.filter_by(kurum_id=kurum_id).all()
+        
+        data = {
+            'SO': [], 'WO': [], 'ST': [], 'WT': []
+        }
+        
+        for item in analizler:
+            # Kategori kontrolü (büyük/küçük harf duyarlılığı için normalize edilebilir)
+            kategori = item.kategori
+            if kategori in data:
+                data[kategori].append({
+                    'id': item.id,
+                    'text': item.aciklama or item.baslik
+                })
+        
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        current_app.logger.error(f"TOWS getirme hatası: {e}", exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
 @api_bp.route('/kurum/<int:kurum_id>/stratejik-profil', methods=['GET', 'POST'])
 @csrf.exempt
 @login_required
@@ -5796,4 +5870,194 @@ def api_admin_add_user():
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı ekleme hatası: {e}', exc_info=True)
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# --- Analiz CRUD Endpointleri ---
+
+@api_bp.route('/kurum/<int:kurum_id>/swot', methods=['POST'])
+@login_required
+@csrf.exempt
+def add_swot(kurum_id):
+    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+    try:
+        data = request.get_json()
+        yeni = SwotAnalizi(
+            kurum_id=kurum_id,
+            kategori=data.get('kategori'),
+            baslik=data.get('baslik'),
+            aciklama=data.get('aciklama'),
+            oncelik=int(data.get('oncelik', 1))
+        )
+        db.session.add(yeni)
+        db.session.commit()
+        return jsonify({'success': True, 'id': yeni.id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/swot/<int:id>', methods=['DELETE'])
+@login_required
+@csrf.exempt
+def delete_swot(id):
+    try:
+        item = SwotAnalizi.query.get_or_404(id)
+        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/kurum/<int:kurum_id>/pestle', methods=['POST'])
+@login_required
+@csrf.exempt
+def add_pestle(kurum_id):
+    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+    try:
+        data = request.get_json()
+        yeni = PestleAnalizi(
+            kurum_id=kurum_id,
+            kategori=data.get('kategori'),
+            baslik=data.get('baslik'),
+            aciklama=data.get('aciklama'),
+            etki=data.get('etki', 'Orta'),
+            oncelik=int(data.get('oncelik', 1))
+        )
+        db.session.add(yeni)
+        db.session.commit()
+        return jsonify({'success': True, 'id': yeni.id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/pestle/<int:id>', methods=['DELETE'])
+@login_required
+@csrf.exempt
+def delete_pestle(id):
+    try:
+        item = PestleAnalizi.query.get_or_404(id)
+        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/kurum/<int:kurum_id>/tows', methods=['POST'])
+@login_required
+@csrf.exempt
+def add_tows(kurum_id):
+    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+    try:
+        data = request.get_json()
+        yeni = TowsAnalizi(
+            kurum_id=kurum_id,
+            kategori=data.get('kategori'),
+            baslik=data.get('baslik'),
+            aciklama=data.get('aciklama'),
+            oncelik=int(data.get('oncelik', 1))
+        )
+        db.session.add(yeni)
+        db.session.commit()
+        return jsonify({'success': True, 'id': yeni.id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/tows/<int:id>', methods=['DELETE'])
+@login_required
+@csrf.exempt
+def delete_tows(id):
+    try:
+        item = TowsAnalizi.query.get_or_404(id)
+        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
+            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# --- Bildirim (Notification) Endpointleri ---
+
+@api_bp.route('/notifications', methods=['GET'])
+@login_required
+def api_get_notifications():
+    """Kullanıcının bildirimlerini getir"""
+    try:
+        notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(50).all()
+        return jsonify({
+            'success': True,
+            'notifications': [{
+                'id': n.id,
+                'tip': n.tip,
+                'baslik': n.baslik,
+                'mesaj': n.mesaj,
+                'link': n.link,
+                'okundu': n.okundu,
+                'created_at': n.created_at.isoformat() if n.created_at else None
+            } for n in notifications]
+        })
+    except Exception as e:
+        current_app.logger.error(f'Bildirim getirme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications/<int:notification_id>/mark-read', methods=['POST'])
+@login_required
+@csrf.exempt
+def api_mark_notification_read(notification_id):
+    """Bildirimi okundu olarak işaretle"""
+    try:
+        notification = Notification.query.get_or_404(notification_id)
+        if notification.user_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
+        
+        notification.okundu = True
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Bildirim okundu işaretleme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications/mark-all-read', methods=['POST'])
+@login_required
+@csrf.exempt
+def api_mark_all_notifications_read():
+    """Tüm bildirimleri okundu olarak işaretle"""
+    try:
+        Notification.query.filter_by(user_id=current_user.id, okundu=False).update({'okundu': True})
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Tüm bildirimler okundu işaretleme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/notifications/count', methods=['GET'])
+@login_required
+def api_get_notification_count():
+    """Okunmamış bildirim sayısını getir"""
+    try:
+        count = Notification.query.filter_by(user_id=current_user.id, okundu=False).count()
+        return jsonify({
+            'success': True,
+            'count': count
+        })
+    except Exception as e:
+        current_app.logger.error(f'Bildirim sayısı getirme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 

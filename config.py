@@ -9,7 +9,8 @@ class Config:
     # --- VERITABANI AYARLARI (HIBRIT YAPI) ---
     # .env dosyasinda DATABASE_URL varsa onu kullanir (Prod/Supabase)
     # Yoksa yerel SQLite dosyasini kullanir (Local/Dev)
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///spsv2.db')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'spsv2.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Guvenlik

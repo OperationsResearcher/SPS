@@ -176,7 +176,7 @@ def dashboard():
             if 'strategic_impact' not in cached_data:
                 cached_data['strategic_impact'] = get_strategic_impact_summary(current_user.kurum_id)
                 set_cached_dashboard_stats(current_user.id, cached_data)
-            return render_template('dashboard.html', 
+            return render_template('dashboard_v2.html', 
                                  stats=cached_data['stats'], 
                                  recent_activities=cached_data['recent_activities'],
                                  strategic_impact=cached_data.get('strategic_impact', []))
@@ -238,7 +238,7 @@ def dashboard():
         current_app.logger.info(f"Dashboard verileri cache'e kaydedildi: {cache_key}")
         
         # 5. Verileri Template'e Gönder
-        return render_template('dashboard.html', 
+        return render_template('dashboard_v2.html', 
                              stats=stats, 
                              recent_activities=recent_activities,
                              strategic_impact=strategic_impact)
@@ -247,7 +247,7 @@ def dashboard():
         current_app.logger.error(f'Dashboard sayfası render hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         # Hata durumunda boş verilerle dashboard göster
-        return render_template('dashboard.html',
+        return render_template('dashboard_v2.html',
                              stats={
                                  'total_tasks': 0,
                                  'critical_tasks': 0,
