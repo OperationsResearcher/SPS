@@ -208,12 +208,18 @@ class TaskImpact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False, index=True)
     
-    # Etkilenen Öğe
-    impact_type = db.Column(db.String(50)) # 'Process', 'Strategy', 'KPI'
-    impact_id = db.Column(db.Integer)
+    # Etkilenen Öğe (Eski yapı - Deprecated)
+    # impact_type = db.Column(db.String(50)) # 'Process', 'Strategy', 'KPI'
+    # impact_id = db.Column(db.Integer)
+    
+    # Yeni Yapı (API ve Frontend ile uyumlu)
+    related_pg_id = db.Column(db.Integer, nullable=True) # BireyselPerformansGostergesi ID
+    related_faaliyet_id = db.Column(db.Integer, nullable=True) # BireyselFaaliyet ID
+    impact_value = db.Column(db.String(50), nullable=True) # Etki Değeri (Numerik string)
+    
     description = db.Column(db.Text)
     
-    # Etki Durumu (Eksik kolonlar eklendi)
+    # Etki Durumu
     is_processed = db.Column(db.Boolean, default=False)
     processed_at = db.Column(db.DateTime, nullable=True)
     

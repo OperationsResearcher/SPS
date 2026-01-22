@@ -97,7 +97,17 @@ def create_app(config_name=None):
         app.logger.addHandler(file_handler)
 
         app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(logging.INFO)
         app.logger.info('Stratejik Planlama sistemi başlatılıyor')
+    
+    # 3.5. Audit Logging Başlat
+    from services.audit_service import register_audit_listeners, register_auth_audit_signals
+    register_audit_listeners(app)
+    register_auth_audit_signals(app)
+
+    # 3.6. DB tablolarını oluştur (eksik tabloları garantiye alır)
+    with app.app_context():
+        db.create_all()
     
     # 4. Custom Error Handlers
     @app.errorhandler(404)
@@ -148,6 +158,15 @@ def create_app(config_name=None):
     from api.routes import api_bp
     app.register_blueprint(api_bp)
 
+    from main.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
+    from analysis.routes import analysis_bp
+    app.register_blueprint(analysis_bp)
+
+    from bsc.routes import bsc_bp
+    app.register_blueprint(bsc_bp)
+
     # 4.6 Custom Filters
     @app.template_filter('role_name')
     def role_name_filter(role):
@@ -167,10 +186,12 @@ def create_app(config_name=None):
         # Tüm modelleri import et
         from models import (
             User, Kurum, Surec, AnaStrateji, AltStrateji,
+            StrategyMapLink,
             SurecPerformansGostergesi, SurecFaaliyet,
             BireyselPerformansGostergesi, BireyselFaaliyet,
             PerformansGostergeVeri, PerformansGostergeVeriAudit,
-            FaaliyetTakip, SwotAnalizi, PestleAnalizi,
+            FaaliyetTakip,
+            AnalysisItem, TowsMatrix,
             Notification, UserActivityLog, FavoriKPI,
             YetkiMatrisi, KullaniciYetki, OzelYetki,
             DashboardLayout, Deger, EtikKural, KalitePolitikasi,

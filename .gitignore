@@ -1,24 +1,12 @@
+.venv/
 venv/
 __pycache__/
 *.pyc
 .vscode/
 .env
-# Veritabanı dosyaları
 *.db
 *.sqlite
 *.sqlite3
 instance/
-
-# Log dosyaları
+SPS_DATA/
 *.log
-*_log.txt
-hata_logu*.txt
-
-# Geçici ve test dosyaları
-output.txt
-analyze_output.txt
-test_output*.txt
-test_results.txt
-temp_*.txt
-data_dump.json
-users_list.txt

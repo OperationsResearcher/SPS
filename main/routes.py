@@ -11,7 +11,9 @@ from models import (
     DashboardLayout, BireyselPerformansGostergesi, SurecPerformansGostergesi,
     PerformansGostergeVeri, PerformansGostergeVeriAudit, BireyselFaaliyet, SurecFaaliyet, UserActivityLog,
     SurecPerformansGostergesi,
-    Deger, EtikKural, KalitePolitikasi, Project, Task, TaskImpact, TaskComment, TaskMention,
+    Deger, EtikKural, KalitePolitikasi,
+    AnalysisItem, TowsMatrix,
+    Project, Task, TaskImpact, TaskComment, TaskMention,
     ProjectFile, project_related_processes, project_members, project_observers, ProjectRisk,
     MainStrategy, SubStrategy, Process, StrategyProcessMatrix, Project, SurecPerformansGostergesi,
     # Faz 2 Modelleri
@@ -1736,6 +1738,19 @@ def kurum_paneli():
             uyeler = User.query.all()
         else:
             uyeler = User.query.filter_by(kurum_id=current_user.kurum_id).all()
+
+        analysis_kurum_id = current_user.kurum_id
+        if analysis_kurum_id:
+            swot_count = AnalysisItem.query.filter_by(kurum_id=analysis_kurum_id, analysis_type='SWOT').count()
+            pestle_count = AnalysisItem.query.filter_by(kurum_id=analysis_kurum_id, analysis_type='PESTLE').count()
+            tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=analysis_kurum_id).count()
+        else:
+            swot_count = 0
+            pestle_count = 0
+            tows_strategy_count = 0
+
+        analysis_total = swot_count + pestle_count + tows_strategy_count
+        analysis_progress = min(100, int((analysis_total / 20) * 100)) if analysis_total else 0
         
         return render_template('kurum_panel.html',
                              kurum=kurum,
@@ -1745,7 +1760,11 @@ def kurum_paneli():
                              etik_kurallari=etik_kurallari,
                              kalite_politikalari=kalite_politikalari,
                              surecler=surecler,
-                             uyeler=uyeler)
+                             uyeler=uyeler,
+                             swot_count=swot_count,
+                             pestle_count=pestle_count,
+                             tows_strategy_count=tows_strategy_count,
+                             analysis_progress=analysis_progress)
     except Exception as e:
         import traceback
         current_app.logger.error(f'Kurum Paneli sayfası hatası: {str(e)}')
@@ -2205,6 +2224,48 @@ def kurum_yonetim_page():
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
 
+
+@main_bp.route('/admin/fix-bsc-schema')
+@login_required
+def fix_bsc_schema():
+    """BSC kolonlarını ve bağlantı tablosunu veri kaybı olmadan ekler."""
+    if current_user.sistem_rol != 'admin':
+        flash('Bu işlem için yetkiniz yok.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    try:
+        from sqlalchemy import text
+
+        with db.engine.connect() as conn:
+            table_info = conn.execute(text("PRAGMA table_info('ana_strateji')")).fetchall()
+            existing_columns = {row[1] for row in table_info}
+
+            if 'perspective' not in existing_columns:
+                conn.execute(text("ALTER TABLE ana_strateji ADD COLUMN perspective VARCHAR(20)"))
+            if 'bsc_code' not in existing_columns:
+                conn.execute(text("ALTER TABLE ana_strateji ADD COLUMN bsc_code VARCHAR(10)"))
+            conn.commit()
+
+        with db.engine.connect() as conn:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS strategy_map_link (
+                    id INTEGER PRIMARY KEY,
+                    source_id INTEGER NOT NULL,
+                    target_id INTEGER NOT NULL,
+                    connection_type VARCHAR(30) NOT NULL DEFAULT 'CAUSE_EFFECT',
+                    UNIQUE(source_id, target_id),
+                    FOREIGN KEY(source_id) REFERENCES ana_strateji(id),
+                    FOREIGN KEY(target_id) REFERENCES ana_strateji(id)
+                )
+            """))
+            conn.commit()
+
+        return "BSC şeması güncellendi. <a href='/bsc/map/%d'>BSC Haritası</a>" % current_user.kurum_id
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'BSC şema güncelleme hatası: {e}', exc_info=True)
+        return f"Hata: {str(e)}", 500
+
 # Proje yönetimi görünümleri: Kanban, Takvim, Gantt
 @main_bp.route('/projeler/<int:project_id>/kanban')
 @login_required
@@ -2417,6 +2478,10 @@ def stratejik_planlama_akisi():
         # Kurumun kalite politikalarını getir
         kalite_politikalari = KalitePolitikasi.query.filter_by(kurum_id=kurum.id).all()
         
+        swot_count = AnalysisItem.query.filter_by(kurum_id=kurum.id, analysis_type='SWOT').count()
+        pestle_count = AnalysisItem.query.filter_by(kurum_id=kurum.id, analysis_type='PESTLE').count()
+        tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=kurum.id).count()
+
         # Kurumun amaç ve vizyon bilgileri (kurum modelinden)
         amac = kurum.amac
         vizyon = kurum.vizyon
@@ -2511,6 +2576,9 @@ def stratejik_planlama_akisi():
                              degerler=degerler,
                              etik_kurallari=etik_kurallari,
                              kalite_politikalari=kalite_politikalari,
+                             swot_count=swot_count,
+                             pestle_count=pestle_count,
+                             tows_strategy_count=tows_strategy_count,
                              amac=amac,
                              vizyon=vizyon,
                              ana_stratejiler=ana_stratejiler,

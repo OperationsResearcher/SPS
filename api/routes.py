@@ -26,7 +26,7 @@ from models import (
     db, User, Kurum, Surec, AnaStrateji, AltStrateji,
     BireyselFaaliyet, BireyselPerformansGostergesi,
     PerformansGostergeVeri, PerformansGostergeVeriAudit, SurecPerformansGostergesi, SurecFaaliyet,
-    SwotAnalizi, PestleAnalizi, TowsAnalizi, FaaliyetTakip, surec_liderleri, surec_uyeleri,
+    FaaliyetTakip, surec_liderleri, surec_uyeleri,
     Notification, UserActivityLog, FavoriKPI, DashboardLayout,
     KullaniciYetki, Project, Task, TaskImpact, TaskComment, TaskMention, ProjectFile,  # Proje Yönetimi modelleri
     Tag, TaskSubtask, TimeEntry, TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,  # Yeni modeller
@@ -50,8 +50,6 @@ from utils.karne_hesaplamalar import (
 from datetime import datetime, timedelta, date
 from utils.telemetry import log_event
 from werkzeug.security import generate_password_hash
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
@@ -611,7 +609,7 @@ def api_surec_karne_kaydet(surec_id):
         # Yönetim dışı kullanıcılar süreç karnesi verisi kaydedemez
         if current_user.sistem_rol == 'admin':
             pass
-        elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
+        elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim', 'kurum_kullanici']:
             if surec.kurum_id != current_user.kurum_id:
                 return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
         else:
@@ -800,14 +798,8 @@ def api_surec_karne_kaydet(surec_id):
         
         db.session.commit()
         
-        log_event(
-            current_app.logger,
-            'task_created',
-            task_id=new_task.id,
-            project_id=project_id,
-            user_id=current_user.id,
-            status=new_task.status,
-        )
+        # Audit logging handled by generic service
+        current_app.logger.info(f"PG Veri kaydedildi: PG={pg_id}, User={current_user.id}")
         
         # Erken Uyarı Mekanizması: PG verisi kaydedildikten sonra performans sapması kontrolü
         if pg_verileri and field == 'gerceklesen' and pg_veri.id:
@@ -1179,6 +1171,16 @@ def export_surec_karnesi_excel():
             return jsonify({"success": False, "message": "Bu süreci görüntüleme yetkiniz yok."}), 403
     
     try:
+        try:
+            from openpyxl import Workbook
+            from openpyxl.styles import Font, PatternFill
+        except Exception as import_err:
+            current_app.logger.error(f'openpyxl import hatası: {import_err}')
+            return jsonify({
+                "success": False,
+                "message": "Excel aktarımı için openpyxl gerekli. Lütfen bağımlılığı yükleyin."
+            }), 500
+
         # Create workbook and sheets
         wb = Workbook()
         ws_pg = wb.active
@@ -2494,7 +2496,6 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
             task.status = data['status']
             # Eğer durum "Tamamlandı" olarak değiştirildiyse, tamamlanma tarihini kaydet
             if data['status'] == 'Tamamlandı' and old_status != 'Tamamlandı':
-                from datetime import datetime
                 task.completed_at = datetime.utcnow()
                 status_degisti_tamamlandi = True
             # Eğer durum "Tamamlandı"dan başka bir duruma değiştirildiyse, completed_at'i null yap
@@ -3870,148 +3871,6 @@ def api_user_theme():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-# --- Mock/Compatibility Endpoints (MVP Stabilization) ---
-
-@api_bp.route('/save-swot-analysis', methods=['POST'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_save_swot_analysis():
-    """SWOT analizini kaydet (mock/cache)."""
-    try:
-        from extensions import cache
-        payload = request.get_json() or {}
-        cache_key = f"swot_analysis:{current_user.kurum_id}"
-        cache.set(cache_key, payload, timeout=3600)
-        return jsonify({'success': True, 'message': 'SWOT kaydedildi (mock).'})
-    except Exception as e:
-        current_app.logger.error(f"SWOT kaydetme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@api_bp.route('/get-swot-analysis', methods=['GET'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_get_swot_analysis():
-    """SWOT analizini getir (mock/cache)."""
-    try:
-        from extensions import cache
-        cache_key = f"swot_analysis:{current_user.kurum_id}"
-        data = cache.get(cache_key) or {'items': []}
-        return jsonify({'success': True, 'data': data})
-    except Exception as e:
-        current_app.logger.error(f"SWOT getirme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@api_bp.route('/save-pestle-analysis', methods=['POST'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_save_pestle_analysis():
-    """PESTLE analizini kaydet (mock/cache)."""
-    try:
-        from extensions import cache
-        payload = request.get_json() or {}
-        cache_key = f"pestle_analysis:{current_user.kurum_id}"
-        cache.set(cache_key, payload, timeout=3600)
-        return jsonify({'success': True, 'message': 'PESTLE kaydedildi (mock).'})
-    except Exception as e:
-        current_app.logger.error(f"PESTLE kaydetme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@api_bp.route('/get-pestle-analysis', methods=['GET'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_get_pestle_analysis():
-    """PESTLE analizini getir (mock/cache)."""
-    try:
-        from extensions import cache
-        cache_key = f"pestle_analysis:{current_user.kurum_id}"
-        data = cache.get(cache_key) or {'items': []}
-        return jsonify({'success': True, 'data': data})
-    except Exception as e:
-        current_app.logger.error(f"PESTLE getirme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@api_bp.route('/save-tows-analysis', methods=['POST'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_save_tows_analysis():
-    """TOWS analizini veritabanına kaydet (Bulk Update)."""
-    try:
-        kurum_id = current_user.kurum_id
-        if not kurum_id:
-             return jsonify({'success': False, 'message': 'Kurum bilgisi bulunamadı'}), 400
-             
-        data = request.get_json() or {}
-        # data format expects: { 'SO': [{text: ..}, ...], 'WO': [...], ... }
-        
-        # Mevcut analizleri temizle 
-        TowsAnalizi.query.filter_by(kurum_id=kurum_id).delete()
-        
-        for category, items in data.items():
-            # category: SO, WO, ST, WT
-            # items: list of objects with 'text'
-            if not items:
-                continue
-            for item in items:
-                text = item.get('text')
-                if text:
-                    tows = TowsAnalizi(
-                        kurum_id=kurum_id,
-                        kategori=category,
-                        baslik=text[:100],  # Başlık için karakter sınırı
-                        aciklama=text,
-                        created_by=current_user.id
-                    )
-                    db.session.add(tows)
-        
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'TOWS analizi kaydedildi.'})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"TOWS kaydetme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@api_bp.route('/get-tows-analysis', methods=['GET'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_get_tows_analysis():
-    """TOWS analizini veritabanından getir."""
-    try:
-        kurum_id = current_user.kurum_id
-        if not kurum_id:
-             return jsonify({'success': False, 'message': 'Kurum bilgisi bulunamadı'}), 400
-             
-        analizler = TowsAnalizi.query.filter_by(kurum_id=kurum_id).all()
-        
-        data = {
-            'SO': [], 'WO': [], 'ST': [], 'WT': []
-        }
-        
-        for item in analizler:
-            # Kategori kontrolü (büyük/küçük harf duyarlılığı için normalize edilebilir)
-            kategori = item.kategori
-            if kategori in data:
-                data[kategori].append({
-                    'id': item.id,
-                    'text': item.aciklama or item.baslik
-                })
-        
-        return jsonify({'success': True, 'data': data})
-    except Exception as e:
-        current_app.logger.error(f"TOWS getirme hatası: {e}", exc_info=True)
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
@@ -5869,121 +5728,6 @@ def api_admin_add_user():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı ekleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-# --- Analiz CRUD Endpointleri ---
-
-@api_bp.route('/kurum/<int:kurum_id>/swot', methods=['POST'])
-@login_required
-@csrf.exempt
-def add_swot(kurum_id):
-    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-    try:
-        data = request.get_json()
-        yeni = SwotAnalizi(
-            kurum_id=kurum_id,
-            kategori=data.get('kategori'),
-            baslik=data.get('baslik'),
-            aciklama=data.get('aciklama'),
-            oncelik=int(data.get('oncelik', 1))
-        )
-        db.session.add(yeni)
-        db.session.commit()
-        return jsonify({'success': True, 'id': yeni.id})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@api_bp.route('/swot/<int:id>', methods=['DELETE'])
-@login_required
-@csrf.exempt
-def delete_swot(id):
-    try:
-        item = SwotAnalizi.query.get_or_404(id)
-        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-        db.session.delete(item)
-        db.session.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@api_bp.route('/kurum/<int:kurum_id>/pestle', methods=['POST'])
-@login_required
-@csrf.exempt
-def add_pestle(kurum_id):
-    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-    try:
-        data = request.get_json()
-        yeni = PestleAnalizi(
-            kurum_id=kurum_id,
-            kategori=data.get('kategori'),
-            baslik=data.get('baslik'),
-            aciklama=data.get('aciklama'),
-            etki=data.get('etki', 'Orta'),
-            oncelik=int(data.get('oncelik', 1))
-        )
-        db.session.add(yeni)
-        db.session.commit()
-        return jsonify({'success': True, 'id': yeni.id})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@api_bp.route('/pestle/<int:id>', methods=['DELETE'])
-@login_required
-@csrf.exempt
-def delete_pestle(id):
-    try:
-        item = PestleAnalizi.query.get_or_404(id)
-        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-        db.session.delete(item)
-        db.session.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@api_bp.route('/kurum/<int:kurum_id>/tows', methods=['POST'])
-@login_required
-@csrf.exempt
-def add_tows(kurum_id):
-    if current_user.sistem_rol != 'admin' and (current_user.kurum_id != kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-        return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-    try:
-        data = request.get_json()
-        yeni = TowsAnalizi(
-            kurum_id=kurum_id,
-            kategori=data.get('kategori'),
-            baslik=data.get('baslik'),
-            aciklama=data.get('aciklama'),
-            oncelik=int(data.get('oncelik', 1))
-        )
-        db.session.add(yeni)
-        db.session.commit()
-        return jsonify({'success': True, 'id': yeni.id})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@api_bp.route('/tows/<int:id>', methods=['DELETE'])
-@login_required
-@csrf.exempt
-def delete_tows(id):
-    try:
-        item = TowsAnalizi.query.get_or_404(id)
-        if current_user.sistem_rol != 'admin' and (current_user.kurum_id != item.kurum_id or current_user.sistem_rol not in ['kurum_yoneticisi', 'ust_yonetim']):
-            return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
-        db.session.delete(item)
-        db.session.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 

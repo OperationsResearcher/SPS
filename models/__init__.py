@@ -13,10 +13,10 @@ from .user import (
     DashboardLayout, Deger, EtikKural, KalitePolitikasi,
     Notification, UserActivityLog
 )
-from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix
+from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix, StrategyMapLink
+from .analysis import AnalysisItem, TowsMatrix
 from .process import (
-    Surec, SurecPerformansGostergesi, SurecFaaliyet, 
-    SwotAnalizi, PestleAnalizi, TowsAnalizi,
+    Surec, SurecPerformansGostergesi, SurecFaaliyet,
     BireyselPerformansGostergesi, BireyselFaaliyet,
     PerformansGostergeVeri, PerformansGostergeVeriAudit,
     FaaliyetTakip, FavoriKPI,
@@ -32,6 +32,27 @@ from .project import (
 
 # V67 Activity Modeli
 from datetime import datetime
+
+# Audit Log (Total Rewrite)
+class AuditLog(db.Model):
+    """
+    Kullanıcı aksiyonlarına dayalı audit log.
+    """
+    __tablename__ = 'audit_log'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_name = db.Column(db.String(100), nullable=True)
+
+    action = db.Column(db.String(20), nullable=False)  # CREATE, UPDATE, DELETE
+    module = db.Column(db.String(100), nullable=False)
+    record_id = db.Column(db.Integer, nullable=False)
+    record_name = db.Column(db.String(255), nullable=True)
+
+    changes = db.Column(db.JSON, nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.now, index=True)
+
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('audit_logs', lazy='dynamic'))
 
 class Activity(db.Model):
     """
@@ -79,20 +100,22 @@ __all__ = [
     # User
     'User', 'Kurum', 'YetkiMatrisi', 'OzelYetki', 'KullaniciYetki',
     'DashboardLayout', 'Deger', 'EtikKural', 'KalitePolitikasi',
-    'Notification', 'UserActivityLog',
+    'Notification', 'UserActivityLog', 'AuditLog',
     
     # Strategy
-    'AnaStrateji', 'AltStrateji', 'StrategyProcessMatrix',
+    'AnaStrateji', 'AltStrateji', 'StrategyProcessMatrix', 'StrategyMapLink',
     'MainStrategy', 'SubStrategy', # Aliases
     
     # Process
-    'Surec', 'SurecPerformansGostergesi', 'SurecFaaliyet', 
-    'SwotAnalizi', 'PestleAnalizi', 'TowsAnalizi',
+    'Surec', 'SurecPerformansGostergesi', 'SurecFaaliyet',
     'BireyselPerformansGostergesi', 'BireyselFaaliyet',
     'PerformansGostergeVeri', 'PerformansGostergeVeriAudit',
     'FaaliyetTakip', 'FavoriKPI',
     'surec_uyeleri', 'surec_liderleri', 'surec_alt_stratejiler', 'process_owners',
     'Process', 'PerformanceIndicator', # Aliases
+
+    # Analysis
+    'AnalysisItem', 'TowsMatrix',
     
     # Project
     'Project', 'Task', 'TaskImpact', 'TaskComment', 'TaskMention',

@@ -888,137 +888,85 @@
 </div>
 
 
-<!-- Analizler -->
-<div class="row mb-4" id="analizPanel" data-kurum-id="{{ current_user.kurum_id }}">
+<!-- Analiz Hızlı Erişim -->
+<div class="row mb-4">
     <div class="col-12">
         <div class="card fade-in-up">
-            <div class="card-header gradient-header d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-chart-pie me-3" style="font-size: 1.5rem;"></i>
-                    <h5 class="mb-0">Analizler</h5>
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <h5 class="mb-1">
+                            <i class="fas fa-chart-line text-primary me-2"></i>
+                            Analiz Durumu
+                        </h5>
+                        <div class="text-muted small">
+                            {% if (swot_count + pestle_count + tows_strategy_count) > 0 %}
+                            Toplam {{ swot_count + pestle_count + tows_strategy_count }} kayıt
+                            {% else %}
+                            Başlanmadı
+                            {% endif %}
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-success-subtle text-success border border-success me-2">
+                                S: {% if swot_count > 0 %}{{ swot_count }}{% else %}Başlanmadı{% endif %}
+                            </span>
+                            <span class="badge bg-info-subtle text-info border border-info me-2">
+                                P: {% if pestle_count > 0 %}{{ pestle_count }}{% else %}Başlanmadı{% endif %}
+                            </span>
+                            <span class="badge bg-warning-subtle text-warning border border-warning">
+                                T: {% if tows_strategy_count > 0 %}{{ tows_strategy_count }}{% else %}Başlanmadı{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 px-lg-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Analiz Tamamlanma</small>
+                            <small class="text-muted">{{ analysis_progress }}%</small>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                style="width: {{ analysis_progress }}%;"
+                                aria-valuenow="{{ analysis_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        {% if kurum %}
+                        <a class="btn btn-primary" href="{{ url_for('analysis.analysis_hub', kurum_id=kurum.id) }}">
+                            <i class="fas fa-rocket me-1"></i>Analiz Merkezi'ne Git
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>Analiz Merkezi'ne Git</button>
+                        {% endif %}
+                    </div>
                 </div>
-                <button class="btn btn-light btn-sm modern-btn" onclick="toggleCardBody(this)">
-                    <i class="fas fa-chevron-up"></i>
-                </button>
             </div>
-            <div class="card-body p-4 card-body-collapsible">
-                <ul class="nav nav-pills mb-3" id="analizTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="swot-tab" data-bs-toggle="tab" data-bs-target="#swot-pane"
-                            type="button" role="tab">SWOT Analizi</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pestle-tab" data-bs-toggle="tab" data-bs-target="#pestle-pane"
-                            type="button" role="tab">PESTLE Analizi</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tows-tab" data-bs-toggle="tab" data-bs-target="#tows-pane"
-                            type="button" role="tab">TOWS Analizi</button>
-                    </li>
-                </ul>
+        </div>
+    </div>
+</div>
 
-                <div class="tab-content" id="analizTabContent">
-                    <!-- SWOT Pane -->
-                    <div class="tab-pane fade show active" id="swot-pane" role="tabpanel">
-                        <div class="d-flex justify-content-end mb-3">
-                            <button class="btn btn-primary btn-sm" onclick="showAddSwotModal()">
-                                <i class="fas fa-plus me-1"></i>Yeni Ekle
-                            </button>
-                        </div>
-                        <div class="row g-3" id="swot-list">
-                            {% for item in kurum.swot_analizleri %}
-                            <div class="col-md-6">
-                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-{{ 'success' if item.kategori == 'strengths' else 'warning' if item.kategori == 'weaknesses' else 'info' if item.kategori == 'opportunities' else 'danger' }}"
-                                    data-id="{{ item.id }}">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="flex-grow-1">
-                                                <h6 class="card-title fw-bold mb-1">{{ item.baslik }}</h6>
-                                                <p class="card-text small text-muted mb-2">{{ item.aciklama }}</p>
-                                                <span class="badge bg-{{ 'success' if item.kategori == 'strengths' else 'warning' if item.kategori == 'weaknesses' else 'info' if item.kategori == 'opportunities' else 'danger' }}">
-                                                    {% if item.kategori == 'strengths' %}Güçlü Yön
-                                                    {% elif item.kategori == 'weaknesses' %}Zayıf Yön
-                                                    {% elif item.kategori == 'opportunities' %}Fırsat
-                                                    {% else %}Tehdit{% endif %}
-                                                </span>
-                                            </div>
-                                            <button class="btn btn-link text-danger p-0 delete-btn" onclick="deleteSwot({{ item.id }})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="col-12 text-center text-muted">Henüz SWOT analizi eklenmemiş.</div>
-                            {% endfor %}
+<!-- BSC Strateji Haritası -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card fade-in-up">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <h5 class="mb-1">
+                            <i class="fas fa-sitemap text-primary me-2"></i>
+                            BSC Strateji Haritası
+                        </h5>
+                        <div class="text-muted small">
+                            Perspektif bazlı hedef ilişkilerini tek ekranda yönetin
                         </div>
                     </div>
-
-                    <!-- PESTLE Pane -->
-                    <div class="tab-pane fade" id="pestle-pane" role="tabpanel">
-                        <div class="d-flex justify-content-end mb-3">
-                            <button class="btn btn-primary btn-sm" onclick="showAddPestleModal()">
-                                <i class="fas fa-plus me-1"></i>Yeni Ekle
-                            </button>
-                        </div>
-                        <div class="row g-3" id="pestle-list">
-                            {% for item in kurum.pestle_analizleri %}
-                            <div class="col-md-6">
-                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-info" data-id="{{ item.id }}">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="card-title fw-bold">{{ item.baslik }}</h6>
-                                            <button class="btn btn-link text-danger p-0 delete-btn"
-                                                onclick="deletePestle({{ item.id }})"><i
-                                                    class="fas fa-trash"></i></button>
-                                        </div>
-                                        <p class="card-text small text-muted">{{ item.aciklama }}</p>
-                                        <div class="d-flex gap-2 flex-wrap">
-                                            <span class="badge bg-info">{{ item.kategori }}</span>
-                                            <span class="badge bg-warning text-dark">{{ item.etki }} Etki</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="col-12 text-center text-muted">Henüz PESTLE analizi eklenmemiş.</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- TOWS Pane -->
-                    <div class="tab-pane fade" id="tows-pane" role="tabpanel">
-                        <div class="d-flex justify-content-end mb-3">
-                            <button class="btn btn-primary btn-sm" onclick="showAddTowsModal()">
-                                <i class="fas fa-plus me-1"></i>Yeni Ekle
-                            </button>
-                        </div>
-                        <div class="row g-3" id="tows-list">
-                            {% for item in kurum.tows_analizleri %}
-                            <div class="col-md-6">
-                                <div class="card h-100 shadow-sm border-0 border-start border-4 border-primary" data-id="{{ item.id }}">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="card-title fw-bold">{{ item.baslik }}</h6>
-                                            <button class="btn btn-link text-danger p-0 delete-btn"
-                                                onclick="deleteTows({{ item.id }})"><i
-                                                    class="fas fa-trash"></i></button>
-                                        </div>
-                                        <p class="card-text small text-muted">{{ item.aciklama }}</p>
-                                        <span class="badge bg-primary">
-                                            {% if item.kategori == 'SO' %}SO - Güçlü/Fırsat
-                                            {% elif item.kategori == 'WO' %}WO - Zayıf/Fırsat
-                                            {% elif item.kategori == 'ST' %}ST - Güçlü/Tehdit
-                                            {% else %}WT - Zayıf/Tehdit{% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="col-12 text-center text-muted">Henüz TOWS analizi eklenmemiş.</div>
-                            {% endfor %}
-                        </div>
+                    <div>
+                        {% if kurum %}
+                        <a class="btn btn-outline-primary" href="{{ url_for('bsc.bsc_map', kurum_id=kurum.id) }}">
+                            Haritaya Git
+                        </a>
+                        {% else %}
+                        <button class="btn btn-outline-secondary" disabled>Haritaya Git</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -1638,127 +1586,6 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-2"></i>Kaydet
                     </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- SWOT Ekle Modal -->
-<div class="modal fade" id="swotModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">SWOT Analizi Ekle</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="swotForm">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kategori</label>
-                        <select class="form-select" name="kategori" required>
-                            <option value="strengths">Güçlü Yön (Strength)</option>
-                            <option value="weaknesses">Zayıf Yön (Weakness)</option>
-                            <option value="opportunities">Fırsat (Opportunity)</option>
-                            <option value="threats">Tehdit (Threat)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- PESTLE Ekle Modal -->
-<div class="modal fade" id="pestleModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">PESTLE Analizi Ekle</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="pestleForm">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kategori</label>
-                        <select class="form-select" name="kategori" required>
-                            <option value="Political">Politik</option>
-                            <option value="Economic">Ekonomik</option>
-                            <option value="Social">Sosyal</option>
-                            <option value="Technological">Teknolojik</option>
-                            <option value="Legal">Yasal</option>
-                            <option value="Environmental">Çevresel</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Etki Düzeyi</label>
-                        <select class="form-select" name="etki">
-                            <option value="Yüksek">Yüksek</option>
-                            <option value="Orta" selected>Orta</option>
-                            <option value="Düşük">Düşük</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- TOWS Ekle Modal -->
-<div class="modal fade" id="towsModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">TOWS Analizi Ekle</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="towsForm">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kategori</label>
-                        <select class="form-select" name="kategori" required>
-                            <option value="SO">Güçlü Yönler - Fırsatlar (SO)</option>
-                            <option value="WO">Zayıf Yönler - Fırsatlar (WO)</option>
-                            <option value="ST">Güçlü Yönler - Tehditler (ST)</option>
-                            <option value="WT">Zayıf Yönler - Tehditler (WT)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Başlık</label>
-                        <input type="text" class="form-control" name="baslik" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Açıklama</label>
-                        <textarea class="form-control" name="aciklama" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
                 </div>
             </form>
         </div>

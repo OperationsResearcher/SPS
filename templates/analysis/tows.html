@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}TOWS Matrisi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">TOWS Matrisi</h2>
+            <p class="text-muted mb-0">Güçlü ve zayıf yönlerinizi fırsat ve tehditlerle eşleştirin</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ url_for('analysis.analysis_hub', kurum_id=kurum_id) }}">Analiz Merkezine Dön</a>
+    </div>
+
+    {% set row_items = strengths + weaknesses %}
+    {% set col_items = opportunities + threats %}
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+                <tr>
+                    <th style="min-width: 200px;">SWOT Öğeleri</th>
+                    {% for col in col_items %}
+                    <th style="min-width: 180px;">
+                        <div class="fw-semibold">{{ col.content }}</div>
+                        <span class="badge bg-info-subtle text-info">{{ col.category }}</span>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in row_items %}
+                <tr>
+                    <th class="table-light text-start">
+                        <div class="fw-semibold">{{ row.content }}</div>
+                        <span class="badge bg-secondary-subtle text-secondary">{{ row.category }}</span>
+                    </th>
+                    {% for col in col_items %}
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary"
+                                onclick="openStrategyModal({{ row.id }}, {{ col.id }}, '{{ row.content|e }}', '{{ col.content|e }}', this)">
+                            ➕ Strateji Üret
+                        </button>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                {% if row_items|length == 0 or col_items|length == 0 %}
+                <tr>
+                    <td colspan="{{ (col_items|length + 1) }}" class="text-muted">
+                        TOWS matrisi için SWOT verileri eksik. Önce SWOT panelinde veri ekleyin.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="towsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Strateji Üret</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="towsStrengthId">
+                <input type="hidden" id="towsOppThreatId">
+                <div class="mb-3">
+                    <div class="small text-muted">Güçlü/Zayıf:</div>
+                    <div class="fw-semibold" id="towsStrengthText"></div>
+                </div>
+                <div class="mb-3">
+                    <div class="small text-muted">Fırsat/Tehdit:</div>
+                    <div class="fw-semibold" id="towsOppThreatText"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Strateji Metni</label>
+                    <textarea class="form-control" id="towsStrategyText" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Aksiyon Planı (opsiyonel)</label>
+                    <textarea class="form-control" id="towsActionPlan" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveStrategy()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    let activeCellButton = null;
+
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    function openStrategyModal(strengthId, oppThreatId, strengthText, oppThreatText, button) {
+        activeCellButton = button;
+        document.getElementById('towsStrengthId').value = strengthId;
+        document.getElementById('towsOppThreatId').value = oppThreatId;
+        document.getElementById('towsStrengthText').textContent = strengthText;
+        document.getElementById('towsOppThreatText').textContent = oppThreatText;
+        document.getElementById('towsStrategyText').value = '';
+        document.getElementById('towsActionPlan').value = '';
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('towsModal')).show();
+    }
+
+    async function saveStrategy() {
+        const strengthId = document.getElementById('towsStrengthId').value;
+        const oppThreatId = document.getElementById('towsOppThreatId').value;
+        const strategyText = document.getElementById('towsStrategyText').value.trim();
+        const actionPlan = document.getElementById('towsActionPlan').value.trim();
+
+        if (!strategyText) return;
+
+        const response = await fetch('/api/tows/olustur', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                strength_id: strengthId,
+                opportunity_threat_id: oppThreatId,
+                strategy_text: strategyText,
+                action_plan: actionPlan
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            if (activeCellButton) {
+                activeCellButton.classList.remove('btn-outline-primary');
+                activeCellButton.classList.add('btn-success');
+                activeCellButton.textContent = 'Kaydedildi';
+                activeCellButton.disabled = true;
+            }
+            bootstrap.Modal.getInstance(document.getElementById('towsModal')).hide();
+        }
+    }
+</script>
+{% endblock %}

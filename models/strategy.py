@@ -24,6 +24,10 @@ class AnaStrateji(db.Model):
     ad = db.Column(db.String(200), nullable=False)
     name = db.Column(db.String(200), nullable=True)  # İngilizce tanım (opsiyonel)
     aciklama = db.Column(db.Text)
+
+    # BSC Perspektifi ve kısa kod
+    perspective = db.Column(db.String(20), nullable=True, index=True)  # FINANSAL, MUSTERI, SUREC, OGRENME
+    bsc_code = db.Column(db.String(10), nullable=True, index=True)  # Örn: F1, M2
     
     # Meta Veriler
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -97,3 +101,26 @@ class StrategyProcessMatrix(db.Model):
     
     def __repr__(self):
         return f'<StrategyProcessMatrix Sub:{self.sub_strategy_id} Proc:{self.process_id} Score:{self.relationship_score}>'
+
+
+class StrategyMapLink(db.Model):
+    """
+    BSC Strateji Haritası Bağlantı Modeli
+    Ana stratejiler arasındaki neden-sonuç ilişkilerini tutar.
+    """
+    __tablename__ = 'strategy_map_link'
+
+    id = db.Column(db.Integer, primary_key=True)
+    source_id = db.Column(db.Integer, db.ForeignKey('ana_strateji.id'), nullable=False, index=True)
+    target_id = db.Column(db.Integer, db.ForeignKey('ana_strateji.id'), nullable=False, index=True)
+    connection_type = db.Column(db.String(30), nullable=False, default='CAUSE_EFFECT')
+
+    source = db.relationship('AnaStrateji', foreign_keys=[source_id], backref=db.backref('bsc_out_links', lazy=True))
+    target = db.relationship('AnaStrateji', foreign_keys=[target_id], backref=db.backref('bsc_in_links', lazy=True))
+
+    __table_args__ = (
+        db.UniqueConstraint('source_id', 'target_id', name='uq_strategy_map_link_pair'),
+    )
+
+    def __repr__(self):
+        return f'<StrategyMapLink {self.source_id} -> {self.target_id}>'

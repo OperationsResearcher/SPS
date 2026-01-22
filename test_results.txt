@@ -1,0 +1,372 @@
+=== TEST BAŞLANGIÇ: 2026-01-17 02:49:25 ===
+
+[02:49:25] [ℹ️ BİLGİ] === FULL SYSTEM TEST BAŞLATILIYOR ===
+[02:49:34] [ℹ️ BİLGİ] Test ortamı hazırlanıyor...
+[02:49:34] [✅ BAŞARILI] Admin kullanıcısı bulundu: admin (ID: 1)
+[02:49:34] [ℹ️ BİLGİ] Test Adımı: A. Kurum Yönetimi - Kurum Ekleme
+[02:49:34] [✅ BAŞARILI] Kurum oluşturuldu: ID=4
+[02:49:34] [✅ BAŞARILI] ✓ A. Kurum Yönetimi - Kurum Ekleme - BAŞARILI
+[02:49:34] [ℹ️ BİLGİ] Test Adımı: B. Kullanıcı Yönetimi - Kullanıcı Ekleme
+[02:49:35] [✅ BAŞARILI] Kullanıcı oluşturuldu: ID=12
+[02:49:35] [✅ BAŞARILI] ✓ B. Kullanıcı Yönetimi - Kullanıcı Ekleme - BAŞARILI
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: C. Stratejik Planlama - Süreç Ekleme
+[02:49:35] [✅ BAŞARILI] Süreç oluşturuldu: ID=13, Liderler: [12]
+[02:49:35] [✅ BAŞARILI] ✓ C. Stratejik Planlama - Süreç Ekleme - BAŞARILI
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: C. Stratejik Planlama - Performans Göstergesi Ekleme
+[02:49:35] [✅ BAŞARILI] Performans göstergesi oluşturuldu: ID=66
+[02:49:35] [✅ BAŞARILI] ✓ C. Stratejik Planlama - Performans Göstergesi Ekleme - BAŞARILI
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: C. Stratejik Planlama - PG Veri Girişi
+[02:49:35] [✅ BAŞARILI] PG veri girişi yapıldı: ID=335, Değer=100
+[02:49:35] [✅ BAŞARILI] ✓ C. Stratejik Planlama - PG Veri Girişi - BAŞARILI
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: D. Proje Yönetimi - Proje Ekleme
+[02:49:35] [✅ BAŞARILI] Proje oluşturuldu: ID=5, İlişkili Süreçler: [13]
+[02:49:35] [✅ BAŞARILI] ✓ D. Proje Yönetimi - Proje Ekleme - BAŞARILI
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: D. Proje Yönetimi - Görev Ekleme
+[02:49:35] [❌ HATA] ✗ D. Proje Yönetimi - Görev Ekleme - HATA: (sqlite3.IntegrityError) NOT NULL constraint failed: task.reporter_id
+[SQL: INSERT INTO task (project_id, title, description, assignee_id, reporter_id, external_assignee_name, parent_id, estimated_time, actual_time, progress, completed_at, is_measurable, planned_output_value, related_indicator_id, status, priority, is_archived, due_date, start_date, reminder_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (5, 'Test Görevi', 'Test için oluşturuldu', 12, None, None, None, None, None, 0, None, 0, None, None, 'Yapılacak', 'Orta', 0, '2026-01-24', None, None, '2026-01-16 23:49:35.371787')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: task.reporter_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 103, in test_step
+    result = test_func()
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 461, in _test
+    db.session.commit()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\scoping.py", line 599, in commit
+    return self._proxied.commit()
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4345, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4441, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1415, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\sql\elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: task.reporter_id
+[SQL: INSERT INTO task (project_id, title, description, assignee_id, reporter_id, external_assignee_name, parent_id, estimated_time, actual_time, progress, completed_at, is_measurable, planned_output_value, related_indicator_id, status, priority, is_archived, due_date, start_date, reminder_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (5, 'Test Görevi', 'Test için oluşturuldu', 12, None, None, None, None, None, 0, None, 0, None, None, 'Yapılacak', 'Orta', 0, '2026-01-24', None, None, '2026-01-16 23:49:35.371787')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: D. Proje Yönetimi - Alt Görev Ekleme
+[02:49:35] [❌ HATA] Görev ID bulunamadı!
+[02:49:35] [❌ HATA] ✗ D. Proje Yönetimi - Alt Görev Ekleme - BAŞARISIZ
+[02:49:35] [ℹ️ BİLGİ] Test Adımı: D. Proje Yönetimi - Risk Ekleme
+[02:49:35] [❌ HATA] ✗ D. Proje Yönetimi - Risk Ekleme - HATA: 'created_by_id' is an invalid keyword argument for ProjectRisk
+Traceback (most recent call last):
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 103, in test_step
+    result = test_func()
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 522, in _test
+    risk = ProjectRisk(
+        project_id=TEST_DATA_IDS['project_id'],
+    ...<6 lines>...
+        status='Aktif'
+    )
+  File "<string>", line 4, in __init__
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state.py", line 571, in _initialize_instance
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state.py", line 569, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2173, in _declarative_constructor
+    raise TypeError(
+        "%r is an invalid keyword argument for %s" % (k, cls_.__name__)
+    )
+TypeError: 'created_by_id' is an invalid keyword argument for ProjectRisk
+
+[02:49:35] [ℹ️ BİLGİ] Test verileri temizleniyor (Güvenli Silme)...
+[02:49:35] [ℹ️ BİLGİ] 1. PerformansGostergeVeri kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 2. BireyselPerformansGostergesi kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 3. BireyselFaaliyet kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 7. Project kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 8. SurecPerformansGostergesi kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 9. Surec kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 10. User kayıtları siliniyor...
+[02:49:35] [ℹ️ BİLGİ] 11. Kurum kayıtları siliniyor...
+[02:49:35] [✅ BAŞARILI] Test verileri başarıyla temizlendi (Güvenli Silme tamamlandı)
+
+--- TEST SONUCU ---
+Toplam Adım: 9
+Başarılı: 6
+Hatalı: 3
+Başarı Oranı: 66.7%
+
+
+--- HATA DETAYLARI ---
+
+Adım: D. Proje Yönetimi - Görev Ekleme
+Hata: (sqlite3.IntegrityError) NOT NULL constraint failed: task.reporter_id
+[SQL: INSERT INTO task (project_id, title, description, assignee_id, reporter_id, external_assignee_name, parent_id, estimated_time, actual_time, progress, completed_at, is_measurable, planned_output_value, related_indicator_id, status, priority, is_archived, due_date, start_date, reminder_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (5, 'Test Görevi', 'Test için oluşturuldu', 12, None, None, None, None, None, 0, None, 0, None, None, 'Yapılacak', 'Orta', 0, '2026-01-24', None, None, '2026-01-16 23:49:35.371787')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback:
+Traceback (most recent call last):
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: task.reporter_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 103, in test_step
+    result = test_func()
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 461, in _test
+    db.session.commit()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\scoping.py", line 599, in commit
+    return self._proxied.commit()
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4345, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\session.py", line 4441, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1415, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\sql\elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: task.reporter_id
+[SQL: INSERT INTO task (project_id, title, description, assignee_id, reporter_id, external_assignee_name, parent_id, estimated_time, actual_time, progress, completed_at, is_measurable, planned_output_value, related_indicator_id, status, priority, is_archived, due_date, start_date, reminder_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (5, 'Test Görevi', 'Test için oluşturuldu', 12, None, None, None, None, None, 0, None, 0, None, None, 'Yapılacak', 'Orta', 0, '2026-01-24', None, None, '2026-01-16 23:49:35.371787')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+
+Adım: D. Proje Yönetimi - Risk Ekleme
+Hata: 'created_by_id' is an invalid keyword argument for ProjectRisk
+Traceback:
+Traceback (most recent call last):
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 103, in test_step
+    result = test_func()
+  File "C:\SPY_Cursor\SP_Code\full_system_test.py", line 522, in _test
+    risk = ProjectRisk(
+        project_id=TEST_DATA_IDS['project_id'],
+    ...<6 lines>...
+        status='Aktif'
+    )
+  File "<string>", line 4, in __init__
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state.py", line 571, in _initialize_instance
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\state.py", line 569, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2173, in _declarative_constructor
+    raise TypeError(
+        "%r is an invalid keyword argument for %s" % (k, cls_.__name__)
+    )
+TypeError: 'created_by_id' is an invalid keyword argument for ProjectRisk
+
+[02:49:35] [ℹ️ BİLGİ] === TEST TAMAMLANDI ===

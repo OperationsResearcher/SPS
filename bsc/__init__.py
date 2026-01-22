@@ -1,0 +1,1 @@
+"""BSC (Balanced Scorecard) modülü."""
