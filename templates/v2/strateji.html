@@ -1,0 +1,263 @@
+{% extends "v2/layout_v2.html" %}
+
+{% block title %}Stratejik Planlama - Kurumsal Karne{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section: Stratejik Plan Genel Bakış -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg text-white"
+                style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="text-uppercase text-white-50 letter-spacing-2">Kurumsal Yönetim Kokpiti</h5>
+                            <h1 class="display-4 fw-bold mb-3">2024-2028 Stratejik Planı</h1>
+                            <p class="lead mb-4 text-white-75">Kurumun vizyonuna giden yolda ana stratejilerin ve
+                                hedeflerin anlık performans takibi.</p>
+
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-square bg-white bg-opacity-10 p-3 rounded-circle me-3">
+                                        <i class="fas fa-bullseye fa-2x text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 fw-bold">{{ kpi_stats.total }}</h3>
+                                        <span class="text-white-50 small">Toplam KPI</span>
+                                    </div>
+                                </div>
+                                <div class="vr bg-white bg-opacity-25" style="height: 40px;"></div>
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-square bg-white bg-opacity-10 p-3 rounded-circle me-3">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 fw-bold">%{{ kpi_stats.success_rate }}</h3>
+                                        <span class="text-white-50 small">Başarı Oranı</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center text-md-end mt-4 mt-md-0">
+                            <div class="position-relative d-inline-block">
+                                <!-- Circular Progress Placeholder -->
+                                <div class="progress-circle"
+                                    style="width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#00d2ff {{ overall_progress }}%, rgba(255,255,255,0.1) 0); display: flex; align-items: center; justify-content: center; margin-left: auto;">
+                                    <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 130px; height: 130px;">
+                                        <div class="text-center">
+                                            <span class="display-6 fw-bold text-white">{{ overall_progress }}%</span>
+                                            <div class="small text-white-50">GENEL<br>İLERLEME</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sol Kolon: Stratejik Amaçlar Listesi -->
+        <div class="col-lg-5">
+            <h5 class="text-muted fw-bold mb-3"><i class="fas fa-list-ul me-2"></i>Stratejik Amaçlar</h5>
+            <div class="d-flex flex-column gap-3">
+                {% for item in strategies %}
+                <div class="card border-0 shadow-sm hover-elevate transition-base">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-light text-dark border">{{ item.obj.code or 'SA-' ~ loop.index
+                                }}</span>
+                            <!-- Status Badge -->
+                            {% if item.status_class == 'success' %}
+                            <span class="badge bg-success-subtle text-success"><i
+                                    class="fas fa-check-circle me-1"></i>İyi Durumda</span>
+                            {% elif item.status_class == 'warning' %}
+                            <span class="badge bg-warning-subtle text-warning"><i
+                                    class="fas fa-exclamation-circle me-1"></i>İlgi Bekliyor</span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger"><i
+                                    class="fas fa-times-circle me-1"></i>Kritik</span>
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title fw-bold text-dark mb-1">{{ item.obj.ad }}</h5>
+                        <p class="text-muted small mb-3">{{ item.obj.aciklama[:100] if item.obj.aciklama else '' }}...
+                        </p>
+
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <small class="text-muted"><i class="fas fa-user-tie me-1"></i>{{ item.responsible }}</small>
+                            <small class="text-muted">{{ item.sub_count }} Alt Hedef</small>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-{{ item.status_class }}" role="progressbar"
+                                style="width: {{ item.progress }}%" aria-valuenow="{{ item.progress }}"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-light text-center border-0 shadow-sm py-5">
+                    <i class="fas fa-chess-board fa-3x text-muted mb-3"></i>
+                    <h5>Henüz Strateji Tanımlanmamış</h5>
+                    <p class="text-muted">Kurumsal hedeflerinizi belirleyerek başlayın.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sağ Kolon: Performans Boyutları (BSC Perspektifleri) -->
+        <div class="col-lg-7">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-muted fw-bold mb-0"><i class="fas fa-chart-pie me-2"></i>Performans Boyutları (BSC)</h5>
+                <button class="btn btn-sm btn-outline-primary rounded-pill"><i
+                        class="fas fa-filter me-1"></i>Filtrele</button>
+            </div>
+
+            <div class="row g-3">
+                <!-- Finansal -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div
+                            class="card-header border-0 bg-transparent py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-primary mb-0"><i class="fas fa-coins me-2"></i>Finansal</h6>
+                            <span class="badge bg-primary rounded-pill">{{ perspectives['Finansal']|length }}
+                                Hedef</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Placeholder Chart Area -->
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="height: 150px;">
+                                <div class="text-center text-muted opacity-50">
+                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                    <p class="small mb-0">Gelir & Bütçe Analizi</p>
+                                </div>
+                            </div>
+                            <!-- Mini List -->
+                            <ul class="list-group list-group-flush mt-3 small">
+                                {% for s in perspectives['Finansal'][:2] %}
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-truncate" style="max-width: 70%;">{{ s.obj.ad }}</span>
+                                    <span class="text-{{ s.status_class }} fw-bold">%{{ s.progress }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Müşteri -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div
+                            class="card-header border-0 bg-transparent py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-success mb-0"><i class="fas fa-users me-2"></i>Müşteri</h6>
+                            <span class="badge bg-success rounded-pill">{{ perspectives['Müşteri']|length }}
+                                Hedef</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Placeholder Chart Area -->
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="height: 150px;">
+                                <div class="text-center text-muted opacity-50">
+                                    <i class="fas fa-smile fa-2x mb-2"></i>
+                                    <p class="small mb-0">Memnuniyet Analizi</p>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush mt-3 small">
+                                {% for s in perspectives['Müşteri'][:2] %}
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-truncate" style="max-width: 70%;">{{ s.obj.ad }}</span>
+                                    <span class="text-{{ s.status_class }} fw-bold">%{{ s.progress }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Süreç -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div
+                            class="card-header border-0 bg-transparent py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-info mb-0"><i class="fas fa-cogs me-2"></i>Süreçler</h6>
+                            <span class="badge bg-info rounded-pill text-white">{{ perspectives['Süreç']|length }}
+                                Hedef</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Placeholder Chart Area -->
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="height: 150px;">
+                                <div class="text-center text-muted opacity-50">
+                                    <i class="fas fa-tasks fa-2x mb-2"></i>
+                                    <p class="small mb-0">Operasyonel Verimlilik</p>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush mt-3 small">
+                                {% for s in perspectives['Süreç'][:2] %}
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-truncate" style="max-width: 70%;">{{ s.obj.ad }}</span>
+                                    <span class="text-{{ s.status_class }} fw-bold">%{{ s.progress }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Öğrenme ve Gelişim -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div
+                            class="card-header border-0 bg-transparent py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-warning mb-0"><i class="fas fa-lightbulb me-2"></i>Öğrenme & Gelişim
+                            </h6>
+                            <span class="badge bg-warning rounded-pill text-white">{{ perspectives['Öğrenme']|length }}
+                                Hedef</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Placeholder Chart Area -->
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="height: 150px;">
+                                <div class="text-center text-muted opacity-50">
+                                    <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                    <p class="small mb-0">Yetkinlik & İK</p>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush mt-3 small">
+                                {% for s in perspectives['Öğrenme'][:2] %}
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span class="text-truncate" style="max-width: 70%;">{{ s.obj.ad }}</span>
+                                    <span class="text-{{ s.status_class }} fw-bold">%{{ s.progress }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-elevate:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
+        cursor: pointer;
+    }
+
+    .transition-base {
+        transition: all 0.3s ease;
+    }
+
+    .letter-spacing-2 {
+        letter-spacing: 2px;
+    }
+</style>
+{% endblock %}

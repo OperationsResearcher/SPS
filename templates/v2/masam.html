@@ -1,0 +1,155 @@
+{% extends "v2/layout_v2.html" %}
+
+{% block title %}Masam - SPS V2{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-dark">
+            <span class="text-secondary fw-normal">Merhaba,</span> {{ current_user.first_name }}
+        </h2>
+        <p class="text-muted"><i class="far fa-calendar-alt me-2"></i>{{ today.strftime('%d.%m.%Y') }}</p>
+    </div>
+</div>
+
+<!-- Özet Kartları -->
+<div class="row mb-4">
+    <!-- Gecikenler -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-left: 5px solid #e74c3c !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Geciken İşler</h6>
+                        <h2 class="mb-0 fw-bold {% if overdue_count > 0 %}text-danger{% else %}text-dark{% endif %}">
+                            {{ overdue_count }}
+                        </h2>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bugün -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-left: 5px solid #f39c12 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Bugün Bitenler</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ today_count }}</h2>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-calendar-day text-warning fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toplam Açık -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-left: 5px solid #3498db !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Toplam Açık İş</h6>
+                        <h2 class="mb-0 fw-bold text-primary">{{ my_tasks|length }}</h2>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-tasks text-primary fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yapılacaklar Listesi -->
+<div class="card border-0 shadow">
+    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-list-ul me-2 text-primary"></i>Yapılacaklar Listesi</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4" style="width: 40%;">Görev</th>
+                        <th style="width: 20%;">Proje</th>
+                        <th style="width: 15%;">Son Tarih</th>
+                        <th style="width: 15%;">Durum</th>
+                        <th class="text-end pe-4" style="width: 10%;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in my_tasks %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if task.priority == 'High' or task.priority == 'Yüksek' %}
+                                <i class="fas fa-circle text-danger me-2" style="font-size: 0.5rem;"
+                                    title="Yüksek Öncelik"></i>
+                                {% elif task.priority == 'Low' or task.priority == 'Düşük' %}
+                                <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem;"
+                                    title="Düşük Öncelik"></i>
+                                {% else %}
+                                <i class="fas fa-circle text-warning me-2" style="font-size: 0.5rem;"
+                                    title="Normal Öncelik"></i>
+                                {% endif %}
+
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ task.title }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-folder me-1 text-muted"></i>
+                                {{ task.project.name if task.project else '-' }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if task.due_date %}
+                            {% if task.due_date < today %} <span class="text-danger fw-bold"><i
+                                    class="fas fa-exclamation-circle me-1"></i>{{ task.due_date.strftime('%d.%m.%Y')
+                                }}</span>
+                                {% elif task.due_date == today %}
+                                <span class="text-warning fw-bold">Bugün</span>
+                                {% else %}
+                                <span class="text-muted">{{ task.due_date.strftime('%d.%m.%Y') }}</span>
+                                {% endif %}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill 
+                                {% if task.status == 'Yapılıyor' or task.status == 'Devam Ediyor' %}bg-info text-white
+                                {% elif task.status == 'Beklemede' %}bg-secondary
+                                {% else %}bg-primary{% endif %}">
+                                {{ task.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle" title="Detay"><i
+                                    class="fas fa-chevron-right"></i></a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-clipboard-check fa-3x mb-3 text-light"></i>
+                            <p>Harika! Yapılacak açık bir göreviniz bulunmuyor.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

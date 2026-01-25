@@ -135,6 +135,9 @@ def login():
     return render_template('login.html', kurumlar=kurumlar, kullanicilar=kullanicilar, kurum_groups=kurum_groups)
 
 
+
+
+
 @auth_bp.route('/easy-login')
 def easy_login():
     """Kolay giriş sayfası - Tüm kullanıcıları listele (Development Only)"""

@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Hızlı Giriş - Stratejik Planlama Sistemi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <!-- Hidden Form to Handle Login Submission -->
+            <!-- Bu form, hızlı giriş butonlarına tıklandığında JS tarafından tetiklenir -->
+            <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" style="display: none;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <!-- ID'ler script ile uyumlu olması için aynı bırakıldı -->
+                <input type="hidden" name="kurum_id" id="kurumSelect">
+                <input type="hidden" name="username" id="username">
+                <input type="hidden" name="password" id="password" value="">
+                <input type="checkbox" name="quick_login" id="quickLogin" value="1" checked>
+            </form>
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header text-center py-3"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="mb-0 text-white">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        <strong>Hızlı Giriş</strong>
+                    </h5>
+                    <small class="text-white-50">{{ kullanicilar|length }} kullanıcı • Tek tıkla direkt giriş</small>
+                </div>
+                <div class="card-body p-3">
+                    <!-- Arama -->
+                    <div class="mb-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input id="quickAra" type="text" class="form-control"
+                                placeholder="İsim, kullanıcı adı veya rol ara...">
+                        </div>
+                    </div>
+
+                    <!-- Tabs (Sekmeler) -->
+                    <ul class="nav nav-tabs nav-fill mb-3" id="quickLoginTabs" role="tablist"
+                        style="font-size: 0.9rem;">
+                        <!-- Tümü -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active py-1" id="tab-all" data-bs-toggle="tab"
+                                data-bs-target="#content-all" type="button" role="tab">
+                                <i class="bi bi-people-fill me-1"></i> Tümü <span class="badge bg-secondary ms-1"
+                                    style="font-size: 0.7em;">{{ kullanicilar|length }}</span>
+                            </button>
+                        </li>
+                        <!-- Kurumlar -->
+                        {% for k_ad, users in kurum_groups.items() %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-1" id="tab-{{ loop.index }}" data-bs-toggle="tab"
+                                data-bs-target="#content-{{ loop.index }}" type="button" role="tab">
+                                <i class="bi bi-building me-1"></i> {{ k_ad }} <span
+                                    class="badge bg-light text-dark border ms-1" style="font-size: 0.7em;">{{
+                                    users|length }}</span>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="tab-content" id="quickLoginContent">
+
+                        <!-- TAB 1: TÜMÜ -->
+                        <div class="tab-pane fade show active" id="content-all" role="tabpanel">
+                            <!-- Rol Filtreleri (Sadece Tümü sekmesinde anlamlı olabilir ama global de tutulabilir) -->
+                            <div class="mb-3">
+                                <div class="d-flex gap-2 flex-wrap justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-outline-dark role-filter active"
+                                        data-role="all">
+                                        All
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger role-filter"
+                                        data-role="admin">
+                                        Admin
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary role-filter"
+                                        data-role="kurum_yoneticisi">
+                                        Yönetici
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info role-filter"
+                                        data-role="kullanici">
+                                        Kullanıcı
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 user-grid">
+                                {% for u in kullanicilar %}
+                                {% include 'partials/login_user_card.html' %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- TAB N: KURUMLAR -->
+                        {% for k_ad, users in kurum_groups.items() %}
+                        <div class="tab-pane fade" id="content-{{ loop.index }}" role="tabpanel">
+                            <div class="row g-2 user-grid">
+                                {% for u in users %}
+                                {% include 'partials/login_user_card.html' %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Demo Bilgisi -->
+                    <div class="alert alert-info alert-dismissible fade show mt-3 mb-0 py-2" role="alert">
+                        <small>
+                            <i class="bi bi-info-circle-fill"></i>
+                            <strong>Demo Şifresi:</strong>
+                            Tüm kullanıcılar için: <code class="bg-white px-2 py-1 rounded">123456</code>
+                        </small>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            style="font-size: 0.7rem;"></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .quick-login-btn {
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .quick-login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .quick-login-btn:active {
+        transform: translateY(0);
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border: 1px solid transparent;
+        margin-bottom: -1px;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        font-weight: 600;
+        border-color: #dee2e6 #dee2e6 #fff;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('loginForm');
+        // Hidden inputs
+        const kurumSelect = document.getElementById('kurumSelect');
+        const usernameInput = document.getElementById('username');
+        const quickLoginCheckbox = document.getElementById('quickLogin');
+
+        const csrfInput = document.querySelector('input[name="csrf_token"]');
+
+        if (!csrfInput) {
+            console.error('CSRF token bulunamadı!');
+            return;
+        }
+
+        // Hızlı giriş butonları (Event Delegation on Document or Tab Content seems better since tabs hide/show)
+        // But buttons are separate elements in DOM, so simpler to attach to all .quick-login-btn
+
+        function attachQuickLoginHandlers() {
+            document.querySelectorAll('.quick-login-btn').forEach(btn => {
+                // Use a flag to avoid double binding
+                if (btn.dataset.bound) return;
+                btn.dataset.bound = true;
+
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const username = this.dataset.username;
+                    const kurum = this.dataset.kurum;
+
+                    if (!kurum || kurum === 'None' || kurum === '') {
+                        alert('Hata: Bu kullanıcı için kurum bilgisi bulunamadı.');
+                        return;
+                    }
+
+                    // Fill hidden form
+                    if (kurumSelect) {
+                        kurumSelect.value = kurum;
+                        // Trigger change/input if needed logic depends on it (mostly not for hidden)
+                    }
+                    if (usernameInput) usernameInput.value = username;
+
+                    // Ensure quick login is checked (it is by default in hidden form but to be safe)
+                    if (quickLoginCheckbox) {
+                        quickLoginCheckbox.checked = true;
+                    }
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Submit hidden form
+                    setTimeout(() => { form.submit(); }, 300);
+                });
+            });
+        }
+
+        attachQuickLoginHandlers();
+
+        // Arama fonksiyonu (Active Tab only)
+        const quickAra = document.getElementById('quickAra');
+        if (quickAra) {
+            quickAra.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const activePane = document.querySelector('.tab-pane.active');
+                if (!activePane) return;
+
+                activePane.querySelectorAll('.user-card').forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(term) ? '' : 'none';
+                });
+            });
+        }
+
+        // Tab değişince aramayı sıfırla veya yeniden uygula - Şimdilik yeniden uygula
+        const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+        tabEls.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (event) {
+                if (quickAra && quickAra.value.length > 0) {
+                    quickAra.dispatchEvent(new Event('input'));
+                }
+            });
+        });
+
+        // Rol filtreleme (Only in Active Tab)
+        document.querySelectorAll('.role-filter').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.role-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const role = this.dataset.role;
+                const activePane = document.querySelector('.tab-pane.active');
+                if (!activePane) return;
+
+                activePane.querySelectorAll('.user-card').forEach(card => {
+                    // Simple implementation: check role match
+                    let match = false;
+                    if (role === 'all') match = true;
+                    else if (role === 'kullanici') {
+                        match = ['kurum_kullanici', 'surec_uyesi', 'surec_lideri'].includes(card.dataset.role);
+                    } else {
+                        match = card.dataset.role === role;
+                    }
+
+                    card.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

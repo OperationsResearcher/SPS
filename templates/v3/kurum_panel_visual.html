@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3 Stratejik Komuta Merkezi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #0b1120;
+            /* Deep Space Blue */
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Neon Kart Tasarımı */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .card-header-neon {
+            background: transparent;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #38bdf8;
+            /* Cyan */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 350px;
+            /* Sabit yükseklik */
+            padding: 10px;
+        }
+
+        /* Navbar Özel */
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 1rem 2rem;
+        }
+
+        .back-btn {
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            background: transparent;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #38bdf8;
+            color: #0b1120;
+            box-shadow: 0 0 15px #38bdf8;
+        }
+
+        /* Yükleniyor Animasyonu */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b1120;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .widget-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .widget-id {
+            background: rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-info-neon {
+            background: transparent;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-info-neon:hover {
+            background: #38bdf8;
+            color: #0b1120;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader" class="loader">
+        <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status"></div>
+    </div>
+
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('main.kurum_paneli') }}" class="btn back-btn btn-sm px-3 rounded-pill">
+                <i class="fas fa-arrow-left me-2"></i>Standart Panele Dön
+            </a>
+            <h4 class="m-0 fw-bold text-white"><i class="fas fa-rocket me-2 text-warning"></i>STRATEJİK KOMUTA MERKEZİ
+                <span class="badge bg-danger ms-2" style="font-size: 0.6em;">LIVE</span>
+            </h4>
+        </div>
+        <div class="text-end">
+            <small class="text-muted d-block">SİSTEM ZAMANI</small>
+            <span id="clock" class="text-info fw-bold font-monospace">Loading...</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-4">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-heartbeat me-2"></i> Kurumsal Nabız</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-01</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Kurumsal Nabız', 'Kurumun genel başarı puanını sıvı dinamikleriyle gösterir. Seviye başarımı, dalgalanma ise etkinlik yoğunluğunu temsil eder.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-liquid" class="chart-container" style="height: 250px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-tachometer-alt me-2"></i> Kritik Performans</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-02</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Kritik Performans Göstergeleri', 'Ciro, Verimlilik ve Risk gibi en kritik 3 ana metriğin anlık durumunu gösteren gösterge paneli.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-gauges" class="chart-container" style="height: 250px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card">
+                    <div class="card-header-neon text-danger">
+                        <div><i class="fas fa-shield-alt me-2"></i> Risk Radarı</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-03</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Risk Radarı', 'Kurumun Finansal, Operasyonel ve Siber gibi 5 farklı boyuttaki risk maruziyet seviyelerini analiz eder.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-radar" class="chart-container" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-sun me-2"></i> Vizyon & Strateji Dağılımı</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-04</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Vizyon & Strateji Dağılımı', 'Vizyondan (Merkez) başlayarak ana hedeflere ve alt stratejilere yayılan hiyerarşik strateji haritası.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-sunburst" class="chart-container" style="height: 500px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-stream me-2"></i> Bütçe & Kaynak Akışı</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-05</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Bütçe & Kaynak Akışı', 'Finansal kaynakların ve insan gücünün departmanlardan projelere nasıl aktığını gösteren akış diyagramı.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-sankey" class="chart-container" style="height: 500px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-project-diagram me-2"></i> Proje Durumları</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-06</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Proje Durumları', 'Aktif projelerin sağlık durumlarına (Mükemmel, Riskli, Kritik vb.) göre dağılımını gösteren gül grafiği.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-rose" class="chart-container"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-chart-line me-2"></i> 2026 Projeksiyonu</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-07</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('2026 Projeksiyonu', 'Mevcut performans verilerine dayanarak yapay zeka tarafından oluşturulan gelecek 6 aylık trend tahmini.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-line" class="chart-container"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="card-header-neon">
+                        <div><i class="fas fa-network-wired me-2"></i> Departman İlişkileri</div>
+                        <div class="widget-controls">
+                            <span class="widget-id">VISUAL-08</span>
+                            <button class="btn-info-neon"
+                                onclick="showInfo('Departman İlişkileri', 'Departmanlar, yöneticiler ve projeler arasındaki etkileşim ağını ve iletişim yoğunluğunu görselleştirir.')"><i
+                                    class="fas fa-info"></i></button>
+                        </div>
+                    </div>
+                    <div id="chart-graph" class="chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-liquidfill@3.1.0/dist/echarts-liquidfill.min.js"></script>
+
+    <script>
+        // Saat Güncelleme
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('tr-TR');
+        }, 1000);
+
+        // Yükleme Ekranı
+        window.onload = function () {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
+            initCharts();
+        };
+
+        // Bilgi Göster Function
+        function showInfo(title, text) {
+            Swal.fire({
+                title: '<strong style="color:#0f172a">' + title + '</strong>',
+                html: '<p class="text-start fs-6">' + text + '</p>',
+                icon: 'info',
+                background: '#fff',
+                confirmButtonColor: '#0ea5e9',
+                confirmButtonText: 'Tamam'
+            });
+        }
+
+        // --- GRAFİK BAŞLATMA FONKSİYONU ---
+        function initCharts() {
+
+            // 1. LIQUID FILL (Global Skor)
+            const liquidChart = echarts.init(document.getElementById('chart-liquid'));
+            liquidChart.setOption({
+                backgroundColor: 'transparent',
+                series: [{
+                    type: 'liquidFill',
+                    data: [0.72, 0.65, 0.50], // Doluluk oranları
+                    radius: '80%',
+                    color: ['#0ea5e9', '#38bdf8', '#7dd3fc'], // Mavi tonları
+                    backgroundStyle: { borderWidth: 2, borderColor: '#1e293b', color: 'transparent' },
+                    label: { fontSize: 40, color: '#fff', fontWeight: 'bold' },
+                    outline: { show: false }
+                }]
+            });
+
+            // 2. GAUGES (KPI Grubu)
+            const gaugeChart = echarts.init(document.getElementById('chart-gauges'));
+            gaugeChart.setOption({
+                backgroundColor: 'transparent',
+                series: [
+                    {
+                        type: 'gauge', center: ['20%', '55%'], radius: '70%',
+                        min: 0, max: 100, splitNumber: 5,
+                        axisLine: { lineStyle: { width: 8, color: [[1, '#22c55e']] } }, // Yeşil
+                        pointer: { width: 4 }, detail: { fontSize: 16, color: '#fff', offsetCenter: [0, '70%'] },
+                        data: [{ value: 85, name: 'Ciro' }], title: { fontSize: 12, color: '#94a3b8', offsetCenter: [0, '100%'] }
+                    },
+                    {
+                        type: 'gauge', center: ['50%', '55%'], radius: '85%', // Orta Büyük
+                        min: 0, max: 100, splitNumber: 5,
+                        axisLine: { lineStyle: { width: 10, color: [[1, '#f59e0b']] } }, // Turuncu
+                        pointer: { width: 5 }, detail: { fontSize: 20, color: '#fff', offsetCenter: [0, '70%'] },
+                        data: [{ value: 64, name: 'Verim' }], title: { fontSize: 14, color: '#94a3b8', offsetCenter: [0, '100%'] }
+                    },
+                    {
+                        type: 'gauge', center: ['80%', '55%'], radius: '70%',
+                        min: 0, max: 100, splitNumber: 5,
+                        axisLine: { lineStyle: { width: 8, color: [[1, '#ef4444']] } }, // Kırmızı
+                        pointer: { width: 4 }, detail: { fontSize: 16, color: '#fff', offsetCenter: [0, '70%'] },
+                        data: [{ value: 42, name: 'Risk' }], title: { fontSize: 12, color: '#94a3b8', offsetCenter: [0, '100%'] }
+                    }
+                ]
+            });
+
+            // 3. RADAR (Risk)
+            const radarChart = echarts.init(document.getElementById('chart-radar'));
+            radarChart.setOption({
+                backgroundColor: 'transparent',
+                radar: {
+                    indicator: [
+                        { name: 'Finans', max: 100 }, { name: 'Siber', max: 100 },
+                        { name: 'Operasyon', max: 100 }, { name: 'Yasal', max: 100 }, { name: 'Pazar', max: 100 }
+                    ],
+                    shape: 'circle',
+                    splitArea: { areaStyle: { color: ['rgba(239, 68, 68, 0.1)', 'rgba(30, 41, 59, 0.5)'] } },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.3)' } }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [{
+                        value: [80, 50, 40, 70, 60],
+                        name: 'Risk Seviyesi',
+                        areaStyle: { color: 'rgba(239, 68, 68, 0.5)' },
+                        lineStyle: { color: '#ef4444' }
+                    }]
+                }]
+            });
+
+            // 4. SUNBURST (Strateji - Dummy Tree Data)
+            const sunburstData = [
+                {
+                    name: 'VİZYON',
+                    children: [
+                        { name: 'BÜYÜME', value: 10, children: [{ name: 'Satış', value: 4 }, { name: 'Pazar', value: 6 }] },
+                        { name: 'VERİM', value: 8, children: [{ name: 'Üretim', value: 3 }, { name: 'Lojistik', value: 5 }] },
+                        { name: 'İNOVASYON', value: 6, children: [{ name: 'Ar-Ge', value: 4 }, { name: 'Dijital', value: 2 }] }
+                    ]
+                }
+            ];
+            const sunburstChart = echarts.init(document.getElementById('chart-sunburst'));
+            sunburstChart.setOption({
+                backgroundColor: 'transparent',
+                series: {
+                    type: 'sunburst',
+                    data: sunburstData,
+                    radius: [0, '90%'],
+                    label: { rotate: 'radial', color: '#fff' },
+                    itemStyle: { borderRadius: 7, borderWidth: 2, borderColor: '#0b1120' }
+                }
+            });
+
+            // 5. SANKEY (Bütçe Akışı)
+            const sankeyChart = echarts.init(document.getElementById('chart-sankey'));
+            sankeyChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item' },
+                series: {
+                    type: 'sankey',
+                    layout: 'none',
+                    emphasis: { focus: 'adjacency' },
+                    data: [{ name: 'Bütçe' }, { name: 'İK' }, { name: 'Teknoloji' }, { name: 'Prj A' }, { name: 'Prj B' }, { name: 'Strateji 1' }],
+                    links: [
+                        { source: 'Bütçe', target: 'Prj A', value: 5 },
+                        { source: 'Bütçe', target: 'Prj B', value: 3 },
+                        { source: 'İK', target: 'Prj A', value: 4 },
+                        { source: 'Teknoloji', target: 'Prj B', value: 2 },
+                        { source: 'Prj A', target: 'Strateji 1', value: 9 }
+                    ],
+                    lineStyle: { color: 'gradient', curveness: 0.5 },
+                    label: { color: '#fff' }
+                }
+            });
+
+            // 6. ROSE (Projeler)
+            const roseChart = echarts.init(document.getElementById('chart-rose'));
+            roseChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item' },
+                series: [{
+                    name: 'Proje Sağlığı',
+                    type: 'pie', radius: [20, 100], center: ['50%', '50%'],
+                    roseType: 'area', itemStyle: { borderRadius: 8 },
+                    data: [
+                        { value: 40, name: 'Mükemmel', itemStyle: { color: '#10b981' } }, // Yeşil
+                        { value: 32, name: 'İyi', itemStyle: { color: '#3b82f6' } }, // Mavi
+                        { value: 28, name: 'Riskli', itemStyle: { color: '#f59e0b' } }, // Sarı
+                        { value: 15, name: 'Kritik', itemStyle: { color: '#ef4444' } }  // Kırmızı
+                    ]
+                }]
+            });
+
+            // 7. LINE (Gelecek Tahmini)
+            const lineChart = echarts.init(document.getElementById('chart-line'));
+            lineChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz'], axisLine: { lineStyle: { color: '#94a3b8' } } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#334155' } }, axisLine: { lineStyle: { color: '#94a3b8' } } },
+                series: [
+                    { data: [820, 932, 901, 934, 1290, 1330], type: 'line', smooth: true, lineStyle: { width: 4, color: '#8b5cf6' }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#8b5cf6' }, { offset: 1, color: 'transparent' }]) } },
+                    { data: [null, null, null, null, 1290, 1450], type: 'line', smooth: true, lineStyle: { type: 'dashed', color: '#f472b6' } } // Tahmin
+                ]
+            });
+
+            // 8. GRAPH (Ağ)
+            const graphChart = echarts.init(document.getElementById('chart-graph'));
+            graphChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {},
+                series: [{
+                    type: 'graph', layout: 'force',
+                    symbolSize: 40, roam: true,
+                    label: { show: true, color: '#fff' },
+                    edgeSymbol: ['circle', 'arrow'], edgeSymbolSize: [4, 10],
+                    force: { repulsion: 200, edgeLength: 100 },
+                    data: [{ name: 'CEO' }, { name: 'IT' }, { name: 'HR' }, { name: 'Prj X' }, { name: 'Prj Y' }],
+                    links: [
+                        { source: 'CEO', target: 'IT' }, { source: 'CEO', target: 'HR' },
+                        { source: 'IT', target: 'Prj X' }, { source: 'HR', target: 'Prj Y' }, { source: 'IT', target: 'Prj Y' }
+                    ],
+                    lineStyle: { color: '#cbd5e1' }
+                }]
+            });
+
+            // Resize Olayı (Responsive)
+            window.addEventListener('resize', function () {
+                liquidChart.resize(); gaugeChart.resize(); radarChart.resize();
+                sunburstChart.resize(); sankeyChart.resize(); roseChart.resize();
+                lineChart.resize(); graphChart.resize();
+            });
+        }
+    </script>
+</body>
+
+</html>

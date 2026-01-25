@@ -1,0 +1,1160 @@
+{% extends "base.html" %}
+
+{% block title %}V3 Dashboard{% endblock %}
+
+{% block content %}
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    /* Dairesel Rozetler */
+    .badge-circle {
+        border-radius: 50% !important;
+        width: 22px;
+        height: 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: bold;
+        color: white;
+        vertical-align: middle;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        margin-left: 6px;
+    }
+
+    .bg-pink-gradient {
+        background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+    }
+
+    .bg-green-gradient {
+        background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    }
+
+    /* V3 Card Styles */
+    .card-v3 {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        background: #fff;
+    }
+
+    .card-v3:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header-v3 {
+        background-color: #2c3e50;
+        color: white;
+        font-weight: 600;
+        cursor: move;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header-v3 h5 {
+        color: white !important;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    .card-header-v3 .close-widget-btn {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.9);
+        border: none;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        border-radius: 50%;
+    }
+
+    .card-header-v3 .close-widget-btn:hover {
+        background-color: #e74c3c;
+        transform: rotate(90deg);
+    }
+
+    .sortable-ghost {
+        opacity: 0.4;
+        background: #e9ecef;
+        border: 2px dashed #adb5bd;
+    }
+
+    .bg-light-hover:hover {
+        background-color: #f8f9fa;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(59, 130, 246, 0.1) !important;
+    }
+
+    .bg-soft-danger {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Kritik Teslimatlar - Geri Sayım Kutusu */
+    .deadline-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .deadline-box:hover {
+        transform: scale(1.05);
+    }
+
+    /* Renk Tonları */
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 2px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1);
+        border: 2px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .bg-info-light {
+        background-color: rgba(13, 202, 240, 0.1);
+        border: 2px solid rgba(13, 202, 240, 0.3);
+    }
+
+    /* Badge Subtle Colors */
+    .bg-danger-subtle {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .bg-warning-subtle {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .bg-success-subtle {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #ced4da;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #adb5bd;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Draggable Dashboard (V3)</h2>
+            <p class="text-muted">Panelinizi sürükleyip bırakarak özelleştirin.</p>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="addWidgetBtn" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="fas fa-eye me-1"></i> Widget Yönetimi
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="addWidgetBtn">
+                <li>
+                    <h6 class="dropdown-header">Widget Görünürlüğü</h6>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-actions')">
+                        <i class="fas fa-rocket me-2"></i> Hızlı İşlemler
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-2')">
+                        <i class="fas fa-tasks me-2"></i> Benim Masam
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-3')">
+                        <i class="fas fa-sticky-note me-2"></i> Karalama Defteri
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-4')">
+                        <i class="fas fa-chart-line me-2"></i> Stratejik Özet
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-5')">
+                        <i class="fas fa-clock me-2"></i> Kritik Teslimatlar
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-notifications')">
+                        <i class="fas fa-bell me-2"></i> Bildirimler
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-quick-data')">
+                        <i class="fas fa-edit me-2"></i> Hızlı Veri
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-processes')">
+                        <i class="fas fa-cog me-2"></i> Süreçlerim
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="toggleWidget('widget-projects')">
+                        <i class="fas fa-rocket me-2"></i> Projelerim
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a class="dropdown-item text-primary fw-bold" href="javascript:void(0)" onclick="showAllWidgets()">
+                        <i class="fas fa-eye me-2"></i> Tümünü Göster
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div id="dashboard-grid" class="row g-4">
+        {% for widget in layout_config if widget.id != 'widget-8' %}
+        <div class="{% if widget.id == 'widget-4' %}col-md-8{% else %}col-md-4{% endif %} widget-wrapper {% if not widget.visible %}d-none{% endif %}"
+            data-id="{{ widget.id }}" id="{{ widget.id }}-wrapper" {% if not widget.visible %}style="display: none;" {%
+            endif %}>
+            <div class="card card-v3 h-100">
+                <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
+                    <h5>
+                        {% if widget.id == 'widget-actions' %}<i class="fas fa-rocket me-2"></i>Hızlı İşlemler
+                        {% elif widget.id == 'widget-2' %}<i class="fas fa-tasks me-2"></i>Benim Masam
+                        {% elif widget.id == 'widget-3' %}<i class="fas fa-sticky-note me-2"></i>Karalama Defteri
+                        {% elif widget.id == 'widget-4' %}<i class="fas fa-chart-line me-2"></i>Stratejik Özet
+                        {% elif widget.id == 'widget-5' %}<i class="fas fa-clock me-2"></i>Kritik Teslimatlar
+                        {% elif widget.id == 'widget-notifications' %}
+                        <i class="fas fa-bell me-2"></i>Bildirimler
+                        {% if notifications|length > 0 %}
+                        <span class="badge bg-danger rounded-pill ms-2" style="font-size: 0.6em;">{{
+                            notifications|length }}</span>
+                        {% endif %}
+                        {% elif widget.id == 'widget-quick-data' %}
+                        <i class="fas fa-edit me-2"></i>Hızlı Veri Girişi
+                        {% if pending_kpis|length > 0 %}
+                        <span class="badge bg-warning text-dark rounded-pill ms-2" style="font-size: 0.6em;">{{
+                            pending_kpis|length }}</span>
+                        {% endif %}
+
+                        {% elif widget.id == 'widget-processes' %}<i class="fas fa-cog me-2"></i>Süreçlerim
+                        {% elif widget.id == 'widget-projects' %}<i class="fas fa-rocket me-2"></i>Projelerim
+                        {% endif %}
+                    </h5>
+                    <button class="btn btn-sm btn-light close-widget-btn" onclick="hideWidget('{{ widget.id }}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body p-3">
+
+                    {% if widget.id == 'widget-actions' %}
+                    <!-- Widget: Hızlı İşlemler (Quick Actions) -->
+                    <div class="row g-2">
+                        <!-- Hızlı Görev -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.gorevlerim') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-plus-circle fa-2x text-primary mb-2"></i>
+                                <div class="small fw-bold text-dark">Hızlı Görev</div>
+                            </a>
+                        </div>
+                        <!-- Yeni Proje -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.projeler') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-project-diagram fa-2x text-success mb-2"></i>
+                                <div class="small fw-bold text-dark">Yeni Proje</div>
+                            </a>
+                        </div>
+                        <!-- Süreç Karnem -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.surec_karnesi') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-clipboard-list fa-2x text-info mb-2"></i>
+                                <div class="small fw-bold text-dark">Süreç Karnem</div>
+                            </a>
+                        </div>
+                        <!-- Performans -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.performans_kartim') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-chart-line fa-2x text-warning mb-2"></i>
+                                <div class="small fw-bold text-dark">Performans</div>
+                            </a>
+                        </div>
+                        <!-- Yardım -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.help_center') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-question-circle fa-2x text-secondary mb-2"></i>
+                                <div class="small fw-bold text-dark">Yardım</div>
+                            </a>
+                        </div>
+                        <!-- AI Asistan -->
+                        <div class="col-4">
+                            <a href="{{ url_for('main.ai_chat') }}"
+                                class="d-block text-center p-3 border rounded text-decoration-none bg-light-hover transition-all h-100">
+                                <i class="fas fa-robot fa-2x text-dark mb-2"></i>
+                                <div class="small fw-bold text-dark">AI Asistan</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary text-start p-3 shadow-sm border-0 bg-light-hover">
+                            <i class="fas fa-plus-circle fa-lg me-3 text-primary"></i>
+                            <span class="fw-bold text-dark">Yeni Görev</span>
+                        </button>
+                        <button class="btn btn-outline-success text-start p-3 shadow-sm border-0 bg-light-hover">
+                            <i class="fas fa-users fa-lg me-3 text-success"></i>
+                            <span class="fw-bold text-dark">Toplantı</span>
+                        </button>
+                        <button class="btn btn-outline-info text-start p-3 shadow-sm border-0 bg-light-hover">
+                            <i class="fas fa-file-invoice fa-lg me-3 text-info"></i>
+                            <span class="fw-bold text-dark">Rapor Al</span>
+                        </button>
+                    </div>
+
+                    {% elif widget.id == 'widget-2' %}
+                    <!-- Widget 2: Benim Masam -->
+                    <ul class="nav nav-tabs nav-tabs-sm mb-3" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active small px-2 py-1" data-bs-toggle="tab"
+                                data-bs-target="#tab-today" type="button">
+                                Bugün
+                                {% if task_counts['today'] > 0 %}
+                                <span class="badge-circle bg-pink-gradient">{{ task_counts['today'] }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link small px-2 py-1" data-bs-toggle="tab" data-bs-target="#tab-week"
+                                type="button">
+                                Hafta
+                                {% if task_counts['week'] > 0 %}
+                                <span class="badge-circle bg-pink-gradient">{{ task_counts['week'] }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link small px-2 py-1" data-bs-toggle="tab" data-bs-target="#tab-month"
+                                type="button">
+                                Ay
+                                {% if task_counts['month'] > 0 %}
+                                <span class="badge-circle bg-pink-gradient">{{ task_counts['month'] }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link small px-2 py-1" data-bs-toggle="tab" data-bs-target="#tab-year"
+                                type="button">
+                                Yıl
+                                {% if task_counts['year'] > 0 %}
+                                <span class="badge-circle bg-pink-gradient">{{ task_counts['year'] }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link small px-2 py-1 text-danger" data-bs-toggle="tab"
+                                data-bs-target="#tab-overdue" type="button">
+                                Geçmiş
+                                {% if task_counts['overdue'] > 0 %}
+                                <span class="badge-circle bg-pink-gradient">{{ task_counts['overdue'] }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        {% macro render_tasks(tasks, empty_text) %}
+                        {% if tasks %}
+                        <div class="list-group list-group-flush">
+                            {% for task in tasks %}
+                            {% set is_completed = task.status in ['Tamamlandı', 'Completed'] %}
+                            <div
+                                class="list-group-item border-0 mb-2 rounded shadow-sm p-3 {{ 'bg-light' if is_completed else 'bg-white' }}">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div style="flex: 1; min-width: 0;" class="me-2">
+                                        <a href="{{ url_for('main.gorev_detay', project_id=task.project_id, task_id=task.id) }}"
+                                            class="text-decoration-none d-block text-truncate {{ 'text-decoration-line-through text-muted' if is_completed else 'text-dark fw-bold' }}"
+                                            title="{{ task.title }}">
+                                            {{ task.title }}
+                                        </a>
+                                        <small class="text-muted d-block text-truncate">
+                                            <i class="fas fa-folder-open me-1"></i>{{ task.project.name if task.project
+                                            else 'Proje Yok' }}
+                                        </small>
+                                    </div>
+                                    {% if task.due_date %}
+                                    <div class="mx-2">
+                                        <span class="badge bg-light text-dark border fw-normal">{{
+                                            task.due_date.strftime('%d.%m') }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="d-flex align-items-center">
+                                        {% if is_completed %}
+                                        <!-- Tamamlanmış görev için sadece "Bitti" rozeti -->
+                                        <span class="badge bg-success opacity-75 px-3">
+                                            <i class="fas fa-check me-1"></i>Bitti
+                                        </span>
+                                        {% else %}
+                                        <!-- Tamamlanmamış görev için Priority ve Tamamla butonu -->
+                                        <span class="badge bg-soft-primary text-primary rounded-pill px-2 me-2">{{
+                                            task.priority }}</span>
+                                        <form action="{{ url_for('v3.complete_task', task_id=task.id) }}" method="POST"
+                                            class="d-inline complete-task-form">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="submit"
+                                                class="btn btn-success btn-sm rounded-circle shadow-sm" title="Tamamla">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-check-circle fa-2x mb-3"></i>
+                            <p class="mb-0 small">{{ empty_text }}</p>
+                        </div>
+                        {% endif %}
+                        {% endmacro %}
+
+                        <div class="tab-pane fade show active" id="tab-today">
+                            {{ render_tasks(task_groups['today'], "Bugün yapacak işiniz yok.") }}
+                        </div>
+                        <div class="tab-pane fade" id="tab-week">
+                            {{ render_tasks(task_groups['week'], "Bu hafta rahattasınız.") }}
+                        </div>
+                        <div class="tab-pane fade" id="tab-month">
+                            {{ render_tasks(task_groups['month'], "Bu ay planlanmış görev yok.") }}
+                        </div>
+                        <div class="tab-pane fade" id="tab-year">
+                            {{ render_tasks(task_groups['year'], "Yılın kalanı boş.") }}
+                        </div>
+                        <div class="tab-pane fade" id="tab-overdue">
+                            {{ render_tasks(task_groups['overdue'], "Süresi geçen işiniz yok.") }}
+                        </div>
+                    </div>
+
+                    {% elif widget.id == 'widget-3' %}
+                    <!-- Widget 3: Karalama Defteri (Scratchpad) -->
+                    <div class="d-flex flex-column h-100">
+                        <!-- Ekleme Formu -->
+                        <form action="{{ url_for('v3.add_note') }}" method="POST" class="mb-3">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="text" name="title" class="form-control form-control-sm mb-2"
+                                placeholder="Başlık..." required maxlength="200">
+                            <textarea name="content" class="form-control form-control-sm mb-2" rows="3"
+                                placeholder="Notunuz..." style="resize: none;"></textarea>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">
+                                    <i class="fas fa-save me-1"></i> Kaydet
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Not Listesi -->
+                        <div class="flex-grow-1" style="max-height: 300px; overflow-y: auto;">
+                            {% if notes %}
+                            <div class="list-group list-group-flush">
+                                {% for note in notes %}
+                                <div class="list-group-item border-0 mb-2 rounded bg-light p-2 position-relative">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1 me-2">
+                                            <h6 class="mb-1 fw-bold text-dark">{{ note.title }}</h6>
+                                            {% if note.content %}
+                                            <p class="mb-1 small text-muted">{{ note.content[:100] }}{% if
+                                                note.content|length > 100 %}...{% endif %}</p>
+                                            {% endif %}
+                                            <small class="text-muted">
+                                                <i class="far fa-clock me-1"></i>
+                                                {{ note.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                            </small>
+                                        </div>
+                                        <form action="{{ url_for('v3.delete_note', note_id=note.id) }}" method="POST"
+                                            class="delete-note-form" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle"
+                                                title="Sil" style="width: 28px; height: 28px; padding: 0;">
+                                                <i class="fas fa-trash-alt" style="font-size: 12px;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-sticky-note fa-2x mb-3 opacity-50"></i>
+                                <p class="mb-0 small">Henüz not eklemediniz.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% elif widget.id == 'widget-4' %}
+                    <!-- Widget 4: Stratejik Özet -->
+                    <div class="row g-0">
+                        <!-- Sol Taraf: Sağlık Skoru Gauge -->
+                        <div class="col-md-5 d-flex align-items-center justify-content-center border-end p-3">
+                            <div class="text-center">
+                                <!-- Dairesel İlerleme -->
+                                <div class="position-relative d-inline-block">
+                                    <svg width="160" height="160" viewBox="0 0 160 160">
+                                        <!-- Arka plan çember -->
+                                        <circle cx="80" cy="80" r="70" fill="none" stroke="#e9ecef" stroke-width="12" />
+                                        <!-- İlerleme çemberi -->
+                                        <circle cx="80" cy="80" r="70" fill="none"
+                                            stroke="{% if strategic_summary.health_color == 'success' %}#28a745{% elif strategic_summary.health_color == 'warning' %}#ffc107{% else %}#dc3545{% endif %}"
+                                            stroke-width="12"
+                                            stroke-dasharray="{{ (strategic_summary.health_score / 100 * 439.8)|round(2) }} 439.8"
+                                            stroke-linecap="round" transform="rotate(-90 80 80)"
+                                            style="transition: stroke-dasharray 1s ease;" />
+                                    </svg>
+                                    <!-- Skor Metni -->
+                                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                        <div class="display-4 fw-bold text-{{ strategic_summary.health_color }}">
+                                            {{ strategic_summary.health_score }}
+                                        </div>
+                                        <small class="text-muted fw-bold">SKOR</small>
+                                    </div>
+                                </div>
+                                <!-- Durum Etiketi -->
+                                <div class="mt-3">
+                                    <span class="badge bg-{{ strategic_summary.health_color }} px-3 py-2 rounded-pill">
+                                        <i class="fas fa-heartbeat me-1"></i>
+                                        {{ strategic_summary.health_status }}
+                                    </span>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    {{ strategic_summary.total_projects }} Proje Takipte
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Taraf: Kritik Uyarılar -->
+                        <div class="col-md-7 p-3">
+                            <h6 class="fw-bold mb-3 text-dark">
+                                <i class="fas fa-exclamation-circle me-2"></i>Dikkat Gerekenler
+                            </h6>
+
+                            {% if strategic_summary.alerts %}
+                            <div class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
+                                {% for alert in strategic_summary.alerts %}
+                                <a href="{{ alert.action_url }}"
+                                    class="list-group-item list-group-item-action border-0 px-2 py-2 mb-1 rounded">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-2">
+                                            <i class="fas {{ alert.icon }} text-{{ alert.type }}"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <small class="text-dark">{{ alert.message }}</small>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-chevron-right text-muted" style="font-size: 10px;"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <!-- Başarı Mesajı -->
+                            <div class="text-center py-4">
+                                <i class="fas fa-coffee fa-3x text-success mb-3 opacity-75"></i>
+                                <p class="text-success fw-bold mb-1">Harika!</p>
+                                <small class="text-muted">Tüm operasyonlar planlandığı gibi gidiyor.</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% elif widget.id == 'widget-5' %}
+                    <!-- Widget 5: Kritik Teslimatlar -->
+                    {% if upcoming_deadlines %}
+                    <div class="list-group list-group-flush">
+                        {% for deadline in upcoming_deadlines %}
+                        <div class="list-group-item border-0 px-2 py-3">
+                            <div class="d-flex align-items-center">
+                                <!-- Sol: Geri Sayım Kutusu -->
+                                <div class="deadline-box me-3 
+                                    {% if deadline.days_left <= 2 %}bg-danger-light{% elif deadline.days_left <= 7 %}bg-warning-light{% else %}bg-info-light{% endif %} 
+                                    d-flex flex-column align-items-center justify-content-center">
+                                    <div
+                                        class="h3 fw-bold mb-0 
+                                        {% if deadline.days_left <= 2 %}text-danger{% elif deadline.days_left <= 7 %}text-warning{% else %}text-info{% endif %}">
+                                        {{ deadline.days_left }}
+                                    </div>
+                                    <small class="text-muted fw-bold" style="font-size: 9px;">GÜN</small>
+                                </div>
+
+                                <!-- Sağ: Görev Detayları -->
+                                <div class="flex-grow-1">
+                                    <a href="/tasks/{{ deadline.task.id }}" class="text-decoration-none">
+                                        <h6 class="mb-1 fw-bold text-dark">{{ deadline.task.title }}</h6>
+                                    </a>
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-muted me-2">
+                                            <i class="fas fa-project-diagram me-1"></i>
+                                            {{ deadline.project_name }}
+                                        </small>
+                                        <!-- Öncelik Rozeti -->
+                                        {% if deadline.priority in ['High', 'Yüksek'] %}
+                                        <span class="badge badge-sm bg-danger-subtle text-danger">
+                                            <i class="fas fa-circle" style="font-size: 6px;"></i> Yüksek
+                                        </span>
+                                        {% elif deadline.priority in ['Medium', 'Orta'] %}
+                                        <span class="badge badge-sm bg-warning-subtle text-warning">
+                                            <i class="fas fa-circle" style="font-size: 6px;"></i> Orta
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-sm bg-success-subtle text-success">
+                                            <i class="fas fa-circle" style="font-size: 6px;"></i> Düşük
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar me-1"></i>
+                                        {{ deadline.due_date.strftime('%d %b %Y') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <!-- Boş Durum -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-check fa-3x text-success mb-3 opacity-75"></i>
+                        <p class="text-success fw-bold mb-1">Harika!</p>
+                        <small class="text-muted">Önümüzdeki 14 gün takviminiz rahat.</small>
+                    </div>
+                    {% endif %}
+
+                    {% elif widget.id == 'widget-notifications' %}
+                    <!-- Widget: Bildirimler -->
+                    <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                        {% if notifications %}
+                        {% for notif in notifications %}
+                        <a href="{{ notif.link if notif.link else 'javascript:void(0)' }}"
+                            class="list-group-item list-group-item-action border-0 px-2 py-3 mb-1 rounded">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3 mt-1">
+                                    {% if notif.tip in ['danger', 'risk', 'task_overdue'] %}
+                                    <div class="bg-soft-danger text-danger rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    {% elif notif.tip in ['warning', 'hatirlatma', 'task_deadline_reminder'] %}
+                                    <div class="bg-soft-warning text-warning rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px;">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    {% elif notif.tip in ['success', 'onay', 'task_completed'] %}
+                                    <div class="bg-soft-success text-success rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px;">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    {% else %}
+                                    <div class="bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px;">
+                                        <i class="fas fa-info"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold text-dark small">{{ notif.baslik }}</h6>
+                                    <p class="mb-1 text-muted small" style="line-height: 1.4;">{{ notif.mesaj }}</p>
+                                    <small class="text-muted" style="font-size: 0.7em;">
+                                        <i class="far fa-clock me-1"></i>
+                                        {{ notif.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <div class="mb-3">
+                                <i class="far fa-bell-slash fa-3x opacity-25"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark">Bildiriminiz Yok</h6>
+                            <small>Şu an için okunmamış bildiriminiz bulunmuyor.</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% elif widget.id == 'widget-quick-data' %}
+                    <!-- Widget: Hızlı Veri Girişi (Pending KPIs) -->
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        {% if pending_kpis %}
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <tbody>
+                                {% for kpi in pending_kpis %}
+                                <tr id="kpi-row-{{ kpi.id }}">
+                                    <td class="py-2">
+                                        <div class="fw-bold text-dark small">{{ kpi.ad }}</div>
+                                        <small class="text-muted" style="font-size: 0.7em;">
+                                            {{ kpi.olcum_birimi }} {% if kpi.hedef_deger %}(Hedef: {{ kpi.hedef_deger
+                                            }}){% endif %}
+                                        </small>
+                                    </td>
+                                    <td class="text-end" style="width: 140px;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" step="0.01" class="form-control"
+                                                id="input-kpi-{{ kpi.id }}" placeholder="Değer">
+                                            <button class="btn btn-outline-success" type="button"
+                                                onclick="saveQuickData({{ kpi.id }})">
+                                                <i class="fas fa-save"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <div class="mb-3">
+                                <i class="fas fa-check-double fa-3x text-success opacity-50"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark">Harika!</h6>
+                            <small>Bu ayki tüm performans verilerinizi girdiniz.</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% elif widget.id == 'widget-processes' %}
+                    <!-- Widget 9: Süreçlerim -->
+                    <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                        {% for s in my_processes %}
+                        <div class="list-group-item border-0 bg-light-hover rounded mb-2 pt-2 pb-1 px-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <a href="/surec-karnesi?surec_id={{ s.id }}" class="text-decoration-none flex-grow-1">
+                                    <span class="fw-bold text-dark small">
+                                        {{ s.ad }}
+                                        {% if current_user in s.liderler %}
+                                        <span class="ms-1" title="Lider"><i class="fas fa-crown text-warning"
+                                                style="font-size: 0.7rem;"></i></span>
+                                        {% endif %}
+                                    </span>
+                                </a>
+                                <span class="badge bg-soft-primary text-primary" style="font-size: 0.65rem;">{{ s.durum
+                                    or 'Devam Ediyor' }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-1">
+                                <small class="text-muted" style="font-size: 0.7rem;">Aşama: {{ s.current_stage or
+                                    'Yürütme' }}</small>
+                                <span class="ms-auto fw-bold" style="font-size: 0.7rem; color: #3bb2b8;">{{ s.ilerleme
+                                    or 0 }}%</span>
+                            </div>
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar bg-green-gradient" style="width: {{ s.ilerleme or 0 }}%"></div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fas fa-cogs fa-2x mb-2 opacity-50"></i>
+                            <p>Dahil olduğunuz aktif bir süreç bulunmuyor.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    {% elif widget.id == 'widget-projects' %}
+                    <!-- Widget: Projelerim -->
+                    <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                        {% for p in my_projects %}
+                        <a href="{{ url_for('main.proje_detay', project_id=p.id) }}"
+                            class="list-group-item list-group-item-action border-0 bg-light-hover rounded mb-2 p-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <span class="fw-bold text-dark small">{{ p.name }}</span>
+                                    <div class="text-muted" style="font-size: 0.7rem;">
+                                        <i class="fas fa-building me-1"></i>{{ p.kurum.kisa_ad if p.kurum else 'Genel'
+                                        }}
+                                    </div>
+                                </div>
+                                {% set p_status = p.health_status or 'Devam Ediyor' %}
+                                <span
+                                    class="badge {% if p_status == 'Riskli' %}bg-soft-danger text-danger{% else %}bg-soft-primary text-primary{% endif %}"
+                                    style="font-size: 0.65rem;">
+                                    {{ p_status }}
+                                </span>
+                            </div>
+
+                            {% set p_progress = p.health_score or 0 %}
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="progress flex-grow-1" style="height: 4px;">
+                                    <div class="progress-bar {% if p_progress < 40 %}bg-danger{% elif p_progress < 80 %}bg-warning{% else %}bg-success{% endif %}"
+                                        style="width: {{ p_progress }}%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold" style="font-size: 0.7rem;">{{ p_progress }}%</span>
+                            </div>
+                        </a>
+                        {% else %}
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fas fa-rocket fa-2x mb-2 opacity-50"></i>
+                            <p>Henüz aktif bir projeniz bulunmuyor.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if my_projects %}
+                    <div class="text-center mt-2">
+                        <a href="{{ url_for('main.projeler') }}" class="btn btn-sm btn-link text-decoration-none small">
+                            Tümünü Gör <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let currentLayout = [];
+    try {
+        const layoutRaw = '{{ layout_config | tojson | safe }}';
+        currentLayout = JSON.parse(layoutRaw);
+    } catch (e) {
+        console.error("Layout parse error", e);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initSortable();
+        initChart();
+        initPostit();
+        initSweetAlert();
+    });
+
+    function saveQuickData(kpiId) {
+        const input = document.getElementById(`input-kpi-${kpiId}`);
+        const value = input.value;
+
+        if (!value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Değer Giriniz',
+                text: 'Lütfen bir sayı girin.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        fetch(`/v3/hizli-veri/kaydet/${kpiId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            },
+            body: JSON.stringify({ deger: value })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Başarılı Animasyonu ve Satırı Silme
+                    const row = document.getElementById(`kpi-row-${kpiId}`);
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(20px)';
+
+                    setTimeout(() => {
+                        row.remove();
+                        // Eğer liste boşaldıysa sayfayı yenile veya boş mesajı göster (basitlik için yenileme opsiyonel)
+                        if (document.querySelectorAll('tr[id^="kpi-row-"]').length === 0) {
+                            location.reload();
+                        }
+                    }, 500);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Kaydedildi',
+                        text: 'Veri başarıyla işlendi!',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Hata', data.message || 'Veri kaydedilemedi.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Hata', 'Bir sorun oluştu.', 'error');
+            });
+    }
+
+    function initSortable() {
+        const grid = document.getElementById('dashboard-grid');
+        new Sortable(grid, {
+            animation: 200,
+            handle: '.handle',
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                saveLayoutOrder();
+            }
+        });
+    }
+
+    function saveLayoutOrder() {
+        const visibleElements = document.querySelectorAll('#dashboard-grid .widget-wrapper');
+        const visibleIds = Array.from(visibleElements).map(el => el.getAttribute('data-id'));
+        const hiddenWidgets = currentLayout.filter(w => !w.visible);
+
+        const newLayout = [];
+        visibleIds.forEach(id => newLayout.push({ id: id, visible: true }));
+        hiddenWidgets.forEach(w => newLayout.push(w));
+
+        currentLayout = newLayout;
+
+        fetch('/v3/api/save_layout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            },
+            body: JSON.stringify({ layout: newLayout })
+        });
+    }
+
+    function hideWidget(id) {
+        const el = document.querySelector(`.widget-wrapper[data-id="${id}"]`);
+        if (el) {
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.remove();
+                const wIndex = currentLayout.findIndex(w => w.id === id);
+                if (wIndex > -1) currentLayout[wIndex].visible = false;
+                saveLayoutOrder();
+                location.reload();
+            }, 300);
+        }
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('strategyGaugeChart');
+        if (ctx) {
+            const score = parseInt(ctx.getAttribute('data-score') || '0');
+            let color = '#e74c3c';
+            if (score >= 70) color = '#2ecc71';
+            else if (score >= 40) color = '#f39c12';
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Performans', 'Kalan'],
+                    datasets: [{
+                        data: [score, 100 - score],
+                        backgroundColor: [color, '#f0f2f5'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                }
+            });
+        }
+    }
+
+    function initPostit() {
+        const saved = localStorage.getItem('v3_postit_content');
+        const el = document.getElementById('postit-content');
+        if (saved && el && !el.value) el.value = saved;
+    }
+
+    function savePostit() {
+        const val = document.getElementById('postit-content').value;
+        localStorage.setItem('v3_postit_content', val);
+        Swal.fire({
+            icon: 'success',
+            title: 'Kaydedildi!',
+            text: 'Notunuz başarıyla kaydedildi.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+
+    function initSweetAlert() {
+        // Görev tamamlama formları
+        const taskForms = document.querySelectorAll('.complete-task-form');
+        taskForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Emin misiniz?',
+                    text: "Bu görevi tamamlamak istediğinizden emin misiniz?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Evet, Tamamla',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Not silme formları
+        const noteForms = document.querySelectorAll('.delete-note-form');
+        noteForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Notu Sil?',
+                    text: "Bu notu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Evet, Sil',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    }
+
+    // Widget Yönetimi Fonksiyonları
+    function toggleWidget(widgetId) {
+        const wrapper = document.getElementById(widgetId + '-wrapper');
+        if (wrapper) {
+            const isHidden = wrapper.classList.contains('d-none') || wrapper.style.display === 'none';
+
+            if (isHidden) {
+                // Widget'ı aç
+                wrapper.classList.remove('d-none');
+                wrapper.style.display = '';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Widget Açıldı',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                // Widget'ı gizle
+                wrapper.classList.add('d-none');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Widget Gizlendi',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        } else {
+            console.error('Widget bulunamadı:', widgetId + '-wrapper');
+        }
+    }
+
+    function hideWidget(widgetId) {
+        const wrapper = document.getElementById(widgetId + '-wrapper');
+        if (wrapper) {
+            wrapper.classList.add('d-none');
+            wrapper.style.display = 'none'; // Fallback
+            Swal.fire({
+                icon: 'info',
+                title: 'Widget Gizlendi',
+                text: 'Widget Yönetimi menüsünden tekrar açabilirsiniz.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    }
+
+    function showAllWidgets() {
+        const allWidgets = ['widget-1', 'widget-2', 'widget-3', 'widget-4', 'widget-5', 'widget-6', 'widget-7', 'widget-8', 'widget-processes', 'widget-projects'];
+        let shownCount = 0;
+
+        allWidgets.forEach(widgetId => {
+            const wrapper = document.getElementById(widgetId + '-wrapper');
+            if (wrapper) {
+                const isHidden = wrapper.classList.contains('d-none') || wrapper.style.display === 'none';
+                if (isHidden) {
+                    wrapper.classList.remove('d-none');
+                    wrapper.style.display = '';
+                    shownCount++;
+                }
+            }
+        });
+
+        if (shownCount > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Tüm Widget\'lar Gösteriliyor',
+                text: `${shownCount} widget açıldı.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tüm Widget\'lar Zaten Açık',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+</script>
+{% endblock %}

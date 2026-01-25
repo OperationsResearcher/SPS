@@ -97,6 +97,28 @@ def offline():
     return render_template('offline.html')
 
 
+@main_bp.route('/hgs')
+def hizli_giris():
+    """Hızlı giriş sayfası - Şifresiz direkt giriş paneli"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    
+    # Tüm kullanıcıları getir (Kurum bilgisiyle birlikte)
+    kullanicilar = User.query.options(db.joinedload(User.kurum)).order_by(User.kurum_id, User.first_name, User.username).all()
+    
+    # Kullanıcıları kurumlara göre grupla
+    kurum_groups = {}
+    for user in kullanicilar:
+        k_ad = user.kurum.kisa_ad if user.kurum else "Diğer"
+        if k_ad not in kurum_groups: kurum_groups[k_ad] = []
+        kurum_groups[k_ad].append(user)
+    
+    # Grupları alfabetik sırala
+    kurum_groups = dict(sorted(kurum_groups.items()))
+    
+    return render_template('hizli_giris.html', kullanicilar=kullanicilar, kurum_groups=kurum_groups)
+
+
 def get_mock_data():
     """V67 DEPRECATED: Eski mock data fonksiyonu - Fallback için korunuyor.
     Artık Activity.query kullanılmalı. Bu fonksiyon sadece migration script'inde kullanılıyor.
@@ -170,51 +192,164 @@ def dashboard():
     
     try:
         # Cache'den dashboard istatistiklerini getirmeye çalış
-        cache_key = f"dashboard_stats_{current_user.id}"
+        cache_key = f"dashboard_stats_v3_{current_user.id}"
         cached_data = get_cached_dashboard_stats(current_user.id)
         
         if cached_data:
             current_app.logger.info(f"Dashboard cache'den yüklendi: {cache_key}")
+            # Stratejik etki kontrolü
             if 'strategic_impact' not in cached_data:
                 cached_data['strategic_impact'] = get_strategic_impact_summary(current_user.kurum_id)
-                set_cached_dashboard_stats(current_user.id, cached_data)
+                # Cache'i güncellemiyoruz, sadece gösterim için ekliyoruz
+            
+            # Decision Support Kontrolü
+            decision_support = cached_data.get('decision_support')
+            if not decision_support:
+                # Cache'de yoksa geçici varsayılan oluştur
+                perf_score = cached_data.get('stats', {}).get('performance_score', 0)
+                decision_support = {
+                    'health_score': int(perf_score) if perf_score else 0,
+                    'insights': [{
+                        'message': 'Detaylı analiz için sayfa yenileniyor...', 
+                        'icon': 'sync', 
+                        'color': 'info'
+                    }]
+                }
+            
             return render_template('dashboard_v2.html', 
                                  stats=cached_data['stats'], 
                                  recent_activities=cached_data['recent_activities'],
-                                 strategic_impact=cached_data.get('strategic_impact', []))
+                                 strategic_impact=cached_data.get('strategic_impact', []),
+                                 decision_support=decision_support)
         
         # Cache'de yoksa hesapla
-        # 1. Veritabanından faaliyetleri çek (eager loading ile N+1 çözümü)
+        # 1. Activity tablosundan veriler
         db_activities = Activity.query.options(joinedload(Activity.project)).all()
         
-        # 2. Temel İstatistikler
-        total_tasks = len(db_activities)
-        completed_tasks = len([a for a in db_activities if a.status == 'Tamamlandı'])
+        # 2. Task (Proje Görevleri) tablosundan veriler - Kullanıcı yetkilerine göre filtrele
+        # Şimdilik tüm aktif görevleri alıyoruz (Dashboard geneli gösteriyor)
+        # TODO: İlerde kullanıcı bazlı filtreleme eklenebilir
+        db_tasks = Task.query.filter(Task.is_archived == False).all()
+
+        # Bugünü hesapla (Kritik işler için)
+        today = date.today()
+        three_days_later = today + timedelta(days=3)
+
+        # A. Activity Bazlı İstatistikler
+        activity_total = len(db_activities)
+        activity_completed = len([a for a in db_activities if a.status == 'Tamamlandı'])
+        activity_critical = len([
+            a for a in db_activities 
+            if a.priority == 'High' and a.status not in ['Tamamlandı', 'Kapalı']
+        ])
+        
+        # B. Task Bazlı İstatistikler
+        # Tamamlandı statüsü kontrolü
+        task_total = 0
+        task_completed = 0
+        task_critical = 0
+        
+        for t in db_tasks:
+            is_completed = t.status in COMPLETED_STATUSES or t.status == 'Tamamlandı'
+            if not t.is_archived: # Arşivlenmişleri sayma
+                task_total += 1
+                
+                if is_completed:
+                    task_completed += 1
+                else:
+                    # Kritik İş Hesabı:
+                    # 1. Öncelik Yüksek Olanlar
+                    # 2. Bitiş tarihi geçmiş veya 3 gün kalmış olanlar
+                    is_high_priority = (t.priority == 'High' or t.priority == 'Yüksek')
+                    is_urgent_deadline = False
+                    
+                    if t.due_date:
+                        # due_date datetime veya date olabilir, date'e çevir
+                        t_deadline = t.due_date.date() if isinstance(t.due_date, datetime) else t.due_date
+                        if t_deadline <= three_days_later:
+                            is_urgent_deadline = True
+                    
+                    if is_high_priority or is_urgent_deadline:
+                        task_critical += 1
+
+        # C. Birleştirilmiş İstatistikler
+        total_tasks = activity_total + task_total
+        completed_tasks = activity_completed + task_completed
+        critical_tasks = activity_critical + task_critical
+        
+        # Performans Skoru
         performance_score = round((completed_tasks / total_tasks) * 100, 1) if total_tasks else 0
+
+        # Karar Destek Mantığı (Decision Support)
+        health_score = int(performance_score) # Zaten yukarıda hesaplanmıştı
+        
+        insights = []
+        if health_score < 50:
+            insights.append({
+                'message': 'Genel tamamlanma oranı kritik seviyede.',
+                'icon': 'exclamation-triangle',
+                'color': 'danger'
+            })
+        
+        if critical_tasks > 5:
+            insights.append({
+                'message': 'Yüksek öncelikli iş yığılması var.',
+                'icon': 'fire',
+                'color': 'warning'
+            })
+            
+        if health_score >= 80:
+            insights.append({
+                'message': 'Süreçler mükemmel ilerliyor.',
+                'icon': 'check-circle',
+                'color': 'success'
+            })
+            
+        if not insights:
+            insights.append({
+                'message': 'Stabil akış devam ediyor.',
+                'icon': 'info-circle',
+                'color': 'primary'
+            })
+            
+        decision_support = {
+            'health_score': health_score,
+            'insights': insights
+        }
 
         stats = {
             'total_tasks': total_tasks,
-            'critical_tasks': len([a for a in db_activities if a.priority == 'High' and a.status not in ['Tamamlandı', 'Kapalı']]),
+            'critical_tasks': critical_tasks,
             'completed_tasks': completed_tasks,
-            # Mevcut istatistikleri koru (geriye uyumluluk için)
             'total_projects': db.session.query(db.func.count(Project.id)).scalar() or 0,
-            'pending_tasks': len([a for a in db_activities if a.status not in ['Tamamlandı', 'Kapalı']]),
+            'pending_tasks': (total_tasks - completed_tasks),
             'performance_score': performance_score,
-            # V67: Grafik Verileri (Chart.js için)
+            # Grafik Verileri (Sadece Activity verilerini kullanmaya devam ediyoruz, 
+            # çünkü Task verileri henüz kaynak (source) bilgisine tam sahip olmayabilir)
             'source_counts': {},
             'priority_counts': {'High': 0, 'Normal': 0, 'Low': 0},
-            'process_performance': {'Genel': performance_score}  # Template'in beklediği key
+            'process_performance': {'Genel': performance_score}
         }
         
-        # 3. Grafik verilerini döngüyle doldur
+        # Grafik verilerini döngüyle doldur (Activity bazlı)
         for a in db_activities:
-            # Kaynak Sayımı
             stats['source_counts'][a.source] = stats['source_counts'].get(a.source, 0) + 1
-            # Öncelik Sayımı
             if a.priority in stats['priority_counts']:
                 stats['priority_counts'][a.priority] += 1
         
-        # 4. Son 5 aktiviteyi tarihe göre sırala (Template için dictionary formatına çevir)
+        # Task verilerini de grafiklere ekle (Source: Proje Yönetimi)
+        if task_total > 0:
+            stats['source_counts']['Proje Yönetimi'] = task_total
+            # Öncelik dağılımını tasklardan da al
+            for t in db_tasks:
+                p_key = 'Normal'
+                if t.priority in ['High', 'Yüksek']: p_key = 'High'
+                elif t.priority in ['Low', 'Düşük']: p_key = 'Low'
+                
+                if p_key in stats['priority_counts']:
+                    stats['priority_counts'][p_key] += 1
+
+        # 4. Son 5 aktiviteyi tarihe göre sırala
         sorted_activities = sorted(db_activities, key=lambda x: x.date, reverse=True)[:5]
         recent_activities = []
         for activity in sorted_activities:
@@ -234,7 +369,8 @@ def dashboard():
         dashboard_data = {
             'stats': stats,
             'recent_activities': recent_activities,
-            'strategic_impact': strategic_impact
+            'strategic_impact': strategic_impact,
+            'decision_support': decision_support
         }
         set_cached_dashboard_stats(current_user.id, dashboard_data)
         current_app.logger.info(f"Dashboard verileri cache'e kaydedildi: {cache_key}")
@@ -243,7 +379,8 @@ def dashboard():
         return render_template('dashboard_v2.html', 
                              stats=stats, 
                              recent_activities=recent_activities,
-                             strategic_impact=strategic_impact)
+                             strategic_impact=strategic_impact,
+                             decision_support=decision_support)
     except Exception as e:
         import traceback
         current_app.logger.error(f'Dashboard sayfası render hatası: {str(e)}')
@@ -1692,84 +1829,773 @@ def performans_kartim():
 @main_bp.route('/kurum-paneli')
 @login_required
 def kurum_paneli():
-    """Kurum Paneli sayfası"""
-    # Kurum yöneticileri için
+    """
+    Stratejik Yönetim Kokpiti
+    
+    Vizyon → Strateji → Süreç → PG → Proje hiyerarşisini analiz eder.
+    BSC perspektif analizi, ağırlıklı performans hesaplamaları ve proje sağlık durumu sunar.
+    """
+    # Yetki kontrolü
     if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
         flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
         return redirect(url_for('main.dashboard'))
     
     try:
-        # Kurum paneli sayfasını render et
+        # Kurum ID belirleme
+        kurum_id = current_user.kurum_id
+        is_admin = current_user.sistem_rol == 'admin'
+        
         # Kurum bilgilerini getir
-        from models import AnaStrateji, AltStrateji
-        # Eager loading ile ilişkili verileri tek seferde çek
-        
-        # Admin TÜM kurumları, diğerleri sadece kendi kurumunu görsün
-        if current_user.sistem_rol == 'admin':
-            # Admin - tüm kurumları görecek
-            kurumlar = Kurum.query.all()  # Tüm kurumları getir
-            kurum = None  # Admin tüm kurumları görecek, belirli bir kurum için filtreleme yok
-            ana_stratejiler = AnaStrateji.query.all()
-            surecler = Surec.query.options(db.joinedload(Surec.kurum)).all()
+        if is_admin:
+            kurumlar = Kurum.query.filter_by(silindi=False).all()
+            kurum = kurumlar[0] if kurumlar else None
         else:
-            # Kurum yöneticisi - sadece kendi kurumunu görecek
-            kurumlar = [Kurum.query.get(current_user.kurum_id)]
-            kurum = kurumlar[0] if kurumlar[0] else None
-            ana_stratejiler = AnaStrateji.query.filter_by(kurum_id=current_user.kurum_id).all()
-            surecler = Surec.query.options(db.joinedload(Surec.kurum)).filter_by(kurum_id=current_user.kurum_id).all()
+            kurum = Kurum.query.get(kurum_id)
+            kurumlar = [kurum] if kurum else []
         
-        # Deger, EtikKural, KalitePolitikasi verilerini getir
+        # ============================================================
+        # A. VİZYON VE GLOBAL SKOR
+        # ============================================================
+        vizyon = kurum.vizyon if kurum else "Vizyon henüz tanımlanmamış."
+        
+        # Global skor: Tüm aktif PG'lerin ağırlıklı başarı puanı ortalaması
+        global_score_query = db.session.query(
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani)
+        ).join(Surec).filter(
+            Surec.silindi == False,
+            Surec.durum.in_(['Aktif', 'Devam Ediyor'])
+        )
+        
+        if not is_admin:
+            global_score_query = global_score_query.filter(Surec.kurum_id == kurum_id)
+        
+        global_score_result = global_score_query.scalar()
+        global_score = int(global_score_result) if global_score_result else 0
+        
+        # ============================================================
+        # B. BSC PERSPEKTİF DAĞILIMI (Radar Chart)
+        # ============================================================
+        bsc_query = db.session.query(
+            AnaStrateji.perspective,
+            db.func.count(AnaStrateji.id).label('count')
+        )
+        
+        if not is_admin:
+            bsc_query = bsc_query.filter(AnaStrateji.kurum_id == kurum_id)
+        
+        bsc_data = bsc_query.group_by(AnaStrateji.perspective).all()
+        
+        # BSC perspektif haritası
+        bsc_map = {
+            'FINANSAL': 'Finansal',
+            'MUSTERI': 'Müşteri',
+            'SUREC': 'Süreç',
+            'OGRENME': 'Öğrenme'
+        }
+        
+        bsc_distribution = {
+            'labels': [],
+            'data': [],
+            'colors': ['#667eea', '#11998e', '#4facfe', '#f093fb']
+        }
+        
+        for perspective, count in bsc_data:
+            if perspective:
+                label = bsc_map.get(perspective, perspective)
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(count)
+        
+        # Eksik perspektifleri 0 ile doldur
+        for key, label in bsc_map.items():
+            if label not in bsc_distribution['labels']:
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(0)
+        
+        # ============================================================
+        # C. STRATEJİK İLERLEME (Ana Stratejiler)
+        # ============================================================
+        strategic_progress = []
+        
+        ana_strateji_query = AnaStrateji.query
+        if not is_admin:
+            ana_strateji_query = ana_strateji_query.filter_by(kurum_id=kurum_id)
+        
+        ana_stratejiler = ana_strateji_query.all()
+        
+        for ana_strateji in ana_stratejiler:
+            # Alt stratejilerin ortalama başarısını hesapla
+            alt_stratejiler = ana_strateji.alt_stratejiler
+            
+            if alt_stratejiler:
+                # Her alt stratejiye bağlı PG'lerin ortalama başarı puanı
+                total_score = 0
+                total_count = 0
+                
+                for alt_strateji in alt_stratejiler:
+                    pg_scores = db.session.query(
+                        db.func.avg(SurecPerformansGostergesi.basari_puani)
+                    ).filter(
+                        SurecPerformansGostergesi.alt_strateji_id == alt_strateji.id
+                    ).scalar()
+                    
+                    if pg_scores:
+                        total_score += pg_scores
+                        total_count += 1
+                
+                avg_score = int(total_score / total_count) if total_count > 0 else 0
+            else:
+                avg_score = 0
+            
+            strategic_progress.append({
+                'id': ana_strateji.id,
+                'code': ana_strateji.code or '',
+                'ad': ana_strateji.ad,
+                'perspective': ana_strateji.perspective or 'SUREC',
+                'skor': avg_score,
+                'alt_strateji_sayisi': len(alt_stratejiler)
+            })
+        
+        # ============================================================
+        # D. SÜREÇ ISI HARİTASI (En İyi ve En Riskli Süreçler)
+        # ============================================================
+        surec_query = db.session.query(
+            Surec.id,
+            Surec.ad,
+            Surec.code,
+            Surec.weight,
+            Surec.ilerleme,
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani).label('avg_score')
+        ).outerjoin(
+            SurecPerformansGostergesi
+        ).filter(
+            Surec.silindi == False
+        ).group_by(
+            Surec.id, Surec.ad, Surec.code, Surec.weight, Surec.ilerleme
+        )
+        
+        if not is_admin:
+            surec_query = surec_query.filter(Surec.kurum_id == kurum_id)
+        
+        surec_data = surec_query.all()
+        
+        # Skorlara göre sırala
+        surec_list = []
+        for s in surec_data:
+            surec_list.append({
+                'id': s.id,
+                'ad': s.ad,
+                'code': s.code or '',
+                'weight': float(s.weight) if s.weight else 0.0,
+                'ilerleme': s.ilerleme or 0,
+                'skor': int(s.avg_score) if s.avg_score else 0
+            })
+        
+        # Skora göre sırala
+        surec_list_sorted = sorted(surec_list, key=lambda x: x['skor'], reverse=True)
+        
+        top_processes = surec_list_sorted[:5]  # En başarılı 5
+        risky_processes = surec_list_sorted[-5:][::-1]  # En riskli 5 (ters çevir)
+        
+        # ============================================================
+        # E. PROJE ETKİSİ (Proje Sağlık Durumu)
+        # ============================================================
+        project_query = Project.query.filter_by(is_archived=False)
+        
+        if not is_admin:
+            project_query = project_query.filter_by(kurum_id=kurum_id)
+        
+        total_projects = project_query.count()
+        
+        # Sağlık durumu dağılımı
+        health_distribution = {
+            'Mükemmel': 0,
+            'İyi': 0,
+            'Dikkat': 0,
+            'Kritik': 0
+        }
+        
+        projects = project_query.all()
+        for project in projects:
+            health = project.health_status or 'İyi'
+            if health in health_distribution:
+                health_distribution[health] += 1
+            else:
+                # Varsayılan
+                if project.health_score and project.health_score >= 80:
+                    health_distribution['Mükemmel'] += 1
+                elif project.health_score and project.health_score >= 50:
+                    health_distribution['İyi'] += 1
+                else:
+                    health_distribution['Dikkat'] += 1
+        
+        # Tamamlanma yüzdesi (Bitiş tarihi geçmiş projeler)
+        today = date.today()
+        completed_projects = 0
+        for project in projects:
+            if project.end_date and project.end_date < today:
+                completed_projects += 1
+        
+        completion_rate = int((completed_projects / total_projects) * 100) if total_projects > 0 else 0
+        
+        project_impact = {
+            'total': total_projects,
+            'health_distribution': health_distribution,
+            'completion_rate': completion_rate
+        }
+        
+        # ============================================================
+        # F. MEVCUT VERİLER (Eski Yapı ile Uyumluluk)
+        # ============================================================
         try:
-            if current_user.sistem_rol == 'admin':
+            if is_admin:
                 degerler = Deger.query.all()
                 etik_kurallari = EtikKural.query.all()
                 kalite_politikalari = KalitePolitikasi.query.all()
+                uyeler = User.query.filter_by(silindi=False).all()
+                surecler = Surec.query.filter_by(silindi=False).all()
             else:
-                degerler = Deger.query.filter_by(kurum_id=current_user.kurum_id).all()
-                etik_kurallari = EtikKural.query.filter_by(kurum_id=current_user.kurum_id).all()
-                kalite_politikalari = KalitePolitikasi.query.filter_by(kurum_id=current_user.kurum_id).all()
+                degerler = Deger.query.filter_by(kurum_id=kurum_id).all()
+                etik_kurallari = EtikKural.query.filter_by(kurum_id=kurum_id).all()
+                kalite_politikalari = KalitePolitikasi.query.filter_by(kurum_id=kurum_id).all()
+                uyeler = User.query.filter_by(kurum_id=kurum_id, silindi=False).all()
+                surecler = Surec.query.filter_by(kurum_id=kurum_id, silindi=False).all()
         except Exception as e:
             current_app.logger.error(f"Kurum bilgileri getirilirken hata: {e}")
             degerler = []
             etik_kurallari = []
             kalite_politikalari = []
+            uyeler = []
+            surecler = []
         
-        if current_user.sistem_rol == 'admin':
-            uyeler = User.query.all()
-        else:
-            uyeler = User.query.filter_by(kurum_id=current_user.kurum_id).all()
-
-        analysis_kurum_id = current_user.kurum_id
-        if analysis_kurum_id:
-            swot_count = AnalysisItem.query.filter_by(kurum_id=analysis_kurum_id, analysis_type='SWOT').count()
-            pestle_count = AnalysisItem.query.filter_by(kurum_id=analysis_kurum_id, analysis_type='PESTLE').count()
-            tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=analysis_kurum_id).count()
+        # Analiz sayıları
+        if kurum_id:
+            swot_count = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type='SWOT').count()
+            pestle_count = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type='PESTLE').count()
+            tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=kurum_id).count()
         else:
             swot_count = 0
             pestle_count = 0
             tows_strategy_count = 0
-
+        
         analysis_total = swot_count + pestle_count + tows_strategy_count
         analysis_progress = min(100, int((analysis_total / 20) * 100)) if analysis_total else 0
         
+        # ============================================================
+        # TEMPLATE'E GÖNDERİLECEK VERİLER
+        # ============================================================
         return render_template('kurum_panel.html',
+                             # Kurum Bilgileri
                              kurum=kurum,
-                             kurumlar=kurumlar if current_user.sistem_rol == 'admin' else None,
+                             kurumlar=kurumlar if is_admin else None,
+                             
+                             # Stratejik Veri Motoru
+                             vizyon=vizyon,
+                             global_score=global_score,
+                             bsc_distribution=bsc_distribution,
+                             strategic_progress=strategic_progress,
+                             top_processes=top_processes,
+                             risky_processes=risky_processes,
+                             project_impact=project_impact,
+                             
+                             # Mevcut Veriler (Uyumluluk)
                              ana_stratejiler=ana_stratejiler,
                              degerler=degerler,
                              etik_kurallari=etik_kurallari,
                              kalite_politikalari=kalite_politikalari,
                              surecler=surecler,
                              uyeler=uyeler,
+                             
+                             # Analiz Verileri
                              swot_count=swot_count,
                              pestle_count=pestle_count,
                              tows_strategy_count=tows_strategy_count,
                              analysis_progress=analysis_progress)
+                             
     except Exception as e:
         import traceback
-        current_app.logger.error(f'Kurum Paneli sayfası hatası: {str(e)}')
+        current_app.logger.error(f'Kurum Paneli (Stratejik Kokpit) hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+        return f"Stratejik Kokpit yüklenirken hata oluştu: {str(e)}", 500
+
+
+@main_bp.route('/v3/kurum-paneli')
+@login_required
+def kurum_paneli_v3():
+    """
+    Stratejik Yönetim Kokpiti V3 (Dual Mode: Standard + Visual)
+    
+    - Standart Mod: Chart.js tabanlı temiz dashboard
+    - Görsel Mod: Apache ECharts ile interaktif veri görselleştirme
+    """
+    # Yetki kontrolü
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    try:
+        # Kurum ID belirleme
+        kurum_id = current_user.kurum_id
+        is_admin = current_user.sistem_rol == 'admin'
+        
+        # Kurum bilgilerini getir
+        if is_admin:
+            kurumlar = Kurum.query.filter_by(silindi=False).all()
+            kurum = kurumlar[0] if kurumlar else None
+        else:
+            kurum = Kurum.query.get(kurum_id)
+            kurumlar = [kurum] if kurum else []
+        
+        # ============================================================
+        # A. VİZYON VE GLOBAL SKOR
+        # ============================================================
+        vizyon = kurum.vizyon if kurum else "Vizyonumuz: Sektörde öncü, yenilikçi ve sürdürülebilir bir kurum olmak."
+        
+        # Global skor: Tüm aktif PG'lerin ağırlıklı başarı puanı ortalaması
+        global_score_query = db.session.query(
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani)
+        ).join(Surec).filter(
+            Surec.silindi == False,
+            Surec.durum.in_(['Aktif', 'Devam Ediyor'])
+        )
+        
+        if not is_admin:
+            global_score_query = global_score_query.filter(Surec.kurum_id == kurum_id)
+        
+        global_score_result = global_score_query.scalar()
+        global_score = int(global_score_result) if global_score_result else 0
+        
+        # ============================================================
+        # B. BSC PERSPEKTİF DAĞILIMI (Radar Chart)
+        # ============================================================
+        bsc_query = db.session.query(
+            AnaStrateji.perspective,
+            db.func.count(AnaStrateji.id).label('count')
+        )
+        
+        if not is_admin:
+            bsc_query = bsc_query.filter(AnaStrateji.kurum_id == kurum_id)
+        
+        bsc_data = bsc_query.group_by(AnaStrateji.perspective).all()
+        
+        # BSC perspektif haritası
+        bsc_map = {
+            'FINANSAL': 'Finansal',
+            'MUSTERI': 'Müşteri',
+            'SUREC': 'Süreç',
+            'OGRENME': 'Öğrenme'
+        }
+        
+        bsc_distribution = {
+            'labels': [],
+            'data': [],
+            'colors': ['#667eea', '#11998e', '#4facfe', '#f093fb']
+        }
+        
+        for perspective, count in bsc_data:
+            if perspective:
+                label = bsc_map.get(perspective, perspective)
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(count)
+        
+        # Eksik perspektifleri 0 ile doldur
+        for key, label in bsc_map.items():
+            if label not in bsc_distribution['labels']:
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(0)
+        
+        # ============================================================
+        # C. STRATEJİK İLERLEME (Ana Stratejiler)
+        # ============================================================
+        strategic_progress = []
+        
+        ana_strateji_query = AnaStrateji.query
+        if not is_admin:
+            ana_strateji_query = ana_strateji_query.filter_by(kurum_id=kurum_id)
+        
+        ana_stratejiler = ana_strateji_query.all()
+        
+        for ana_strateji in ana_stratejiler:
+            # Alt stratejilerin ortalama başarısını hesapla
+            alt_stratejiler = ana_strateji.alt_stratejiler
+            
+            if alt_stratejiler:
+                # Her alt stratejiye bağlı PG'lerin ortalama başarı puanı
+                total_score = 0
+                total_count = 0
+                
+                for alt_strateji in alt_stratejiler:
+                    pg_scores = db.session.query(
+                        db.func.avg(SurecPerformansGostergesi.basari_puani)
+                    ).filter(
+                        SurecPerformansGostergesi.alt_strateji_id == alt_strateji.id
+                    ).scalar()
+                    
+                    if pg_scores:
+                        total_score += pg_scores
+                        total_count += 1
+                
+                avg_score = int(total_score / total_count) if total_count > 0 else 0
+            else:
+                avg_score = 0
+            
+            strategic_progress.append({
+                'id': ana_strateji.id,
+                'code': ana_strateji.code or '',
+                'ad': ana_strateji.ad,
+                'perspective': ana_strateji.perspective or 'SUREC',
+                'skor': avg_score,
+                'alt_strateji_sayisi': len(alt_stratejiler)
+            })
+        
+        # ============================================================
+        # D. SÜREÇ ISI HARİTASI (En İyi ve En Riskli Süreçler)
+        # ============================================================
+        surec_query = db.session.query(
+            Surec.id,
+            Surec.ad,
+            Surec.code,
+            Surec.weight,
+            Surec.ilerleme,
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani).label('avg_score')
+        ).outerjoin(
+            SurecPerformansGostergesi
+        ).filter(
+            Surec.silindi == False
+        ).group_by(
+            Surec.id, Surec.ad, Surec.code, Surec.weight, Surec.ilerleme
+        )
+        
+        if not is_admin:
+            surec_query = surec_query.filter(Surec.kurum_id == kurum_id)
+        
+        surec_data = surec_query.all()
+        
+        # Skorlara göre sırala
+        surec_list = []
+        for s in surec_data:
+            surec_list.append({
+                'id': s.id,
+                'ad': s.ad,
+                'code': s.code or '',
+                'weight': float(s.weight) if s.weight else 0.0,
+                'ilerleme': s.ilerleme or 0,
+                'skor': int(s.avg_score) if s.avg_score else 0
+            })
+        
+        # Skora göre sırala
+        surec_list_sorted = sorted(surec_list, key=lambda x: x['skor'], reverse=True)
+        
+        top_processes = surec_list_sorted[:5]  # En başarılı 5
+        risky_processes = surec_list_sorted[-5:][::-1]  # En riskli 5 (ters çevir)
+        
+        # ============================================================
+        # E. PROJE ETKİSİ (Proje Sağlık Durumu)
+        # ============================================================
+        project_query = Project.query.filter_by(is_archived=False)
+        
+        if not is_admin:
+            project_query = project_query.filter_by(kurum_id=kurum_id)
+        
+        total_projects = project_query.count()
+        
+        # Sağlık durumu dağılımı
+        health_distribution = {
+            'Mükemmel': 0,
+            'İyi': 0,
+            'Dikkat': 0,
+            'Kritik': 0
+        }
+        
+        projects = project_query.all()
+        for project in projects:
+            health = project.health_status or 'İyi'
+            if health in health_distribution:
+                health_distribution[health] += 1
+            else:
+                # Varsayılan
+                if project.health_score and project.health_score >= 80:
+                    health_distribution['Mükemmel'] += 1
+                elif project.health_score and project.health_score >= 50:
+                    health_distribution['İyi'] += 1
+                else:
+                    health_distribution['Dikkat'] += 1
+        
+        # Tamamlanma yüzdesi (Bitiş tarihi geçmiş projeler)
+        today = date.today()
+        completed_projects = 0
+        for project in projects:
+            if project.end_date and project.end_date < today:
+                completed_projects += 1
+        
+        completion_rate = int((completed_projects / total_projects) * 100) if total_projects > 0 else 0
+        
+        project_impact = {
+            'total': total_projects,
+            'health_distribution': health_distribution,
+            'completion_rate': completion_rate
+        }
+        
+        # ============================================================
+        # TEMPLATE'E GÖNDERİLECEK VERİLER (V3)
+        # ============================================================
+        return render_template('v3/kurum_panel.html',
+                             # Kurum Bilgileri
+                             kurum=kurum,
+                             kurumlar=kurumlar if is_admin else None,
+                             
+                             # Stratejik Veri Motoru
+                             vizyon=vizyon,
+                             global_score=global_score,
+                             bsc_distribution=bsc_distribution,
+                             strategic_progress=strategic_progress,
+                             top_processes=top_processes,
+                             risky_processes=risky_processes,
+                             project_impact=project_impact)
+                             
+    except Exception as e:
+        import traceback
+        current_app.logger.error(f'Kurum Paneli V3 hatası: {str(e)}')
+        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
+        return f"Stratejik Kokpit V3 yüklenirken hata oluştu: {str(e)}", 500
+
+
+@main_bp.route('/v3/kurum-paneli/visual')
+@login_required
+def kurum_paneli_visual():
+    """
+    Stratejik Yönetim Kokpiti - Görsel Mod (Sadece ECharts)
+    """
+    # Yetki kontrolü
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    try:
+        # Kurum ID belirleme
+        kurum_id = current_user.kurum_id
+        is_admin = current_user.sistem_rol == 'admin'
+        
+        # Kurum bilgilerini getir
+        if is_admin:
+            kurumlar = Kurum.query.filter_by(silindi=False).all()
+            kurum = kurumlar[0] if kurumlar else None
+        else:
+            kurum = Kurum.query.get(kurum_id)
+            kurumlar = [kurum] if kurum else []
+        
+        # ============================================================
+        # A. VİZYON VE GLOBAL SKOR
+        # ============================================================
+        vizyon = kurum.vizyon if kurum else "Vizyonumuz: Sektörde öncü, yenilikçi ve sürdürülebilir bir kurum olmak."
+        
+        # Global skor: Tüm aktif PG'lerin ağırlıklı başarı puanı ortalaması
+        global_score_query = db.session.query(
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani)
+        ).join(Surec).filter(
+            Surec.silindi == False,
+            Surec.durum.in_(['Aktif', 'Devam Ediyor'])
+        )
+        
+        if not is_admin:
+            global_score_query = global_score_query.filter(Surec.kurum_id == kurum_id)
+        
+        global_score_result = global_score_query.scalar()
+        global_score = int(global_score_result) if global_score_result else 0
+        
+        # ============================================================
+        # B. BSC PERSPEKTİF DAĞILIMI (Radar Chart)
+        # ============================================================
+        bsc_query = db.session.query(
+            AnaStrateji.perspective,
+            db.func.count(AnaStrateji.id).label('count')
+        )
+        
+        if not is_admin:
+            bsc_query = bsc_query.filter(AnaStrateji.kurum_id == kurum_id)
+        
+        bsc_data = bsc_query.group_by(AnaStrateji.perspective).all()
+        
+        # BSC perspektif haritası
+        bsc_map = {
+            'FINANSAL': 'Finansal',
+            'MUSTERI': 'Müşteri',
+            'SUREC': 'Süreç',
+            'OGRENME': 'Öğrenme'
+        }
+        
+        bsc_distribution = {
+            'labels': [],
+            'data': [],
+            'colors': ['#667eea', '#11998e', '#4facfe', '#f093fb']
+        }
+        
+        for perspective, count in bsc_data:
+            if perspective:
+                label = bsc_map.get(perspective, perspective)
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(count)
+        
+        # Eksik perspektifleri 0 ile doldur
+        for key, label in bsc_map.items():
+            if label not in bsc_distribution['labels']:
+                bsc_distribution['labels'].append(label)
+                bsc_distribution['data'].append(0)
+        
+        # ============================================================
+        # C. STRATEJİK İLERLEME (Ana Stratejiler)
+        # ============================================================
+        strategic_progress = []
+        
+        ana_strateji_query = AnaStrateji.query
+        if not is_admin:
+            ana_strateji_query = ana_strateji_query.filter_by(kurum_id=kurum_id)
+        
+        ana_stratejiler = ana_strateji_query.all()
+        
+        for ana_strateji in ana_stratejiler:
+            # Alt stratejilerin ortalama başarısını hesapla
+            alt_stratejiler = ana_strateji.alt_stratejiler
+            
+            if alt_stratejiler:
+                # Her alt stratejiye bağlı PG'lerin ortalama başarı puanı
+                total_score = 0
+                total_count = 0
+                
+                for alt_strateji in alt_stratejiler:
+                    pg_scores = db.session.query(
+                        db.func.avg(SurecPerformansGostergesi.basari_puani)
+                    ).filter(
+                        SurecPerformansGostergesi.alt_strateji_id == alt_strateji.id
+                    ).scalar()
+                    
+                    if pg_scores:
+                        total_score += pg_scores
+                        total_count += 1
+                
+                avg_score = int(total_score / total_count) if total_count > 0 else 0
+            else:
+                avg_score = 0
+            
+            strategic_progress.append({
+                'id': ana_strateji.id,
+                'code': ana_strateji.code or '',
+                'ad': ana_strateji.ad,
+                'perspective': ana_strateji.perspective or 'SUREC',
+                'skor': avg_score,
+                'alt_strateji_sayisi': len(alt_stratejiler)
+            })
+        
+        # ============================================================
+        # D. SÜREÇ ISI HARİTASI (En İyi ve En Riskli Süreçler)
+        # ============================================================
+        surec_query = db.session.query(
+            Surec.id,
+            Surec.ad,
+            Surec.code,
+            Surec.weight,
+            Surec.ilerleme,
+            db.func.avg(SurecPerformansGostergesi.agirlikli_basari_puani).label('avg_score')
+        ).outerjoin(
+            SurecPerformansGostergesi
+        ).filter(
+            Surec.silindi == False
+        ).group_by(
+            Surec.id, Surec.ad, Surec.code, Surec.weight, Surec.ilerleme
+        )
+        
+        if not is_admin:
+            surec_query = surec_query.filter(Surec.kurum_id == kurum_id)
+        
+        surec_data = surec_query.all()
+        
+        # Skorlara göre sırala
+        surec_list = []
+        for s in surec_data:
+            surec_list.append({
+                'id': s.id,
+                'ad': s.ad,
+                'code': s.code or '',
+                'weight': float(s.weight) if s.weight else 0.0,
+                'ilerleme': s.ilerleme or 0,
+                'skor': int(s.avg_score) if s.avg_score else 0
+            })
+        
+        # Skora göre sırala
+        surec_list_sorted = sorted(surec_list, key=lambda x: x['skor'], reverse=True)
+        
+        top_processes = surec_list_sorted[:5]  # En başarılı 5
+        risky_processes = surec_list_sorted[-5:][::-1]  # En riskli 5 (ters çevir)
+        
+        # ============================================================
+        # E. PROJE ETKİSİ (Proje Sağlık Durumu)
+        # ============================================================
+        project_query = Project.query.filter_by(is_archived=False)
+        
+        if not is_admin:
+            project_query = project_query.filter_by(kurum_id=kurum_id)
+        
+        total_projects = project_query.count()
+        
+        # Sağlık durumu dağılımı
+        health_distribution = {
+            'Mükemmel': 0,
+            'İyi': 0,
+            'Dikkat': 0,
+            'Kritik': 0
+        }
+        
+        projects = project_query.all()
+        for project in projects:
+            health = project.health_status or 'İyi'
+            if health in health_distribution:
+                health_distribution[health] += 1
+            else:
+                # Varsayılan
+                if project.health_score and project.health_score >= 80:
+                    health_distribution['Mükemmel'] += 1
+                elif project.health_score and project.health_score >= 50:
+                    health_distribution['İyi'] += 1
+                else:
+                    health_distribution['Dikkat'] += 1
+        
+        # Tamamlanma yüzdesi (Bitiş tarihi geçmiş projeler)
+        today = date.today()
+        completed_projects = 0
+        for project in projects:
+            if project.end_date and project.end_date < today:
+                completed_projects += 1
+        
+        completion_rate = int((completed_projects / total_projects) * 100) if total_projects > 0 else 0
+        
+        project_impact = {
+            'total': total_projects,
+            'health_distribution': health_distribution,
+            'completion_rate': completion_rate
+        }
+        
+        # ============================================================
+        # TEMPLATE'E GÖNDERİLECEK VERİLER (V3 VISUAL)
+        # ============================================================
+        return render_template('v3/kurum_panel_visual.html',
+                             # Kurum Bilgileri
+                             kurum=kurum,
+                             kurumlar=kurumlar if is_admin else None,
+                             
+                             # Stratejik Veri Motoru
+                             vizyon=vizyon,
+                             global_score=global_score,
+                             bsc_distribution=bsc_distribution,
+                             strategic_progress=strategic_progress,
+                             top_processes=top_processes,
+                             risky_processes=risky_processes,
+                             project_impact=project_impact)
+                             
+    except Exception as e:
+        import traceback
+        current_app.logger.error(f'Kurum Paneli Visual V3 hatası: {str(e)}')
+        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
+        return f"Stratejik Kokpit Visual V3 yüklenirken hata oluştu: {str(e)}", 500
+
 
 
 @main_bp.route('/admin/seed_db')

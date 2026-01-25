@@ -45,9 +45,62 @@
         .dropdown-submenu>.dropdown-toggle {
             cursor: pointer;
         }
+
+        /* V3 Panels Button - Gradient & Pulse Animation */
+        .btn-v3-panels {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .btn-v3-panels:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            color: white;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 4px 25px rgba(102, 126, 234, 0.8);
+            }
+        }
+
+        .v3-dropdown-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 1rem;
+        }
+
+        .v3-dropdown-item {
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+        }
+
+        .v3-dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transform: translateX(5px);
+        }
     </style>
 
     {% block styles %}{% endblock %}
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
@@ -196,6 +249,13 @@
                             href="{{ url_for('main.executive_dashboard') }}">
                             <i class="fas fa-chart-line"></i>
                             <span>Yönetici Kokpiti</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.kurum_paneli_v3' %}active{% endif %}"
+                            href="{{ url_for('main.kurum_paneli_v3') }}">
+                            <i class="fas fa-rocket"></i>
+                            <span>🚀 Kurum Paneli V3</span>
                         </a>
                     </div>
                     {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
@@ -431,7 +491,57 @@
                             <div id="notificationList" style="max-height: 360px; overflow: auto;"></div>
                         </div>
                     </div>
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Tema DeİŸiştir">
+
+                    <!-- V3 Panels Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-v3-panels dropdown-toggle" type="button" id="v3PanelsDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-rocket me-2"></i>V3 Panelleri
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0"
+                            aria-labelledby="v3PanelsDropdown" style="min-width: 280px;">
+                            <li class="v3-dropdown-header">
+                                <i class="fas fa-stars me-2"></i>YENİ NESİL ARAYÜZLER
+                            </li>
+                            <li>
+                                <a class="dropdown-item v3-dropdown-item" href="{{ url_for('v3.dashboard') }}">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <i class="fas fa-user-circle me-2 text-primary"></i>
+                                            <span class="fw-semibold">Bireysel Dashboard</span>
+                                        </div>
+                                        <span class="badge bg-warning text-dark">BETA</span>
+                                    </div>
+                                    <small class="text-muted ms-4 d-block">Kişisel görev ve proje takibi</small>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item v3-dropdown-item" href="{{ url_for('main.kurum_paneli_v3') }}">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <i class="fas fa-building me-2 text-success"></i>
+                                            <span class="fw-semibold">Stratejik Komuta Merkezi</span>
+                                        </div>
+                                        <span class="badge bg-success text-white">YENİ</span>
+                                    </div>
+                                    <small class="text-muted ms-4 d-block">Dual-mode kurumsal kokpit</small>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="px-3 py-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        ECharts & interaktif görselleştirme
+                                    </small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
                     <div class="layout-toggle">
@@ -550,6 +660,60 @@
                                         <i class="fas fa-question-circle me-2"></i>Yardım
                                     </a>
                                 </li>
+
+                                <!-- V3 Panels Dropdown (Classic Layout) -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle btn-v3-panels" href="#"
+                                        id="v3PanelsDropdownClassic" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-rocket me-2"></i>V3 Panelleri
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0"
+                                        aria-labelledby="v3PanelsDropdownClassic" style="min-width: 280px;">
+                                        <li class="v3-dropdown-header">
+                                            <i class="fas fa-stars me-2"></i>YENİ NESİL ARAYÜZLER
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item v3-dropdown-item"
+                                                href="{{ url_for('v3.dashboard') }}">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <i class="fas fa-user-circle me-2 text-primary"></i>
+                                                        <span class="fw-semibold">Bireysel Dashboard</span>
+                                                    </div>
+                                                    <span class="badge bg-warning text-dark">BETA</span>
+                                                </div>
+                                                <small class="text-muted ms-4 d-block">Kişisel görev ve proje
+                                                    takibi</small>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item v3-dropdown-item"
+                                                href="{{ url_for('main.kurum_paneli_v3') }}">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <i class="fas fa-building me-2 text-success"></i>
+                                                        <span class="fw-semibold">Stratejik Komuta Merkezi</span>
+                                                    </div>
+                                                    <span class="badge bg-success text-white">YENİ</span>
+                                                </div>
+                                                <small class="text-muted ms-4 d-block">Dual-mode kurumsal kokpit</small>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li>
+                                            <div class="px-3 py-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    ECharts & interaktif görselleştirme
+                                                </small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 {% if current_user.sistem_rol in ['ust_yonetim', 'kurum_yoneticisi', 'admin'] %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

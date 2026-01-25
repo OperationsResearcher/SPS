@@ -30,10 +30,10 @@ login_manager.session_protection = 'strong'
 # CSRF koruması
 csrf = CSRFProtect()
 
-# Rate Limiting - Configuration will be set during app init
+# Rate Limiting - Relaxed for development/testing
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["200/hour", "50/minute"],  # Flask-Limiter preferred format
+    default_limits=["10000/hour", "1000/minute"],  # Very high limits for development
     storage_uri="memory://",
     strategy="fixed-window"
 )

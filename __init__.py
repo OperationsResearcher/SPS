@@ -167,6 +167,14 @@ def create_app(config_name=None):
     from bsc.routes import bsc_bp
     app.register_blueprint(bsc_bp)
 
+    # 4.7 V2 Modülü (Deneysel)
+    from v2 import v2_bp
+    app.register_blueprint(v2_bp)
+
+    # 4.8 V3 Modülü (Dashboard)
+    from v3 import v3_bp
+    app.register_blueprint(v3_bp)
+
     # 4.6 Custom Filters
     @app.template_filter('role_name')
     def role_name_filter(role):

@@ -240,3 +240,20 @@ class UserActivityLog(db.Model):
     surec_pg_id = db.Column(db.Integer, nullable=True)
     
     user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('aktivite_loglari', lazy=True))
+
+class Note(db.Model):
+    """
+    Karalama Defteri (Scratchpad) Modeli
+    Kullanıcıların hızlı notlar alması için.
+    """
+    __tablename__ = 'note'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    
+    # İlişki
+    user = db.relationship('User', backref=db.backref('notes', lazy='dynamic', order_by='Note.created_at.desc()'))
+

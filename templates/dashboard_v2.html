@@ -115,7 +115,8 @@
         {
             "source_counts": {{ stats.source_counts | tojson }},
             "priority_counts": {{ stats.priority_counts | tojson }},
-            "process_performance": {{ stats.process_performance | tojson }}
+            "process_performance": {{ stats.process_performance | tojson }},
+            "decision_support": {{ decision_support | tojson if decision_support is defined else {} | tojson }}
         }
     </script>
     <div class="row mb-4">
@@ -125,20 +126,45 @@
                     <h6 class="mb-0 fw-bold"><i class="fas fa-lightbulb me-2 text-warning"></i>Karar Destek Özeti</h6>
                 </div>
                 <div class="card-body">
-                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                    <ul class="mb-0">
-                        <li>Kritik iş sayısı: <strong>{{ stats.critical_tasks or 0 }}</strong></li>
-                        <li>Açık toplam iş: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0)
-                                }}</strong></li>
-                        <li>Kurumsal performans ortalaması: <strong>%{{ stats.performance_score or 0 }}</strong></li>
-                    </ul>
+                    {% if decision_support %}
+                    <div class="row align-items-center">
+                        <!-- Sol Sütun: Grafik -->
+                        <div class="col-md-5 position-relative text-center">
+                            <canvas id="healthChart" height="150"></canvas>
+                            <!-- Ortadaki Skor -->
+                            <div
+                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <h3 class="mb-0 fw-bold text-dark">%{{ decision_support.health_score }}</h3>
+                                <small class="text-muted" style="font-size: 0.7rem;">Başarı</small>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Sütun: Öneriler -->
+                        <div class="col-md-7 border-start ps-4">
+                            {% for insight in decision_support.insights %}
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <span class="badge bg-{{ insight.color }} rounded-circle p-2">
+                                        <i class="fas fa-{{ insight.icon }} fa-sm text-white"></i>
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-0 text-dark small fw-semibold">{{ insight.message }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <hr class="my-2 text-muted opacity-25">
+
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Açık İş: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0)
+                                        }}</strong></span>
+                                <span>Kritik: <strong>{{ stats.critical_tasks or 0 }}</strong></span>
+                            </div>
+                        </div>
+                    </div>
                     {% else %}
-                    <ul class="mb-0">
-                        <li>Bugünkü öncelik: <strong>Kritik işleri tamamla</strong></li>
-                        <li>Devam eden görevler: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0)
-                                }}</strong></li>
-                        <li>Tamamlanan görevler: <strong>{{ stats.completed_tasks or 0 }}</strong></li>
-                    </ul>
+                    <div class="alert alert-warning">Veri hazırlanıyor...</div>
                     {% endif %}
                 </div>
             </div>
@@ -571,7 +597,7 @@
             });
         }
 
-        // 4. KURUMSAL PERFORMANS GRAFİĞİ
+        // 4. KURUMSAL PERFORMANS GRAFİĞİ (Bar)
         const perfCtx = document.getElementById('performanceChart');
         if (perfCtx && Object.keys(perfData).length > 0) {
             new Chart(perfCtx, {
@@ -590,6 +616,39 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true, max: 120 } }
+                }
+            });
+        }
+
+        // 5. KARAR DESTEK SAĞLIK GRAFİĞİ (Doughnut - Tiny)
+        const healthCtx = document.getElementById('healthChart');
+        if (healthCtx) {
+            const score = statsData.decision_support ? statsData.decision_support.health_score : 0;
+            // Renk belirle
+            let scoreColor = '#4e73df'; // Primary
+            if (score < 50) scoreColor = '#e74a3b'; // Danger
+            else if (score >= 80) scoreColor = '#1cc88a'; // Success
+            else scoreColor = '#f6c23e'; // Warning
+
+            new Chart(healthCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Başarı', 'Kalan'],
+                    datasets: [{
+                        data: [score, 100 - score],
+                        backgroundColor: [scoreColor, '#e3e6f0'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Sağlanılan alana uy (height=150)
+                    cutout: '75%', // İnce halka
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
                 }
             });
         }

@@ -11,8 +11,9 @@ from extensions import db
 from .user import (
     User, Kurum, YetkiMatrisi, OzelYetki, KullaniciYetki,
     DashboardLayout, Deger, EtikKural, KalitePolitikasi,
-    Notification, UserActivityLog
+    Notification, UserActivityLog, Note
 )
+from .dashboard import UserDashboardSettings
 from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix, StrategyMapLink
 from .analysis import AnalysisItem, TowsMatrix
 from .process import (
@@ -100,7 +101,8 @@ __all__ = [
     # User
     'User', 'Kurum', 'YetkiMatrisi', 'OzelYetki', 'KullaniciYetki',
     'DashboardLayout', 'Deger', 'EtikKural', 'KalitePolitikasi',
-    'Notification', 'UserActivityLog', 'AuditLog',
+    'Notification', 'UserActivityLog', 'AuditLog', 'Note',
+    'UserDashboardSettings', # V3 Dashboard Settings
     
     # Strategy
     'AnaStrateji', 'AltStrateji', 'StrategyProcessMatrix', 'StrategyMapLink',
