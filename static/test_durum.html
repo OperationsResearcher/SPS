@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Sunucu Bağlantı Testi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e3f2fd;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #1976d2;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-box {
+            background: #f5f5f5;
+            border-left: 4px solid #1976d2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .info-box p {
+            margin: 10px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .info-box strong {
+            color: #1976d2;
+        }
+        
+        .version {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            color: #856404;
+        }
+        
+        .btn-reload {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.6);
+        }
+        
+        .btn-reload:active {
+            transform: translateY(0);
+        }
+        
+        .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔍</div>
+        <h1>BU DOSYA SUNUCUDAN GELİYOR!</h1>
+        
+        <div class="info-box">
+            <p><strong>Son Güncelleme:</strong> 17 Ocak 2026, 14:30:00</p>
+            <p><strong>Dosya Yolu:</strong> /static/test_durum.html</p>
+            <p><strong>Sunucu Durumu:</strong> <span style="color: #4caf50;">✓ Aktif</span></p>
+        </div>
+        
+        <div class="version">
+            <strong>Cache Kırma Versiyonu:</strong> v1.0.20260117-143000<br>
+            <small style="color: #666;">Bu numara her güncellemede değişir</small>
+        </div>
+        
+        <button class="btn-reload" onclick="window.location.reload()">
+            🔄 Sayfayı Yenile
+        </button>
+        
+        <div style="margin-top: 30px; color: #666; font-size: 0.9em;">
+            <p>Bu sayfa sunucudan doğrudan servis edilmektedir.</p>
+            <p>Eğer bu sayfayı görüyorsanız, static dosya servisi çalışıyor demektir.</p>
+        </div>
+    </div>
+</body>
+</html>
