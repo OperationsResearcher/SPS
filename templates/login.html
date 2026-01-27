@@ -174,51 +174,62 @@
             opacity: 0.9;
         }
 
-        /* Floating Inputs Customization - Kokpit Style */
-        .form-floating > .form-control {
+        /* Input Container with Icon */
+        .input-with-icon {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--metallic-silver);
+            opacity: 0.6;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Simple Inputs - Kokpit Style */
+        .form-control, .form-select {
             border-radius: 12px;
             border: 1px solid rgba(192, 192, 192, 0.3);
             background-color: rgba(20, 30, 40, 0.6);
             color: var(--text-white);
-            padding-top: 1.625rem;
-            padding-bottom: 0.625rem;
-            height: calc(3.5rem + 2px);
+            padding: 0.875rem 1rem;
+            padding-left: 3rem; /* İkon için boşluk */
             font-size: 1rem;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
-        .form-floating > .form-select {
-            border-radius: 12px;
-            border: 1px solid rgba(192, 192, 192, 0.3);
-            background-color: rgba(20, 30, 40, 0.6);
-            color: var(--text-white);
-            padding-top: 1.625rem;
-            padding-bottom: 0.625rem;
-            height: calc(3.5rem + 2px);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-floating > .form-control:focus,
-        .form-floating > .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--neon-cyan);
             background-color: rgba(20, 30, 40, 0.8);
             box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2), 0 0 15px rgba(0, 255, 255, 0.3);
             color: var(--text-white);
+            outline: none;
         }
 
-        .form-floating > label {
-            padding: 1rem 0.75rem;
-            color: var(--metallic-silver);
-        }
-
-        .form-floating > .form-control::placeholder {
+        .form-control::placeholder {
             color: rgba(192, 192, 192, 0.5);
+            opacity: 1;
+        }
+
+        .form-select {
+            padding-left: 3rem;
+            cursor: pointer;
         }
 
         .form-select option {
             background-color: var(--kokpit-dark);
             color: var(--text-white);
+        }
+
+        .form-select:invalid {
+            color: rgba(192, 192, 192, 0.5);
         }
 
         .btn-login {
@@ -438,26 +449,26 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
                 <!-- Kurum Seçimi -->
-                <div class="form-floating mb-3">
+                <div class="input-with-icon">
+                    <i class="fas fa-building input-icon"></i>
                     <select class="form-select" id="kurumSelect" name="kurum_id" required>
-                        <option value="" selected disabled>Kurum seçiniz</option>
+                        <option value="" disabled selected hidden>Kurum Seçiniz...</option>
                         {% for kurum in kurumlar %}
                         <option value="{{ kurum.id }}">{{ kurum.kisa_ad }} - {{ kurum.ticari_unvan }}</option>
                         {% endfor %}
                     </select>
-                    <label for="kurumSelect"><i class="fas fa-building me-2"></i>Kurum</label>
                 </div>
 
                 <!-- Kullanıcı Adı -->
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="username" name="username" placeholder="kullanici.adi" required>
-                    <label for="username"><i class="fas fa-user me-2"></i>Kullanıcı Adı</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Kullanıcı adı giriniz" required>
                 </div>
 
                 <!-- Şifre -->
-                <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Şifre" required>
-                    <label for="password"><i class="fas fa-lock me-2"></i>Şifre</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Şifrenizi giriniz" required>
                 </div>
 
                 <!-- Options -->
@@ -498,7 +509,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const quickLoginCheckbox = document.getElementById('quickLogin');
         const passwordInput = document.getElementById('password');
-        const passwordLabel = document.querySelector('label[for="password"]');
+        const passwordIcon = document.querySelector('.input-with-icon:has(#password) .input-icon');
 
         // Logic to handle Quick Login toggling
         if (quickLoginCheckbox) {
@@ -508,18 +519,26 @@
                     passwordInput.disabled = true;
                     passwordInput.value = '';
                     passwordInput.required = false;
+                    passwordInput.placeholder = 'Şifre (Devre Dışı)';
                     
                     // Visual feedback
-                    passwordInput.classList.add('bg-light');
-                    if(passwordLabel) passwordLabel.innerHTML = '<i class="fas fa-lock-open me-2"></i>Şifre (Devre Dışı)';
+                    passwordInput.style.opacity = '0.5';
+                    if(passwordIcon) {
+                        passwordIcon.classList.remove('fa-lock');
+                        passwordIcon.classList.add('fa-lock-open');
+                    }
                 } else {
                     // Enable password
                     passwordInput.disabled = false;
                     passwordInput.required = true;
+                    passwordInput.placeholder = 'Şifrenizi giriniz';
                     
                     // Visual feedback
-                    passwordInput.classList.remove('bg-light');
-                    if(passwordLabel) passwordLabel.innerHTML = '<i class="fas fa-lock me-2"></i>Şifre';
+                    passwordInput.style.opacity = '1';
+                    if(passwordIcon) {
+                        passwordIcon.classList.remove('fa-lock-open');
+                        passwordIcon.classList.add('fa-lock');
+                    }
                 }
             });
         }

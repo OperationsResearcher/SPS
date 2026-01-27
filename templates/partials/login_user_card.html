@@ -1,17 +1,17 @@
 {% set display_name = (u.first_name + ' ' + u.last_name).strip() if u.first_name and u.last_name else u.username %}
 {% set role = (u.sistem_rol or '').lower() %}
-{% set btn_class = 'btn-outline-danger' if role == 'admin' else 'btn-outline-warning' if role == 'kurum_yoneticisi' else
-'btn-outline-info' if role == 'ust_yonetim' else 'btn-outline-secondary' if role in ['surec_lideri', 'surec_uyesi'] else
-'btn-outline-success' %}
 {% set icon_class = 'bi-crown-fill' if role == 'admin' else 'bi-person-badge-fill' if role == 'kurum_yoneticisi' else
 'bi-shield-fill' if role == 'ust_yonetim' else 'bi-tasks' if role in ['surec_lideri', 'surec_uyesi'] else
 'bi-person-fill' %}
+{% set icon_color = 'rgba(255, 200, 200, 0.6)' if role == 'admin' else 'rgba(255, 255, 200, 0.6)' if role == 'kurum_yoneticisi' else
+'rgba(200, 255, 255, 0.6)' if role == 'ust_yonetim' else 'rgba(200, 200, 255, 0.6)' if role in ['surec_lideri', 'surec_uyesi'] else
+'rgba(200, 255, 200, 0.6)' %}
 {% set kurum_adi = u.kurum.kisa_ad if u.kurum else 'Kurum Bilgisi Yok' %}
 
 <div class="col-6 col-md-4 col-lg-3 user-card" data-role="{{ u.sistem_rol }}" data-kurum-ad="{{ kurum_adi }}">
-    <button type="button" class="btn {{ btn_class }} btn-sm w-100 quick-login-btn" data-username="{{ u.username }}"
+    <button type="button" class="btn btn-outline-secondary btn-sm w-100 quick-login-btn" data-username="{{ u.username }}"
         data-kurum="{{ u.kurum_id }}" title="{{ kurum_adi }} - {{ u.sistem_rol }}">
-        <i class="bi {{ icon_class }} me-1"></i>
+        <i class="bi {{ icon_class }} me-1" style="color: {{ icon_color }};"></i>
         <span class="d-inline-block text-truncate" style="max-width: 120px;">{{ display_name }}</span>
     </button>
 </div>

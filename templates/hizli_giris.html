@@ -19,13 +19,12 @@
             </form>
 
             <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-center py-3"
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <h5 class="mb-0 text-white">
+                <div class="card-header text-center py-3">
+                    <h5 class="mb-0" style="color: #051626;">
                         <i class="bi bi-lightning-charge-fill me-2"></i>
                         <strong>Hızlı Giriş</strong>
                     </h5>
-                    <small class="text-white-50">{{ kullanicilar|length }} kullanıcı • Tek tıkla direkt giriş</small>
+                    <small class="text-muted">{{ kullanicilar|length }} kullanıcı • Tek tıkla direkt giriş</small>
                 </div>
                 <div class="card-body p-3">
                     <!-- Arama -->
@@ -46,8 +45,8 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active py-1" id="tab-all" data-bs-toggle="tab"
                                 data-bs-target="#content-all" type="button" role="tab">
-                                <i class="bi bi-people-fill me-1"></i> Tümü <span class="badge bg-secondary ms-1"
-                                    style="font-size: 0.7em;">{{ kullanicilar|length }}</span>
+                                <i class="bi bi-people-fill me-1"></i> Tümü <span class="badge ms-1"
+                                    style="font-size: 0.7em; background: #e9ecef; color: #051626;">{{ kullanicilar|length }}</span>
                             </button>
                         </li>
                         <!-- Kurumlar -->
@@ -56,7 +55,7 @@
                             <button class="nav-link py-1" id="tab-{{ loop.index }}" data-bs-toggle="tab"
                                 data-bs-target="#content-{{ loop.index }}" type="button" role="tab">
                                 <i class="bi bi-building me-1"></i> {{ k_ad }} <span
-                                    class="badge bg-light text-dark border ms-1" style="font-size: 0.7em;">{{
+                                    class="badge ms-1" style="font-size: 0.7em; background: #e9ecef; color: #051626;">{{
                                     users|length }}</span>
                             </button>
                         </li>
@@ -67,22 +66,22 @@
 
                         <!-- TAB 1: TÜMÜ -->
                         <div class="tab-pane fade show active" id="content-all" role="tabpanel">
-                            <!-- Rol Filtreleri (Sadece Tümü sekmesinde anlamlı olabilir ama global de tutulabilir) -->
+                            <!-- Rol Filtreleri (Monochrome) -->
                             <div class="mb-3">
                                 <div class="d-flex gap-2 flex-wrap justify-content-center">
-                                    <button type="button" class="btn btn-sm btn-outline-dark role-filter active"
+                                    <button type="button" class="btn btn-sm btn-outline-secondary role-filter active"
                                         data-role="all">
-                                        All
+                                        Tümü
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger role-filter"
+                                    <button type="button" class="btn btn-sm btn-outline-secondary role-filter"
                                         data-role="admin">
                                         Admin
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary role-filter"
+                                    <button type="button" class="btn btn-sm btn-outline-secondary role-filter"
                                         data-role="kurum_yoneticisi">
                                         Yönetici
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-info role-filter"
+                                    <button type="button" class="btn btn-sm btn-outline-secondary role-filter"
                                         data-role="kullanici">
                                         Kullanıcı
                                     </button>
@@ -127,7 +126,11 @@
 </div>
 
 <style>
+    /* Quick Login Buttons - Light Mode */
     .quick-login-btn {
+        background: transparent !important;
+        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+        color: #051626 !important;
         transition: all 0.2s ease;
         white-space: nowrap;
         overflow: hidden;
@@ -135,25 +138,46 @@
     }
 
     .quick-login-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        background: rgba(0, 0, 0, 0.05) !important;
+        border-color: rgba(0, 0, 0, 0.3) !important;
+        color: #051626 !important;
+        opacity: 1;
+        transform: none;
+        box-shadow: none;
     }
 
     .quick-login-btn:active {
-        transform: translateY(0);
+        background: rgba(0, 0, 0, 0.08) !important;
+        transform: none;
     }
 
-    .nav-tabs .nav-link {
-        color: #6c757d;
-        border: 1px solid transparent;
-        margin-bottom: -1px;
+    /* Role Filter Buttons - Light Mode */
+    .role-filter {
+        background: transparent !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        color: #6c757d !important;
     }
 
-    .nav-tabs .nav-link.active {
-        color: #4e73df;
+    .role-filter:hover {
+        background: rgba(0, 0, 0, 0.05) !important;
+        border-color: rgba(0, 0, 0, 0.25) !important;
+        color: #051626 !important;
+    }
+
+    .role-filter.active {
+        background: rgba(5, 22, 38, 0.1) !important;
+        border-color: rgba(5, 22, 38, 0.3) !important;
+        color: #051626 !important;
         font-weight: 600;
-        border-color: #dee2e6 #dee2e6 #fff;
     }
+
+    /* Input Group - Light Mode */
+    .input-group-text {
+        background: #f8f9fa !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        color: #051626 !important;
+    }
+
 </style>
 
 <script>

@@ -28,6 +28,403 @@
     <meta name="apple-mobile-web-app-title" content="Stratejik Plan">
 
     <style>
+        /* ============================================
+           AYDINLIK KURUMSAL THEME - LIGHT MODE
+           ============================================ */
+        :root {
+            --kokpit-navy: #051626;
+            --kokpit-dark: #0a1f35;
+            --light-bg: #f4f6f9;
+            --light-bg-alt: #eaeff2;
+            --card-white: #ffffff;
+            --text-dark: #051626;
+            --text-muted-light: #6c757d;
+            --table-header-bg: #051626;
+            --table-header-text: #ffffff;
+        }
+
+        /* Global Light Background */
+        body {
+            background: var(--light-bg) !important;
+            background: linear-gradient(135deg, #f4f6f9 0%, #eaeff2 100%) !important;
+            color: var(--text-dark) !important;
+            min-height: 100vh;
+        }
+
+        /* Grid Pattern Overlay - Çok Hafif */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(5, 22, 38, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(5, 22, 38, 0.01) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphism Container */
+        .container-fluid,
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card/Panel - White with Shadow */
+        .card {
+            background: var(--card-white) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 15px !important;
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .card-header {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .card-body {
+            color: var(--text-dark) !important;
+        }
+
+        /* Light Table Styling - Corporate Style */
+        .table,
+        .table-dark {
+            background-color: var(--card-white) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .table thead th,
+        .table-dark thead th {
+            background-color: var(--table-header-bg) !important;
+            color: var(--table-header-text) !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 0.75rem;
+        }
+
+        .table tbody tr,
+        .table-dark tbody tr {
+            background-color: var(--card-white) !important;
+            color: var(--text-dark) !important;
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover,
+        .table-dark tbody tr:hover {
+            background-color: #e9ecef !important;
+            cursor: pointer;
+        }
+
+        .table td,
+        .table th,
+        .table-dark td,
+        .table-dark th {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            padding: 0.75rem;
+        }
+
+        /* Headings */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-dark) !important;
+            font-weight: 600;
+        }
+
+        /* Text Colors */
+        .text-muted {
+            color: var(--text-muted-light) !important;
+        }
+
+        /* Form Controls - Light Mode */
+        .form-control,
+        .form-select {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.15) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #ffffff !important;
+            border-color: var(--kokpit-navy) !important;
+            box-shadow: 0 0 0 3px rgba(5, 22, 38, 0.1) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted-light) !important;
+        }
+
+        /* Buttons - Light Corporate */
+        .btn-primary {
+            background: var(--kokpit-navy) !important;
+            border: 1px solid var(--kokpit-navy) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-primary:hover {
+            background: var(--kokpit-dark) !important;
+            border-color: var(--kokpit-dark) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(5, 22, 38, 0.3) !important;
+        }
+
+        .btn-outline-secondary,
+        .btn-outline-dark {
+            background: transparent !important;
+            border: 1px solid rgba(0, 0, 0, 0.2) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-dark:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--text-dark) !important;
+        }
+
+        /* Outline Buttons - Light Mode */
+        .btn-outline-danger,
+        .btn-outline-warning,
+        .btn-outline-info,
+        .btn-outline-success,
+        .btn-outline-primary {
+            background: transparent !important;
+            border: 1px solid rgba(0, 0, 0, 0.2) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .btn-outline-danger:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-info:hover,
+        .btn-outline-success:hover,
+        .btn-outline-primary:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-color: rgba(0, 0, 0, 0.3) !important;
+            color: var(--text-dark) !important;
+        }
+
+        /* Badges - Light Mode */
+        .badge {
+            background-color: #e9ecef !important;
+            color: var(--text-dark) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .badge.bg-success {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border-color: #c3e6cb !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border-color: #ffeaa7 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border-color: #f5c6cb !important;
+        }
+
+        .badge.bg-info {
+            background-color: #d1ecf1 !important;
+            color: #0c5460 !important;
+            border-color: #bee5eb !important;
+        }
+
+        .badge.bg-primary {
+            background-color: #cce5ff !important;
+            color: var(--kokpit-navy) !important;
+            border-color: #b3d9ff !important;
+        }
+
+        /* Alerts - Light Mode */
+        .alert {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            color: var(--text-dark) !important;
+        }
+
+        /* Navbar - Light Mode */
+        .navbar {
+            background: var(--card-white) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+            z-index: 1050 !important;
+            position: relative;
+        }
+
+        /* Sidebar - Light Mode */
+        .sidebar {
+            background: var(--card-white) !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        /* Sidebar Nav Links - Light Mode */
+        .sidebar .nav-link {
+            color: var(--text-dark) !important;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(5, 22, 38, 0.08) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(5, 22, 38, 0.15) !important;
+            color: var(--text-dark) !important;
+            font-weight: 600;
+        }
+
+        .sidebar .nav-link i {
+            color: var(--text-dark) !important;
+        }
+
+        /* Navbar Nav Links - Light Mode */
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .navbar-text {
+            color: var(--text-dark) !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .navbar-brand:hover {
+            color: var(--kokpit-dark) !important;
+        }
+
+        .navbar .nav-link.active {
+            color: var(--text-dark) !important;
+            font-weight: 600;
+        }
+
+        .navbar .dropdown-menu,
+        .topbar .dropdown-menu,
+        .topbar-right .dropdown-menu,
+        .dropdown-menu {
+            background: var(--card-white) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            z-index: 1060 !important;
+        }
+
+        /* Topbar Right Buttons - High Z-Index */
+        .topbar-right {
+            position: relative;
+            z-index: 1051 !important;
+            display: flex !important;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right .dropdown,
+        .topbar-right .layout-toggle,
+        .topbar-right .theme-toggle {
+            position: relative;
+            z-index: 1052 !important;
+            display: flex !important;
+            visibility: visible !important;
+        }
+
+        /* Theme Toggle Buttons - Light Mode */
+        .topbar-right .theme-toggle {
+            background: #f8f9fa !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            color: #051626 !important;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .topbar-right .theme-toggle i {
+            color: #051626 !important;
+            font-size: 1.1rem !important;
+        }
+
+        .topbar-right .theme-toggle:hover {
+            background: rgba(5, 22, 38, 0.1) !important;
+            color: #051626 !important;
+            border-color: rgba(5, 22, 38, 0.2) !important;
+        }
+
+        .topbar-right .theme-toggle:hover i {
+            color: #051626 !important;
+        }
+
+        .navbar .dropdown-item {
+            color: var(--text-dark) !important;
+        }
+
+        .navbar .dropdown-item:hover,
+        .navbar .dropdown-item:focus {
+            background: rgba(5, 22, 38, 0.08) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .navbar .dropdown-item.active {
+            background: rgba(5, 22, 38, 0.15) !important;
+            color: var(--text-dark) !important;
+        }
+
+        /* Sidebar Logo - Light Mode */
+        .sidebar-logo,
+        .sidebar-logo i,
+        .sidebar-logo span {
+            color: var(--text-dark) !important;
+        }
+
+        .sidebar-logo:hover {
+            color: var(--kokpit-dark) !important;
+        }
+
+        /* Sidebar Section Titles */
+        .nav-section-title {
+            color: var(--text-muted-light) !important;
+        }
+
+        /* Nav Tabs - Light Mode */
+        .nav-tabs .nav-link {
+            color: var(--text-muted-light) !important;
+            border: 1px solid transparent !important;
+            background: transparent !important;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--text-dark) !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--text-dark) !important;
+            font-weight: 600;
+            border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) transparent !important;
+            background: var(--card-white) !important;
+        }
+
+        /* ============================================
+           END KOKPİT THEME
+           ============================================ */
+
         /* Nested dropdown (Extra Araçlar) support */
         .dropdown-submenu>.dropdown-menu {
             top: 0;
@@ -611,7 +1008,7 @@
                 {% else %}
                 {# Classic Layout (for authenticated classic users and all guests) #}
                 {% if current_user.is_authenticated %}
-                <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: var(--primary-gradient);">
+                <nav class="navbar navbar-expand-lg navbar-light mb-4">
                     <div class="container-fluid">
                         <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
                             <i class="fas fa-chart-line"></i>
@@ -883,9 +1280,10 @@
                                 </div>
                                 <div class="dropdown">
                                     <a href="#"
-                                        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                                        class="d-flex align-items-center text-decoration-none dropdown-toggle"
                                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false"
-                                        data-bs-auto-close="true">
+                                        data-bs-auto-close="true"
+                                        style="color: #051626 !important;">
                                         {% if current_user.profile_photo %}
                                         {% set photo_url = current_user.profile_photo %}
                                         {% if not photo_url.startswith('http://') and not
