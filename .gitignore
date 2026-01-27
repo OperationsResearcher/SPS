@@ -10,3 +10,5 @@ __pycache__/
 instance/
 SPS_DATA/
 *.log
+.tmp.driveupload/
+.tmp.driveupload*
