@@ -30,11 +30,11 @@ login_manager.session_protection = 'strong'
 # CSRF koruması
 csrf = CSRFProtect()
 
-# Rate Limiting - DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
-# Çok yüksek limitler vererek pratikte sınırsız hale getiriyoruz
+# Rate Limiting - TAMAMEN DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
+# default_limits boş liste = hiçbir limit uygulanmaz
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["200000/day", "50000/hour", "10000/minute"],  # Pratikte sınırsız - asla takılmayacak
+    default_limits=[],  # BOŞ LİSTE = HİÇBİR LİMİT YOK, ASLA 429 DÖNMEZ
     storage_uri="memory://",
     strategy="fixed-window"
 )
