@@ -19,19 +19,39 @@
         :root {
             --font-primary: 'Inter', sans-serif;
             --font-heading: 'Poppins', sans-serif;
-            --primary-color: #4361ee;
-            --primary-hover: #3a0ca3;
-            --secondary-color: #7209b7;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
+            --kokpit-navy: #051626;
+            --kokpit-dark: #0a1f35;
+            --metallic-silver: #c0c0c0;
+            --neon-cyan: #00ffff;
+            --glass-bg: rgba(30, 40, 50, 0.7);
+            --text-silver: #e0e0e0;
+            --text-white: #ffffff;
         }
 
         body {
             font-family: var(--font-primary);
             margin: 0;
             overflow-x: hidden;
-            background-color: #f8fafc;
+            background-color: var(--kokpit-navy);
+            background: linear-gradient(135deg, var(--kokpit-navy) 0%, var(--kokpit-dark) 100%);
             height: 100vh;
+            position: relative;
+        }
+
+        /* Kokpit grid pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .split-screen {
@@ -40,30 +60,18 @@
             width: 100%;
         }
 
-        /* --- Left Side: Visual --- */
+        /* --- Left Side: Logo Display --- */
         .left-pane {
             flex: 0 0 60%;
             position: relative;
-            background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') no-repeat center center/cover;
+            background: var(--kokpit-navy);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: var(--text-white);
             padding: 3rem;
             overflow: hidden;
-        }
-
-        /* Overlay with gradient */
-        .left-pane::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.85) 100%);
-            z-index: 1;
         }
 
         .hero-content {
@@ -71,28 +79,51 @@
             z-index: 2;
             max-width: 600px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .hero-title {
-            font-family: var(--font-heading);
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-            background: linear-gradient(to right, #fff, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        .login-logo {
+            width: 80%;
+            max-width: 400px;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
             animation: fadeInDown 1s ease-out;
+            margin-bottom: 2rem;
         }
 
-        .hero-subtitle {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            font-weight: 300;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-            animation: fadeInUp 1s ease-out 0.3s backwards;
+        .hero-tagline {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--text-silver);
+            text-align: center;
+            line-height: 1.8;
+            max-width: 500px;
+            margin: 0 auto;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-tagline .highlight {
+            color: var(--neon-cyan);
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .login-logo {
+                width: 70%;
+                max-width: 300px;
+            }
+            .hero-tagline {
+                font-size: 0.95rem;
+                padding: 0 1rem;
+            }
         }
 
         /* --- Right Side: Form --- */
@@ -101,9 +132,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 2rem 4rem; /* Adjusted side padding */
-            background: white;
+            padding: 2rem 4rem;
+            background: transparent;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
@@ -112,6 +144,15 @@
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(192, 192, 192, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .login-header {
@@ -122,20 +163,23 @@
         .login-header h2 {
             font-family: var(--font-heading);
             font-weight: 700;
-            color: var(--text-dark);
+            color: var(--text-silver);
             margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
 
         .login-header p {
-            color: var(--text-muted);
+            color: var(--metallic-silver);
             font-size: 0.95rem;
+            opacity: 0.9;
         }
 
-        /* Floating Inputs Customization */
+        /* Floating Inputs Customization - Kokpit Style */
         .form-floating > .form-control {
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
+            border: 1px solid rgba(192, 192, 192, 0.3);
+            background-color: rgba(20, 30, 40, 0.6);
+            color: var(--text-white);
             padding-top: 1.625rem;
             padding-bottom: 0.625rem;
             height: calc(3.5rem + 2px);
@@ -145,8 +189,9 @@
 
         .form-floating > .form-select {
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
+            border: 1px solid rgba(192, 192, 192, 0.3);
+            background-color: rgba(20, 30, 40, 0.6);
+            color: var(--text-white);
             padding-top: 1.625rem;
             padding-bottom: 0.625rem;
             height: calc(3.5rem + 2px);
@@ -156,62 +201,154 @@
 
         .form-floating > .form-control:focus,
         .form-floating > .form-select:focus {
-            border-color: var(--primary-color);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+            border-color: var(--neon-cyan);
+            background-color: rgba(20, 30, 40, 0.8);
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2), 0 0 15px rgba(0, 255, 255, 0.3);
+            color: var(--text-white);
         }
 
         .form-floating > label {
             padding: 1rem 0.75rem;
-            color: var(--text-muted);
+            color: var(--metallic-silver);
+        }
+
+        .form-floating > .form-control::placeholder {
+            color: rgba(192, 192, 192, 0.5);
+        }
+
+        .form-select option {
+            background-color: var(--kokpit-dark);
+            color: var(--text-white);
         }
 
         .btn-login {
-            background-color: var(--primary-color);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(160, 160, 160, 0.15));
+            border: 1px solid rgba(192, 192, 192, 0.4);
             border-radius: 12px;
             padding: 1rem;
             font-weight: 600;
             font-size: 1rem;
             letter-spacing: 0.5px;
-            color: white;
+            color: var(--text-silver);
             width: 100%;
             margin-top: 1.5rem;
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.25);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
         .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.35);
-            color: white;
+            transform: translateY(-2px);
+            border-color: var(--neon-cyan);
+            color: var(--text-white);
+            box-shadow: 
+                0 8px 25px rgba(0, 255, 255, 0.4),
+                0 0 30px rgba(0, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
         }
         
         .btn-login:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
-        /* Alert Styling */
+        /* Alert Styling - Kokpit Theme */
         .alert-custom {
-            border: none;
+            border: 1px solid rgba(192, 192, 192, 0.3);
             border-radius: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: rgba(20, 30, 40, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            color: var(--text-silver);
+        }
+
+        .alert-danger {
+            border-color: rgba(255, 0, 0, 0.4);
+            background-color: rgba(40, 20, 20, 0.8);
+        }
+
+        .alert-success {
+            border-color: rgba(0, 255, 0, 0.4);
+            background-color: rgba(20, 40, 20, 0.8);
         }
         
         .alert-dismissible .btn-close {
             padding: 1.25rem;
+            filter: invert(1);
+            opacity: 0.7;
+        }
+
+        .alert-dismissible .btn-close:hover {
+            opacity: 1;
         }
 
         .footer-copyright {
             margin-top: auto;
             text-align: center;
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: var(--metallic-silver);
+            opacity: 0.7;
             padding-top: 2rem;
+        }
+
+        /* Form check labels */
+        .form-check-label {
+            color: var(--metallic-silver);
+        }
+
+        .text-muted {
+            color: var(--metallic-silver) !important;
+            opacity: 0.8;
+        }
+
+        .badge {
+            background-color: rgba(192, 192, 192, 0.2) !important;
+            color: var(--text-silver) !important;
+            border-color: rgba(192, 192, 192, 0.4) !important;
+        }
+
+        /* Form Check Inputs - Kokpit Style */
+        .form-check-input {
+            background-color: rgba(20, 30, 40, 0.6);
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .form-check-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2);
+        }
+
+        .form-check-input:disabled {
+            background-color: rgba(20, 30, 40, 0.4);
+            border-color: rgba(192, 192, 192, 0.2);
+            opacity: 0.6;
         }
 
         /* Animations */
@@ -231,31 +368,32 @@
             }
             .left-pane {
                 flex: none;
-                height: 30vh; /* Reduced height on mobile */
+                height: 30vh;
                 padding: 1.5rem;
+                background: var(--kokpit-navy);
             }
-            .hero-title {
-                font-size: 2rem;
-                margin-bottom: 0.5rem;
-            }
-            .hero-subtitle {
-                font-size: 1rem;
-                display: none; /* Hide subtitle on very small screens to save space */
+            .login-logo {
+                width: 60%;
+                max-width: 250px;
             }
             .right-pane {
                 flex: 1;
                 padding: 2rem 1.5rem;
-                justify-content: flex-start; /* Align top on mobile */
+                justify-content: flex-start;
             }
             .form-container {
                 margin-top: 1rem;
+                padding: 2rem 1.5rem;
             }
         }
         
-        /* Show subtitle on tablets but hide on phones if needed, or adjust */
-        @media (min-width: 576px) and (max-width: 992px) {
-            .hero-subtitle {
-                display: block;
+        @media (max-width: 576px) {
+            .login-logo {
+                width: 70%;
+                max-width: 200px;
+            }
+            .form-container {
+                padding: 1.5rem 1rem;
             }
         }
     </style>
@@ -263,12 +401,12 @@
 <body>
 
 <div class="split-screen">
-    <!-- Left Pane: Visual Info -->
+    <!-- Left Pane: Logo Display -->
     <div class="left-pane">
         <div class="hero-content">
-            <h1 class="hero-title">Stratejik Yönetim Sistemi</h1>
-            <p class="hero-subtitle">
-                "Veriye dayalı kararlar, geleceği şekillendiren stratejiler." <br>
+            <img src="{{ url_for('static', filename='Kokpitlogo.png') }}" alt="KOKPİT Logo" class="login-logo">
+            <p class="hero-tagline">
+                "Veriye dayalı kararlar, geleceği şekillendiren <span class="highlight">stratejiler</span>."<br>
                 Kurumsal performansınızı en üst seviyeye taşıyın.
             </p>
         </div>
