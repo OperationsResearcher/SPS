@@ -216,20 +216,23 @@ def dashboard():
                     }]
                 }
             
-            return render_template('dashboard_v2.html', 
+            return render_template('dashboard.html', 
                                  stats=cached_data['stats'], 
                                  recent_activities=cached_data['recent_activities'],
                                  strategic_impact=cached_data.get('strategic_impact', []),
                                  decision_support=decision_support)
         
         # Cache'de yoksa hesapla
-        # 1. Activity tablosundan veriler
-        db_activities = Activity.query.options(joinedload(Activity.project)).all()
+        # 2. Activity tablosundan veriler - Kurum Bazlı Filtreleme
+        db_activities = Activity.query.join(Activity.project).filter(
+            Project.kurum_id == current_user.kurum_id
+        ).options(joinedload(Activity.project)).all()
         
-        # 2. Task (Proje Görevleri) tablosundan veriler - Kullanıcı yetkilerine göre filtrele
-        # Şimdilik tüm aktif görevleri alıyoruz (Dashboard geneli gösteriyor)
-        # TODO: İlerde kullanıcı bazlı filtreleme eklenebilir
-        db_tasks = Task.query.filter(Task.is_archived == False).all()
+        # 3. Task (Proje Görevleri) tablosundan veriler - Kurum Bazlı Filtreleme
+        db_tasks = Task.query.join(Task.project).filter(
+            Project.kurum_id == current_user.kurum_id,
+            Task.is_archived == False
+        ).all()
 
         # Bugünü hesapla (Kritik işler için)
         today = date.today()
@@ -321,7 +324,7 @@ def dashboard():
             'total_tasks': total_tasks,
             'critical_tasks': critical_tasks,
             'completed_tasks': completed_tasks,
-            'total_projects': db.session.query(db.func.count(Project.id)).scalar() or 0,
+            'total_projects': db.session.query(db.func.count(Project.id)).filter(Project.kurum_id == current_user.kurum_id).scalar() or 0,
             'pending_tasks': (total_tasks - completed_tasks),
             'performance_score': performance_score,
             # Grafik Verileri (Sadece Activity verilerini kullanmaya devam ediyoruz, 
@@ -376,7 +379,7 @@ def dashboard():
         current_app.logger.info(f"Dashboard verileri cache'e kaydedildi: {cache_key}")
         
         # 5. Verileri Template'e Gönder
-        return render_template('dashboard_v2.html', 
+        return render_template('dashboard.html', 
                              stats=stats, 
                              recent_activities=recent_activities,
                              strategic_impact=strategic_impact,
@@ -386,7 +389,7 @@ def dashboard():
         current_app.logger.error(f'Dashboard sayfası render hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         # Hata durumunda boş verilerle dashboard göster
-        return render_template('dashboard_v2.html',
+        return render_template('dashboard.html',
                              stats={
                                  'total_tasks': 0,
                                  'critical_tasks': 0,
