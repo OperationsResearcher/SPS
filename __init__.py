@@ -27,7 +27,12 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
-    limiter.init_app(app)
+    # Rate Limiter - Sadece aktifse başlat
+    if app.config.get('RATELIMIT_ENABLED', False):
+        limiter.init_app(app)
+    else:
+        # Devre dışı modda bile init et ama enabled=False olarak ayarlanmış durumda
+        limiter.init_app(app)
     cache.init_app(app)
     
     # Security Headers (Flask-Talisman)

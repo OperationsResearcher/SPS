@@ -30,10 +30,11 @@ login_manager.session_protection = 'strong'
 # CSRF koruması
 csrf = CSRFProtect()
 
-# Rate Limiting - Relaxed for development/testing
+# Rate Limiting - DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
+# Çok yüksek limitler vererek pratikte sınırsız hale getiriyoruz
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["10000/hour", "1000/minute"],  # Very high limits for development
+    default_limits=["200000/day", "50000/hour", "10000/minute"],  # Pratikte sınırsız - asla takılmayacak
     storage_uri="memory://",
     strategy="fixed-window"
 )

@@ -16,6 +16,9 @@ class Config:
     # Guvenlik
     SECRET_KEY = os.getenv('SECRET_KEY', 'varsayilan-guvensiz-anahtar-degistir')
     DEBUG = True
+    
+    # Rate Limiter - DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
+    RATELIMIT_ENABLED = False
 
 
 # __init__.py dosyasinin aradigi fonksiyon:
