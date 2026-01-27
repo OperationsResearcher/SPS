@@ -1,24 +1,78 @@
-from waitress import serve
-from app import create_app
-from werkzeug.middleware.proxy_fix import ProxyFix  # <--- EKLENDI: Gerekli kütüphane
 import os
+import subprocess
+from app import create_app
 
-# Uygulamayi olustur
+def kill_port_8080():
+    """
+    8080 portunu kullanan eski süreçleri bulur ve sonlandırır.
+    Windows için taskkill kullanır.
+    """
+    try:
+        # netstat ile 8080 portunu kullanan PID'leri bul
+        result = subprocess.run(
+            ['netstat', '-ano'],
+            capture_output=True,
+            text=True,
+            shell=True
+        )
+        
+        pids_to_kill = []
+        for line in result.stdout.split('\n'):
+            if ':8080' in line and 'LISTENING' in line:
+                parts = line.split()
+                if len(parts) > 4:
+                    pid = parts[-1]
+                    if pid.isdigit():
+                        pids_to_kill.append(pid)
+        
+        # Bulunan PID'leri öldür
+        if pids_to_kill:
+            print(f"⚠️  8080 portunu kullanan {len(pids_to_kill)} süreç bulundu. Temizleniyor...")
+            for pid in pids_to_kill:
+                try:
+                    subprocess.run(
+                        ['taskkill', '/F', '/PID', pid],
+                        capture_output=True,
+                        shell=True
+                    )
+                    print(f"   ✓ PID {pid} sonlandırıldı")
+                except Exception as e:
+                    print(f"   ✗ PID {pid} sonlandırılamadı: {e}")
+            print("✅ Port temizliği tamamlandı.\n")
+        else:
+            print("✅ 8080 portu temiz.\n")
+    except Exception as e:
+        print(f"⚠️  Port kontrolü sırasında hata: {e}\n")
+
+
+# Port temizliğini yap
+kill_port_8080()
+
+# Uygulamayı oluştur
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = create_app()
 
-# --- EKLENDI: ProxyFix Ayari (Caddy Uyumu) ---
-# Caddy'nin ilettigi 'X-Forwarded-For' basligini okuyarak
-# 127.0.0.1 yerine gercek kullanici IP'sini Flask'a tanitiyoruz.
-# Bu sayede 'Too Many Requests' hatasi cozulur.
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
+# Template ve static folder yollarını garanti altına al
+if not hasattr(app, 'template_folder') or app.template_folder is None:
+    app.template_folder = os.path.join(BASE_DIR, 'templates')
+if not hasattr(app, 'static_folder') or app.static_folder is None:
+    app.static_folder = os.path.join(BASE_DIR, 'static')
 
 if __name__ == '__main__':
-    print("------------------------------------------------")
-    print("SPS WAITRESS SUNUCUSU (HTTPS - CADDY ARKASI)")
-    print(f"Calisma Dizini: {os.getcwd()}")
-    print("Veritabani Yolu: C:\\SPY_Cursor\\SPS_DATA\\spsv2.db (Harici)")
-    print("Erisim Adresi: http://0.0.0.0:8080 (Disaridan 443)")
-    print("------------------------------------------------")
+    print("=" * 60)
+    print("🚀 SAF FLASK (DEV MODU) - PORT 8080 AÇIK - GEÇMİŞ TEMİZLENDİ")
+    print("=" * 60)
+    print(f"📁 Çalışma Dizini: {BASE_DIR}")
+    print(f"📂 Template Klasörü: {app.template_folder}")
+    print(f"📂 Static Klasörü: {app.static_folder}")
+    print(f"🌐 Erişim Adresi: http://0.0.0.0:8080")
+    print(f"🔧 Debug Modu: AÇIK")
+    print("=" * 60)
+    print()
     
-    # 8080 Portundan yayin yap (Caddy buraya yonlendirecek)
-    serve(app, host='0.0.0.0', port=8080, threads=6)
+    # Saf Flask sunucusu
+    app.run(
+        host='0.0.0.0',
+        port=8080,
+        debug=True
+    )
