@@ -31,12 +31,13 @@ login_manager.session_protection = 'strong'
 csrf = CSRFProtect()
 
 # Rate Limiting - TAMAMEN DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
-# default_limits boş liste = hiçbir limit uygulanmaz
+# Saniyede 1 milyon limit = pratikte sınırsız, asla takılmayacak
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=[],  # BOŞ LİSTE = HİÇBİR LİMİT YOK, ASLA 429 DÖNMEZ
+    default_limits=["1000000 per second"],  # Saniyede 1 milyon = pratikte sınırsız
     storage_uri="memory://",
-    strategy="fixed-window"
+    strategy="fixed-window",
+    enabled=False  # Tamamen devre dışı
 )
 
 # Security Headers (Flask-Talisman)
