@@ -1,5 +1,6 @@
 import os
 import subprocess
+from waitress import serve
 from app import create_app
 
 def kill_port_8080():
@@ -60,19 +61,16 @@ if not hasattr(app, 'static_folder') or app.static_folder is None:
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("🚀 SAF FLASK (DEV MODU) - PORT 8080 AÇIK - GEÇMİŞ TEMİZLENDİ")
+    print("🚀 WAITRESS PROD SUNUCUSU BAŞLATILIYOR (PORT 8080)...")
     print("=" * 60)
     print(f"📁 Çalışma Dizini: {BASE_DIR}")
     print(f"📂 Template Klasörü: {app.template_folder}")
     print(f"📂 Static Klasörü: {app.static_folder}")
     print(f"🌐 Erişim Adresi: http://0.0.0.0:8080")
-    print(f"🔧 Debug Modu: AÇIK")
+    print(f"⚙️  Thread Sayısı: 6")
+    print(f"🏭 Mod: PRODUCTION (Waitress)")
     print("=" * 60)
     print()
     
-    # Saf Flask sunucusu
-    app.run(
-        host='0.0.0.0',
-        port=8080,
-        debug=True
-    )
+    # Waitress Production Sunucusu
+    serve(app, host='0.0.0.0', port=8080, threads=6)
