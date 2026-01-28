@@ -26,13 +26,17 @@ from models import (
     # Faz 4 Modelleri
     Competitor, GameScenario, DoomsdayScenario, YearlyChronicle,
     # V67 Modelleri
-    Activity
+    Activity,
+    # Feedback Modülü
+    Feedback
 )
 from datetime import datetime, timedelta, date
 from io import BytesIO, StringIO
 import json
 import os
 import re
+import uuid
+from werkzeug.utils import secure_filename
 from utils.task_status import COMPLETED_STATUSES, normalize_task_status
 from decorators import role_required
 
@@ -2660,9 +2664,19 @@ def admin_panel():
     
     current_app.logger.info(f'Admin panel loading for {current_user.username} (sistem_admin={is_system_admin}): {len(kullanicilar)} users, {len(kurumlar)} organizations')
     
+    # Geri bildirim istatistikleri (admin panel için)
+    from models import Feedback
+    is_system_admin_for_feedback = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+    if is_system_admin_for_feedback:
+        pending_count = Feedback.query.filter_by(status='Bekliyor').count()
+    else:
+        user_ids_feedback = [u.id for u in User.query.filter_by(kurum_id=current_user.kurum_id).all()]
+        pending_count = Feedback.query.filter(Feedback.user_id.in_(user_ids_feedback), Feedback.status == 'Bekliyor').count() if user_ids_feedback else 0
+    
     return render_template('admin_panel.html',
                          kurumlar=kurumlar,
                          kullanicilar=kullanicilar,
+                         pending_count=pending_count,
                          surecler=surecler,
                          is_system_admin=is_system_admin,
                          total_users=User.query.count(),
@@ -7434,3 +7448,267 @@ def reset_walkthroughs():
 def help_center():
     """İnteraktif Yardım Merkezi"""
     return render_template('help_center.html', title='Yardım Merkezi')
+
+
+@main_bp.route('/admin/feedback')
+@login_required
+def admin_feedback():
+    """
+    Admin - Kule İletişim Modülü Geri Bildirim Yönetimi
+    
+    Admin ve kurum yöneticileri için geri bildirimleri görüntüleme ve yönetme sayfası.
+    """
+    # Yetki kontrolü
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    
+    # Sistem admini kontrolü
+    is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+    
+    # Filtreleme parametreleri
+    status_filter = request.args.get('status', 'all')
+    category_filter = request.args.get('category', 'all')
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    # Query oluştur
+    query = Feedback.query
+    
+    # Sistem admini değilse sadece kendi kurumunun kullanıcılarının feedback'lerini göster
+    if not is_system_admin:
+        from models import User
+        user_ids = [u.id for u in User.query.filter_by(kurum_id=current_user.kurum_id).all()]
+        query = query.filter(Feedback.user_id.in_(user_ids))
+    
+    # Durum filtresi
+    if status_filter != 'all':
+        query = query.filter(Feedback.status == status_filter)
+    
+    # Kategori filtresi
+    if category_filter != 'all':
+        query = query.filter(Feedback.category == category_filter)
+    
+    # Sıralama (en yeni önce)
+    query = query.order_by(Feedback.created_at.desc())
+    
+    # Sayfalama
+    feedbacks = query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    # İstatistikler
+    total_count = Feedback.query.count() if is_system_admin else Feedback.query.filter(Feedback.user_id.in_(user_ids)).count()
+    pending_count = Feedback.query.filter_by(status='Bekliyor').count() if is_system_admin else Feedback.query.filter(Feedback.user_id.in_(user_ids), Feedback.status == 'Bekliyor').count()
+    in_progress_count = Feedback.query.filter_by(status='İnceleniyor').count() if is_system_admin else Feedback.query.filter(Feedback.user_id.in_(user_ids), Feedback.status == 'İnceleniyor').count()
+    resolved_count = Feedback.query.filter_by(status='Çözüldü').count() if is_system_admin else Feedback.query.filter(Feedback.user_id.in_(user_ids), Feedback.status == 'Çözüldü').count()
+    
+    return render_template('admin/feedback_management.html',
+                         feedbacks=feedbacks,
+                         status_filter=status_filter,
+                         category_filter=category_filter,
+                         total_count=total_count,
+                         pending_count=pending_count,
+                         in_progress_count=in_progress_count,
+                         resolved_count=resolved_count,
+                         is_system_admin=is_system_admin)
+
+
+@main_bp.route('/admin/feedback/<int:feedback_id>/detail', methods=['GET'])
+@login_required
+def get_feedback_detail(feedback_id):
+    """Geri bildirim detaylarını getir"""
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        return jsonify({'success': False, 'message': 'Yetkiniz yok.'}), 403
+    
+    try:
+        feedback = Feedback.query.get_or_404(feedback_id)
+        
+        # Yetki kontrolü
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        if not is_system_admin:
+            from models import User
+            user = User.query.get(feedback.user_id)
+            if user.kurum_id != current_user.kurum_id:
+                return jsonify({'success': False, 'message': 'Bu geri bildirimi görüntüleyemezsiniz.'}), 403
+        
+        # User bilgilerini güvenli şekilde al
+        user_name = feedback.user.first_name or feedback.user.username if feedback.user else 'Bilinmeyen Kullanıcı'
+        user_email = feedback.user.email if feedback.user else ''
+        
+        return jsonify({
+            'success': True,
+            'feedback': {
+                'id': feedback.id,
+                'user_name': user_name,
+                'user_email': user_email,
+                'category': feedback.category,
+                'description': feedback.description or '',
+                'page_url': feedback.page_url or '',
+                'screenshot_path': feedback.screenshot_path or '',
+                'status': feedback.status,
+                'admin_note': feedback.admin_note or '',
+                'created_at': feedback.created_at.strftime('%d.%m.%Y %H:%M') if feedback.created_at else '',
+                'updated_at': feedback.updated_at.strftime('%d.%m.%Y %H:%M') if feedback.updated_at else ''
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Feedback detay hatası: {e}', exc_info=True)
+        error_message = str(e) if current_app.debug else 'Bir hata oluştu.'
+        return jsonify({'success': False, 'message': error_message}), 500
+
+
+@main_bp.route('/admin/feedback/<int:feedback_id>/update-status', methods=['POST'])
+@login_required
+def update_feedback_status(feedback_id):
+    """Geri bildirim durumunu güncelle"""
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        return jsonify({'success': False, 'message': 'Yetkiniz yok.'}), 403
+    
+    try:
+        data = request.get_json()
+        new_status = data.get('status')
+        admin_note = data.get('admin_note', '')
+        
+        feedback = Feedback.query.get_or_404(feedback_id)
+        
+        # Yetki kontrolü (sistem admini değilse sadece kendi kurumunun feedback'lerini güncelleyebilir)
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        if not is_system_admin:
+            from models import User
+            user = User.query.get(feedback.user_id)
+            if user.kurum_id != current_user.kurum_id:
+                return jsonify({'success': False, 'message': 'Bu geri bildirimi güncelleyemezsiniz.'}), 403
+        
+        # Durum kontrolü
+        valid_statuses = ['Bekliyor', 'İnceleniyor', 'Çözüldü', 'Reddedildi']
+        if new_status not in valid_statuses:
+            return jsonify({'success': False, 'message': 'Geçersiz durum.'}), 400
+        
+        # Eski durumu kaydet (bildirim için)
+        old_status = feedback.status
+        
+        feedback.status = new_status
+        if admin_note:
+            feedback.admin_note = admin_note
+        feedback.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        # Durum değiştiyse kullanıcıya bildirim gönder
+        if old_status != new_status:
+            try:
+                from services.notification_service import create_feedback_status_notification
+                create_feedback_status_notification(feedback.id, old_status, new_status, current_user.id)
+            except Exception as e:
+                current_app.logger.error(f'Feedback bildirim gönderme hatası: {e}', exc_info=True)
+                # Bildirim hatası durumu güncellemeyi engellemez
+        
+        return jsonify({
+            'success': True,
+            'message': 'Durum güncellendi.',
+            'status': new_status
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Feedback durum güncelleme hatası: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': 'Bir hata oluştu.'}), 500
+
+
+@main_bp.route('/submit-feedback', methods=['POST'])
+@login_required
+def submit_feedback():
+    """
+    Kule İletişim Modülü - Geri Bildirim Gönderme
+    
+    Kullanıcıların sistem hakkında hata bildirimi, öneri veya talep göndermesi için.
+    """
+    try:
+        # Klasör kontrolü ve oluşturma
+        feedback_upload_dir = os.path.join(current_app.static_folder, 'uploads', 'feedback')
+        if not os.path.exists(feedback_upload_dir):
+            os.makedirs(feedback_upload_dir, exist_ok=True)
+            current_app.logger.info(f'Feedback upload klasörü oluşturuldu: {feedback_upload_dir}')
+        
+        # Form verilerini al
+        page_url = request.form.get('page_url', '')
+        category = request.form.get('category', '')
+        description = request.form.get('description', '')
+        
+        # Validasyon
+        if not category or not description:
+            return jsonify({
+                'success': False,
+                'message': 'Kategori ve mesaj alanları zorunludur.'
+            }), 400
+        
+        # Kategori kontrolü (yeni kategoriler)
+        valid_categories = ['Tasarım Hatası', 'Hesaplama Hatası', 'Çalışmayan Buton', 'Çalışmayan Fonksiyon', 'Diğer']
+        if category not in valid_categories:
+            return jsonify({
+                'success': False,
+                'message': 'Geçersiz kategori seçimi.'
+            }), 400
+        
+        # Kullanıcı kontrolü
+        if not current_user.is_authenticated:
+            return jsonify({
+                'success': False,
+                'message': 'Giriş yapmanız gerekiyor.'
+            }), 401
+        
+        # Ekran görüntüsü işleme (varsa)
+        screenshot_path = None
+        if 'screenshot' in request.files:
+            screenshot_file = request.files['screenshot']
+            
+            # Dosya seçilmiş mi kontrol et
+            if screenshot_file and screenshot_file.filename:
+                # Dosya uzantısı kontrolü
+                allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                file_ext = screenshot_file.filename.rsplit('.', 1)[1].lower() if '.' in screenshot_file.filename else ''
+                
+                if file_ext not in allowed_extensions:
+                    return jsonify({
+                        'success': False,
+                        'message': 'Sadece resim dosyaları kabul edilir (PNG, JPG, JPEG, GIF, WEBP).'
+                    }), 400
+                
+                # Güvenli dosya adı oluştur
+                original_filename = secure_filename(screenshot_file.filename)
+                unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
+                screenshot_path = os.path.join('uploads', 'feedback', unique_filename)
+                full_path = os.path.join(current_app.static_folder, screenshot_path)
+                
+                # Dosyayı kaydet
+                screenshot_file.save(full_path)
+                current_app.logger.info(f'Feedback ekran görüntüsü kaydedildi: {full_path}')
+        
+        # Veritabanına kaydet
+        feedback = Feedback(
+            user_id=current_user.id,
+            page_url=page_url,
+            category=category,
+            description=description,
+            screenshot_path=screenshot_path,
+            status='Bekliyor'
+        )
+        
+        db.session.add(feedback)
+        db.session.commit()
+        
+        current_app.logger.info(f'Yeni geri bildirim kaydedildi: ID={feedback.id}, Kullanıcı={current_user.username}, Kategori={category}')
+        
+        return jsonify({
+            'success': True,
+            'message': 'Geri bildirim alındı. Teşekkür ederiz!'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Feedback gönderim hatası: {e}', exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': 'Bir hata oluştu. Lütfen tekrar deneyin.'
+        }), 500

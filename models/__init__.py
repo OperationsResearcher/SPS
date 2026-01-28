@@ -13,6 +13,7 @@ from .user import (
     DashboardLayout, Deger, EtikKural, KalitePolitikasi,
     Notification, UserActivityLog, Note
 )
+from .feedback import Feedback
 from .dashboard import UserDashboardSettings
 from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix, StrategyMapLink
 from .analysis import AnalysisItem, TowsMatrix
@@ -102,6 +103,9 @@ __all__ = [
     'User', 'Kurum', 'YetkiMatrisi', 'OzelYetki', 'KullaniciYetki',
     'DashboardLayout', 'Deger', 'EtikKural', 'KalitePolitikasi',
     'Notification', 'UserActivityLog', 'AuditLog', 'Note',
+    
+    # Feedback
+    'Feedback',
     'UserDashboardSettings', # V3 Dashboard Settings
     
     # Strategy

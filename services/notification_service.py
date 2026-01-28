@@ -589,6 +589,67 @@ def check_and_send_overdue_notifications():
         return 0
 
 
+def create_feedback_status_notification(feedback_id, old_status, new_status, updated_by_user_id):
+    """
+    Geri bildirim durum değişikliği bildirimi oluştur
+    
+    Args:
+        feedback_id: Geri Bildirim ID
+        old_status: Eski durum
+        new_status: Yeni durum
+        updated_by_user_id: Durumu güncelleyen kullanıcı ID
+    """
+    try:
+        from models import Feedback
+        feedback = Feedback.query.get(feedback_id)
+        if not feedback:
+            return None
+        
+        updated_by = User.query.get(updated_by_user_id)
+        if not updated_by:
+            return None
+        
+        # Durum mesajları
+        status_messages = {
+            'Bekliyor': 'Geri bildiriminiz alındı ve incelenmeye alındı.',
+            'İnceleniyor': 'Geri bildiriminiz inceleniyor.',
+            'Çözüldü': 'Geri bildiriminiz çözüldü. Teşekkür ederiz!',
+            'Reddedildi': 'Geri bildiriminiz değerlendirildi ancak şu an için uygulanamayacak.'
+        }
+        
+        # Mesaj oluştur
+        if new_status in status_messages:
+            mesaj = status_messages[new_status]
+        else:
+            mesaj = f'Geri bildiriminizin durumu "{old_status}" → "{new_status}" olarak güncellendi.'
+        
+        # Admin notu varsa ekle
+        if feedback.admin_note:
+            mesaj += f'\n\nAdmin Notu: {feedback.admin_note}'
+        
+        # Kullanıcıya bildirim gönder
+        notification = Notification(
+            user_id=feedback.user_id,
+            tip='feedback_status_changed',
+            baslik='Geri Bildirim Durumu Güncellendi',
+            mesaj=mesaj,
+            link=f'/admin/feedback',
+            ilgili_user_id=updated_by_user_id
+        )
+        db.session.add(notification)
+        db.session.commit()
+        
+        if current_app:
+            current_app.logger.info(f'Geri bildirim durum bildirimi oluşturuldu: Feedback ID {feedback_id}, Durum: {old_status} → {new_status}')
+        
+        return notification
+    except Exception as e:
+        db.session.rollback()
+        if current_app:
+            current_app.logger.error(f'Geri bildirim durum bildirimi hatası: {e}', exc_info=True)
+        return None
+
+
 def check_pg_performance_deviation(pg_veri_id):
     """
     PG verisi kaydedildiğinde performans sapması kontrolü yapar

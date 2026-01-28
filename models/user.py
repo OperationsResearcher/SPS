@@ -60,6 +60,9 @@ class User(UserMixin, db.Model):
     # İlişki tanımları
     deleter = db.relationship('User', remote_side=[id], foreign_keys=[deleted_by])
     
+    # Geri Bildirim İlişkisi (Feedback modeli ile)
+    # feedbacks relationship Feedback modelinde backref ile tanımlı
+    
     def __repr__(self):
         return f'<User {self.username}>'
 

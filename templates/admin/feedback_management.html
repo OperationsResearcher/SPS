@@ -1,0 +1,991 @@
+{% extends "base.html" %}
+{% block title %}Kule İletişim Yönetimi - Admin Panel{% endblock %}
+
+{% block styles %}
+<style>
+    /* Modal Overlay ve Z-Index Düzeltmeleri - KRİTİK */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        z-index: 1040 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Tüm modallar için garantili z-index */
+    .modal {
+        z-index: 1055 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        pointer-events: none !important; /* Container tıklanamaz */
+    }
+    
+    .modal.show {
+        display: block !important;
+        z-index: 1055 !important;
+    }
+    
+    .modal-dialog {
+        z-index: 1056 !important;
+        margin: 1.75rem auto;
+        pointer-events: auto !important; /* Dialog tıklanabilir */
+        position: relative !important;
+    }
+    
+    .modal-content {
+        position: relative !important;
+        z-index: 1057 !important;
+        background: #ffffff !important;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+        pointer-events: auto !important; /* İçerik tıklanabilir */
+    }
+    
+    /* Modal içindeki tüm elementler tıklanabilir olmalı */
+    .modal-content * {
+        pointer-events: auto !important;
+    }
+    
+    /* Özel modal ID'leri için ekstra garanti */
+    #statusUpdateModal,
+    #feedbackDetailModal,
+    #screenshotModal {
+        z-index: 1055 !important;
+    }
+    
+    #statusUpdateModal .modal-dialog,
+    #feedbackDetailModal .modal-dialog,
+    #screenshotModal .modal-dialog {
+        z-index: 1056 !important;
+        pointer-events: auto !important;
+    }
+    
+    #statusUpdateModal .modal-content,
+    #feedbackDetailModal .modal-content,
+    #screenshotModal .modal-content {
+        z-index: 1057 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Screenshot Modal Özel Stil */
+    #screenshotModal .modal-content {
+        background: #ffffff !important;
+    }
+    
+    #screenshotModal .modal-body {
+        background: #f8f9fa !important;
+    }
+    
+    /* Status Update Modal Özel Stil */
+    #statusUpdateModal .modal-content {
+        background: #ffffff !important;
+    }
+    
+    #statusUpdateModal .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #ffffff !important;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    #statusUpdateModal .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+    
+    /* Feedback Detail Modal Özel Stil */
+    #feedbackDetailModal .modal-content {
+        background: #ffffff !important;
+    }
+    
+    #feedbackDetailModal .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-broadcast-tower me-2" style="color: #ff6b35;"></i>
+            Kule İletişim Yönetimi
+        </h2>
+        <a href="{{ url_for('main.admin_panel') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Admin Panel'e Dön
+        </a>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon primary me-3">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small">Toplam Bildirim</span>
+                            <h3 class="fw-bold mb-0">{{ total_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon warning me-3">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small">Bekliyor</span>
+                            <h3 class="fw-bold mb-0 text-warning">{{ pending_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 border-start border-info border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon info me-3">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small">İnceleniyor</span>
+                            <h3 class="fw-bold mb-0 text-info">{{ in_progress_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 border-start border-success border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon success me-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small">Çözüldü</span>
+                            <h3 class="fw-bold mb-0 text-success">{{ resolved_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtreler -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('main.admin_feedback') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Durum</label>
+                    <select name="status" class="form-select">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Tümü</option>
+                        <option value="Bekliyor" {% if status_filter == 'Bekliyor' %}selected{% endif %}>Bekliyor</option>
+                        <option value="İnceleniyor" {% if status_filter == 'İnceleniyor' %}selected{% endif %}>İnceleniyor</option>
+                        <option value="Çözüldü" {% if status_filter == 'Çözüldü' %}selected{% endif %}>Çözüldü</option>
+                        <option value="Reddedildi" {% if status_filter == 'Reddedildi' %}selected{% endif %}>Reddedildi</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Kategori</label>
+                    <select name="category" class="form-select">
+                        <option value="all" {% if category_filter == 'all' %}selected{% endif %}>Tümü</option>
+                        <option value="Tasarım Hatası" {% if category_filter == 'Tasarım Hatası' %}selected{% endif %}>Tasarım Hatası</option>
+                        <option value="Hesaplama Hatası" {% if category_filter == 'Hesaplama Hatası' %}selected{% endif %}>Hesaplama Hatası</option>
+                        <option value="Çalışmayan Buton" {% if category_filter == 'Çalışmayan Buton' %}selected{% endif %}>Çalışmayan Buton</option>
+                        <option value="Çalışmayan Fonksiyon" {% if category_filter == 'Çalışmayan Fonksiyon' %}selected{% endif %}>Çalışmayan Fonksiyon</option>
+                        <option value="Diğer" {% if category_filter == 'Diğer' %}selected{% endif %}>Diğer</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filtrele
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Geri Bildirim Listesi -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Geri Bildirimler
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if feedbacks.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Kullanıcı</th>
+                            <th>Kategori</th>
+                            <th>Mesaj</th>
+                            <th>Sayfa</th>
+                            <th>Durum</th>
+                            <th>Tarih</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedbacks.items %}
+                        <tr>
+                            <td><strong>#{{ feedback.id }}</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.85rem;">
+                                        {{ feedback.user.first_name[0]|upper if feedback.user.first_name else feedback.user.username[0]|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ feedback.user.first_name or feedback.user.username }}</div>
+                                        <small class="text-muted">{{ feedback.user.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ feedback.category }}</span>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 300px;" title="{{ feedback.description }}">
+                                    {{ feedback.description[:100] }}{% if feedback.description|length > 100 %}...{% endif %}
+                                </div>
+                                {% if feedback.screenshot_path %}
+                                <small class="text-muted">
+                                    <i class="fas fa-image me-1"></i>Ekran görüntüsü var
+                                </small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    <a href="{{ feedback.page_url }}" target="_blank" class="text-decoration-none">
+                                        <i class="fas fa-external-link-alt me-1"></i>Sayfayı Gör
+                                    </a>
+                                </small>
+                            </td>
+                            <td>
+                                {% if feedback.status == 'Bekliyor' %}
+                                <span class="badge bg-warning text-dark">{{ feedback.status }}</span>
+                                {% elif feedback.status == 'İnceleniyor' %}
+                                <span class="badge bg-info">{{ feedback.status }}</span>
+                                {% elif feedback.status == 'Çözüldü' %}
+                                <span class="badge bg-success">{{ feedback.status }}</span>
+                                {% elif feedback.status == 'Reddedildi' %}
+                                <span class="badge bg-danger">{{ feedback.status }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ feedback.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ feedback.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                </small>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary view-feedback-btn" 
+                                        onclick="handleViewFeedback({{ feedback.id }}); return false;"
+                                        data-feedback-id="{{ feedback.id }}" 
+                                        title="Detayları Gör">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success update-status-btn" 
+                                        onclick="handleUpdateStatus({{ feedback.id }}, '{{ feedback.status|e }}', '{{ (feedback.admin_note or '')|e|replace("'", "\\'") }}'); return false;"
+                                        data-feedback-id="{{ feedback.id }}" 
+                                        data-status="{{ feedback.status }}"
+                                        data-admin-note="{{ (feedback.admin_note or '')|e }}"
+                                        title="Durum Değiştir">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sayfalama -->
+            {% if feedbacks.pages > 1 %}
+            <div class="card-footer bg-white">
+                <nav aria-label="Sayfalama">
+                    <ul class="pagination mb-0 justify-content-center">
+                        {% if feedbacks.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('main.admin_feedback', page=feedbacks.prev_num, status=status_filter, category=category_filter) }}">Önceki</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in feedbacks.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                            {% if page_num %}
+                                {% if page_num == feedbacks.page %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('main.admin_feedback', page=page_num, status=status_filter, category=category_filter) }}">{{ page_num }}</a>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if feedbacks.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('main.admin_feedback', page=feedbacks.next_num, status=status_filter, category=category_filter) }}">Sonraki</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Henüz geri bildirim bulunmuyor.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Global handler fonksiyonları - inline onclick'lerden çağrılacak
+function handleViewFeedback(feedbackId) {
+    console.log('✅ handleViewFeedback çağrıldı, Feedback ID:', feedbackId);
+    if (!feedbackId) {
+        console.error('❌ Feedback ID geçersiz!');
+        alert('Feedback ID geçersiz!');
+        return;
+    }
+    if (typeof viewFeedback === 'function') {
+        viewFeedback(parseInt(feedbackId));
+    } else {
+        console.error('❌ viewFeedback fonksiyonu bulunamadı!');
+        alert('Sistem hatası: viewFeedback fonksiyonu bulunamadı! Lütfen sayfayı yenileyin.');
+    }
+}
+
+function handleUpdateStatus(feedbackId, status, adminNote) {
+    console.log('✅ handleUpdateStatus çağrıldı, Feedback ID:', feedbackId, 'Status:', status, 'AdminNote:', adminNote);
+    if (!feedbackId) {
+        console.error('❌ Feedback ID geçersiz!');
+        alert('Feedback ID geçersiz!');
+        return;
+    }
+    // adminNote string olarak geliyor, direkt kullan
+    const parsedNote = adminNote || '';
+    console.log('📝 Parsed note:', parsedNote);
+    if (typeof openStatusUpdateModal === 'function') {
+        openStatusUpdateModal(parseInt(feedbackId), status || '', parsedNote);
+    } else {
+        console.error('❌ openStatusUpdateModal fonksiyonu bulunamadı!');
+        alert('Sistem hatası: openStatusUpdateModal fonksiyonu bulunamadı!');
+    }
+}
+
+// Event Delegation - Yedek olarak çalışır (inline onclick çalışmazsa)
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 Feedback management script yüklendi');
+    
+    // Event delegation kullan - document üzerinde listener
+    document.addEventListener('click', function(e) {
+        // Detay görüntüleme butonu
+        if (e.target.closest('.view-feedback-btn') && !e.target.closest('.view-feedback-btn').hasAttribute('onclick')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const btn = e.target.closest('.view-feedback-btn');
+            const feedbackId = btn.getAttribute('data-feedback-id');
+            console.log('✅ Detay butonu tıklandı (delegation), Feedback ID:', feedbackId);
+            if (feedbackId) {
+                handleViewFeedback(parseInt(feedbackId));
+            }
+            return false;
+        }
+        
+        // Durum güncelleme butonu
+        if (e.target.closest('.update-status-btn') && !e.target.closest('.update-status-btn').hasAttribute('onclick')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const btn = e.target.closest('.update-status-btn');
+            const feedbackId = btn.getAttribute('data-feedback-id');
+            const status = btn.getAttribute('data-status') || '';
+            const adminNote = btn.getAttribute('data-admin-note') || '';
+            console.log('✅ Durum değiştir butonu tıklandı (delegation), Feedback ID:', feedbackId);
+            if (feedbackId) {
+                handleUpdateStatus(parseInt(feedbackId), status, adminNote);
+            }
+            return false;
+        }
+    });
+    
+    // Test: Butonların sayısını kontrol et
+    const viewBtns = document.querySelectorAll('.view-feedback-btn');
+    const updateBtns = document.querySelectorAll('.update-status-btn');
+    console.log('📊 Bulunan butonlar - Detay:', viewBtns.length, 'Durum:', updateBtns.length);
+});
+
+function viewFeedback(feedbackId) {
+    console.log('viewFeedback çağrıldı:', feedbackId);
+    
+    // Loading göster
+    const modalElement = document.getElementById('feedbackDetailModal');
+    if (!modalElement) {
+        alert('Modal elementi bulunamadı!');
+        return;
+    }
+    
+    document.getElementById('feedbackDetailContent').innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">Yükleniyor...</p></div>';
+    
+    // Modal'ın body'de olduğundan emin ol (stacking context sorunu için)
+    if (modalElement.parentElement !== document.body) {
+        console.log('⚠️ Modal body\'de değil, taşınıyor...');
+        document.body.appendChild(modalElement);
+    }
+    
+    // Bootstrap Modal oluştur ve göster
+    let modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalElement, {
+            backdrop: true, // Backdrop görünür ama z-index ile modal içeriğinin altında kalacak
+            keyboard: true,
+            focus: true
+        });
+    }
+    
+    // Modal açıldığında backdrop'un z-index'ini kontrol et ve modal'ı en üste getir
+    modalElement.addEventListener('shown.bs.modal', function() {
+        // Modal'ı body'ye taşı (ekstra garanti)
+        if (modalElement.parentElement !== document.body) {
+            document.body.appendChild(modalElement);
+        }
+        
+        // Z-index ayarları
+        modalElement.style.zIndex = '1055';
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.style.zIndex = '1040';
+            backdrop.style.pointerEvents = 'auto'; // Backdrop tıklanabilir (kapatma için)
+        }
+        const dialog = modalElement.querySelector('.modal-dialog');
+        if (dialog) {
+            dialog.style.zIndex = '1056';
+            dialog.style.pointerEvents = 'auto';
+        }
+        const content = modalElement.querySelector('.modal-content');
+        if (content) {
+            content.style.zIndex = '1057';
+            content.style.pointerEvents = 'auto';
+        }
+        
+        console.log('✅ Modal açıldı, z-index ayarlandı');
+    }, { once: true });
+    
+    modal.show();
+    
+    fetch(`/admin/feedback/${feedbackId}/detail`)
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const feedback = data.feedback;
+                const content = `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Kullanıcı:</strong><br>
+                            ${feedback.user_name} (${feedback.user_email})
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Kategori:</strong><br>
+                            <span class="badge bg-secondary">${feedback.category}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Durum:</strong><br>
+                            <span class="badge bg-${getStatusColor(feedback.status)}">${feedback.status}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Tarih:</strong><br>
+                            ${feedback.created_at}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Sayfa URL:</strong><br>
+                        <a href="${feedback.page_url}" target="_blank">${feedback.page_url}</a>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Mesaj:</strong><br>
+                        <div class="alert alert-light">${feedback.description.replace(/\n/g, '<br>')}</div>
+                    </div>
+                    ${feedback.screenshot_path ? `
+                    <div class="mb-3">
+                        <strong>Ekran Görüntüsü:</strong><br>
+                        <div class="text-center">
+                            <img src="/static/${feedback.screenshot_path}" class="img-fluid rounded shadow-sm mb-2" alt="Ekran Görüntüsü" style="max-height: 400px; cursor: pointer;" onclick="openScreenshotModal('/static/${feedback.screenshot_path}')">
+                            <br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="openScreenshotModal('/static/${feedback.screenshot_path}')">
+                                <i class="fas fa-expand me-2"></i>Tam Ekran Görüntüle
+                            </button>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="mb-3">
+                        <strong>Durum:</strong><br>
+                        <span class="badge bg-${getStatusColor(feedback.status)} fs-6">${feedback.status}</span>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="openStatusUpdateModal(${feedbackId}, '${feedback.status}', ${JSON.stringify(feedback.admin_note || '')}); return false;">
+                            <i class="fas fa-edit me-1"></i>Durumu Değiştir
+                        </button>
+                    </div>
+                    ${feedback.admin_note ? `
+                    <div class="alert alert-info">
+                        <strong>Admin Notu:</strong><br>
+                        ${feedback.admin_note.replace(/\n/g, '<br>')}
+                    </div>
+                    ` : ''}
+                `;
+                document.getElementById('feedbackDetailContent').innerHTML = content;
+                
+                // Modal zaten açık, sadece içeriği güncelledik
+                // Bootstrap otomatik olarak backdrop'u yönetir
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            const errorMsg = error.message || 'Geri bildirim detayları yüklenirken bir hata oluştu.';
+            document.getElementById('feedbackDetailContent').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Hata:</strong> ${errorMsg}
+                    <br><small>Lütfen sayfayı yenileyip tekrar deneyin.</small>
+                </div>
+            `;
+        });
+}
+
+function closeFeedbackDetailModal() {
+    const modalElement = document.getElementById('feedbackDetailModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+    } else {
+        modalElement.classList.remove('show');
+        modalElement.style.display = 'none';
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'Bekliyor': 'warning',
+        'İnceleniyor': 'info',
+        'Çözüldü': 'success',
+        'Reddedildi': 'danger'
+    };
+    return colors[status] || 'secondary';
+}
+
+function openScreenshotModal(imagePath) {
+    const modal = `
+        <div class="modal fade" id="screenshotModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-image me-2"></i>Ekran Görüntüsü
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body text-center p-3" style="background: #f8f9fa;">
+                        <img src="${imagePath}" class="img-fluid rounded shadow" alt="Ekran Görüntüsü" style="max-height: 75vh; cursor: zoom-in;" onclick="this.style.maxHeight = this.style.maxHeight === '75vh' ? 'none' : '75vh';">
+                        <div class="mt-3">
+                            <small class="text-muted">Görüntüye tıklayarak büyütebilir/küçültebilirsiniz</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Kapat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Eski modal varsa kaldır
+    const oldModal = document.getElementById('screenshotModal');
+    if (oldModal) {
+        oldModal.remove();
+    }
+    
+    // Backdrop'u temizle
+    const oldBackdrop = document.querySelector('.modal-backdrop');
+    if (oldBackdrop && !document.querySelector('.modal.show')) {
+        oldBackdrop.remove();
+    }
+    
+    // Yeni modal ekle
+    document.body.insertAdjacentHTML('beforeend', modal);
+    const modalElement = document.getElementById('screenshotModal');
+    const screenshotModal = new bootstrap.Modal(modalElement, {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+    });
+    
+    screenshotModal.show();
+    
+    // Modal görünür olduğundan emin ol
+    modalElement.style.display = 'block';
+    modalElement.classList.add('show');
+    document.body.classList.add('modal-open');
+    
+    // Modal kapandığında DOM'dan kaldır ve backdrop'u temizle
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        this.remove();
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    });
+}
+
+function openStatusUpdateModalSafe(feedbackId, currentStatus, currentAdminNote) {
+    // Güvenli wrapper - admin notu zaten JSON string olarak geliyor
+    const adminNote = (typeof currentAdminNote === 'string') ? currentAdminNote : (currentAdminNote || '');
+    openStatusUpdateModal(feedbackId, currentStatus, adminNote);
+}
+
+function openStatusUpdateModal(feedbackId, currentStatus, currentAdminNote) {
+    console.log('openStatusUpdateModal çağrıldı:', feedbackId, currentStatus);
+    
+    const modalElement = document.getElementById('statusUpdateModal');
+    if (!modalElement) {
+        console.error('Status update modal elementi bulunamadı!');
+        alert('Modal bulunamadı. Sayfayı yenileyip tekrar deneyin.');
+        return;
+    }
+    
+    // Değerleri doldur
+    const feedbackIdInput = document.getElementById('statusUpdateFeedbackId');
+    const statusSelect = document.getElementById('statusUpdateSelect');
+    const adminNoteTextarea = document.getElementById('statusUpdateAdminNote');
+    
+    if (!feedbackIdInput || !statusSelect || !adminNoteTextarea) {
+        console.error('Modal input elementleri bulunamadı!');
+        alert('Modal elementleri bulunamadı. Sayfayı yenileyip tekrar deneyin.');
+        return;
+    }
+    
+    feedbackIdInput.value = feedbackId || '';
+    statusSelect.value = currentStatus || '';
+    adminNoteTextarea.value = currentAdminNote || '';
+    
+    // Modal'ın body'de olduğundan emin ol (stacking context sorunu için)
+    if (modalElement.parentElement !== document.body) {
+        console.log('⚠️ Status Update Modal body\'de değil, taşınıyor...');
+        document.body.appendChild(modalElement);
+    }
+    
+    // Bootstrap Modal oluştur ve göster
+    let modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalElement, {
+            backdrop: true, // Backdrop görünür ama z-index ile modal içeriğinin altında kalacak
+            keyboard: true,
+            focus: true
+        });
+    }
+    
+    // Modal açıldığında backdrop'un z-index'ini kontrol et ve modal'ı en üste getir
+    modalElement.addEventListener('shown.bs.modal', function() {
+        // Modal'ı body'ye taşı (ekstra garanti)
+        if (modalElement.parentElement !== document.body) {
+            document.body.appendChild(modalElement);
+        }
+        
+        // Z-index ayarları
+        modalElement.style.zIndex = '1055';
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.style.zIndex = '1040';
+            backdrop.style.pointerEvents = 'auto'; // Backdrop tıklanabilir (kapatma için)
+        }
+        const dialog = modalElement.querySelector('.modal-dialog');
+        if (dialog) {
+            dialog.style.zIndex = '1056';
+            dialog.style.pointerEvents = 'auto';
+        }
+        const content = modalElement.querySelector('.modal-content');
+        if (content) {
+            content.style.zIndex = '1057';
+            content.style.pointerEvents = 'auto';
+        }
+        
+        console.log('✅ Status Update Modal açıldı, z-index ayarlandı');
+    }, { once: true });
+    
+    try {
+        modal.show();
+    } catch (error) {
+        console.error('Modal açma hatası:', error);
+        alert('Modal açılırken bir hata oluştu: ' + error.message);
+    }
+}
+
+function saveStatusUpdate() {
+    const feedbackId = document.getElementById('statusUpdateFeedbackId').value;
+    const newStatus = document.getElementById('statusUpdateSelect').value;
+    const adminNote = document.getElementById('statusUpdateAdminNote').value;
+    
+    if (!newStatus) {
+        alert('Lütfen bir durum seçin.');
+        return;
+    }
+    
+    // Butonu devre dışı bırak
+    const saveBtn = document.querySelector('#statusUpdateModal .btn-primary');
+    const originalHtml = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Güncelleniyor...';
+    
+    fetch('/admin/feedback/' + feedbackId + '/update-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({
+            status: newStatus,
+            admin_note: adminNote
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            const statusMessages = {
+                'Bekliyor': 'Geri bildirim bekliyor durumuna alındı.',
+                'İnceleniyor': 'Geri bildirim inceleniyor durumuna alındı.',
+                'Çözüldü': 'Geri bildirim çözüldü olarak işaretlendi.',
+                'Reddedildi': 'Geri bildirim reddedildi olarak işaretlendi.'
+            };
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı!',
+                    text: statusMessages[newStatus] || 'Durum güncellendi.',
+                    confirmButtonColor: '#ff6b35'
+                }).then(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('statusUpdateModal'));
+                    if (modal) modal.hide();
+                    location.reload();
+                });
+            } else {
+                alert(statusMessages[newStatus] || 'Durum güncellendi.');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('statusUpdateModal'));
+                if (modal) modal.hide();
+                location.reload();
+            }
+        } else {
+            alert('Hata: ' + (data.message || 'Durum güncellenemedi.'));
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalHtml;
+        }
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        const errorMsg = error.message || 'Durum güncellenirken bir hata oluştu.';
+        alert('Hata: ' + errorMsg);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalHtml;
+    });
+}
+
+</script>
+
+<!-- ============================================ -->
+<!-- MODALLAR - Sayfanın en altında, body'nin doğrudan çocuğu olmalı -->
+<!-- ============================================ -->
+
+<!-- Durum Güncelleme Modal -->
+<div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-labelledby="statusUpdateModalLabel" aria-hidden="true" style="z-index: 1055 !important;" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered" style="z-index: 1056 !important; pointer-events: auto !important;">
+        <div class="modal-content" style="z-index: 1057 !important; pointer-events: auto !important;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="statusUpdateModalLabel">
+                    <i class="fas fa-edit me-2"></i>Durum Güncelle
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="pointer-events: auto !important;">
+                <input type="hidden" id="statusUpdateFeedbackId">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-tag me-2 text-primary"></i>Yeni Durum <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select form-select-lg" id="statusUpdateSelect" required>
+                        <option value="">Durum seçiniz...</option>
+                        <option value="Bekliyor">🟡 Bekliyor - Geri bildirim alındı, bekliyor</option>
+                        <option value="İnceleniyor">🔵 İnceleniyor - Geri bildirim inceleniyor</option>
+                        <option value="Çözüldü">🟢 Çözüldü - Problem çözüldü</option>
+                        <option value="Reddedildi">🔴 Reddedildi - Geri bildirim reddedildi</option>
+                    </select>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Durum değişikliği kullanıcıya bildirim olarak gönderilecektir.
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-comment-alt me-2 text-primary"></i>Admin Notu (Opsiyonel)
+                    </label>
+                    <textarea class="form-control" id="statusUpdateAdminNote" rows="4" 
+                        placeholder="Durum değişikliği hakkında kullanıcıya iletmek istediğiniz notu buraya yazın..."></textarea>
+                    <small class="form-text text-muted">
+                        Bu not kullanıcıya bildirim olarak gönderilecektir.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer" style="pointer-events: auto !important;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>İptal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveStatusUpdate()">
+                    <i class="fas fa-save me-2"></i>Durumu Güncelle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Detay Modal -->
+<div class="modal fade" id="feedbackDetailModal" tabindex="-1" aria-labelledby="feedbackDetailModalLabel" aria-hidden="true" style="z-index: 1055 !important;" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="z-index: 1056 !important; pointer-events: auto !important;">
+        <div class="modal-content" style="z-index: 1057 !important; pointer-events: auto !important;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feedbackDetailModalLabel">
+                    <i class="fas fa-broadcast-tower me-2" style="color: #ff6b35;"></i>
+                    Geri Bildirim Detayları
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="feedbackDetailContent" style="pointer-events: auto !important;">
+                <!-- İçerik JavaScript ile doldurulacak -->
+            </div>
+            <div class="modal-footer" style="pointer-events: auto !important;">
+                <button type="button" class="btn btn-secondary" onclick="closeFeedbackDetailModal()">
+                    <i class="fas fa-times me-2"></i>Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MODAL STACKING CONTEXT ÇÖZÜMÜ - DOM'dan body'ye taşıma -->
+<!-- ============================================ -->
+<script>
+// jQuery ile modalları hapsoldukları div'den kurtarıp body'nin çocuğu yapıyoruz
+// Bu, CSS stacking context sorunlarını %100 by-pass eder
+(function() {
+    function moveModalsToBody() {
+        // jQuery kullanarak modalları body'ye taşı
+        if (typeof jQuery !== 'undefined') {
+            const statusModal = document.getElementById('statusUpdateModal');
+            const detailModal = document.getElementById('feedbackDetailModal');
+            
+            if (statusModal && statusModal.parentElement !== document.body) {
+                console.log('📦 statusUpdateModal body\'ye taşınıyor...');
+                jQuery(statusModal).appendTo('body');
+            }
+            
+            if (detailModal && detailModal.parentElement !== document.body) {
+                console.log('📦 feedbackDetailModal body\'ye taşınıyor...');
+                jQuery(detailModal).appendTo('body');
+            }
+        } else {
+            // jQuery yoksa vanilla JS ile yap
+            const statusModal = document.getElementById('statusUpdateModal');
+            const detailModal = document.getElementById('feedbackDetailModal');
+            
+            if (statusModal && statusModal.parentElement !== document.body) {
+                console.log('📦 statusUpdateModal body\'ye taşınıyor (vanilla JS)...');
+                document.body.appendChild(statusModal);
+            }
+            
+            if (detailModal && detailModal.parentElement !== document.body) {
+                console.log('📦 feedbackDetailModal body\'ye taşınıyor (vanilla JS)...');
+                document.body.appendChild(detailModal);
+            }
+        }
+    }
+    
+    // DOM hazır olduğunda çalıştır
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', moveModalsToBody);
+    } else {
+        // DOM zaten hazırsa direkt çalıştır
+        moveModalsToBody();
+    }
+    
+    // jQuery ready event'i de ekle (çifte garanti)
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).ready(function() {
+            console.log('✅ jQuery ready - Modallar body\'ye taşınıyor...');
+            moveModalsToBody();
+            
+            // Ekstra garanti: 100ms sonra tekrar kontrol et
+            setTimeout(moveModalsToBody, 100);
+        });
+    }
+    
+    // Sayfa tamamen yüklendikten sonra da kontrol et
+    window.addEventListener('load', function() {
+        console.log('✅ Window load - Modallar body\'ye taşınıyor...');
+        moveModalsToBody();
+    });
+})();
+</script>
+
+{% endblock %}

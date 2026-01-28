@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Admin Panel - Stratejik Planlama Sistemi{% endblock %}
 {% block content %}
 <style>
@@ -117,6 +117,14 @@
                                 aria-selected="false">
                                 <i class="fas fa-check-double me-2"></i>Yetki Matrisi
                             </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="{{ url_for('main.admin_feedback') }}" role="button">
+                                <i class="fas fa-broadcast-tower me-2" style="color: #ff6b35;"></i>Kule İletişim
+                                {% if pending_count > 0 %}
+                                <span class="badge bg-warning text-dark ms-2">{{ pending_count }}</span>
+                                {% endif %}
+                            </a>
                         </li>
                     </ul>
                     <div class="tab-content" id="adminTabContent">

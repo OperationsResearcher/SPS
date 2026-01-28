@@ -371,6 +371,70 @@
             color: #051626 !important;
         }
 
+        /* Kule İletişim Butonu - Özel Stil */
+        #feedbackToggleBtn,
+        #feedbackToggleBtnClassic {
+            background: rgba(255, 107, 53, 0.1) !important;
+            border: 1px solid rgba(255, 107, 53, 0.3) !important;
+            color: #ff6b35 !important;
+            animation: pulse-tower 2s infinite;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        #feedbackToggleBtn:hover,
+        #feedbackToggleBtnClassic:hover {
+            background: rgba(255, 107, 53, 0.2) !important;
+            border-color: rgba(255, 107, 53, 0.5) !important;
+            color: #ff8c42 !important;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+            text-decoration: none !important;
+        }
+
+        #feedbackToggleBtn i,
+        #feedbackToggleBtnClassic i {
+            color: #ff6b35 !important;
+            font-size: 1.2rem !important;
+        }
+
+        #feedbackToggleBtn:hover i,
+        #feedbackToggleBtnClassic:hover i {
+            color: #ff8c42 !important;
+        }
+
+        @keyframes pulse-tower {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(255, 107, 53, 0);
+            }
+        }
+
+        /* Feedback Modal Input Placeholder - Light Mode */
+        #feedbackModal .form-control::placeholder {
+            color: #6c757d !important;
+        }
+
+        #feedbackModal .form-select option:first-child {
+            color: #6c757d !important;
+        }
+
+        #feedbackModal .form-control:focus,
+        #feedbackModal .form-select:focus {
+            background: #ffffff !important;
+            border-color: rgba(255, 107, 53, 0.5) !important;
+            color: #051626 !important;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2) !important;
+        }
+
+        #feedbackModal .form-select option {
+            color: #051626 !important;
+            background: #ffffff !important;
+        }
+
         .navbar .dropdown-item {
             color: var(--text-dark) !important;
         }
@@ -873,6 +937,18 @@
                 </div>
 
                 <div class="topbar-right">
+                    <!-- Kule İletişim Modülü (Bildirimler butonunun hemen solu) -->
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <a href="{{ url_for('main.admin_feedback') }}" class="theme-toggle" id="feedbackToggleBtn" title="Kule İletişim Yönetimi" style="color: #ff6b35 !important; text-decoration: none;">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </a>
+                    {% else %}
+                    <button class="theme-toggle" id="feedbackToggleBtn" data-bs-toggle="modal"
+                        data-bs-target="#feedbackModal" title="Kuleye Bildir" style="color: #ff6b35 !important;">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </button>
+                    {% endif %}
+
                     <div class="dropdown">
                         <button class="theme-toggle position-relative" id="notificationDropdown"
                             data-bs-toggle="dropdown" aria-expanded="false" title="Bildirimler">
@@ -937,7 +1013,7 @@
                             </li>
                         </ul>
                     </div>
-
+                    
                     <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
@@ -1236,6 +1312,20 @@
                                 {% endif %}
                             </ul>
                             <div class="d-flex align-items-center" style="color: white;">
+                                <!-- Kule İletişim Modülü (Bildirimler butonunun hemen solu) -->
+                                {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                <a href="{{ url_for('main.admin_feedback') }}" class="theme-toggle" id="feedbackToggleBtnClassic" title="Kule İletişim Yönetimi"
+                                    style="color: #ff6b35; background: transparent; border: 1px solid rgba(255, 107, 53, 0.7); margin-right: 1rem; text-decoration: none;">
+                                    <i class="fas fa-broadcast-tower"></i>
+                                </a>
+                                {% else %}
+                                <button class="theme-toggle" id="feedbackToggleBtnClassic" data-bs-toggle="modal"
+                                    data-bs-target="#feedbackModal" title="Kuleye Bildir"
+                                    style="color: #ff6b35; background: transparent; border: 1px solid rgba(255, 107, 53, 0.7); margin-right: 1rem;">
+                                    <i class="fas fa-broadcast-tower"></i>
+                                </button>
+                                {% endif %}
+
                                 <div class="dropdown" style="margin-right: 1rem;">
                                     <button class="theme-toggle position-relative" id="notificationDropdown"
                                         data-bs-toggle="dropdown" aria-expanded="false" title="Bildirimler"
@@ -2438,6 +2528,173 @@
     {% endif %}
 
     {% block scripts %}{% endblock %}
+
+    <!-- Kule İletişim Modülü Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: #f4f6f9; border: 1px solid rgba(255, 107, 53, 0.3); border-radius: 15px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255, 107, 53, 0.2); background: #ffffff; border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title" id="feedbackModalLabel" style="color: #051626; font-weight: 600;">
+                        <i class="fas fa-broadcast-tower me-2" style="color: #ff6b35;"></i>
+                        Kule İletişim Merkezi
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="feedbackForm">
+                    <div class="modal-body" style="color: #051626; background: #f4f6f9;">
+                        <!-- Gizli Input: Sayfa URL'si -->
+                        <input type="hidden" name="page_url" id="feedbackPageUrl">
+                        
+                        <!-- Kategori Seçimi -->
+                        <div class="mb-3">
+                            <label for="feedbackCategory" class="form-label" style="color: #051626; font-weight: 500;">
+                                <i class="fas fa-tag me-2" style="color: #ff6b35;"></i>Kategori <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="feedbackCategory" name="category" required style="background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.15); color: #051626;">
+                                <option value="">Kategori seçiniz...</option>
+                                <option value="Tasarım Hatası">Tasarım Hatası</option>
+                                <option value="Hesaplama Hatası">Hesaplama Hatası</option>
+                                <option value="Çalışmayan Buton">Çalışmayan Buton</option>
+                                <option value="Çalışmayan Fonksiyon">Çalışmayan Fonksiyon</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Mesaj Alanı -->
+                        <div class="mb-3">
+                            <label for="feedbackDescription" class="form-label" style="color: #051626; font-weight: 500;">
+                                <i class="fas fa-comment-alt me-2" style="color: #ff6b35;"></i>Mesajınız <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="feedbackDescription" name="description" rows="5" 
+                                placeholder="Kule, bir sorun tespit ettim..." required
+                                style="background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.15); color: #051626; resize: vertical;"></textarea>
+                            <small class="form-text" style="color: #6c757d;">
+                                Lütfen sorununuzu veya önerinizi detaylı bir şekilde açıklayın.
+                            </small>
+                        </div>
+                        
+                        <!-- Ekran Görüntüsü -->
+                        <div class="mb-3">
+                            <label for="feedbackScreenshot" class="form-label" style="color: #051626; font-weight: 500;">
+                                <i class="fas fa-camera me-2" style="color: #ff6b35;"></i>Ekran Görüntüsü (İsteğe Bağlı)
+                            </label>
+                            <input type="file" class="form-control" id="feedbackScreenshot" name="screenshot" 
+                                accept="image/*" style="background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.15); color: #051626;">
+                            <small class="form-text" style="color: #6c757d;">
+                                Sadece resim dosyaları kabul edilir (JPG, PNG, GIF, WEBP).
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid rgba(0, 0, 0, 0.1); background: #ffffff; border-radius: 0 0 15px 15px;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #f8f9fa; border: 1px solid rgba(0, 0, 0, 0.15); color: #051626;">
+                            <i class="fas fa-times me-2"></i>İptal
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="feedbackSubmitBtn" style="background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); border: none; color: #ffffff; font-weight: 600;">
+                            <i class="fas fa-paper-plane me-2"></i>Kuleye Gönder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kule İletişim Modülü JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackModal = document.getElementById('feedbackModal');
+            const feedbackForm = document.getElementById('feedbackForm');
+            const feedbackPageUrl = document.getElementById('feedbackPageUrl');
+            const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+            
+            // Modal açıldığında sayfa URL'sini otomatik doldur
+            if (feedbackModal) {
+                feedbackModal.addEventListener('show.bs.modal', function() {
+                    feedbackPageUrl.value = window.location.href;
+                });
+            }
+            
+            // Form gönderimi (AJAX)
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Submit butonunu devre dışı bırak
+                    feedbackSubmitBtn.disabled = true;
+                    feedbackSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Gönderiliyor...';
+                    
+                    // FormData oluştur
+                    const formData = new FormData(feedbackForm);
+                    
+                    // CSRF token'ı FormData'ya ekle
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                    formData.append('csrf_token', csrfToken);
+                    
+                    try {
+                        const response = await fetch('/submit-feedback', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok && data.success) {
+                            // Başarılı - Modal'ı kapat ve bildirim göster
+                            const modalInstance = bootstrap.Modal.getInstance(feedbackModal);
+                            modalInstance.hide();
+                            
+                            // Formu temizle
+                            feedbackForm.reset();
+                            
+                            // Başarı mesajı göster
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Mesajınız Kuleye İletildi!',
+                                    text: 'Geri bildiriminiz için teşekkür ederiz. En kısa sürede incelenecektir.',
+                                    confirmButtonColor: '#ff6b35',
+                                    confirmButtonText: 'Tamam'
+                                });
+                            } else {
+                                alert('✅ Mesajınız Kuleye İletildi!\n\nGeri bildiriminiz için teşekkür ederiz. En kısa sürede incelenecektir.');
+                            }
+                        } else {
+                            // Hata durumu
+                            const errorMsg = data.message || 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: errorMsg,
+                                    confirmButtonColor: '#dc3545'
+                                });
+                            } else {
+                                alert('❌ Hata: ' + errorMsg);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Feedback gönderim hatası:', error);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Bağlantı Hatası',
+                                text: 'Sunucuya bağlanılamadı. Lütfen internet bağlantınızı kontrol edin.',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        } else {
+                            alert('❌ Bağlantı hatası: Sunucuya bağlanılamadı.');
+                        }
+                    } finally {
+                        // Submit butonunu tekrar aktif et
+                        feedbackSubmitBtn.disabled = false;
+                        feedbackSubmitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Kuleye Gönder';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

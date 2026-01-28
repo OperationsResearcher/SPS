@@ -110,6 +110,12 @@ def create_app(config_name=None):
     # 3.6. DB tablolarını oluştur (eksik tabloları garantiye alır)
     with app.app_context():
         db.create_all()
+        
+        # 3.7. Gerekli klasörleri oluştur
+        feedback_upload_dir = os.path.join(app.static_folder, 'uploads', 'feedback')
+        if not os.path.exists(feedback_upload_dir):
+            os.makedirs(feedback_upload_dir, exist_ok=True)
+            app.logger.info(f'Feedback upload klasörü oluşturuldu: {feedback_upload_dir}')
     
     # 4. Custom Error Handlers
     @app.errorhandler(404)
