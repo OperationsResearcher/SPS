@@ -114,6 +114,13 @@
 
     }
 
+    /* Süreç kartları: üst süreç kartı, alt süreçler girintili blok içinde */
+    .surec-root-card { border-left: 4px solid #0d6efd; }
+    .surec-alt-list { background: rgba(13, 110, 253, 0.06); border-radius: 8px; border-left: 3px solid rgba(13, 110, 253, 0.4); }
+    .surec-alt-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .surec-alt-item:last-child { border-bottom: none; }
+    .surec-alt-item:hover { background: rgba(13, 110, 253, 0.08); }
+
 
 
     .action-transfer-btn.btn-success {
@@ -349,6 +356,47 @@
         transform: translateX(2px);
 
     }
+
+    /* Hayalet overlay önleme: modallar backdrop'un üstünde görünsün (main z-index:1 içinde kalmayıp body'ye taşınacak) */
+    #surecDetayModal,
+    #editSurecModal,
+    #newProcessModal,
+    #editProcessModal {
+        z-index: 1060 !important;
+    }
+    #surecDetayModal .modal-dialog,
+    #editSurecModal .modal-dialog,
+    #newProcessModal .modal-dialog,
+    #editProcessModal .modal-dialog {
+        z-index: 1061 !important;
+    }
+    /* Ana sayfa: Bağlı alt süreçler listesi – okunaklı, girintili bloklar */
+    .surec-alt-list {
+        border-left: 4px solid rgba(13, 110, 253, 0.5);
+        background: rgba(13, 110, 253, 0.06);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem 0.5rem 1rem;
+    }
+    .surec-alt-item {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .surec-alt-item:last-child { margin-bottom: 0; }
+    .surec-alt-item .btn-group .btn { font-size: 0.8rem; }
+    /* Modal: Bağlı alt süreçler – tıklanabilir satırlar */
+    #edit_alt_surecler_list .list-group-item {
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    #edit_alt_surecler_list .list-group-item:hover {
+        background: rgba(13, 110, 253, 0.08);
+        border-left-color: #0d6efd;
+    }
 </style>
 
 
@@ -558,264 +606,83 @@
 
             {% if surecler %}
 
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-light">
-
-                        <tr>
-
-                            <th><i class="bi bi-diagram-2"></i> Süreç Adı</th>
-
-                            <th><i class="bi bi-file-text"></i> Doküman</th>
-
-                            <th><i class="bi bi-info-circle"></i> Durum</th>
-
-                            <th><i class="bi bi-graph-up"></i> İlerleme</th>
-
-                            <th><i class="bi bi-star"></i> Liderler</th>
-
-                            <th><i class="bi bi-people"></i> Üyeler</th>
-
-                            <th><i class="bi bi-bullseye"></i> Stratejiler</th>
-
-                            <th><i class="bi bi-building"></i> Kurum</th>
-
-                            <th class="text-center"><i class="bi bi-gear"></i> İşlemler</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for surec in surecler %}
-
-                        <tr>
-
-                            <td>
-
+            <div id="surec-tree-tbody" class="row g-4">
+                {% for root in (surecler_roots or []) %}
+                <div class="col-12">
+                    <div class="card surec-root-card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
                                 <div class="d-flex align-items-center">
-
-                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2"
-                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-
-                                        <i class="bi bi-diagram-2 text-primary fs-5"></i>
-
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-diagram-2 text-primary fs-4"></i>
                                     </div>
-
                                     <div>
-
-                                        <strong class="text-primary">{{ surec.ad }}</strong>
-
-                                        {% if surec.aciklama %}
-
-                                        <br><small class="text-muted">{{ surec.aciklama[:50] }}{% if
-                                            surec.aciklama|length > 50 %}...{% endif %}</small>
-
+                                        <h6 class="mb-1 text-primary">{{ root.ad }}</h6>
+                                        {% if root.aciklama %}
+                                        <small class="text-muted">{{ root.aciklama[:60] }}{% if root.aciklama|length > 60 %}...{% endif %}</small>
                                         {% endif %}
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-
-                                {% if surec.dokuman_no %}
-
-                                <span class="badge bg-light text-dark border">{{ surec.dokuman_no }}</span>
-
-                                {% if surec.rev_no %}
-
-                                <br><small class="text-muted">Rev: {{ surec.rev_no }}</small>
-
-                                {% endif %}
-
-                                {% else %}
-
-                                <span class="text-muted">-</span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="badge bg-{% if surec.durum == 'Aktif' %}success{% elif surec.durum == 'Pasif' %}secondary{% elif surec.durum == 'Beklemede' %}warning text-dark{% else %}info{% endif %} px-3 py-2">
-
-                                    <i
-                                        class="bi bi-{% if surec.durum == 'Aktif' %}check-circle{% elif surec.durum == 'Pasif' %}x-circle{% elif surec.durum == 'Beklemede' %}clock{% else %}info-circle{% endif %}"></i>
-
-                                    {{ surec.durum }}
-
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="d-flex align-items-center">
-
-                                    <div class="progress flex-grow-1" style="height: 20px; min-width: 60px;">
-
-                                        <div class="progress-bar 
-
-                                        {% if surec.ilerleme >= 75 %}bg-success
-
-                                        {% elif surec.ilerleme >= 50 %}bg-info
-
-                                        {% elif surec.ilerleme >= 25 %}bg-warning
-
-                                        {% else %}bg-danger
-
-                                        {% endif %}" role="progressbar" style="width: {{ surec.ilerleme }}%;"
-                                            aria-valuenow="{{ surec.ilerleme }}" aria-valuemin="0" aria-valuemax="100">
-
+                                        <div class="mt-1">
+                                            <span class="badge bg-{% if root.durum == 'Aktif' %}success{% elif root.durum == 'Pasif' %}secondary{% elif root.durum == 'Beklemede' %}warning text-dark{% else %}info{% endif %} me-1">{{ root.durum }}</span>
+                                            {% if root.dokuman_no %}<span class="badge bg-light text-dark border me-1">{{ root.dokuman_no }}</span>{% endif %}
+                                            <span class="badge bg-secondary">{{ root.kurum.kisa_ad if root.kurum else '-' }}</span>
                                         </div>
-
                                     </div>
-
-                                    <span class="ms-2 fw-bold">{{ surec.ilerleme }}%</span>
-
                                 </div>
-
-                            </td>
-
-                            <td>
-
-                                {% if surec.liderler %}
-
-                                <div class="d-flex flex-wrap gap-1">
-
-                                    {% for lider in surec.liderler %}
-
-                                    <span class="badge bg-primary bg-gradient px-2 py-1">
-
-                                        <i class="bi bi-star-fill"></i> {{ lider.username }}
-
-                                        {% if lider == current_user %}
-
-                                        <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin liderisiniz"></i>
-
-                                        {% endif %}
-
-                                    </span>
-
-                                    {% endfor %}
-
-                                </div>
-
-                                {% else %}
-
-                                <span class="text-muted fst-italic">-</span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if surec.uyeler %}
-
-                                <div class="d-flex flex-wrap gap-1">
-
-                                    {% for uye in surec.uyeler %}
-
-                                    <span class="badge bg-secondary bg-gradient px-2 py-1">
-
-                                        <i class="bi bi-person-fill"></i> {{uye.username }}
-
-                                        {% if uye == current_user %}
-
-                                        <i class="bi bi-check-circle-fill ms-1" title="Siz bu sürecin üyesisiniz"></i>
-
-                                        {% endif %}
-
-                                    </span>
-
-                                    {% endfor %}
-
-                                </div>
-
-                                {% else %}
-
-                                <span class="text-muted fst-italic">-</span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if surec.alt_stratejiler %}
-
-                                <div class="d-flex flex-wrap gap-1">
-
-                                    {% for alt in surec.alt_stratejiler %}
-
-                                    <span class="badge bg-info bg-gradient text-dark px-2 py-1">
-
-                                        <i class="bi bi-bullseye"></i> {{ alt.ad[:15] }}{% if alt.ad|length > 15 %}...{%
-                                        endif %}
-
-                                    </span>
-
-                                    {% endfor %}
-
-                                </div>
-
-                                {% else %}
-
-                                <span class="text-muted fst-italic">-</span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <span class="badge bg-secondary">{{ surec.kurum.kisa_ad if surec.kurum else '-'
-                                    }}</span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button class="btn btn-outline-primary" onclick="viewSurec({{ surec.id }})"
-                                        title="Detaylar" data-bs-toggle="tooltip">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </button>
-
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewSurec({{ root.id }})" title="Detaylar"><i class="bi bi-eye-fill"></i></button>
                                     {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
-                                    <button class="btn btn-outline-warning text-dark"
-                                        onclick="editProcess({{ surec.id }})" title="Düzenle" data-bs-toggle="tooltip">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </button>
-
-                                    <button class="btn btn-outline-danger"
-                                        onclick="deleteSurec({{ surec.id }}, '{{ surec.ad }}')" title="Sil"
-                                        data-bs-toggle="tooltip">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-
+                                    <button class="btn btn-outline-warning text-dark" onclick="editProcess({{ root.id }})" title="Düzenle"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="btn btn-outline-danger" onclick="deleteSurec({{ root.id }}, '{{ root.ad|e }}')" title="Sil"><i class="bi bi-trash-fill"></i></button>
                                     {% endif %}
                                 </div>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
+                            </div>
+                            <div class="d-flex flex-wrap gap-3 small text-muted mb-2">
+                                <span><i class="bi bi-graph-up me-1"></i>İlerleme: <strong>{{ root.ilerleme }}%</strong></span>
+                                <span><i class="bi bi-star me-1"></i>Lider: {{ root.liderler|length }}</span>
+                                <span><i class="bi bi-people me-1"></i>Üye: {{ root.uyeler|length }}</span>
+                                <span><i class="bi bi-bullseye me-1"></i>Strateji: {{ root.alt_stratejiler|length }}</span>
+                            </div>
+                            {% set alt_list = (surecler_children or {}).get(root.id, []) %}
+                            {% if alt_list %}
+                            <div class="surec-alt-list mt-3">
+                                <div class="small fw-bold text-primary mb-2"><i class="bi bi-diagram-3 me-1"></i>Bağlı alt süreçler ({{ alt_list|length }})</div>
+                                {% for child in alt_list %}
+                                <div class="surec-alt-item d-flex justify-content-between align-items-center gap-2">
+                                    <span class="text-dark fw-medium">{{ child.ad }}</span>
+                                    <div class="btn-group btn-group-sm flex-shrink-0">
+                                        <button class="btn btn-outline-primary btn-sm py-0 px-2" onclick="viewSurec({{ child.id }})" title="Detay"><i class="bi bi-eye"></i></button>
+                                        {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                        <button class="btn btn-outline-warning btn-sm py-0 px-2 text-dark" onclick="editProcess({{ child.id }})" title="Bu alt süreci düzenle"><i class="bi bi-pencil me-1"></i>Düzenle</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if surecler_orphans %}
+                <div class="col-12">
+                    <div class="card border-secondary shadow-sm">
+                        <div class="card-header bg-light small fw-bold"><i class="bi bi-diagram-3 me-1"></i>Diğer süreçler (üst süreç bu sayfada değil)</div>
+                        <div class="card-body py-2">
+                            {% for s in surecler_orphans %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                                <span>{{ s.ad }}</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary btn-sm py-0" onclick="viewSurec({{ s.id }})" title="Detay"><i class="bi bi-eye"></i></button>
+                                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                                    <button class="btn btn-outline-warning btn-sm py-0 text-dark" onclick="editProcess({{ s.id }})" title="Düzenle"><i class="bi bi-pencil"></i> Düzenle</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             {% else %}
@@ -911,7 +778,7 @@
                             </label>
 
                             <input type="text" class="form-control form-control-lg" id="ad"
-                                placeholder="Ç–rn: Satın Alma Süreci" required>
+                                placeholder="Örneğin: Satın Alma Süreci" required>
 
                         </div>
 
@@ -923,7 +790,7 @@
 
                             </label>
 
-                            <input type="text" class="form-control" id="dokuman_no" placeholder="Ç–rn: DOK-001">
+                            <input type="text" class="form-control" id="dokuman_no" placeholder="Örneğin: DOK-001">
 
                         </div>
 
@@ -935,13 +802,29 @@
 
                             </label>
 
-                            <input type="text" class="form-control" id="rev_no" placeholder="Ç–rn: Rev-1">
+                            <input type="text" class="form-control" id="rev_no" placeholder="Örneğin: Rev-1">
 
                         </div>
 
                     </div>
 
-
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label"><i class="bi bi-diagram-3"></i> Üst Süreç (Parent Process)</label>
+                            <select class="form-select" id="surec_parent_id">
+                                <option value="">— Bağımsız (üst süreç yok) —</option>
+                                {% if parent_options_with_depth is defined and parent_options_with_depth %}
+                                {% for p, pdepth in parent_options_with_depth %}
+                                <option value="{{ p.id }}">{{ ("— " * pdepth) }}{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% else %}
+                                {% for p in (parent_options or []) %}
+                                <option value="{{ p.id }}">{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="row">
 
@@ -1389,6 +1272,42 @@
 
                         </div>
 
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label"><i class="bi bi-diagram-3"></i> Üst Süreç (Parent Process)</label>
+
+                            <select class="form-select" id="edit_parent_id">
+
+                                <option value="">— Bağımsız (üst süreç yok) —</option>
+
+                                {% if parent_options_with_depth is defined and parent_options_with_depth %}
+                                {% for p, pdepth in parent_options_with_depth %}
+                                <option value="{{ p.id }}">{{ ("— " * pdepth) }}{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% else %}
+                                {% for p in (parent_options or []) %}
+                                <option value="{{ p.id }}">{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% endif %}
+
+                            </select>
+
+                            <small class="text-muted">Bir süreç kendi üst süreci olamaz.</small>
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">Skor Motoru: Ağırlık (0-100)</label>
+
+                            <input type="number" class="form-control" id="edit_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit">
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
                         <div class="col-md-3 mb-3">
 
                             <label class="form-label">Doküman No</label>
@@ -1509,7 +1428,12 @@
 
                     </div>
 
-
+                    <!-- Bağlı alt süreçler: tıklayınca o sürecin düzenlemesine geçilir -->
+                    <div class="mb-3" id="edit_alt_surecler_wrap" style="display: none;">
+                        <label class="form-label fw-bold"><i class="bi bi-diagram-3 me-1"></i>Bağlı alt süreçler</label>
+                        <p class="small text-muted mb-2">Alt sürece geçmek için satıra tıklayın.</p>
+                        <div id="edit_alt_surecler_list" class="list-group list-group-flush"></div>
+                    </div>
 
                     <!-- Süreç Liderleri Seçimi (Çoklu) -->
 
@@ -1874,9 +1798,13 @@
 
     function addDüzenleLiderler() {
 
-        const source = document.getElementById('edit_lider_source');
+        const modal = document.querySelector('.modal.show');
 
-        const target = document.getElementById('edit_lider_ids');
+        const source = modal ? modal.querySelector('#edit_lider_source') : document.getElementById('edit_lider_source');
+
+        const target = modal ? modal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        if (!source || !target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(source.selectedOptions);
 
@@ -1944,7 +1872,11 @@
 
     function removeDüzenleLiderler() {
 
-        const target = document.getElementById('edit_lider_ids');
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        if (!target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(target.selectedOptions);
 
@@ -1988,9 +1920,13 @@
 
     function addDüzenleUyeler() {
 
-        const source = document.getElementById('edit_uye_source');
+        const modal = document.querySelector('.modal.show');
 
-        const target = document.getElementById('edit_uye_ids');
+        const source = modal ? modal.querySelector('#edit_uye_source') : document.getElementById('edit_uye_source');
+
+        const target = modal ? modal.querySelector('#edit_uye_ids') : document.getElementById('edit_uye_ids');
+
+        if (!source || !target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(source.selectedOptions);
 
@@ -2030,7 +1966,11 @@
 
     function removeDüzenleUyeler() {
 
-        const target = document.getElementById('edit_uye_ids');
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_uye_ids') : document.getElementById('edit_uye_ids');
+
+        if (!target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(target.selectedOptions);
 
@@ -2060,7 +2000,11 @@
 
     function loadDüzenleSurecLiderler(surec) {
 
-        const target = document.getElementById('edit_lider_ids');
+        const modalEl = document.getElementById('editSurecModal');
+
+        const target = modalEl ? modalEl.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        if (!target) return;
 
         target.innerHTML = '';
 
@@ -2106,7 +2050,11 @@
 
     function loadDüzenleSurecUyeler(surec) {
 
-        const target = document.getElementById('edit_uye_ids');
+        const modalEl = document.getElementById('editSurecModal');
+
+        const target = modalEl ? modalEl.querySelector('#edit_uye_ids') : document.getElementById('edit_uye_ids');
+
+        if (!target) return;
 
         target.innerHTML = '';
 
@@ -2152,7 +2100,11 @@
 
     function loadDüzenleSurecStratejiler(surec) {
 
-        const target = document.getElementById('edit_strateji_ids');
+        const modalEl = document.getElementById('editSurecModal');
+
+        const target = modalEl ? modalEl.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
+
+        if (!target) return;
 
         target.innerHTML = '';
 
@@ -2268,13 +2220,45 @@
 
 
 
+    // Süreç Düzenle modalında bağlı alt süreçleri listele; tıklayınca o sürecin düzenlemesine geç
+    function fillEditAltSureclerList(altSurecler) {
+        const wrap = document.getElementById('edit_alt_surecler_wrap');
+        const list = document.getElementById('edit_alt_surecler_list');
+        if (!wrap || !list) return;
+        list.innerHTML = '';
+        if (!altSurecler || altSurecler.length === 0) {
+            wrap.style.display = 'none';
+            return;
+        }
+        wrap.style.display = 'block';
+        altSurecler.forEach(function (sub) {
+            const item = document.createElement('a');
+            item.href = '#';
+            item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+            item.innerHTML = '<span><i class="bi bi-arrow-return-right me-2 text-muted"></i>' + (sub.ad || 'Süreç #' + sub.id) + '</span><span class="badge bg-primary">Düzenle</span>';
+            item.onclick = function (e) {
+                e.preventDefault();
+                var modalEl = document.getElementById('editSurecModal');
+                var modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
+                setTimeout(function () { editProcess(sub.id); }, 300);
+            };
+            list.appendChild(item);
+        });
+    }
+
     // Düzenleme formu için strateji ekleme fonksiyonu
 
     function addDüzenleStratejiler() {
 
-        const source = document.getElementById('edit_strateji_source');
+        const modal = document.querySelector('.modal.show');
 
-        const target = document.getElementById('edit_strateji_ids');
+        const source = modal ? modal.querySelector('#edit_strateji_source') : document.getElementById('edit_strateji_source');
+
+        const target = modal ? modal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
+
+        if (!source || !target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(source.selectedOptions);
 
@@ -2300,7 +2284,7 @@
 
         selected.forEach(opt => {
 
-            const mainStrategyAd = opt.dataset.mainStrategyAd;
+            const mainStrategyAd = opt.dataset.mainStrategyName || opt.dataset.mainStrategyAd || '';
 
             const subStrategyAd = opt.text;
 
@@ -2336,7 +2320,7 @@
 
             const mainStrategyDiv = document.createElement('div');
 
-            mainStrategyDiv.classAd = 'strategy-group';
+            mainStrategyDiv.className = 'strategy-group';
 
             mainStrategyDiv.innerHTML = `
 
@@ -2414,7 +2398,11 @@
 
     function removeDüzenleStratejiler() {
 
-        const target = document.getElementById('edit_strateji_ids');
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
+
+        if (!target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selectedItems = target.querySelectorAll('.strategy-item.selected');
 
@@ -2448,7 +2436,11 @@
 
     function removeDüzenleStrategyItem(strategyId) {
 
-        const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
+
+        const item = target ? target.querySelector(`.strategy-item[data-strategy-id="${strategyId}"]`) : null;
 
         if (item) {
 
@@ -2466,7 +2458,11 @@
 
     function toggleDüzenleStrategySelection(strategyId) {
 
-        const item = document.querySelector(`#edit_strateji_ids .strategy-item[data-strategy-id="${strategyId}"]`);
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
+
+        const item = target ? target.querySelector(`.strategy-item[data-strategy-id="${strategyId}"]`) : null;
 
         if (item) {
 
@@ -2644,6 +2640,102 @@
 
 
 
+    // Anti-ghosting: overlay ve modal backdrop temizliği (global, her yerden çağrılabilir)
+    function cleanupOverlayAndBackdrop() {
+        var backdrops = document.querySelectorAll('.modal-backdrop');
+        for (var i = 0; i < backdrops.length; i++) backdrops[i].remove();
+        var guideOverlays = document.querySelectorAll('.guide-overlay');
+        for (var j = 0; j < guideOverlays.length; j++) guideOverlays[j].remove();
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        if (document.body.style.pointerEvents === 'none') document.body.style.removeProperty('pointer-events');
+    }
+
+    // Erişilebilirlik: modal kapandığında odağı ana sayfaya döndür (aria-hidden / focus kilidi önleme)
+    function focusResetOnModalHide() {
+        var active = document.activeElement;
+        if (!active || active === document.body) return;
+        var inModal = active.closest && active.closest('.modal');
+        if (!inModal) return;
+        active.blur();
+        document.body.setAttribute('tabindex', '-1');
+        try { document.body.focus(); } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        cleanupOverlayAndBackdrop();
+        function onModalHidden() {
+            focusResetOnModalHide();
+            cleanupOverlayAndBackdrop();
+        }
+        /* Açılışta modalı body'ye taşı: main (z-index:1) içinde kalırsa backdrop (1050) modalın üstüne biner (hayalet ekran). */
+        function ensureModalInBody(ev) {
+            var el = ev.target;
+            if (el && el.nodeType === 1 && el.parentNode !== document.body) {
+                document.body.appendChild(el);
+            }
+        }
+        var modalIds = ['editSurecModal', 'newProcessModal', 'surecDetayModal', 'editProcessModal'];
+        for (var k = 0; k < modalIds.length; k++) {
+            var el = document.getElementById(modalIds[k]);
+            if (el) {
+                el.addEventListener('show.bs.modal', ensureModalInBody);
+                el.addEventListener('hide.bs.modal', focusResetOnModalHide); /* aria-hidden uygulanmadan önce odağı dışarı al */
+                el.addEventListener('hidden.bs.modal', onModalHidden);
+            }
+        }
+    });
+    window.addEventListener('error', function () { cleanupOverlayAndBackdrop(); });
+    window.addEventListener('unhandledrejection', function () { cleanupOverlayAndBackdrop(); });
+
+    // Süreç ağacı collapse/expand: özyinelemeli tüm alt süreçleri gizle/göster (DOM üzerinden, performanslı)
+    document.addEventListener('DOMContentLoaded', function () {
+        var tbody = document.getElementById('surec-tree-tbody');
+        if (!tbody) return;
+        function getDescendantIds(rootId) {
+            var rows = tbody.querySelectorAll('tr.surec-tree-row');
+            var parentToIds = {};
+            var id;
+            for (var i = 0; i < rows.length; i++) {
+                id = rows[i].getAttribute('data-parent-id');
+                if (!id) continue;
+                if (!parentToIds[id]) parentToIds[id] = [];
+                parentToIds[id].push(rows[i].getAttribute('data-surec-id'));
+            }
+            var out = [];
+            var stack = [rootId];
+            while (stack.length) {
+                var pid = stack.pop();
+                var children = parentToIds[pid];
+                if (!children) continue;
+                for (var j = 0; j < children.length; j++) {
+                    out.push(children[j]);
+                    stack.push(children[j]);
+                }
+            }
+            return out;
+        }
+        tbody.addEventListener('click', function (e) {
+            var btn = e.target.closest('.surec-tree-toggle');
+            if (!btn) return;
+            var surecId = btn.getAttribute('data-surec-id');
+            var descendantIds = getDescendantIds(surecId);
+            var icon = btn.querySelector('.surec-toggle-icon');
+            var isCurrentlyVisible = btn.getAttribute('data-descendants-visible') !== 'false';
+            var show = !isCurrentlyVisible;
+            for (var k = 0; k < descendantIds.length; k++) {
+                var row = tbody.querySelector('tr.surec-tree-row[data-surec-id="' + descendantIds[k] + '"]');
+                if (row) row.style.display = show ? '' : 'none';
+            }
+            btn.setAttribute('data-descendants-visible', show ? 'true' : 'false');
+            if (icon) {
+                icon.classList.toggle('bi-chevron-down', show);
+                icon.classList.toggle('bi-chevron-right', !show);
+            }
+        });
+    });
+
     // Form submit
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -2680,6 +2772,8 @@
 
                     surec_adi: document.getElementById('ad').value,
 
+                    parent_id: (() => { const el = document.getElementById('surec_parent_id'); return (el && el.value) ? parseInt(el.value, 10) : null; })(),
+
                     dokuman_no: document.getElementById('dokuman_no').value,
 
                     rev_no: document.getElementById('rev_no').value,
@@ -2712,9 +2806,11 @@
 
             })
 
-                .then(r => r.json())
+                .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
 
-                .then(data => {
+                .then(function (res) {
+
+                    var data = res.data;
 
                     if (data.success) {
 
@@ -2728,21 +2824,25 @@
 
                         resetSelections();
 
+                        if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
+
                         // Sayfayı yenile
 
-                        setTimeout(() => location.reload(), 1500);
+                        setTimeout(function () { location.reload(); }, 1500);
 
                     } else {
 
-                        showToast('error', data.message, '→Œ Hata');
+                        showToast('error', data.message, res.status === 400 ? 'Validasyon Hatası' : 'Hata');
+                        if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                     }
 
                 })
 
-                .catch(err => {
+                .catch(function (err) {
 
-                    showToast('error', 'Hata: ' + err.message, '→Œ Bağlantı Hatası');
+                    showToast('error', 'Hata: ' + err.message, 'Bağlantı Hatası');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 });
 
@@ -3304,7 +3404,8 @@
 
                     loadDüzenleSurecStratejiler(surec);
 
-
+                    // Bağlı alt süreçleri listele (tıklayınca o sürece geç)
+                    fillEditAltSureclerList(data.alt_surecler || []);
 
                     // Modalı göster
 
@@ -3315,14 +3416,16 @@
                 } else {
 
                     showToast('error', data.message);
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 }
 
             })
 
-            .catch(err => {
+            .catch(function (err) {
 
                 showToast('error', 'Süreç bilgileri yüklenirken hata: ' + err.message);
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
             });
 
@@ -3348,17 +3451,25 @@
 
 
 
-        // Lider, üye ve strateji bilgilerini topla
+        // Lider, üye ve strateji bilgilerini topla (açık modal içinden)
 
-        const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => parseInt(opt.value));
+        const formModal = e.target && e.target.closest ? e.target.closest('.modal') : null;
 
-        const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => parseInt(opt.value));
+        const stratejiContainer = formModal ? formModal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
 
-        const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => parseInt(item.getAttribute('data-strategy-id')));
+        const liderSelect = formModal ? formModal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        const uyeSelect = formModal ? formModal.querySelector('#edit_uye_ids') : document.getElementById('edit_uye_ids');
+
+        const liderIds = liderSelect ? Array.from(liderSelect.options).map(opt => parseInt(opt.value)) : [];
+
+        const uyeIds = uyeSelect ? Array.from(uyeSelect.options).map(opt => parseInt(opt.value)) : [];
+
+        const stratejiIds = stratejiContainer ? Array.from(stratejiContainer.querySelectorAll('.strategy-item')).map(item => parseInt(item.getAttribute('data-strategy-id'))) : [];
 
 
 
-        fetch(`/surec/update/${surecId}`, {
+        fetch('/surec/update/' + surecId, {
 
             method: 'POST',
 
@@ -3390,6 +3501,10 @@
 
                 aciklama: document.getElementById('edit_aciklama').value,
 
+                parent_id: (function () { var el = document.getElementById('edit_parent_id'); return (el && el.value) ? parseInt(el.value, 10) : null; })(),
+
+                weight: (function () { var el = document.getElementById('edit_weight'); return (el && el.value !== '') ? parseFloat(el.value) : null; })(),
+
                 lider_ids: liderIds,
 
                 uye_ids: uyeIds,
@@ -3400,37 +3515,39 @@
 
         })
 
-            .then(r => r.json())
+            .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
 
-            .then(data => {
+            .then(function (res) {
+
+                var data = res.data;
 
                 if (data.success) {
 
                     showToast('success', data.message, 'Başarılı');
 
-                    // Modalı kapat
+                    var modalElement = document.getElementById('editSurecModal');
 
-                    const modalElement = document.getElementById('editSurecModal');
-
-                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    var modal = bootstrap.Modal.getInstance(modalElement);
 
                     if (modal) modal.hide();
 
-                    // Sayfayı yenile
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(function () { location.reload(); }, 1500);
 
                 } else {
 
-                    showToast('error', data.message, '→Œ Hata');
+                    showToast('error', data.message, res.status === 400 ? 'Validasyon Hatası' : 'Hata');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 }
 
             })
 
-            .catch(err => {
+            .catch(function (err) {
 
-                showToast('error', 'Güncelleme hatası: ' + err.message, '→Œ Bağlantı Hatası');
+                showToast('error', 'Güncelleme hatası: ' + err.message, 'Bağlantı Hatası');
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
             });
 
@@ -3458,19 +3575,23 @@
 
                         showToast('success', data.message, 'Başarılı');
 
-                        setTimeout(() => location.reload(), 1500);
+                        if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
+
+                        setTimeout(function () { location.reload(); }, 1500);
 
                     } else {
 
                         showToast('error', data.message, 'Hata');
+                        if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                     }
 
                 })
 
-                .catch(err => {
+                .catch(function (err) {
 
                     showToast('error', 'Silme işlemi başarısız: ' + err.message, 'Hata');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 });
 
@@ -3708,7 +3829,7 @@
 
         selected.forEach(opt => {
 
-            const mainStrategyAd = opt.dataset.mainStrategyAd;
+            const mainStrategyAd = opt.dataset.mainStrategyName || opt.dataset.mainStrategyAd || '';
 
             const subStrategyAd = opt.text;
 
@@ -3926,9 +4047,14 @@
 
 
 
+        const parentIdEl = document.getElementById('newProcessParentId');
         const formData = {
 
             ad: document.getElementById('newProcessAd').value.trim(),
+
+            parent_id: (parentIdEl && parentIdEl.value) ? parseInt(parentIdEl.value, 10) : null,
+
+            weight: (function () { var el = document.getElementById('newProcessWeight'); return (el && el.value !== '') ? parseFloat(el.value) : null; })(),
 
             lider_ids: liderIds, // Çoklu lider seçimi
 
@@ -3960,25 +4086,13 @@
 
         };
 
-        if (IS_ADMIN) {
-
-            const kurumSelect = document.getElementById('newProcessKurum');
-
-            formData.kurum_id = kurumSelect ? kurumSelect.value : '';
-
-        }
-
-
+        var kurumEl = document.getElementById('newProcessKurum');
+        formData.kurum_id = kurumEl ? kurumEl.value : (typeof CURRENT_USER_KURUM_ID !== 'undefined' ? CURRENT_USER_KURUM_ID : '');
 
         // Zorunlu alan kontrolü
+        if (!formData.ad || !formData.kurum_id || liderIds.length === 0) {
 
-        if (!formData.ad || (IS_ADMIN && !formData.kurum_id) || liderIds.length === 0) {
-
-            const msg = IS_ADMIN
-
-                ? 'Lütfen süreç adı, kurum ve en az bir lider seçin!'
-
-                : 'Lütfen süreç adı ve en az bir lider seçin!';
+            const msg = 'Lütfen süreç adı ve en az bir lider seçin!';
 
             showToast('warning', msg, 'Uyarı');
 
@@ -4022,28 +4136,30 @@
 
                     if (modal) modal.hide();
 
-                    setTimeout(() => location.reload(), 1500);
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
+
+                    setTimeout(function () { location.reload(); }, 1500);
 
                 } else {
 
-                    showToast('error', data.message, '→Œ Hata');
+                    showToast('error', data.message, 'Hata');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 }
 
             })
 
-            .catch(error => {
+            .catch(function (error) {
 
                 console.error('Error:', error);
-
-                showToast('error', 'Süreç oluşturulurken hata oluştu!', '→Œ Bağlantı Hatası');
+                showToast('error', 'Süreç oluşturulurken hata oluştu!', 'Bağlantı Hatası');
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
             })
 
-            .finally(() => {
+            .finally(function () {
 
                 submitBtn.disabled = false;
-
                 submitBtn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Süreç Oluştur';
 
             });
@@ -4132,6 +4248,16 @@
 
                     document.getElementById('edit_ad').value = surec.ad;
 
+                    var editParentEl = document.getElementById('edit_parent_id');
+                    if (editParentEl) {
+                        Array.from(editParentEl.options).forEach(function (opt) { opt.disabled = false; });
+                        editParentEl.value = surec.parent_id || '';
+                        var forbiddenIds = [surec.id].concat(surec.descendant_ids || []);
+                        Array.from(editParentEl.options).forEach(function (opt) {
+                            var vid = opt.value ? parseInt(opt.value, 10) : null;
+                            if (vid && forbiddenIds.indexOf(vid) !== -1) opt.disabled = true;
+                        });
+                    }
                     document.getElementById('edit_dokuman_no').value = surec.dokuman_no || '';
 
                     document.getElementById('edit_rev_no').value = surec.rev_no || '';
@@ -4154,7 +4280,8 @@
 
                     document.getElementById('edit_aciklama').value = surec.aciklama || '';
 
-
+                    var editWeightEl = document.getElementById('edit_weight');
+                    if (editWeightEl) editWeightEl.value = (surec.weight != null && surec.weight !== '') ? surec.weight : '';
 
                     // Çoklu lider seçimi için verileri yükle
 
@@ -4172,7 +4299,8 @@
 
                     loadDüzenleProcessStratejiler(surec);
 
-
+                    // Bağlı alt süreçleri listele (tıklayınca o sürece geç)
+                    fillEditAltSureclerList(data.alt_surecler || []);
 
                     const modal = new bootstrap.Modal(document.getElementById('editSurecModal'));
 
@@ -4181,16 +4309,17 @@
                 } else {
 
                     showToast('error', data.message || 'Süreç bilgileri yüklenirken bir hata oluştu', 'Hata');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 }
 
             })
 
-            .catch(error => {
+            .catch(function (error) {
 
                 console.error('Error:', error);
-
                 handleAjaxError(error, 'Süreç bilgileri yüklenirken bir hata oluştu');
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
             });
 
@@ -4432,13 +4561,17 @@
 
 
 
-    // Lider ekleme fonksiyonu
+    // Lider ekleme fonksiyonu (açık modal içinden)
 
     function addDüzenleLiderler() {
 
-        const source = document.getElementById('edit_lider_source');
+        const modal = document.querySelector('.modal.show');
 
-        const target = document.getElementById('edit_lider_ids');
+        const source = modal ? modal.querySelector('#edit_lider_source') : document.getElementById('edit_lider_source');
+
+        const target = modal ? modal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        if (!source || !target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(source.selectedOptions);
 
@@ -4504,11 +4637,15 @@
 
 
 
-    // Lider çıkarma fonksiyonu
+    // Lider çıkarma fonksiyonu (açık modal içinden)
 
     function removeDüzenleLiderler() {
 
-        const target = document.getElementById('edit_lider_ids');
+        const modal = document.querySelector('.modal.show');
+
+        const target = modal ? modal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        if (!target) { showToast('warning', 'Form alanı bulunamadı.', 'Uyarı'); return; }
 
         const selected = Array.from(target.selectedOptions);
 
@@ -4558,13 +4695,21 @@
 
 
 
-        // Çoklu lider seçimi için lider ID'lerini topla
+        // Çoklu lider/üye/strateji seçimi (açık modal içinden)
 
-        const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => opt.value);
+        const modal = document.querySelector('.modal.show');
 
-        const uyeIds = Array.from(document.getElementById('edit_uye_ids').options).map(opt => opt.value);
+        const stratejiContainer = modal ? modal.querySelector('#edit_strateji_ids') : document.getElementById('edit_strateji_ids');
 
-        const stratejiIds = Array.from(document.querySelectorAll('#edit_strateji_ids .strategy-item')).map(item => item.getAttribute('data-strategy-id'));
+        const liderSelect = modal ? modal.querySelector('#edit_lider_ids') : document.getElementById('edit_lider_ids');
+
+        const uyeSelect = modal ? modal.querySelector('#edit_uye_ids') : document.getElementById('edit_uye_ids');
+
+        const liderIds = liderSelect ? Array.from(liderSelect.options).map(opt => opt.value) : [];
+
+        const uyeIds = uyeSelect ? Array.from(uyeSelect.options).map(opt => opt.value) : [];
+
+        const stratejiIds = stratejiContainer ? Array.from(stratejiContainer.querySelectorAll('.strategy-item')).map(item => item.getAttribute('data-strategy-id')) : [];
 
 
 
@@ -4632,47 +4777,48 @@
 
 
 
-        fetch(`/admin/update-process/${processId}`, {
+        fetch('/admin/update-process/' + processId, {
 
             method: 'PUT',
 
-            headers: {
-
-                'Content-Type': 'application/json',
-
-            },
+            headers: { 'Content-Type': 'application/json' },
 
             body: JSON.stringify(formData)
 
         })
 
-            .then(response => response.json())
+            .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
 
-            .then(data => {
+            .then(function (res) {
+
+                var data = res.data;
 
                 if (data.success) {
 
                     showToast('success', 'Süreç başarıyla güncellendi!', 'Başarılı');
 
-                    setTimeout(() => location.reload(), 1500);
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
+
+                    setTimeout(function () { location.reload(); }, 1500);
 
                 } else {
 
-                    showToast('error', data.message, 'Hata');
+                    showToast('error', data.message, res.status === 400 ? 'Validasyon Hatası' : 'Hata');
+                    if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
                 }
 
             })
 
-            .catch(error => {
+            .catch(function (error) {
 
                 console.error('Error:', error);
-
                 showToast('error', 'Süreç güncellenirken hata oluştu!', 'Hata');
+                if (typeof cleanupOverlayAndBackdrop === 'function') cleanupOverlayAndBackdrop();
 
             })
 
-            .finally(() => {
+            .finally(function () {
 
                 submitBtn.disabled = false;
 
@@ -4813,46 +4959,36 @@
                             <label class="form-label">Süreç Adı <span class="text-danger">*</span></label>
 
                             <input type="text" class="form-control" id="newProcessAd" required
-                                placeholder="Ç–rn: Yazılım Geliştirme Süreci">
+                                placeholder="Örneğin: Yazılım Geliştirme Süreci">
 
                         </div>
 
-                        <div class="col-md-6 mb-3">
-
-                            {% if current_user.sistem_rol == 'admin' %}
-
-                            <label class="form-label">Kurum <span class="text-danger">*</span></label>
-
-                            <select class="form-control" id="newProcessKurum" required
-                                onchange="onNewProcessKurumChange(this.value)">
-
-                                <option value="">Kurum seçiniz...</option>
-
-                                {% for kurum in kurumlar %}
-
-                                <option value="{{ kurum.id }}" {% if kurum.id==current_user.kurum_id %}selected{% endif
-                                    %}>{{ kurum.kisa_ad }}</option>
-
-                                {% endfor %}
-
-                            </select>
-
-                            {% else %}
-
-                            <label class="form-label">Kurum</label>
-
-                            <input type="text" class="form-control"
-                                value="{{ current_user.kurum.kisa_ad if current_user.kurum else '' }}" disabled>
-
-                            <small class="text-muted">Süreç mevcut kurumunuza eklenecektir.</small>
-
-                            {% endif %}
-
-                        </div>
+                        <input type="hidden" id="newProcessKurum" value="{{ current_user.kurum_id or '' }}">
 
                     </div>
 
-
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label"><i class="bi bi-diagram-3"></i> Üst Süreç (Parent Process)</label>
+                            <select class="form-select" id="newProcessParentId">
+                                <option value="">— Bağımsız (üst süreç yok) —</option>
+                                {% if parent_options_with_depth is defined and parent_options_with_depth %}
+                                {% for p, pdepth in parent_options_with_depth %}
+                                <option value="{{ p.id }}">{{ ("— " * pdepth) }}{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% else %}
+                                {% for p in (parent_options or []) %}
+                                <option value="{{ p.id }}">{{ p.ad }}{% if p.code %} ({{ p.code }}){% endif %}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                            <small class="text-muted">Alt süreç tanımlamak için üst süreci seçin. Aynı kuruma ait süreçler listelenir.</small>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Skor Motoru: Ağırlık (0-100)</label>
+                            <input type="number" class="form-control" id="newProcessWeight" min="0" max="100" step="0.5" placeholder="Boş = eşit">
+                        </div>
+                    </div>
 
                     <!-- Süreç Liderleri Seçimi (Çoklu) -->
 

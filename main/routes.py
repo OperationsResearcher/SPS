@@ -635,6 +635,16 @@ def surec_performans_gostergesi_add(surec_id):
             except (ValueError, TypeError):
                 alt_strateji_id = None
         
+        # Skor motoru ağırlığı (0-100, opsiyonel)
+        weight = None
+        if data.get('weight') is not None and data.get('weight') != '':
+            try:
+                w = float(data.get('weight'))
+                if 0 <= w <= 100:
+                    weight = w
+            except (ValueError, TypeError):
+                pass
+
         # Yeni performans göstergesi oluştur
         yeni_pg = SurecPerformansGostergesi(
             surec_id=surec_id,
@@ -648,7 +658,8 @@ def surec_performans_gostergesi_add(surec_id):
             bitis_tarihi=bitis_tarihi,
             direction=data.get('direction', 'Increasing'),
             basari_puani_araliklari=data.get('basari_puani_araliklari') if data.get('basari_puani_araliklari') else None,
-            alt_strateji_id=alt_strateji_id
+            alt_strateji_id=alt_strateji_id,
+            weight=weight
         )
         
         db.session.add(yeni_pg)
@@ -728,6 +739,7 @@ def surec_performans_gostergesi_get(surec_id, pg_id):
                 'bitis_tarihi': pg.bitis_tarihi.strftime('%Y-%m-%d') if pg.bitis_tarihi else None,
                 'veri_toplama_yontemi': pg.veri_toplama_yontemi,
                 'agirlik': pg.agirlik,
+                'weight': pg.weight,
                 'onemli': pg.onemli,
                 'kodu': pg.kodu,
                 'gosterge_turu': pg.gosterge_turu,
@@ -850,6 +862,16 @@ def surec_performans_gostergesi_update(surec_id, pg_id):
                 pg.alt_strateji_id = int(data.get('alt_strateji_id')) if data.get('alt_strateji_id') else None
             except (ValueError, TypeError):
                 pg.alt_strateji_id = None
+        if 'weight' in data:
+            w = data.get('weight')
+            if w is None or w == '':
+                pg.weight = None
+            else:
+                try:
+                    f = float(w)
+                    pg.weight = f if 0 <= f <= 100 else None
+                except (ValueError, TypeError):
+                    pg.weight = None
         
         db.session.commit()
         
@@ -943,7 +965,8 @@ def surec_paneli():
         base_query = Surec.query.options(
             joinedload(Surec.kurum),
             joinedload(Surec.liderler),
-            joinedload(Surec.uyeler)
+            joinedload(Surec.uyeler),
+            joinedload(Surec.parent)
         )
 
         # Kurum izolasyonu: admin dışı sadece kendi kurumunun süreçlerini görebilir
@@ -967,13 +990,65 @@ def surec_paneli():
             current_app.logger.info("Normal kullanıcı - lider/üye süreçler getiriliyor")
         
         # Pagination uygula
-        pagination = query.paginate(
+        pagination = query.order_by(Surec.parent_id, Surec.id).paginate(
             page=page,
             per_page=per_page,
             error_out=False
         )
         
         surecler = pagination.items
+        
+        # Hiyerarşik tree: (surec, depth) listesi - mevcut sayfadaki süreçler için depth hesapla
+        surec_ids = {s.id for s in surecler}
+        parent_map = {s.id: s.parent_id for s in surecler}
+        depth_map = {}
+        def get_depth(pid):
+            if pid is None or pid not in surec_ids:
+                return 0
+            if pid in depth_map:
+                return depth_map[pid]
+            depth_map[pid] = get_depth(parent_map.get(pid)) + 1
+            return depth_map[pid]
+        for s in surecler:
+            depth_map[s.id] = 0 if s.parent_id is None else (get_depth(s.parent_id) + 1)
+        # Hangi süreçlerin alt süreci var (collapse/expand için)
+        parent_counts = dict(
+            db.session.query(Surec.parent_id, db.func.count(Surec.id))
+            .filter(Surec.parent_id.in_(surec_ids), Surec.silindi == False)
+            .group_by(Surec.parent_id)
+            .all()
+        ) if surec_ids else {}
+        surecler_tree = [(s, depth_map[s.id], (parent_counts.get(s.id) or 0) > 0) for s in surecler]
+        
+        # Kart görünümü için: kök süreçler ve parent_id'ye göre alt süreçler (sadece bu sayfadaki)
+        surecler_roots = sorted([s for s in surecler if s.parent_id is None], key=lambda x: (x.ad or '').lower())
+        surecler_children = {}
+        for s in surecler:
+            if s.parent_id is not None:
+                surecler_children.setdefault(s.parent_id, []).append(s)
+        for pid in surecler_children:
+            surecler_children[pid] = sorted(surecler_children[pid], key=lambda x: (x.ad or '').lower())
+        # Üst süreç bu sayfada olmayan alt süreçler (kartlarda "Diğer süreçler" olarak gösterilir)
+        root_ids = {r.id for r in surecler_roots}
+        surecler_orphans = sorted([s for s in surecler if s.parent_id is not None and s.parent_id not in root_ids], key=lambda x: (x.ad or '').lower())
+        
+        # Üst süreç seçenekleri (dropdown): aynı kurumdaki tüm süreçler (kendi kendisi düzenlemede elenir)
+        kurum_id_filter = current_user.kurum_id if current_user.sistem_rol != 'admin' else None
+        parent_options_query = Surec.query.filter_by(silindi=False)
+        if kurum_id_filter is not None:
+            parent_options_query = parent_options_query.filter_by(kurum_id=kurum_id_filter)
+        parent_options = parent_options_query.order_by(Surec.parent_id, Surec.ad).all()
+        # Hiyerarşik derinlik: dropdown'da "-- Alt Süreç" görseli için (Tenant/kurum_id aynı kalır)
+        by_id = {p.id: p for p in parent_options}
+        parent_depth_map = {}
+        for p in parent_options:
+            d = 0
+            cur = p
+            while cur and getattr(cur, 'parent_id', None) and cur.parent_id in by_id:
+                d += 1
+                cur = by_id.get(cur.parent_id)
+            parent_depth_map[p.id] = d
+        parent_options_with_depth = [(p, parent_depth_map[p.id]) for p in parent_options]
         
         # Lider ve üye süreçlerini ayrı ayrı al (template için)
         lider_surecler = [s for s in surecler if current_user in s.liderler]
@@ -1001,6 +1076,12 @@ def surec_paneli():
         
         return render_template('surec_panel.html', 
                              surecler=surecler,
+                             surecler_tree=surecler_tree,
+                             surecler_roots=surecler_roots,
+                             surecler_children=surecler_children,
+                             surecler_orphans=surecler_orphans,
+                             parent_options=parent_options,
+                             parent_options_with_depth=parent_options_with_depth,
                              lider_surecler=lider_surecler,
                              uye_surecler=uye_surecler,
                              kullanicilar=kullanicilar,
@@ -1045,11 +1126,16 @@ def get_surec(surec_id):
         # Performans göstergelerini getir
         performans_gostergeleri = SurecPerformansGostergesi.query.filter_by(surec_id=surec_id).all()
         
+        # Bağlı alt süreçler (bu sürecin parent'ı olduğu süreçler)
+        alt_surecler = [{'id': sub.id, 'ad': sub.ad} for sub in surec.sub_processes.filter_by(silindi=False).order_by(Surec.ad).all()]
+        
         return jsonify({
             'success': True,
             'surec': {
                 'id': surec.id,
                 'ad': surec.ad,
+                'parent_id': surec.parent_id,
+                'weight': surec.weight,
                 'dokuman_no': surec.dokuman_no,
                 'rev_no': surec.rev_no,
                 'rev_tarihi': surec.rev_tarihi.strftime('%Y-%m-%d') if surec.rev_tarihi else None,
@@ -1070,6 +1156,7 @@ def get_surec(surec_id):
                 } for s in surec.alt_stratejiler],
                 'kurum': {'id': surec.kurum.id, 'kisa_ad': surec.kurum.kisa_ad} if surec.kurum else None
             },
+            'alt_surecler': alt_surecler,
             'performans_gostergeleri': [{
                 'id': pg.id,
                 'ad': pg.ad,
@@ -1221,35 +1308,51 @@ def update_surec(surec_id):
         surec.baslangic_siniri = data.get('baslangic_siniri', surec.baslangic_siniri)
         surec.bitis_siniri = data.get('bitis_siniri', surec.bitis_siniri)
         surec.aciklama = data.get('aciklama', surec.aciklama)
+        # Skor Motoru: ağırlık (0-100)
+        if 'weight' in data:
+            w = data.get('weight')
+            surec.weight = min(100.0, max(0.0, float(w))) if w is not None and str(w).strip() != '' else None
+        # Üst süreç (döngü ve kendi kendisi kontrolü)
+        new_parent_id = _validate_surec_parent_id(surec.id, data.get('parent_id'), surec.kurum_id)
+        surec.parent_id = new_parent_id
+
+        # Liderleri güncelle (kurum izolasyonu); boş liste gönderilirse temizlenir
+        if 'lider_ids' in data:
+            lider_ids = data.get('lider_ids', [])
+            normalized_lider_ids = [int(x) for x in lider_ids] if lider_ids else []
+            if not normalized_lider_ids:
+                surec.liderler = []
+            else:
+                surec.liderler = User.query.filter(
+                    User.kurum_id == surec.kurum_id,
+                    User.id.in_(normalized_lider_ids)
+                ).all()
         
-        # Liderleri güncelle (kurum izolasyonu)
-        lider_ids = data.get('lider_ids', [])
-        if lider_ids:
-            normalized_lider_ids = [int(x) for x in lider_ids]
-            surec.liderler = User.query.filter(
-                User.kurum_id == surec.kurum_id,
-                User.id.in_(normalized_lider_ids)
-            ).all()
+        # Üyeleri güncelle (kurum izolasyonu); boş liste gönderilirse temizlenir
+        if 'uye_ids' in data:
+            uye_ids = data.get('uye_ids', [])
+            normalized_uye_ids = [int(x) for x in uye_ids] if uye_ids else []
+            if not normalized_uye_ids:
+                surec.uyeler = []
+            else:
+                surec.uyeler = User.query.filter(
+                    User.kurum_id == surec.kurum_id,
+                    User.id.in_(normalized_uye_ids)
+                ).all()
         
-        # Üyeleri güncelle (kurum izolasyonu)
-        uye_ids = data.get('uye_ids', [])
-        if uye_ids is not None:
-            normalized_uye_ids = [int(x) for x in uye_ids]
-            surec.uyeler = User.query.filter(
-                User.kurum_id == surec.kurum_id,
-                User.id.in_(normalized_uye_ids)
-            ).all()
-        
-        # Alt stratejileri güncelle (kurum izolasyonu)
+        # Alt stratejileri güncelle (kurum izolasyonu); boş liste gönderilirse temizlenir
         strateji_ids = data.get('strateji_ids', None)
         if strateji_ids is None:
-            strateji_ids = data.get('alt_strateji_ids', [])
-        if strateji_ids:
-            normalized_strateji_ids = [int(x) for x in strateji_ids]
-            surec.alt_stratejiler = AltStrateji.query.filter(
-                AltStrateji.id.in_(normalized_strateji_ids),
-                AltStrateji.ana_strateji.has(kurum_id=surec.kurum_id)
-            ).all()
+            strateji_ids = data.get('alt_strateji_ids', None)
+        if 'strateji_ids' in data or 'alt_strateji_ids' in data:
+            normalized_strateji_ids = [int(x) for x in (strateji_ids or [])] if strateji_ids else []
+            if not normalized_strateji_ids:
+                surec.alt_stratejiler = []
+            else:
+                surec.alt_stratejiler = AltStrateji.query.filter(
+                    AltStrateji.id.in_(normalized_strateji_ids),
+                    AltStrateji.ana_strateji.has(kurum_id=surec.kurum_id)
+                ).all()
         
         db.session.commit()
         
@@ -1257,6 +1360,9 @@ def update_surec(surec_id):
             'success': True,
             'message': 'Süreç başarıyla güncellendi'
         })
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
     except Exception as e:
         db.session.rollback()
         import traceback
@@ -1305,7 +1411,9 @@ def admin_update_process(process_id):
         surec.baslangic_siniri = data.get('baslangic_siniri', surec.baslangic_siniri)
         surec.bitis_siniri = data.get('bitis_siniri', surec.bitis_siniri)
         surec.aciklama = data.get('aciklama', surec.aciklama)
-        
+        new_parent_id = _validate_surec_parent_id(surec.id, data.get('parent_id'), surec.kurum_id)
+        surec.parent_id = new_parent_id
+
         # Liderleri güncelle (kurum izolasyonu)
         lider_ids = data.get('lider_ids', [])
         if lider_ids:
@@ -1339,6 +1447,9 @@ def admin_update_process(process_id):
             'success': True,
             'message': 'Süreç başarıyla güncellendi'
         })
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
     except Exception as e:
         db.session.rollback()
         import traceback
@@ -1468,8 +1579,17 @@ def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
         faaliyet.aciklama = (data.get('aciklama') or '').strip() or None
         faaliyet.baslangic_tarihi = _parse_optional_date(data.get('baslangic_tarihi'))
         faaliyet.bitis_tarihi = _parse_optional_date(data.get('bitis_tarihi'))
+        if 'surec_pg_id' in data:
+            faaliyet.surec_pg_id = int(data['surec_pg_id']) if data.get('surec_pg_id') else None
 
         db.session.commit()
+
+        # Skor Motoru: Aksiyon (faaliyet) güncellendiğinde bağlı PG üzerinden vizyonu yeniden hesapla
+        try:
+            from services.score_engine_service import recalc_on_faaliyet_change
+            recalc_on_faaliyet_change(getattr(faaliyet, 'surec_pg_id', None), surec.kurum_id)
+        except Exception:
+            pass
 
         return jsonify({'success': True, 'message': 'Faaliyet başarıyla güncellendi'})
     except Exception as e:
@@ -1547,6 +1667,37 @@ def _validate_same_kurum_alt_stratejiler(kurum_id: int, strateji_ids: list[int])
     return stratejiler
 
 
+def _surec_descendant_ids(surec_id: int) -> set:
+    """Bir sürecin tüm alt süreç (çocuk, torun, ...) id'lerini döndürür. Sonsuz döngü engellemek için kullanılır."""
+    out = set()
+    stack = [surec_id]
+    while stack:
+        pid = stack.pop()
+        children = Surec.query.filter_by(parent_id=pid, silindi=False).all()
+        for c in children:
+            if c.id not in out:
+                out.add(c.id)
+                stack.append(c.id)
+    return out
+
+
+def _validate_surec_parent_id(surec_id: int | None, parent_id_raw, kurum_id: int) -> int | None:
+    """Üst süreç (parent_id) geçerli mi kontrol eder: aynı kurum, kendi kendisi olamaz, döngü olamaz."""
+    if parent_id_raw is None or parent_id_raw == '' or (isinstance(parent_id_raw, list) and not parent_id_raw):
+        return None
+    parent_id = int(parent_id_raw) if not isinstance(parent_id_raw, int) else parent_id_raw
+    if parent_id <= 0:
+        return None
+    parent = Surec.query.filter_by(id=parent_id, silindi=False).first()
+    if not parent or parent.kurum_id != kurum_id:
+        raise ValueError('Üst süreç aynı kuruma ait olmalı ve bulunmalıdır')
+    if surec_id and parent_id == surec_id:
+        raise ValueError('Bir süreç kendi üst süreci olamaz')
+    if surec_id and parent_id in _surec_descendant_ids(surec_id):
+        raise ValueError('Üst süreç seçimi döngü oluşturmaz (alt sürecinizi üst süreç yapamazsınız)')
+    return parent_id
+
+
 @main_bp.route('/surec/get/<int:surec_id>')
 @login_required
 def surec_get_for_edit(surec_id):
@@ -1570,11 +1721,18 @@ def surec_get_for_edit(surec_id):
         if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
             return jsonify({'success': False, 'message': 'Bu süreci düzenleme yetkiniz yok'}), 403
 
+        sub_count = Surec.query.filter_by(parent_id=surec.id, silindi=False).count()
+        descendant_ids = list(_surec_descendant_ids(surec.id))
+        alt_surecler = [{'id': sub.id, 'ad': sub.ad} for sub in surec.sub_processes.filter_by(silindi=False).order_by(Surec.ad).all()]
         return jsonify({
             'success': True,
+            'alt_surecler': alt_surecler,
             'surec': {
                 'id': surec.id,
                 'ad': surec.ad,
+                'parent_id': surec.parent_id,
+                'sub_processes_count': sub_count,
+                'descendant_ids': descendant_ids,
                 'dokuman_no': surec.dokuman_no or '',
                 'rev_no': surec.rev_no or '',
                 'rev_tarihi': surec.rev_tarihi.strftime('%Y-%m-%d') if surec.rev_tarihi else '',
@@ -1586,6 +1744,7 @@ def surec_get_for_edit(surec_id):
                 'baslangic_siniri': surec.baslangic_siniri or '',
                 'bitis_siniri': surec.bitis_siniri or '',
                 'aciklama': surec.aciklama or '',
+                'weight': getattr(surec, 'weight', None),
                 'liderler': [{'id': u.id, 'username': u.username} for u in surec.liderler],
                 'uyeler': [{'id': u.id, 'username': u.username} for u in surec.uyeler],
                 'alt_stratejiler': [{
@@ -1636,14 +1795,23 @@ def surec_add_simple():
 
         uye_ids = _ensure_int_list(data.get('uye_ids'))
         alt_strateji_ids = _ensure_int_list(data.get('alt_strateji_ids') or data.get('strateji_ids'))
+        parent_id = _validate_surec_parent_id(None, data.get('parent_id'), kurum_id)
 
         liderler = _validate_same_kurum_user_ids(kurum_id, lider_ids)
         uyeler = _validate_same_kurum_user_ids(kurum_id, uye_ids)
         alt_stratejiler = _validate_same_kurum_alt_stratejiler(kurum_id, alt_strateji_ids)
 
+        weight_f = None
+        if data.get('weight') is not None and str(data.get('weight')).strip() != '':
+            try:
+                weight_f = min(100.0, max(0.0, float(data.get('weight'))))
+            except (ValueError, TypeError):
+                weight_f = None
         surec = Surec(
             kurum_id=kurum_id,
+            parent_id=parent_id,
             ad=ad,
+            weight=weight_f,
             dokuman_no=(data.get('dokuman_no') or '').strip() or None,
             rev_no=(data.get('rev_no') or '').strip() or None,
             rev_tarihi=_parse_optional_date(data.get('rev_tarihi')),
@@ -1698,6 +1866,8 @@ def surec_delete(surec_id):
         elif current_user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
             pass
 
+        # Alt süreçlerin parent_id'sini null yap (yetim kalmasın, kök süreç olsun)
+        Surec.query.filter_by(parent_id=surec_id, silindi=False).update({Surec.parent_id: None}, synchronize_session=False)
         surec.silindi = True
         surec.deleted_at = datetime.utcnow()
         surec.deleted_by = current_user.id
@@ -1744,14 +1914,23 @@ def admin_create_process():
 
         uye_ids = _ensure_int_list(data.get('uye_ids'))
         strateji_ids = _ensure_int_list(data.get('strateji_ids'))
+        parent_id = _validate_surec_parent_id(None, data.get('parent_id'), kurum_id)
 
         liderler = _validate_same_kurum_user_ids(kurum_id, lider_ids)
         uyeler = _validate_same_kurum_user_ids(kurum_id, uye_ids)
         alt_stratejiler = _validate_same_kurum_alt_stratejiler(kurum_id, strateji_ids)
 
+        weight_f = None
+        if data.get('weight') is not None and str(data.get('weight')).strip() != '':
+            try:
+                weight_f = min(100.0, max(0.0, float(data.get('weight'))))
+            except (ValueError, TypeError):
+                weight_f = None
         surec = Surec(
             kurum_id=kurum_id,
+            parent_id=parent_id,
             ad=ad,
+            weight=weight_f,
             dokuman_no=(data.get('dokuman_no') or '').strip() or None,
             rev_no=(data.get('rev_no') or '').strip() or None,
             rev_tarihi=_parse_optional_date(data.get('rev_tarihi')),
@@ -1808,6 +1987,7 @@ def admin_delete_process(process_id):
         if current_user.sistem_rol != 'admin' and surec.kurum_id != current_user.kurum_id:
             return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
 
+        Surec.query.filter_by(parent_id=process_id, silindi=False).update({Surec.parent_id: None}, synchronize_session=False)
         surec.silindi = True
         surec.deleted_at = datetime.utcnow()
         surec.deleted_by = current_user.id
@@ -2364,6 +2544,16 @@ def kurum_paneli_v3():
         current_app.logger.error(f'Kurum Paneli V3 hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         return f"Stratejik Kokpit V3 yüklenirken hata oluştu: {str(e)}", 500
+
+
+@main_bp.route('/v3/skor-motoru')
+@login_required
+def skor_motoru_detay():
+    """Skor Motoru detay sayfası: Vizyon puanı, ana/alt strateji, süreç ve PG skorları (API'den)."""
+    if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+        flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
+        return redirect(url_for('main.dashboard'))
+    return render_template('v3/skor_motoru_detay.html')
 
 
 @main_bp.route('/v3/kurum-paneli/visual')
@@ -3802,9 +3992,17 @@ def add_ana_strateji():
         if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
             return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
             
-        # kurum_panel.html form alanları: name="ad", name="aciklama"
+        # kurum_panel.html form alanları: name="ad", name="aciklama", name="ana_strateji_weight"
         ad = request.form.get('ana_strateji_ad') or request.form.get('ad')
         aciklama = request.form.get('ana_strateji_aciklama') or request.form.get('aciklama')
+        weight = request.form.get('ana_strateji_weight') or request.form.get('weight')
+        weight_f = None
+        if weight and str(weight).strip():
+            try:
+                weight_f = float(weight)
+                weight_f = min(100.0, max(0.0, weight_f)) if weight_f is not None else None
+            except (ValueError, TypeError):
+                weight_f = None
         
         if not ad:
             return jsonify({'success': False, 'message': 'Strateji adı zorunludur'}), 400
@@ -3812,7 +4010,8 @@ def add_ana_strateji():
         yeni_strateji = AnaStrateji(
             kurum_id=current_user.kurum_id,
             ad=ad,
-            aciklama=aciklama
+            aciklama=aciklama,
+            weight=weight_f
         )
         
         db.session.add(yeni_strateji)
@@ -3838,6 +4037,14 @@ def update_ana_strateji(id):
              
         strateji.ad = request.form.get('ana_strateji_ad') or request.form.get('ad') or strateji.ad
         strateji.aciklama = request.form.get('ana_strateji_aciklama') or request.form.get('aciklama') or strateji.aciklama
+        w = request.form.get('ana_strateji_weight') or request.form.get('weight')
+        if w is not None and str(w).strip() != '':
+            try:
+                strateji.weight = min(100.0, max(0.0, float(w)))
+            except (ValueError, TypeError):
+                pass
+        else:
+            strateji.weight = None
         
         db.session.commit()
         
@@ -3882,10 +4089,17 @@ def add_alt_strateji():
         if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
             return jsonify({'success': False, 'message': 'Yetkiniz yok'}), 403
             
-        # kurum_panel.html form alanları: name="ana_strateji_id", name="ad", name="aciklama"
+        # kurum_panel.html form alanları: name="ana_strateji_id", name="ad", name="aciklama", name="alt_strateji_weight"
         ana_strateji_id = request.form.get('alt_strateji_ana_id') or request.form.get('ana_strateji_id')
         ad = request.form.get('alt_strateji_ad') or request.form.get('ad')
         aciklama = request.form.get('alt_strateji_aciklama') or request.form.get('aciklama')
+        weight = request.form.get('alt_strateji_weight') or request.form.get('weight')
+        weight_f = None
+        if weight and str(weight).strip():
+            try:
+                weight_f = min(100.0, max(0.0, float(weight)))
+            except (ValueError, TypeError):
+                weight_f = None
         
         if not ad or not ana_strateji_id:
             return jsonify({'success': False, 'message': 'Strateji adı ve ana strateji zorunludur'}), 400
@@ -3901,7 +4115,8 @@ def add_alt_strateji():
         yeni_strateji = AltStrateji(
             ana_strateji_id=ana_strateji_id,
             ad=ad,
-            aciklama=aciklama
+            aciklama=aciklama,
+            weight=weight_f
         )
         
         db.session.add(yeni_strateji)
@@ -3929,6 +4144,14 @@ def update_alt_strateji(id):
              
         strateji.ad = request.form.get('alt_strateji_ad') or request.form.get('ad') or strateji.ad
         strateji.aciklama = request.form.get('alt_strateji_aciklama') or request.form.get('aciklama') or strateji.aciklama
+        w = request.form.get('alt_strateji_weight') or request.form.get('weight')
+        if w is not None and str(w).strip() != '':
+            try:
+                strateji.weight = min(100.0, max(0.0, float(w)))
+            except (ValueError, TypeError):
+                pass
+        else:
+            strateji.weight = None
         
         db.session.commit()
         
@@ -4232,6 +4455,22 @@ def stratejik_asistan():
         current_app.logger.error(f'Stratejik Asistan sayfası render hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         return f"Template render hatası: {str(e)}", 500
+
+
+@main_bp.route('/ai-coach')
+@login_required
+def ai_coach_page():
+    """AI Coach sayfası - Skor motoru verilerini Gemini ile analiz ettirir."""
+    try:
+        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
+            flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
+            return redirect(url_for('main.dashboard'))
+        return render_template('ai_coach.html')
+    except Exception as e:
+        import traceback
+        current_app.logger.error(f'AI Coach sayfası hatası: {str(e)}')
+        current_app.logger.error(traceback.format_exc())
+        return f"Sayfa yüklenemedi: {str(e)}", 500
 
 
 @main_bp.route('/strategy/matrix')

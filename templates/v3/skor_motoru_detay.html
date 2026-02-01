@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Skor Motoru Detay - Stratejik Kokpit{% endblock %}
+
+{% block content %}
+<style>
+    .card-header-v3 {
+        background: #eef1f5 !important;
+        color: #1e293b !important;
+        font-weight: 600;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .card-header-v3 h5 { color: #1e293b !important; margin-bottom: 0; }
+    .skor-badge { min-width: 3rem; text-align: center; }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-dark"><i class="fas fa-calculator me-2"></i>Skor Motoru Detay</h1>
+        <a href="{{ url_for('main.kurum_paneli_v3') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-1"></i>Kurum Paneli</a>
+    </div>
+
+    <div id="skor-detay-loading" class="text-center py-5 text-muted">
+        <div class="spinner-border mb-2"></div>
+        <p class="mb-0">Veriler yükleniyor...</p>
+    </div>
+    <div id="skor-detay-error" class="alert alert-danger d-none"></div>
+    <div id="skor-detay-content" class="d-none">
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <h6 class="text-muted text-uppercase small">Vizyon Puanı</h6>
+                        <h2 class="display-4 fw-bold text-primary mb-0" id="detay-vision-score">—</h2>
+                        <small class="text-muted">0–100</small>
+                        <div class="mt-2 small text-muted" id="detay-as-of-date"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header card-header-v3">
+                        <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Ana Stratejiler (Skor / Vizyona Katkı)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Ad</th><th class="text-end skor-badge">Skor</th><th class="text-end skor-badge">Katkı</th></tr>
+                                </thead>
+                                <tbody id="detay-ana-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header card-header-v3">
+                        <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Alt Stratejiler</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Ad</th><th class="text-end skor-badge">Skor</th></tr>
+                                </thead>
+                                <tbody id="detay-alt-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header card-header-v3">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Süreçler</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Ad</th><th class="text-end skor-badge">Skor</th></tr>
+                                </thead>
+                                <tbody id="detay-surec-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header card-header-v3">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Performans Göstergeleri (PG)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Ad</th><th class="text-end skor-badge">Skor</th></tr>
+                                </thead>
+                                <tbody id="detay-pg-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var apiUrl = '{{ url_for("api.api_vision_score") }}';
+    fetch(apiUrl, { credentials: 'same-origin' })
+        .then(function (r) {
+            if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+            var ct = r.headers.get('content-type');
+            if (!ct || ct.indexOf('application/json') === -1) throw new Error('JSON yanıt yok');
+            return r.json();
+        })
+        .then(function (data) {
+            document.getElementById('skor-detay-loading').classList.add('d-none');
+            document.getElementById('skor-detay-error').classList.add('d-none');
+            if (!data.success) {
+                document.getElementById('skor-detay-error').textContent = data.message || 'Veri alınamadı.';
+                document.getElementById('skor-detay-error').classList.remove('d-none');
+                return;
+            }
+            var vs = data.vision_score != null ? parseFloat(data.vision_score).toFixed(1) : '—';
+            document.getElementById('detay-vision-score').textContent = vs;
+            document.getElementById('detay-as-of-date').textContent = data.as_of_date ? 'Tarih: ' + data.as_of_date : '';
+
+            function fillTable(tbodyId, rows, cols) {
+                var tbody = document.getElementById(tbodyId);
+                tbody.innerHTML = '';
+                (rows || []).forEach(function (row) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = cols.map(function (c) {
+                        var val = row[c.key];
+                        var text = val != null ? (typeof val === 'number' ? val.toFixed(1) : String(val)) : '—';
+                        var cls = c.className || '';
+                        return '<td class="' + cls + '">' + text + '</td>';
+                    }).join('');
+                    tbody.appendChild(tr);
+                });
+                if (!(rows && rows.length)) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td colspan="' + cols.length + '" class="text-muted text-center py-3">Veri yok</td>';
+                    tbody.appendChild(tr);
+                }
+            }
+            fillTable('detay-ana-tbody', data.ana_stratejiler || [], [
+                { key: 'ad' },
+                { key: 'score', className: 'text-end' },
+                { key: 'vizyona_katki', className: 'text-end' }
+            ]);
+            fillTable('detay-alt-tbody', data.alt_stratejiler || [], [
+                { key: 'ad' },
+                { key: 'score', className: 'text-end' }
+            ]);
+            fillTable('detay-surec-tbody', data.surecler || [], [
+                { key: 'ad' },
+                { key: 'score', className: 'text-end' }
+            ]);
+            fillTable('detay-pg-tbody', data.performans_gostergeleri || [], [
+                { key: 'ad' },
+                { key: 'score', className: 'text-end' }
+            ]);
+            document.getElementById('skor-detay-content').classList.remove('d-none');
+        })
+        .catch(function (err) {
+            document.getElementById('skor-detay-loading').classList.add('d-none');
+            document.getElementById('skor-detay-error').textContent = 'Skor motoru verisi yüklenemedi.';
+            document.getElementById('skor-detay-error').classList.remove('d-none');
+        });
+});
+</script>
+{% endblock %}

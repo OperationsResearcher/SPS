@@ -16,6 +16,11 @@ class Config:
     # Guvenlik
     SECRET_KEY = os.getenv('SECRET_KEY', 'varsayilan-guvensiz-anahtar-degistir')
     DEBUG = True
+
+    # AI Coach (Gemini) - anahtar asla kod icinde yazilmaz
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+    # Model adi (ornek: gemini-2.0-flash, gemini-2.5-flash, gemini-pro). Bossa asagidaki sira denenir.
+    GEMINI_MODEL = os.getenv('GEMINI_MODEL', '').strip() or None
     
     # Rate Limiter - DEVRE DIŞI (Toplantı sırasında 429 hatası önlemek için)
     RATELIMIT_ENABLED = False

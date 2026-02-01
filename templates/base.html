@@ -17,9 +17,6 @@
     <!-- Custom CSS - Loaded AFTER Bootstrap to override -->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
-    <!-- Lottie Player for Guide Animations -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-
     <!-- PWA Manifest -->
     <link href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#667eea">
@@ -558,6 +555,17 @@
             background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
             transform: translateX(5px);
         }
+
+        /* ============================================
+           GLOBAL MODAL FIX - Hayalet overlay önleme (tüm sayfalarda)
+           Modallar backdrop'un üstünde görünsün, body'ye taşınsın
+           ============================================ */
+        .modal {
+            z-index: 1060 !important;
+        }
+        .modal .modal-dialog {
+            z-index: 1061 !important;
+        }
     </style>
 
     {% block styles %}{% endblock %}
@@ -675,6 +683,13 @@
                             href="{{ url_for('main.stratejik_asistan') }}">
                             <i class="fas fa-magic"></i>
                             <span>Stratejik Asistan</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.ai_coach_page' %}active{% endif %}"
+                            href="{{ url_for('main.ai_coach_page') }}">
+                            <i class="fas fa-robot"></i>
+                            <span>AI Coach</span>
                         </a>
                     </div>
                     <div class="nav-item">
@@ -1174,6 +1189,18 @@
                                             </a>
                                         </li>
                                         <li>
+                                            <a class="dropdown-item v3-dropdown-item"
+                                                href="{{ url_for('main.ai_coach_page') }}">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <i class="fas fa-robot me-2 text-primary"></i>
+                                                        <span class="fw-semibold">AI Coach</span>
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted ms-4 d-block">Skor motoru analizi, Gemini ile stratejik öneriler</small>
+                                            </a>
+                                        </li>
+                                        <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
@@ -1461,6 +1488,47 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Global Modal Fix: hayalet overlay önleme (tüm sayfalarda tüm modallar) -->
+    <script>
+        (function () {
+            function cleanupOverlayAndBackdrop() {
+                var backdrops = document.querySelectorAll('.modal-backdrop');
+                for (var i = 0; i < backdrops.length; i++) backdrops[i].remove();
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('overflow');
+                document.body.style.removeProperty('padding-right');
+            }
+            function focusResetOnModalHide() {
+                var active = document.activeElement;
+                if (!active || active === document.body) return;
+                var inModal = active.closest && active.closest('.modal');
+                if (!inModal) return;
+                active.blur();
+                document.body.setAttribute('tabindex', '-1');
+                try { document.body.focus(); } catch (e) {}
+            }
+            function ensureModalInBody(ev) {
+                var el = ev.target;
+                if (el && el.nodeType === 1 && el.parentNode !== document.body) {
+                    document.body.appendChild(el);
+                }
+            }
+            function onModalHidden() {
+                focusResetOnModalHide();
+                cleanupOverlayAndBackdrop();
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                cleanupOverlayAndBackdrop();
+                /* Tüm modallar (statik + dinamik): Bootstrap olayları document'e bubble eder */
+                document.addEventListener('show.bs.modal', ensureModalInBody);
+                document.addEventListener('hide.bs.modal', focusResetOnModalHide);
+                document.addEventListener('hidden.bs.modal', onModalHidden);
+            });
+            window.addEventListener('error', cleanupOverlayAndBackdrop);
+            window.addEventListener('unhandledrejection', cleanupOverlayAndBackdrop);
+            window.cleanupOverlayAndBackdrop = cleanupOverlayAndBackdrop;
+        })();
+    </script>
     <!-- jQuery (loading-handler.js için gerekli) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- Chart.js -->

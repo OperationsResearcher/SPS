@@ -29,6 +29,9 @@ class AnaStrateji(db.Model):
     perspective = db.Column(db.String(20), nullable=True, index=True)  # FINANSAL, MUSTERI, SUREC, OGRENME
     bsc_code = db.Column(db.String(10), nullable=True, index=True)  # Örn: F1, M2
     
+    # Skor Motoru: 0-100 arası ağırlık (None/0 = eşit dağılım: 100 / kardeş sayısı)
+    weight = db.Column(db.Float, nullable=True)
+    
     # Meta Veriler
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -64,6 +67,9 @@ class AltStrateji(db.Model):
     # Yöntem
     target_method = db.Column(db.String(10), nullable=True)  # HKY, RG, SH, DH, HK, SGH
     aciklama = db.Column(db.Text)
+    
+    # Skor Motoru: 0-100 arası ağırlık (None/0 = eşit dağılım)
+    weight = db.Column(db.Float, nullable=True)
     
     # Meta Veriler
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

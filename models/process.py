@@ -40,14 +40,15 @@ class Surec(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
-    
+    parent_id = db.Column(db.Integer, db.ForeignKey('surec.id', ondelete='SET NULL'), nullable=True, index=True)
+
     # Tanımlama
     code = db.Column(db.String(20), nullable=True, index=True)  # Örn: SR1
     ad = db.Column(db.String(200), nullable=False, index=True)
     name = db.Column(db.String(200), nullable=True)  # İngilizce
     
-    # Detaylar
-    weight = db.Column(db.Float, default=0.0)  # Süreç Ağırlığı (0.0-1.0)
+    # Detaylar (Skor Motoru: 0-100 arası ağırlık; None/0 = eşit dağılım)
+    weight = db.Column(db.Float, nullable=True)
     dokuman_no = db.Column(db.String(50))
     rev_no = db.Column(db.String(20))
     rev_tarihi = db.Column(db.Date)
@@ -73,7 +74,9 @@ class Surec(db.Model):
     
     # İlişkiler
     kurum = db.relationship('Kurum', foreign_keys=[kurum_id], backref=db.backref('surecler', lazy=True))
-    
+    parent = db.relationship('Surec', remote_side=[id], foreign_keys=[parent_id], backref=db.backref('sub_processes', lazy='dynamic'))
+    # Alt süreçler: parent silindiğinde DB ON DELETE SET NULL ile parent_id null olur (yetim kalmaz).
+
     # Many-to-Many İlişkiler
     liderler = db.relationship('User', secondary=surec_liderleri, backref='liderlik_yaptigi_surecler')
     uyeler = db.relationship('User', secondary=surec_uyeleri, backref='uye_oldugu_surecler')
@@ -114,7 +117,10 @@ class SurecPerformansGostergesi(db.Model):
     # Konfigürasyon
     agirlik = db.Column(db.Integer, default=0)
     onemli = db.Column(db.Boolean, default=False)
-    direction = db.Column(db.String(20), default='Increasing')  # Increasing/Decreasing
+    direction = db.Column(db.String(20), default='Increasing')  # Increasing/Decreasing (hedef_yonu)
+    # Skor Motoru: 0-100 ağırlık (None/0 = eşit dağılım); her veri girişinde hesaplanan 0-100 başarı puanı
+    weight = db.Column(db.Float, nullable=True)
+    calculated_score = db.Column(db.Float, nullable=True)
     
     # Excel formatı için yeni alanlar
     gosterge_turu = db.Column(db.String(50), nullable=True)
@@ -141,14 +147,16 @@ class SurecPerformansGostergesi(db.Model):
     
 class SurecFaaliyet(db.Model):
     """
-    Süreç Faaliyet Modeli
-    
+    Süreç Faaliyet Modeli (Aksiyon).
     Süreç hedeflerine ulaşmak için yapılması gereken aksiyonlar.
+    Vizyon puanına sadece bağlı PG üzerinden (ispat) etki eder.
     """
     __tablename__ = 'surec_faaliyet'
     
     id = db.Column(db.Integer, primary_key=True)
     surec_id = db.Column(db.Integer, db.ForeignKey('surec.id'), nullable=False, index=True)
+    # Aksiyon–PG ilişkisi: Bu faaliyet hangi PG'nin verisini güncelleyerek vizyona etki eder
+    surec_pg_id = db.Column(db.Integer, db.ForeignKey('surec_performans_gostergesi.id'), nullable=True, index=True)
     
     ad = db.Column(db.String(200), nullable=False)
     aciklama = db.Column(db.Text)
@@ -162,6 +170,7 @@ class SurecFaaliyet(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     surec = db.relationship('Surec', backref=db.backref('faaliyetler', lazy=True, cascade='all, delete-orphan'))
+    surec_pg = db.relationship('SurecPerformansGostergesi', backref=db.backref('faaliyetler', lazy=True))
     
     def __repr__(self):
         return f'<SurecFaaliyet {self.ad}>'

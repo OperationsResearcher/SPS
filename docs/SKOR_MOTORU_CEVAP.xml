@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cevap>
+  <thinking>
+    1) Veritabanı: AnaStrateji, AltStrateji, Surec, SurecPerformansGostergesi modellerine weight (Float, 0-100) eklendi; KPI'ya calculated_score eklendi. Ağırlık atanmamış kayıtlar için varsayılan "Eşit Dağılım" (100 / kardeş sayısı) kullanılıyor.
+    2) PG skoru: hedef_yonu (direction: Increasing/Decreasing) ile (Gerçekleşen/Hedef) oranı 100 üzerinden hesaplanıyor; Azalan için oran = hedef/gerçekleşen. Maksimum 100.
+    3) Özyinelemeli yukarı taşıma: Yaprak süreçler PG ağırlıklı ortalaması; üst süreçler alt süreç ağırlıklı ortalaması; Alt Strateji puanı StrategyProcessMatrix ile süreç puanlarının relationship_score ağırlıklı ortalaması; Ana Strateji alt strateji ağırlıklı ortalaması; Vizyon = ana strateji ağırlıklı ortalaması (0-100).
+    4) Point-in-time: as_of_date'e kadar PerformansGostergeVeri (veri_tarihi &lt;= as_of_date) kullanılarak o anki vizyon fotoğrafı hesaplanıyor.
+    5) Aksiyon–PG: SurecFaaliyet.surec_pg_id ile faaliyet bir PG'ye bağlandı; faaliyet güncellendiğinde sadece bağlı PG üzerinden recalc_on_faaliyet_change ile vizyon güncelleniyor (ispat). Dairesel bağımlılık yok: PG veri → PG skor → Süreç → Alt Strateji → Ana Strateji → Vizyon; Aksiyon doğrudan vizyonu etkilemiyor, sadece PG verisini tetikliyor.
+  </thinking>
+  <dosya_adi>
+    models/strategy.py
+    models/process.py
+    services/score_engine_service.py
+    scripts/migrate_score_engine_schema.py
+    api/routes.py
+    main/routes.py
+    docs/SKOR_MOTORU_CEVAP.xml
+  </dosya_adi>
+  <skorlama_mantigi>
+    PG başarı puanı: ratio = (Artan ise gerceklesen/hedef, Azalan ise hedef/gerceklesen); score = min(100, max(0, ratio * 100)).
+    Varsayılan ağırlık: w = (weight is None veya 0) ? (100 / kardeş_sayısı) : min(100, max(0, weight)).
+    Süreç puanı (yaprak): surec_puan = sum(pg_skoru * pg_agirlik) / sum(pg_agirlik).
+    Süreç puanı (üst): surec_puan = sum(alt_surec_puan * alt_agirlik) / sum(alt_agirlik).
+    Alt Strateji puanı: alt_puan = sum(surec_puan * relationship_score) / sum(relationship_score) [StrategyProcessMatrix üzerinden].
+    Ana Strateji puanı: ana_puan = sum(alt_puan * alt_agirlik) / sum(alt_agirlik).
+    Vizyon puanı: vision = sum(ana_puan * ana_agirlik) / sum(ana_agirlik); çıktı 0-100.
+  </skorlama_mantigi>
+  <kod_degisikligi>
+    - AnaStrateji, AltStrateji: weight (Float, nullable) eklendi.
+    - Surec: weight nullable yapıldı (0-100).
+    - SurecPerformansGostergesi: weight (Float), calculated_score (Float) eklendi.
+    - SurecFaaliyet: surec_pg_id (FK surec_performans_gostergesi), surec_pg relationship eklendi.
+    - score_engine_service: compute_pg_score, get_pg_representative_data, _default_weight, compute_vision_score, recalc_on_pg_data_change, recalc_on_faaliyet_change.
+    - API: POST /surec/&lt;surec_id&gt;/karne/kaydet ve PUT /pg-veri/guncelle sonrası recalc_on_pg_data_change; GET /api/vision-score?as_of_date=YYYY-MM-DD.
+    - main/routes: update_surec_faaliyet sonrası recalc_on_faaliyet_change; formdan surec_pg_id kabul edildi.
+  </kod_degisikligi>
+  <denetim>
+    Tüm maddeler işlendi. Circular dependency yok: Vizyon ← Ana Strateji ← Alt Strateji ← Süreç (matris) ← PG skoru ← PG verisi; Aksiyon sadece PG verisi girişini tetikleyebilir (surec_pg_id ile), doğrudan vizyon formülüne girmez. Ağırlıklar tek yönlü ağaç/graf; döngü yok.
+  </denetim>
+</cevap>

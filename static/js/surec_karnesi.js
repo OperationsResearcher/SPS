@@ -525,9 +525,48 @@ function debugSurecData() {
         });
 }
 
+// Hayalet overlay önleme: modal backdrop temizliği ve body'ye taşıma
+function cleanupOverlayAndBackdrop() {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+}
+function focusResetOnModalHide() {
+    const active = document.activeElement;
+    if (active && active !== document.body && active.closest && active.closest('.modal')) {
+        active.blur();
+        document.body.setAttribute('tabindex', '-1');
+        try { document.body.focus(); } catch (e) {}
+    }
+}
+function ensureModalInBody(ev) {
+    const el = ev.target;
+    if (el && el.nodeType === 1 && el.parentNode !== document.body) {
+        document.body.appendChild(el);
+    }
+}
+const KARNESI_MODAL_IDS = ['dataEntryWizardModal2', 'addPerformansModal', 'editPerformansModal', 'addFaaliyetModal', 'pgVeriDetayModal'];
+
 // Sayfa yüklendiğinde kullanıcının süreçlerini getir
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM Yüklendi!');
+
+    cleanupOverlayAndBackdrop();
+    KARNESI_MODAL_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('show.bs.modal', ensureModalInBody);
+            el.addEventListener('hide.bs.modal', focusResetOnModalHide);
+            el.addEventListener('hidden.bs.modal', function () {
+                focusResetOnModalHide();
+                cleanupOverlayAndBackdrop();
+            });
+        }
+    });
+    window.addEventListener('error', cleanupOverlayAndBackdrop);
+    window.addEventListener('unhandledrejection', cleanupOverlayAndBackdrop);
 
     // Yıl dropdown'unu mevcut yıl ile güncelle (opsiyon yoksa ekle)
     const yilSelect = document.getElementById('yilSelect');
@@ -2189,6 +2228,9 @@ function addPerformansGostergesi(e) {
         direction = document.getElementById('pg_direction').value || 'Increasing';
     }
 
+    const pgWeightEl = document.getElementById('pg_weight');
+    const pgWeight = (pgWeightEl && pgWeightEl.value !== '') ? parseFloat(pgWeightEl.value) : null;
+
     const formData = {
         ad: document.getElementById('pg_ad').value,
         aciklama: document.getElementById('pg_aciklama').value,
@@ -2202,7 +2244,8 @@ function addPerformansGostergesi(e) {
         basari_puani_araliklari: basariPuaniAraliklari,
         alt_strateji_id: document.getElementById('pg_alt_strateji').value || null,
         gosterge_turu: document.getElementById('pg_gosterge_turu').value,
-        target_method: document.getElementById('pg_hedef_yontemi').value
+        target_method: document.getElementById('pg_hedef_yontemi').value,
+        weight: pgWeight
     };
 
     fetch(`/surec/${mevcutSurecId}/performans-gostergesi/add`, {
@@ -2257,6 +2300,8 @@ function editPerformansGostergesi(pgId) {
                 document.getElementById('edit_pg_hesaplama_yontemi').value = pg.veri_toplama_yontemi || 'Ortalama';
                 document.getElementById('edit_pg_gosterge_turu').value = pg.gosterge_turu || '';
                 document.getElementById('edit_pg_hedef_yontemi').value = pg.target_method || '';
+                const editPgWeightEl = document.getElementById('edit_pg_weight');
+                if (editPgWeightEl) editPgWeightEl.value = (pg.weight != null && pg.weight !== '') ? pg.weight : '';
 
                 // Modal açıldıktan sonra alt stratejileri yükle ve seçimi yap
                 function onModalShown() {
@@ -2419,6 +2464,9 @@ function updatePerformansGostergesi(e) {
         direction = document.getElementById('edit_pg_direction').value || 'Increasing';
     }
 
+    const editPgWeightEl = document.getElementById('edit_pg_weight');
+    const editPgWeight = (editPgWeightEl && editPgWeightEl.value !== '') ? parseFloat(editPgWeightEl.value) : null;
+
     const formData = {
         ad: document.getElementById('edit_pg_ad').value,
         aciklama: document.getElementById('edit_pg_aciklama').value,
@@ -2432,7 +2480,8 @@ function updatePerformansGostergesi(e) {
         target_method: document.getElementById('edit_pg_hedef_yontemi').value,
         direction: direction,
         basari_puani_araliklari: basariPuaniAraliklari,
-        alt_strateji_id: document.getElementById('edit_pg_alt_strateji').value || null
+        alt_strateji_id: document.getElementById('edit_pg_alt_strateji').value || null,
+        weight: editPgWeight
     };
 
     console.log('Form Data:', formData);

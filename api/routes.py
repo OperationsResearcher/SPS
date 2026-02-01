@@ -801,6 +801,15 @@ def api_surec_karne_kaydet(surec_id):
         # Audit logging handled by generic service
         current_app.logger.info(f"PG Veri kaydedildi: PG={pg_id}, User={current_user.id}")
         
+        # Skor Motoru: PG verisi değişince Vizyon puanını tüm hiyerarşide yeniden hesapla
+        try:
+            kurum_id = getattr(current_user, 'kurum_id', None)
+            if kurum_id:
+                from services.score_engine_service import recalc_on_pg_data_change
+                recalc_on_pg_data_change(kurum_id)
+        except Exception as ex:
+            current_app.logger.debug("Skor motoru güncellemesi atlandı: %s", ex)
+        
         # Erken Uyarı Mekanizması: PG verisi kaydedildikten sonra performans sapması kontrolü
         if pg_verileri and field == 'gerceklesen' and pg_veri.id:
             from services.notification_service import check_pg_performance_deviation
@@ -814,6 +823,222 @@ def api_surec_karne_kaydet(surec_id):
         db.session.rollback()
         current_app.logger.error(f'Veri kaydedilemedi: {e}')
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+def _default_weight(weight, sibling_count):
+    """Skor motoru ile uyumlu: ağırlık atanmamışsa 100 / kardeş sayısı."""
+    if sibling_count <= 0:
+        return 100.0
+    if weight is not None and weight > 0:
+        return min(100.0, max(0.0, float(weight)))
+    return 100.0 / sibling_count
+
+
+@api_bp.route('/vision-score', methods=['GET'])
+@login_required
+def api_vision_score():
+    """Point-in-time Vizyon puanı (0-100). as_of_date: YYYY-MM-DD (opsiyonel, varsayılan bugün).
+    Yanıtta surec_scores, pg_scores ve isimli listeler (ana_stratejiler, alt_stratejiler, surecler, performans_gostergeleri) ile vizyona katkı (ana_strateji) döner."""
+    try:
+        from datetime import datetime as dt
+        from services.score_engine_service import compute_vision_score
+        kurum_id = getattr(current_user, 'kurum_id', None)
+        if not kurum_id:
+            return jsonify({'success': False, 'message': 'Kurum bilgisi yok'}), 400
+        as_of_str = request.args.get('as_of_date')
+        as_of_date = None
+        if as_of_str:
+            try:
+                as_of_date = dt.strptime(as_of_str.strip()[:10], '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Geçersiz as_of_date (YYYY-MM-DD beklenir)'}), 400
+        persist = request.args.get('persist', '').lower() in ('1', 'true', 'yes')
+        result = compute_vision_score(kurum_id, as_of_date, persist_pg_scores=persist)
+        ana_scores = result.get('ana_strateji_scores', {})
+        alt_scores = result.get('alt_strateji_scores', {})
+        surec_scores = result.get('surec_scores', {})
+        pg_scores = result.get('pg_scores', {})
+
+        # İsimli listeler ve vizyona katkı
+        ana_list = AnaStrateji.query.filter_by(kurum_id=kurum_id).order_by(AnaStrateji.id).all()
+        n_ana = len(ana_list)
+        w_sum_ana = sum(_default_weight(a.weight, n_ana) for a in ana_list) or 1.0
+        ana_stratejiler = []
+        for a in ana_list:
+            sc = ana_scores.get(a.id, 0.0)
+            w = _default_weight(a.weight, n_ana)
+            vizyona_katki = round((w / w_sum_ana) * sc, 2) if w_sum_ana else 0.0
+            ana_stratejiler.append({
+                'id': a.id,
+                'ad': a.ad or '',
+                'score': round(sc, 2),
+                'agirlik': round(w, 2),
+                'vizyona_katki': vizyona_katki,
+            })
+
+        alt_ids = list(alt_scores.keys())
+        alt_stratejiler = []
+        if alt_ids:
+            for alt in AltStrateji.query.filter(AltStrateji.id.in_(alt_ids)).order_by(AltStrateji.id).all():
+                alt_stratejiler.append({
+                    'id': alt.id,
+                    'ad': alt.ad or '',
+                    'ana_strateji_id': alt.ana_strateji_id,
+                    'score': round(alt_scores.get(alt.id, 0.0), 2),
+                })
+
+        surec_ids = list(surec_scores.keys())
+        surecler = []
+        if surec_ids:
+            for s in Surec.query.filter(Surec.id.in_(surec_ids), Surec.silindi == False).order_by(Surec.id).all():
+                surecler.append({
+                    'id': s.id,
+                    'ad': s.ad or '',
+                    'score': round(surec_scores.get(s.id, 0.0), 2),
+                })
+
+        pg_ids = list(pg_scores.keys())
+        performans_gostergeleri = []
+        if pg_ids:
+            for pg in SurecPerformansGostergesi.query.filter(SurecPerformansGostergesi.id.in_(pg_ids)).order_by(SurecPerformansGostergesi.id).all():
+                performans_gostergeleri.append({
+                    'id': pg.id,
+                    'ad': pg.ad or '',
+                    'surec_id': pg.surec_id,
+                    'score': round(pg_scores.get(pg.id, 0.0), 2),
+                })
+
+        return jsonify({
+            'success': True,
+            'vision_score': result['vision_score'],
+            'as_of_date': result['as_of_date'],
+            'kurum_id': kurum_id,
+            'ana_strateji_scores': ana_scores,
+            'alt_strateji_scores': alt_scores,
+            'surec_scores': surec_scores,
+            'pg_scores': pg_scores,
+            'ana_stratejiler': ana_stratejiler,
+            'alt_stratejiler': alt_stratejiler,
+            'surecler': surecler,
+            'performans_gostergeleri': performans_gostergeleri,
+        })
+    except Exception as e:
+        current_app.logger.exception('Vision score hesaplanamadı: %s', e)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@api_bp.route('/vision-score/recalc', methods=['POST'])
+@login_required
+def api_vision_score_recalc():
+    """Tüm hiyerarşide vizyon puanını yeniden hesapla ve PG calculated_score alanlarını güncelle (Skor Motoru aktif)."""
+    try:
+        from services.score_engine_service import recalc_on_pg_data_change
+        kurum_id = getattr(current_user, 'kurum_id', None)
+        if not kurum_id:
+            return jsonify({'success': False, 'message': 'Kurum bilgisi yok'}), 400
+        result = recalc_on_pg_data_change(kurum_id)
+        return jsonify({
+            'success': True,
+            'vision_score': result.get('vision_score', 0),
+            'as_of_date': result.get('as_of_date'),
+            'kurum_id': kurum_id,
+            'message': 'Vizyon puanı tüm hiyerarşide yeniden hesaplandı.',
+        })
+    except Exception as e:
+        current_app.logger.exception('Vision score recalc hatası: %s', e)
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+def _build_vision_score_payload_for_ai(kurum_id, as_of_date=None):
+    """Skor motoru çıktısını AI Coach'a gönderilecek payload olarak döndürür (surec/PG ağırlıkları dahil)."""
+    from datetime import datetime as dt
+    from services.score_engine_service import compute_vision_score
+    result = compute_vision_score(kurum_id, as_of_date, persist_pg_scores=False)
+    ana_scores = result.get('ana_strateji_scores', {})
+    alt_scores = result.get('alt_strateji_scores', {})
+    surec_scores = result.get('surec_scores', {})
+    pg_scores = result.get('pg_scores', {})
+
+    ana_list = AnaStrateji.query.filter_by(kurum_id=kurum_id).order_by(AnaStrateji.id).all()
+    n_ana = len(ana_list)
+    w_sum_ana = sum(_default_weight(a.weight, n_ana) for a in ana_list) or 1.0
+    ana_stratejiler = []
+    for a in ana_list:
+        sc = ana_scores.get(a.id, 0.0)
+        w = _default_weight(a.weight, n_ana)
+        vizyona_katki = round((w / w_sum_ana) * sc, 2) if w_sum_ana else 0.0
+        ana_stratejiler.append({
+            'id': a.id, 'ad': a.ad or '', 'score': round(sc, 2),
+            'agirlik': round(w, 2), 'vizyona_katki': vizyona_katki,
+        })
+
+    surec_ids = list(surec_scores.keys())
+    surecler = []
+    if surec_ids:
+        for s in Surec.query.filter(Surec.id.in_(surec_ids), Surec.silindi == False).order_by(Surec.id).all():
+            sw = float(s.weight) if s.weight is not None else None
+            surecler.append({
+                'id': s.id, 'ad': s.ad or '', 'score': round(surec_scores.get(s.id, 0.0), 2),
+                'agirlik': round(sw, 2) if sw is not None else None,
+            })
+
+    pg_ids = list(pg_scores.keys())
+    performans_gostergeleri = []
+    if pg_ids:
+        for pg in SurecPerformansGostergesi.query.filter(SurecPerformansGostergesi.id.in_(pg_ids)).order_by(SurecPerformansGostergesi.id).all():
+            w = float(pg.weight) if pg.weight is not None else None
+            performans_gostergeleri.append({
+                'id': pg.id, 'ad': pg.ad or '', 'surec_id': pg.surec_id,
+                'score': round(pg_scores.get(pg.id, 0.0), 2),
+                'agirlik': round(w, 2) if w is not None else None,
+            })
+
+    return {
+        'vision_score': result['vision_score'],
+        'as_of_date': result['as_of_date'],
+        'kurum_id': kurum_id,
+        'ana_stratejiler': ana_stratejiler,
+        'surecler': surecler,
+        'performans_gostergeleri': performans_gostergeleri,
+    }
+
+
+@api_bp.route('/ai-coach/analyze', methods=['GET', 'POST'])
+@login_required
+@csrf.exempt
+def api_ai_coach_analyze():
+    """Skor motoru verilerini hesaplayıp AI Coach (Gemini) ile analiz ettirir; Markdown yanıt döner."""
+    try:
+        kurum_id = getattr(current_user, 'kurum_id', None)
+        if not kurum_id:
+            return jsonify({'success': False, 'message': 'Kurum bilgisi yok'}), 400
+        as_of_str = request.args.get('as_of_date') or (request.get_json() or {}).get('as_of_date')
+        as_of_date = None
+        if as_of_str:
+            from datetime import datetime as dt
+            try:
+                as_of_date = dt.strptime(str(as_of_str).strip()[:10], '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        payload = _build_vision_score_payload_for_ai(kurum_id, as_of_date)
+        from services.ai_coach_service import analyze_strategic_performance
+        result = analyze_strategic_performance(payload)
+        if not result.get('success'):
+            return jsonify({
+                'success': False,
+                'message': result.get('error', 'Analiz başarısız.'),
+                'analysis_markdown': None,
+            }), 200
+        return jsonify({
+            'success': True,
+            'analysis_markdown': result.get('analysis_markdown'),
+            'vision_score': payload.get('vision_score'),
+            'as_of_date': payload.get('as_of_date'),
+            'usage': result.get('usage'),
+        })
+    except Exception as e:
+        current_app.logger.exception('AI Coach analyze hatası: %s', e)
+        return jsonify({'success': False, 'message': str(e), 'analysis_markdown': None}), 500
 
 
 @api_bp.route('/surec/<int:surec_id>/uyeler', methods=['GET'])
@@ -1707,13 +1932,22 @@ def api_pg_veri_guncelle(veri_id):
         
         db.session.commit()
         
+        # Skor Motoru: PG verisi güncellenince Vizyon puanını tüm hiyerarşide yeniden hesapla
+        try:
+            kurum_id = getattr(current_user, 'kurum_id', None)
+            if kurum_id:
+                from services.score_engine_service import recalc_on_pg_data_change
+                recalc_on_pg_data_change(kurum_id)
+        except Exception as ex:
+            current_app.logger.debug("Skor motoru güncellemesi atlandı: %s", ex)
+        
         return jsonify({
             'success': True,
             'message': 'Veri başarıyla güncellendi'
         })
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'PG veri güncelleme hatası: {e}')
+        current_app.logger.error(f'PG veri güncelleme hatası: %s', e)
         import traceback
         current_app.logger.error(traceback.format_exc())
         return jsonify({'success': False, 'message': str(e)}), 500

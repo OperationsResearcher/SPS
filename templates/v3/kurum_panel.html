@@ -38,25 +38,42 @@
     }
 
     .card-header-v3 {
-        background-color: #2c3e50;
-        color: white;
+        background: #eef1f5 !important;
+        color: #1e293b !important;
         font-weight: 600;
         cursor: move;
         border-top-left-radius: 12px !important;
         border-top-right-radius: 12px !important;
         padding: 1rem 1.25rem;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .card-header-v3 h5 {
-        color: white !important;
-        font-size: 1.05rem;
+        color: #1e293b !important;
+        font-size: 1.1rem;
+        font-weight: 600;
         margin-bottom: 0;
+        line-height: 1.35;
+    }
+
+    .card-header-v3 h5 i {
+        color: #475569 !important;
+    }
+
+    .card-header-v3.card-header-danger {
+        background: #c0392b !important;
+        color: #fff !important;
+        border-bottom-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header-v3.card-header-danger h5,
+    .card-header-v3.card-header-danger h5 i {
+        color: #fff !important;
     }
 
     .card-header-v3 .close-widget-btn {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(30, 41, 59, 0.1);
+        color: #475569;
         border: none;
         width: 32px;
         height: 32px;
@@ -69,16 +86,22 @@
 
     .card-header-v3 .close-widget-btn:hover {
         background-color: #e74c3c;
+        color: #fff;
         transform: rotate(90deg);
+    }
+
+    .card-header-v3.card-header-danger .close-widget-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
     }
 
     .widget-id-badge {
         font-size: 0.7rem;
-        font-weight: 700;
-        padding: 0.35rem 0.65rem;
-        border-radius: 8px;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        font-weight: 600;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        background: rgba(30, 41, 59, 0.1);
+        color: #475569 !important;
     }
 
     .sortable-ghost {
@@ -87,27 +110,42 @@
         border: 2px dashed #adb5bd;
     }
 
-    /* Info Button */
+    /* Info Button (açık başlıkta okunaklı) */
+    .card-header-v3 .btn-info-circle {
+        background: rgba(30, 41, 59, 0.12);
+        color: #475569;
+        border: 1px solid rgba(30, 41, 59, 0.2);
+    }
+
+    .card-header-v3 .btn-info-circle:hover {
+        background: #4e73df;
+        color: #fff;
+        border-color: #4e73df;
+        transform: scale(1.15);
+    }
+
+    .card-header-v3.card-header-danger .btn-info-circle {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .card-header-v3.card-header-danger .btn-info-circle:hover {
+        background: #fff;
+        color: #c0392b;
+    }
+
     .btn-info-circle {
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.3);
         font-size: 0.75rem;
         cursor: pointer;
         margin-left: 8px;
         transition: all 0.2s;
-    }
-
-    .btn-info-circle:hover {
-        background: white;
-        color: #4e73df;
-        transform: scale(1.15);
     }
 
     /* Visual Mode Styles */
@@ -258,7 +296,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-bullseye me-2"></i> Kurumsal Vizyon</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-warning text-dark">WIDGET-001</span>
+                        <span class="widget-id-badge bg-warning text-dark">widget-001</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Kurumsal Vizyon', 'Vizyon, kurumun gelecekte ulaşmak istediği ideal konumu tanımlar. Stratejik planlamanın temel taşıdır ve tüm çalışanların ortak hedefini belirler. İyi tanımlanmış bir vizyon, organizasyonun yönünü netleştirir ve motivasyonu artırır.')">
                             <i class="fas fa-info"></i>
@@ -281,7 +319,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-tachometer-alt me-2"></i> Başarı Skoru</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-primary text-white">WIDGET-002</span>
+                        <span class="widget-id-badge bg-primary text-white">widget-002</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Başarı Skoru', 'Kurumsal başarı skoru, tüm stratejik hedeflerin, süreçlerin ve projelerin ağırlıklı performans ortalamasıdır. 0-100 arasında değişir. 70 üzeri mükemmel, 50-70 arası iyi, 50 altı iyileştirme gerektirir. Bu metrik, yönetimin genel performansı tek bir sayıda görmesini sağlar.')">
                             <i class="fas fa-info"></i>
@@ -328,7 +366,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-tasks me-2"></i> Stratejik İlerleme</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-success text-white">WIDGET-004</span>
+                        <span class="widget-id-badge bg-success text-white">widget-004</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Stratejik İlerleme', 'Kurumun ana stratejik hedeflerinin (amaçlarının) gerçekleşme yüzdeleridir. Her hedef, altındaki performans göstergeleri (KPI) ve süreçlerin ağırlıklı ortalaması ile hesaplanır. Düşük skorlu hedefler, yönetimin öncelikli müdahale alanlarını gösterir.')">
                             <i class="fas fa-info"></i>
@@ -367,7 +405,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-trophy me-2"></i> Lokomotif Süreçler</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-success text-white">WIDGET-005</span>
+                        <span class="widget-id-badge bg-success text-white">widget-005</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Lokomotif Süreçler', 'En yüksek performans skoruna sahip iş süreçleridir. Bu süreçler, kurumun güçlü yönlerini temsil eder ve diğer süreçlere örnek teşkil eder. Best practice (en iyi uygulama) olarak diğer birimlere transfer edilebilir.')">
                             <i class="fas fa-info"></i>
@@ -398,11 +436,10 @@
         <!-- WIDGET-006: Dikkat Gerekenler (col-md-4) -->
         <div class="col-md-4 widget-wrapper" data-id="widget-006" id="widget-006-wrapper">
             <div class="card card-v3 h-100">
-                <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle"
-                    style="background-color: #c0392b;">
+                <div class="card-header card-header-v3 card-header-danger d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-exclamation-triangle me-2"></i> Dikkat Gerekenler</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-danger text-white">WIDGET-006</span>
+                        <span class="widget-id-badge bg-danger text-white">widget-006</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Dikkat Gerekenler', 'Performans skoru %50\'nin altında olan kritik süreçler ve hedeflerdir. Bu alanlar acil yönetim müdahalesi gerektirir. Kök neden analizi yapılmalı, iyileştirme planları oluşturulmalı ve yakın takip edilmelidir. Risk yönetimi açısından öncelikli alanlardır.')">
                             <i class="fas fa-info"></i>
@@ -441,7 +478,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-project-diagram me-2"></i> Proje Sağlık</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-warning text-dark">WIDGET-007</span>
+                        <span class="widget-id-badge bg-warning text-dark">widget-007</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Proje Sağlık Durumu', 'Aktif projelerin sağlık durumu dağılımıdır. Mükemmel: Hedefte, İyi: Küçük sapmalar, Dikkat: Riskler var, Kritik: Acil müdahale gerekli. Proje portföy yönetimi için kritik bir göstergedir.')">
                             <i class="fas fa-info"></i>
@@ -463,7 +500,7 @@
                 <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
                     <h5><i class="fas fa-chart-line me-2"></i> Proje Özeti</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="widget-id-badge bg-secondary text-white">WIDGET-008</span>
+                        <span class="widget-id-badge bg-secondary text-white">widget-008</span>
                         <button class="btn-info-circle"
                             onclick="showInfo('Proje Özeti', 'Kurumdaki toplam aktif proje sayısı ve bunların ortalama tamamlanma yüzdesidir. Tamamlanma oranı, projelerin zaman ve bütçe hedeflerine ne kadar uyduğunu gösterir. Portföy performansının genel bir fotoğrafıdır.')">
                             <i class="fas fa-info"></i>
@@ -488,6 +525,43 @@
             </div>
         </div>
 
+        <!-- WIDGET-009: Skor Motoru (Vizyon Puanı + Vizyona Katkı) -->
+        <div class="col-md-6 widget-wrapper" data-id="widget-009" id="widget-009-wrapper">
+            <div class="card card-v3 h-100">
+                <div class="card-header card-header-v3 d-flex justify-content-between align-items-center handle">
+                    <h5><i class="fas fa-calculator me-2"></i> Skor Motoru</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="widget-id-badge bg-primary text-white">widget-009</span>
+                        <button class="btn-info-circle"
+                            onclick="showInfo('Skor Motoru', 'PG verisinden Vizyon puanına kadar hiyerarşik, ağırlıklandırılmış skorlama. Vizyon puanı 0-100 arası; ana stratejilerin skorları ve vizyona katkıları (ağırlıklı pay) burada gösterilir.')">
+                            <i class="fas fa-info"></i>
+                        </button>
+                        <button class="close-widget-btn" onclick="hideWidget('widget-009')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div id="skor-motoru-loading" class="text-center text-muted py-3">
+                        <span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor...
+                    </div>
+                    <div id="skor-motoru-content" class="d-none">
+                        <div class="text-center mb-3">
+                            <h2 class="display-5 fw-bold text-primary mb-0" id="skor-motoru-vision-score">—</h2>
+                            <small class="text-muted">Vizyon Puanı (0–100)</small>
+                            <div class="mt-1"><small class="text-muted" id="skor-motoru-date"></small></div>
+                            <a href="{{ url_for('main.skor_motoru_detay') }}" class="btn btn-sm btn-outline-primary mt-2">Tüm detay</a>
+                        </div>
+                        <hr class="my-3">
+                        <h6 class="text-dark fw-bold mb-2">Ana Stratejiler (Skor / Vizyona Katkı)</h6>
+                        <ul class="list-group list-group-flush" id="skor-motoru-ana-list">
+                        </ul>
+                    </div>
+                    <div id="skor-motoru-error" class="d-none text-center text-danger py-2 small"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 
@@ -496,21 +570,97 @@
 <script>
     // DATA
     const REAL_DATA = {
-        score: {{ global_score|default (0) | int }},
-    bsc: { { bsc_distribution | tojson | safe } },
-    projects: { { project_impact | tojson | safe } }
+        score: {{ global_score|default(0)|int }},
+        bsc: {{ bsc_distribution|tojson|safe }},
+        projects: {{ project_impact|tojson|safe }}
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        initStandardMode();
-
+        loadSkorMotoru();
+        try {
+            initStandardMode();
+        } catch (e) { console.warn('initStandardMode:', e); }
         const sortableEl = document.getElementById('view-standard');
         if (sortableEl) {
-            new Sortable(sortableEl, {
-                animation: 200, handle: '.handle', ghostClass: 'sortable-ghost'
-            });
+            try {
+                new Sortable(sortableEl, {
+                    animation: 200, handle: '.handle', ghostClass: 'sortable-ghost'
+                });
+            } catch (e) { console.warn('Sortable:', e); }
         }
     });
+
+    function loadSkorMotoru() {
+        const loadingEl = document.getElementById('skor-motoru-loading');
+        const contentEl = document.getElementById('skor-motoru-content');
+        const errorEl = document.getElementById('skor-motoru-error');
+        if (!loadingEl || !contentEl || !errorEl) return;
+        function hideLoadingShowError(msg) {
+            loadingEl.classList.add('d-none');
+            contentEl.classList.add('d-none');
+            errorEl.textContent = msg || 'Skor motoru verisi yüklenemedi.';
+            errorEl.classList.remove('d-none');
+        }
+        var apiUrl = ('{{ url_for("api.api_vision_score") }}' || '').trim() || '/api/vision-score';
+        var timeout = setTimeout(function () {
+            timeout = null;
+            hideLoadingShowError('Zaman aşımı. Sayfayı yenileyip tekrar deneyin.');
+        }, 15000);
+        fetch(apiUrl, { credentials: 'same-origin' })
+            .then(function (r) {
+                if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+                var ct = r.headers.get('content-type');
+                if (!ct || ct.indexOf('application/json') === -1) throw new Error('JSON yanıt yok');
+                return r.json();
+            })
+            .then(function (data) {
+                if (timeout) clearTimeout(timeout);
+                try {
+                    loadingEl.classList.add('d-none');
+                    errorEl.classList.add('d-none');
+                    if (!data || !data.success) {
+                        errorEl.textContent = (data && data.message) ? data.message : 'Veri alınamadı.';
+                        errorEl.classList.remove('d-none');
+                        return;
+                    }
+                    var vsEl = document.getElementById('skor-motoru-vision-score');
+                    var dateEl = document.getElementById('skor-motoru-date');
+                    var vs = data.vision_score != null ? Math.round(parseFloat(data.vision_score)) : '—';
+                    if (vsEl) vsEl.textContent = (typeof vs === 'number' ? vs + ' / 100' : vs);
+                    if (dateEl) dateEl.textContent = data.as_of_date ? 'Tarih: ' + data.as_of_date : '';
+                    var anaList = document.getElementById('skor-motoru-ana-list');
+                    if (anaList) {
+                        anaList.innerHTML = '';
+                        var list = data.ana_stratejiler || [];
+                        list.forEach(function (a) {
+                            var li = document.createElement('li');
+                            li.className = 'list-group-item border-0 px-0 py-2 d-flex justify-content-between align-items-center';
+                            var scoreStr = (a.score != null && typeof a.score === 'number') ? a.score.toFixed(1) : '—';
+                            var katkiStr = (a.vizyona_katki != null && typeof a.vizyona_katki === 'number') ? a.vizyona_katki.toFixed(1) : '—';
+                            li.innerHTML = '<span class="fw-bold text-dark">' + (a.ad || ('Strateji #' + (a.id || ''))) + '</span>' +
+                                '<span><span class="badge bg-primary rounded-pill me-1">' + scoreStr + '</span>' +
+                                '<span class="badge bg-secondary rounded-pill">Katkı: ' + katkiStr + '</span></span>';
+                            anaList.appendChild(li);
+                        });
+                        if (list.length === 0) {
+                            var empty = document.createElement('li');
+                            empty.className = 'list-group-item border-0 px-0 py-2 text-muted';
+                            empty.textContent = 'Ana strateji bulunamadı.';
+                            anaList.appendChild(empty);
+                        }
+                    }
+                    contentEl.classList.remove('d-none');
+                } catch (e) {
+                    hideLoadingShowError('Veri işlenirken hata: ' + (e && e.message ? e.message : String(e)));
+                    if (typeof console !== 'undefined' && console.error) console.error('Skor Motoru:', e);
+                }
+            })
+            .catch(function (err) {
+                if (timeout) clearTimeout(timeout);
+                hideLoadingShowError('Skor motoru verisi yüklenemedi: ' + (err && err.message ? err.message : ''));
+                if (typeof console !== 'undefined' && console.error) console.error('Skor Motoru fetch:', err);
+            });
+    }
 
     function showInfo(title, text) {
         Swal.fire({

@@ -316,6 +316,16 @@
         padding-bottom: 0 !important;
         opacity: 0;
     }
+
+    /* Hayalet overlay (modal backdrop) önleme: modallar backdrop'un üstünde görünsün */
+    #anaStratejiModal,
+    #altStratejiModal {
+        z-index: 1060 !important;
+    }
+    #anaStratejiModal .modal-dialog,
+    #altStratejiModal .modal-dialog {
+        z-index: 1061 !important;
+    }
 </style>
 
 <div class="row mb-4">
@@ -977,7 +987,7 @@
 <!-- Stratejiler -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card fade-in-up">
+        <div class="card fade-in-up" id="stratejikPlanlamaCard">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
                 <span>
                     <i class="fas fa-chess-queen me-2"></i>
@@ -1054,7 +1064,8 @@
                                                     data-ana-strateji-id="{{ ana_strateji.id }}"
                                                     data-ad="{{ alt_strateji.ad|e }}"
                                                     data-aciklama="{{ alt_strateji.aciklama|e }}"
-                                                    onclick="editAltStrateji(this.dataset.id, this.dataset.anaStratejiId, this.dataset.ad, this.dataset.aciklama)"
+                                                    data-weight="{{ alt_strateji.weight if alt_strateji.weight is not none else '' }}"
+                                                    onclick="editAltStrateji(this.dataset.id, this.dataset.anaStratejiId, this.dataset.ad, this.dataset.aciklama, this.dataset.weight)"
                                                     title="Düzenle">
                                                     <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
                                                 </button>
@@ -1092,7 +1103,8 @@
                                     </button>
                                     <button class="btn btn-sm btn-outline-primary" data-id="{{ ana_strateji.id }}"
                                         data-ad="{{ ana_strateji.ad|e }}" data-aciklama="{{ ana_strateji.aciklama|e }}"
-                                        onclick="editAnaStrateji(this.dataset.id, this.dataset.ad, this.dataset.aciklama)"
+                                        data-weight="{{ ana_strateji.weight if ana_strateji.weight is not none else '' }}"
+                                        onclick="editAnaStrateji(this.dataset.id, this.dataset.ad, this.dataset.aciklama, this.dataset.weight)"
                                         title="Ana Stratejiyi Düzenle">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -1143,6 +1155,12 @@
 
 <!-- Ek CSS Stilleri -->
 <style>
+    /* Stratejik Planlama kartı: içerik öngörülen alana sığsın, dikey kaydırma çubuğu */
+    #stratejikPlanlamaCard .card-body-collapsible {
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
     .strategy-card {
         transition: all 0.3s ease;
     }
@@ -1540,6 +1558,11 @@
                         <textarea class="form-control" name="aciklama" id="ana_strateji_aciklama" rows="3"
                             placeholder="Strateji açıklaması..."></textarea>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Skor Motoru: Ağırlık (0-100)</label>
+                        <input type="number" class="form-control" name="ana_strateji_weight" id="ana_strateji_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                        <small class="text-muted">Vizyon puanında bu ana stratejinin payı. Boş bırakılırsa kardeş sayısına göre eşit dağıtılır.</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
@@ -1579,6 +1602,11 @@
                         <label class="form-label">Açıklama</label>
                         <textarea class="form-control" name="aciklama" id="alt_strateji_aciklama" rows="3"
                             placeholder="Alt strateji açıklaması..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Skor Motoru: Ağırlık (0-100)</label>
+                        <input type="number" class="form-control" name="alt_strateji_weight" id="alt_strateji_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                        <small class="text-muted">Ana strateji puanında bu alt stratejinin payı. Boş = eşit dağılım.</small>
                     </div>
                 </div>
                 <div class="modal-footer">

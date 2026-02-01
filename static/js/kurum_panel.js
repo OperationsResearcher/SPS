@@ -341,17 +341,17 @@ function showEkleAnaStratejiModal() {
     document.getElementById('ana_strateji_id').value = '';
     document.getElementById('ana_strateji_ad').value = '';
     document.getElementById('ana_strateji_aciklama').value = '';
-    
+    document.getElementById('ana_strateji_weight').value = '';
     const modal = new bootstrap.Modal(document.getElementById('anaStratejiModal'));
     modal.show();
 }
 
-function editAnaStrateji(id, ad, aciklama) {
+function editAnaStrateji(id, ad, aciklama, weight) {
     document.getElementById('anaStratejiModalBaşlık').textContent = 'Ana Strateji Düzenle';
     document.getElementById('ana_strateji_id').value = id;
-    document.getElementById('ana_strateji_ad').value = ad;
-    document.getElementById('ana_strateji_aciklama').value = aciklama;
-    
+    document.getElementById('ana_strateji_ad').value = ad || '';
+    document.getElementById('ana_strateji_aciklama').value = aciklama || '';
+    document.getElementById('ana_strateji_weight').value = weight !== undefined && weight !== '' ? weight : '';
     const modal = new bootstrap.Modal(document.getElementById('anaStratejiModal'));
     modal.show();
 }
@@ -414,23 +414,22 @@ function showEkleAltStratejiModal(anaStratejiId, anaStratejiAd) {
     document.getElementById('alt_strateji_ana_ad').value = anaStratejiAd;
     document.getElementById('alt_strateji_ad').value = '';
     document.getElementById('alt_strateji_aciklama').value = '';
-    
+    document.getElementById('alt_strateji_weight').value = '';
     const modal = new bootstrap.Modal(document.getElementById('altStratejiModal'));
     modal.show();
 }
 
-function editAltStrateji(id, anaStratejiId, ad, aciklama) {
+function editAltStrateji(id, anaStratejiId, ad, aciklama, weight) {
     document.getElementById('altStratejiModalBaşlık').textContent = 'Alt Strateji Düzenle';
     document.getElementById('alt_strateji_id').value = id;
     document.getElementById('alt_strateji_ana_id').value = anaStratejiId;
-    document.getElementById('alt_strateji_ad').value = ad;
-    document.getElementById('alt_strateji_aciklama').value = aciklama;
-    
+    document.getElementById('alt_strateji_ad').value = ad || '';
+    document.getElementById('alt_strateji_aciklama').value = aciklama || '';
+    document.getElementById('alt_strateji_weight').value = weight !== undefined && weight !== '' ? weight : '';
     // Card layout için güncellendi - ana strateji adını karttan al
     const anaStratejiCard = document.querySelector(`.col[data-id="${anaStratejiId}"] .card-title`);
     const anaStratejiAd = anaStratejiCard ? anaStratejiCard.textContent.trim().replace(/^.*?\s+/, '') : '';
     document.getElementById('alt_strateji_ana_ad').value = anaStratejiAd;
-    
     const modal = new bootstrap.Modal(document.getElementById('altStratejiModal'));
     modal.show();
 }
@@ -510,6 +509,50 @@ document.addEventListener('DOMContentLoaded', function() {
             bar.style.width = width;
         }, 500);
     });
+});
+
+// Hayalet overlay (modal backdrop) önleme: Ana Strateji ve Alt Strateji modalları
+document.addEventListener('DOMContentLoaded', function() {
+    function cleanupOverlayAndBackdrop() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(function(b) { b.remove(); });
+        const guideOverlays = document.querySelectorAll('.guide-overlay');
+        guideOverlays.forEach(function(g) { g.remove(); });
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        if (document.body.style.pointerEvents === 'none') document.body.style.removeProperty('pointer-events');
+    }
+    function focusResetOnModalHide() {
+        const active = document.activeElement;
+        if (!active || active === document.body) return;
+        const inModal = active.closest && active.closest('.modal');
+        if (!inModal) return;
+        active.blur();
+        document.body.setAttribute('tabindex', '-1');
+        try { document.body.focus(); } catch (e) {}
+    }
+    function ensureModalInBody(ev) {
+        const el = ev.target;
+        if (el && el.nodeType === 1 && el.parentNode !== document.body) {
+            document.body.appendChild(el);
+        }
+    }
+    function onModalHidden() {
+        focusResetOnModalHide();
+        cleanupOverlayAndBackdrop();
+    }
+    cleanupOverlayAndBackdrop();
+    ['anaStratejiModal', 'altStratejiModal'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('show.bs.modal', ensureModalInBody);
+            el.addEventListener('hide.bs.modal', focusResetOnModalHide);
+            el.addEventListener('hidden.bs.modal', onModalHidden);
+        }
+    });
+    window.addEventListener('error', function() { cleanupOverlayAndBackdrop(); });
+    window.addEventListener('unhandledrejection', function() { cleanupOverlayAndBackdrop(); });
 });
 
 // ==========================================

@@ -4,6 +4,23 @@
 
 {% block content %}
 <!-- V2.1.0: Süreç karnesi CSS stilleri restoration.css dosyasına taşındı -->
+<style>
+    /* Hayalet overlay önleme: modallar backdrop'un üstünde görünsün */
+    #dataEntryWizardModal2,
+    #addPerformansModal,
+    #editPerformansModal,
+    #addFaaliyetModal,
+    #pgVeriDetayModal {
+        z-index: 1060 !important;
+    }
+    #dataEntryWizardModal2 .modal-dialog,
+    #addPerformansModal .modal-dialog,
+    #editPerformansModal .modal-dialog,
+    #addFaaliyetModal .modal-dialog,
+    #pgVeriDetayModal .modal-dialog {
+        z-index: 1061 !important;
+    }
+</style>
 
 <div class="container-fluid mt-4">
     <!-- Süreç Bilgileri -->
@@ -550,6 +567,11 @@
                                 <option value="SGH">Sektöre Göre Hedef (SGH)</option>
                             </select>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Skor motoru ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="pg_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                            <small class="text-muted">Vizyon puanı hesaplamada kullanılır (0–100)</small>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mb-3">
@@ -834,6 +856,11 @@
                                 <option value="DH">Dalgalı Hedef (DH)</option>
                                 <option value="SGH">Sektöre Göre Hedef (SGH)</option>
                             </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Skor motoru ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="edit_pg_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                            <small class="text-muted">Vizyon puanı hesaplamada kullanılır (0–100)</small>
                         </div>
                     </div>
                     <div class="row">
