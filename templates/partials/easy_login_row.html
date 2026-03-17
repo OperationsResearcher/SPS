@@ -1,0 +1,40 @@
+<tr class="user-row"
+    data-search="{{ (user.username|lower) }} {{ (user.email|lower) }} {{ (user.first_name|lower if user.first_name) }} {{ (user.last_name|lower if user.last_name) }} {{ (user.sistem_rol|lower) }}">
+    <td>
+        <strong>{{ user.username }}</strong>
+        {% if user.first_name and user.last_name %}
+        <br><small class="text-muted">{{ user.first_name }} {{ user.last_name }}</small>
+        {% endif %}
+    </td>
+    <td>
+        <small>{{ user.email }}</small>
+    </td>
+    <td>
+        {% if user.kurum %}
+        <span class="badge bg-info">{{ user.kurum.kisa_ad }}</span>
+        {% else %}
+        <span class="badge bg-secondary">-</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if user.sistem_rol == 'admin' %}
+        <span class="badge bg-danger">Admin</span>
+        {% elif user.sistem_rol == 'kurum_yoneticisi' %}
+        <span class="badge bg-warning text-dark">Yönetici</span>
+        {% elif user.sistem_rol == 'ust_yonetim' %}
+        <span class="badge bg-primary">Üst Yönetim</span>
+        {% else %}
+        <span class="badge bg-success">Kullanıcı</span>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        <form action="{{ url_for('auth.login') }}" method="POST" style="display: inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="username" value="{{ user.username }}">
+            <input type="hidden" name="password" value="123456">
+            <button type="submit" class="btn btn-sm btn-primary" title="Bu kullanıcı ile giriş yap">
+                <i class="bi bi-box-arrow-in-right"></i> Giriş
+            </button>
+        </form>
+    </td>
+</tr>

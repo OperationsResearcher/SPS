@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 4 - Nirvana Legacy Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>✨ Faz 4 - Nirvana Legacy (V66.0)</h1>
+            <p>Oyun Teorisi, Bilgi Grafığı, Siyah Kuğu Simülatörü, Omega'nın Kitabı kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz4-nirvana', 'Faz 4 - Nirvana Legacy')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz4-nirvana')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz4-nirvana';
+        const moduleTitle = 'Faz 4 - Nirvana Legacy';
+        
+        const questions = [
+            {
+                text: 'Oyun Teorisi sayfası (/game-theory) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Rakip listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Oyun senaryoları listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni rakip ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Eklediğim rakip listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni oyun senaryosu oluşturabiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Oyun senaryosu için kazanç matrisi (payoff matrix) girebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Nash Dengesi Hesapla" butonuna bastığımda sonuçlar gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Nash Dengesi sonuçlarında önerilen strateji açıklaması görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bilgi Grafığı sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bilgi grafığı sayfasında graf görselleştirmesi görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Graf görselleştirmesinde stratejiler, süreçler ve projeler gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Graf görselleştirmesinde öğeler arasındaki bağlantılar (edges) görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Siyah Kuğu Simülatörü sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Doomsday senaryoları listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni doomsday senaryosu ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Doomsday senaryolarında şiddet seviyesi (1-10) ve olasılık bilgileri görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Omega\'nın Kitabı sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yıllık vakayiname listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni yıllık vakayiname kaydı ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Aynı yıl için ikinci bir vakayiname eklemeye çalıştığımda hata mesajı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfalar görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Nirvana Legacy paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

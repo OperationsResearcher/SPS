@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}PESTLE Analizi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">PESTLE Analizi</h2>
+            <p class="text-muted mb-0">Çevresel faktörleri görsel olarak haritalayın</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ url_for('analysis.analysis_hub', kurum_id=kurum_id) }}">Analiz Merkezine Dön</a>
+    </div>
+
+    {% set columns = [
+        ('Political', 'Politik', 'bi-flag', 'primary'),
+        ('Economic', 'Ekonomik', 'bi-graph-up', 'success'),
+        ('Social', 'Sosyal', 'bi-people', 'info'),
+        ('Technological', 'Teknolojik', 'bi-cpu', 'warning'),
+        ('Legal', 'Yasal', 'bi-shield-check', 'danger'),
+        ('Environmental', 'Çevresel', 'bi-globe', 'secondary')
+    ] %}
+
+    <div class="row g-3">
+        {% for key, label, icon, color in columns %}
+        <div class="col-12 col-md-6 col-lg-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-{{ color }}-subtle d-flex justify-content-between align-items-center">
+                    <div class="text-{{ color }}">
+                        <i class="bi {{ icon }} me-1"></i>{{ label }}
+                    </div>
+                    <button class="btn btn-sm btn-{{ color }}" onclick="openAddModal('{{ key }}')">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2" id="list-{{ key }}">
+                        {% for item in pestle_items[key] %}
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body py-2 d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">{{ item.content }}</div>
+                                    <div class="small text-muted">Önem: {{ item.score }}/5</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteItem({{ item.id }})">Sil</button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-muted small">Henüz kayıt yok.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="analysisModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="analysisModalTitle">Yeni Öğe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="analysisCategory">
+                <div class="mb-3">
+                    <label class="form-label">İçerik</label>
+                    <textarea class="form-control" id="analysisContent" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Önem Derecesi</label>
+                    <select class="form-select" id="analysisScore">
+                        <option value="1">1 - Düşük</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3 - Orta</option>
+                        <option value="4">4</option>
+                        <option value="5">5 - Yüksek</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveItem()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    function openAddModal(category) {
+        document.getElementById('analysisCategory').value = category;
+        document.getElementById('analysisContent').value = '';
+        document.getElementById('analysisScore').value = '3';
+        document.getElementById('analysisModalTitle').textContent = `Yeni ${category} öğesi`;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('analysisModal')).show();
+    }
+
+    async function saveItem() {
+        const category = document.getElementById('analysisCategory').value;
+        const content = document.getElementById('analysisContent').value.trim();
+        const score = document.getElementById('analysisScore').value;
+        if (!content) return;
+
+        const response = await fetch('/api/analiz/ekle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                analysis_type: 'PESTLE',
+                category: category,
+                content: content,
+                score: score
+            })
+        });
+        const data = await response.json();
+        if (!data.success) return;
+
+        const list = document.getElementById(`list-${category}`);
+        if (list) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'card border-0 shadow-sm';
+            wrapper.innerHTML = `
+                <div class="card-body py-2 d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="fw-semibold">${data.item.content}</div>
+                        <div class="small text-muted">Önem: ${data.item.score}/5</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${data.item.id})">Sil</button>
+                </div>
+            `;
+            list.prepend(wrapper);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('analysisModal')).hide();
+    }
+
+    async function deleteItem(id) {
+        const response = await fetch(`/api/analiz/sil/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCsrfToken() }
+        });
+        const data = await response.json();
+        if (data.success) {
+            const button = document.querySelector(`button[onclick="deleteItem(${id})"]`);
+            const card = button?.closest('.card');
+            if (card) card.remove();
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SPS V2{% endblock %}</title>
+    <!-- Mevcut stilleri kullan ama üzerine override et -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* V2 için farklı bir renk paleti */
+            --v2-primary: #2c3e50;
+            --v2-secondary: #e74c3c;
+            --v2-bg: #ecf0f1;
+        }
+
+        body {
+            background-color: var(--v2-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .v2-navbar {
+            background-color: var(--v2-primary) !important;
+            border-bottom: 3px solid var(--v2-secondary);
+        }
+
+        .v2-brand {
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .v2-badge {
+            background-color: var(--v2-secondary);
+            font-size: 0.7rem;
+            vertical-align: top;
+        }
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+    <!-- V2 Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark v2-navbar shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand v2-brand" href="{{ url_for('v2.masam') }}">
+                <i class="fas fa-rocket me-2"></i>SPS <span class="badge v2-badge rounded-pill">V2 BETA</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#v2Nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="v2Nav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'v2.masam' %}active{% endif %}"
+                            href="{{ url_for('v2.masam') }}">
+                            <i class="fas fa-laptop-house me-1"></i> Masam
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'v2.yonetim' %}active{% endif %}"
+                            href="{{ url_for('v2.yonetim') }}">
+                            <i class="fas fa-tasks me-1"></i> Yönetim
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'v2.strateji' %}active{% endif %}"
+                            href="{{ url_for('v2.strateji') }}">
+                            <i class="fas fa-chess me-1"></i> Strateji
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <span class="text-white-50 me-3 small">
+                        <i class="fas fa-user-circle me-1"></i>
+                        {{ current_user.first_name if current_user.is_authenticated else 'Misafir' }}
+                    </span>
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-sm btn-outline-light me-2">
+                        <i class="fas fa-undo me-1"></i> V1'e Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

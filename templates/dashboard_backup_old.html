@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Gösterge Paneli{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Gösterge Paneli
+                </h2>
+                <div class="text-muted">
+                    Hoş geldiniz, <strong>{{ current_user.first_name or current_user.username }}</strong>!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Hızlı Erişim Kartları -->
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-spreadsheet fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Süreç Karnesi</h5>
+                    <p class="card-text text-muted">Süreç performans göstergelerinizi görüntüleyin ve yönetin</p>
+                    <a href="{{ url_for('main.surec_karnesi') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Git
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-list-task fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Faaliyetler</h5>
+                    <p class="card-text text-muted">Redmine benzeri faaliyet takip modülü</p>
+                    <a href="{{ url_for('main.activities_list') }}" class="btn btn-success">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Git
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Görevlerim</h5>
+                    <p class="card-text text-muted">Size atanan görevleri görüntüleyin</p>
+                    <a href="{{ url_for('main.surec_karnesi') }}" class="btn btn-info">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Git
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-user fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Profilim</h5>
+                    <p class="card-text text-muted">Profil bilgilerinizi görüntüleyin ve düzenleyin</p>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-warning">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Git
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Hızlı İstatistikler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-primary" id="surec-sayisi">-</h3>
+                            <p class="text-muted">Süreç Sayısı</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-success" id="faaliyet-sayisi">-</h3>
+                            <p class="text-muted">Aktif Faaliyet</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-info" id="pg-sayisi">-</h3>
+                            <p class="text-muted">Performans Göstergesi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Aktiviteler -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Son Aktiviteler
+                    </h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                        <div class="d-flex mb-3">
+                            <div class="stat-icon {{ activity.type_class }} me-3" style="width: 40px; height: 40px; font-size: 16px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <i class="fas {{ activity.icon }}"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    {% if activity.link %}
+                                    <a href="{{ activity.link }}" class="text-decoration-none text-dark">{{ activity.title }}</a>
+                                    {% else %}
+                                    {{ activity.title }}
+                                    {% endif %}
+                                </h6>
+                                {% if activity.description %}
+                                <small class="text-muted">{{ activity.description }}</small>
+                                <br>
+                                {% endif %}
+                                <small class="text-muted">{{ activity.created_at.strftime('%d.%m.%Y %H:%M') if activity.created_at else '-' }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-info-circle text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p class="text-muted mb-0">Henüz aktivite bulunmuyor.</p>
+                            <small class="text-muted">Sistem kullanımınız arttıkça aktiviteler burada görünecektir.</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // İstatistikleri yükle
+    loadStatistics();
+});
+
+function loadStatistics() {
+    // Süreç sayısı
+    fetch('/api/kullanici/sureclerim')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('surec-sayisi').textContent = data.surecler.length;
+            }
+        })
+        .catch(error => {
+            console.error('Süreç sayısı yüklenemedi:', error);
+        });
+    
+    // Faaliyet sayısı
+    const userId = {{ current_user.id }};
+    fetch('/api/activities?assigned_to=' + userId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const aktifFaaliyetler = data.activities.filter(a => {
+                    return a.status_ad !== 'Tamamlandı' && a.status_ad !== 'İptal';
+                });
+                document.getElementById('faaliyet-sayisi').textContent = aktifFaaliyetler.length;
+            }
+        })
+        .catch(error => {
+            console.error('Faaliyet sayısı yüklenemedi:', error);
+        });
+}
+</script>
+{% endblock %}

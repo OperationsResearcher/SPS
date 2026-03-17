@@ -1,0 +1,1189 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Stratejik Planlama Sistemi{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --info-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            /* Layout Değişkenleri */
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+            --topbar-height: 70px;
+            --transition-speed: 0.3s;
+        }
+        
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-primary: #1a1d29;
+            --bg-secondary: #252936;
+            --bg-tertiary: #2d3142;
+            --text-primary: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --border-color: #3a3f52;
+        }
+        
+        /* Light Mode */
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .progress-bar.bg-success {
+            background: var(--success-gradient) !important;
+        }
+        
+        .progress-bar.bg-warning {
+            background: var(--warning-gradient) !important;
+        }
+        
+        .progress-bar.bg-danger {
+            background: var(--danger-gradient) !important;
+        }
+        
+        /* Responsive tasarım iyileştirmeleri */
+        @media (max-width: 768px) {
+            .quick-login-btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table-responsive table {
+                min-width: 600px;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn-group .btn {
+                margin-bottom: 0.25rem;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+            
+            .pagination .page-item {
+                margin-bottom: 0.25rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            .card-header h5 {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                font-size: 0.875rem;
+                padding: 0.375rem 0.75rem;
+            }
+        }
+        
+        .badge {
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.85em;
+        }
+        
+        .badge.bg-success {
+            background: var(--success-gradient) !important;
+        }
+        
+        .badge.bg-warning {
+            background: var(--warning-gradient) !important;
+            color: #333 !important;
+        }
+        
+        .badge.bg-danger {
+            background: var(--danger-gradient) !important;
+        }
+        
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .table thead {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: #6c757d;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-icon.primary { background: var(--primary-gradient); }
+        .stat-icon.success { background: var(--success-gradient); }
+        .stat-icon.warning { background: var(--warning-gradient); color: #333 !important; }
+        .stat-icon.danger { background: var(--danger-gradient); }
+        .stat-icon.info { background: var(--info-gradient); color: #333 !important; }
+        .stat-icon.secondary { background: var(--secondary-gradient, linear-gradient(135deg, #6c757d 0%, #495057 100%)); }
+        
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-shadow:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3) !important;
+            transform: translateY(-3px);
+        }
+        
+        /* Responsive Tasarım İyileştirmeleri */
+        @media (max-width: 768px) {
+            .quick-login-btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .navbar-nav {
+                text-align: center;
+            }
+            
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .quick-login-btn {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .card-header h5 {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           MODERN SIDEBAR LAYOUT CSS
+           ============================================ */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: all var(--transition-speed) ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: var(--topbar-height);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+        
+        .sidebar.collapsed .sidebar-logo span {
+            display: none;
+        }
+        
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            display: block;
+        }
+        
+        .sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+        
+        .sidebar .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+        
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar .nav-link span {
+            flex: 1;
+            white-space: nowrap;
+        }
+        
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .sidebar .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: white;
+            border-radius: 0 3px 3px 0;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed) ease;
+            min-height: 100vh;
+        }
+        
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .breadcrumb-nav {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .content-wrapper {
+            padding: 2rem;
+        }
+        
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .layout-toggle {
+            position: relative;
+        }
+        
+        .layout-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .layout-menu.show {
+            display: block;
+        }
+        
+        .layout-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .layout-option:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .layout-option.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .mobile-overlay.show {
+            display: block;
+        }
+        
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .user-dropdown:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+        
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {# Determine layout preference first #}
+    {% set layout_pref = 'classic' %}
+    {% if current_user.is_authenticated %}
+        {# Öncelik: 1) URL parametresi (layout değişimi için), 2) Kullanıcının kayıtlı tercihi, 3) Default classic #}
+        {% set url_layout = request.args.get('layout') %}
+        {% if url_layout and url_layout in ['classic', 'sidebar'] %}
+            {# URL parametresi varsa onu kullan (layout değişimi sırasında) #}
+            {% set layout_pref = url_layout %}
+        {% elif current_user.layout_preference %}
+            {# Kullanıcının kayıtlı tercihi varsa onu kullan #}
+            {% set layout_pref = current_user.layout_preference %}
+        {% else %}
+            {# Hiçbiri yoksa default classic #}
+            {% set layout_pref = 'classic' %}
+        {% endif %}
+    {% endif %}
+    {% set use_sidebar_layout = current_user.is_authenticated and layout_pref == 'sidebar' %}
+
+    {# Render layout wrappers based on preference #}
+    {% if use_sidebar_layout %}
+        {# Modern Sidebar Layout #}
+        <div class="app-wrapper">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <a href="{{ url_for('main.dashboard') }}" class="sidebar-logo">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Stratejik Planlama</span>
+            </a>
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Sidebar'ı Gizle/Göster">
+                        <i class="fas fa-bars"></i>
+            </button>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <div class="nav-section">
+                        <span class="nav-section-title">Ana Menü</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Gösterge Paneli</span>
+                        </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.projeler' or request.endpoint == 'main.proje_detay' %}active{% endif %}" href="{{ url_for('main.projeler') }}">
+                                <i class="fas fa-folder-open"></i>
+                                <span>Proje Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                                <span>Süreç Karnesi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.gorev_aktivite_log' %}active{% endif %}" href="{{ url_for('main.gorev_aktivite_log') }}">
+                                <i class="bi bi-list-task"></i>
+                                <span>Görev Aktivite Logu</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.gorevlerim' %}active{% endif %}" href="{{ url_for('main.gorevlerim') }}">
+                                <i class="fas fa-tasks"></i>
+                                <span>Görevlerim</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <div class="nav-section">
+                        <span class="nav-section-title">Yönetim</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.kurum_yonetim_page' %}active{% endif %}" href="{{ url_for('main.kurum_yonetim_page') }}">
+                                <i class="fas fa-building"></i>
+                                <span>Kurum Yönetimi</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_planlama_akisi' %}active{% endif %}" href="{{ url_for('main.stratejik_planlama_akisi') }}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>SP Akış Diyagramı</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_asistan' %}active{% endif %}" href="{{ url_for('main.stratejik_asistan') }}">
+                                <i class="fas fa-magic"></i>
+                                <span>Stratejik Asistan</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.executive_dashboard' %}active{% endif %}" href="{{ url_for('main.executive_dashboard') }}">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Yönetici Kokpiti</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.sistem_degisiklik_gunlugu' %}active{% endif %}" href="{{ url_for('main.sistem_degisiklik_gunlugu') }}">
+                                <i class="fas fa-history"></i>
+                                <span>Sistem Logları</span>
+                            </a>
+                        </div>
+                        {% if current_user.sistem_rol == 'admin' %}
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.admin_panel' %}active{% endif %}" href="{{ url_for('main.admin_panel') }}">
+                                <i class="fas fa-users-cog"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="nav-section">
+                        <span class="nav-section-title">Kişisel</span>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'auth.profile' %}active{% endif %}" href="{{ url_for('auth.profile') }}">
+                                <i class="fas fa-user"></i>
+                                <span>Profil</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'auth.settings' %}active{% endif %}" href="{{ url_for('auth.settings') }}">
+                                <i class="fas fa-cog"></i>
+                                <span>Ayarlar</span>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="sidebar-footer">
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Çıkış</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+            
+            <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+            
+            <main class="main-content">
+                <div class="topbar">
+                    <div class="topbar-left">
+                        <button class="theme-toggle d-md-none" onclick="toggleSidebar()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <nav class="breadcrumb-nav">
+                            {% block breadcrumb %}
+                            <i class="fas fa-home"></i> Ana Sayfa
+                            {% endblock %}
+                        </nav>
+                    </div>
+                    
+                    <div class="topbar-right">
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+                        <div class="layout-toggle">
+                            <button class="theme-toggle" onclick="toggleLayoutMenu(event, 'sidebarLayoutMenu')" title="Layout Seç">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <div class="layout-menu" id="sidebarLayoutMenu">
+                                <a href="#" class="layout-option {% if layout_pref == 'sidebar' %}active{% endif %}" onclick="setLayout('sidebar'); return false;">
+                                    <i class="fas fa-bars"></i>
+                                    <span>Sidebar Layout</span>
+                                </a>
+                                <a href="#" class="layout-option {% if layout_pref == 'classic' %}active{% endif %}" onclick="setLayout('classic'); return false;">
+                                    <i class="fas fa-window-maximize"></i>
+                                    <span>Klasik Layout</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <div class="user-dropdown" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                {% if current_user.profile_photo %}
+                                    {% set photo_url = current_user.profile_photo %}
+                                    {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                        {% if photo_url.startswith('/static/') %}
+                                            {% set photo_url = url_for('static', filename=photo_url[8:]) %}
+                                        {% else %}
+                                            {% set photo_url = url_for('static', filename=photo_url.lstrip('/')) %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <img src="{{ photo_url }}" alt="{{ current_user.username }}" class="user-avatar" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="user-avatar" style="background: var(--primary-gradient); display: none; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                        {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                    </div>
+                                {% else %}
+                                    <div class="user-avatar" style="background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                        {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="user-info d-none d-md-block">
+                                    <div class="user-name">{{ current_user.first_name or current_user.username }}</div>
+                                    <div class="user-role">{{ current_user.sistem_rol|role_name }}</div>
+                                </div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profil</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.settings') }}"><i class="fas fa-cog me-2"></i>Ayarlar</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-wrapper">
+    {% else %}
+        {# Classic Layout (for authenticated classic users and all guests) #}
+        {% if current_user.is_authenticated %}
+        <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: var(--primary-gradient);">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+                    <i class="fas fa-chart-line"></i>
+                    Stratejik Planlama
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#classicNavbar" aria-controls="classicNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="classicNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Gösterge Paneli
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.projeler' or request.endpoint == 'main.proje_detay' %}active{% endif %}" href="{{ url_for('main.projeler') }}">
+                                <i class="fas fa-folder-open me-2"></i>Proje Yönetimi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_paneli' %}active{% endif %}" href="{{ url_for('main.surec_paneli') }}">
+                                <i class="fas fa-cogs me-2"></i>Süreç Paneli
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>Süreç Karnesi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.performans_kartim' %}active{% endif %}" href="{{ url_for('main.performans_kartim') }}">
+                                <i class="fas fa-tasks me-2"></i>Performans Kartım
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.kurum_paneli' %}active{% endif %}" href="{{ url_for('main.kurum_paneli') }}">
+                                <i class="fas fa-building me-2"></i>Kurum Paneli
+                        </a>
+                    </li>
+                        {% if current_user.sistem_rol in ['ust_yonetim', 'kurum_yoneticisi', 'admin'] %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="true">
+                                <i class="fas fa-cog me-2"></i>Yönetim
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_planlama_akisi') }}"><i class="fas fa-project-diagram me-2"></i>SP Akış Diyagramı</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_asistan') }}"><i class="fas fa-magic me-2"></i>Stratejik Asistan</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.executive_dashboard') }}"><i class="fas fa-chart-line me-2"></i>Yönetici Kokpiti</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.sistem_degisiklik_gunlugu') }}"><i class="fas fa-history me-2"></i>Sistem Logları</a></li>
+                    {% if current_user.sistem_rol == 'admin' %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_panel') }}"><i class="fas fa-users-cog me-2"></i>Admin Panel</a></li>
+                                {% endif %}
+                            </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                    <div class="d-flex align-items-center" style="color: white;">
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir" style="color: white; background: transparent; border: 1px solid white; margin-right: 1rem;">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                                    </button>
+                        <div class="layout-toggle">
+                             <button class="theme-toggle" onclick="toggleLayoutMenu(event, 'classicLayoutMenu')" title="Layout Seç" style="color: white; background: transparent; border: 1px solid white; margin-right: 1rem;">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <div class="layout-menu" id="classicLayoutMenu">
+                                <a href="#" class="layout-option {% if layout_pref == 'sidebar' %}active{% endif %}" onclick="setLayout('sidebar'); return false;">
+                                    <i class="fas fa-bars"></i>
+                                    <span>Sidebar Layout</span>
+                                </a>
+                                <a href="#" class="layout-option {% if layout_pref == 'classic' %}active{% endif %}" onclick="setLayout('classic'); return false;">
+                                    <i class="fas fa-window-maximize"></i>
+                                    <span>Klasik Layout</span>
+                                </a>
+                                        </div>
+                                    </div>
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="true">
+                            {% if current_user.profile_photo %}
+                                {% set photo_url = current_user.profile_photo %}
+                                {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                    {% if photo_url.startswith('/static/') %}
+                                        {% set photo_url = url_for('static', filename=photo_url[8:]) %}
+                                    {% else %}
+                                        {% set photo_url = url_for('static', filename=photo_url.lstrip('/')) %}
+                                    {% endif %}
+                                {% endif %}
+                                <img src="{{ photo_url }}" alt="{{ current_user.username }}" width="32" height="32" class="rounded-circle me-2" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="rounded-circle me-2" style="width: 32px; height: 32px; background: var(--bg-tertiary); display: none; align-items: center; justify-content: center; color: var(--text-primary); font-weight: 600;">
+                                    {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                </div>
+                            {% else %}
+                                <div class="rounded-circle me-2" style="width: 32px; height: 32px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-weight: 600;">
+                                    {{ (current_user.first_name or current_user.username)[0]|upper }}
+                                </div>
+                            {% endif %}
+                                <strong>{{ current_user.first_name or current_user.username }}</strong>
+                        </a>
+                            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profil</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.settings') }}"><i class="fas fa-cog me-2"></i>Ayarlar</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></li>
+                </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    <main class="container-fluid py-4">
+    {% endif %}
+
+    {# Common content area for all layouts #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show auto-dismiss-alert" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+    {# The one and only content block #}
+        {% block content %}{% endblock %}
+
+    {# Close the layout wrappers #}
+    {% if use_sidebar_layout %}
+                </div>
+    </main>
+        </div>
+    {% else %}
+        </main>
+    {% endif %}
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <script>
+    // Layout Yönetimi
+    function setLayout(layout) {
+        if (!['classic', 'sidebar'].includes(layout)) {
+            return;
+        }
+        
+        fetch('/api/user/layout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({layout: layout})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem('layout', layout);
+                setTimeout(() => {
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('layout', layout);
+                    window.location.href = currentUrl.toString();
+                }, 800);
+            }
+        })
+        .catch(err => {
+            console.error('Layout save error:', err);
+        });
+    }
+    
+    // Tema Yönetimi
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        let theme = savedTheme;
+        {% if current_user.theme_preferences %}
+        try {
+            const userTheme = {{ current_user.theme_preferences | tojson | safe }};
+            if (userTheme && userTheme.theme) theme = userTheme.theme;
+        } catch(e) {}
+        {% endif %}
+        setTheme(theme, false);
+    }
+    
+    function setTheme(theme, save = true) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+        if (save) {
+            localStorage.setItem('theme', theme);
+            saveThemePreference(theme);
+        }
+    }
+    
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme, true);
+    }
+    
+    function saveThemePreference(theme) {
+        fetch('/api/user/theme', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({theme: theme})
+        }).catch(err => console.log('Theme save error:', err));
+    }
+    
+    // Sidebar Yönetimi
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        
+        if (sidebar) {
+            sidebar.classList.toggle('collapsed');
+            if (overlay) overlay.classList.toggle('show');
+            
+            if (window.innerWidth <= 992) {
+                sidebar.classList.toggle('show');
+            }
+        }
+    }
+    
+    function toggleLayoutMenu(event, menuId) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+        
+        document.querySelectorAll('.layout-menu').forEach(otherMenu => {
+            if (otherMenu.id !== menuId) {
+                otherMenu.classList.remove('show');
+            }
+        });
+        
+        menu.classList.toggle('show');
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.layout-toggle')) {
+            document.querySelectorAll('.layout-menu').forEach(menu => menu.classList.remove('show'));
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+    });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

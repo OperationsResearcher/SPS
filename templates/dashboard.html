@@ -1,0 +1,949 @@
+<!-- Son Güncelleme: 2026-01-26 11:58 | Antigravity AI -->
+{% extends "base.html" %}
+
+<!-- Test banner removed -->
+    🚀 TEST: BEN DOĞRU DOSYAYIM! (WIDGET DÜZELTİLDİ)
+</div>
+
+{% block title %}Gösterge Paneli{% endblock %}
+
+{% block styles %}
+<style>
+    /* Dashboard Kritik Kartlar - Arka Plan Renkleri */
+    .dashboard-stat-card.card-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        border: none;
+    }
+
+    .dashboard-stat-card.card-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+        border: none;
+    }
+
+    .dashboard-stat-card.card-success {
+        background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+        border: none;
+    }
+
+    .dashboard-stat-card {
+        color: #ffffff !important;
+    }
+
+    .dashboard-stat-card .card-title {
+        color: #ffffff !important;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .dashboard-stat-card h2 {
+        color: #ffffff !important;
+    }
+
+    .dashboard-stat-card i {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .dashboard-stat-card .card-header {
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .dashboard-stat-card .card-header h5 {
+        color: #ffffff !important;
+    }
+
+    .dashboard-stat-card .card-header .badge {
+        opacity: 0.9 !important;
+    }
+
+    .dashboard-stat-card .card-header .btn-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .dashboard-stat-card .card-header .btn-link:hover {
+        color: #ffffff !important;
+    }
+
+    /* GARANTİ CSS - Header Görünürlük Override */
+    .card-header {
+        display: flex !important;
+        visibility: visible !important;
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+
+    .dashboard-stat-card .card-header {
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Widget ID Badge - Kesin Görünürlük */
+    .badge[style*="WID"] {
+        z-index: 1 !important;
+        position: relative !important;
+        color: #dc3545 !important;
+        background-color: #ffffff !important;
+        border: 2px solid #dc3545 !important;
+        font-weight: bold !important;
+        padding: 0.25em 0.5em !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Gösterge Paneli
+                </h2>
+                <div class="text-muted">
+                    Hoş geldiniz, <strong>{{ current_user.first_name or current_user.username }}</strong>!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Özet Kartları (Kritik İşler, Toplam Yük, Tamamlanan) -->
+    {% if stats %}
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card dashboard-stat-card card-danger text-white shadow-sm h-100" id="widget-wid-01"
+                data-widget-id="WID-01" data-widget-name="Kritik İşler">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i> KRİTİK İŞLER
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-white text-danger border" style="font-family: monospace; font-size: 0.7rem;">#WID-01</span>
+                        <button type="button" class="btn btn-sm btn-link text-white p-0" 
+                                data-bs-toggle="popover" title="Kritik İşler" 
+                                data-bs-content="Yüksek öncelikli veya bitiş tarihi yaklaşan/geçen tamamlanmamış görevlerin toplam sayısı. Kaynak: Proje Modülü">
+                            <i class="fas fa-info-circle fa-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">{{ stats.critical_tasks or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-stat-card card-primary text-white shadow-sm h-100" id="widget-wid-02"
+                data-widget-id="WID-02" data-widget-name="Toplam Yük">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i> TOPLAM YÜK
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-white text-primary border" style="font-family: monospace; font-size: 0.7rem;">#WID-02</span>
+                        <button type="button" class="btn btn-sm btn-link text-white p-0" 
+                                data-bs-toggle="popover" title="Toplam Yük" 
+                                data-bs-content="Sistemdeki toplam aktif (arşivlenmemiş) görev sayısı. Kaynak: Proje Modülü">
+                            <i class="fas fa-info-circle fa-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">{{ stats.total_tasks or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-stat-card card-success text-white shadow-sm h-100" id="widget-wid-03"
+                data-widget-id="WID-03" data-widget-name="Tamamlanan">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i> TAMAMLANAN
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-white text-success border" style="font-family: monospace; font-size: 0.7rem;">#WID-03</span>
+                        <button type="button" class="btn btn-sm btn-link text-white p-0" 
+                                data-bs-toggle="popover" title="Tamamlanan" 
+                                data-bs-content="Bugüne kadar başarıyla tamamlanan görev sayısı. Kaynak: Proje Modülü">
+                            <i class="fas fa-info-circle fa-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">{{ stats.completed_tasks or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Dashboard verileri yükleniyor...
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if stats %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm" id="widget-wid-04" data-widget-id="WID-04"
+                data-widget-name="Karar Destek Özeti">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i> Karar Destek Özeti
+                    </h5>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"
+                            style="font-family: monospace; font-size: 0.7rem;">#WID-04</span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                            title="Karar Destek"
+                            data-bs-content="Performans verilerinize dayalı otomatik analiz ve öneriler.">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if current_user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim'] %}
+                    <ul class="mb-0">
+                        <li>Kritik iş sayısı: <strong>{{ stats.critical_tasks or 0 }}</strong></li>
+                        <li>Açık toplam iş: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0)
+                                }}</strong></li>
+                        <li>Kurumsal performans ortalaması: <strong>%{{ stats.performance_score or 0 }}</strong></li>
+                    </ul>
+                    {% else %}
+                    <ul class="mb-0">
+                        <li>Bugünkü öncelik: <strong>Kritik işleri tamamla</strong></li>
+                        <li>Devam eden görevler: <strong>{{ (stats.total_tasks or 0) - (stats.completed_tasks or 0)
+                                }}</strong></li>
+                        <li>Tamamlanan görevler: <strong>{{ stats.completed_tasks or 0 }}</strong></li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- V67: Grafikler (Chart.js) -->
+    {% if stats %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100" id="widget-wid-05" data-widget-id="WID-05"
+                data-widget-name="Kaynak Dağılımı">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-satellite-dish me-2"></i> Kaynak Dağılımı
+                    </h5>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"
+                            style="font-family: monospace; font-size: 0.7rem;">#WID-05</span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                            title="Kaynak Dağılımı"
+                            data-bs-content="Görevlerin kaynak sistemlere (Proje Yönetimi, Jira, Redmine vb.) göre dağılımı.">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="sourceChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100" id="widget-wid-06" data-widget-id="WID-06"
+                data-widget-name="Öncelik Analizi">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-fire me-2 text-danger"></i> Öncelik Analizi
+                    </h5>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"
+                            style="font-family: monospace; font-size: 0.7rem;">#WID-06</span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                            title="Öncelik Analizi"
+                            data-bs-content="Aktif görevlerin öncelik seviyelerine (Yüksek, Normal, Düşük) göre dağılımı.">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="priorityChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI PERFORMANS GRAFİĞİ (YENİ) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm" id="widget-wid-07" data-widget-id="WID-07" data-widget-name="Süreç Performansı">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i> Süreç Performansı <span class="badge bg-primary ms-2"
+                            style="font-size: 0.8rem;">Ort: %{{ stats.performance_score or 0 }}</span>
+                    </h5>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"
+                            style="font-family: monospace; font-size: 0.7rem;">#WID-07</span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                            title="Süreç Performansı"
+                            data-bs-content="Kurumsal süreçlerin KPI başarı oranlarına göre performans grafiği.">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stratejik İlerleme Durumu -->
+    {% if strategic_impact is defined %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm" id="widget-wid-08" data-widget-id="WID-08"
+                data-widget-name="Stratejik İlerleme">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bullseye me-2"></i> Stratejik İlerleme
+                    </h5>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"
+                            style="font-family: monospace; font-size: 0.7rem;">#WID-08</span>
+                        <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                            title="Stratejik İlerleme"
+                            data-bs-content="Tanımlı stratejik hedeflerin proje ve görevlerle olan ilişkisel ilerleme durumu.">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if strategic_impact|length == 0 %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>No Strategies Defined
+                    </div>
+                    {% else %}
+                    {% for item in strategic_impact %}
+                    {% set percent = item.health_percent or 0 %}
+                    {% set orphaned = item.orphaned %}
+                    {% if orphaned or percent < 50 %}
+                        {% set color='danger' %}
+                        {% set status='Orphaned / Risk' %}
+                    {% elif percent < 75 %}
+                        {% set color='warning' %}
+                        {% set status='Dikkat' %}
+                    {% else %}
+                        {% set color='success' %}
+                        {% set status=item.status or 'İyi' %}
+                    {% endif %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div>
+                                <strong>
+                                    {% if item.strategy_code %}{{ item.strategy_code }} - {% endif %}{{
+                                    item.strategy_name }}
+                                </strong>
+                                {% if orphaned %}
+                                <span class="badge bg-danger ms-2">Bağlı Proje Yok</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">
+                                {{ percent | round(1) }}% • {{ item.project_count or 0 }} proje
+                            </small>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-{{ color }}" role="progressbar" style="width: {{ percent }}%"
+                                aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-{{ color }}">{{ status }}</small>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Son Faaliyetler Listesi -->
+{% if recent_activities is defined %}
+<div class="card shadow-sm mb-4" id="widget-wid-09" data-widget-id="WID-09" data-widget-name="Son Faaliyetler">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-stream me-2 text-primary"></i> Son Faaliyetler
+        </h5>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-secondary border"
+                style="font-family: monospace; font-size: 0.7rem;">#WID-09</span>
+            <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                title="Son Faaliyetler" data-bs-content="Sistemde gerçekleşen son 5 işlem kaydı.">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for activity in recent_activities %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <span class="badge bg-{{ 'danger' if activity.priority == 'High' else 'secondary' }} me-2">{{
+                    activity.priority }}</span>
+                <strong>{{ activity.subject }}</strong>
+                <br>
+                <small class="text-muted"><i class="fas fa-code-branch"></i> {{ activity.project }} | {{
+                    activity.source }}</small>
+            </div>
+            <span class="badge bg-light text-dark border">{{ activity.status }}</span>
+        </div>
+        {% else %}
+        <div class="list-group-item">Henüz faaliyet yok.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Hızlı Erişim Kartları -->
+<div class="row mb-4" id="widget-wid-10" data-widget-id="WID-10" data-widget-name="Hızlı Erişim Menüsü">
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i> Hızlı Erişim Menüsü
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border" style="font-family: monospace; font-size: 0.7rem;">#WID-10</span>
+                    <button type="button" class="btn btn-sm btn-link text-info p-0" 
+                            data-bs-toggle="popover" title="Hızlı Erişim" 
+                            data-bs-content="Sık kullanılan modüllere hızlı erişim için kısayollar.">
+                        <i class="fas fa-info-circle fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-spreadsheet fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Süreç Karnesi</h5>
+                <p class="card-text text-muted">Süreç performans göstergelerinizi görüntüleyin ve yönetin</p>
+                <a href="{{ url_for('main.surec_karnesi') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Git
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-list-task fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Faaliyetler</h5>
+                <p class="card-text text-muted">Redmine benzeri faaliyet takip modülü</p>
+                <a href="{{ url_for('main.gorev_aktivite_log') }}" class="btn btn-success">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Git
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Kurum Paneli</h5>
+                <p class="card-text text-muted">Kurum bilgileri ve stratejik tanımlar</p>
+                <a href="{{ url_for('main.kurum_paneli') }}" class="btn btn-info">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Git
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Profilim</h5>
+                <p class="card-text text-muted">Profil bilgilerinizi görüntüleyin ve düzenleyin</p>
+                <a href="{{ url_for('auth.profile') }}" class="btn btn-warning">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Git
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-robot fa-3x mb-3" style="color: #667eea;"></i>
+                <h5 class="card-title">AI Stratejik Danışman</h5>
+                <p class="card-text text-muted">AI destekli stratejik planlama asistanı</p>
+                <a href="{{ url_for('main.stratejik_asistan') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Git
+                </a>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hızlı İstatistikler -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" id="widget-wid-11" data-widget-id="WID-11" data-widget-name="Hızlı İstatistikler">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i> Hızlı İstatistikler
+                </h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border"
+                        style="font-family: monospace; font-size: 0.7rem;">#WID-11</span>
+                    <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                        title="Hızlı İstatistikler"
+                        data-bs-content="Süreç, Faaliyet ve Performans Göstergesi toplam sayıları.">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h3 class="text-primary" id="surec-sayisi">-</h3>
+                        <p class="text-muted">Süreç Sayısı</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3 class="text-success" id="faaliyet-sayisi">-</h3>
+                        <p class="text-muted">Aktif Faaliyet</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3 class="text-info" id="pg-sayisi">-</h3>
+                        <p class="text-muted">Performans Göstergesi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Muda Hunter Efficiency Widget -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i> Süreç Verimlilik Analizi
+                </h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border"
+                        style="font-family: monospace; font-size: 0.7rem;">#WID-12</span>
+                    <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                        title="Verimlilik Analizi"
+                        data-bs-content="Muda Hunter modülü tarafından hesaplanan süreç verimlilik skoru.">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body text-center" id="efficiencyScoreContainer">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2"></i> Stratejik Asistan
+                </h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border"
+                        style="font-family: monospace; font-size: 0.7rem;">#WID-13</span>
+                    <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                        title="Stratejik Asistan"
+                        data-bs-content="Yapay zeka tarafından üretilen stratejik içgörüler ve öneriler.">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="aiInsightsContainer">
+                <div class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Son Aktiviteler -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i> Son Aktiviteler
+                </h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border"
+                        style="font-family: monospace; font-size: 0.7rem;">#WID-14</span>
+                    <button type="button" class="btn btn-sm btn-link text-info p-0" data-bs-toggle="popover"
+                        title="Son Aktiviteler" data-bs-content="Kullanıcının gerçekleştirdiği son aktiviteler.">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if recent_activities %}
+                {% for activity in recent_activities %}
+                <div class="d-flex mb-3">
+                    <div class="stat-icon {{ activity.type_class }} me-3"
+                        style="width: 40px; height: 40px; font-size: 16px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <i class="fas {{ activity.icon }}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">
+                            {% if activity.link %}
+                            <a href="{{ activity.link }}" class="text-decoration-none text-dark">{{ activity.title
+                                }}</a>
+                            {% else %}
+                            {{ activity.title }}
+                            {% endif %}
+                        </h6>
+                        {% if activity.description %}
+                        <small class="text-muted">{{ activity.description }}</small>
+                        <br>
+                        {% endif %}
+                        <small class="text-muted">{{ activity.created_at.strftime('%d.%m.%Y %H:%M') if
+                            activity.created_at else '-' }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-info-circle text-muted mb-2" style="font-size: 2rem;"></i>
+                    <p class="text-muted mb-0">Henüz aktivite bulunmuyor.</p>
+                    <small class="text-muted">Sistem kullanımınız arttıkça aktiviteler burada görünecektir.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Popovers
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+        })
+
+        // İstatistikleri yükle
+        loadStatistics();
+        // AI Insights yükle
+        loadAIInsights();
+        // Efficiency Score yükle
+        loadEfficiencyScore();
+        // V67: Chart.js Grafikleri
+        initCharts();
+    });
+
+    function loadAIInsights() {
+        fetch('/api/ai/insights')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('aiInsightsContainer');
+
+                if (data.success && data.insights && data.insights.length > 0) {
+                    let html = '';
+                    data.insights.forEach(insight => {
+                        const iconMap = {
+                            'danger': 'fa-exclamation-circle',
+                            'warning': 'fa-exclamation-triangle',
+                            'info': 'fa-info-circle',
+                            'success': 'fa-check-circle'
+                        };
+                        const icon = iconMap[insight.type] || 'fa-info-circle';
+                        const bgClass = insight.type === 'danger' ? 'border-danger' :
+                            insight.type === 'warning' ? 'border-warning' :
+                                insight.type === 'info' ? 'border-info' : 'border-success';
+
+                        html += `
+                        <div class="alert alert-${insight.type === 'danger' ? 'danger' : insight.type === 'warning' ? 'warning' : 'info'} d-flex align-items-start mb-3" role="alert">
+                            <i class="fas ${icon} fa-lg me-3 mt-1"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading mb-1">${insight.title}</h6>
+                                <p class="mb-2">${insight.message}</p>
+                                ${insight.action_url ? `<a href="${insight.action_url}" class="btn btn-sm btn-outline-${insight.type === 'danger' ? 'danger' : insight.type === 'warning' ? 'warning' : 'primary'}">Detaylı İncele</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <p class="text-muted mb-0">Şu anda özel bir öneri veya uyarı bulunmuyor.</p>
+                        <small class="text-muted">Sistem sürekli analiz ediyor ve önemli bilgileri burada paylaşacak.</small>
+                    </div>
+                `;
+                }
+            })
+            .catch(error => {
+                console.error('AI insights yüklenemedi:', error);
+                document.getElementById('aiInsightsContainer').innerHTML = `
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    AI önerileri şu anda yüklenemiyor. Lütfen daha sonra tekrar deneyin.
+                </div>
+            `;
+            });
+    }
+
+    function loadStatistics() {
+        // Süreç sayısı
+        fetch('/api/kullanici/sureclerim')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('surec-sayisi').textContent = data.surecler.length;
+                }
+            })
+            .catch(error => {
+                console.error('Süreç sayısı yüklenemedi:', error);
+            });
+
+        // Faaliyet sayısı
+        const userId = {{ current_user.id }};
+
+    fetch('/api/activities?assigned_to=' + userId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const aktifFaaliyetler = data.activities.filter(a => {
+                    return a.status_ad !== 'Tamamlandı' && a.status_ad !== 'İptal';
+                });
+                document.getElementById('faaliyet-sayisi').textContent = aktifFaaliyetler.length;
+            }
+        })
+        .catch(error => {
+            console.error('Faaliyet sayısı yüklenemedi:', error);
+        });
+    }
+
+    function loadEfficiencyScore() {
+        fetch('/api/muda-hunter/efficiency-score', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('efficiencyScoreContainer');
+                if (data.success) {
+                    const score = data.efficiency_score;
+                    const scoreClass = score >= 80 ? 'text-success' : score >= 60 ? 'text-info' : score >= 40 ? 'text-warning' : 'text-danger';
+                    const scoreText = score >= 80 ? 'Mükemmel' : score >= 60 ? 'İyi' : score >= 40 ? 'Orta' : 'Düşük';
+
+                    container.innerHTML = `
+                <h1 class="${scoreClass} mb-2">${score}/100</h1>
+                <p class="text-muted mb-0">${scoreText} - <a href="{{ url_for('main.muda_hunter') }}">Detaylı analiz için tıklayın</a></p>
+            `;
+                } else {
+                    container.innerHTML = '<p class="text-muted">Verimlilik skoru yüklenemedi</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Efficiency score yüklenemedi:', error);
+                document.getElementById('efficiencyScoreContainer').innerHTML = '<p class="text-muted">Verimlilik skoru yüklenemedi</p>';
+            });
+    }
+
+    // V67: Chart.js Grafikleri
+    function initCharts() {
+        // 1. Veri Hazırlığı
+        let sourceData = {};
+        let priorityData = { 'High': 0, 'Normal': 0, 'Low': 0 };
+        let perfData = {};
+
+        {% if stats %}
+        // Güvenli veri aktarımı (Null check backend tarafında tojson ile yapılır)
+        const rawSource = {{ stats.source_counts | tojson
+    }};
+    if (rawSource) sourceData = rawSource;
+
+    const rawPriority = {{ stats.priority_counts | tojson }};
+    if (rawPriority) priorityData = rawPriority;
+
+    const rawPerf = {{ stats.process_performance | tojson }};
+    if (rawPerf) perfData = rawPerf;
+    {% endif %}
+
+    // 2. KAYNAK GRAFİĞİ (Doughnut)
+    const sourceCtx = document.getElementById('sourceChart');
+    if (sourceCtx && Object.keys(sourceData).length > 0) {
+        new Chart(sourceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(sourceData),
+                datasets: [{
+                    data: Object.values(sourceData),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 10, font: { size: 11 } } }
+                }
+            }
+        });
+    } else if (sourceCtx) {
+        sourceCtx.parentElement.innerHTML = '<p class="text-muted text-center py-4">Henüz kaynak verisi bulunmuyor.</p>';
+    }
+
+    // 3. ÖNCELİK GRAFİĞİ (Bar)
+    const priorityCtx = document.getElementById('priorityChart');
+    if (priorityCtx) {
+        new Chart(priorityCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(priorityData),
+                datasets: [{
+                    label: 'İş Sayısı',
+                    data: Object.values(priorityData),
+                    backgroundColor: ['#e74a3b', '#4e73df', '#858796'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    }
+
+    // 4. KURUMSAL PERFORMANS GRAFİĞİ
+    const perfCtx = document.getElementById('performanceChart');
+    if (perfCtx && Object.keys(perfData).length > 0) {
+        new Chart(perfCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(perfData),
+                datasets: [{
+                    label: 'Başarı Skoru (%)',
+                    data: Object.values(perfData),
+                    backgroundColor: Object.values(perfData).map(val =>
+                        val >= 90 ? '#1cc88a' :
+                            val >= 75 ? '#4e73df' :
+                                val >= 50 ? '#f6c23e' : '#e74a3b'
+                    ),
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function (c) { return 'Başarı: %' + c.parsed.y; } } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 120,
+                        ticks: { callback: function (value) { return '%' + value; } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    } else if (perfCtx) {
+        perfCtx.parentElement.innerHTML = '<div class="text-center py-5"><i class="fas fa-chart-bar text-muted fa-3x mb-3 opacity-25"></i><p class="text-muted">Henüz performans verisi oluşmadı.</p></div>';
+    }
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) { return new bootstrap.Popover(popoverTriggerEl) })
+    });
+</script>
+
+<!-- SELF-CHECK: Widget Header ve ID Kontrolü -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            const headers = document.querySelectorAll('.card-header');
+            const headerCount = headers.length;
+            
+            let widCount = 0;
+            const allText = document.body.innerText || document.body.textContent || '';
+            const widMatches = allText.match(/#WID-\d+/g);
+            if (widMatches) {
+                widCount = widMatches.length;
+            }
+            
+            const visibleHeaders = Array.from(headers).filter(h => {
+                const style = window.getComputedStyle(h);
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+            }).length;
+            
+            if (headerCount === 0 || widCount === 0 || visibleHeaders < 10) {
+                const errorMsg = `HATA: Headerlar veya IDler render edilmedi!\nBulunan Header: ${headerCount}\nGörünür Header: ${visibleHeaders}\nBulunan WID: ${widCount}`;
+                alert(errorMsg);
+                
+                const errorBanner = document.createElement('div');
+                errorBanner.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #dc3545; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 99999; box-shadow: 0 4px 6px rgba(0,0,0,0.3);';
+                errorBanner.innerHTML = '⚠️ GÖRÜNÜRLÜK SORUNU VAR - Headerlar veya Widget ID\'leri render edilmedi!';
+                document.body.insertBefore(errorBanner, document.body.firstChild);
+                
+                console.error('Dashboard Self-Check Failed:', {
+                    headerCount: headerCount,
+                    visibleHeaders: visibleHeaders,
+                    widCount: widCount,
+                    allHeaders: Array.from(headers).map(h => h.innerHTML.substring(0, 50))
+                });
+            } else {
+                console.log('✅ Dashboard Self-Check Passed:', {
+                    headerCount: headerCount,
+                    visibleHeaders: visibleHeaders,
+                    widCount: widCount
+                });
+            }
+        }, 500);
+    });
+</script>
+{% endblock %}

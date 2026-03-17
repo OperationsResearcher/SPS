@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 3 - Corporate Consciousness Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🧠 Faz 3 - Corporate Consciousness (V62.0)</h1>
+            <p>Tükenmişlik Kalkanı, Monte Carlo Simülatörü, Deep Work Protokolü kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz3-consciousness', 'Faz 3 - Corporate Consciousness')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz3-consciousness')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz3-consciousness';
+        const moduleTitle = 'Faz 3 - Corporate Consciousness';
+        
+        const questions = [
+            {
+                text: 'Tükenmişlik Kalkanı sayfası (/wellbeing) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Refah skorları listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kullanıcının son skoru doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Geçmiş skorlar tablosu doğru çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Refah skoru hesaplandığında, skor kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Refah skoruna göre risk seviyesi (düşük, orta, yüksek, kritik) doğru belirleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Monte Carlo Simülatörü sayfasına erişebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Simülasyon senaryoları listesi ekranda görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni simülasyon senaryosu eklediğimde, senaryo kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Simülasyon durumu (taslak, çalışıyor, tamamlandı, başarısız) ekranda doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Deep Work Başlat" butonuna bastığımda oturum başlatılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '"Deep Work Durdur" butonuna bastığımda oturum durduruluyor ve süre hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Deep Work oturumu başlatma işlemi çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Deep Work oturumu durdurma işlemi çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Oturum süresi (duration_minutes) doğru hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfalar görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Skor görselleştirmeleri doğru çalışıyor mu? (Renk kodlamaları)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Form validasyonları doğru çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Hata mesajları kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Corporate Consciousness paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

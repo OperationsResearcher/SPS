@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ve Raporlama Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>📈 Dashboard ve Raporlama Kontrol Listesi</h1>
+            <p>Gösterge paneli, istatistikler, grafikler, filtreleme, özelleştirilebilir görünümler</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('dashboard', 'Dashboard ve Raporlama')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('dashboard', 'Dashboard ve Raporlama')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'dashboard';
+        const moduleTitle = 'Dashboard ve Raporlama';
+        
+        const questions = [
+            {
+                text: "Ana dashboard sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard sayfasında istatistik kartları (toplam proje, tamamlanan görevler vb.) görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard'da 'KRİTİK İŞLER' kartı görüntüleniyor ve doğru sayıyı gösteriyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard'da 'TOPLAM YÜK' kartı görüntüleniyor ve doğru sayıyı gösteriyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard'da 'TAMAMLANAN' kartı görüntüleniyor ve doğru sayıyı gösteriyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "İstatistik verileri merkezi mock data'dan doğru hesaplanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "'Son Faaliyetler' bölümü görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Son Faaliyetler listesinde faaliyetler görüntüleniyor mu? (Konu, Proje, Kaynak, Durum bilgileri ile)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Son Faaliyetler listesinde öncelik durumuna göre badge'ler (Kritik, Normal, Düşük) doğru gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Son aktiviteler listesi görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Aktivite listesinde aktivite tipine göre ikonlar ve renkler doğru gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum paneli sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kurum paneli sayfasında kurum bilgileri ve istatistikler görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Bireysel panel sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Bireysel performans kartı sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Executive dashboard (yönetici paneli) sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Executive dashboard'da üst seviye grafikler ve özet bilgiler görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Grafikler (Chart.js veya başka bir kütüphane) doğru çiziliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Grafik verileri doğru hesaplanıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Filtreleme seçenekleri (tarih aralığı, süreç, kullanıcı vb.) çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Filtre uygulandığında grafikler ve veriler güncelleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Özelleştirilebilir dashboard layout özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard kartları sürükle-bırak ile yeniden düzenlenebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "KPI dashboard sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "KPI dashboard'da performans göstergeleri doğru görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje portföy sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Proje portföy sayfasında projeler görsel olarak görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Raporlama sayfaları açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Raporlar doğru verilerle oluşturuluyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Rapor export özelliği (PDF, Excel) varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Zaman takibi sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Görev aktivite log sayfası açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Sayfa yüklenme süreleri kabul edilebilir mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Dashboard sayfaları mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Grafikler mobil cihazlarda düzgün görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>

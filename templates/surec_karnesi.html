@@ -1,0 +1,1344 @@
+{% extends "base.html" %}
+
+{% block title %}Süreç Karnesi{% endblock %}
+
+{% block content %}
+<!-- V2.1.0: Süreç karnesi CSS stilleri restoration.css dosyasına taşındı -->
+<style>
+    /* Hayalet overlay önleme: modallar backdrop'un üstünde görünsün */
+    #dataEntryWizardModal2,
+    #addPerformansModal,
+    #editPerformansModal,
+    #addFaaliyetModal,
+    #pgVeriDetayModal {
+        z-index: 1060 !important;
+    }
+    #dataEntryWizardModal2 .modal-dialog,
+    #addPerformansModal .modal-dialog,
+    #editPerformansModal .modal-dialog,
+    #addFaaliyetModal .modal-dialog,
+    #pgVeriDetayModal .modal-dialog {
+        z-index: 1061 !important;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <!-- Süreç Bilgileri -->
+    <div class="surec-header">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="mb-2">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> SÜREÇ KARNESİ
+                </h4>
+                <h5 id="surecAdi">Süreç seçiniz...</h5>
+            </div>
+            <div class="col-md-4 text-end">
+                <p class="mb-1"><strong>Döküman No:</strong> <span id="dokumanNo">-</span></p>
+                <p class="mb-1"><strong>Rev. No:</strong> <span id="revNo">-</span></p>
+                <p class="mb-0"><strong>Yıl:</strong> <span id="yilBilgisi">2025</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Süreç Seçimi -->
+    <div class="card mb-3 no-print">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Süreç Seçin:</label>
+                    <select id="surecSelect" class="form-select" onchange="loadSurecKarnesi()">
+                        <option value="">-- Süreç Seçiniz --</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Yıl:</label>
+                    <select id="yilSelect" class="form-select" onchange="loadSurecKarnesi()">
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Gösterim Periyodu:</label>
+                    <select id="periyotSelect" class="form-select" onchange="changePeriyot()">
+                        <option value="ceyrek">Çeyrek</option>
+                        <option value="yillik">Yıllık</option>
+                        <option value="aylik">Aylık</option>
+                        <option value="haftalik">Haftalık</option>
+                        <option value="gunluk">Günlük</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm" id="openDataEntryWizard2Btn" type="button">
+                            <i class="bi bi-magic"></i> Veri Giriş Sihirbazı
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="showAddPerformansForm()"
+                            title="Yeni Performans Göstergesi">
+                            <i class="bi bi-plus-circle"></i> PG Ekle
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="showAddFaaliyetForm()" title="Yeni Faaliyet">
+                            <i class="bi bi-plus-circle"></i> Faaliyet Ekle
+                        </button>
+                        <button class="btn btn-info btn-sm" onclick="debugSurecData()"
+                            title="Debug: Süreç verilerini kontrol et">
+                            <i class="bi bi-bug"></i> Debug
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Data Entry Wizard Modal (VGS) - İzole & basit akış -->
+    <div class="modal fade" id="dataEntryWizardModal2" tabindex="-1" aria-labelledby="dataEntryWizardModal2Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dataEntryWizardModal2Label">Veri Giriş Sihirbazı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Süreç</label>
+                            <select id="wizard2-surec-select" class="form-select"></select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Performans Göstergesi</label>
+                            <select id="wizard2-pg-select" class="form-select"></select>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Yıl</label>
+                            <select id="wizard2-yil-select" class="form-select"></select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Periyot Tipi</label>
+                            <select id="wizard2-periyot-tipi" class="form-select">
+                                <option value="">(Göstergeye göre otomatik)</option>
+                                <option value="yillik">Yıllık</option>
+                                <option value="ceyrek">Çeyrek</option>
+                                <option value="aylik">Aylık</option>
+                                <option value="haftalik">Haftalık</option>
+                                <option value="gunluk">Günlük</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4" id="wizard2-ay-container" style="display:none;">
+                            <label class="form-label">Ay</label>
+                            <select id="wizard2-ay-select" class="form-select"></select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Dönem No</label>
+                            <select id="wizard2-period-select" class="form-select"></select>
+                            <div class="form-text" id="wizard2-period-help"></div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Gerçekleşen Değer</label>
+                            <input id="wizard2-deger" type="text" class="form-control" placeholder="Örn: 42" />
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Açıklama (opsiyonel)</label>
+                            <textarea id="wizard2-aciklama" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0">
+                                <strong>Veri Giriş:</strong> Süreç, gösterge, dönem ve değer seçip kaydedin.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-success" id="wizard2-save-btn">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SÜREÇ SAĞLIK SKORU -->
+    <!-- V2.1.1: Inline style'lar restoration.css'e taşındı -->
+    <div class="card mb-4" id="saglikSkoruCard">
+        <div class="card-header bg-gradient">
+            <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Süreç Sağlık Skoru</h6>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <!-- 1. Süreç Sağlık Skoru (Gauge) -->
+                <div class="col-md-4 text-center border-end">
+                    <h6 class="text-muted mb-3">Genel Sağlık Skoru</h6>
+                    <!-- V2.1.1: Inline style'lar restoration.css'e taşındı -->
+                    <div id="gaugeChartContainer">
+                        <canvas id="gaugeChart" width="250" height="250"></canvas>
+                        <!-- V2.1.1: Inline style'lar restoration.css'e taşındı -->
+                        <div id="gaugeValue"></div>
+                    </div>
+                    <h5 id="saglikSkoruDurum" class="mt-2 text-primary fw-bold"></h5>
+                </div>
+
+                <!-- 2. KPI Başarı Dağılımı (Pie Chart) - YENİ -->
+                <div class="col-md-4 text-center border-end">
+                    <h6 class="text-muted mb-3">KPI Başarı Dağılımı</h6>
+                    <div
+                        style="position: relative; height: 200px; width: 100%; display: flex; justify-content: center;">
+                        <canvas id="kpiStatusChart"></canvas>
+                    </div>
+                    <div class="mt-2" id="kpiStatusLegend"></div>
+                </div>
+
+                <!-- 3. Detaylı Metrikler -->
+                <div class="col-md-4">
+                    <h6 class="text-muted mb-3 ps-2">Performans Detayları</h6>
+
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Proje Tamamlama:</small>
+                            <small id="projeTamamlamaText" class="fw-bold">0%</small>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div id="projeTamamlamaBar" class="progress-bar bg-success" role="progressbar"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Zamanında Görevler:</small>
+                            <small id="gecikenGorevText" class="fw-bold">0%</small>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div id="gecikenGorevBar" class="progress-bar bg-danger" role="progressbar"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">KPI Hedef Tutma:</small>
+                            <small id="pgHedefText" class="fw-bold text-primary">0%</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div id="pgHedefBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%">
+                            </div>
+                        </div>
+
+                        <!-- Özet Sayılar -->
+                        <div class="row mt-4 text-center">
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-primary" id="totalKPIConunt">0</h4>
+                                    <small style="font-size: 10px;">Toplam KPI</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-success" id="successKPICount">0</h4>
+                                    <small style="font-size: 10px;">Başarılı</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-danger" id="riskKPICount">0</h4>
+                                    <small style="font-size: 10px;">Riskli</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TREND ANALİZİ -->
+    <div class="card mb-4" id="trendAnalizCard">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> Performans Trend Analizi</h6>
+            <small class="text-muted">Dönemsel Ortalama Başarı Grafiği</small>
+        </div>
+        <div class="card-body">
+            <div style="height: 250px; width: 100%;">
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="text-center mt-2">
+                <small class="text-muted"><i class="bi bi-info-circle"></i> Grafik, tüm performans göstergelerinin
+                    ilgili dönemdeki ortalama hedef tutturma yüzdesini gösterir.</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERFORMANS GÖSTERGE ve SORUMLULUKLARIM -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Süreç Karnesi</h6>
+                <button class="btn btn-light btn-sm" onclick="showAddPerformansForm()">
+                    <i class="bi bi-plus-circle"></i> Yeni Performans Göstergesi
+                </button>
+            </div>
+        </div>
+
+        <!-- Periyot Navigasyon Çubuğu -->
+        <div class="card-body border-bottom bg-light py-3" id="periyotNavigasyonPanel">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <button class="btn btn-outline-primary btn-sm" onclick="navigate('prev')" id="periyotPrevBtn">
+                    <i class="bi bi-chevron-left"></i> Önceki
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary fs-6 px-3 py-2" id="periyotNavigasyonLabel">2025 - Çeyrek
+                        Görünümü</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="navigate('next')" id="periyotNextBtn">
+                    Sonraki <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sütun Gösterim Kontrol Paneli -->
+        <div class="card-body border-bottom bg-light py-2" id="sutunGosterimKontrol">
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <strong class="me-2">Sütun Gösterimi:</strong>
+                <div id="sutunCheckboxContainer" class="d-flex flex-wrap gap-2">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_kodu"
+                            data-sutun="col-code" checked onchange="toggleSutunVisibility('col-code')">
+                        <label class="form-check-label" for="sutun_kodu">Kodu</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_ana_strateji"
+                            data-sutun="col-description" data-sutun-index="1" checked
+                            onchange="toggleSutunVisibility('col-description', 1)">
+                        <label class="form-check-label" for="sutun_ana_strateji">Ana Strateji</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_alt_strateji"
+                            data-sutun="col-description" data-sutun-index="2" checked
+                            onchange="toggleSutunVisibility('col-description', 2)">
+                        <label class="form-check-label" for="sutun_alt_strateji">Alt Strateji</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_performans_adi"
+                            data-sutun="col-description" data-sutun-index="3" checked
+                            onchange="toggleSutunVisibility('col-description', 3)">
+                        <label class="form-check-label" for="sutun_performans_adi">Performans Adı</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_gost_turu"
+                            data-sutun="col-description" data-sutun-index="4" checked
+                            onchange="toggleSutunVisibility('col-description', 4)">
+                        <label class="form-check-label" for="sutun_gost_turu">Göst. Türü</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_hedef_yon"
+                            data-sutun="col-description" data-sutun-index="5" checked
+                            onchange="toggleSutunVisibility('col-description', 5)">
+                        <label class="form-check-label" for="sutun_hedef_yon">Hedef Belirl. Yön.</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_agirlik"
+                            data-sutun="col-weight" checked onchange="toggleSutunVisibility('col-weight')">
+                        <label class="form-check-label" for="sutun_agirlik">Göst. Ağırlığı (%)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_birim"
+                            data-sutun="col-description" data-sutun-index="6" checked
+                            onchange="toggleSutunVisibility('col-description', 6)">
+                        <label class="form-check-label" for="sutun_birim">Birim</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_olcum_per"
+                            data-sutun="col-period" checked onchange="toggleSutunVisibility('col-period')">
+                        <label class="form-check-label" for="sutun_olcum_per">Ölçüm Per.</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_onceki_yil"
+                            data-sutun="col-target" data-sutun-index="1" checked
+                            onchange="toggleSutunVisibility('col-target', 1)">
+                        <label class="form-check-label" for="sutun_onceki_yil">Önceki Yıl Ort.</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_hedef"
+                            data-sutun="col-target" data-sutun-index="2" checked
+                            onchange="toggleSutunVisibility('col-target', 2)">
+                        <label class="form-check-label" for="sutun_hedef">Hedef</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input sutun-checkbox" type="checkbox" id="sutun_hesaplama_yontemi"
+                            data-sutun="col-method" checked onchange="toggleSutunVisibility('col-method')">
+                        <label class="form-check-label" for="sutun_hesaplama_yontemi">Hesaplama Yöntemi</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0" style="overflow-x: auto;">
+            <table class="excel-table" id="performansTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="col-code" data-column-index="0">Kodu</th>
+                        <th rowspan="2" class="col-description" data-column-index="1">Ana Strateji</th>
+                        <th rowspan="2" class="col-description" data-column-index="2">Alt Strateji</th>
+                        <th rowspan="2" class="col-description" data-column-index="3">Performans Adı</th>
+                        <th rowspan="2" class="col-description" data-column-index="4">Göst. Türü</th>
+                        <th rowspan="2" class="col-description" data-column-index="5">Hedef Belirl. Yön.</th>
+                        <th rowspan="2" class="col-weight" data-column-index="6">Göst. Ağırlığı (%)</th>
+                        <th rowspan="2" class="col-description" data-column-index="7">Birim</th>
+                        <th rowspan="2" class="col-period" data-column-index="8">Ölçüm Per.</th>
+                        <th rowspan="2" class="col-target" data-column-index="9">Önceki Yıl Ort.</th>
+                        <th rowspan="2" class="col-target" data-column-index="10">Hedef</th>
+                        <th colspan="3">I. Çeyrek</th>
+                        <th colspan="3">II. Çeyrek</th>
+                        <th colspan="3">III. Çeyrek</th>
+                        <th colspan="3">IV. Çeyrek</th>
+                        <th rowspan="2" class="col-target">Yıl Sonu</th>
+                        <th rowspan="2" class="col-target">Başarı Puanı</th>
+                        <th rowspan="2" class="col-target">Ağırlıklı Başarı Puanı</th>
+                        <th rowspan="2" class="col-method" data-column-index="">Hesaplama Yöntemi</th>
+                        <th rowspan="2" class="col-actions">İşlemler</th>
+                    </tr>
+                    <tr>
+                        <!-- I. Çeyrek -->
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <!-- II. Çeyrek -->
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <!-- III. Çeyrek -->
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <!-- IV. Çeyrek -->
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                    </tr>
+                </thead>
+                <tbody id="performansTbody">
+                    <tr>
+                        <td colspan="27" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Lütfen bir süreç seçiniz</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FAALİYETLERİM -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-list-check"></i> SÜREÇ FAALİYETLERİM</h6>
+            <button class="btn btn-light btn-sm" onclick="showAddFaaliyetForm()">
+                <i class="bi bi-plus-circle"></i> Yeni Faaliyet
+            </button>
+        </div>
+        <div class="card-body p-0" style="overflow-x: auto;">
+            <table class="excel-table" id="faaliyetTable">
+                <thead>
+                    <tr>
+                        <th class="col-code">No</th>
+                        <th class="col-description">Faaliyet Adı</th>
+                        <th class="ay-column">Oca</th>
+                        <th class="ay-column">Şub</th>
+                        <th class="ay-column">Mar</th>
+                        <th class="ay-column">Nis</th>
+                        <th class="ay-column">May</th>
+                        <th class="ay-column">Haz</th>
+                        <th class="ay-column">Tem</th>
+                        <th class="ay-column">Ağu</th>
+                        <th class="ay-column">Eyl</th>
+                        <th class="ay-column">Eki</th>
+                        <th class="ay-column">Kas</th>
+                        <th class="ay-column">Ara</th>
+                        <th style="width: 80px;">ÖNE.</th>
+                        <th class="col-actions">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="faaliyetTbody">
+                    <tr>
+                        <td colspan="16" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Lütfen bir süreç seçiniz</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Yazdır Butonu -->
+    <div class="text-end mb-4 no-print">
+        <button class="btn btn-outline-success" id="exportExcelBtn">
+            <i class="bi bi-file-earmark-excel"></i> Excel'e Aktar
+        </button>
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer"></i> Yazdır / PDF
+        </button>
+    </div>
+</div>
+
+<!-- Performans Göstergesi Ekleme Modal -->
+<div class="modal fade" id="addPerformansModal" tabindex="-1" aria-labelledby="addPerformansModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPerformansModalLabel">
+                    <i class="bi bi-speedometer2 me-2"></i>Yeni Performans Göstergesi
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPerformansForm" onsubmit="addPerformansGostergesi(event)">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Gösterge Adı *</label>
+                            <input type="text" class="form-control" id="pg_ad" placeholder="Performans göstergesi adı"
+                                required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="pg_aciklama" rows="3"
+                                placeholder="Gösterge açıklaması"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hedef Değer</label>
+                            <input type="text" class="form-control" id="pg_hedef" placeholder="Hedef değer">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ölçüm Birimi</label>
+                            <input type="text" class="form-control" id="pg_birim" placeholder="Ölçüm birimi">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Periyot</label>
+                            <select class="form-select" id="pg_periyot">
+                                <option value="Aylık">Aylık</option>
+                                <option value="Çeyreklik">Çeyreklik</option>
+                                <option value="Yıllık">Yıllık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control" id="pg_baslangic">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" id="pg_bitis">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Alt Strateji</label>
+                            <select class="form-select" id="pg_alt_strateji" onchange="onAltStratejiChange('add')">
+                                <option value="">-- Alt Strateji Seçiniz --</option>
+                            </select>
+                            <small class="text-muted">Alt strateji seçilince otomatik olarak ana strateji de
+                                belirlenir</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gösterge Türü</label>
+                            <select class="form-select" id="pg_gosterge_turu">
+                                <option value="">Seçiniz</option>
+                                <option value="İyileştirme">İyileştirme (iylş.)</option>
+                                <option value="Koruma">Koruma</option>
+                                <option value="Bilgi Amaçlı">Bilgi Amaçlı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hedef Belirleme Yöntemi</label>
+                            <select class="form-select" id="pg_hedef_yontemi">
+                                <option value="">Seçiniz</option>
+                                <option value="RG">Rakibe Göre (RG)</option>
+                                <option value="HKY">Hedef Katsayısı Yöntemi (HKY)</option>
+                                <option value="HK">Hedef Konulamaz (HK)</option>
+                                <option value="SH">Sabit Hedef (SH)</option>
+                                <option value="DH">Dalgalı Hedef (DH)</option>
+                                <option value="SGH">Sektöre Göre Hedef (SGH)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Skor motoru ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="pg_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                            <small class="text-muted">Vizyon puanı hesaplamada kullanılır (0–100)</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="alert alert-info" id="pg_ana_strateji_bilgi" style="display: none;">
+                                <small><strong>Ana Strateji:</strong> <span id="pg_ana_strateji_adi">-</span></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performans Göstergesi Hesaplaması -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-calculator me-2"></i>Performans Göstergesi Hesaplaması
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Süreç üyeleri tarafından girilen Performans Göstergelerinin Karnede gösterimi
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Hesaplama Yöntemi *</label>
+                                            <select class="form-select" id="pg_hesaplama_yontemi" required>
+                                                <option value="">-- Hesaplama Yöntemi Seçiniz --</option>
+                                                <option value="Toplama">Toplama</option>
+                                                <option value="Ortalama">Ortalama</option>
+                                                <option value="Son Değer">Son Değer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="alert alert-info mb-0">
+                                                <small>
+                                                    <strong>Toplama:</strong> Tüm üyelerin değerlerini toplar<br>
+                                                    <strong>Ortalama:</strong> Tüm üyelerin değerlerinin ortalamasını
+                                                    alır<br>
+                                                    <strong>Son Değer:</strong> En son girilen değeri gösterir
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Başarı Puanı Yapılandırması -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-trophy me-2"></i>Başarı Puanı Yapılandırması (Opsiyonel)
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Başarı Puanı Kullanılsın mı? -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="pg_basari_puani_kullan"
+                                                    onchange="toggleBasariPuaniYapilandirma('add')">
+                                                <label class="form-check-label fw-bold" for="pg_basari_puani_kullan">
+                                                    Başarı Puanı Kullanılsın mı?
+                                                </label>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Başarı puanı kullanmak istiyorsanız
+                                                bu seçeneği işaretleyin. İşaretlenmezse karnede gösterilmez.</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Başarı Puanı Yapılandırması (Gizli/Görünür) -->
+                                    <div id="pg_basari_puani_yapilandirma_div" style="display: none;">
+                                        <p class="text-muted small mb-3">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Her puan seviyesi için aralık ve açıklama tanımlayın. Başarı puanı otomatik
+                                            olarak gerçekleşen değere göre hesaplanacaktır.
+                                        </p>
+
+                                        <!-- Yön (Increasing/Decreasing) -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label fw-bold">Hedef Yönü</label>
+                                                <select class="form-select" id="pg_direction">
+                                                    <option value="Increasing">Arttıkça İyi (Increasing)</option>
+                                                    <option value="Decreasing">Azaldıkça İyi (Decreasing)</option>
+                                                </select>
+                                                <small class="text-muted">Arttıkça İyi: Büyük değerler daha iyi puan
+                                                    alır. Azaldıkça İyi: Küçük değerler daha iyi puan alır.</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Başarı Puanları -->
+                                        <div id="basari_puani_yapilandirma">
+                                            <!-- Puan 1 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">1 Puan</label>
+                                                    <input type="text" class="form-control" id="bp_aciklama_1"
+                                                        placeholder="Beklentinin Çok Altında"
+                                                        value="Beklentinin Çok Altında">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 0-40 veya -400000)</label>
+                                                    <input type="text" class="form-control" id="bp_aralik_1"
+                                                        placeholder="0-40">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 2 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">2 Puan</label>
+                                                    <input type="text" class="form-control" id="bp_aciklama_2"
+                                                        placeholder="İyileştirmeye Açık" value="İyileştirmeye Açık">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 40-60)</label>
+                                                    <input type="text" class="form-control" id="bp_aralik_2"
+                                                        placeholder="40-60">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 3 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">3 Puan</label>
+                                                    <input type="text" class="form-control" id="bp_aciklama_3"
+                                                        placeholder="Hedefe Ulaşmış" value="Hedefe Ulaşmış">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 60-80)</label>
+                                                    <input type="text" class="form-control" id="bp_aralik_3"
+                                                        placeholder="60-80">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 4 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">4 Puan</label>
+                                                    <input type="text" class="form-control" id="bp_aciklama_4"
+                                                        placeholder="Hedefin Üzerinde" value="Hedefin Üzerinde">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 80-100)</label>
+                                                    <input type="text" class="form-control" id="bp_aralik_4"
+                                                        placeholder="80-100">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 5 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">5 Puan</label>
+                                                    <input type="text" class="form-control" id="bp_aciklama_5"
+                                                        placeholder="Mükemmel" value="Mükemmel">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 100- veya 100+)</label>
+                                                    <input type="text" class="form-control" id="bp_aralik_5"
+                                                        placeholder="100-">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert alert-warning mb-0 mt-3">
+                                            <small>
+                                                <strong>Not:</strong> Aralık formatı: "min-max" (örn: 40-60), "min-"
+                                                (örn: 100-), "-max" (örn: -40), veya tek değer (örn: 50).<br>
+                                                Binlik ayraçlar (nokta veya virgül) otomatik olarak temizlenecektir.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="submit" form="addPerformansForm" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performans Göstergesi Düzenleme Modal -->
+<div class="modal fade" id="editPerformansModal" tabindex="-1" aria-labelledby="editPerformansModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="editPerformansModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Performans Göstergesi Düzenle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPerformansForm">
+                    <input type="hidden" id="edit_pg_id">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Gösterge Adı *</label>
+                            <input type="text" class="form-control" id="edit_pg_ad"
+                                placeholder="Performans göstergesi adı" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="edit_pg_aciklama" rows="3"
+                                placeholder="Gösterge açıklaması"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hedef Değer</label>
+                            <input type="text" class="form-control" id="edit_pg_hedef" placeholder="Hedef değer">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ölçüm Birimi</label>
+                            <input type="text" class="form-control" id="edit_pg_birim" placeholder="Ölçüm birimi">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Periyot</label>
+                            <select class="form-select" id="edit_pg_periyot">
+                                <option value="Aylık">Aylık</option>
+                                <option value="Çeyreklik">Çeyreklik</option>
+                                <option value="Yıllık">Yıllık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control" id="edit_pg_baslangic">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" id="edit_pg_bitis">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Alt Strateji</label>
+                            <select class="form-select" id="edit_pg_alt_strateji"
+                                onchange="onAltStratejiChange('edit')">
+                                <option value="">-- Alt Strateji Seçiniz --</option>
+                            </select>
+                            <small class="text-muted">Alt strateji seçilince otomatik olarak ana strateji de
+                                belirlenir</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gösterge Türü</label>
+                            <select class="form-select" id="edit_pg_gosterge_turu">
+                                <option value="">Seçiniz</option>
+                                <option value="İyileştirme">İyileştirme (iylş.)</option>
+                                <option value="Koruma">Koruma</option>
+                                <option value="Bilgi Amaçlı">Bilgi Amaçlı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hedef Belirleme Yöntemi</label>
+                            <select class="form-select" id="edit_pg_hedef_yontemi">
+                                <option value="">Seçiniz</option>
+                                <option value="RG">Rakibe Göre (RG)</option>
+                                <option value="HKY">Hedef Katsayısı Yöntemi (HKY)</option>
+                                <option value="HK">Hedef Konulamaz (HK)</option>
+                                <option value="SH">Sabit Hedef (SH)</option>
+                                <option value="DH">Dalgalı Hedef (DH)</option>
+                                <option value="SGH">Sektöre Göre Hedef (SGH)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Skor motoru ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="edit_pg_weight" min="0" max="100" step="0.5" placeholder="Boş = eşit dağılım">
+                            <small class="text-muted">Vizyon puanı hesaplamada kullanılır (0–100)</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="alert alert-info" id="edit_pg_ana_strateji_bilgi" style="display: none;">
+                                <small><strong>Ana Strateji:</strong> <span
+                                        id="edit_pg_ana_strateji_adi">-</span></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performans Göstergesi Hesaplaması -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-calculator me-2"></i>Performans Göstergesi Hesaplaması
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Süreç üyeleri tarafından girilen Performans Göstergelerinin Karnede gösterimi
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Hesaplama Yöntemi *</label>
+                                            <select class="form-select" id="edit_pg_hesaplama_yontemi" required>
+                                                <option value="">-- Hesaplama Yöntemi Seçiniz --</option>
+                                                <option value="Toplama">Toplama</option>
+                                                <option value="Ortalama">Ortalama</option>
+                                                <option value="Son Değer">Son Değer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="alert alert-info mb-0">
+                                                <small>
+                                                    <strong>Toplama:</strong> Tüm üyelerin değerlerini toplar<br>
+                                                    <strong>Ortalama:</strong> Tüm üyelerin değerlerinin ortalamasını
+                                                    alır<br>
+                                                    <strong>Son Değer:</strong> En son girilen değeri gösterir
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Başarı Puanı Yapılandırması -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-trophy me-2"></i>Başarı Puanı Yapılandırması (Opsiyonel)
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Başarı Puanı Kullanılsın mı? -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="edit_pg_basari_puani_kullan"
+                                                    onchange="toggleBasariPuaniYapilandirma('edit')">
+                                                <label class="form-check-label fw-bold"
+                                                    for="edit_pg_basari_puani_kullan">
+                                                    Başarı Puanı Kullanılsın mı?
+                                                </label>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Başarı puanı kullanmak istiyorsanız
+                                                bu seçeneği işaretleyin. İşaretlenmezse karnede gösterilmez.</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Başarı Puanı Yapılandırması (Gizli/Görünür) -->
+                                    <div id="edit_pg_basari_puani_yapilandirma_div" style="display: none;">
+                                        <p class="text-muted small mb-3">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Her puan seviyesi için aralık ve açıklama tanımlayın. Başarı puanı otomatik
+                                            olarak gerçekleşen değere göre hesaplanacaktır.
+                                        </p>
+
+                                        <!-- Yön (Increasing/Decreasing) -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label fw-bold">Hedef Yönü</label>
+                                                <select class="form-select" id="edit_pg_direction">
+                                                    <option value="Increasing">Arttıkça İyi (Increasing)</option>
+                                                    <option value="Decreasing">Azaldıkça İyi (Decreasing)</option>
+                                                </select>
+                                                <small class="text-muted">Arttıkça İyi: Büyük değerler daha iyi puan
+                                                    alır. Azaldıkça İyi: Küçük değerler daha iyi puan alır.</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Başarı Puanları -->
+                                        <div id="edit_basari_puani_yapilandirma">
+                                            <!-- Puan 1 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">1 Puan</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aciklama_1"
+                                                        placeholder="Beklentinin Çok Altında"
+                                                        value="Beklentinin Çok Altında">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 0-40 veya -400000)</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aralik_1"
+                                                        placeholder="0-40">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 2 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">2 Puan</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aciklama_2"
+                                                        placeholder="İyileştirmeye Açık" value="İyileştirmeye Açık">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 40-60)</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aralik_2"
+                                                        placeholder="40-60">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 3 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">3 Puan</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aciklama_3"
+                                                        placeholder="Hedefe Ulaşmış" value="Hedefe Ulaşmış">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 60-80)</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aralik_3"
+                                                        placeholder="60-80">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 4 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">4 Puan</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aciklama_4"
+                                                        placeholder="Hedefin Üzerinde" value="Hedefin Üzerinde">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 80-100)</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aralik_4"
+                                                        placeholder="80-100">
+                                                </div>
+                                            </div>
+
+                                            <!-- Puan 5 -->
+                                            <div class="row mb-3 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">5 Puan</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aciklama_5"
+                                                        placeholder="Mükemmel" value="Mükemmel">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Aralık (örn: 100- veya 100+)</label>
+                                                    <input type="text" class="form-control" id="edit_bp_aralik_5"
+                                                        placeholder="100-">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert alert-warning mb-0 mt-3">
+                                            <small>
+                                                <strong>Not:</strong> Aralık formatı: "min-max" (örn: 40-60), "min-"
+                                                (örn: 100-), "-max" (örn: -40), veya tek değer (örn: 50).<br>
+                                                Binlik ayraçlar (nokta veya virgül) otomatik olarak temizlenecektir.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="submit" form="editPerformansForm" class="btn btn-warning">
+                    <i class="bi bi-check-circle me-1"></i>Güncelle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Faaliyet Ekleme Modal -->
+<div class="modal fade" id="addFaaliyetModal" tabindex="-1" aria-labelledby="addFaaliyetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFaaliyetModalLabel">
+                    <i class="bi bi-list-check me-2"></i>Yeni Faaliyet
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFaaliyetForm" onsubmit="addFaaliyet(event)">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Faaliyet Adı *</label>
+                            <input type="text" class="form-control" id="f_ad" placeholder="Faaliyet adı" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="f_aciklama" rows="3"
+                                placeholder="Faaliyet açıklaması"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control" id="f_baslangic">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" id="f_bitis">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Durum</label>
+                            <select class="form-select" id="f_durum">
+                                <option value="Planlandı">Planlandı</option>
+                                <option value="Devam Ediyor">Devam Ediyor</option>
+                                <option value="Tamamlandı">Tamamlandı</option>
+                                <option value="İptal">İptal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">İlerleme (%)</label>
+                            <input type="number" class="form-control" id="f_ilerleme" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="submit" form="addFaaliyetForm" class="btn btn-warning">
+                    <i class="bi bi-plus-circle me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<!-- <script src="{{ url_for('static', filename='js/reporting.js') }}"></script> -->
+<!-- <script src="{{ url_for('static', filename='js/veri_giris.js') }}"></script> -->
+
+
+<!-- Basit PG Veri Detay Modal -->
+<div class="modal fade" id="pgVeriDetayModal" tabindex="-1" aria-labelledby="pgVeriDetayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="pgVeriDetayModalLabel">
+                    <i class="fas fa-info-circle me-2"></i>Veri Detayları
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Sekmeler -->
+                <ul class="nav nav-tabs mb-3" id="pgDetayTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="veri-tab" data-bs-toggle="tab"
+                            data-bs-target="#veri-content" type="button" role="tab">
+                            <i class="fas fa-chart-line me-1"></i>Veri Detayları
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="gorevler-tab" data-bs-toggle="tab"
+                            data-bs-target="#gorevler-content" type="button" role="tab">
+                            <i class="fas fa-tasks me-1"></i>Bu Veriyi Besleyen Proje Görevleri
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Sekme içerikleri -->
+                <div class="tab-content" id="pgDetayTabContent">
+                    <div class="tab-pane fade show active" id="veri-content" role="tabpanel">
+                        <div id="pgVeriDetayContent">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Yükleniyor...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Veri detayları yükleniyor...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="gorevler-content" role="tabpanel">
+                        <div id="pgProjeGorevleriContent">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Yükleniyor...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Proje görevleri yükleniyor...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PG Veri Güncelleme Modal -->
+<div class="modal fade" id="pgVeriGuncelleModal" tabindex="-1" aria-labelledby="pgVeriGuncelleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="pgVeriGuncelleModalLabel">
+                    <i class="fas fa-edit me-2"></i>Veri Güncelle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pgVeriGuncelleForm">
+                    <input type="hidden" id="editVeriId">
+
+                    <div class="mb-3">
+                        <label for="editGerceklesenDeger" class="form-label">Gerçekleşen Değer *</label>
+                        <input type="text" class="form-control" id="editGerceklesenDeger" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editAciklama" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="editAciklama" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-warning" onclick="kaydetPGVeriGuncelle()">
+                    <i class="fas fa-save me-2"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PG Veri Silme Onay Modal -->
+<div class="modal fade" id="pgVeriSilOnayModal" tabindex="-1" aria-labelledby="pgVeriSilOnayModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="pgVeriSilOnayModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Veri Sil
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="silVeriId">
+                <p>Bu veriyi silmek istediğinizden emin misiniz?</p>
+                <p class="text-muted small">Bu işlem geri alınamaz. Silme işlemi audit log'a kaydedilecektir.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" onclick="silPGVeri()">
+                    <i class="fas fa-trash me-2"></i>Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VGS (eski - kaldırıldı) -->
+
+<!-- VGS JS (izole script) dosyası tarafından yönetilmektedir -->
+
+
+
+
+<!-- Hedef Dağıtım Modalı -->
+<div class="modal fade" id="hedefDagitimModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bireysel Hedef Dağıtımı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info py-2">
+                    <i class="bi bi-info-circle"></i> Bu sihirbaz, seçilen KPI hedefini süreç üyelerine <strong>Bireysel
+                        Hedef</strong> olarak dağıtır.
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Seçilen KPI:</label>
+                    <span id="dagitim_pg_adi" class="ms-2 text-primary fw-bold"></span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Toplam Hedef (Süreç):</label>
+                        <div class="input-group">
+                            <input type="number" id="dagitim_hedef_toplam" class="form-control" step="0.01">
+                            <span class="input-group-text" id="dagitim_pg_birim">Birim</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Dağıtım Yöntemi:</label>
+                        <select id="dagitim_yontemi" class="form-select" onchange="hesaplaHedefDagitim()">
+                            <option value="manuel">Manuel Giriş (Tek Tek)</option>
+                            <option value="esit">Eşit Dağıt (Ortalama)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 border-bottom pb-2">Personel Listesi</h6>
+
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover table-striped table-sm" id="dagitimUserTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th style="width: 40px" class="text-center">
+                                    <input type="checkbox" id="selectAllUsers" class="form-check-input"
+                                        onchange="toggleAllUsers(this)" checked>
+                                </th>
+                                <th>Personel</th>
+                                <th>Rol</th>
+                                <th style="width: 150px">Hedef Payı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Kullanıcılar buraya JS ile yüklenecek -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 p-2 bg-light rounded">
+                    <span>
+                        <small class="text-muted">Seçili Personel:</small> <span id="selectedUserCount"
+                            class="fw-bold">0</span>
+                    </span>
+                    <span>
+                        <small class="text-muted">Dağıtılan Toplam:</small> <span id="distributedTotal"
+                            class="fw-bold fs-5 text-primary">0</span>
+                    </span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="distributeTargets()" id="btnDistributeSave">
+                    <i class="bi bi-save"></i> Hedefleri Dağıt ve Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- VGS2 JS (izole) -->
+<script src="{{ url_for('static', filename='js/surec_karnesi.js') }}"></script>
+
+{% endblock %}

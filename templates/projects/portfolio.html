@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-briefcase"></i> Portföy Özeti</h3>
+    <a href="/dashboard" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Dashboard'a Dön</a>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Toplam Proje</h6>
+          <h2 class="mb-0" id="total-projects">—</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Aktif Projeler</h6>
+          <h2 class="mb-0 text-success" id="active-projects">—</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Riskli Projeler</h6>
+          <h2 class="mb-0 text-danger" id="risky-projects">—</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h6 class="text-muted">Ort. Risk Skoru</h6>
+          <h2 class="mb-0" id="avg-risk-score">—</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Proje Listesi</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="projects-table">
+          <thead class="table-light">
+            <tr>
+              <th>Proje Adı</th>
+              <th>Durum</th>
+              <th>İlerleme (%)</th>
+              <th>Görev Sayısı</th>
+              <th>Risk Skoru</th>
+              <th>Başlangıç</th>
+              <th>Bitiş</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Proje İlerleme Grafiği</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="progressChart" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Risk Dağılımı</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="riskChart" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+let projects = [];
+
+async function loadPortfolio() {
+  try {
+    const res = await fetch('/api/portfoy/ozet');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Portföy verisi yüklenemedi');
+
+    projects = data.projects || [];
+
+    // Özet kartlar
+    document.getElementById('total-projects').textContent = data.total_projects || 0;
+    document.getElementById('active-projects').textContent = data.active_projects || 0;
+    document.getElementById('risky-projects').textContent = data.risky_projects || 0;
+    document.getElementById('avg-risk-score').textContent = (data.average_risk_score || 0).toFixed(1);
+
+    renderTable();
+    renderCharts();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Portföy Yükleme Hatası');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#projects-table tbody');
+  tbody.innerHTML = '';
+
+  if (projects.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Proje bulunamadı</td></tr>';
+    return;
+  }
+
+  projects.forEach(proj => {
+    const progress = proj.progress_avg || proj.progress || 0;
+    const riskScore = proj.risk_score || 0;
+    const riskClass = riskScore > 70 ? 'danger' : riskScore > 40 ? 'warning' : 'success';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><a href="/projeler/${proj.project_id || proj.id}"><strong>${proj.name || 'N/A'}</strong></a></td>
+      <td><span class="badge bg-secondary">${proj.status || 'Aktif'}</span></td>
+      <td>
+        <div class="progress" style="height: 20px;">
+          <div class="progress-bar" role="progressbar" style="width: ${progress}%">${progress.toFixed(0)}%</div>
+        </div>
+      </td>
+      <td>${proj.task_count || proj.overdue_count || 0}</td>
+      <td><span class="badge bg-${riskClass}">${riskScore.toFixed(0)}</span></td>
+      <td>${proj.start_date || '—'}</td>
+      <td>${proj.end_date || '—'}</td>
+      <td>
+        <a href="/projeler/${proj.project_id || proj.id}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+        <a href="/projeler/${proj.project_id || proj.id}/kanban" class="btn btn-sm btn-outline-secondary"><i class="fas fa-columns"></i></a>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCharts() {
+  // İlerleme Grafiği
+  const progressCtx = document.getElementById('progressChart');
+  new Chart(progressCtx, {
+    type: 'bar',
+    data: {
+      labels: projects.map(p => p.name),
+      datasets: [{
+        label: 'İlerleme (%)',
+        data: projects.map(p => p.progress || 0),
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, max: 100 } }
+    }
+  });
+
+  // Risk Grafiği
+  const riskCtx = document.getElementById('riskChart');
+  const lowRisk = projects.filter(p => p.risk_score <= 40).length;
+  const mediumRisk = projects.filter(p => p.risk_score > 40 && p.risk_score <= 70).length;
+  const highRisk = projects.filter(p => p.risk_score > 70).length;
+
+  new Chart(riskCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Düşük Risk', 'Orta Risk', 'Yüksek Risk'],
+      datasets: [{
+        data: [lowRisk, mediumRisk, highRisk],
+        backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(255, 99, 132, 0.7)']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+
+loadPortfolio();
+</script>
+{% endblock %}

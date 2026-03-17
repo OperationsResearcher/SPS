@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Kolay Giriş{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-box-arrow-in-right"></i> Kolay Giriş Sistemi
+                    </h4>
+                    <p class="mb-0 mt-2"><small>Tüm kullanıcılar için şifre: <strong>123456</strong></small></p>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Arama -->
+                    <div class="mb-4">
+                        <input type="text" id="userSearch" class="form-control form-control-lg"
+                            placeholder="🔍 Kullanıcı ara (ad, email, rol...)">
+                    </div>
+
+                    <!-- Tabs (Sekmeler) -->
+                    <ul class="nav nav-tabs mb-3" id="kurumTabs" role="tablist">
+                        <!-- Tümü Sekmesi -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-tumu" data-bs-toggle="tab"
+                                data-bs-target="#content-tumu" type="button" role="tab" aria-controls="content-tumu"
+                                aria-selected="true">
+                                <i class="fas fa-users me-1"></i> Tümü <span class="badge bg-secondary ms-1">{{
+                                    users|length }}</span>
+                            </button>
+                        </li>
+
+                        <!-- Kurum Sekmeleri -->
+                        {% for kurum_ad, kurum_users in kurum_groups.items() %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-{{ loop.index }}" data-bs-toggle="tab"
+                                data-bs-target="#content-{{ loop.index }}" type="button" role="tab">
+                                <i class="fas fa-building me-1"></i> {{ kurum_ad }} <span
+                                    class="badge bg-light text-dark ms-1">{{ kurum_users|length }}</span>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Tab İçerikleri -->
+                    <div class="tab-content" id="kurumTabsContent">
+
+                        <!-- Tab: Tümü -->
+                        <div class="tab-pane fade show active" id="content-tumu" role="tabpanel"
+                            aria-labelledby="tab-tumu">
+                            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                <table class="table table-hover">
+                                    <thead class="table-light sticky-top">
+                                        <tr>
+                                            <th width="30%">Kullanıcı</th>
+                                            <th width="25%">Email</th>
+                                            <th width="20%">Kurum</th>
+                                            <th width="15%">Rol</th>
+                                            <th width="10%" class="text-center">Giriş</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userTableBody">
+                                        {% for user in users %}
+                                        {% include 'partials/easy_login_row.html' %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Kurumlar -->
+                        {% for kurum_ad, kurum_users in kurum_groups.items() %}
+                        <div class="tab-pane fade" id="content-{{ loop.index }}" role="tabpanel"
+                            aria-labelledby="tab-{{ loop.index }}">
+                            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                <table class="table table-hover">
+                                    <thead class="table-light sticky-top">
+                                        <tr>
+                                            <th width="30%">Kullanıcı</th>
+                                            <th width="25%">Email</th>
+                                            <th width="20%">Kurum</th>
+                                            <th width="15%">Rol</th>
+                                            <th width="10%" class="text-center">Giriş</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in kurum_users %}
+                                        {% include 'partials/easy_login_row.html' %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- İstatistikler -->
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            Toplam <strong id="totalUsers">{{ users|length }}</strong> kullanıcı
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bilgi Kartı -->
+            <div class="card mt-3">
+                <div class="card-body bg-light">
+                    <h6 class="card-title">
+                        <i class="bi bi-info-circle"></i> Bilgilendirme
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>Varsayılan Şifre:</strong> Tüm kullanıcılar için <code>123456</code></li>
+                        <li><strong>Admin Erişimi:</strong> <code>admin</code> kullanıcısı tüm yetkilere sahiptir</li>
+                        <li><strong>Test Amaçlı:</strong> Bu sayfa geliştirme ve test için tasarlanmıştır</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Kullanıcı Arama
+    document.getElementById('userSearch').addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+
+        // Aktif tab'ı bul
+        const activePane = document.querySelector('.tab-pane.active');
+        if (!activePane) return;
+
+        const rows = activePane.querySelectorAll('.user-row');
+
+        rows.forEach(row => {
+            const searchData = row.getAttribute('data-search');
+            if (searchData.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Tab değiştiğinde aramayı temizle veya tetikle (isteğe bağlı, şimdilik basit bırakalım)
+    // Her tab değişiminde search input sıfırlanabilir veya mevcut filtre aktif tab'a uygulanabilir.
+    // Mevcut filtreyi uygulamak en iyisi.
+    const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabEls.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function (event) {
+            // Trigger search input event manually to filter newly shown tab
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput.value.length > 0) {
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    });
+</script>
+
+<style>
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    /* Tab stilleri için */
+    .nav-tabs .nav-link {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        font-weight: 600;
+        border-top: 3px solid #0d6efd;
+    }
+
+    .nav-link .badge {
+        font-size: 0.75em;
+        vertical-align: top;
+        margin-top: 2px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,1328 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Proje Detay{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('main.dashboard') }}">Ana Sayfa</a> /
+<a href="{{ url_for('main.projeler') }}">Proje Yönetimi</a> / {{ project.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Üst Başlık: Proje Adı, Tarihler ve İlerleme -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="mb-0">
+                        <i class="fas fa-project-diagram me-2"></i>{{ project.name }}
+                    </h4>
+                    {% if project.description %}
+                    <p class="mb-0 mt-2 small">{{ project.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 text-end">
+                    {% if project.start_date and project.end_date %}
+                    <div class="small">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        {{ project.start_date.strftime('%d.%m.%Y') }} - {{ project.end_date.strftime('%d.%m.%Y') }}
+                    </div>
+                    {% endif %}
+                    <div class="mt-1">
+                        <a class="text-white text-decoration-none small"
+                            href="{{ url_for('main.strategy_project_detail', id=project.id) }}">
+                            <i class="fas fa-chart-line me-1"></i>Stratejik analiz
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <span
+                            class="badge bg-{{ 'success' if project.priority == 'Düşük' else 'warning' if project.priority == 'Orta' else 'danger' }}">
+                            {{ project.priority }}
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        {% set active_view = 'kanban' %}
+                        {% set btn_style = 'btn-outline-light' %}
+                        {% set active_btn_style = 'btn-light' %}
+                        {% include 'partials/project_views_nav.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Proje Araçları Bölümü -->
+    <div class="card mb-4 shadow-sm border-top border-5 border-primary">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="fas fa-toolbox text-primary me-2"></i>Proje Araçları
+            </h5>
+            <p class="text-muted small mt-2 mb-0">Planlama, yönetim, otomasyon ve raporlama araçlarına erişin</p>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- CPM Analizi -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('cpm')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_cpm', project_id=project.id) }}" class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-project-diagram fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="card-title">CPM Analizi</h6>
+                                    <p class="card-text small text-muted">Kritik yol ve görev bağımlılıkları</p>
+                                    <span class="badge bg-primary">Planlama</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RAID Yönetimi -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('raid')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_raid', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-shield-alt fa-2x text-danger"></i>
+                                    </div>
+                                    <h6 class="card-title">RAID Yönetimi</h6>
+                                    <p class="card-text small text-muted">Risk, varsayım, sorun, bağımlılık</p>
+                                    <span class="badge bg-danger">Risk</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SLA Tanımları -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('sla')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_sla', project_id=project.id) }}" class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-clock fa-2x text-warning"></i>
+                                    </div>
+                                    <h6 class="card-title">SLA Tanımları</h6>
+                                    <p class="card-text small text-muted">Görev tamamlanma hedefleri</p>
+                                    <span class="badge bg-warning text-dark">Yönetim</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kapasite Planlama -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('capacity')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_capacity', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-users-cog fa-2x text-success"></i>
+                                    </div>
+                                    <h6 class="card-title">Kapasite Planlama</h6>
+                                    <p class="card-text small text-muted">Ekip kapasite yönetimi</p>
+                                    <span class="badge bg-success">Kaynaklar</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Baseline Takibi -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('baseline')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_baseline', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-chart-bar fa-2x text-info"></i>
+                                    </div>
+                                    <h6 class="card-title">Baseline Takibi</h6>
+                                    <p class="card-text small text-muted">Planlanan vs Gerçek analiz</p>
+                                    <span class="badge bg-info">Analiz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bağımlılık Matrisi -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('dependency')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_dependency_matrix', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-sitemap fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="card-title">Bağımlılık Matrisi</h6>
+                                    <p class="card-text small text-muted">Görev ilişkileri ve bağlantıları</p>
+                                    <span class="badge bg-primary">Planlama</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kural Motoru -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('rules')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_rules', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-cogs fa-2x text-success"></i>
+                                    </div>
+                                    <h6 class="card-title">Kural Motoru</h6>
+                                    <p class="card-text small text-muted">Otomatik aksiyonlar ve tetikleyiciler</p>
+                                    <span class="badge bg-success">Otomasyon</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Entegrasyonlar -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('integrations')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_integrations', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-plug fa-2x text-info"></i>
+                                    </div>
+                                    <h6 class="card-title">Entegrasyonlar</h6>
+                                    <p class="card-text small text-muted">Slack, Teams, Outlook webhook'ları</p>
+                                    <span class="badge bg-info">Otomasyon</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tekrarlayan Görevler -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('recurring')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_recurring', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-redo fa-2x text-success"></i>
+                                    </div>
+                                    <h6 class="card-title">Tekrarlayan Görevler</h6>
+                                    <p class="card-text small text-muted">Cron temelli otomatik görev oluşturma</p>
+                                    <span class="badge bg-success">Otomasyon</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Çalışma Günleri -->
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 tool-info-btn"
+                            onclick="showToolInfo('workdays')" style="z-index: 10;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </button>
+                        <a href="{{ url_for('main.project_workdays', project_id=project.id) }}"
+                            class="text-decoration-none">
+                            <div class="card h-100 tool-card border-0 shadow-sm transition-all">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="fas fa-calendar-check fa-2x text-secondary"></i>
+                                    </div>
+                                    <h6 class="card-title">Çalışma Günleri</h6>
+                                    <p class="card-text small text-muted">Tatil ve çalışma günü yönetimi</p>
+                                    <span class="badge bg-secondary">Yönetim</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- İlerleme Çubuğu -->
+            <div class="mb-2">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="text-muted">Proje İlerlemesi</small>
+                    <small class="text-muted" id="progressPercentage">0%</small>
+                </div>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                        id="projectProgressBar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                        aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <strong>Burnup</strong>
+                        </div>
+                        <div class="card-body"><canvas id="burnupChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <strong>Burndown</strong>
+                        </div>
+                        <div class="card-body"><canvas id="burndownChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Grid: Sol (8) ve Sağ (4) Kolon -->
+    <div class="row">
+        <!-- Sol Kolon: 8 birim -->
+        <div class="col-md-8">
+            <!-- Proje Takvimi (Gantt) -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Proje Takvimi (Gantt)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-gantt fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Gantt şeması yakında eklenecek</p>
+                        <p class="small text-muted">Proje görevlerinin zaman çizelgesi burada görüntülenecek</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Faaliyetler Listesi -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>Faaliyetler Listesi
+                    </h6>
+                    {% if user_project_role in ['manager', 'member'] %}
+                    <a class="btn btn-light btn-sm" href="{{ url_for('main.gorev_yeni', project_id=project.id) }}">
+                        <i class="fas fa-plus me-1"></i>Görev Ekle
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <input type="text" class="form-control mb-3" id="taskSearchInput"
+                        placeholder="Görevlerde ara (başlık, açıklama, sorumlu, durum)...">
+                    <div id="tasksListContainer">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <p class="text-muted small mt-2">Görevler yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Kolon: 4 birim -->
+        <div class="col-md-4">
+            <!-- Proje Künyesi -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Proje Künyesi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Proje Yöneticisi:</strong><br>
+                        {% if project.manager %}
+                        <span class="text-muted">
+                            <i class="fas fa-user me-1"></i>
+                            {{ project.manager.first_name }} {{ project.manager.last_name }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted">Atanmamış</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Oluşturulma Tarihi:</strong><br>
+                        <span class="text-muted">
+                            {{ project.created_at.strftime('%d.%m.%Y %H:%M') if project.created_at else '-' }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Durum:</strong><br>
+                        <span class="badge bg-{{ 'success' if project.is_archived else 'primary' }}">
+                            {{ 'Arşivlendi' if project.is_archived else 'Aktif' }}
+                        </span>
+                    </div>
+                    {% if project.members %}
+                    <div class="mb-3">
+                        <strong>Üyeler:</strong><br>
+                        <small class="text-muted">{{ project.members|length }} kişi</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Risk Isı Haritası -->
+            <div class="card mb-4 shadow-sm border-left-danger">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Risk Isı Haritası
+                    </h6>
+                    <button class="btn btn-light btn-sm" onclick="showAddRiskModal()">
+                        <i class="fas fa-plus me-1"></i>Risk Ekle
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="riskHeatmapContainer">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <p class="text-muted small mt-2">Riskler yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Simülasyon Butonu -->
+            <div class="card mt-4 shadow-sm border-left-warning">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-robot me-2"></i>AI Simülasyon
+                    </h5>
+                    <p class="card-text small">Proje gecikirse ne olur? Olası senaryoları analiz et.</p>
+                    <button class="btn btn-warning btn-block w-100" onclick="showWhatIfModal()">
+                        <i class="fas fa-chart-line me-2"></i>What-If Simülasyonu Başlat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const canEditTasks = {{ 'true' if user_project_role in ['manager', 'member']else 'false' }};
+    const canDeleteTasks = {{ 'true' if user_project_role == 'manager' else 'false' }};
+    let tasksCache = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // İlerleme çubuğunu güncelle
+        updateProjectProgress();
+
+        // Görevleri yükle
+        loadTasks();
+
+        const taskSearchInput = document.getElementById('taskSearchInput');
+        if (taskSearchInput) {
+            taskSearchInput.addEventListener('input', function () {
+                renderTasks(tasksCache);
+            });
+        }
+
+        // Riskleri yükle
+        loadRisks();
+
+        // Burnup/Burndown yükle
+        loadBurnCharts();
+    });
+
+    function updateProjectProgress() {
+        // Basit bir ilerleme hesaplama (tamamlanan görevler / toplam görevler)
+        fetch(`/api/projeler/{{ project.id }}/gorevler`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.gorevler) {
+                    const tasks = data.gorevler;
+                    const total = tasks.length;
+                    const completed = tasks.filter(t => t.status === 'Tamamlandı').length;
+                    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                    const progressBar = document.getElementById('projectProgressBar');
+                    const progressText = document.getElementById('progressPercentage');
+
+                    if (progressBar) {
+                        progressBar.style.width = progress + '%';
+                        progressBar.setAttribute('aria-valuenow', progress);
+                    }
+                    if (progressText) {
+                        progressText.textContent = progress + '%';
+                    }
+                }
+            })
+            .catch(err => console.error('Progress update error:', err));
+    }
+
+    async function loadBurnCharts() {
+        try {
+            const res = await fetch('/api/projeler/{{ project.id }}/burn');
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Grafikler yüklenemedi');
+            const ctxUp = document.getElementById('burnupChart');
+            const ctxDown = document.getElementById('burndownChart');
+            const labels = (data.burnup || []).map(p => p.date);
+            const burnupData = (data.burnup || []).map(p => p.done);
+            const scopeData = (data.burnup || []).map(p => p.scope);
+            const burndownData = (data.burndown || []).map(p => p.remaining);
+
+            if (ctxUp) {
+                new Chart(ctxUp, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Tamamlanan', data: burnupData, borderColor: '#2ecc71', tension: 0.2 },
+                            { label: 'Kapsam', data: scopeData, borderColor: '#95a5a6', borderDash: [4, 4], tension: 0 }
+                        ]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+            if (ctxDown) {
+                new Chart(ctxDown, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Kalan iş', data: burndownData, borderColor: '#e67e22', tension: 0.2 },
+                            { label: 'Kapsam', data: scopeData, borderColor: '#95a5a6', borderDash: [4, 4], tension: 0 }
+                        ]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+        } catch (e) {
+            if (window.showToast) showToast('error', e.message || 'Burn grafikleri yüklenemedi', 'Hata');
+        }
+    }
+
+    function loadTasks() {
+        fetch(`/api/projeler/{{ project.id }}/gorevler`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('tasksListContainer');
+                if (data.success && data.gorevler) {
+                    tasksCache = data.gorevler;
+                    renderTasks(tasksCache);
+                } else {
+                    container.innerHTML = '<p class="text-danger text-center">Görevler yüklenirken hata oluştu</p>';
+                }
+            })
+            .catch(err => {
+                console.error('Tasks load error:', err);
+                document.getElementById('tasksListContainer').innerHTML =
+                    '<p class="text-danger text-center">Görevler yüklenirken hata oluştu</p>';
+            });
+    }
+
+    function renderTasks(tasks) {
+        const container = document.getElementById('tasksListContainer');
+        const query = (document.getElementById('taskSearchInput')?.value || '').trim().toLowerCase();
+        const filtered = !query ? tasks : tasks.filter(task => {
+            const text = [
+                task.title,
+                task.description,
+                task.status,
+                task.external_assignee_name,
+                task.assigned_to ? `${task.assigned_to.first_name || ''} ${task.assigned_to.last_name || ''}` : '',
+                task.assigned_to_id
+            ].join(' ').toLowerCase();
+            return text.includes(query);
+        });
+
+        if (filtered.length === 0) {
+            console.log('Filtreleme sonucu 0 görev bulundu.');
+            container.innerHTML = '<p class="text-muted text-center">Eşleşen görev bulunamadı</p>';
+            return;
+        }
+
+        let html = '<div class="list-group">';
+        filtered.forEach(task => {
+            const statusClass = {
+                'Tamamlandı': 'success',
+                'Devam Ediyor': 'primary',
+                'Yapılacak': 'secondary',
+                'Beklemede': 'warning'
+            }[task.status] || 'secondary';
+
+            const isCompleted = task.status === 'Tamamlandı';
+            const canComplete = canEditTasks && !isCompleted && (task.status === 'Yapılacak' || task.status === 'Devam Ediyor' || task.status === 'Beklemede');
+
+            const taskTitleHtml = canEditTasks
+                ? `<a href="/projeler/{{ project.id }}/gorevler/${task.id}" class="text-decoration-none">${task.title}</a>`
+                : `${task.title}`;
+
+            html += `
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">${taskTitleHtml}</h6>
+                        ${task.description ? `<p class="mb-1 small text-muted">${task.description}</p>` : ''}
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                ${task.due_date || 'Tarih belirtilmemiş'}
+                            </small>
+                            ${task.assigned_to ? `<small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                ${task.assigned_to.first_name || ''} ${task.assigned_to.last_name || ''}
+                            </small>` : task.external_assignee_name ? `<small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                ${task.external_assignee_name}
+                            </small>` : task.assigned_to_id ? `<small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                Sorumlu: ${task.assigned_to_id}
+                            </small>` : ''}
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                        <span class="badge bg-${statusClass}">${task.status}</span>
+                        ${canComplete ? `
+                            <button class="btn btn-success btn-sm" onclick="completeTask(${task.id})" title="Görevi Tamamla">
+                                <i class="fas fa-check"></i> Bitir
+                            </button>
+                        ` : isCompleted ? `
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> Tamamlandı
+                            </span>
+                        ` : ''}
+
+                        ${canEditTasks ? `
+                            <a class="btn btn-outline-primary btn-sm" href="/projeler/{{ project.id }}/gorevler/${task.id}" title="Düzenle">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        ` : ''}
+
+                        ${canDeleteTasks ? `
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteTask(${task.id})" title="Sil">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function loadRisks() {
+        fetch(`/api/projeler/{{ project.id }}/riskler`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('riskHeatmapContainer');
+                if (data.success && data.risks) {
+                    const risks = data.risks;
+                    if (risks.length === 0) {
+                        container.innerHTML = '<p class="text-muted text-center">Henüz risk eklenmemiş</p>';
+                    } else {
+                        let html = '<div class="risk-grid">';
+                        risks.forEach(risk => {
+                            const score = risk.impact * risk.probability;
+                            const level = score >= 20 ? 'Kritik' : score >= 12 ? 'Yüksek' : score >= 6 ? 'Orta' : 'Düşük';
+                            const color = score >= 20 ? 'danger' : score >= 12 ? 'warning' : score >= 6 ? 'info' : 'success';
+
+                            html += `
+                            <div class="card mb-2 border-${color}">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title mb-1 small">${risk.title}</h6>
+                                    <span class="badge bg-${color}">${level} (${score})</span>
+                                </div>
+                            </div>
+                        `;
+                        });
+                        html += '</div>';
+                        container.innerHTML = html;
+                    }
+                } else {
+                    container.innerHTML = '<p class="text-muted text-center">Riskler yüklenirken hata oluştu</p>';
+                }
+            })
+            .catch(err => {
+                console.error('Risks load error:', err);
+                document.getElementById('riskHeatmapContainer').innerHTML =
+                    '<p class="text-muted text-center">Riskler yüklenirken hata oluştu</p>';
+            });
+    }
+
+    function showWhatIfModal() {
+        // Modal'ı göster
+        const modal = new bootstrap.Modal(document.getElementById('whatIfModal'));
+        modal.show();
+
+        // İçeriği yükle
+        const contentDiv = document.getElementById('whatIfContent');
+        contentDiv.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-3x text-muted"></i><p class="mt-2">Senaryolar hesaplanıyor...</p></div>';
+
+        // URL'den project ID'yi al
+        const projectId = window.location.pathname.split('/').pop();
+
+        // API'den simülasyon verilerini al
+        fetch(`/api/project/${projectId}/simulate`)
+            .then(response => response.json())
+            .then(data => {
+                let htmlContent = `<div class="alert alert-${data.risk_level === 'high' ? 'danger' : data.risk_level === 'medium' ? 'warning' : 'info'}">
+                                  <strong><i class="fas fa-exclamation-triangle me-2"></i>Tespit:</strong> ${data.summary}
+                                </div>
+                                <h6 class="mt-3"><i class="fas fa-search me-2"></i>Olası Senaryolar:</h6>
+                                <ul class="list-group mb-3">`;
+
+                data.scenarios.forEach(s => {
+                    htmlContent += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                  <div>
+                                      <strong>${s.description}</strong>
+                                  </div>
+                                  <span class="badge bg-primary rounded-pill">${s.impact}</span>
+                                </li>`;
+                });
+
+                htmlContent += `</ul>
+                            <h6 class="mt-3"><i class="fas fa-lightbulb me-2"></i>Yapay Zeka Önerisi:</h6>
+                            <div class="alert alert-info">
+                                <p class="mb-0">${data.recommendation}</p>
+                            </div>`;
+
+                contentDiv.innerHTML = htmlContent;
+            })
+            .catch(err => {
+                console.error('Simülasyon hatası:', err);
+                contentDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Analiz sırasında hata oluştu. Lütfen tekrar deneyin.</div>';
+            });
+    }
+
+    async function deleteTask(taskId) {
+        if (!canDeleteTasks) return;
+        if (!confirm('Bu görevi silmek istediğinize emin misiniz?')) return;
+
+        try {
+            const response = await fetch(`/api/projeler/{{ project.id }}/gorevler/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+                }
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadTasks();
+                updateProjectProgress();
+                showToast('success', 'Görev silindi.', 'Başarılı');
+            } else {
+                showToast('error', result.message || 'Görev silinemedi', 'Hata');
+            }
+        } catch (e) {
+            console.error('Görev silme hatası:', e);
+            showToast('error', 'Görev silinirken bir hata oluştu.', 'Hata');
+        }
+    }
+
+    function showAddRiskModal() {
+        showToast('info', 'Risk ekleme özelliği yakında eklenecek', 'Bilgi');
+    }
+
+    function completeTask(taskId) {
+        if (!confirm('Bu görevi tamamlamak istediğinize emin misiniz?')) return;
+
+        fetch(`/api/task/${taskId}/complete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', 'Görev tamamlandı. İlerleme güncelleniyor...', 'Başarılı');
+                    // İlerleme çubuğunu güncelle
+                    if (data.new_progress !== undefined) {
+                        const progressBar = document.getElementById('projectProgressBar');
+                        const progressText = document.getElementById('progressPercentage');
+                        if (progressBar) {
+                            progressBar.style.width = data.new_progress + '%';
+                            progressBar.setAttribute('aria-valuenow', data.new_progress);
+                        }
+                        if (progressText) {
+                            progressText.textContent = data.new_progress + '%';
+                        }
+                    }
+                    // Görev listesini yenile
+                    loadTasks();
+                } else {
+                    showToast('error', data.message || 'Görev tamamlanırken bir hata oluştu', 'Hata');
+                }
+            })
+            .catch(err => {
+                console.error('Görev tamamlama hatası:', err);
+                showToast('error', 'Görev tamamlanırken bir hata oluştu. Lütfen tekrar deneyin.', 'Hata');
+            });
+    }
+</script>
+
+<!-- What-If Simülasyon Modal -->
+<div class="modal fade" id="whatIfModal" tabindex="-1" role="dialog" aria-labelledby="whatIfModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="whatIfModalLabel">
+                    <i class="fas fa-brain me-2"></i>AI Senaryo Analizi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="whatIfContent">
+                <div class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-3x text-muted"></i>
+                    <p class="mt-2 text-muted">Senaryolar hesaplanıyor...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="applyRecommendations()">
+                    <i class="fas fa-check me-2"></i>Önerileri Uygula
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Araç Bilgilendirme Modal -->
+<div class="modal fade" id="toolInfoModal" tabindex="-1" aria-labelledby="toolInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="toolInfoModalLabel">
+                    <i class="fas fa-info-circle me-2"></i><span id="toolInfoTitle"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="toolInfoBody">
+                <!-- İçerik dinamik yüklenecek -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" id="toolInfoActionBtn">
+                    <i class="fas fa-arrow-right me-2"></i>Araca Git
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Proje Araçları Kartları Stili */
+    .tool-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        border-bottom-color: currentColor;
+    }
+
+    .tool-card .card-title {
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .tool-card .card-text {
+        line-height: 1.4;
+        min-height: 2.8rem;
+    }
+
+    .tool-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .tool-card:hover .tool-icon {
+        transform: scale(1.1);
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    /* Araç kartları renkli alt çizgi */
+    .tool-card:nth-child(1),
+    .tool-card:nth-child(6) {
+        border-left: 4px solid #0d6efd;
+    }
+
+    .tool-card:nth-child(2) {
+        border-left: 4px solid #dc3545;
+    }
+
+    .tool-card:nth-child(3),
+    .tool-card:nth-child(10) {
+        border-left: 4px solid #ffc107;
+    }
+
+    .tool-card:nth-child(4),
+    .tool-card:nth-child(7),
+    .tool-card:nth-child(9) {
+        border-left: 4px solid #198754;
+    }
+
+    .tool-card:nth-child(5) {
+        border-left: 4px solid #0dcaf0;
+    }
+
+    .tool-card:nth-child(8) {
+        border-left: 4px solid #0dcaf0;
+    }
+</style>
+
+<script>
+    function applyRecommendations() {
+        showToast('info', 'Önerileri uygulama özelliği yakında eklenecek', 'Bilgi');
+        // İleride burada önerileri otomatik uygulama mantığı olacak
+    }
+
+    // Araç bilgilendirme sistemi
+    const toolInfoData = {
+        cpm: {
+            title: 'CPM (Critical Path Method) Analizi',
+            icon: 'fas fa-project-diagram',
+            color: 'primary',
+            url: '{{ url_for("main.project_cpm", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Görevler arasındaki bağımlılıkları (predecessor/successor) tanımlayın</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Her görev için tahmini süre girin</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Sistem otomatik olarak kritik yolu hesaplar</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Slack (boşluk) zamanlarını görüntüleyin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-chart-line text-info me-2"></i><strong>Kritik Yol:</strong> Projeyi geciktirecek görevler kırmızı ile işaretlenir</li>
+                    <li class="mb-2"><i class="fas fa-clock text-warning me-2"></i><strong>Slack Zamanı:</strong> Gecikme toleransı olan görevleri belirleyin</li>
+                    <li class="mb-2"><i class="fas fa-calendar-alt text-primary me-2"></i><strong>Erken/Geç Başlangıç:</strong> Her görev için optimal zaman penceresi</li>
+                    <li class="mb-2"><i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>Bottleneck Tespiti:</strong> Darboğaz görevleri belirleyin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-success mb-0">
+                    <p class="mb-2"><strong>🎯 Risk Azaltma:</strong> Kritik görevlere odaklanarak gecikmeler önlenir</p>
+                    <p class="mb-2"><strong>📊 Kaynak Optimizasyonu:</strong> Slack zamanı olan görevlerde esneklik sağlar</p>
+                    <p class="mb-2"><strong>⏱️ Gerçekçi Planlama:</strong> En kısa proje süresini bilimsel olarak hesaplar</p>
+                    <p class="mb-0"><strong>🔍 Önceliklendirme:</strong> Hangi görevlerin geciktirilmeyeceğini net gösterir</p>
+                </div>`
+                }
+            ]
+        },
+        raid: {
+            title: 'RAID Yönetimi',
+            icon: 'fas fa-shield-alt',
+            color: 'danger',
+            url: '{{ url_for("main.project_raid", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>Risks (Riskler):</strong> Olasılık (1-5) ve etki (1-5) puanlayın, azaltma stratejisi belirleyin</li>
+                    <li class="mb-2"><i class="fas fa-question-circle text-info me-2"></i><strong>Assumptions (Varsayımlar):</strong> Doğrulama tarihi ve notlarla varsayımlarınızı kaydedin</li>
+                    <li class="mb-2"><i class="fas fa-bug text-warning me-2"></i><strong>Issues (Sorunlar):</strong> Aciliyet seviyesi (Düşük/Orta/Yüksek/Kritik) ile aktif sorunları takip edin</li>
+                    <li class="mb-2"><i class="fas fa-link text-primary me-2"></i><strong>Dependencies (Bağımlılıklar):</strong> Dış bağımlılıkları ve görev ilişkilerini (FS/SS/FF/SF) yönetin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-chart-pie text-danger me-2"></i><strong>Risk Skoru:</strong> Olasılık × Etki = toplam risk değeri (max 25)</li>
+                    <li class="mb-2"><i class="fas fa-list-check text-success me-2"></i><strong>Önceliklendirme:</strong> En kritik riskleri skor sıralamasıyla görebilirsiniz</li>
+                    <li class="mb-2"><i class="fas fa-bell text-warning me-2"></i><strong>Varsayım Uyarıları:</strong> Doğrulama tarihi geçmiş varsayımlar vurgulanır</li>
+                    <li class="mb-2"><i class="fas fa-fire text-danger me-2"></i><strong>Acil Sorunlar:</strong> Kritik ve yüksek aciliyetli sorunlar öne çıkar</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-danger mb-0">
+                    <p class="mb-2"><strong>🛡️ Proaktif Koruma:</strong> Riskler kriz olmadan önce yönetilir</p>
+                    <p class="mb-2"><strong>📋 Toplantı Verimliliği:</strong> Tüm riskler, sorunlar, varsayımlar tek ekranda</p>
+                    <p class="mb-2"><strong>🎯 Yanlış Varsayım Engeli:</strong> Doğrulanmamış varsayımlar planı çürütmeden yakalanır</p>
+                    <p class="mb-0"><strong>🔗 Bağımlılık Şeffaflığı:</strong> Blokaj noktaları ve dış faktörler görünür olur</p>
+                </div>`
+                }
+            ]
+        },
+        sla: {
+            title: 'SLA (Service Level Agreement) Tanımları',
+            icon: 'fas fa-clock',
+            color: 'warning',
+            url: '{{ url_for("main.project_sla", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-tag text-primary me-2"></i>Görev tiplerine göre SLA kuralları oluşturun (Bug, Feature, Task vb.)</li>
+                    <li class="mb-2"><i class="fas fa-hourglass-half text-warning me-2"></i>Hedef tamamlanma süresini (saat/gün) belirleyin</li>
+                    <li class="mb-2"><i class="fas fa-bell text-danger me-2"></i>Otomatik uyarı eşikleri tanımlayın (%75, %90, %100)</li>
+                    <li class="mb-2"><i class="fas fa-cog text-success me-2"></i>Öncelik seviyelerine göre farklı SLA'lar atayın</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>SLA Uyum Oranı:</strong> Hedeflere uyum yüzdesi raporlanır</li>
+                    <li class="mb-2"><i class="fas fa-exclamation-circle text-warning me-2"></i><strong>Yaklaşan İhlaller:</strong> Süresi dolmak üzere olan görevler vurgulanır</li>
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i><strong>İhlal Analizi:</strong> SLA'yı aşan görevler listelenir</li>
+                    <li class="mb-2"><i class="fas fa-chart-bar text-info me-2"></i><strong>Performans Metrikleri:</strong> Ortalama tamamlanma süreleri grafiği</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-warning mb-0">
+                    <p class="mb-2"><strong>⏰ Zaman Yönetimi:</strong> Görevler net tamamlanma hedefleriyle yönetilir</p>
+                    <p class="mb-2"><strong>📈 Performans İzleme:</strong> Ekip ve bireysel SLA uyum oranları ölçülür</p>
+                    <p class="mb-2"><strong>🚨 Erken Uyarı:</strong> Gecikme riski olan görevler önceden belirlenir</p>
+                    <p class="mb-0"><strong>🎯 Kalite Garantisi:</strong> Müşteri/stakeholder beklentileri karşılanır</p>
+                </div>`
+                }
+            ]
+        },
+        capacity: {
+            title: 'Kapasite Planlama',
+            icon: 'fas fa-users-cog',
+            color: 'success',
+            url: '{{ url_for("main.project_capacity", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-user text-primary me-2"></i>Ekip üyelerinin günlük/haftalık çalışma saatlerini tanımlayın</li>
+                    <li class="mb-2"><i class="fas fa-calendar text-info me-2"></i>Tatil ve izin günlerini sisteme girin</li>
+                    <li class="mb-2"><i class="fas fa-tasks text-warning me-2"></i>Görevlere tahmini efor (saat) atayın</li>
+                    <li class="mb-2"><i class="fas fa-chart-gantt text-success me-2"></i>Zaman çizelgesinde kaynak yüklenmesini görüntüleyin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-tachometer-alt text-danger me-2"></i><strong>Yüklenme Oranı:</strong> %0-100+ aralığında kişi bazlı kullanım</li>
+                    <li class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i><strong>Aşırı Yüklenme Uyarısı:</strong> %100'ü aşan atamalar kırmızı ile gösterilir</li>
+                    <li class="mb-2"><i class="fas fa-battery-quarter text-info me-2"></i><strong>Boş Kapasite:</strong> Atanmamış zaman dilimlerini görüntüleyin</li>
+                    <li class="mb-2"><i class="fas fa-balance-scale text-success me-2"></i><strong>Kaynak Dengeleme:</strong> Görev dağılımını optimize edin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-success mb-0">
+                    <p class="mb-2"><strong>👥 Ekip Sağlığı:</strong> Burnout riski taşıyan kişileri önceden tespit edersiniz</p>
+                    <p class="mb-2"><strong>📊 Gerçekçi Planlama:</strong> Kapasite üstü iş atanmasını engellersiniz</p>
+                    <p class="mb-2"><strong>🔄 Esnek Yeniden Atama:</strong> Boş kapasitedeki kişilere görev aktarılabilir</p>
+                    <p class="mb-0"><strong>💰 Maliyet Optimizasyonu:</strong> Kaynak israfı önlenir, verimlilik artar</p>
+                </div>`
+                }
+            ]
+        },
+        baseline: {
+            title: 'Baseline (Referans) Takibi',
+            icon: 'fas fa-chart-bar',
+            color: 'info',
+            url: '{{ url_for("main.project_baseline", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-save text-primary me-2"></i>Proje başlangıcında veya önemli milestone'larda "Baseline Kaydet"</li>
+                    <li class="mb-2"><i class="fas fa-calendar-check text-success me-2"></i>Kaydedilen baseline, o anki tüm görev tarih/efor bilgilerini dondurur</li>
+                    <li class="mb-2"><i class="fas fa-chart-line text-warning me-2"></i>Gerçek ilerleme ile planlanan (baseline) karşılaştırılır</li>
+                    <li class="mb-2"><i class="fas fa-edit text-info me-2"></i>Görevler değiştikçe sapma (variance) otomatik hesaplanır</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-arrows-alt-h text-primary me-2"></i><strong>Tarih Sapması:</strong> Planlanan vs gerçek tarih farkı (gün)</li>
+                    <li class="mb-2"><i class="fas fa-hourglass-end text-warning me-2"></i><strong>Efor Sapması:</strong> Tahmini vs harcanan efor farkı (saat)</li>
+                    <li class="mb-2"><i class="fas fa-percentage text-danger me-2"></i><strong>Sapma Yüzdesi:</strong> +/- % olarak gösterilir</li>
+                    <li class="mb-2"><i class="fas fa-chart-area text-success me-2"></i><strong>Trend Grafiği:</strong> Zaman içinde sapmanın nasıl değiştiği görülür</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-info mb-0">
+                    <p class="mb-2"><strong>📏 Tahmin Doğruluğu:</strong> Gelecek projeler için daha iyi efor tahmini yaparsınız</p>
+                    <p class="mb-2"><strong>🔍 Sapma Analizi:</strong> Neden gecikme/aşma olduğunu retrospektif inceleyebilirsiniz</p>
+                    <p class="mb-2"><strong>📊 Yönetici Raporlama:</strong> "Plan vs Gerçek" raporu stakeholder'lara sunulur</p>
+                    <p class="mb-0"><strong>⚖️ PMI Uyumluluk:</strong> PMBOK standartlarındaki EVM (Earned Value Management) temelini oluşturur</p>
+                </div>`
+                }
+            ]
+        },
+        dependency: {
+            title: 'Bağımlılık Matrisi',
+            icon: 'fas fa-sitemap',
+            color: 'primary',
+            url: '{{ url_for("main.project_dependency_matrix", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-table text-primary me-2"></i>Matris formatında satır = kaynak görev, sütun = hedef görev</li>
+                    <li class="mb-2"><i class="fas fa-link text-info me-2"></i>İki görev arasında bağımlılık varsa hücreye tıklayın</li>
+                    <li class="mb-2"><i class="fas fa-project-diagram text-success me-2"></i>Görsel ağ grafiği ile tüm bağlantıları görüntüleyin</li>
+                    <li class="mb-2"><i class="fas fa-search text-warning me-2"></i>Döngüsel bağımlılık (circular dependency) uyarıları alın</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-network-wired text-primary me-2"></i><strong>Bağımlılık Haritası:</strong> Hangi görevin hangi göreve bağlı olduğu netleşir</li>
+                    <li class="mb-2"><i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>Döngü Tespiti:</strong> A→B→C→A gibi kısır döngüler yakalanır</li>
+                    <li class="mb-2"><i class="fas fa-lock text-warning me-2"></i><strong>Blokaj Noktaları:</strong> Çok sayıda görevi bekleyen görevler vurgulanır</li>
+                    <li class="mb-2"><i class="fas fa-cubes text-info me-2"></i><strong>Bağımlılık Yoğunluğu:</strong> Görev başına ortalama bağlantı sayısı</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-primary mb-0">
+                    <p class="mb-2"><strong>🧩 Kompleksite Yönetimi:</strong> Karmaşık projelerde ilişkileri görsel olarak anlamlandırırsınız</p>
+                    <p class="mb-2"><strong>🚫 Döngü Engelleme:</strong> Mantıksal hatalar proje başlamadan düzeltilir</p>
+                    <p class="mb-2"><strong>⚡ Paralel İş:</strong> Bağımlı olmayan görevler eş zamanlı yürütülebilir</p>
+                    <p class="mb-0"><strong>🎯 Kritik Görevler:</strong> En çok bağımlılığa sahip görevler önceliklendirilir</p>
+                </div>`
+                }
+            ]
+        },
+        rules: {
+            title: 'Kural Motoru (Automation Engine)',
+            icon: 'fas fa-cogs',
+            color: 'success',
+            url: '{{ url_for("main.project_rules", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-bolt text-warning me-2"></i><strong>Tetikleyici (Trigger):</strong> "Görev tamamlandı", "Deadline yaklaştı" gibi olaylar</li>
+                    <li class="mb-2"><i class="fas fa-filter text-primary me-2"></i><strong>Koşul (Condition):</strong> "Eğer öncelik = Yüksek ise", "Eğer atama yapılmamışsa"</li>
+                    <li class="mb-2"><i class="fas fa-play-circle text-success me-2"></i><strong>Aksiyon (Action):</strong> "Bildirim gönder", "Durum değiştir", "Atama yap"</li>
+                    <li class="mb-2"><i class="fas fa-toggle-on text-info me-2"></i>Kuralı aktif/pasif duruma getirebilirsiniz</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-robot text-primary me-2"></i><strong>Otomatik İş Akışları:</strong> Manuel müdahale gerektirmeyen süreçler</li>
+                    <li class="mb-2"><i class="fas fa-bell text-warning me-2"></i><strong>Akıllı Bildirimler:</strong> Sadece gerekli durumlarda uyarı</li>
+                    <li class="mb-2"><i class="fas fa-exchange-alt text-info me-2"></i><strong>Durum Otomasyonu:</strong> Görevler otomatik statü değiştirir (ör. "Test"→"Tamamlandı")</li>
+                    <li class="mb-2"><i class="fas fa-history text-success me-2"></i><strong>Kural Çalıştırma Logu:</strong> Hangi kuralın ne zaman tetiklendiğini görün</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-success mb-0">
+                    <p class="mb-2"><strong>⏱️ Zaman Tasarrufu:</strong> Tekrarlayan manuel işler otomatikleştirilir</p>
+                    <p class="mb-2"><strong>🎯 Tutarlılık:</strong> Kurallar her zaman aynı şekilde uygulanır, insan hatası sıfıra iner</p>
+                    <p class="mb-2"><strong>🔔 Proaktif Yönetim:</strong> Sorun oluşmadan önce otomatik aksiyon alınır</p>
+                    <p class="mb-0"><strong>📈 Ölçeklenebilirlik:</strong> 10 görevde çalışan süreç 1000 görevde de çalışır</p>
+                </div>`
+                }
+            ]
+        },
+        integrations: {
+            title: 'Entegrasyonlar (Webhook & API)',
+            icon: 'fas fa-plug',
+            color: 'info',
+            url: '{{ url_for("main.project_integrations", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fab fa-slack text-purple me-2"></i><strong>Slack:</strong> Webhook URL'si ekleyin, görev güncellemeleri kanala düşsün</li>
+                    <li class="mb-2"><i class="fab fa-microsoft text-primary me-2"></i><strong>MS Teams:</strong> Teams webhook URL'si ile bildirimleri Teams'e gönderin</li>
+                    <li class="mb-2"><i class="fas fa-envelope text-danger me-2"></i><strong>Email (Outlook/Gmail):</strong> SMTP ayarları ile e-posta otomasyonu</li>
+                    <li class="mb-2"><i class="fas fa-code text-success me-2"></i><strong>Custom Webhook:</strong> Kendi sisteminize JSON POST isteği gönderin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-comments text-info me-2"></i><strong>Gerçek Zamanlı Bildirimler:</strong> Takımınız kullandığı platformda anında haberdar olur</li>
+                    <li class="mb-2"><i class="fas fa-sync text-primary me-2"></i><strong>Çift Yönlü Entegrasyon:</strong> (Gelişmiş) Slack'ten komut göndererek görev durumu değiştirebilirsiniz</li>
+                    <li class="mb-2"><i class="fas fa-chart-pie text-success me-2"></i><strong>Event Log:</strong> Hangi olayın hangi sisteme gönderildiği kayıt altında</li>
+                    <li class="mb-2"><i class="fas fa-shield-alt text-warning me-2"></i><strong>Güvenlik:</strong> Webhook secret ile yetkisiz erişim engellenir</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-info mb-0">
+                    <p class="mb-2"><strong>🔗 Ekosistem Entegrasyonu:</strong> Kullandığınız diğer araçlarla senkronize çalışır</p>
+                    <p class="mb-2"><strong>📢 İletişim Verimliliği:</strong> Ekip "proje aracına girmeden" güncellemeleri görür</p>
+                    <p class="mb-2"><strong>🚀 Ölçeklenme:</strong> Webhook'larla binlerce kullanıcıya anında bildirim gönderilir</p>
+                    <p class="mb-0"><strong>🤖 Otomasyon Zinciri:</strong> Bir olay, başka sistemde tetikleyici olabilir (event-driven architecture)</p>
+                </div>`
+                }
+            ]
+        },
+        recurring: {
+            title: 'Tekrarlayan Görevler (Recurring Tasks)',
+            icon: 'fas fa-redo',
+            color: 'success',
+            url: '{{ url_for("main.project_recurring", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-calendar-alt text-primary me-2"></i>Cron ifadesi girin: <code>0 9 * * 1</code> (Her Pazartesi saat 09:00)</li>
+                    <li class="mb-2"><i class="fas fa-file-alt text-info me-2"></i>Şablon görev tanımlayın (başlık, açıklama, atama, öncelik)</li>
+                    <li class="mb-2"><i class="fas fa-clock text-warning me-2"></i>Başlangıç ve bitiş tarihi belirleyin (veya süresiz)</li>
+                    <li class="mb-2"><i class="fas fa-toggle-on text-success me-2"></i>Aktif hale getirin; sistem otomatik görev oluşturmaya başlar</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-tasks text-primary me-2"></i><strong>Otomatik Görev Üretimi:</strong> Belirlenen periyotta yeni görevler sisteme eklenir</li>
+                    <li class="mb-2"><i class="fas fa-history text-info me-2"></i><strong>Oluşturma Geçmişi:</strong> Hangi tekrardan kaç görev yaratıldığı loglanır</li>
+                    <li class="mb-2"><i class="fas fa-calendar-check text-success me-2"></i><strong>Esnek Zamanlama:</strong> Günlük, haftalık, aylık, custom cron destekler</li>
+                    <li class="mb-2"><i class="fas fa-pause-circle text-warning me-2"></i><strong>Durdurma/Devam:</strong> İstediğiniz zaman tekrarı durdurup tekrar başlatabilirsiniz</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-success mb-0">
+                    <p class="mb-2"><strong>🔁 Rutin İşler:</strong> Haftalık rapor, aylık denetim gibi periyodik görevleri unutmazsınız</p>
+                    <p class="mb-2"><strong>⏰ Zaman Yönetimi:</strong> Aynı görevi her hafta manuel oluşturma yükünden kurtulursunuz</p>
+                    <p class="mb-2"><strong>📊 Tutarlılık:</strong> Şablon görev sayesinde her sefer aynı standart uygulanır</p>
+                    <p class="mb-0"><strong>🎯 Compliance:</strong> Yasal/düzenleyici zorunlu periyodik görevler asla atlanmaz</p>
+                </div>`
+                }
+            ]
+        },
+        workdays: {
+            title: 'Çalışma Günleri & Tatil Yönetimi',
+            icon: 'fas fa-calendar-check',
+            color: 'secondary',
+            url: '{{ url_for("main.project_workdays", project_id=project.id) }}',
+            sections: [
+                {
+                    heading: 'Nasıl Kullanılır?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-calendar text-primary me-2"></i>Resmi tatil günlerini takvime ekleyin (örn. 1 Ocak, 23 Nisan)</li>
+                    <li class="mb-2"><i class="fas fa-clock text-warning me-2"></i>Günlük çalışma saatlerini tanımlayın (örn. 09:00-18:00, 8 saat)</li>
+                    <li class="mb-2"><i class="fas fa-business-time text-success me-2"></i>Hafta içi/hafta sonu kurallarını belirleyin</li>
+                    <li class="mb-2"><i class="fas fa-user-clock text-info me-2"></i>Kişi bazlı özel izin/tatil günleri girin</li>
+                </ul>`
+                },
+                {
+                    heading: 'Ne Sonuçlar Elde Edersiniz?',
+                    content: `<ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-calculator text-primary me-2"></i><strong>Net Çalışma Günü:</strong> Tatiller hariç gerçek iş gün sayısı hesaplanır</li>
+                    <li class="mb-2"><i class="fas fa-calendar-times text-danger me-2"></i><strong>Deadline Ayarlama:</strong> Görev bitiş tarihleri tatilleri atlayarak hesaplanır</li>
+                    <li class="mb-2"><i class="fas fa-chart-line text-info me-2"></i><strong>Kapasite Düzeltmesi:</strong> Tatil günlerinde 0 kapasite olarak gösterilir</li>
+                    <li class="mb-2"><i class="fas fa-users text-success me-2"></i><strong>Ekip Takvimi:</strong> Kimin ne zaman izinde olduğu görünür</li>
+                </ul>`
+                },
+                {
+                    heading: 'Proje Yönetimine Katkısı',
+                    content: `<div class="alert alert-secondary mb-0">
+                    <p class="mb-2"><strong>📅 Gerçekçi Planlama:</strong> Tatiller ve izinler göz önüne alınarak deadline belirlenir</p>
+                    <p class="mb-2"><strong>🌍 Global Projeler:</strong> Farklı ülkelerin resmi tatilleri tek sistemde yönetilir</p>
+                    <p class="mb-2"><strong>⏳ Efor Hesabı:</strong> CPM ve baseline hesaplamalarında net çalışma günü kullanılır</p>
+                    <p class="mb-0"><strong>👥 Ekip Koordinasyonu:</strong> "X kişisi izinli, görevi Y'ye atayalım" kararları kolaylaşır</p>
+                </div>`
+                }
+            ]
+        }
+    };
+
+    function showToolInfo(toolKey) {
+        const tool = toolInfoData[toolKey];
+        if (!tool) return;
+
+        const modal = new bootstrap.Modal(document.getElementById('toolInfoModal'));
+        document.getElementById('toolInfoTitle').innerHTML = `<i class="${tool.icon} me-2"></i>${tool.title}`;
+
+        let sectionsHtml = '';
+        tool.sections.forEach(section => {
+            sectionsHtml += `
+            <div class="mb-4">
+                <h5 class="text-${tool.color} mb-3">
+                    <i class="fas fa-chevron-right me-2"></i>${section.heading}
+                </h5>
+                ${section.content}
+            </div>
+        `;
+        });
+
+        document.getElementById('toolInfoBody').innerHTML = sectionsHtml;
+
+        const actionBtn = document.getElementById('toolInfoActionBtn');
+        actionBtn.onclick = function () {
+            window.location.href = tool.url;
+        };
+
+        modal.show();
+    }
+
+    // Info butonlarının link'i engellemesi için
+    document.querySelectorAll('.tool-info-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+</script>
+{% endblock %}

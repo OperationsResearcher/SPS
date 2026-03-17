@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Yönetimi Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="kontrol.html">Ana Sayfa</a> > Kullanıcı Yönetimi Modülü
+            </div>
+            <h1>👥 Kullanıcı Yönetimi Kontrol Listesi</h1>
+        </div>
+        
+        <div class="progress-section">
+            <div id="progress-text">0 / 0 soru cevaplandı (0%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <!-- Sorular buraya eklenecek -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportResults('kullanici', 'Kullanıcı Yönetimi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="window.location.href='kontrol.html'">Ana Sayfaya Dön</button>
+            <button class="btn btn-danger" onclick="clearResults('kullanici', 'Kullanıcı Yönetimi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "Admin panelinden yeni kullanıcı ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı ekleme formunda zorunlu alanlar (kullanıcı adı, e-posta, şifre, kurum) belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı ekleme formunda sistem rolü (admin, kurum_yoneticisi, ust_yonetim, kurum_kullanici) seçilebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı ekleme işlemi başarıyla tamamlandığında onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı listesi tablosu düzgün görüntüleniyor mu? (Ad, e-posta, rol, kurum bilgileri)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı düzenleme butonu tıklanabilir ve form/modal açılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı düzenleme formunda mevcut kullanıcı bilgileri doğru şekilde yükleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı bilgileri (ad, soyad, telefon, unvan, departman) düzenlenebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı rolü değiştirilebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı düzenleme işlemi başarıyla kaydediliyor ve liste güncelleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı silme butonu görünüyor mu? (Yetki kontrolü ile)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı silme işleminde onay mesajı (confirm) gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı silme işlemi başarıyla tamamlanıyor ve listeden kaldırılıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı görüntüleme (view) butonu ile detaylar gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı detay sayfasında süreç rolleri (lider/üye olduğu süreçler) görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı listesinde sayfalama (pagination) çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı arama/filtreleme özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcıya süreç atama işlemi yapılabiliyor mu? (Lider veya üye olarak)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Şifre değiştirme işlemi yapılabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Profil fotoğrafı yükleme işlemi çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "E-posta validasyonu (format kontrolü) çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı adı benzersizlik kontrolü yapılıyor mu? (Aynı kullanıcı adı ile iki kullanıcı eklenememeli)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Yetki matrisi/paneli sayfası çalışıyor ve roller görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hata durumlarında (örn: kullanıcı adı zaten kullanılıyor) anlaşılır hata mesajları gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Kullanıcı işlemleri mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule('kullanici', questions);
+        initializeModule('kullanici', 'Kullanıcı Yönetimi', questions);
+        
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+
+
+
+

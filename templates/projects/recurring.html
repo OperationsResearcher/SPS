@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-redo"></i> Tekrarlayan Görevler — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('recurring')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Tekrarlayan Görevler Nedir?</strong> Belirli aralıklarla otomatik olarak oluşturulacak görev şablonları tanımlayabilirsiniz (günlük, haftalık, aylık).
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Tekrarlayan Görev Ekle</button>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Tanımlı Tekrarlayan Görevler</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="recurring-table">
+          <thead class="table-light">
+            <tr>
+              <th>Görev Şablonu</th>
+              <th>Cron İfadesi</th>
+              <th>Sonraki Çalışma</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Cron İfadesi Örnekleri</h5>
+    </div>
+    <div class="card-body">
+      <ul class="mb-0">
+        <li><code>0 9 * * 1</code> - Her Pazartesi saat 09:00</li>
+        <li><code>0 0 1 * *</code> - Her ayın 1. günü gece yarısı</li>
+        <li><code>0 0 * * *</code> - Her gün gece yarısı</li>
+        <li><code>0 */6 * * *</code> - Her 6 saatte bir</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="recurringModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tekrarlayan Görev Ekle/Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="recurring-id">
+        <div class="mb-3">
+          <label class="form-label">Görev Şablonu</label>
+          <select class="form-select" id="template-task" required></select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Cron İfadesi</label>
+          <input type="text" class="form-control" id="cron-expr" placeholder="0 9 * * 1" required>
+          <small class="text-muted">Örn: 0 9 * * 1 (Her Pazartesi 09:00)</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Sonraki Çalışma Zamanı</label>
+          <input type="datetime-local" class="form-control" id="next-run">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="saveRecurring()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let recurrings = [];
+let tasks = [];
+function getRecurringModal() {
+  const el = document.getElementById('recurringModal');
+  return bootstrap.Modal.getOrCreateInstance(el);
+}
+
+async function loadRecurring() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/tekrarlayan');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    recurrings = data.recurring || data.recurring_tasks || [];
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Tekrarlayan Görevler Yükleme Hatası');
+  }
+}
+
+async function loadTasks() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/gorevler');
+    const data = await res.json();
+    if (data.success) tasks = data.tasks || [];
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#recurring-table tbody');
+  tbody.innerHTML = '';
+
+  if (recurrings.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Henüz tekrarlayan görev eklenmedi.</td></tr>';
+    return;
+  }
+
+  recurrings.forEach(rec => {
+    const task = tasks.find(t => t.id === rec.template_task_id);
+    const taskName = task ? task.title : `Görev #${rec.template_task_id}`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${taskName}</strong></td>
+      <td><code>${rec.cron_expr}</code></td>
+      <td>${rec.next_run_at || '—'}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="editRecurring(${rec.id})"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring(${rec.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('recurring-id').value = '';
+  document.getElementById('template-task').innerHTML = tasks.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+  document.getElementById('cron-expr').value = '0 9 * * 1';
+  document.getElementById('next-run').value = '';
+  getRecurringModal().show();
+}
+
+function editRecurring(id) {
+  const rec = recurrings.find(r => r.id === id);
+  if (!rec) return;
+
+  document.getElementById('recurring-id').value = rec.id;
+  document.getElementById('template-task').innerHTML = tasks.map(t => `<option value="${t.id}" ${t.id === rec.template_task_id ? 'selected' : ''}>${t.title}</option>`).join('');
+  document.getElementById('cron-expr').value = rec.cron_expr;
+  document.getElementById('next-run').value = rec.next_run_at ? rec.next_run_at.replace(' ', 'T') : '';
+  getRecurringModal().show();
+}
+
+async function saveRecurring() {
+  const id = document.getElementById('recurring-id').value;
+  const template_task_id = parseInt(document.getElementById('template-task').value);
+  const cron_expr = document.getElementById('cron-expr').value.trim();
+  const next_run_at = document.getElementById('next-run').value;
+
+  if (!template_task_id || !cron_expr) return alert('Görev şablonu ve cron ifadesi gerekli');
+
+  const body = { template_task_id, cron_expr, next_run_at: next_run_at || null };
+  const url = id ? `/api/projeler/{{ project.id }}/tekrarlayan/${id}` : '/api/projeler/{{ project.id }}/tekrarlayan';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    getRecurringModal().hide();
+    loadRecurring();
+    if (window.showToast) showToast('success', 'Tekrarlayan görev kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kaydetme Hatası');
+  }
+}
+
+async function deleteRecurring(id) {
+  if (!confirm('Bu tekrarlayan görevi silmek istediğinizden emin misiniz?')) return;
+
+  try {
+    const res = await fetch(`/api/projeler/{{ project.id }}/tekrarlayan/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    loadRecurring();
+    if (window.showToast) showToast('success', 'Tekrarlayan görev silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Silme Hatası');
+  }
+}
+
+(async function init() {
+  await loadTasks();
+  await loadRecurring();
+})();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

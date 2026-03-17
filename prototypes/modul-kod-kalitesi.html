@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kod Kalitesi ve Performans Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🔧 Kod Kalitesi ve Performans Kontrol Listesi</h1>
+            <p>N+1 Query, Type Hints, Docstring, Kod Organizasyonu kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('kod-kalitesi', 'Kod Kalitesi ve Performans')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('kod-kalitesi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'kod-kalitesi';
+        const moduleTitle = 'Kod Kalitesi ve Performans';
+        
+        const questions = [
+            {
+                text: 'Kritik fonksiyonlarda type hints (tip belirteçleri) kullanılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Public fonksiyonlarda docstring (dokümantasyon) mevcut mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Veritabanı sorgularında N+1 query problemi var mı? (Eager loading kullanılıyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sık kullanılan veritabanı sorguları için index'ler tanımlanmış mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Kod organizasyonu iyi mi? (models.py, routes.py çok büyük değil mi?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'JavaScript kodları modüler mi? (Inline script yerine external .js dosyaları kullanılıyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Error handling tutarlı mı? (Tüm kritik fonksiyonlarda try-except var mı?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Logging doğru kullanılıyor mu? (Sensitive bilgiler loglanmıyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Backup/yedek dosyalar temizlenmiş mi? (.backup, .yedek* dosyaları yok mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Code duplication (kod tekrarı) minimum seviyede mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Magic numbers (sihirli sayılar) yerine sabitler (constants) kullanılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Import organizasyonu doğru mu? (Standart kütüphaneler, üçüncü parti, yerel imports sıralı mı?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Function complexity (fonksiyon karmaşıklığı) makul seviyede mi? (Çok uzun fonksiyonlar yok mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Class ve fonksiyon isimleri açıklayıcı ve tutarlı mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Comments (yorumlar) gerektiğinde ve açıklayıcı mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Unused imports (kullanılmayan importlar) temizlenmiş mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Code formatting (kod formatı) tutarlı mı? (PEP 8 standartlarına uygun mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Environment variables .env.example dosyasında dokümante edilmiş mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Production checklist script\'i mevcut ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak kod kalitesi ve performans iyileştirmeleri uygun mu?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

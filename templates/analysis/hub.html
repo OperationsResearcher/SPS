@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Analiz Merkezi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Stratejik Analiz Merkezi</h2>
+            <p class="text-muted mb-0">SWOT, PESTLE ve TOWS için etkileşimli çalışma alanı</p>
+        </div>
+    </div>
+
+    {% set swot_progress = 100 if swot_count >= 10 else swot_count * 10 %}
+    {% set pestle_progress = 100 if pestle_count >= 12 else pestle_count * 8 %}
+    {% set tows_progress = 100 if tows_count >= 8 else tows_count * 12 %}
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">SWOT Analizi</h5>
+                            <small class="text-muted">{{ swot_count }} öğe</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">SWOT</span>
+                    </div>
+                    <div class="progress mt-3" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ swot_progress }}%"></div>
+                    </div>
+                    <p class="text-muted small mt-3 mb-4">Güçlü yönler, zayıf yönler, fırsatlar ve tehditler.</p>
+                    <a class="btn btn-outline-success w-100" href="{{ url_for('analysis.swot_board', kurum_id=kurum_id) }}">
+                        SWOT Paneline Git
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">PESTLE Analizi</h5>
+                            <small class="text-muted">{{ pestle_count }} öğe</small>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">PESTLE</span>
+                    </div>
+                    <div class="progress mt-3" style="height: 8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ pestle_progress }}%"></div>
+                    </div>
+                    <p class="text-muted small mt-3 mb-4">Politik, ekonomik, sosyal ve diğer çevresel faktörler.</p>
+                    <a class="btn btn-outline-primary w-100" href="{{ url_for('analysis.pestle_board', kurum_id=kurum_id) }}">
+                        PESTLE Paneline Git
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">TOWS Matrisi</h5>
+                            <small class="text-muted">{{ tows_count }} strateji</small>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning">TOWS</span>
+                    </div>
+                    <div class="progress mt-3" style="height: 8px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ tows_progress }}%"></div>
+                    </div>
+                    <p class="text-muted small mt-3 mb-4">SWOT kesişimlerinden strateji üret.</p>
+                    <a class="btn btn-outline-warning w-100" href="{{ url_for('analysis.tows_matrix', kurum_id=kurum_id) }}">
+                        TOWS Matrisine Git
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

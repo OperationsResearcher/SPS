@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}HGS Verileri - Stratejik Planlama Sistemi{% endblock %}
+
+{% block styles %}
+<style>
+    /* HGS Page Specific Styles - Light Mode */
+    .hgs-container {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 
+            0 4px 20px rgba(0, 0, 0, 0.08),
+            0 2px 8px rgba(0, 0, 0, 0.04);
+        margin-bottom: 2rem;
+    }
+
+    .hgs-header {
+        color: #051626;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(5, 22, 38, 0.1);
+    }
+
+    .hgs-header h1 {
+        color: #051626;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hgs-header p {
+        color: #6c757d;
+    }
+
+    /* Badge Status - Light Mode */
+    .badge-status {
+        background-color: #e9ecef !important;
+        color: #051626 !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        font-weight: 400;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="hgs-container">
+        <div class="hgs-header">
+            <h1><i class="fas fa-road me-2"></i>HGS Verileri</h1>
+            <p>Yol geçiş ücreti ve trafik verileri</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Tarih</th>
+                        <th>Giriş Noktası</th>
+                        <th>Çıkış Noktası</th>
+                        <th>Ücret</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Örnek Veri - Gerçek veri buraya gelecek -->
+                    <tr>
+                        <td>34 ABC 123</td>
+                        <td>2026-01-17 10:30</td>
+                        <td>İstanbul (Avrupa)</td>
+                        <td>Ankara</td>
+                        <td>₺125.50</td>
+                        <td><span class="badge badge-status">Ödendi</span></td>
+                    </tr>
+                    <tr>
+                        <td>06 XYZ 789</td>
+                        <td>2026-01-17 11:15</td>
+                        <td>Ankara</td>
+                        <td>İzmir</td>
+                        <td>₺180.00</td>
+                        <td><span class="badge badge-status">Beklemede</span></td>
+                    </tr>
+                    <tr>
+                        <td>35 DEF 456</td>
+                        <td>2026-01-17 12:00</td>
+                        <td>İzmir</td>
+                        <td>Antalya</td>
+                        <td>₺95.25</td>
+                        <td><span class="badge badge-status">Ödendi</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary">
+                <i class="fas fa-download me-2"></i>Verileri Dışa Aktar
+            </button>
+            <button class="btn btn-primary ms-2">
+                <i class="fas fa-sync me-2"></i>Yenile
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

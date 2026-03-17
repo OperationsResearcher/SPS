@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-clock"></i> SLA Yönetimi — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('sla')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>SLA Nedir?</strong> Service Level Agreement (Hizmet Seviyesi Anlaşması) görevlerin tamamlanma süreleri için hedefler belirler.
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> SLA Tanımı Ekle</button>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Tanımlı SLA'lar</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="sla-table">
+          <thead class="table-light">
+            <tr>
+              <th>SLA Adı</th>
+              <th>Hedef Süre (saat)</th>
+              <th>İhlal Politikası</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="slaModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">SLA Tanımı Ekle/Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="sla-id">
+        <div class="mb-3">
+          <label class="form-label">SLA Adı</label>
+          <input type="text" class="form-control" id="sla-name" placeholder="Örn: Kritik Görev SLA" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Hedef Süre (saat)</label>
+          <input type="number" class="form-control" id="target-hours" value="48" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">İhlal Politikası</label>
+          <select class="form-select" id="breach-policy">
+            <option value="notify">Bildirim Gönder</option>
+            <option value="escalate">Yöneticiye Bildir</option>
+            <option value="auto_close">Otomatik Kapat</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="saveSLA()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let slas = [];
+function getSlaModal() {
+  const el = document.getElementById('slaModal');
+  return bootstrap.Modal.getOrCreateInstance(el);
+}
+
+async function loadSLAs() {
+  try {
+    const res = await fetch('/api/projeler/{{ project.id }}/sla');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    slas = data.sla || data.slas || [];
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'SLA Yükleme Hatası');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#sla-table tbody');
+  tbody.innerHTML = '';
+
+  if (slas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Henüz SLA eklenmedi.</td></tr>';
+    return;
+  }
+
+  slas.forEach(sla => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${sla.name || 'Adsız SLA'}</strong></td>
+      <td><span class="badge bg-info">${sla.target_hours} saat</span></td>
+      <td><span class="badge bg-secondary">${sla.breach_policy}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="editSLA(${sla.id})"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteSLA(${sla.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('sla-id').value = '';
+  document.getElementById('sla-name').value = '';
+  document.getElementById('target-hours').value = '48';
+  document.getElementById('breach-policy').value = 'notify';
+  getSlaModal().show();
+}
+
+function editSLA(id) {
+  const sla = slas.find(s => s.id === id);
+  if (!sla) return;
+
+  document.getElementById('sla-id').value = sla.id;
+  document.getElementById('sla-name').value = sla.name || '';
+  document.getElementById('target-hours').value = sla.target_hours;
+  document.getElementById('breach-policy').value = sla.breach_policy;
+  getSlaModal().show();
+}
+
+async function saveSLA() {
+  const id = document.getElementById('sla-id').value;
+  const name = document.getElementById('sla-name').value.trim();
+  const target_hours = parseFloat(document.getElementById('target-hours').value);
+  const breach_policy = document.getElementById('breach-policy').value;
+
+  if (!name || !target_hours) return alert('SLA adı ve hedef süre gerekli');
+
+  const body = { name, target_hours, breach_policy };
+  const url = id ? `/api/projeler/{{ project.id }}/sla/${id}` : '/api/projeler/{{ project.id }}/sla';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    getSlaModal().hide();
+    loadSLAs();
+    if (window.showToast) showToast('success', 'SLA kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Kaydetme Hatası');
+  }
+}
+
+async function deleteSLA(id) {
+  if (!confirm('Bu SLA tanımını silmek istediğinizden emin misiniz?')) return;
+
+  try {
+    const res = await fetch(`/api/projeler/{{ project.id }}/sla/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    loadSLAs();
+    if (window.showToast) showToast('success', 'SLA silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Silme Hatası');
+  }
+}
+
+loadSLAs();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

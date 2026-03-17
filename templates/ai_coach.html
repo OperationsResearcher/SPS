@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}AI Coach - Stratejik Analiz{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-robot me-2"></i>AI Coach</h2>
+            <p class="text-muted mb-0">
+                Skor motoru verilerinizi analiz eder; ağırlığı yüksek ama puanı düşük alanları tespit edip "En Düşük Efor / En Yüksek Etki" ile aksiyon önerir.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-10 col-12 mx-auto">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Stratejik Analiz</h5>
+                    <small class="text-muted">Vizyon puanı, ana stratejiler, süreçler ve PG skorları Gemini ile analiz edilir.</small>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary btn-lg" id="aiCoachAnalyzeBtn">
+                        <i class="fas fa-play me-2"></i>Stratejik Analiz Başlat
+                    </button>
+
+                    <div id="aiCoachProgress" class="d-none mt-4">
+                        <div class="d-flex align-items-center text-primary">
+                            <div class="spinner-border me-3" role="status" aria-hidden="true"></div>
+                            <div>
+                                <strong>Analiz yapılıyor...</strong>
+                                <p class="mb-0 small text-muted" id="aiCoachProgressText">Gemini verileri analiz ediyor, ağırlık dengelerini kontrol ediyor...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="aiCoachError" class="d-none mt-4 alert alert-danger" role="alert"></div>
+
+                    <div id="aiCoachResult" class="d-none mt-4">
+                        <div class="card bg-light border-0">
+                            <div class="card-header bg-white border-bottom py-2">
+                                <h6 class="mb-0"><i class="fas fa-check-circle text-success me-2"></i>Analiz Sonucu</h6>
+                                <small class="text-muted" id="aiCoachMeta"></small>
+                            </div>
+                            <div class="card-body ai-coach-markdown-wrapper p-4" id="aiCoachMarkdownWrap">
+                                <div class="ai-coach-markdown" id="aiCoachMarkdown"></div>
+                            </div>
+                            <div class="card-footer bg-white border-top py-2 px-3 small text-muted" id="aiCoachUsageWrap">
+                                <i class="fas fa-coins me-1"></i><span id="aiCoachUsage">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+    .ai-coach-markdown-wrapper {
+        min-height: 420px;
+        height: 75vh;
+        max-height: none;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding: 1.25rem 1.5rem;
+        padding-right: 1rem;
+        margin-right: 2px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #fff;
+    }
+    .ai-coach-markdown-wrapper::-webkit-scrollbar {
+        width: 12px;
+    }
+    .ai-coach-markdown-wrapper::-webkit-scrollbar-track {
+        background: #f1f3f5;
+        border-radius: 6px;
+    }
+    .ai-coach-markdown-wrapper::-webkit-scrollbar-thumb {
+        background: #adb5bd;
+        border-radius: 6px;
+    }
+    .ai-coach-markdown-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #868e96;
+    }
+    .ai-coach-markdown { font-size: 1rem; line-height: 1.65; padding-bottom: 2rem; }
+    .ai-coach-markdown h2 { font-size: 1.3rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .ai-coach-markdown h3 { font-size: 1.15rem; margin-top: 0.85rem; margin-bottom: 0.4rem; }
+    .ai-coach-markdown ul, .ai-coach-markdown ol { padding-left: 1.35rem; }
+    .ai-coach-markdown li { margin-bottom: 0.35rem; }
+    .ai-coach-markdown p { margin-bottom: 0.6rem; }
+    .ai-coach-markdown strong { font-weight: 600; }
+    .ai-coach-markdown code { background: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.9em; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('aiCoachAnalyzeBtn');
+    var progress = document.getElementById('aiCoachProgress');
+    var progressText = document.getElementById('aiCoachProgressText');
+    var errorEl = document.getElementById('aiCoachError');
+    var result = document.getElementById('aiCoachResult');
+    var metaEl = document.getElementById('aiCoachMeta');
+    var markdownEl = document.getElementById('aiCoachMarkdown');
+    var usageEl = document.getElementById('aiCoachUsage');
+    var apiUrl = '{{ url_for("api.api_ai_coach_analyze") }}';
+
+    function escapeHtml(s) {
+        if (!s) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+    }
+
+    var progressMessages = [
+        'Gemini verileri analiz ediyor, ağırlık dengelerini kontrol ediyor...',
+        'Yüksek ağırlık / düşük puan alanları tespit ediliyor...',
+        'En Düşük Efor / En Yüksek Etki aksiyonları hazırlanıyor...'
+    ];
+    var progressIndex = 0;
+    var progressInterval;
+
+    function showProgress() {
+        progress.classList.remove('d-none');
+        errorEl.classList.add('d-none');
+        result.classList.add('d-none');
+        btn.disabled = true;
+        progressIndex = 0;
+        progressText.textContent = progressMessages[0];
+        progressInterval = setInterval(function () {
+            progressIndex = (progressIndex + 1) % progressMessages.length;
+            progressText.textContent = progressMessages[progressIndex];
+        }, 2500);
+    }
+
+    function hideProgress() {
+        clearInterval(progressInterval);
+        progress.classList.add('d-none');
+        btn.disabled = false;
+    }
+
+    function showError(msg) {
+        hideProgress();
+        errorEl.textContent = msg || 'Analiz sırasında bir hata oluştu.';
+        errorEl.classList.remove('d-none');
+        result.classList.add('d-none');
+    }
+
+    function showResult(analysisMarkdown, visionScore, asOfDate, usage) {
+        hideProgress();
+        errorEl.classList.add('d-none');
+        if (markdownEl && analysisMarkdown) {
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                markdownEl.innerHTML = marked.parse(analysisMarkdown);
+            } else {
+                markdownEl.innerHTML = '<pre class="mb-0" style="white-space: pre-wrap;">' + escapeHtml(analysisMarkdown) + '</pre>';
+            }
+        }
+        if (metaEl) {
+            var parts = [];
+            if (visionScore != null) parts.push('Vizyon puanı: ' + visionScore + ' / 100');
+            if (asOfDate) parts.push('Tarih: ' + asOfDate);
+            metaEl.textContent = parts.join(' · ');
+        }
+        if (usageEl) {
+            if (usage && (usage.prompt_token_count != null || usage.candidates_token_count != null || usage.total_token_count != null)) {
+                var p = usage.prompt_token_count != null ? usage.prompt_token_count : '—';
+                var c = usage.candidates_token_count != null ? usage.candidates_token_count : '—';
+                var t = usage.total_token_count;
+                if (t == null && typeof p === 'number' && typeof c === 'number') t = p + c;
+                if (t == null) t = '—';
+                usageEl.textContent = 'Bu işlem için ' + t + ' token harcandı (girdi: ' + p + ', çıktı: ' + c + ').';
+            } else {
+                usageEl.textContent = 'Token bilgisi alınamadı.';
+            }
+        }
+        result.classList.remove('d-none');
+    }
+
+    btn.addEventListener('click', function () {
+        showProgress();
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+            body: JSON.stringify({})
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.success && data.analysis_markdown) {
+                showResult(data.analysis_markdown, data.vision_score, data.as_of_date, data.usage);
+            } else {
+                showError(data.message || data.error || 'Analiz sonucu alınamadı.');
+            }
+        })
+        .catch(function (err) {
+            showError('İstek başarısız: ' + (err.message || 'Bağlantı hatası'));
+        });
+    });
+});
+</script>
+{% endblock %}

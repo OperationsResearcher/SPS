@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Proje Detay - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{{ url_for('main.strategy_projects') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Portföye Dön
+            </a>
+            <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="btn btn-primary btn-sm ms-2">
+                <i class="fas fa-tasks me-1"></i>Proje Yönetimi (Görevler)
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Sol Kolon: Proje Künyesi -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Proje Künyesi</h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">{{ project.name }}</h4>
+                    {% if project.description %}
+                    <p class="card-text text-muted">{{ project.description }}</p>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-calendar-alt me-2"></i>Başlangıç:</strong><br>
+                        <span class="text-muted">
+                            {% if project.start_date %}
+                                {{ project.start_date.strftime('%d.%m.%Y') }}
+                            {% else %}
+                                Belirtilmemiş
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-calendar-check me-2"></i>Bitiş:</strong><br>
+                        <span class="text-muted">
+                            {% if project.end_date %}
+                                {{ project.end_date.strftime('%d.%m.%Y') }}
+                            {% else %}
+                                Belirtilmemiş
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    {% if project.priority %}
+                    <div class="mb-3">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Öncelik:</strong><br>
+                        <span class="badge bg-{% if project.priority == 'Kritik' %}danger{% elif project.priority == 'Yüksek' %}warning{% elif project.priority == 'Orta' %}info{% else %}secondary{% endif %}">
+                            {{ project.priority }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if project.manager %}
+                    <div class="mb-3">
+                        <strong><i class="fas fa-user-tie me-2"></i>Proje Yöneticisi:</strong><br>
+                        <span class="text-muted">{{ project.manager.first_name }} {{ project.manager.last_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sağ Kolon: Stratejik Uyum Analizi -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Stratejik Uyum Analizi</h5>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#processModal">
+                        <i class="fas fa-edit me-1"></i>Süreçleri Düzenle
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Toplam Skor -->
+                    <div class="text-center mb-4 p-4 bg-light rounded">
+                        <h6 class="text-muted mb-2">Toplam Stratejik Skor</h6>
+                        <h2 class="mb-0">
+                            <span class="badge {% if total_strategic_score >= 50 %}bg-success{% elif total_strategic_score >= 30 %}bg-warning{% elif total_strategic_score >= 15 %}bg-info{% else %}bg-secondary{% endif %} text-white" 
+                                  style="font-size: 2.5rem; padding: 15px 25px;">
+                                {{ total_strategic_score }}
+                            </span>
+                        </h2>
+                    </div>
+                    
+                    <!-- İlişki İstatistikleri -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success mb-0">{{ strong_relations }}</h3>
+                                    <small class="text-muted">Güçlü İlişki (A)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning mb-0">{{ weak_relations }}</h3>
+                                    <small class="text-muted">Zayıf İlişki (B)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bağlı Süreçler -->
+                    <h6 class="mb-3"><i class="fas fa-cogs me-2"></i>Bağlı Süreçler ve Puanları</h6>
+                    {% if project_processes %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Süreç Kodu</th>
+                                        <th>Süreç Adı</th>
+                                        <th class="text-center">Stratejik Puan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in project_processes %}
+                                    <tr>
+                                        <td><strong>{{ item.process.code }}</strong></td>
+                                        <td>{{ item.process.ad }}</td>
+                                        <td class="text-center">
+                                            <span class="badge {% if item.score >= 30 %}bg-success{% elif item.score >= 15 %}bg-warning{% elif item.score >= 5 %}bg-info{% else %}bg-secondary{% endif %} text-white">
+                                                {{ item.score }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Bu proje henüz hiçbir süreçle ilişkilendirilmemiş.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Süreç Seçim Modalı -->
+<div class="modal fade" id="processModal" tabindex="-1" aria-labelledby="processModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('main.strategy_project_update_processes', id=project.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="processModalLabel">
+                        <i class="fas fa-cogs me-2"></i>Süreçleri Seç
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">
+                        Bu projenin hangi süreçlere hizmet ettiğini seçin. Seçimler projenin stratejik puanını etkileyecektir.
+                    </p>
+                    {% if processes %}
+                        <div class="list-group">
+                            {% for process in processes %}
+                            {% set process_score = process_totals.get(process.id, 0) %}
+                            <label class="list-group-item d-flex align-items-center">
+                                <input class="form-check-input me-3" type="checkbox" 
+                                       name="process_ids" value="{{ process.id }}"
+                                       {% if process.id in related_process_ids %}checked{% endif %}>
+                                <div class="flex-grow-1">
+                                    <strong>{{ process.code }}</strong> - {{ process.ad }}
+                                </div>
+                                <span class="badge {% if process_score >= 30 %}bg-success{% elif process_score >= 15 %}bg-warning{% elif process_score >= 5 %}bg-info{% else %}bg-secondary{% endif %} text-white ms-2">
+                                    {{ process_score }} Puan
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz süreç tanımlanmamış.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

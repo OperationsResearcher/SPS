@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-ruler"></i> Baseline & Varyans Analizi — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('baseline')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Baseline Nedir?</strong> Baseline, projenin başlangıçta planlanan görev tarih ve süre bilgilerini saklar. 
+    Proje ilerledikçe gerçekleşen değerlerle karşılaştırılarak varyans (sapma) analizi yapılır.
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Görev Baseline Bilgileri</h5>
+      <button class="btn btn-sm btn-primary" onclick="captureBaseline()">
+        <i class="fas fa-camera"></i> Yeni Baseline Kaydet
+      </button>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="baseline-table">
+          <thead class="table-light">
+            <tr>
+              <th>Görev</th>
+              <th>Plan Başlangıç</th>
+              <th>Gerçek Başlangıç</th>
+              <th>Plan Bitiş</th>
+              <th>Gerçek Bitiş</th>
+              <th>Plan Efor (saat)</th>
+              <th>Gerçek Efor (saat)</th>
+              <th>Varyans</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Varyans Grafiği</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="varianceChart" height="80"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+let tasks = [];
+let baselines = [];
+
+async function loadData() {
+  try {
+    // Görevleri yükle
+    const resT = await fetch('/api/projeler/{{ project.id }}/gorevler');
+    const dataT = await resT.json();
+    if (!dataT.success) throw new Error(dataT.message);
+    tasks = dataT.tasks || [];
+
+    // Baseline'ları yükle
+    const resB = await fetch('/api/projeler/{{ project.id }}/baseline');
+    const dataB = await resB.json();
+    if (!dataB.success) throw new Error(dataB.message);
+    baselines = dataB.baselines || [];
+
+    renderTable();
+    renderChart();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Veri Yükleme Hatası');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#baseline-table tbody');
+  tbody.innerHTML = '';
+
+  tasks.forEach(task => {
+    const baseline = baselines.find(b => b.task_id === task.id);
+    const plannedStart = baseline?.planned_start || '—';
+    const plannedEnd = baseline?.planned_end || '—';
+    const plannedEffort = baseline?.planned_effort || 0;
+    const actualStart = task.start_date || '—';
+    const actualEnd = task.due_date || '—';
+    const actualEffort = task.actual_time || 0;
+
+    const variance = actualEffort - plannedEffort;
+    const varianceClass = variance > 0 ? 'text-danger' : variance < 0 ? 'text-success' : 'text-muted';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><a href="/projeler/{{ project.id }}#task-${task.id}">${task.title}</a></td>
+      <td>${plannedStart}</td>
+      <td>${actualStart}</td>
+      <td>${plannedEnd}</td>
+      <td>${actualEnd}</td>
+      <td>${plannedEffort}</td>
+      <td>${actualEffort}</td>
+      <td class="${varianceClass}"><strong>${variance > 0 ? '+' : ''}${variance} saat</strong></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderChart() {
+  const labels = tasks.map(t => t.title);
+  const planned = tasks.map(t => {
+    const b = baselines.find(bl => bl.task_id === t.id);
+    return b?.planned_effort || 0;
+  });
+  const actual = tasks.map(t => t.actual_time || 0);
+
+  const ctx = document.getElementById('varianceChart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Planlanan', data: planned, backgroundColor: 'rgba(54, 162, 235, 0.7)' },
+        { label: 'Gerçekleşen', data: actual, backgroundColor: 'rgba(255, 99, 132, 0.7)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Efor (saat)' } }
+      }
+    }
+  });
+}
+
+async function captureBaseline() {
+  if (!confirm('Tüm görevlerin mevcut planlı bilgilerini baseline olarak kaydetmek istiyor musunuz?')) return;
+
+  try {
+    for (const task of tasks) {
+      const body = {
+        task_id: task.id,
+        planned_start: task.start_date,
+        planned_end: task.due_date,
+        planned_effort: task.estimated_time || 0
+      };
+      const res = await fetch('/api/projeler/{{ project.id }}/baseline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+    }
+
+    loadData();
+    if (window.showToast) showToast('success', 'Baseline kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Baseline Kaydetme Hatası');
+  }
+}
+
+loadData();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

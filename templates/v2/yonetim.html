@@ -1,0 +1,190 @@
+{% extends "v2/layout_v2.html" %}
+
+{% block title %}Yönetim - SPS V2{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-md-12">
+        <h2 class="fw-bold text-dark">
+            <span class="text-secondary fw-normal">Taktiksel</span> Yönetim Paneli
+        </h2>
+        <p class="text-muted">Proje portföyü ve süreçlerin anlık durum takibi.</p>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <!-- Aktif Projeler -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Aktif Projeler</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.total_projects }}</h2>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-project-diagram text-primary fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-check me-1"></i>{{ stats.completed_projects }} Tamamlandı
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tamamlanma Oranı -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Portföy İlerlemesi</h6>
+                        <h2 class="mb-0 fw-bold text-dark">%{{ stats.avg_completion }}</h2>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-chart-line text-success fa-lg"></i>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ stats.avg_completion }}%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Süreç Sayısı -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Aktif Süreçler</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.process_count }}</h2>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-cogs text-info fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3 small text-muted">
+                    Sistemde tanımlı toplam süreç.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sol Sütun: Proje Portföyü -->
+    <div class="col-md-8">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-layer-group me-2 text-primary"></i>Proje Portföyü</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4" style="width: 35%;">Proje Adı</th>
+                                <th style="width: 20%;">Yönetici</th>
+                                <th style="width: 15%;">Bitiş</th>
+                                <th style="width: 20%;">İlerleme</th>
+                                <th class="text-center" style="width: 10%;">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in all_projects %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-semibold text-dark">{{ project.name }}</div>
+                                    <small class="text-muted">{{ project.priority }} Öncelik</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-secondary text-white small me-2"
+                                            style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                            {{ project.manager.first_name[0] if project.manager and
+                                            project.manager.first_name else '?' }}
+                                        </div>
+                                        <span>{{ project.manager.first_name }} {{ project.manager.last_name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-muted small">
+                                        {{ project.end_date.strftime('%d.%m.%Y') if project.end_date else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% set progress = project.health_score or 0 %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                            <div class="progress-bar {% if progress == 100 %}bg-success{% elif progress < 50 %}bg-danger{% else %}bg-primary{% endif %}"
+                                                role="progressbar" style="width: {{ progress }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ progress }}%</small>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge rounded-pill 
+                                        {% if project.health_status == 'İyi' %}bg-success
+                                        {% elif project.health_status == 'Riskli' %}bg-warning
+                                        {% elif project.health_status == 'Kritik' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ project.health_status or 'Belirsiz' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">Aktif proje bulunamadı.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sağ Sütun: Süreç Listesi -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-stream me-2 text-info"></i>Süreç Durumu</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for surec in active_processes[:8] %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark">{{ surec.ad }}</div>
+                        <small class="text-muted">{{ surec.code or 'Kodsuz' }}</small>
+                    </div>
+                </div>
+                {% else %}
+                <div class="list-group-item text-muted">Tanımlı süreç yok.</div>
+                {% endfor %}
+
+                {% if active_processes|length > 8 %}
+                <div class="list-group-item text-center bg-light">
+                    <small class="text-muted">+{{ active_processes|length - 8 }} süreç daha var</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Hızlı Aksiyonlar -->
+        <div class="card border-0 shadow bg-primary text-white">
+            <div class="card-body">
+                <h5 class="fw-bold"><i class="fas fa-rocket me-2"></i>Yeni Proje</h5>
+                <p class="small opacity-75">Yeni bir kurumsal proje veya stratejik girişim başlatın.</p>
+                <button class="btn btn-light btn-sm text-primary fw-bold w-100">Oluştur</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

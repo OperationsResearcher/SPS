@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V67 Master Planı Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🚀 V67 Master Planı - Trinity Update</h1>
+            <p>Mock Data → Gerçek Veritabanı, İş Zekası, Görselleştirme</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('v67-plan', 'V67 Master Planı')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('v67-plan', 'V67 Master Planı')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'v67-plan';
+        const moduleTitle = 'V67 Master Planı - Trinity Update';
+        
+        const questions = [
+            {
+                text: 'V67 yol haritası dokümantasyonu hazır mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Dashboard sayfasında faaliyetler listeleniyor mu? (Redmine/Jira/CRM faaliyetleri)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Redmine sayfasında faaliyetler tablo halinde görüntüleniyor mu? (Konu, Proje, Durum, Tarih bilgileri ile)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Faaliyetler veritabanından mı geliyor? (Sayfa yenilendiğinde veriler kaybolmuyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Yeni faaliyet eklendiğinde Dashboard ve Redmine sayfalarında görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Dashboard\'da faaliyet istatistikleri (Kritik İşler, Toplam Yük, Tamamlanan) doğru hesaplanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 5 - Redmine sayfasında faaliyetler tarihe göre sıralı mı? (En yeni en üstte)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Proje listesi sayfasına gidildiğinde projeler görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Her proje kartında "Sağlık Durumu" bölümü görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Sağlık durumu bir çubuk (progress bar) ile görsel olarak gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Sağlık skoru sayısal olarak (0-100 arası) görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Sağlık skoru yüksek olan projeler (≥80) yeşil renkte gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Sağlık skoru orta olan projeler (50-79) sarı/turuncu renkte gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Sağlık skoru düşük olan projeler (<50) kırmızı renkte gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Riskli projelerde (skor <60) "Yüksek Risk!" uyarısı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Proje üzerinde kritik işler arttığında sağlık skoru otomatik düşüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 6 - Projedeki kritik işler tamamlandığında sağlık skoru otomatik yükseliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Dashboard sayfasında "Kaynak Dağılımı" grafiği (pasta grafiği) görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Pasta grafiğinde faaliyet kaynakları (Redmine, Jira, CRM, Dahili) farklı renklerle gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Pasta grafiğinin üzerine gelindiğinde (hover) kaynak adı ve sayısı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Dashboard\'da "Öncelik Analizi" grafiği (çubuk grafik) görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Öncelik Analizi grafiğinde High, Normal, Low öncelikleri farklı renklerle gösteriliyor mu? (High=Kırmızı, Normal=Mavi, Low=Gri)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Öncelik Analizi grafiğinde her öncelik seviyesi için iş sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Çubuk grafiğin üzerine gelindiğinde (hover) öncelik seviyesi ve iş sayısı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Grafikler mobil cihazlarda (telefon, tablet) düzgün görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'FAZ 7 - Grafikler sayfa yenilendiğinde kaybolmuyor mu? (Veriler doğru yükleniyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak V67 özellikleri kullanıcı dostu ve anlaşılır mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Sayfa yüklenme süreleri kabul edilebilir mi? (Dashboard ve Redmine sayfaları hızlı açılıyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Tüm özellikler hatasız çalışıyor mu? (Konsolda hata mesajı görünmüyor mu?)',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: sps-web
+    ports:
+      - "8000:5000"
+    restart: always
+    environment:
+      # Veritabanı: kalıcı volume'daki SQLite
+      DATABASE_URL: sqlite:////app/data/spsv2.db
+      FLASK_ENV: production
+      # SECRET_KEY ortam değişkeni ile verilebilir (güvenlik için .env kullanın)
+    volumes:
+      # Veritabanı ve instance klasörü kalıcı olsun (konteyner silinse bile veri kaybolmasın)
+      - sps-data:/app/data
+      - sps-instance:/app/instance
+
+volumes:
+  sps-data:
+    # spsv2.db bu volume'da saklanır
+  sps-instance:
+    # Flask instance klasörü (uploads, secret key vb.) bu volume'da saklanır

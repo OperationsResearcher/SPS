@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 2 - Muda Hunter Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🔍 Faz 2 - Muda Hunter (V65.0)</h1>
+            <p>Süreç Verimsizlik Analizi kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz2-muda', 'Faz 2 - Muda Hunter')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz2-muda')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz2-muda';
+        const moduleTitle = 'Faz 2 - Muda Hunter';
+        
+        const questions = [
+            {
+                text: 'Muda Hunter sayfası (/muda-hunter) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel verimlilik skoru doğru hesaplanıyor ve gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç seçimi dropdown\'ı çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi butonu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir süreç seçip "Analiz Et" butonuna bastığımda analiz başlatılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi tamamlandığında sonuçlar ekranda gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Analiz sonuçlarında Muda bulguları listesi görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Her Muda bulgusunda Muda tipi (Bekleme, Hata, Aşırı İşleme, vb.) bilgisi görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Her Muda bulgusunda önem seviyesi (düşük, orta, yüksek, kritik) görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Muda bulguları veritabanına kaydediliyor mu? (Sayfayı yenilediğimde görünüyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi yapıldığında bekleme (Waiting) tipi Muda\'lar tespit ediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi yapıldığında hata/kusur (Defects) tipi Muda\'lar tespit ediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi yapıldığında aşırı işleme (Overprocessing) tipi Muda\'lar tespit ediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Süreç analizi yapıldığında aşırı üretim (Overproduction) tipi Muda\'lar tespit ediliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel verimlilik skoru (0-100 arası) sayfada doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Verimlilik skoru renk kodlaması ile gösteriliyor mu? (Yeşil: iyi, Kırmızı: kötü)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Dashboard sayfasında "Süreç Verimlilik Skoru" widget\'ı görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Dashboard\'daki verimlilik skoru widget\'ında skor doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: '7 Muda tipi açıklamaları sayfada görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Muda kartları görsel olarak uygun ve bilgilendirici mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Analiz sonuçları kullanıcı dostu şekilde gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Muda Hunter modülü başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

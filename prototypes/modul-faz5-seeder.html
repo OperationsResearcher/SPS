@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 5 - Veri Simülasyonu Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🌱 Faz 5 - Veri Simülasyonu (V53.0)</h1>
+            <p>Seeder servisi, demo veri üretimi, admin panel entegrasyonu kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz5-seeder', 'Faz 5 - Veri Simülasyonu')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz5-seeder')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz5-seeder';
+        const moduleTitle = 'Faz 5 - Veri Simülasyonu';
+        
+        const questions = [
+            {
+                text: 'Admin Panel sayfasına giriş yapılabiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Admin Panel\'de "Veritabanını Doldur" veya "Demo Veri Oluştur" butonu görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluştur butonuna tıklandığında işlem başlatılıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturma işlemi tamamlandığında başarı mesajı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan kurum sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan kullanıcı sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan strateji sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan süreç sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan proje sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Başarı mesajında oluşturulan görev sayısı doğru gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde kurumlar görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde kullanıcılar görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde stratejiler görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde süreçler görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde projeler görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Demo veri oluşturulduktan sonra sistemde görevler görülebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Normal kullanıcı (admin değil) demo veri oluşturma işlemini yapabiliyor mu? (Yapmamalı)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Hata durumunda kullanıcıya uygun hata mesajı gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Oluşturulan demo veriler gerçekçi mi? (Türkçe isimler, anlamlı veriler)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Demo Veri Oluşturma özelliği kullanılabilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

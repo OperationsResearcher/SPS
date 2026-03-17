@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Bilgi Grafığı - Knowledge Graph{% endblock %}
+
+{% block styles %}
+<link href="{{ url_for('static', filename='vendor/vis-network/vis-network.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+<style>
+    #knowledgeGraph {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-project-diagram me-2"></i>
+                Bilgi Grafığı - Knowledge Graph
+            </h2>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div id="knowledgeGraph"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='vendor/vis-network/vis-network.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script>
+    // Bilgi grafığı görselleştirmesi - servis tarafından hazırlanmış veri
+    {% if graph_data %}
+    const graphData = {{ graph_data | tojson }};
+    const nodes = graphData.nodes || [];
+    const edges = graphData.edges || [];
+    {% else %}
+    // Fallback: basit görselleştirme
+    const nodes = [];
+    const edges = [];
+    
+    // Stratejiler
+    {% for strategy in strategies %}
+    nodes.push({id: 'strategy_{{ strategy.id }}', label: '{{ strategy.alt_strateji_adi }}', group: 'strategy', color: '#667eea'});
+    {% endfor %}
+    
+    // Süreçler
+    {% for process in processes %}
+    nodes.push({id: 'process_{{ process.id }}', label: '{{ process.surec_adi }}', group: 'process', color: '#198754'});
+    {% endfor %}
+    
+    // Projeler
+    {% for project in projects %}
+    nodes.push({id: 'project_{{ project.id }}', label: '{{ project.name }}', group: 'project', color: '#fd7e14'});
+    {% endfor %}
+    {% endif %}
+    
+    const data = { nodes: nodes, edges: edges };
+    const options = {
+        nodes: {
+            shape: 'box',
+            font: { size: 12 },
+            borderWidth: 2
+        },
+        edges: {
+            arrows: { to: { enabled: true } },
+            smooth: { type: 'continuous' }
+        },
+        physics: {
+            enabled: true,
+            stabilization: {
+                iterations: 100
+            }
+        },
+        interaction: {
+            zoomView: true,
+            dragView: true
+        }
+    };
+    
+    const container = document.getElementById('knowledgeGraph');
+    if (container && nodes.length > 0) {
+        const network = new vis.Network(container, data, options);
+        
+        // Merkezilik metriklerini göster
+        {% if centrality_metrics %}
+        network.on('stabilizationEnd', function() {
+            console.log('Merkezilik Metrikleri:', {{ centrality_metrics | tojson }});
+        });
+        {% endif %}
+    }
+</script>
+{% endblock %}
+

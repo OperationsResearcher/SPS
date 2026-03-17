@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 1 - PWA Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>📱 Faz 1 - PWA Entegrasyonu (V52.0)</h1>
+            <p>Progressive Web App kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz1-pwa', 'Faz 1 - PWA Entegrasyonu')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz1-pwa')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz1-pwa';
+        const moduleTitle = 'Faz 1 - PWA Entegrasyonu';
+        
+        const questions = [
+            {
+                text: 'manifest.json dosyası doğru konumda (static/manifest.json) ve erişilebilir mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'manifest.json dosyasında gerekli alanlar (name, short_name, icons, start_url) tanımlı mı?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Service Worker (sw.js) dosyası doğru konumda (static/sw.js) ve erişilebilir mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Service Worker başarıyla kaydediliyor mu? (Browser console\'da kontrol edin)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'base.html\'de manifest linki (<link rel="manifest">) doğru şekilde eklenmiş mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'base.html\'de Service Worker kayıt kodu (navigator.serviceWorker.register) çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Offline sayfası (/offline route) oluşturulmuş ve erişilebilir mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Offline sayfası görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Service Worker cache stratejisi doğru çalışıyor mu? (Statik dosyalar cache\'leniyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Uygulama Chrome/Edge\'de "Add to Home Screen" seçeneği ile yüklenebiliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Uygulama yüklendikten sonra standalone modda (ana ekrandan açıldığında) düzgün çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'PWA ikonu (icon) doğru şekilde görüntüleniyor mu? (Ana ekranda)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'İnternet bağlantısı kesildiğinde offline sayfası gösteriliyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Service Worker güncellemeleri otomatik olarak algılanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'PWA özellikleri mobil cihazlarda (Android/iOS) test edildi mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Cache mekanizması performansı iyileştiriyor mu? (Sayfa yükleme hızı)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Service Worker hata yönetimi doğru çalışıyor mu? (Hatalar console\'a loglanıyor mu?)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'PWA özellikleri production ortamında test edildi mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Lighthouse PWA audit testleri geçiyor mu? (PWA score)',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak PWA entegrasyonu başarılı ve çalışır durumda mı?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+
+
+
+

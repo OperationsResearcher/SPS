@@ -1,0 +1,3 @@
+KULLANICI LISTESI:
+User: admin | Role: admin
+User: user | Role: kurum_kullanici

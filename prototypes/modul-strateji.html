@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strateji Yönetimi Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="kontrol.html">Ana Sayfa</a> > Strateji Yönetimi Modülü
+            </div>
+            <h1>🎯 Strateji Yönetimi Kontrol Listesi</h1>
+        </div>
+        
+        <div class="progress-section">
+            <div id="progress-text">0 / 0 soru cevaplandı (0%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <!-- Sorular buraya eklenecek -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="exportResults('strateji', 'Strateji Yönetimi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="window.location.href='kontrol.html'">Ana Sayfaya Dön</button>
+            <button class="btn btn-danger" onclick="clearResults('strateji', 'Strateji Yönetimi')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "Ana strateji ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji ekleme formunda zorunlu alanlar (ad, kurum) belirtilmiş mi?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji kod (code) alanı doldurulabiliyor mu? (Örn: ST1, ST2)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji ekleme işlemi başarıyla tamamlandığında onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji listesi düzgün görüntüleniyor mu? (Kod, ad, açıklama)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji düzenleme butonu çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Ana strateji silme butonu çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji ekleme butonu görünüyor ve çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji ekleme formunda ana strateji seçimi yapılabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji kod (code) alanı doldurulabiliyor mu? (Örn: ST1.1, ST1.2)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji hedef yöntemi (target_method) seçilebiliyor mu? (HKY, RG, SH, DH, HK, SGH)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji ekleme işlemi başarıyla tamamlandığında onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji listesi ana strateji altında hiyerarşik olarak görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji düzenleme butonu çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Alt strateji silme butonu çalışıyor ve onay mesajı gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Strateji-Süreç Matrisi sayfası erişilebilir ve görüntülenebiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Strateji-Süreç Matrisi'nde ilişki gücü (A/B veya 0-9) ayarlanabiliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Matris hücrelerinde ilişki skorları doğru görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Matris değişiklikleri kaydediliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Stratejik planlama akışı sayfası çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Stratejik asistan özelliği varsa çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Strateji detay sayfasında tüm bilgiler (kod, ad, açıklama, ilişkili süreçler) görüntüleniyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Form validasyonları çalışıyor mu? (Boş alan kontrolü vb.)",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Hata durumlarında anlaşılır hata mesajları gösteriliyor mu?",
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: "Strateji işlemleri mobil cihazlarda düzgün çalışıyor mu?",
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule('strateji', questions);
+        initializeModule('strateji', 'Strateji Yönetimi', questions);
+        
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+
+
+
+

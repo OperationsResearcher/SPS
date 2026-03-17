@@ -1,0 +1,16 @@
+Script Başlatılıyor...
+C:\SPY_Cursor\SP_Code\config.py:22: UserWarning: SECRET_KEY not set. Using development fallback.
+  warnings.warn("SECRET_KEY not set. Using development fallback.", UserWarning)
+[2026-01-04 21:19:28,358] INFO in __init__: Veritabanı tabloları kontrol edildi ve güncellendi.
+1. Bağlam Oluşturuldu.
+C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask_sqlalchemy\extension.py:868: SAWarning: Can't sort tables for DROP; an unresolvable foreign key dependency exists between tables: kurum, user; and backend does not support ALTER.  To restore at least a partial sort, apply use_alter=True to ForeignKey and ForeignKeyConstraint objects involved in the cycle to mark these as known cycles that will be ignored.
+  getattr(metadata, op_name)(bind=engine)
+2. DB Resetlendi.
+3. Sistem Kurumu Eklendi.
+4. KMF Kurumu Eklendi.
+HATA Admin: 'User' object has no attribute 'set_password'
+Traceback (most recent call last):
+  File "C:\SPY_Cursor\SP_Code\seed_debug.py", line 58, in seed_database
+    admin.set_password("123456")
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'set_password'

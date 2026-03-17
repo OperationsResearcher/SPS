@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+{% block title %}BSC Strateji Haritası{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 bsc-map-page position-relative">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1">BSC Strateji Haritası</h3>
+            <div class="text-muted small">Neden-sonuç ilişkilerini sürükle-bırak ile oluşturun</div>
+        </div>
+        <div class="text-muted small">
+            Kurum: <strong>{{ kurum.ad }}</strong>
+        </div>
+    </div>
+
+    <div id="bsc-map" class="bsc-map position-relative">
+        {% for perspective in perspective_order %}
+        <div class="bsc-lane" data-perspective="{{ perspective }}">
+            <div class="lane-header">
+                <span>{{ perspective_labels.get(perspective, perspective) }}</span>
+            </div>
+            <div class="lane-body" data-perspective="{{ perspective }}">
+                {% for strategy in strategies %}
+                {% set strategy_perspective = strategy.perspective or 'SUREC' %}
+                {% if strategy_perspective == perspective %}
+                <div class="bsc-card" draggable="true" data-strategy-id="{{ strategy.id }}"
+                    data-perspective="{{ strategy_perspective }}">
+                    <div class="card-code">{{ strategy.bsc_code or (strategy.code or 'ST') }}</div>
+                    <div class="card-title">{{ strategy.ad }}</div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" class="btn btn-light bsc-info-btn" data-bs-toggle="modal" data-bs-target="#bscHelpModal">
+        <i class="fas fa-info"></i>
+    </button>
+
+    <div id="bscLinkHint" class="alert alert-info bsc-link-hint" role="alert">
+        Lütfen önce SEBEP (Alttaki), sonra SONUÇ (Üstteki) kartına tıklayın.
+    </div>
+
+    <button type="button" id="bscLinkFab" class="btn btn-primary bsc-link-fab">
+        <i class="fas fa-link"></i>
+        <span class="ms-2">Bağlantı Modu</span>
+    </button>
+</div>
+
+<div class="modal fade" id="bscHelpModal" tabindex="-1" aria-labelledby="bscHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bscHelpModalLabel">BSC Strateji Haritası Rehberi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Balanced Scorecard (BSC) Nedir?</h6>
+                <p class="text-muted">
+                    Finansal, Müşteri, İç Süreç ve Öğrenme &amp; Gelişim perspektifleri üzerinden stratejilerin
+                    neden-sonuç ilişkilerini görselleştirir.
+                </p>
+                <h6>Nasıl Kullanılır?</h6>
+                <ol class="text-muted">
+                    <li>Kartları sürükleyerek uygun perspektife taşıyın.</li>
+                    <li>Bağlantı Modu ile kartları sıralı tıklayarak ilişki kurun.</li>
+                    <li>Haritada sebep-sonuç hikayesini oluşturun.</li>
+                </ol>
+                <h6>Renk Efsanesi</h6>
+                <ul class="text-muted">
+                    <li><span class="badge bg-success">Yeşil</span> Finansal Perspektif</li>
+                    <li><span class="badge bg-primary">Mavi</span> Müşteri Perspektifi</li>
+                    <li><span class="badge bg-warning text-dark">Sarı</span> İç Süreçler</li>
+                    <li><span class="badge bg-purple">Mor</span> Öğrenme &amp; Gelişim</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Anladım</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bsc-map-page .bsc-map {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+        background: #f8fafc;
+        min-height: 720px;
+    }
+
+    .bsc-lane {
+        padding: 20px 24px 24px;
+        position: relative;
+    }
+
+    .bsc-lane + .bsc-lane {
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .bsc-lane[data-perspective="FINANSAL"] {
+        background: linear-gradient(135deg, rgba(52, 211, 153, 0.25), rgba(16, 185, 129, 0.08));
+    }
+
+    .bsc-lane[data-perspective="MUSTERI"] {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+    }
+
+    .bsc-lane[data-perspective="SUREC"] {
+        background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(251, 191, 36, 0.05));
+    }
+
+    .bsc-lane[data-perspective="OGRENME"] {
+        background: linear-gradient(135deg, rgba(192, 132, 252, 0.2), rgba(168, 85, 247, 0.05));
+    }
+
+    .lane-header {
+        font-weight: 600;
+        margin-bottom: 16px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #0f172a;
+    }
+
+    .lane-body {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        min-height: 120px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .bsc-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 12px 14px;
+        min-width: 160px;
+        max-width: 220px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        cursor: grab;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .bsc-card:active {
+        cursor: grabbing;
+    }
+
+    .bsc-card.selected {
+        outline: 2px solid #2563eb;
+        box-shadow: 0 16px 35px rgba(37, 99, 235, 0.2);
+    }
+
+    .bsc-card.link-source {
+        outline: 2px solid #ef4444;
+        box-shadow: 0 18px 35px rgba(239, 68, 68, 0.25);
+    }
+
+    .card-code {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.95rem;
+        line-height: 1.2;
+    }
+
+    .bsc-info-btn {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        z-index: 9999;
+    }
+
+    .bsc-link-fab {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        border-radius: 999px;
+        padding: 12px 20px;
+        box-shadow: 0 18px 35px rgba(37, 99, 235, 0.35);
+        z-index: 9999;
+    }
+
+    .bsc-link-fab.is-active {
+        background: #ef4444;
+        border-color: #ef4444;
+        box-shadow: 0 18px 35px rgba(239, 68, 68, 0.35);
+    }
+
+    .bsc-link-hint {
+        position: fixed;
+        right: 28px;
+        bottom: 90px;
+        z-index: 9999;
+        display: none;
+    }
+
+    .leader-line {
+        z-index: 9000 !important;
+    }
+
+    .bg-purple {
+        background-color: #a855f7;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/leader-line@1.0.7/leader-line.min.js"></script>
+<script>
+    const links = {{ links_payload | tojson }};
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    const linkHint = document.getElementById('bscLinkHint');
+    const linkFab = document.getElementById('bscLinkFab');
+    let isLinkingMode = false;
+    let selectedSourceCard = null;
+    let activeLines = [];
+
+    function showLinkHint() {
+        if (!linkHint) {
+            alert('Lütfen önce SEBEP (Alttaki), sonra SONUÇ (Üstteki) kartına tıklayın.');
+            return;
+        }
+        linkHint.style.display = 'block';
+        setTimeout(() => {
+            linkHint.style.display = 'none';
+        }, 3500);
+    }
+
+    function toggleLinkingMode() {
+        isLinkingMode = !isLinkingMode;
+        document.body.style.cursor = isLinkingMode ? 'crosshair' : 'default';
+        linkFab.classList.toggle('is-active', isLinkingMode);
+        linkFab.querySelector('span').textContent = isLinkingMode ? 'Bağlantı Modu (Açık)' : 'Bağlantı Modu';
+        if (isLinkingMode) {
+            showLinkHint();
+        } else {
+            clearSelection();
+        }
+    }
+
+    function clearSelection() {
+        if (selectedSourceCard) {
+            selectedSourceCard.classList.remove('link-source');
+        }
+        selectedSourceCard = null;
+    }
+
+    function buildLine(sourceEl, targetEl) {
+        return new LeaderLine(sourceEl, targetEl, {
+            color: 'rgba(15, 23, 42, 0.5)',
+            size: 2,
+            endPlug: 'arrow3',
+            path: 'fluid'
+        });
+    }
+
+    function drawExistingLinks() {
+        activeLines.forEach(line => line.remove());
+        activeLines = [];
+        links.forEach(link => {
+            const source = document.querySelector(`.bsc-card[data-strategy-id='${link.source_id}']`);
+            const target = document.querySelector(`.bsc-card[data-strategy-id='${link.target_id}']`);
+            if (!source || !target) {
+                return;
+            }
+            const line = buildLine(source, target);
+            line.svg.style.pointerEvents = 'auto';
+            line.svg.addEventListener('click', () => handleDeleteLink(link.id));
+            activeLines.push(line);
+        });
+    }
+
+    function refreshLines() {
+        activeLines.forEach(line => line.position());
+    }
+
+    async function handleDeleteLink(linkId) {
+        if (!confirm('Bu bağlantıyı kaldırmak istiyor musunuz?')) {
+            return;
+        }
+        const response = await fetch(`/api/bsc/link/${linkId}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': csrfToken }
+        });
+        const result = await response.json();
+        if (result.success) {
+            const index = links.findIndex(item => item.id === linkId);
+            if (index !== -1) {
+                links.splice(index, 1);
+            }
+            drawExistingLinks();
+        } else {
+            alert(result.message || 'Bağlantı silinemedi.');
+        }
+    }
+
+    function handleCardClick(card) {
+        if (!isLinkingMode) {
+            return;
+        }
+        if (!selectedSourceCard) {
+            selectedSourceCard = card;
+            card.classList.add('link-source');
+            return;
+        }
+        if (selectedSourceCard === card) {
+            clearSelection();
+            return;
+        }
+        createLink(selectedSourceCard.dataset.strategyId, card.dataset.strategyId);
+    }
+
+    async function createLink(sourceId, targetId) {
+        const response = await fetch('/api/bsc/link', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ source_id: sourceId, target_id: targetId })
+        });
+        const result = await response.json();
+        if (result.success) {
+            if (!links.find(item => item.id === result.link_id)) {
+                links.push({
+                    id: result.link_id,
+                    source_id: parseInt(sourceId, 10),
+                    target_id: parseInt(targetId, 10),
+                    connection_type: 'CAUSE_EFFECT'
+                });
+            }
+            clearSelection();
+            drawExistingLinks();
+        } else if (result.message) {
+            alert(result.message);
+        }
+    }
+
+    function bindCardInteractions(card) {
+        card.addEventListener('dragstart', event => {
+            event.dataTransfer.setData('text/plain', card.dataset.strategyId);
+        });
+
+        card.addEventListener('click', () => handleCardClick(card));
+    }
+
+    document.querySelectorAll('.bsc-card').forEach(card => bindCardInteractions(card));
+
+    document.querySelectorAll('.lane-body').forEach(lane => {
+        lane.addEventListener('dragover', event => {
+            event.preventDefault();
+        });
+        lane.addEventListener('drop', async event => {
+            event.preventDefault();
+            const strategyId = event.dataTransfer.getData('text/plain');
+            const card = document.querySelector(`.bsc-card[data-strategy-id='${strategyId}']`);
+            if (!card) {
+                return;
+            }
+            const previousLane = card.closest('.lane-body');
+            if (previousLane === lane) {
+                return;
+            }
+            lane.appendChild(card);
+            card.dataset.perspective = lane.dataset.perspective;
+            refreshLines();
+
+            const response = await fetch('/api/bsc/update-perspective', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    strategy_id: strategyId,
+                    perspective: lane.dataset.perspective
+                })
+            });
+            const result = await response.json();
+            if (!result.success) {
+                if (previousLane) {
+                    previousLane.appendChild(card);
+                    card.dataset.perspective = previousLane.dataset.perspective;
+                }
+                refreshLines();
+                alert(result.message || 'Güncelleme başarısız.');
+            }
+        });
+    });
+
+    linkFab.addEventListener('click', toggleLinkingMode);
+    window.addEventListener('resize', refreshLines);
+    window.addEventListener('load', () => {
+        drawExistingLinks();
+    });
+</script>
+{% endblock %}

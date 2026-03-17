@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faz 2 - Hoshin Kanri Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol-common.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="kontrol.html" class="back-link">← Ana Sayfaya Dön</a>
+            <h1>🎯 Faz 2 - Hoshin Kanri Paketi (V59.0)</h1>
+            <p>Hoshin Catchball, MTBP, Gemba Walk kontrolleri</p>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-info">
+                <span id="progress-text">0% tamamlandı</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="questions-container"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportResults('faz2-hoshin', 'Faz 2 - Hoshin Kanri Paketi')">Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" onclick="clearResults('faz2-hoshin')">Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-common.js"></script>
+    <script>
+        const moduleName = 'faz2-hoshin';
+        const moduleTitle = 'Faz 2 - Hoshin Kanri Paketi';
+        
+        const questions = [
+            {
+                text: 'MTBP sayfası (/mtbp) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'MTBP sayfasında plan listesi doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni MTBP planı oluşturma formu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Plan ekleme işlemi başarıyla tamamlanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk sayfası (/gemba) erişilebilir ve çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk kayıtları tablosu doğru görüntüleniyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Yeni Gemba Walk kaydı ekleme formu çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk ekleme işlemi başarıyla tamamlanıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Bir hedefe/OKR\'a yorum ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Eklediğim yorumlar listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'MTBP planı oluşturduğumda, plan kaydediliyor ve listede görünüyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'MTBP planına alt maddeler/plan öğeleri ekleyebiliyor muyum?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk kaydı eklediğimde, kayıt başarıyla oluşturuluyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'MTBP sayfası görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk sayfası görsel olarak uygun ve kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Plan kartları modern ve bilgilendirici mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Gemba Walk kayıtları tablosu okunabilir ve düzenli mi?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Form validasyonları doğru çalışıyor mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Hata mesajları kullanıcı dostu mu?',
+                answer: '',
+                explanation: ''
+            },
+            {
+                text: 'Genel olarak Hoshin Kanri paketi başarılı ve kullanılabilir mi?',
+                answer: '',
+                explanation: ''
+            }
+        ];
+        
+        setCurrentModule(moduleName, questions);
+        initializeModule(moduleName, moduleTitle, questions);
+    </script>
+</body>
+</html>
+

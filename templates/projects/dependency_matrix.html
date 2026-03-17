@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-project-diagram"></i> Bağımlılık Matrisi — {{ project.name }}</h3>
+    <div>
+      <button class="btn btn-info me-2" onclick="showToolInfo('dependency')" title="Bu araç hakkında bilgi">
+        <i class="fas fa-info-circle me-1"></i> Nasıl Kullanılır?
+      </button>
+      <a href="/projeler/{{ project.id }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Projeye Dön</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Bağımlılık Matrisi Nedir?</strong> Görevler arasındaki bağımlılıkları görsel bir matris ile gösterir. Hangi görevin hangi görevi beklediğini kolayca görüntüleyebilirsiniz.
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Bağımlılık Matrisi</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0" id="matrix-table">
+          <thead class="table-light"></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Bağımlılık Türleri</h5>
+    </div>
+    <div class="card-body">
+      <ul class="mb-0">
+        <li><span class="badge bg-primary">FS</span> Finish-to-Start: Öncelik bitince başla</li>
+        <li><span class="badge bg-info">SS</span> Start-to-Start: Öncelik başlayınca başla</li>
+        <li><span class="badge bg-success">FF</span> Finish-to-Finish: Öncelik bitince bitir</li>
+        <li><span class="badge bg-warning">SF</span> Start-to-Finish: Öncelik başlayınca bitir</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+let tasks = [];
+let dependencies = [];
+
+async function loadMatrix() {
+  try {
+    const resT = await fetch('/api/projeler/{{ project.id }}/gorevler');
+    const dataT = await resT.json();
+    if (!dataT.success) throw new Error(dataT.message);
+    tasks = dataT.tasks || [];
+
+    const resM = await fetch('/api/projeler/{{ project.id }}/bagimlilik-matrisi');
+    const dataM = await resM.json();
+    if (!dataM.success) throw new Error(dataM.message);
+    dependencies = dataM.matrix || [];
+
+    renderMatrix();
+  } catch (e) {
+    console.error(e);
+    if (window.showToast) showToast('error', e.message, 'Matris Yükleme Hatası');
+  }
+}
+
+function renderMatrix() {
+  const thead = document.querySelector('#matrix-table thead');
+  const tbody = document.querySelector('#matrix-table tbody');
+
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  if (tasks.length === 0) {
+    tbody.innerHTML = '<tr><td class="text-center text-muted p-5">Görev bulunamadı</td></tr>';
+    return;
+  }
+
+  // Başlık satırı
+  const headerRow = document.createElement('tr');
+  headerRow.innerHTML = '<th>→</th>' + tasks.map(t => `<th class="text-center small" style="min-width: 80px;">${t.title}</th>`).join('');
+  thead.appendChild(headerRow);
+
+  // Satırlar
+  tasks.forEach(rowTask => {
+    const tr = document.createElement('tr');
+    let cells = `<th class="small">${rowTask.title}</th>`;
+
+    tasks.forEach(colTask => {
+      if (rowTask.id === colTask.id) {
+        cells += '<td class="text-center bg-light">—</td>';
+      } else {
+        const dep = dependencies.find(d => d.predecessor_id === rowTask.id && d.successor_id === colTask.id);
+        if (dep) {
+          const typeMap = { FS: 'primary', SS: 'info', FF: 'success', SF: 'warning' };
+          const bgClass = typeMap[dep.dependency_type] || 'secondary';
+          cells += `<td class="text-center bg-${bgClass} bg-opacity-25"><span class="badge bg-${bgClass}">${dep.dependency_type}</span></td>`;
+        } else {
+          cells += '<td class="text-center"></td>';
+        }
+      }
+    });
+
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+}
+
+loadMatrix();
+</script>
+
+{% include 'projects/_tool_info_modal.html' %}
+
+{% endblock %}

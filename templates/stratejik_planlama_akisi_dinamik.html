@@ -1,0 +1,1117 @@
+{% extends "base.html" %}
+
+{% block title %}Dinamik Stratejik Planlama Akışı - {{ kurum.kisa_ad }}{% endblock %}
+
+{% block styles %}
+<link href="{{ url_for('static', filename='vendor/vis-network/vis-network.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    margin-bottom: 2rem;
+    animation: slideDown 0.5s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.2s; }
+  .stat-card:nth-child(3) { animation-delay: 0.3s; }
+  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .graph-container {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.7s ease-out;
+    animation-fill-mode: both;
+    animation-delay: 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .graph-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  #spGraph {
+    width: 100%;
+    height: calc(100vh - 380px);
+    min-height: 600px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    position: relative;
+  }
+
+  .controls-panel {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: fadeInUp 0.7s ease-out;
+    animation-fill-mode: both;
+    animation-delay: 0.3s;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+  }
+
+  .panel-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-box {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-box:focus-within {
+    border-color: rgba(102, 126, 234, 0.5);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .search-input {
+    border: none;
+    background: white;
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  }
+
+  .search-results-item {
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .search-results-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.3);
+    transform: translateX(5px);
+  }
+
+  .search-results-item.active {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+
+  .form-switch .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    cursor: pointer;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+  }
+
+  .form-switch .form-check-input:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+  }
+
+  .form-switch .form-check-label {
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .legend-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    transform: translateX(5px);
+  }
+
+  .legend-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .legend-label {
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .btn-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  .btn-modern:active {
+    transform: translateY(-1px);
+  }
+
+  .btn-outline-modern {
+    background: white;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    color: #667eea;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-modern:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    color: #667eea;
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    z-index: 1000;
+  }
+
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 20px;
+    font-weight: 600;
+    color: #667eea;
+    font-size: 0.85rem;
+  }
+
+  .divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.3) 50%, transparent 100%);
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 1200px) {
+    #spGraph {
+      height: 500px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="max-width: 1800px;">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <h1 class="page-title mb-2">
+          <i class="fas fa-project-diagram me-3"></i>
+          Dinamik Stratejik Planlama Akışı
+        </h1>
+        <p class="page-subtitle mb-0">
+          <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem; animation: pulse 2s ease-in-out infinite;"></i>
+          Canlı veri akışı • Skorlar 0-100 normalize • A+B ilişki modeli
+        </p>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a class="btn btn-outline-modern" href="{{ url_for('main.stratejik_planlama_akisi') }}">
+          <i class="fas fa-arrow-left me-2"></i>Statik Akış
+        </a>
+        <a class="btn btn-outline-modern" href="{{ url_for('main.kurum_paneli') }}">
+          <i class="fas fa-building me-2"></i>Kurum Paneli
+        </a>
+        <button class="btn btn-modern" id="refreshBtn" type="button">
+          <i class="fas fa-sync-alt me-2"></i>Yenile
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mt-3" id="statsRow">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-bullseye"></i>
+          </div>
+          <div class="stat-value" id="statMainStrategies">-</div>
+          <div class="stat-label">Ana Strateji</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+            <i class="fas fa-stream"></i>
+          </div>
+          <div class="stat-value" id="statSubStrategies">-</div>
+          <div class="stat-label">Alt Strateji</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <i class="fas fa-cogs"></i>
+          </div>
+          <div class="stat-value" id="statProcesses">-</div>
+          <div class="stat-label">Süreç</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <div class="stat-value" id="statProjects">-</div>
+          <div class="stat-label">Proje</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row g-4">
+    <!-- Graph -->
+    <div class="col-12 col-xl-9">
+      <div class="graph-container">
+        <div id="spGraph">
+          <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Grafik yükleniyor...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="col-12 col-xl-3">
+      <!-- Search Panel -->
+      <div class="controls-panel mb-4">
+        <div class="panel-title">
+          <i class="fas fa-search"></i>
+          Arama
+        </div>
+
+        <div class="search-box">
+          <div class="input-group">
+            <input type="text" class="form-control search-input" id="nodeSearch" 
+                   placeholder="Strateji, süreç, proje ara..." autocomplete="off">
+            <button class="btn btn-outline-secondary" type="button" id="clearSearch" 
+                    style="border-radius: 0 10px 10px 0; border-left: none;" title="Temizle">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="small mt-2" id="searchMeta" style="color: #6b7280; font-weight: 500;"></div>
+        </div>
+
+        <div class="list-group" id="searchResults" style="max-height: 280px; overflow:auto; display:none;"></div>
+      </div>
+
+      <!-- Filter Panel -->
+      <div class="controls-panel mb-4">
+        <div class="panel-title">
+          <i class="fas fa-filter"></i>
+          Filtreler
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="autoRefresh" checked>
+          <label class="form-check-label" for="autoRefresh">
+            <i class="fas fa-sync-alt me-2"></i>Otomatik Yenileme (30sn)
+          </label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="showProjects" checked>
+          <label class="form-check-label" for="showProjects">
+            <i class="fas fa-project-diagram me-2"></i>Projeleri Göster
+          </label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="showKpis" checked>
+          <label class="form-check-label" for="showKpis">
+            <i class="fas fa-chart-bar me-2"></i>Performans Göstergelerini Göster
+          </label>
+        </div>
+
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="showDerived" checked>
+          <label class="form-check-label" for="showDerived">
+            <i class="fas fa-project-diagram me-2"></i>Türetilmiş İlişkiler
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-sm btn-modern flex-fill" id="expandAllBtn" type="button">
+            <i class="fas fa-expand-alt me-2"></i>Hepsini Aç
+          </button>
+          <button class="btn btn-sm btn-outline-modern flex-fill" id="collapseAllBtn" type="button">
+            <i class="fas fa-compress-alt me-2"></i>Hepsini Kapat
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-title" style="font-size: 0.95rem; margin-bottom: 1rem;">
+          <i class="fas fa-search-plus"></i>
+          Görünüm
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-sm btn-outline-modern flex-fill" id="zoomInBtn" type="button" title="Yakınlaştır">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-modern flex-fill" id="zoomOutBtn" type="button" title="Uzaklaştır">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-modern flex-fill" id="fitBtn" type="button" title="Tümünü Göster">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="compactView">
+          <label class="form-check-label" for="compactView">
+            <i class="fas fa-compress-arrows-alt me-2"></i>Kompakt Görünüm
+          </label>
+        </div>
+
+        <button class="btn btn-sm btn-outline-modern w-100" id="clearFocusBtn" type="button" style="display: none;">
+          <i class="fas fa-eye me-2"></i>Tümünü Göster (ESC)
+        </button>
+
+        <div class="mt-3 small" style="color: #6b7280; line-height: 1.6;">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>İpucu:</strong> Bir düğüme tek tıklayınca sadece o ve bağlantıları görünür. Çift tıklama ile alt öğeleri açıp kapatabilir veya detaya gidebilirsiniz.
+        </div>
+      </div>
+
+      <!-- Legend Panel -->
+      <div class="controls-panel">
+        <div class="panel-title">
+          <i class="fas fa-palette"></i>
+          Renk Kodları
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); border-radius: 8px;"></span>
+          <span class="legend-label">Vizyon</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);"></span>
+          <span class="legend-label">Ana Strateji</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);"></span>
+          <span class="legend-label">Alt Strateji</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 50%;"></span>
+          <span class="legend-label">Süreç</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);"></span>
+          <span class="legend-label">Performans Göstergesi</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); transform: rotate(45deg);"></span>
+          <span class="legend-label">Proje</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+          <span class="meta-badge">
+            <i class="fas fa-link" style="color: #10b981;"></i>
+            A (9)
+          </span>
+          <span class="meta-badge">
+            <i class="fas fa-link" style="color: #f59e0b;"></i>
+            B (3)
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+
+<script src="{{ url_for('static', filename='vendor/vis-network/vis-network.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script>
+  let network = null;
+  let lastGraph = { nodes: [], edges: [], meta: {} };
+  let refreshTimer = null;
+  let searchableNodes = [];
+  let searchMatches = [];
+  let searchMatchIndex = 0;
+  let lastFocusedNodeId = null;
+  let collapsedNodes = new Set();
+  let allNodes = [];
+  let allEdges = [];
+  let focusedNodeId = null;
+
+  function byId(id) { return document.getElementById(id); }
+
+  function getConnectedNodes(nodeId) {
+    // Find all nodes directly connected to this node (both directions)
+    const connected = new Set([nodeId]);
+    
+    allEdges.forEach(e => {
+      if (e.from === nodeId) {
+        connected.add(e.to);
+      }
+      if (e.to === nodeId) {
+        connected.add(e.from);
+      }
+    });
+    
+    return Array.from(connected);
+  }
+
+  function clearFocusMode() {
+    focusedNodeId = null;
+    const clearBtn = byId('clearFocusBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    renderGraph(lastGraph);
+  }
+
+  function normText(s) {
+    return String(s || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLocaleLowerCase('tr-TR');
+  }
+
+  function plainLabel(node) {
+    const label = String(node?.label || '').replace(/\n/g, ' ');
+    // sondaki "(85%)" benzeri skor etiketini aramada engel olmasın
+    return label.replace(/\s*\(\s*\d+\s*%\s*\)\s*$/g, '').trim();
+  }
+
+  function groupName(group) {
+    switch (group) {
+      case 'main_strategy': return 'Ana';
+      case 'sub_strategy': return 'Alt';
+      case 'process': return 'Süreç';
+      case 'project': return 'Proje';
+      case 'kpi': return 'PG';
+      default: return group || '';
+    }
+  }
+
+  function focusNode(nodeId) {
+    if (!network || !nodeId) return;
+    lastFocusedNodeId = nodeId;
+
+    network.selectNodes([nodeId]);
+    network.focus(nodeId, {
+      scale: 1.15,
+      animation: { duration: 500, easingFunction: 'easeInOutQuad' }
+    });
+  }
+
+  function renderSearchResults(matches) {
+    const resultsEl = byId('searchResults');
+    const metaEl = byId('searchMeta');
+    if (!resultsEl || !metaEl) return;
+
+    if (!matches || matches.length === 0) {
+      resultsEl.style.display = 'none';
+      metaEl.innerHTML = byId('nodeSearch')?.value ? '<i class="fas fa-info-circle me-2"></i>Sonuç bulunamadı.' : '';
+      return;
+    }
+
+    metaEl.innerHTML = `<i class="fas fa-check-circle me-2" style="color: #10b981;"></i>${matches.length} sonuç bulundu`;
+    resultsEl.innerHTML = '';
+    resultsEl.style.display = 'block';
+
+    matches.slice(0, 12).forEach((n, idx) => {
+      const a = document.createElement('button');
+      a.type = 'button';
+      a.className = 'list-group-item list-group-item-action search-results-item py-2';
+      a.dataset.nodeId = n.id;
+      a.innerHTML = `<div class="d-flex justify-content-between align-items-center gap-2">
+          <div class="text-truncate" style="font-weight: 500;">${plainLabel(n) || String(n.id)}</div>
+          <span class="badge" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%); color: #667eea; border: 1px solid rgba(102, 126, 234, 0.3);">${groupName(n.group)}</span>
+        </div>`;
+      a.addEventListener('click', () => focusNode(n.id));
+      resultsEl.appendChild(a);
+
+      if (idx === 0) a.classList.add('active');
+    });
+  }
+
+  function runSearch() {
+    const q = normText(byId('nodeSearch')?.value);
+    if (!q) {
+      searchMatches = [];
+      searchMatchIndex = 0;
+      renderSearchResults([]);
+      return;
+    }
+
+    const matches = (searchableNodes || []).filter(n => {
+      const hay = normText(`${plainLabel(n)} ${n.title || ''}`);
+      return hay.includes(q);
+    });
+
+    // önce label içinde başlayanları öne al
+    matches.sort((a, b) => {
+      const aL = normText(plainLabel(a));
+      const bL = normText(plainLabel(b));
+      const aStarts = aL.startsWith(q) ? 0 : 1;
+      const bStarts = bL.startsWith(q) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return aL.localeCompare(bL, 'tr');
+    });
+
+    searchMatches = matches;
+    searchMatchIndex = 0;
+    renderSearchResults(searchMatches);
+  }
+
+  function focusNextMatch() {
+    if (!searchMatches || searchMatches.length === 0) return;
+    const n = searchMatches[searchMatchIndex % searchMatches.length];
+    searchMatchIndex = (searchMatchIndex + 1) % searchMatches.length;
+    focusNode(n.id);
+  }
+
+  function getChildNodes(nodeId) {
+    // Find all nodes that have edges FROM this node
+    return allEdges
+      .filter(e => e.from === nodeId)
+      .map(e => e.to);
+  }
+
+  function getAllDescendants(nodeId, visited = new Set()) {
+    if (visited.has(nodeId)) return [];
+    visited.add(nodeId);
+    
+    const children = getChildNodes(nodeId);
+    const descendants = [...children];
+    
+    children.forEach(childId => {
+      descendants.push(...getAllDescendants(childId, visited));
+    });
+    
+    return descendants;
+  }
+
+  function applyFilters(graph) {
+    const showProjects = byId('showProjects')?.checked;
+    const showKpis = byId('showKpis')?.checked;
+    const showDerived = byId('showDerived')?.checked;
+
+    // Store original data
+    allNodes = graph.nodes || [];
+    allEdges = graph.edges || [];
+
+    // Apply visibility filters
+    let nodes = allNodes.filter(n => {
+      if (!showProjects && n.group === 'project') return false;
+      if (!showKpis && n.group === 'kpi') return false;
+      return true;
+    });
+
+    // Apply collapse filters
+    if (collapsedNodes.size > 0) {
+      const hiddenNodes = new Set();
+      collapsedNodes.forEach(collapsedId => {
+        const descendants = getAllDescendants(collapsedId);
+        descendants.forEach(d => hiddenNodes.add(d));
+      });
+      nodes = nodes.filter(n => !hiddenNodes.has(n.id));
+    }
+
+    // Apply focus mode filter
+    if (focusedNodeId) {
+      const connectedNodes = getConnectedNodes(focusedNodeId);
+      nodes = nodes.filter(n => connectedNodes.includes(n.id));
+    }
+
+    const nodeIdSet = new Set(nodes.map(n => n.id));
+
+    const edges = allEdges.filter(e => {
+      // türetilmiş proje->sub strateji edge'leri dashed=true olarak gönderiliyor
+      if (!showDerived && e.dashes === true) {
+        const from = String(e.from || '');
+        const to = String(e.to || '');
+        if (from.startsWith('proj_') && to.startsWith('sub_')) return false;
+      }
+      return nodeIdSet.has(e.from) && nodeIdSet.has(e.to);
+    });
+
+    return { nodes, edges, meta: graph.meta || {} };
+  }
+
+  function renderGraph(graph) {
+    const container = byId('spGraph');
+    if (!container) return;
+
+    const filtered = applyFilters(graph);
+    searchableNodes = filtered.nodes || [];
+
+    const data = {
+      nodes: new vis.DataSet(filtered.nodes),
+      edges: new vis.DataSet(filtered.edges)
+    };
+
+    const isCompact = byId('compactView')?.checked;
+    const levelSep = isCompact ? 180 : 320;
+    const nodeSpace = isCompact ? 120 : 220;
+    const treeSpace = isCompact ? 150 : 300;
+
+    const options = {
+      layout: {
+        hierarchical: {
+          enabled: true,
+          direction: 'UD',
+          levelSeparation: levelSep,
+          nodeSpacing: nodeSpace,
+          treeSpacing: treeSpace,
+          sortMethod: 'directed',
+          shakeTowards: 'roots'
+        }
+      },
+      physics: {
+        enabled: false
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 80,
+        zoomView: true,
+        dragView: true,
+        multiselect: false
+      },
+      nodes: {
+        font: { size: 15, face: 'Segoe UI', bold: { color: '#1f2937' }, multi: 'html' },
+        borderWidth: 3,
+        margin: 16,
+        shadow: {
+          enabled: true,
+          color: 'rgba(0,0,0,0.2)',
+          size: 10,
+          x: 2,
+          y: 5
+        },
+        widthConstraint: {
+          maximum: 280
+        }
+      },
+      edges: {
+        font: { size: 12, align: 'middle', strokeWidth: 0, background: 'rgba(255,255,255,0.8)' },
+        smooth: { 
+          type: 'cubicBezier',
+          forceDirection: 'vertical',
+          roundness: 0.5
+        },
+        arrows: {
+          to: {
+            enabled: true,
+            scaleFactor: 1.0
+          }
+        }
+      }
+    };
+
+    if (!network) {
+      network = new vis.Network(container, data, options);
+      
+      // Single click: enable focus mode
+      network.on('click', function(params) {
+        if (params.nodes && params.nodes.length === 1) {
+          const nodeId = params.nodes[0];
+          focusedNodeId = nodeId;
+          const clearBtn = byId('clearFocusBtn');
+          if (clearBtn) clearBtn.style.display = 'inline-block';
+          renderGraph(lastGraph);
+        } else if (params.nodes.length === 0 && params.edges.length === 0) {
+          // Clicked on empty space
+          if (focusedNodeId) {
+            clearFocusMode();
+          }
+        }
+      });
+      
+      // Double click: expand/collapse node or navigate or navigate
+      network.on('doubleClick', function(params) {
+        const nodeId = params.nodes && params.nodes[0];
+        if (!nodeId) return;
+        
+        // If in focus mode, navigate to detail page on double click
+        if (focusedNodeId) {
+          const node = allNodes.find(n => n.id === nodeId);
+          if (node && node.url) {
+            window.location.href = node.url;
+          }
+          return;
+        }
+        
+        const hasChildren = getChildNodes(nodeId).length > 0;
+        if (!hasChildren) {
+          // No children, navigate to detail page
+          const node = allNodes.find(n => n.id === nodeId);
+          if (node && node.url) {
+            window.location.href = node.url;
+          }
+          return;
+        }
+        
+        // Toggle collapse state
+        if (collapsedNodes.has(nodeId)) {
+          collapsedNodes.delete(nodeId);
+        } else {
+          collapsedNodes.add(nodeId);
+        }
+        
+        renderGraph(lastGraph);
+      });
+      
+      // Hover effect
+      network.on('hoverNode', function(params) {
+        container.style.cursor = 'pointer';
+      });
+      
+      network.on('blurNode', function(params) {
+        container.style.cursor = 'default';
+      });
+    } else {
+      network.setData(data);
+      network.setOptions(options);
+    }
+
+    // Arama açıksa, yeni veriye göre sonuçları güncelle
+    runSearch();
+    // Son fokuslu node hâlâ görünüyorsa tekrar odakla
+    if (lastFocusedNodeId && searchableNodes.some(n => n.id === lastFocusedNodeId)) {
+      focusNode(lastFocusedNodeId);
+    }
+
+    // Update stats
+    const meta = filtered.meta || {};
+    byId('statMainStrategies').textContent = meta.main_strategies || 0;
+    byId('statSubStrategies').textContent = meta.sub_strategies || 0;
+    byId('statProcesses').textContent = meta.processes || 0;
+    byId('statProjects').textContent = meta.projects || 0;
+
+    // Hide loading overlay
+    const loadingOverlay = byId('loadingOverlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'none';
+    }
+  }
+
+  async function fetchGraph() {
+    // Show loading overlay
+    const loadingOverlay = byId('loadingOverlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'flex';
+    }
+
+    const res = await fetch('/api/strategic-planning/graph', { headers: { 'Accept': 'application/json' } });
+    const data = await res.json();
+    if (!data || !data.success) {
+      if (loadingOverlay) loadingOverlay.style.display = 'none';
+      throw new Error((data && data.message) ? data.message : 'Graph yüklenemedi');
+    }
+    lastGraph = data;
+    renderGraph(lastGraph);
+  }
+
+  function scheduleAutoRefresh() {
+    if (refreshTimer) {
+      clearInterval(refreshTimer);
+      refreshTimer = null;
+    }
+
+    if (byId('autoRefresh')?.checked) {
+      refreshTimer = setInterval(() => {
+        fetchGraph().catch(err => console.error(err));
+      }, 30000);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof vis === 'undefined') {
+      alert('Grafik kütüphanesi (vis-network) yüklenemedi. Ağ kısıtı varsa CDN engelleniyor olabilir. Çözüm: static/vendor/vis-network altına vis-network.min.js/.css dosyalarını indirip yerelden servis edin.');
+      return;
+    }
+
+    const searchInput = byId('nodeSearch');
+    const clearBtn = byId('clearSearch');
+
+    searchInput?.addEventListener('input', () => runSearch());
+    searchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        focusNextMatch();
+      }
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        runSearch();
+      }
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      runSearch();
+      searchInput?.focus();
+    });
+
+    byId('refreshBtn')?.addEventListener('click', () => {
+      const btn = byId('refreshBtn');
+      const icon = btn?.querySelector('i');
+      if (icon) {
+        icon.style.animation = 'spin 0.8s linear infinite';
+      }
+      fetchGraph()
+        .catch(err => alert(err.message || String(err)))
+        .finally(() => {
+          if (icon) {
+            icon.style.animation = '';
+          }
+        });
+    });
+
+    ['autoRefresh', 'showProjects', 'showKpis', 'showDerived'].forEach(id => {
+      byId(id)?.addEventListener('change', () => {
+        scheduleAutoRefresh();
+        renderGraph(lastGraph);
+      });
+    });
+
+    // Expand/Collapse All buttons
+    byId('expandAllBtn')?.addEventListener('click', () => {
+      collapsedNodes.clear();
+      renderGraph(lastGraph);
+    });
+
+    byId('collapseAllBtn')?.addEventListener('click', () => {
+      // Collapse all main strategies
+      const mainStrategies = allNodes.filter(n => n.group === 'main_strategy');
+      collapsedNodes.clear();
+      mainStrategies.forEach(n => collapsedNodes.add(n.id));
+      renderGraph(lastGraph);
+    });
+
+    // Zoom controls
+    byId('zoomInBtn')?.addEventListener('click', () => {
+      if (network) {
+        const scale = network.getScale();
+        network.moveTo({ scale: scale * 1.3, animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
+      }
+    });
+
+    byId('zoomOutBtn')?.addEventListener('click', () => {
+      if (network) {
+        const scale = network.getScale();
+        network.moveTo({ scale: scale * 0.7, animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
+      }
+    });
+
+    byId('fitBtn')?.addEventListener('click', () => {
+      if (network) {
+        network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+      }
+    });
+
+    // Compact view toggle
+    byId('compactView')?.addEventListener('change', () => {
+      renderGraph(lastGraph);
+    });
+
+    // Clear focus button
+    byId('clearFocusBtn')?.addEventListener('click', () => {
+      clearFocusMode();
+    });
+
+    // ESC key to clear focus
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && focusedNodeId) {
+        clearFocusMode();
+      }
+    });
+
+    fetchGraph().catch(err => alert(err.message || String(err)));
+    scheduleAutoRefresh();
+  });
+</script>
+{% endblock %}

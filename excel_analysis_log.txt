@@ -1,0 +1,146 @@
+Analiz Edilen Dosya: c:\SPY_Cursor\SP_Code\belge\SR4 Pazarlama Stratejileri Yönetimi Süreç Karnesi.xlsx
+
+Sayfalar: ['Veriler', '2021', '2022', '2023', '2025']
+
+--- SAYFA: Veriler ---
+Satır 0: Col0: SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ
+Satır 1: Col0: REV. TARİHİ | Col2: 2021-04-15 00:00:00 | Col4: YAYIN TARİHİ | Col6: 2020-02-01 00:00:00 | Col14: DOKÜMAN NO :
+Satır 2: Col0: SÜREÇ LİDERİ | Col2: Salih YALÇIN
+Satır 3: Col0: SÜREÇ EKİBİ | Col2: Emre Koşar, Ebru Takcı, M. Arif | Col18: 2020 Yılı Parametre Başarı Puanları
+Satır 4: Col18: Beklentinin Çok Altında  
+ (1 puan) | Col19: İyileştirmeye Açık
+(2 puan) | Col20: Hedefe Ulaşmış 
+(3 puan) | Col21: Hedefin Üzerinde
+(4 puan) | Col22: Mükemmel 
+(5 puan)
+Satır 5: Col0: Ana Strateji | Col1: Alt Strateji | Col2: Gösterge | Col3: Göst. Türü | Col4: Hedef Belirl. Yön. | Col5: Göst. Ağırlığı (%) | Col6: Birim | Col7: Ölçüm Per. | Col8: Önceki Yıl Ort. | Col9: Fiili/ Hedef | Col10: 1.Ç | Col11: 2.Ç | Col12: 3.Ç | Col13: 4.Ç | Col14: Yıl Sonu | Col15: Başarı Puanı | Col16: Ağırlıklı Başarı Puanı
+Satır 6: Col0: ST2 | Col1: ST2.1 | Col2: Eğitim Gelirleri | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col9: Fiili | Col10: 100006.66666666667 | Col16: 0 | Col17: 0.5 | Col18: -399000 | Col19: 400.000-449.000 | Col20: 450.000-499.000 | Col21: 500.000-549.000 | Col22: 550.000-
+Satır 7: Col9: Hedef | Col10: 118750 | Col11: 118750 | Col12: 118750 | Col13: 118750 | Col14: 475000
+Satır 8: Col2: Danışmanlık Hizmeti Gelirleri | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col9: Fiili | Col10: 213333.33333333334 | Col16: 0 | Col17: 0.5 | Col18: -799000 | Col19: 800.000 - 899.000 | Col20: 900.000-999.000 | Col21: 1.000.000-1.099.000 | Col22: 1.100.000 - 
+Satır 9: Col9: Hedef | Col10: 237500 | Col11: 237500 | Col12: 237500 | Col13: 237500 | Col14: 950000
+Satır 10: Col2: Ödül Süreci Gelirleri | Col3: iylş. | Col4: DH | Col5: 0.05 | Col6: TL | Col7: 1 Yıl  | Col9: Fiili | Col16: 0 | Col17: 0.25 | Col18: -5999 | Col19: 6.000 - 6.999 | Col20: 7.000-7.999 | Col21: 8.000 - 8.999 | Col22: 9.000 -
+Satır 11: Col9: Hedef | Col14: 7500
+Satır 12: Col1: ST2.2 | Col2: Pazarlama Stratejileri Yönetimi 
+Gider Bütçesine Uyum Oranı  | Col3: iylş. | Col4: HKY | Col5: 0.05 | Col6: % | Col7: 3 ay | Col9: Fiili | Col16: 0 | Col18: -0.79 | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 13: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95
+Satır 14: Col2: Verilen Teklif Sayısı | Col3: iylş. | Col4: HKY | Col5: 0.05 | Col6: adet | Col7: 3 ay  | Col9: Fiili | Col10: 7 | Col16: 0 | Col17: 0.25 | Col18: 15-23 | Col19: 24-29 | Col20: 30-35 | Col21: 36-41 | Col22: 42-
+Satır 15: Col9: Hedef | Col10: 8 | Col11: 10 | Col12: 6 | Col13: 8 | Col14: 32
+Satır 16: Col2: Tekliflerin Sözleşmeye Dönüşme Oranı | Col3: iylş. | Col4: HKY | Col5: 0.08 | Col6: % | Col7: 3 ay  | Col9: Fiili | Col10: 0.875 | Col16: 0 | Col17: 0.4 | Col18: %40-49 | Col19: %50-59 | Col20: %60-69 | Col21: %70-79 | Col22: %80-
+Satır 17: Col9: Hedef | Col10: 0.65 | Col11: 0.65 | Col12: 0.65 | Col13: 0.65 | Col14: 0.65
+Satır 18: Col0: ST3 | Col1: ST3.1 | Col2: Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col5: 0.1 | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col16: 0 | Col17: 0.5 | Col18: -0.06 | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 19: Col9: Hedef | Col14: 0.15
+
+
+--- SAYFA: 2021 ---
+Satır 0: Col0: SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ
+Satır 1: Col0: REV. TARİHİ | Col2: 2022-04-15 00:00:00 | Col4: YAYIN TARİHİ | Col6: 2021-02-01 00:00:00 | Col14: DOKÜMAN NO :
+Satır 2: Col0: SÜREÇ LİDERİ | Col2: Salih YALÇIN
+Satır 3: Col0: SÜREÇ EKİBİ | Col2: Beyza Kaçar, M. Arif | Col18: 2022 Yılı Parametre Başarı Puanları
+Satır 4: Col18: Beklentinin Çok Altında  
+ (1 puan) | Col19: İyileştirmeye Açık
+(2 puan) | Col20: Hedefe Ulaşmış 
+(3 puan) | Col21: Hedefin Üzerinde
+(4 puan) | Col22: Mükemmel 
+(5 puan)
+Satır 5: Col0: Ana Strateji | Col1: Alt Strateji | Col2: Gösterge | Col3: Göst. Türü | Col4: Hedef Belirl. Yön. | Col5: Göst. Ağırlığı (%) | Col6: Birim | Col7: Ölçüm Per. | Col8: Önceki Yıl Ort. | Col9: Fiili/ Hedef | Col10: 1.Ç | Col11: 2.Ç | Col12: 3.Ç | Col13: 4.Ç | Col14: Yıl Sonu | Col15: Başarı Puanı | Col16: Ağırlıklı Başarı Puanı
+Satır 6: Col0: ST2 | Col1: ST2.1 | Col2: Eğitim Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col18: -0.79 | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 7: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 8: Col2: Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col18: -0.79 | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 9: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 10: Col2: Ödül Süreci Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.05 | Col6: TL | Col7: 1 Yıl  | Col9: Fiili | Col10: - | Col11: - | Col12: - | Col13: - | Col14: - | Col16: 0 | Col18: -0.79 | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 11: Col9: Hedef | Col10: - | Col11: - | Col12: - | Col13: - | Col14: -
+Satır 12: Col1: ST2.2 | Col2: Verilen Teklif Sayısı | Col3: iylş. | Col4: HKY | Col5: 0.05 | Col6: adet | Col7: 3 ay  | Col9: Fiili | Col10: 7 | Col11: 10 | Col12: 9 | Col13: 10 | Col14: 36 | Col15: 4 | Col16: 0.2 | Col18: 15-23 | Col19: 24-29 | Col20: 30-35 | Col21: 36-41 | Col22: 42-
+Satır 13: Col9: Hedef | Col10: 8 | Col11: 10 | Col12: 6 | Col13: 8 | Col14: 30-35
+Satır 14: Col2: Tekliflerin Sözleşmeye Dönüşme Oranı | Col3: iylş. | Col4: HKY | Col5: 0.08 | Col6: % | Col7: 3 ay  | Col9: Fiili | Col10: 0.54 | Col11: 0.54 | Col12: 0.54 | Col13: 0.54 | Col14: 0.54 | Col15: 2 | Col16: 0.16 | Col18: %40-49 | Col19: %50-59 | Col20: %60-69 | Col21: %70-79 | Col22: %80-
+Satır 15: Col9: Hedef | Col10: %60-69 | Col11: %60-69 | Col12: %60-69 | Col13: %60-69 | Col14: %60-69
+Satır 16: Col0: ST3 | Col1: ST3.2.
+ | Col2: Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col5: 0.1 | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col16: 0 | Col18: -0.06 | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 17: Col9: Hedef | Col14: %12-16
+Satır 18: Col2: Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col5: 0.1 | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col16: 0 | Col18: -0.06 | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 19: Col9: Hedef | Col14: %12-16
+
+
+--- SAYFA: 2022 ---
+Satır 0: Col0: SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ
+Satır 1: Col0: REV. TARİHİ | Col2: 2022-11-22 00:00:00 | Col4: YAYIN TARİHİ | Col6: 2022-04-01 00:00:00 | Col14: DOKÜMAN NO :
+Satır 2: Col0: SÜREÇ LİDERİ | Col2: Salih YALÇIN
+Satır 3: Col0: SÜREÇ EKİBİ | Col2: Emre Koşar, Ebru Takcı, M. Arif | Col18: 2022 Yılı Parametre Başarı Puanları
+Satır 4: Col18: Beklentinin Çok Altında  
+ (1 puan) | Col19: İyileştirmeye Açık
+(2 puan) | Col20: Hedefe Ulaşmış 
+(3 puan) | Col21: Hedefin Üzerinde
+(4 puan) | Col22: Mükemmel 
+(5 puan)
+Satır 5: Col0: Ana Strateji | Col1: Alt Strateji | Col2: Gösterge | Col3: Göst. Türü | Col4: Hedef Belirl. Yön. | Col5: Göst. Ağırlığı (%) | Col6: Birim | Col7: Ölçüm Per. | Col8: Önceki Yıl Ort. | Col9: Fiili/ Hedef | Col10: 1.Ç | Col11: 2.Ç | Col12: 3.Ç | Col13: 4.Ç | Col14: Yıl Sonu | Col15: Başarı Puanı | Col16: Ağırlıklı Başarı Puanı
+Satır 6: Col0: ST2 | Col1: ST2.1 | Col2: Eğitim Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col17: 0.19999999999999996 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 7: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 8: Col2: Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col17: 0.19999999999999996 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 9: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 10: Col2: Ödül Süreci Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.05 | Col6: TL | Col7: 1 Yıl  | Col9: Fiili | Col10: - | Col14: - | Col16: 0 | Col17: 0.25 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 11: Col9: Hedef | Col10: - | Col14: -
+Satır 12: Col1: ST2.2 | Col2: Verilen Teklif Sayısı | Col3: iylş. | Col4: HKY | Col5: 0.05 | Col6: adet | Col7: 3 ay  | Col8: 9 | Col9: Fiili | Col10: 16 | Col11: 10 | Col12: 19 | Col13: 21 | Col14: 66 | Col15: 3 | Col16: 0.15000000000000002 | Col17: 0.09999999999999998 | Col18: 39-44 | Col19: 45-49 | Col20: 50-54 | Col21: 55-60 | Col22: 61-
+Satır 13: Col9: Hedef | Col10: 11 | Col11: 11 | Col12: 11 | Col13: 11 | Col14: 50-54
+Satır 14: Col2: Tekliflerin Sözleşmeye Dönüşme Oranı | Col3: iylş. | Col4: HKY | Col5: 0.08 | Col6: % | Col7: 3 ay  | Col8: 0.54 | Col9: Fiili | Col10: 0.31 | Col11: 0.28 | Col12: 0.16 | Col13: 0.48 | Col14: 0.31 | Col15: 0 | Col16: 0 | Col17: 0.4 | Col18: %40-49 | Col19: %50-59 | Col20: %60-69 | Col21: %70-79 | Col22: %80-
+Satır 15: Col9: Hedef | Col10: %60-69 | Col11: %60-69 | Col12: %60-69 | Col13: %60-69 | Col14: %60-69
+Satır 16: Col0: ST3 | Col1: ST3.2 | Col2: Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col5: 0.15 | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col14: 0.15 | Col15: 3 | Col16: 0.44999999999999996 | Col17: 0.30000000000000004 | Col18: 4%-6% | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 17: Col9: Hedef | Col10: %12-16 | Col14: %12-16
+Satır 18: Col2: Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col5: 0.1 | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col14: 0.1 | Col15: 2 | Col16: 0.2 | Col17: 0.3 | Col18: 4%-6% | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 19: Col9: Hedef | Col10: %12-16 | Col14: %12-16
+
+
+--- SAYFA: 2023 ---
+Satır 0: Col0: SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ
+Satır 1: Col0: REV. TARİHİ | Col2: 2022-11-22 00:00:00 | Col4: YAYIN TARİHİ | Col6: 2022-04-01 00:00:00 | Col14: DOKÜMAN NO :
+Satır 2: Col0: SÜREÇ LİDERİ | Col2: Salih YALÇIN
+Satır 3: Col0: SÜREÇ EKİBİ | Col2: Emre Koşar, Ebru Takcı, M. Arif | Col18: 2022 Yılı Parametre Başarı Puanları
+Satır 4: Col18: Beklentinin Çok Altında  
+ (1 puan) | Col19: İyileştirmeye Açık
+(2 puan) | Col20: Hedefe Ulaşmış 
+(3 puan) | Col21: Hedefin Üzerinde
+(4 puan) | Col22: Mükemmel 
+(5 puan)
+Satır 5: Col0: Ana Strateji | Col1: Alt Strateji | Col2: Gösterge | Col3: Göst. Türü | Col4: Hedef Belirl. Yön. | Col5: Göst. Ağırlığı (%) | Col6: Birim | Col7: Ölçüm Per. | Col8: Önceki Yıl Ort. | Col9: Fiili/ Hedef | Col10: 1.Ç | Col11: 2.Ç | Col12: 3.Ç | Col13: 4.Ç | Col14: Yıl Sonu | Col15: Başarı Puanı | Col16: Ağırlıklı Başarı Puanı
+Satır 6: Col0: ST2 | Col1: ST2.1 | Col2: Eğitim Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col17: 0.19999999999999996 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 7: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 8: Col2: Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.1 | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: 0.95 | Col15: 3 | Col16: 0.30000000000000004 | Col17: 0.19999999999999996 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 9: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 10: Col2: FVÖK/Net Satışlar | Col3: iylş. | Col4: SH | Col5: 0.1 | Col6: % | Col7: 6 ay | Col8: 0.1 | Col9: Fiili | Col10: 0.2 | Col12: 0.2 | Col14: 0.2 | Col15: 3 | Col16: 0.30000000000000004 | Col18: %5-10 | Col19: %11-17 | Col20: %18-22 | Col21: %23-29 | Col22: %30-üzeri
+Satır 11: Col9: Hedef | Col10: 0.2 | Col12: 0.2 | Col14: 0.2
+Satır 12: Col2: Ödül Süreci Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col6: TL | Col7: 1 Yıl  | Col8: 0.1 | Col9: Fiili | Col10: - | Col14: - | Col16: 0 | Col17: 0.0 | Col21: - | Col22: -
+Satır 13: Col9: Hedef | Col10: - | Col14: -
+Satır 14: Col1: ST2.2 | Col2: Verilen Teklif Sayısı | Col3: iylş. | Col4: HKY | Col5: 0.05 | Col6: adet | Col7: 3 ay  | Col8: 17 | Col9: Fiili | Col10: 12 | Col11: 28 | Col12: 27 | Col13: 19 | Col14: 86 | Col15: 5 | Col16: 0.25 | Col17: 0.0 | Col18: 49-54 | Col19: 55-59 | Col20: 60-64 | Col21: 65-70 | Col22: 71-
+Satır 15: Col9: Hedef | Col10: 16 | Col11: 16 | Col12: 16 | Col13: 16 | Col14: 60-64
+Satır 16: Col2: Tekliflerin Sözleşmeye Dönüşme Oranı | Col3: iylş. | Col4: HKY | Col5: 0.07 | Col6: % | Col7: 3 ay  | Col8: 0.31 | Col9: Fiili | Col10: 0.5 | Col11: 0.64 | Col12: 0.74 | Col13: 0.68 | Col14: 0.64 | Col15: 4 | Col16: 0.28 | Col17: 0.07 | Col18: %25-34 | Col19: %35-44 | Col20: %45-54 | Col21: %55-64 | Col22: %65-
+Satır 17: Col9: Hedef | Col10: %45-54 | Col11: %45-54 | Col12: %45-54 | Col13: %45-54 | Col14: %45-54
+Satır 18: Col0: ST3 | Col1: ST3.1 | Col2: Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı  | Col3: iylş. | Col4: SH | Col6: % | Col7: 1 Yıl  | Col9: Fiili | Col17: 0.0 | Col18: 4%-6% | Col19: %7-11 | Col20: %12-16 | Col21: %17-21 | Col22: %22-
+Satır 19: Col9: Hedef
+
+
+--- SAYFA: 2025 ---
+Satır 0: Col0: SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ
+Satır 1: Col0: REV. TARİHİ | Col2: 2024-12-16 00:00:00 | Col4: YAYIN TARİHİ | Col6: 2022-04-01 00:00:00 | Col14: DOKÜMAN NO :
+Satır 2: Col0: SÜREÇ LİDERİ | Col2: Tuğba Sorkulu
+Satır 3: Col0: SÜREÇ EKİBİ | Col2: Salih Yalçın | Col18: 2024 Yılı Parametre Başarı Puanları
+Satır 4: Col18: Beklentinin Çok Altında  
+ (1 puan) | Col19: İyileştirmeye Açık
+(2 puan) | Col20: Hedefe Ulaşmış 
+(3 puan) | Col21: Hedefin Üzerinde
+(4 puan) | Col22: Mükemmel 
+(5 puan)
+Satır 5: Col0: Ana Strateji | Col1: Alt Strateji | Col2: Gösterge | Col3: Göst. Türü | Col4: Hedef Belirl. Yön. | Col5: Göst. Ağırlığı (%) | Col6: Birim | Col7: Ölçüm Per. | Col8: Önceki Yıl Ort. | Col9: Fiili/ Hedef | Col10: 1.Ç | Col11: 2.Ç | Col12: 3.Ç | Col13: 4.Ç | Col14: Yıl Sonu | Col15: Başarı Puanı | Col16: Ağırlıklı Başarı Puanı
+Satır 6: Col0: ST2 | Col1: ST2.1 | Col2: Verilen Teklif Sayısı | Col3: iylş. | Col4: DH | Col5: 0.05 | Col6: adet | Col7: 3 ay  | Col8: 86 | Col9: Fiili | Col10: 18 | Col11: 22 | Col12: 15 | Col13: 17 | Col14: 72 | Col15: 5 | Col16: 0.25 | Col18: 29-34 | Col19: 35-39 | Col20: 40-44 | Col21: 45-60 | Col22: 61-
+Satır 7: Col9: Hedef | Col10: 10 | Col11: 10 | Col12: 12 | Col13: 10 | Col14: 40-44
+Satır 8: Col2: Tekliflerin Sözleşmeye Dönüşme Oranı | Col3: iylş. | Col4: HKY | Col5: 0.08 | Col6: % | Col7: 3 ay  | Col8: 0.64 | Col9: Fiili | Col10: 0.17 | Col11: 0.19 | Col12: 0.33 | Col13: 0.24 | Col14: 0.25 | Col15: 0 | Col16: 0 | Col18: %35-44 | Col19: %45-54 | Col20: %55-64 | Col21: 65-74 | Col22: 75-
+Satır 9: Col9: Hedef | Col10: %45-54 | Col11: %45-54 | Col12: %45-54 | Col13: %45-54 | Col14: %45-54
+Satır 10: Col2: FVÖK/Net Satış Oranı | Col3: iylş. | Col4: SH | Col5: 0.11 | Col6: % | Col7: 6 ay | Col8: 0.2 | Col9: Fiili | Col10: 0.03 | Col16: 0 | Col18: %5-10 | Col19: %11-17 | Col20: %18-22 | Col21: %23-29 | Col22: %30-üzeri
+Satır 11: Col9: Hedef | Col10: 0.2 | Col12: 0.2 | Col14: 0.2
+Satır 12: Col1: ST2.2 | Col2: Gelir Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col5: 0.11 | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col10: 0.65 | Col11: 0.65 | Col12: 0.6 | Col13: 0.6 | Col14: 0.01 | Col15: 1 | Col16: 0.11 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 13: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 14: Col2: Eğitim Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col16: 0 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 15: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 16: Col2: Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col6: TL | Col7: 3 ay  | Col8: 0.95 | Col9: Fiili | Col16: 0 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 17: Col9: Hedef | Col10: 0.95 | Col11: 0.95 | Col12: 0.95 | Col13: 0.95 | Col14: %90-100
+Satır 18: Col2: Ödül Süreci Gelirleri Bütçesine Uyum Oranı | Col3: iylş. | Col4: DH | Col6: TL | Col7: 1 Yıl  | Col9: Fiili | Col16: 0 | Col18: 60% - 79% | Col19: %80-89 | Col20: %90-100 | Col21: - | Col22: -
+Satır 19: Col9: Hedef | Col10: 0.95 | Col14: %90-100
+
+
