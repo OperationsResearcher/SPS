@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}{{ process.name }} - Süreç Detayı{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/process.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/process_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-header mb-5 shadow">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="{{ url_for('process_bp.index') }}"
+                                class="text-white-50">Süreçler</a></li>
+                        {% if process.parent %}
+                        <li class="breadcrumb-item"><a
+                                href="{{ url_for('process_bp.detail', process_id=process.parent.id) }}"
+                                class="text-white-50">{{ process.parent.name }}</a></li>
+                        {% endif %}
+                        <li class="breadcrumb-item active text-white" aria-current="page">{{ process.code }}</li>
+                    </ol>
+                </nav>
+                <h1 class="fw-bold mb-1">{{ process.name }}</h1>
+                <p class="lead text-white-50 mb-0">{{ process.english_name or '' }}</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="d-inline-block bg-white bg-opacity-10 p-3 rounded-4 backdrop-blur">
+                    <div class="small text-white-50 fw-bold">GENEL İLERLEME</div>
+                    <div class="h2 fw-bold mb-0">%{{ process.progress }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <ul class="nav nav-tabs nav-tabs-modern mb-4" id="processTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab"
+                        data-bs-target="#overview">Genel Bakış</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="kpis-tab" data-bs-toggle="tab" data-bs-target="#kpis">Performans
+                        Göstergeleri ({{ kpis|length }})</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="activities-tab" data-bs-toggle="tab"
+                        data-bs-target="#activities">Faaliyetler ({{ activities|length }})</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="sub-tab" data-bs-toggle="tab" data-bs-target="#sub">Alt Süreçler ({{
+                        sub_processes|length }})</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="processTabsContent">
+                <!-- Overview -->
+                <div class="tab-pane fade show active" id="overview">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-info-circle text-primary me-2"></i>Süreç Bilgileri
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold">AÇIKLAMA</label>
+                                    <p>{{ process.description or 'Açıklama belirtilmemiş.' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bg-light p-3 rounded-3">
+                                        <div class="row g-3">
+                                            <div class="col-6">
+                                                <div class="small text-muted fw-bold">DOKÜMAN NO</div>
+                                                <div class="fw-bold">{{ process.document_no or '-' }}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="small text-muted fw-bold">REVİZYON NO</div>
+                                                <div class="fw-bold">{{ process.revision_no or '-' }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="tab-pane fade" id="kpis">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Performans Göstergeleri</h5>
+                        <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#addKpiModal">
+                            <i class="fas fa-plus me-1"></i>Yeni PG Ekle
+                        </button>
+                    </div>
+                    {% for kpi in kpis %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-3 kpi-row">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="small text-muted fw-bold text-uppercase">{{ kpi.code or 'PG' }}</div>
+                                    <h6 class="fw-bold mb-0">{{ kpi.name }}</h6>
+                                </div>
+                                <div class="col-auto text-center border-start px-4">
+                                    <div class="small text-muted fw-bold">HEDEF</div>
+                                    <div class="fw-bold text-primary">{{ kpi.target_value }} {{ kpi.unit }}</div>
+                                </div>
+                                <div class="col-auto text-center border-start px-4">
+                                    <div class="small text-muted fw-bold">PERİYOT</div>
+                                    <div class="badge bg-light text-dark border">{{ kpi.period }}</div>
+                                </div>
+                                <div class="col-auto text-end border-start ps-4">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-circle"><i
+                                            class="fas fa-play"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Bu sürece ait performans göstergesi bulunmamaktadır.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Activities -->
+                <div class="tab-pane fade" id="activities">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Süreç Faaliyetleri</h5>
+                        <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#addActivityModal">
+                            <i class="fas fa-plus me-1"></i>Yeni Faaliyet Ekle
+                        </button>
+                    </div>
+                    {% for activity in activities %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h6 class="fw-bold mb-0">{{ activity.name }}</h6>
+                                <span
+                                    class="activity-badge {% if activity.status == 'Planlandı' %}planned{% elif activity.status == 'Devam Ediyor' %}ongoing{% else %}completed{% endif %}">
+                                    {{ activity.status }}
+                                </span>
+                            </div>
+                            <p class="small text-muted mb-3">{{ activity.description }}</p>
+                            <div class="progress progress-thin mb-1">
+                                <div class="progress-bar bg-info" style="width: {{ activity.progress }}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small text-muted">
+                                <span>İlerleme: %{{ activity.progress }}</span>
+                                <span>{{ activity.end_date or '' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Bu sürece ait kayıtlı faaliyet bulunmamaktadır.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Sub-processes -->
+                <div class="tab-pane fade" id="sub">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Alt Süreçler</h5>
+                        <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#addSubProcessModal">
+                            <i class="fas fa-plus me-1"></i>Alt Süreç Ekle
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        {% for sub in sub_processes %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-4">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <div class="x-small text-muted fw-bold">{{ sub.code }}</div>
+                                            <h6 class="fw-bold mb-1">{{ sub.name }}</h6>
+                                        </div>
+                                        <a href="{{ url_for('process_bp.detail', process_id=sub.id) }}"
+                                            class="btn btn-sm btn-light rounded-circle"><i
+                                                class="fas fa-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted mb-0">Henüz alt süreç tanımlanmamış.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Widgets -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-3 fw-bold border-0">
+                    <i class="fas fa-link me-2"></i>Strateji İlişkisi
+                </div>
+                <div class="card-body p-3">
+                    <div class="list-group list-group-flush">
+                        {% for sub_st in process.sub_strategies %}
+                        <div class="list-group-item px-0 border-0 bg-transparent">
+                            <div class="x-small text-primary fw-bold">{{ sub_st.code }}</div>
+                            <div class="small fw-bold">{{ sub_st.title }}</div>
+                        </div>
+                        {% else %}
+                        <p class="small text-muted mb-0">Herhangi bir strateji hedefiyle ilişkilendirilmemiş.</p>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-link btn-sm p-0 mt-2 text-primary fw-bold" data-bs-toggle="modal"
+                        data-bs-target="#linkStrategyModal">+ Strateji İlişkisi Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="addKpiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0">
+            <div class="modal-header gradient-header">
+                <h5 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>KPI / PG Ekle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="addKpiForm">
+                    <input type="hidden" name="process_id" value="{{ process.id }}">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Gösterge Adı</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Kodu</label>
+                            <input type="text" class="form-control" name="code" placeholder="PG-01">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Hedef</label>
+                            <input type="text" class="form-control" name="target_value" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Birim</label>
+                            <input type="text" class="form-control" name="unit" placeholder="%, Gün, TL">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Periyot</label>
+                            <select class="form-select" name="period">
+                                <option value="Aylık">Aylık</option>
+                                <option value="Çeyreklik">Çeyreklik</option>
+                                <option value="Altı Aylık">Altı Aylık</option>
+                                <option value="Yıllık">Yıllık</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Hedef Yönü</label>
+                            <select class="form-select" name="direction">
+                                <option value="Increasing">Artan (İyi)</option>
+                                <option value="Decreasing">Azalan (İyi)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-primary w-100 rounded-pill" id="saveKpiBtn">Göstergeyi
+                    Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addActivityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0">
+            <div class="modal-header gradient-header">
+                <h5 class="modal-title fw-bold"><i class="fas fa-tasks me-2"></i>Faaliyet / Aksiyon Ekle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="addActivityForm">
+                    <input type="hidden" name="process_id" value="{{ process.id }}">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Faaliyet Adı</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">İlişkili PG (Opsiyonel)</label>
+                        <select class="form-select" name="process_kpi_id">
+                            <option value="">Bağımsız Faaliyet</option>
+                            {% for kpi in kpis %}
+                            <option value="{{ kpi.id }}">{{ kpi.code }} - {{ kpi.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" name="end_date">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-primary w-100 rounded-pill" id="saveActivityBtn">Faaliyeti
+                    Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/process_detail.js') }}"></script>
+{% endblock %}

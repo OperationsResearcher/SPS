@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Stratejik Planlama Akışı{% if tenant %} - {{ tenant.short_name or tenant.name }}{% endif %} - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/strategy_planning_flow.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 strategy-flow-page">
+    {% if error %}
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+        <a href="{{ url_for('dashboard_bp.index') }}" class="btn btn-sm btn-outline-danger ms-2">Dashboard'a Dön</a>
+    </div>
+    {% elif tenant %}
+    <div class="strategy-flow-header">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-project-diagram me-2"></i>Stratejik Planlama Akışı
+                </h1>
+                <div class="strategy-flow-header-actions">
+                    <div class="strategy-flow-update-toggle">
+                        <input type="radio" name="updateMode" id="updateManual" class="form-check-input" checked>
+                        <label for="updateManual" class="form-check-label">Son güncellenen: <span id="lastUpdateTime">—</span></label>
+                    </div>
+                    <div class="strategy-flow-update-toggle">
+                        <input type="radio" name="updateMode" id="updateAuto" class="form-check-input">
+                        <label for="updateAuto" class="form-check-label">Otomatik güncellensin (30 saniye bir)</label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                {% if current_user.role and current_user.role.name == 'Admin' %}
+                <a class="btn btn-light btn-sm" href="{{ url_for('admin_bp.strategy_management') }}">
+                    <i class="fas fa-cog me-1"></i>Yönetim
+                </a>
+                {% endif %}
+                <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                    <i class="fas fa-bolt me-1"></i>Dinamik Stratejik Planlama
+                </a>
+                {% if current_user.role and current_user.role.name in ('Admin', 'tenant_admin', 'executive_manager') %}
+                <a class="btn btn-outline-light btn-sm" href="{{ url_for('admin_bp.strategy_management') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                    <i class="fas fa-plus me-1"></i>Yeni Ekle
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="strategy-flow-box flow-blue">
+                <h5>Değerler ve Etik Kurallar</h5>
+                {% set core_vals = tenant.core_values or '' %}
+                {% set ethics = tenant.code_of_ethics or '' %}
+                {% if core_vals or ethics %}
+                <div class="content-preview">{{ (core_vals[:100] or ethics[:100]) }}{% if (core_vals|length or ethics|length) > 100 %}...{% endif %}</div>
+                {% else %}
+                <div class="empty-state">Henüz eklenmedi</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="strategy-flow-box flow-purple">
+                <h5>Amaç</h5>
+                {% if tenant.purpose %}
+                <div class="content-preview">{{ tenant.purpose[:100] }}{% if tenant.purpose|length > 100 %}...{% endif %}</div>
+                {% else %}
+                <div class="empty-state">Henüz tanımlanmadı</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="strategy-flow-box flow-blue">
+                <h5>Kalite Politikası</h5>
+                {% if tenant.quality_policy %}
+                <div class="content-preview">{{ tenant.quality_policy[:100] }}{% if tenant.quality_policy|length > 100 %}...{% endif %}</div>
+                {% else %}
+                <div class="empty-state">Henüz eklenmedi</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-green">
+                <h5>Beklentim</h5>
+                <div class="flow-status">Hazırlık Aşamasında</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-blue">
+                <h5>Vizyon</h5>
+                {% if tenant.vision %}
+                <div class="content-preview">{{ tenant.vision[:200] }}{% if tenant.vision|length > 200 %}...{% endif %}</div>
+                {% else %}
+                <div class="empty-state">Henüz tanımlanmadı</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-section-title mt-4 mb-3">
+        <i class="fas fa-chart-line me-2"></i>Durum Analizi & Strateji Üretimi
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-analysis-cards mb-3">
+                <a href="{{ url_for('strategy_bp.swot') }}" class="strategy-flow-analysis-card swot text-decoration-none">
+                    <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="card-title">SWOT</div>
+                    <div class="card-status">{% if swot_count %}Tamamlandı{% else %}Başlanmadı{% endif %}</div>
+                </a>
+                <div class="strategy-flow-analysis-card pestle">
+                    <div class="card-icon"><i class="fas fa-globe"></i></div>
+                    <div class="card-title">PESTLE</div>
+                    <div class="card-status">Başlanmadı</div>
+                </div>
+                <div class="strategy-flow-analysis-card tows">
+                    <div class="card-icon"><i class="fas fa-th"></i></div>
+                    <div class="card-title">TOWS Matrisi</div>
+                    <div class="card-status">Başlanmadı</div>
+                </div>
+            </div>
+            <p class="small text-muted mb-2">Stratejik analiz verileri</p>
+            <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.swot') }}">
+                <i class="fas fa-plus me-1"></i>Yeni Analiz Ekle
+            </a>
+        </div>
+    </div>
+
+    <div class="strategy-flow-section-title mt-4 mb-3">
+        <i class="fas fa-sitemap me-2"></i>BSC Strateji Haritası
+        <i class="fas fa-info-circle text-muted ms-1" title="Neden sonuç ilişkisi kurmanıza yardımcı olur"></i>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-bsc-box">
+                <p class="bsc-desc mb-0">Neden sonuç ilişkisi kurmanıza yardımcı olur.</p>
+                <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                    <i class="fas fa-map me-1"></i>Haritayı Gör
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-purple">
+                <h5><i class="fas fa-user me-2"></i>Ana Stratejilerimiz</h5>
+                {% if strategies_count > 0 %}
+                <div class="content-preview">{{ strategies_count }} ana strateji tanımlı</div>
+                {% else %}
+                <div class="empty-state">Henüz ana strateji eklenmedi</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-blue">
+                <h5><i class="fas fa-cogs me-2"></i>Süreç Hedefleri</h5>
+                {% if processes_count > 0 %}
+                <div class="content-preview">{{ processes_count }} süreç tanımlı</div>
+                {% else %}
+                <div class="empty-state">Henüz süreç eklenmedi</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-green">
+                <h5><i class="fas fa-folder-open me-2"></i>Süreç İyileştirme Faaliyetleri</h5>
+                <a class="strategy-flow-link" href="{{ url_for('process_bp.index') }}">
+                    <i class="fas fa-arrow-right me-1"></i>Detaylı görüntüle ve yönet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="strategy-flow-arrow-down"><i class="fas fa-chevron-down"></i></div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="strategy-flow-box flow-purple">
+                <h5><i class="fas fa-user me-2"></i>Bireysel Hedefler</h5>
+                <a class="strategy-flow-link" href="{{ url_for('dashboard_bp.performans_kartim') }}">
+                    <i class="fas fa-arrow-right me-1"></i>Bireysel panele git
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <p class="strategy-flow-footer-note">Sürekli güncelleme aktifse. Tüm seviyelerden geri bildirim</p>
+    {% endif %}
+</div>
+
+{% if tenant %}
+<div data-strategy-flow-config="{{ url_for('strategy_bp.strategic_planning_flow') }}" data-tenant-id="{{ tenant.id }}" class="d-none" id="strategyFlowConfig"></div>
+<script src="{{ url_for('static', filename='js/strategy_planning_flow.js') }}"></script>
+{% endif %}
+{% endblock %}

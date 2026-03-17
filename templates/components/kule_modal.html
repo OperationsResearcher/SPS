@@ -1,0 +1,68 @@
+<!-- Kule İletişim Modülü Modal -->
+<div class="modal fade" id="kuleModal" tabindex="-1" aria-labelledby="kuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kuleModalLabel">
+                    <i class="fas fa-broadcast-tower me-2"></i>
+                    Kule İletişim Merkezi
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="kuleForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <!-- Gizli Input: Sayfa URL'si -->
+                    <input type="hidden" name="page_url" id="kulePageUrl">
+
+                    <!-- Konu/Kategori Seçimi -->
+                    <div class="mb-3">
+                        <label for="kuleSubject" class="form-label">
+                            <i class="fas fa-tag me-2"></i>Konu <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="kuleSubject" name="subject" required>
+                            <option value="">Konu seçiniz...</option>
+                            <option value="Tasarım Hatası">Tasarım Hatası</option>
+                            <option value="Hesaplama Hatası">Hesaplama Hatası</option>
+                            <option value="Çalışmayan Buton">Çalışmayan Buton</option>
+                            <option value="Çalışmayan Fonksiyon">Çalışmayan Fonksiyon</option>
+                            <option value="Sistem Geliştirme Önerisi">Sistem Geliştirme Önerisi</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+
+                    <!-- Mesaj Alanı -->
+                    <div class="mb-3">
+                        <label for="kuleMessage" class="form-label">
+                            <i class="fas fa-comment-alt me-2"></i>Mesajınız <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="kuleMessage" name="message" rows="5"
+                            placeholder="Kule, bir sorun tespit ettim..." required></textarea>
+                        <small class="form-text text-muted">
+                            Lütfen sorununuzu veya önerinizi detaylı bir şekilde açıklayın.
+                        </small>
+                    </div>
+
+                    <!-- Ekran Görüntüsü -->
+                    <div class="mb-3">
+                        <label for="kuleScreenshot" class="form-label">
+                            <i class="fas fa-camera me-2"></i>Ekran Görüntüsü (İsteğe Bağlı)
+                        </label>
+                        <input type="file" class="form-control" id="kuleScreenshot" name="screenshot" accept="image/*">
+                        <small class="form-text text-muted">
+                            Sadece resim dosyaları kabul edilir (JPG, PNG, WEBP).
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>İptal
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnKuleGonder">
+                        <i class="fas fa-paper-plane me-2"></i>Kuleye Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

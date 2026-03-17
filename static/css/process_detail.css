@@ -1,0 +1,32 @@
+/* ==========================================================
+   process_detail.css — FIX Kural 5: Inline <style> bloktan taşındı
+   Kaynak: templates/process/detail.html (Satır 7-35)
+   ========================================================== */
+
+.detail-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 0 0 2rem 2rem;
+    margin-top: -1.5rem;
+}
+
+.nav-tabs-modern {
+    border-bottom: none;
+    gap: 10px;
+}
+
+.nav-tabs-modern .nav-link {
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.nav-tabs-modern .nav-link.active {
+    background-color: #667eea;
+    color: white;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}

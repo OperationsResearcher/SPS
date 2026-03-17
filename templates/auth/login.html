@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Giriş Yap - Kokpitim{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block sidebar %}<main class="min-vh-100 p-0">{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/auth.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="login-fullpage">
+    <div class="login-split-screen">
+        <div class="login-left-pane">
+            <div class="login-hero-content">
+                <a href="{{ url_for('hgs_bp.index') }}"><img src="{{ url_for('static', filename='img/Kokpitlogo.png') }}" alt="KOKPİT Logo" class="login-logo"></a>
+                <p class="login-hero-tagline">
+                    "Veriye dayalı kararlar, geleceği şekillendiren <span class="highlight">stratejiler</span>."<br>
+                    Kurumsal performansınızı en üst seviyeye taşıyın.
+                </p>
+            </div>
+        </div>
+        <div class="login-right-pane">
+            <div class="login-form-container">
+                <div class="login-header">
+                    <h2>Hoş Geldiniz</h2>
+                    <p>Hesabınıza giriş yapmak için lütfen bilgilerinizi girin.</p>
+                </div>
+                <form method="post" action="{{ url_for('auth_bp.login') }}" id="loginForm" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="login-input-with-icon">
+                        <i class="fas fa-envelope login-input-icon"></i>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="E-posta adresinizi giriniz" required autofocus>
+                    </div>
+                    <div class="login-input-with-icon">
+                        <i class="fas fa-lock login-input-icon"></i>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Şifrenizi giriniz" required>
+                    </div>
+                    <button type="submit" class="btn login-btn-submit">
+                        Giriş Yap <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="login-footer-copyright">
+                &copy; 2026 Kokpitim - Tüm Hakları Saklıdır
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

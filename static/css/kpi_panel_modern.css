@@ -1,0 +1,43 @@
+/* KPI Panel Modern - KPI Paneli stilleri */
+
+.kpi-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.kpi-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.kpi-filters .filter-input {
+    min-width: 200px;
+}
+
+.kpi-panel-header .editable {
+    cursor: pointer;
+    border-bottom: 2px dashed #e5e7eb;
+    transition: border-color 0.2s;
+}
+
+.kpi-panel-header .editable:hover {
+    border-color: #3b82f6;
+}
+
+.kpi-panel-header .saving {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.kpi-panel-header .saved {
+    background: #d1fae5;
+    transition: background 0.3s;
+}
+
+.kpi-panel-header .error {
+    background: #fee2e2;
+    transition: background 0.3s;
+}

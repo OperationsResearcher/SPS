@@ -1,0 +1,271 @@
+/* Custom CSS for Tenant Dashboard based on previous Kurum Paneli */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.modern-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease-out;
+    overflow: hidden;
+}
+
+.modern-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.gradient-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.card-id-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.25);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.modern-card .card-header {
+    border: none;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sağ taraftaki ikonları (edit/info/chevron) shrink ile kesilmeden korur */
+.modern-card .card-header > div:last-child {
+    flex-shrink: 0;
+}
+
+.modern-card .card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(-100%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.modern-card:hover .card-header::before {
+    transform: translateX(100%);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon-box-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.icon-box-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.icon-box-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.icon-box-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.stat-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.card-body-collapsible {
+    transition: all 0.3s ease;
+    max-height: 1000px;
+    overflow: hidden;
+}
+
+.card-body-collapsible.collapsed {
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    opacity: 0;
+}
+
+.strategy-list {
+    position: relative;
+    padding-left: 20px;
+    margin: 0;
+    list-style: none;
+}
+
+.strategy-list::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    width: 2px;
+}
+
+.strategy-list-primary::before {
+    background-color: #667eea;
+}
+
+.strategy-list-info::before {
+    background-color: #0dcaf0;
+}
+
+.strategy-list-warning::before {
+    background-color: #ffc107;
+}
+
+.strategy-list-danger::before {
+    background-color: #dc3545;
+}
+
+.strategy-item {
+    position: relative;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.strategy-item:last-child {
+    margin-bottom: 0;
+}
+
+.strategy-icon {
+    position: absolute;
+    left: -19px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.strategy-list-info .strategy-icon {
+    border: 2px solid #0dcaf0;
+}
+
+.strategy-list-info .strategy-icon i {
+    color: #0dcaf0;
+    font-size: 10px;
+}
+
+.strategy-list-info .strategy-text {
+    color: #0dcaf0;
+    font-weight: 500;
+}
+
+.strategy-list-warning .strategy-icon {
+    border: 2px solid #ffc107;
+}
+
+.strategy-list-warning .strategy-icon i {
+    color: #ffc107;
+    font-size: 10px;
+}
+
+.strategy-list-warning .strategy-text {
+    color: #ffc107;
+    font-weight: 500;
+}
+
+.strategy-list-danger .strategy-icon {
+    border: 2px solid #dc3545;
+}
+
+.strategy-list-danger .strategy-icon i {
+    color: #dc3545;
+    font-size: 10px;
+}
+
+.strategy-list-danger .strategy-text {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+
+.strategy-content-box {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-trigger {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-trigger:hover {
+    transform: scale(1.1);
+    opacity: 0.8 !important;
+}

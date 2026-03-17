@@ -1,0 +1,34 @@
+/* Custom styles - Kokpitim */
+
+.kokpitim-navbar-logo {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+}
+
+.login-card {
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Global Background matching old system */
+body {
+    background: linear-gradient(135deg, #f4f6f9 0%, #eaeff2 100%) !important;
+    color: #051626;
+    min-height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(5, 22, 38, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 22, 38, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}

@@ -1,0 +1,90 @@
+/* Dashboard - Ozet Kartlari (Eski tasarimdan aktarildi) */
+
+.dashboard-stat-card.card-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    border: none;
+}
+
+.dashboard-stat-card.card-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+    border: none;
+}
+
+.dashboard-stat-card.card-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+    border: none;
+}
+
+.dashboard-stat-card.card-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%) !important;
+    border: none;
+    color: #212529 !important;
+}
+
+.dashboard-stat-card {
+    color: #ffffff !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dashboard-stat-card .card-title {
+    color: inherit !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-stat-card.card-info .card-title {
+    color: #212529 !important;
+}
+
+.dashboard-stat-card h2,
+.dashboard-stat-card .display-4 {
+    color: inherit !important;
+}
+
+.dashboard-stat-card.card-info h2,
+.dashboard-stat-card.card-info .display-4 {
+    color: #212529 !important;
+}
+
+.dashboard-stat-card i {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.dashboard-stat-card.card-info i {
+    color: rgba(33, 37, 41, 0.5) !important;
+}
+
+.dashboard-stat-card .card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.dashboard-stat-card.card-info .card-header {
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.dashboard-stat-card .card-header h5 {
+    color: inherit !important;
+}
+
+.dashboard-stat-card.card-info .card-header h5 {
+    color: #212529 !important;
+}
+
+/* Dashboard Modul Kartlari */
+.dashboard-module-card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dashboard-module-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}

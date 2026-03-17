@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Ayarlar - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/auth_settings.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-cog me-2"></i>
+            Ayarlar
+        </h2>
+    </div>
+</div>
+
+<form id="settingsForm" method="post" action="{{ url_for('auth_bp.settings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="all">
+    <div class="row">
+        <!-- Tema Ayarları -->
+        <div class="col-lg-6 mb-4">
+            <div class="card settings-card fade-in-up">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-palette me-2"></i>
+                    <strong>Tema Ayarları</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Uygulamanın görünümünü özelleştirin
+                    </p>
+                    <div class="mb-4">
+                        <label class="form-label"><strong>Tema Modu</strong></label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="settings-theme-option card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-sun fa-3x text-warning mb-2"></i>
+                                        <h5>Aydınlık Tema</h5>
+                                        <small class="text-muted">Klasik beyaz arka plan</small>
+                                        <div class="form-check mt-2 d-flex justify-content-center">
+                                            <input class="form-check-input" type="radio" name="theme" value="light" {{ 'checked' if theme_prefs.get('theme', 'light') == 'light' else '' }}>
+                                            <label class="form-check-label ms-1">Seçili</label>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="settings-theme-option card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-moon fa-3x text-primary mb-2"></i>
+                                        <h5>Karanlık Tema</h5>
+                                        <small class="text-muted">Göz yormayan koyu tema</small>
+                                        <div class="form-check mt-2 d-flex justify-content-center">
+                                            <input class="form-check-input" type="radio" name="theme" value="dark" {{ 'checked' if theme_prefs.get('theme') == 'dark' else '' }}>
+                                            <label class="form-check-label ms-1">Seçili</label>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Ana Renk</strong></label>
+                        <div class="d-flex flex-wrap gap-2 settings-color-buttons">
+                            <button type="button" class="btn btn-primary settings-color-btn" data-color="primary"><i class="fas fa-check"></i></button>
+                            <button type="button" class="btn btn-success settings-color-btn" data-color="success"></button>
+                            <button type="button" class="btn btn-info settings-color-btn" data-color="info"></button>
+                            <button type="button" class="btn btn-warning settings-color-btn" data-color="warning"></button>
+                            <button type="button" class="btn btn-danger settings-color-btn" data-color="danger"></button>
+                            <button type="button" class="btn btn-dark settings-color-btn" data-color="dark"></button>
+                        </div>
+                        <input type="hidden" name="primary_color" id="primary_color" value="{{ theme_prefs.get('color', 'primary') }}">
+                        <small class="text-muted d-block mt-2">Seçilen renk: <span id="currentColorLabel" class="badge bg-{{ theme_prefs.get('color', 'primary') }}">Mavi (Varsayılan)</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bildirim Ayarları -->
+        <div class="col-lg-6 mb-4">
+            <div class="card settings-card fade-in-up">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-bell me-2"></i>
+                    <strong>Bildirim Ayarları</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hangi bildirimleri almak istediğinizi seçin
+                    </p>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notify_email" name="notify_email" {{ 'checked' if notif_prefs.get('email', True) else '' }}>
+                        <label class="form-check-label" for="notify_email">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            <strong>E-posta Bildirimleri</strong>
+                            <br><small class="text-muted">Önemli güncellemeler için e-posta gönder</small>
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notify_process" name="notify_process" {{ 'checked' if notif_prefs.get('process', True) else '' }}>
+                        <label class="form-check-label" for="notify_process">
+                            <i class="fas fa-project-diagram me-2 text-success"></i>
+                            <strong>Süreç Bildirimleri</strong>
+                            <br><small class="text-muted">Süreç güncellemeleri hakkında bildir</small>
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notify_task" name="notify_task" {{ 'checked' if notif_prefs.get('task', True) else '' }}>
+                        <label class="form-check-label" for="notify_task">
+                            <i class="fas fa-tasks me-2 text-warning"></i>
+                            <strong>Görev Bildirimleri</strong>
+                            <br><small class="text-muted">Yeni görevler atandığında bildir</small>
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notify_deadline" name="notify_deadline" {{ 'checked' if notif_prefs.get('deadline', True) else '' }}>
+                        <label class="form-check-label" for="notify_deadline">
+                            <i class="fas fa-clock me-2 text-danger"></i>
+                            <strong>Son Tarih Hatırlatmaları</strong>
+                            <br><small class="text-muted">Yaklaşan son tarihler için hatırlatıcı</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Güvenlik Ayarları -->
+        <div class="col-lg-6 mb-4">
+            <div class="card settings-card fade-in-up">
+                <div class="card-header bg-warning text-dark">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Güvenlik Ayarları</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hesap güvenliğinizi artırın
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="fas fa-key me-2 text-primary"></i>
+                            <strong>Şifre Değiştir</strong>
+                            <br><small class="text-muted">Profil sayfasından değiştirebilirsiniz</small>
+                        </div>
+                        <a href="{{ url_for('auth_bp.profile') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Değiştir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dil ve Bölge -->
+        <div class="col-lg-6 mb-4">
+            <div class="card settings-card fade-in-up">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-globe me-2"></i>
+                    <strong>Dil ve Bölge</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Dil ve bölge tercihlerinizi ayarlayın
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Dil</strong></label>
+                        <select class="form-select" id="language" name="language">
+                            <option value="tr" {{ 'selected' if locale_prefs.get('language') == 'tr' else '' }}>Türkçe</option>
+                            <option value="en" {{ 'selected' if locale_prefs.get('language') == 'en' else '' }}>English</option>
+                            <option value="de" {{ 'selected' if locale_prefs.get('language') == 'de' else '' }}>Deutsch</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Saat Dilimi</strong></label>
+                        <select class="form-select" id="timezone" name="timezone">
+                            <option value="Europe/Istanbul" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/Istanbul' else '' }}>İstanbul (GMT+3)</option>
+                            <option value="Europe/London" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/London' else '' }}>Londra (GMT+0)</option>
+                            <option value="America/New_York" {{ 'selected' if locale_prefs.get('timezone') == 'America/New_York' else '' }}>New York (GMT-5)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Tarih Formatı</strong></label>
+                        <select class="form-select" id="date_format" name="date_format">
+                            <option value="dd.mm.yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'dd.mm.yyyy' else '' }}>GG.AA.YYYY (04.10.2025)</option>
+                            <option value="mm/dd/yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'mm/dd/yyyy' else '' }}>AA/GG/YYYY (10/04/2025)</option>
+                            <option value="yyyy-mm-dd" {{ 'selected' if locale_prefs.get('date_format') == 'yyyy-mm-dd' else '' }}>YYYY-AA-GG (2025-10-04)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yardım Asistanı -->
+        <div class="col-lg-6 mb-4">
+            <div class="card settings-card fade-in-up">
+                <div class="card-header settings-guide-header">
+                    <i class="fas fa-robot me-2"></i>
+                    <strong>Yardım Asistanı</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        İnteraktif rehber karakterini özelleştirin
+                    </p>
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" id="show_page_guides" name="show_page_guides" {{ 'checked' if show_page_guides else '' }}>
+                        <label class="form-check-label" for="show_page_guides">
+                            <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                            <strong>Sayfa Rehberlerini Göster</strong>
+                            <br><small class="text-muted">Her sayfada yardım asistanını göster</small>
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Karakter Stili</strong></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="guide_character_style" id="style_professional" value="professional" {{ 'checked' if guide_character_style == 'professional' else '' }}>
+                            <label class="form-check-label d-flex align-items-center" for="style_professional">
+                                <span class="settings-avatar-pill settings-avatar-professional me-3"><i class="fas fa-user-tie text-white"></i></span>
+                                <div>
+                                    <strong>Profesyonel</strong><br>
+                                    <small class="text-muted">İş odaklı, ciddi ve bilgili asistan</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="radio" name="guide_character_style" id="style_friendly" value="friendly" {{ 'checked' if guide_character_style == 'friendly' else '' }}>
+                            <label class="form-check-label d-flex align-items-center" for="style_friendly">
+                                <span class="settings-avatar-pill settings-avatar-friendly me-3"><i class="fas fa-smile text-white"></i></span>
+                                <div>
+                                    <strong>Arkadaş Canlısı</strong><br>
+                                    <small class="text-muted">Samimi, neşeli ve yakın asistan</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="radio" name="guide_character_style" id="style_minimal" value="minimal" {{ 'checked' if guide_character_style == 'minimal' else '' }}>
+                            <label class="form-check-label d-flex align-items-center" for="style_minimal">
+                                <span class="settings-avatar-pill settings-avatar-minimal me-3"><i class="fas fa-robot text-white"></i></span>
+                                <div>
+                                    <strong>Minimal</strong><br>
+                                    <small class="text-muted">Sade, kısa ve öz asistan</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Tüm Ayarları Kaydet
+            </button>
+        </div>
+    </div>
+</form>
+
+<div class="position-fixed bottom-0 end-0 p-3 settings-toast-container">
+    <div id="settingsToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2 settings-toast-icon"></i>
+            <strong class="me-auto">Bildirim</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="settingsToastMessage">Ayarlar kaydedildi!</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth_settings.js') }}"></script>
+{% endblock %}

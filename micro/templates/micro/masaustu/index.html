@@ -1,0 +1,169 @@
+{% extends "micro/base.html" %}
+{% block title %}Masaüstüm — Kokpitim{% endblock %}
+{% block page_title %}Masaüstüm{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;">
+
+    <!-- Karşılama -->
+    <div style="margin-bottom:24px;">
+        <h1 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 2px;" class="dark:text-white">
+            Merhaba, {{ current_user.first_name or current_user.email }} 👋
+        </h1>
+        <p style="font-size:13px; color:#64748b; margin:0;">
+            {% if current_user.tenant %}{{ current_user.tenant.short_name or current_user.tenant.name }}{% endif %}
+            {% if current_user.role %} &middot; {{ current_user.role.name }}{% endif %}
+        </p>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="mc-grid-4" style="margin-bottom:24px;">
+        <div class="mc-stat-card mc-stat-indigo">
+            <div class="mc-stat-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="mc-stat-label">Bireysel PG</div>
+            <div class="mc-stat-value">{{ toplam_bireysel_pg }}</div>
+            <div class="mc-stat-sub">Aktif gösterge</div>
+        </div>
+        <div class="mc-stat-card mc-stat-amber">
+            <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
+            <div class="mc-stat-label">Devam Eden Faaliyet</div>
+            <div class="mc-stat-value">{{ toplam_faaliyet }}</div>
+            <div class="mc-stat-sub">Aktif faaliyet</div>
+        </div>
+        <div class="mc-stat-card mc-stat-emerald">
+            <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="mc-stat-label">Süreç PG</div>
+            <div class="mc-stat-value">{{ toplam_surec_pg }}</div>
+            <div class="mc-stat-sub">Süreç göstergesi</div>
+        </div>
+        <div class="mc-stat-card mc-stat-red">
+            <div class="mc-stat-icon"><i class="fas fa-bell"></i></div>
+            <div class="mc-stat-label">Okunmamış Bildirim</div>
+            <div class="mc-stat-value">{{ toplam_bildirim }}</div>
+            <div class="mc-stat-sub">Bekleyen bildirim</div>
+        </div>
+    </div>
+
+    <!-- İki Kolon -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+
+        <!-- Bireysel PG'ler -->
+        <div class="mc-card">
+            <div class="mc-card-header">
+                <span class="mc-card-title"><i class="fas fa-chart-bar" style="color:#6366f1; margin-right:6px;"></i>Bireysel PG'lerim</span>
+                <a href="{{ url_for('micro_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Tümünü Gör →</a>
+            </div>
+            <div style="max-height:280px; overflow-y:auto;" class="mc-scroll">
+                {% for pg in bireysel_pgs %}
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+                    <div>
+                        <div style="font-size:13.5px; font-weight:500; color:#1e293b;" class="dark:text-white">{{ pg.name }}</div>
+                        <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.period or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                    </div>
+                    <span class="mc-badge {% if pg.status == 'Tamamlandı' %}mc-badge-success{% elif pg.status == 'Gecikmiş' %}mc-badge-danger{% else %}mc-badge-info{% endif %}">
+                        {{ pg.status or 'Devam Ediyor' }}
+                    </span>
+                </div>
+                {% else %}
+                <div class="mc-empty" style="padding:32px 20px;">
+                    <div class="mc-empty-icon" style="font-size:28px;">📊</div>
+                    <div class="mc-empty-text">Henüz bireysel PG yok.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Bireysel Faaliyetler -->
+        <div class="mc-card">
+            <div class="mc-card-header">
+                <span class="mc-card-title"><i class="fas fa-check-circle" style="color:#10b981; margin-right:6px;"></i>Devam Eden Faaliyetlerim</span>
+                <a href="{{ url_for('micro_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Tümünü Gör →</a>
+            </div>
+            <div style="max-height:280px; overflow-y:auto;" class="mc-scroll">
+                {% for faaliyet in bireysel_faaliyetler %}
+                <div style="padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+                    <div style="font-size:13.5px; font-weight:500; color:#1e293b; margin-bottom:8px;" class="dark:text-white">{{ faaliyet.name }}</div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="mc-progress" style="flex:1;">
+                            <div class="mc-progress-fill {% if faaliyet.progress >= 80 %}success{% elif faaliyet.progress >= 50 %}{% else %}warning{% endif %}"
+                                 style="width:{{ faaliyet.progress }}%;"></div>
+                        </div>
+                        <span style="font-size:12px; color:#64748b; white-space:nowrap;">{{ faaliyet.progress }}%</span>
+                    </div>
+                    {% if faaliyet.end_date %}
+                    <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Bitiş: {{ faaliyet.end_date.strftime('%d.%m.%Y') }}</div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="mc-empty" style="padding:32px 20px;">
+                    <div class="mc-empty-icon" style="font-size:28px;">✅</div>
+                    <div class="mc-empty-text">Devam eden faaliyet yok.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Süreç PG'leri -->
+    {% if surec_pgs %}
+    <div class="mc-card" style="margin-bottom:20px;">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-project-diagram" style="color:#f59e0b; margin-right:6px;"></i>Süreç PG'lerim</span>
+            <a href="{{ url_for('micro_bp.surec') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Süreçlere Git →</a>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:0;">
+            {% for pg in surec_pgs %}
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+                <div>
+                    <div style="font-size:13.5px; font-weight:500; color:#1e293b;" class="dark:text-white">{{ pg.name }}</div>
+                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.process.name if pg.process else '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                </div>
+                {% if pg.target_value %}
+                <span style="font-size:12px; color:#64748b;">Hedef: {{ pg.target_value }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Bildirimler -->
+    {% if bildirimler %}
+    <div class="mc-card" style="margin-bottom:20px;">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-bell" style="color:#ef4444; margin-right:6px;"></i>Okunmamış Bildirimler</span>
+            <a href="{{ url_for('micro_bp.bildirim') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Tümünü Gör →</a>
+        </div>
+        {% for b in bildirimler %}
+        <div style="padding:12px 20px; border-bottom:1px solid #f1f5f9; display:flex; gap:12px; align-items:flex-start;">
+            <div style="width:8px; height:8px; border-radius:50%; background:#ef4444; margin-top:5px; flex-shrink:0;"></div>
+            <div>
+                <div style="font-size:13.5px; font-weight:500; color:#1e293b;" class="dark:text-white">{{ b.title }}</div>
+                {% if b.message %}
+                <div style="font-size:12px; color:#64748b; margin-top:2px;">{{ b.message[:100] }}{% if b.message|length > 100 %}…{% endif %}</div>
+                {% endif %}
+                <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">{{ b.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stratejiler -->
+    {% if stratejiler %}
+    <div class="mc-card">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-bullseye" style="color:#8b5cf6; margin-right:6px;"></i>Stratejik Hedefler</span>
+            <a href="{{ url_for('micro_bp.sp') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Stratejik Planlamaya Git →</a>
+        </div>
+        {% for s in stratejiler %}
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+            <span class="mc-badge mc-badge-indigo" style="font-family:monospace;">{{ s.code or '—' }}</span>
+            <span style="font-size:13.5px; color:#334155;" class="dark:text-white">{{ s.title }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

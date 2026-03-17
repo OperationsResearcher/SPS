@@ -1,0 +1,352 @@
+/* ── Süreç Karnesi CSS ─────────────────────────────── */
+
+/* Genel karne header */
+.surec-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.surec-header .btn-outline-secondary {
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.surec-header .btn-outline-secondary:hover {
+    color: #fff;
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Üst bardaki aksiyon butonları - gradient üzerinde okunabilirlik */
+.karne-btn-wizard {
+    background: #fff;
+    color: #0d6efd;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.karne-btn-wizard:hover {
+    background: #f0f4ff;
+    color: #0a58ca;
+    border-color: #fff;
+}
+
+.karne-btn-excel {
+    background: #198754;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.karne-btn-excel:hover {
+    background: #157347;
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Excel benzeri tablo */
+.excel-table {
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    width: 100%;
+}
+
+.excel-table th,
+.excel-table td {
+    border: 1px solid #dee2e6;
+    padding: 5px 8px;
+    white-space: nowrap;
+}
+
+.excel-table thead th {
+    background: #212529;
+    color: #fff;
+    text-align: center;
+    font-size: 0.78rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.excel-table .col-quarter {
+    min-width: 60px;
+    text-align: center;
+}
+
+.excel-table .ay-column {
+    min-width: 38px;
+    text-align: center;
+}
+
+.excel-table .col-code {
+    min-width: 70px;
+}
+
+.excel-table .col-strategy {
+    min-width: 110px;
+    font-size: 0.75rem;
+}
+
+.excel-table .col-weight {
+    min-width: 70px;
+    text-align: center;
+}
+
+.excel-table .col-unit {
+    min-width: 60px;
+    text-align: center;
+}
+
+.excel-table .col-period {
+    min-width: 80px;
+    text-align: center;
+}
+
+.excel-table .col-target {
+    min-width: 70px;
+    text-align: center;
+}
+
+.excel-table .col-actions {
+    min-width: 80px;
+    text-align: center;
+}
+
+.excel-table tbody tr:hover {
+    background: #f0f4ff;
+}
+
+/* Gauge Container */
+.gauge-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gauge-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -40%);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+/* No-print */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .surec-header {
+        background: #0d6efd !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .excel-table {
+        font-size: 0.68rem;
+    }
+}
+
+/* Modal on top */
+#dataEntryWizardModal,
+#addPGModal,
+#addFaaliyetModal {
+    z-index: 1060 !important;
+}
+
+/* Karne kartları sürükle-bırak */
+.karne-sortable-ghost {
+    opacity: 0.4;
+    background: rgba(13, 110, 253, 0.1) !important;
+}
+
+.karne-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Performans Göstergeleri kartı başlığındaki filtre alanları */
+.karne-pg-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.karne-header-filters {
+    width: 100%;
+    padding: 0.5rem 0;
+    align-self: center;
+}
+
+.karne-header-filters .form-select {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.karne-card-id-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.25);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.karne-filter-label {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Yönetici Özeti kartı */
+.yonetici-ozeti-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+}
+
+.yonetici-ozeti-header .opacity-90 {
+    opacity: 0.9 !important;
+}
+
+.yonetici-ozeti-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.yonetici-ozeti-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #dee2e6;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.yonetici-ozeti-item:hover {
+    background: #f0f4ff;
+}
+
+.yonetici-ozeti-item.yonetici-ozeti-iyi {
+    border-left-color: #198754;
+    background: rgba(25, 135, 84, 0.06);
+}
+
+.yonetici-ozeti-item.yonetici-ozeti-dikkat {
+    border-left-color: #ffc107;
+    background: rgba(255, 193, 7, 0.08);
+}
+
+.yonetici-ozeti-item.yonetici-ozeti-kritik {
+    border-left-color: #dc3545;
+    background: rgba(220, 53, 69, 0.06);
+}
+
+.yonetici-ozeti-item.yonetici-ozeti-veri-yok {
+    border-left-color: #6c757d;
+    background: rgba(108, 117, 125, 0.06);
+}
+
+.yonetici-ozeti-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.yonetici-ozeti-code {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.yonetici-ozeti-name {
+    color: #495057;
+    font-size: 0.9rem;
+    margin-top: 0.15rem;
+}
+
+.yonetici-ozeti-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.yonetici-ozeti-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.yonetici-ozeti-skor {
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 4.5rem;
+    text-align: center;
+}
+
+.yonetici-ozeti-skor.text-success { color: #198754; }
+.yonetici-ozeti-skor.text-warning { color: #d97706; }
+.yonetici-ozeti-skor.text-danger { color: #dc3545; }
+.yonetici-ozeti-skor.text-secondary { color: #6c757d; }
+
+.yonetici-ozeti-durum {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.yonetici-ozeti-durum.durum-iyi {
+    background: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.yonetici-ozeti-durum.durum-dikkat {
+    background: rgba(255, 193, 7, 0.2);
+    color: #856404;
+}
+
+.yonetici-ozeti-durum.durum-kritik {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.yonetici-ozeti-durum.durum-veri-yok {
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+}
+
+.yonetici-ozeti-progress {
+    width: 80px;
+    height: 6px;
+    border-radius: 3px;
+    background: #e9ecef;
+    overflow: hidden;
+}
+
+.yonetici-ozeti-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.yonetici-ozeti-empty-msg {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+.yonetici-ozeti-empty-msg i {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}

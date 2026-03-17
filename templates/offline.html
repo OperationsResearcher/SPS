@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çevrimdışı - Kokpitim</title>
+    <link href="{{ url_for('static', filename='css/offline.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            📡
+        </div>
+
+        <h1>İnternet Bağlantısı Yok</h1>
+
+        <p>
+            Şu anda çevrimdışısınız. İnternet bağlantınızı kontrol edin ve tekrar deneyin.
+        </p>
+
+        <button class="retry-btn" id="retryBtn" type="button">
+            Tekrar Dene
+        </button>
+
+        <div class="offline-features">
+            <h2>Çevrimdışı Özellikler</h2>
+            <ul class="offline-feature-list">
+                <li>Önbelleğe alınmış sayfaları görüntüleyebilirsiniz</li>
+                <li>Veri girişleriniz kaydedilir ve senkronize edilir</li>
+                <li>Bağlantı kurulduğunda otomatik güncellenir</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/offline.js') }}"></script>
+</body>
+</html>

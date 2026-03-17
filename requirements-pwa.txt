@@ -1,0 +1,12 @@
+# PWA and Push Notification Dependencies
+# Sprint 19-21: Mobile & PWA
+
+# Web Push Notifications
+pywebpush==1.14.0
+py-vapid==1.9.0
+
+# Existing dependencies (reference)
+# Flask>=2.3.0
+# Flask-SQLAlchemy>=3.0.0
+# Flask-Login>=0.6.0
+# Flask-SocketIO>=5.3.0

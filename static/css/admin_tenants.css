@@ -1,0 +1,13 @@
+/* Kurum Yonetimi - Admin Tenants */
+
+.tenants-table .btn-admin-action {
+    padding: 0.25rem 0.5rem;
+}
+
+.tenants-table .table th {
+    font-weight: 600;
+}
+
+.tenants-table .badge-package {
+    font-size: 0.8em;
+}

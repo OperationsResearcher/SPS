@@ -1,0 +1,203 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}SaaS Paket Yönetimi - Kokpitim{% endblock %}
+
+{% block admin_content %}
+<h4 class="mb-4">SaaS Paket ve Modül Yönetimi</h4>
+<p class="text-muted small mb-3"><strong>Paketler:</strong> Paket listesi, hangi pakette hangi modül var, yeni paket
+    ekleme, mevcut paketin değiştirilmesi. <strong>Modüller:</strong> Modüle dahil bileşenler (Bileşen İsmi — Bileşenler
+    sekmesinde atanan). <strong>Bileşenler:</strong> Rotalara Bileşen İsmi atama.</p>
+<ul class="nav nav-tabs" id="packagesTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="packages-tab" data-bs-toggle="tab" data-bs-target="#packages-pane"
+            type="button" role="tab">Paketler</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="modules-tab" data-bs-toggle="tab" data-bs-target="#modules-pane" type="button"
+            role="tab">Modüller</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="components-tab" data-bs-toggle="tab" data-bs-target="#components-pane"
+            type="button" role="tab">Bileşenler (Rotalar)</button>
+    </li>
+</ul>
+<div class="tab-content border border-top-0 p-3" id="packagesTabsContent">
+    <div class="tab-pane fade show active" id="packages-pane" role="tabpanel">
+        <h5>Paket Ekle</h5>
+        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="mb-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="add_package">
+            <div class="row mb-2">
+                <div class="col-md-4"><input type="text" name="package_name" class="form-control"
+                        placeholder="Paket adı" required></div>
+                <div class="col-md-8">
+                    {% for mod in modules %}
+                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                            name="package_modules" value="{{ mod.id }}"><label class="form-check-label">{{ mod.name
+                            }}</label></div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Paket Ekle</button>
+        </form>
+        <h5>Mevcut Paketler</h5>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Paket</th>
+                    <th>Modüller</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pkg in packages_list %}
+                <tr>
+                    <td>{{ pkg.name }}</td>
+                    <td>{% for m in pkg.modules %}{{ m.name }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="edit_package"><input type="hidden"
+                                name="package_id" value="{{ pkg.id }}">
+                            <input type="text" name="package_name" value="{{ pkg.name }}"
+                                class="form-control form-control-sm d-inline-block w-auto me-1">
+                            {% for mod in modules %}
+                            <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                                    name="package_modules" value="{{ mod.id }}" {% if mod in pkg.modules %}checked{%
+                                    endif %}><label class="form-check-label">{{ mod.name }}</label></div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Kaydet</button>
+                        </form>
+                        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="d-inline"
+                            data-confirm="Silmek istediğinize emin misiniz?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="delete_package"><input type="hidden"
+                                name="package_id" value="{{ pkg.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="modules-pane" role="tabpanel">
+        <h5>Modül Ekle</h5>
+        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="mb-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="add_module">
+            <div class="row mb-2">
+                <div class="col-md-4"><input type="text" name="module_name" class="form-control" placeholder="Modül adı"
+                        required></div>
+                <div class="col-md-8">
+                    {% for slug in component_slugs %}
+                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                            name="module_component_slugs" value="{{ slug }}"><label class="form-check-label">{{ slug
+                            }}</label></div>
+                    {% else %}
+                    <span class="text-muted small">Bileşen yok. Önce Bileşenler sekmesinde rotalara Bileşen İsmi
+                        atayın.</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Modül Ekle</button>
+        </form>
+        <h5>Mevcut Modüller</h5>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Modül</th>
+                    <th>Bileşenler (Bileşen İsmi)</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mod in modules %}
+                <tr>
+                    <td>{{ mod.name }}</td>
+                    <td>{% for slug in module_slugs_map.get(mod.id, []) %}{{ slug }}{% if not loop.last %}, {% endif
+                        %}{% else %}<span class="text-muted">—</span>{% endfor %}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="edit_module"><input type="hidden" name="module_id"
+                                value="{{ mod.id }}">
+                            <input type="text" name="module_name" value="{{ mod.name }}"
+                                class="form-control form-control-sm d-inline-block w-auto me-1">
+                            {% for slug in component_slugs %}
+                            <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                                    name="module_component_slugs" value="{{ slug }}" {% if slug in
+                                    module_slugs_map.get(mod.id, []) %}checked{% endif %}><label
+                                    class="form-check-label">{{ slug }}</label></div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Kaydet</button>
+                        </form>
+                        <form method="post" action="{{ url_for('admin_bp.packages') }}" class="d-inline"
+                            data-confirm="Silmek istediğinize emin misiniz?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="delete_module"><input type="hidden"
+                                name="module_id" value="{{ mod.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="components-pane" role="tabpanel"
+        data-sync-url="{{ url_for('admin_bp.components_sync') }}"
+        data-update-url="{{ url_for('admin_bp.components_update') }}">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Rota Kayıtları (Auto-Discovery)</h5>
+            <button type="button" class="btn btn-primary" id="btnComponentsSync">
+                <i class="fas fa-sync-alt me-1"></i>Sistemi Tarayıp Yenile
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>URL</th>
+                        <th>Metodlar</th>
+                        <th>Bileşen İsmi</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for route in routes %}
+                    <tr data-route-id="{{ route.id }}">
+                        <td><code>{{ route.endpoint }}</code></td>
+                        <td><small>{{ route.url_rule }}</small></td>
+                        <td>{{ route.methods or '-' }}</td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm component-slug-input"
+                                value="{{ route.component_slug or '' }}" placeholder="Bileşen slug"
+                                data-route-id="{{ route.id }}">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-save-slug"
+                                data-route-id="{{ route.id }}">
+                                Kaydet
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-muted text-center py-4">
+                            Henüz rota kaydı yok. &quot;Sistemi Tarayıp Yenile&quot; butonuna tıklayarak rotaları
+                            keşfedin.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_confirm.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin_packages.js') }}"></script>
+{% endblock %}

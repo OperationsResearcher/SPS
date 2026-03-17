@@ -1,0 +1,82 @@
+/* Dashboard Sideview (Yan Gorunum) - Iki Sutun Layout */
+
+.dashboard-sideview-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    .dashboard-sideview-wrapper {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.dashboard-sideview-sidebar {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .dashboard-sideview-sidebar {
+        width: 280px;
+        min-width: 280px;
+    }
+}
+
+.dashboard-sideview-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-sideview-stat-item {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-sideview-stat-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-sideview-stat-item.danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+.dashboard-sideview-stat-item.primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+}
+
+.dashboard-sideview-stat-item.success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
+    color: white;
+}
+
+.dashboard-sideview-stat-item.info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+    color: #212529;
+}
+
+.dashboard-sideview-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.dashboard-sideview-card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-sideview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}

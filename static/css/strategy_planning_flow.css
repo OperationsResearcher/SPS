@@ -1,0 +1,171 @@
+/* Stratejik Planlama Akışı - Statik Akış Sayfası */
+
+.strategy-flow-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.strategy-flow-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.strategy-flow-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-flow-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.strategy-flow-update-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0.95;
+}
+
+.strategy-flow-update-toggle .form-check-input {
+    cursor: pointer;
+}
+
+.strategy-flow-box {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    min-height: 100px;
+}
+
+.strategy-flow-box:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.strategy-flow-box.flow-blue { border-left: 4px solid #3498db; }
+.strategy-flow-box.flow-purple { border-left: 4px solid #9b59b6; }
+.strategy-flow-box.flow-green { border-left: 4px solid #27ae60; }
+.strategy-flow-box.flow-orange { border-left: 4px solid #e67e22; }
+
+.strategy-flow-box h5 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-flow-box .content-preview {
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.strategy-flow-box .empty-state {
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.strategy-flow-box .flow-status {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+.strategy-flow-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 1rem;
+}
+
+.strategy-flow-analysis-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.strategy-flow-analysis-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.strategy-flow-analysis-card:hover {
+    border-color: #667eea;
+}
+
+.strategy-flow-analysis-card .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-flow-analysis-card.swot .card-icon { color: #27ae60; }
+.strategy-flow-analysis-card.pestle .card-icon { color: #3498db; }
+.strategy-flow-analysis-card.tows .card-icon { color: #f39c12; }
+
+.strategy-flow-analysis-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.strategy-flow-analysis-card .card-status {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+}
+
+.strategy-flow-bsc-box {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: white;
+}
+
+.strategy-flow-bsc-box .bsc-desc {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+}
+
+.strategy-flow-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.strategy-flow-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+.strategy-flow-footer-note {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.strategy-flow-arrow-down {
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}

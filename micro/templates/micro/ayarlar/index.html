@@ -1,0 +1,59 @@
+{% extends "micro/base.html" %}
+{% block title %}Ayarlar — Kokpitim{% endblock %}
+{% block page_title %}Ayarlar{% endblock %}
+
+{% block content %}
+<div style="max-width:680px; margin:0 auto;">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Ayarlar</h2>
+      <p class="mc-page-subtitle">Hesap ve kurum ayarlarınızı yönetin.</p>
+    </div>
+  </div>
+
+  <!-- Kişisel Ayarlar -->
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">Kişisel</div>
+    <a href="{{ url_for('micro_bp.ayarlar_hesap') }}" class="ayarlar-hub-item">
+      <div class="ayarlar-hub-icon" style="background:#eff6ff;">
+        <i class="fas fa-user-cog" style="color:#3b82f6;"></i>
+      </div>
+      <div class="ayarlar-hub-body">
+        <div class="ayarlar-hub-title">Hesap Ayarları</div>
+        <div class="ayarlar-hub-desc">Bildirim tercihleri, tema, dil ve saat dilimi</div>
+      </div>
+      <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
+    </a>
+    <a href="{{ url_for('micro_bp.profil') }}" class="ayarlar-hub-item">
+      <div class="ayarlar-hub-icon" style="background:#f0fdf4;">
+        <i class="fas fa-id-card" style="color:#16a34a;"></i>
+      </div>
+      <div class="ayarlar-hub-body">
+        <div class="ayarlar-hub-title">Profil Bilgileri</div>
+        <div class="ayarlar-hub-desc">Ad, unvan, departman ve profil fotoğrafı</div>
+      </div>
+      <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
+    </a>
+  </div>
+
+  <!-- Kurum Ayarları — sadece yetkili roller görür -->
+  {% set role_name = current_user.role.name if current_user.role else '' %}
+  {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+  <div class="mc-card">
+    <div class="ayarlar-hub-section-label">Kurum</div>
+    <a href="{{ url_for('micro_bp.ayarlar_eposta') }}" class="ayarlar-hub-item">
+      <div class="ayarlar-hub-icon" style="background:#fdf4ff;">
+        <i class="fas fa-envelope-open-text" style="color:#9333ea;"></i>
+      </div>
+      <div class="ayarlar-hub-body">
+        <div class="ayarlar-hub-title">E-posta Bildirimleri</div>
+        <div class="ayarlar-hub-desc">SMTP yapılandırması ve bildirim tercihleri</div>
+      </div>
+      <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

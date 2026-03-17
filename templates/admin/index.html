@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Yönetici Paneli - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-primary"><i class="fas fa-users-cog me-2"></i>Sistem Yönetim Paneli</h1>
+            <div>
+                <a href="{{ url_for('admin_bp.packages') }}" class="btn btn-outline-warning text-dark me-2">
+                    <i class="fas fa-layer-group me-1"></i>SaaS Paket & Modül Yönetimi
+                </a>
+                <a href="{{ url_for('admin_bp.tenants') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-building me-1"></i>Kurum Listesi
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="card shadow-sm border-0 bg-primary text-white admin-stat-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-0">Toplam Kurum</h6>
+                                <h2 class="mt-2 mb-0">{{ tenants_count }}</h2>
+                            </div>
+                            <i class="fas fa-building fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card shadow-sm border-0 bg-success text-white admin-stat-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-0">Toplam Kullanıcı</h6>
+                                <h2 class="mt-2 mb-0">{{ users_count }}</h2>
+                            </div>
+                            <i class="fas fa-users fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card shadow-sm border-0 bg-warning text-dark admin-stat-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-0">Aktif Paketler</h6>
+                                <h2 class="mt-2 mb-0">{{ packages_count }}</h2>
+                            </div>
+                            <i class="fas fa-box-open fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card shadow-sm border-0 bg-info text-white admin-stat-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-0">Aktif Modüller</h6>
+                                <h2 class="mt-2 mb-0">{{ modules_count }}</h2>
+                            </div>
+                            <i class="fas fa-cubes fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hızlı Bağlantılar — QA ve Prototip Sayfaları -->
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-link me-2"></i>Hızlı Bağlantılar — QA Kontrol Listeleri</h5>
+                <p class="mb-0 small text-muted mt-1">Süreç modülü test ve kalite kontrol listeleri</p>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-3">
+                        <a href="{{ url_for('static', filename='prototypes/kontrol.html') }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            <div class="card border h-100 hover-shadow">
+                                <div class="card-body">
+                                    <i class="fas fa-clipboard-check text-primary fa-2x mb-2"></i>
+                                    <h6 class="card-title mb-1">Ana QA Kontrol Listesi</h6>
+                                    <p class="card-text small text-muted mb-0">Tüm modül listelerine genel bakış</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <a href="{{ url_for('static', filename='prototypes/modul-surec.html') }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            <div class="card border h-100 hover-shadow">
+                                <div class="card-body">
+                                    <i class="fas fa-cog text-primary fa-2x mb-2"></i>
+                                    <h6 class="card-title mb-1">Süreç Yönetimi</h6>
+                                    <p class="card-text small text-muted mb-0">Süreç modülü QA kontrol listesi</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <a href="{{ url_for('static', filename='prototypes/modul-karne.html') }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            <div class="card border h-100 hover-shadow">
+                                <div class="card-body">
+                                    <i class="fas fa-file-alt text-primary fa-2x mb-2"></i>
+                                    <h6 class="card-title mb-1">Süreç Karnesi</h6>
+                                    <p class="card-text small text-muted mb-0">Karne modülü QA kontrol listesi</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <a href="{{ url_for('static', filename='prototypes/modul-pg.html') }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            <div class="card border h-100 hover-shadow">
+                                <div class="card-body">
+                                    <i class="fas fa-chart-line text-primary fa-2x mb-2"></i>
+                                    <h6 class="card-title mb-1">Performans Göstergesi</h6>
+                                    <p class="card-text small text-muted mb-0">PG modülü QA kontrol listesi</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kurum Listesi -->
+        <div class="card shadow border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-list me-2"></i>Kurum Listesi ve Paket Yönetimi</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Kurum Adı</th>
+                                <th>Paket</th>
+                                <th>Durum</th>
+                                <th class="text-end pe-4">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tenant in tenants_list %}
+                            <tr>
+                                <td class="ps-4 fw-bold">
+                                    <div class="d-flex align-items-center">
+                                        <div class="admin-tenant-avatar bg-light text-primary me-3 rounded-circle">
+                                            {{ (tenant.short_name or tenant.name)[:2]|upper }}
+                                        </div>
+                                        <div>
+                                            {{ tenant.short_name or tenant.name }}
+                                            <div class="small text-muted">ID: {{ tenant.id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if tenant.package %}
+                                    <span class="badge bg-primary rounded-pill">{{ tenant.package.name }}</span>
+                                    {% else %}
+                                    <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if tenant.is_active %}
+                                    <span class="badge bg-success rounded-pill">Aktif</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary rounded-pill">Pasif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('admin_bp.tenants') }}" class="btn btn-sm btn-dark text-white">
+                                        <i class="fas fa-edit me-1"></i> Düzenle
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Kayıtlı kurum bulunamadı.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

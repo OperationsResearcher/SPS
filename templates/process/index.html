@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Süreç Yönetimi - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/process.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-gradient-primary text-white d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-project-diagram fa-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="mb-0 fw-bold">Süreç Yönetimi</h2>
+                        <p class="text-muted mb-0">Kurumsal süreçlerinizi, PG'lerinizi ve faaliyetlerinizi yönetin.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary shadow-sm rounded-pill px-4" data-bs-toggle="modal"
+                    data-bs-target="#addProcessModal">
+                    <i class="fas fa-plus me-2"></i>Yeni Süreç Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Process Grid -->
+    <div class="row process-grid">
+        {% for process in processes %}
+        <div class="col">
+            <div class="card process-card shadow-sm h-100">
+                <div class="card-header position-relative">
+                    <div class="process-code">{{ process.code or 'KODSUZ' }}</div>
+                    <h5 class="process-title mb-0">{{ process.name }}</h5>
+                    <div class="dropdown position-absolute top-0 end-0 m-3">
+                        <button class="btn btn-link text-white p-0" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item"
+                                    href="{{ url_for('process_bp.detail', process_id=process.id) }}"><i
+                                        class="fas fa-eye me-2"></i>Detay</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="javascript:void(0)"
+                                    onclick="deleteProcess({{ process.id }}, '{{ process.name }}')"><i
+                                        class="fas fa-trash me-2"></i>Sil</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-4 excerpt-2line">{{ process.description or 'Açıklama girilmemiş.' }}
+                    </p>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-4">
+                            <div class="process-stat-box">
+                                <div class="process-stat-value">{{ process.kpis|length }}</div>
+                                <div class="process-stat-label">PG</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="process-stat-box">
+                                <div class="process-stat-value">{{ process.activities|length }}</div>
+                                <div class="process-stat-label">Faaliyet</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="process-stat-box">
+                                <div class="process-stat-value">{{ process.sub_processes.count() }}</div>
+                                <div class="process-stat-label">Alt Süreç</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted x-small fw-bold">İLERLEME</span>
+                            <span class="text-dark fw-bold small">%{{ process.progress }}</span>
+                        </div>
+                        <div class="progress progress-thin">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ process.progress }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 p-3">
+                    <a href="{{ url_for('process_bp.detail', process_id=process.id) }}"
+                        class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                        Süreci Yönet <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info py-5 text-center border-0 shadow-sm rounded-4">
+                <i class="fas fa-info-circle fa-3x mb-3 opacity-50"></i>
+                <h5>Henüz bir süreç tanımlanmamış.</h5>
+                <p class="text-muted">Kurumunuza ait ana süreçleri ekleyerek başlayabilirsiniz.</p>
+                <button class="btn btn-primary mt-2 rounded-pill px-4" data-bs-toggle="modal"
+                    data-bs-target="#addProcessModal">
+                    İlk Süreci Ekle
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Process Modal -->
+<div class="modal fade" id="addProcessModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header gradient-header">
+                <h5 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>Yeni Süreç Oluştur</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="addProcessForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Süreç Kodu</label>
+                            <input type="text" class="form-control" name="code" placeholder="Örn: SR-01">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Süreç Adı</label>
+                            <input type="text" class="form-control" name="name" required
+                                placeholder="Örn: İnsan Kaynakları Yönetimi">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">İngilizce Adı (Opsiyonel)</label>
+                            <input type="text" class="form-control" name="english_name"
+                                placeholder="Human Resources Management">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Açıklama</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Doküman No</label>
+                            <input type="text" class="form-control" name="document_no" placeholder="DOK-01">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Revizyon No</label>
+                            <input type="text" class="form-control" name="revision_no" placeholder="00">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light p-3">
+                <button type="button" class="btn btn-link text-muted fw-bold" data-bs-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold" id="saveProcessBtn">Süreci
+                    Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/process.js') }}"></script>
+{% endblock %}

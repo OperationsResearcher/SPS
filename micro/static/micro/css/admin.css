@@ -1,0 +1,44 @@
+/* ── Admin Modülü Stilleri ── */
+
+.admin-role-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-weight: 500;
+}
+
+.dark .admin-role-badge {
+  background-color: #312e81;
+  color: #a5b4fc;
+}
+
+.admin-status-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.admin-status-badge.active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.admin-status-badge.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.dark .admin-status-badge.active {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+.dark .admin-status-badge.inactive {
+  background-color: #7f1d1d;
+  color: #fca5a5;
+}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Performans Kartım — Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bireysel_panel.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4" id="performansKartimApp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0">
+            <i class="fas fa-chart-line text-primary me-2"></i>Performans Kartım
+        </h2>
+        <div class="d-flex gap-2 align-items-center">
+            <label class="form-label mb-0 fw-medium">Yıl:</label>
+            <select id="yilSelect" class="form-select form-select-sm bireysel-yil-select">
+                {% for y in range(2027, 2022, -1) %}
+                <option value="{{ y }}" {% if y==2025 %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Bireysel PG Kartları -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Performans Göstergelerim</h5>
+            <span class="badge bg-light text-primary" id="pgCount">0</span>
+        </div>
+        <div class="card-body">
+            <div id="pgListContainer">
+                <div class="text-muted text-center py-4" id="pgEmptyState">
+                    <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
+                    <p class="mb-0">Henüz size atanmış performans göstergesi bulunmuyor.</p>
+                    <p class="small mt-1">Süreç karnesinden süreç lideri size PG atayabilir.</p>
+                </div>
+                <div id="pgList" class="row g-3 initially-hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bireysel Faaliyetler -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Faaliyetlerim</h5>
+            <span class="badge bg-light text-success" id="actCount">0</span>
+        </div>
+        <div class="card-body">
+            <div id="actListContainer">
+                <div class="text-muted text-center py-4" id="actEmptyState">
+                    <i class="fas fa-clipboard-list fa-3x mb-3 opacity-50"></i>
+                    <p class="mb-0">Henüz atanmış faaliyet bulunmuyor.</p>
+                    <p class="small mt-1">Süreç karnesinden süreç faaliyetlerini bireysel faaliyete dönüştürebilirsiniz.
+                    </p>
+                </div>
+                <div id="actList" class="list-group list-group-flush initially-hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Görevler Kanban (Eski Proje Uyumu) -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Görevlerim</h5>
+        </div>
+        <div class="card-body">
+            <div class="kanban-board">
+                <div class="kanban-column" id="todo-column">
+                    <h6 class="border-primary">Yapılacaklar</h6>
+                    <div class="task-placeholder text-muted small">Yapılacak görev yok.</div>
+                </div>
+                <div class="kanban-column" id="inprogress-column">
+                    <h6 class="border-warning">Devam Edenler</h6>
+                    <div class="task-placeholder text-muted small">Devam eden görev yok.</div>
+                </div>
+                <div class="kanban-column" id="done-column">
+                    <h6 class="border-success">Tamamlananlar</h6>
+                    <div class="task-placeholder text-muted small">Tamamlanan görev yok.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bireysel_panel.js') }}"
+    data-api-performans="{{ url_for('process_bp.performans_kartim_api') }}"
+    data-api-surecler="{{ url_for('process_bp.kullanici_surecleri') }}"></script>
+{% endblock %}

@@ -1,0 +1,121 @@
+/* ── Karne Tablosu ── */
+.karne-table {
+  border-collapse: collapse;
+}
+
+.karne-table th,
+.karne-table td {
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.dark .karne-table th,
+.dark .karne-table td {
+  border-color: #374151;
+}
+
+.karne-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.dark .karne-table tbody tr:hover {
+  background-color: #1f2937;
+}
+
+.month-col {
+  min-width: 2.5rem;
+}
+
+/* Ay hücresi — veri var */
+.karne-table td.has-data {
+  background-color: #ecfdf5;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.dark .karne-table td.has-data {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+/* Ay hücresi — veri yok */
+.karne-table td.no-data {
+  color: #d1d5db;
+}
+
+/* Faaliyet checkbox tamamlandı */
+.track-check:checked + label,
+.track-done {
+  color: #059669;
+}
+
+/* ── Hiyerarşik Süreç Ağacı ── */
+.process-tree-item {
+  border-left: 2px solid #e5e7eb;
+  margin-left: 1rem;
+  padding-left: 0.75rem;
+}
+
+.dark .process-tree-item {
+  border-color: #374151;
+}
+
+.process-tree-root {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.process-tree-item .process-tree-item {
+  margin-left: 1.25rem;
+}
+
+/* Süreç kodu badge */
+.process-code-badge {
+  display: inline-block;
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.dark .process-code-badge {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+/* İlerleme çubuğu */
+.progress-bar-track {
+  height: 4px;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+  overflow: hidden;
+}
+
+.dark .progress-bar-track {
+  background-color: #374151;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #10b981;
+  transition: width 0.3s ease;
+}
+
+/* Favori yıldız */
+.btn-favorite.active {
+  color: #f59e0b;
+}
+
+.btn-favorite {
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.btn-favorite:hover {
+  color: #f59e0b;
+}

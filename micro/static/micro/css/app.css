@@ -1,0 +1,100 @@
+/* Micro platform — özel stiller */
+
+/* ── Geçiş animasyonları ── */
+[x-cloak] { display: none !important; }
+
+/* Modül kartı hover */
+a[href]:hover .module-icon {
+    transform: scale(1.1);
+    transition: transform 0.15s ease;
+}
+
+/* ── Form input ortak stil (Tailwind ile birlikte) ── */
+.micro-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    background: white;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.micro-input:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.dark .micro-input {
+    background: #374151;
+    border-color: #4B5563;
+    color: #F9FAFB;
+}
+
+/* ── Tablo ── */
+.micro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.micro-table th {
+    text-align: left;
+    padding: 0.625rem 1rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6B7280;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.micro-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: middle;
+}
+
+.micro-table tr:last-child td {
+    border-bottom: none;
+}
+
+.micro-table tr:hover td {
+    background: #F9FAFB;
+}
+
+.dark .micro-table th {
+    color: #9CA3AF;
+    border-bottom-color: #374151;
+}
+
+.dark .micro-table td {
+    border-bottom-color: #1F2937;
+}
+
+.dark .micro-table tr:hover td {
+    background: #1F2937;
+}
+
+/* ── Badge ── */
+.badge-success { background: #D1FAE5; color: #065F46; }
+.badge-warning { background: #FEF3C7; color: #92400E; }
+.badge-danger  { background: #FEE2E2; color: #991B1B; }
+.badge-info    { background: #DBEAFE; color: #1E40AF; }
+.badge-gray    { background: #F3F4F6; color: #374151; }
+
+/* ── İlerleme çubuğu ── */
+.progress-bar {
+    height: 6px;
+    border-radius: 9999px;
+    background: #E5E7EB;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: #4F46E5;
+    transition: width 0.3s ease;
+}

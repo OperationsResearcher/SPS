@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kokpitim - Süreç Modülü QA Kontrol Listesi</title>
+    <link rel="stylesheet" href="kontrol.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kokpitim Süreç Modülü</h1>
+            <p>QA Kontrol Listeleri — Süreç, Karne ve PG modüllerini test edin</p>
+        </div>
+        
+        <div class="modules-grid">
+            <a href="modul-surec.html" class="module-card">
+                <span class="icon">&#9881;</span>
+                <h2>Süreç Yönetimi</h2>
+                <p>Süreç ekleme, düzenleme, silme, lider/üye atama, süreç durumu yönetimi</p>
+                <div class="progress">
+                    <span id="surec-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="surec-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-karne.html" class="module-card">
+                <span class="icon">&#128203;</span>
+                <h2>Süreç Karnesi</h2>
+                <p>Veri girişi, performans takibi, faaliyet yönetimi, Excel export, periyot bazlı raporlama</p>
+                <div class="progress">
+                    <span id="karne-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="karne-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="modul-pg.html" class="module-card">
+                <span class="icon">&#128202;</span>
+                <h2>Performans Göstergesi (PG)</h2>
+                <p>PG ekleme, düzenleme, silme, hedef değer belirleme, ölçüm birimi seçimi</p>
+                <div class="progress">
+                    <span id="pg-progress">0% tamamlandı</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="pg-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="actions">
+            <button class="btn" id="export-all-btn">Tüm Sonuçları Dışa Aktar</button>
+            <button class="btn btn-secondary" id="clear-all-btn">Tüm Sonuçları Temizle</button>
+        </div>
+    </div>
+    
+    <script src="kontrol-index.js"></script>
+</body>
+</html>

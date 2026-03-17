@@ -1,0 +1,1072 @@
+{% extends "base.html" %}
+
+{% block title %}Süreç Karnesi — {{ process.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/process_karne.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tenant_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4" data-process-id="{{ process.id }}" data-current-year="{{ current_year }}">
+
+    <!-- Süreç Başlık Bilgisi -->
+    <div class="surec-header mb-3">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-1"><i class="bi bi-file-earmark-spreadsheet"></i> SÜREÇ KARNESİ</h4>
+                <h5 id="surecAdi" class="text-primary">{{ process.name }}</h5>
+                <a href="{{ url_for('process_bp.index') }}" class="btn btn-sm btn-outline-secondary mt-1">
+                    <i class="bi bi-arrow-left me-1"></i>Süreç Paneline Dön
+                </a>
+            </div>
+            <div class="col-md-4 text-end">
+                <p class="mb-1"><strong>Döküman No:</strong> <span id="dokumanNo">{{ process.document_no or '-'
+                        }}</span></p>
+                <p class="mb-1"><strong>Rev. No:</strong> <span id="revNo">{{ process.revision_no or '-' }}</span></p>
+                <p class="mb-0"><strong>Yıl:</strong> <span id="yilBilgisi">{{ current_year }}</span></p>
+            </div>
+        </div>
+        <div class="row mt-3 no-print">
+            <div class="col-12 d-flex justify-content-end flex-wrap gap-2">
+                <button class="btn btn-sm karne-btn-wizard" id="openDataEntryWizardBtn" type="button">
+                    <i class="bi bi-magic"></i> Veri Giriş Sihirbazı
+                </button>
+                <button class="btn btn-success btn-sm" onclick="showAddPGForm()">
+                    <i class="bi bi-plus-circle"></i> PG Ekle
+                </button>
+                <button class="btn btn-warning btn-sm" onclick="showAddFaaliyetForm()">
+                    <i class="bi bi-plus-circle"></i> Faaliyet Ekle
+                </button>
+                <button class="btn btn-sm karne-btn-excel" id="exportExcelBtn" title="Excel'e Aktar">
+                    <i class="bi bi-file-earmark-excel"></i> Excel'e Aktar
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="window.print()" title="Yazdır">
+                    <i class="bi bi-printer"></i> Yazdır
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sıralanabilir Kartlar Konteyneri -->
+    <div id="karneCardsContainer" class="karne-cards-sortable no-print">
+    <!-- Veri Giriş Sihirbazı Modal -->
+    <div class="modal fade" id="dataEntryWizardModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-magic me-2"></i>Veri Giriş Sihirbazı</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Süreç</label>
+                            <select id="wiz_surec" class="form-select">
+                                {% for p in all_processes %}
+                                <option value="{{ p.id }}" {% if p.id==process.id %}selected{% endif %}>{{ p.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Performans Göstergesi *</label>
+                            <select id="wiz_pg" class="form-select">
+                                <option value="">-- Önce süreç seçin --</option>
+                                {% for k in kpis %}
+                                <option value="{{ k.id }}" data-period="{{ k.period }}">
+                                    {{ k.code or '' }} {{ k.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Yıl</label>
+                            <select id="wiz_yil" class="form-select">
+                                {% for y in range(current_year + 2, current_year - 6, -1) %}
+                                <option value="{{ y }}" {% if y==current_year %}selected{% endif %}>{{ y }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Periyot Tipi</label>
+                            <select id="wiz_periyot_tipi" class="form-select">
+                                <option value="">Otomatik (PG'den al)</option>
+                                <option value="yillik">Yıllık</option>
+                                <option value="ceyrek">Çeyrek</option>
+                                <option value="aylik">Aylık</option>
+                                <option value="haftalik">Haftalık</option>
+                                <option value="gunluk">Günlük</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2" id="wiz_ay_container" style="display:none;">
+                            <label class="form-label fw-bold">Ay</label>
+                            <select id="wiz_ay_select" class="form-select">
+                                <option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option>
+                                <option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
+                                <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option>
+                                <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Dönem No</label>
+                            <select id="wiz_period_no" class="form-select">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Gerçekleşen Değer *</label>
+                            <input type="text" id="wiz_deger" class="form-control" placeholder="Örn: 42">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tarih</label>
+                            <input type="date" id="wiz_tarih" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama (opsiyonel)</label>
+                            <textarea id="wiz_aciklama" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                <strong>Veri Giriş:</strong> Süreç, gösterge, dönem ve değer seçip kaydedin.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-success" id="wizSaveBtn">
+                        <i class="bi bi-save me-1"></i>Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SÜREÇ SAĞLIK SKORU -->
+    <div class="card modern-card mb-4 shadow-sm karne-draggable-card" id="saglikSkoruCard" data-card-id="saglikSkoruCard">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-grip-vertical karne-drag-handle me-2" style="cursor:grab; opacity:0.9;" aria-label="Sürükle"></i>
+                <div>
+                    <h6 class="mb-0"><i class="bi bi-heart-pulse me-2"></i>Süreç Sağlık Skoru</h6>
+                    <small class="opacity-90">Genel sağlık skoru, KPI dağılımı ve performans detayları</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="karne-card-id-badge me-2" title="Kart ID">saglikSkoruCard</span>
+                <i class="bi bi-info-circle me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Süreç sağlık skoru, KPI hedef tutma oranları ve ilerleme durumuna göre hesaplanır. Gauge grafiği genel skoru, pasta grafiği KPI dağılımını gösterir."
+                    style="cursor:help; opacity:0.9;"></i>
+                <i class="bi bi-chevron-down karne-collapse-icon" data-bs-toggle="collapse"
+                    data-bs-target="#saglikSkoruBody" style="cursor:pointer;" aria-label="Küçült/Genişlet"></i>
+            </div>
+        </div>
+        <div id="saglikSkoruBody" class="collapse show" >
+        <div class="card-body">
+            <div class="row align-items-center">
+                <!-- Gauge -->
+                <div class="col-md-4 text-center border-end">
+                    <h6 class="text-muted mb-3">Genel Sağlık Skoru</h6>
+                    <div id="gaugeChartContainer" class="gauge-container">
+                        <canvas id="gaugeChart" width="200" height="200"></canvas>
+                        <div id="gaugeValue" class="gauge-value">—</div>
+                    </div>
+                    <h5 id="saglikSkoruDurum" class="mt-2 fw-bold text-primary"></h5>
+                </div>
+                <!-- Pie -->
+                <div class="col-md-4 text-center border-end">
+                    <h6 class="text-muted mb-3">KPI Başarı Dağılımı</h6>
+                    <div style="position:relative; height:200px; width:100%; display:flex; justify-content:center;">
+                        <canvas id="kpiStatusChart"></canvas>
+                    </div>
+                    <div class="mt-2" id="kpiStatusLegend"></div>
+                </div>
+                <!-- Metrics -->
+                <div class="col-md-4">
+                    <h6 class="text-muted mb-3 ps-2">Performans Detayları</h6>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Proje Tamamlama:</small>
+                            <small id="projeTamamlamaText" class="fw-bold">{{ process.progress }}%</small>
+                        </div>
+                        <div class="progress mb-3" style="height:8px;">
+                            <div id="projeTamamlamaBar" class="progress-bar bg-success"
+                                style="width:{{ process.progress }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">KPI Hedef Tutma:</small>
+                            <small id="pgHedefText" class="fw-bold text-primary">0%</small>
+                        </div>
+                        <div class="progress" style="height:8px;">
+                            <div id="pgHedefBar" class="progress-bar bg-primary" style="width:0%"></div>
+                        </div>
+                        <div class="row mt-4 text-center">
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-primary" id="totalKPICount">{{ kpis|length }}</h4>
+                                    <small style="font-size:10px;">Toplam KPI</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-success" id="successKPICount">0</h4>
+                                    <small style="font-size:10px;">Başarılı</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2 bg-light">
+                                    <h4 class="mb-0 text-danger" id="riskKPICount">0</h4>
+                                    <small style="font-size:10px;">Riskli</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- YÖNETİCİ ÖZETİ -->
+    <div class="card modern-card mb-4 shadow-sm karne-draggable-card" id="yoneticiOzetiCard" data-card-id="yoneticiOzetiCard">
+        <div class="card-header yonetici-ozeti-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-grip-vertical karne-drag-handle me-2" style="cursor:grab; opacity:0.9;" aria-label="Sürükle"></i>
+                <div>
+                    <h6 class="mb-0"><i class="bi bi-clipboard2-pulse me-2"></i>Yönetici Özeti</h6>
+                    <small class="opacity-90">Her PG'nin güncel durumu — hedef tutma ve performans değerlendirmesi</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="karne-card-id-badge me-2" title="Kart ID">yoneticiOzetiCard</span>
+                <i class="bi bi-info-circle me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Aktif gün itibariyle her performans göstergesinin hedefe ulaşma durumu, başarı oranı ve özet bilgisi."
+                    style="cursor:help; opacity:0.9;"></i>
+                <i class="bi bi-chevron-down karne-collapse-icon" data-bs-toggle="collapse"
+                    data-bs-target="#yoneticiOzetiBody" style="cursor:pointer;" aria-label="Küçült/Genişlet"></i>
+            </div>
+        </div>
+        <div id="yoneticiOzetiBody" class="collapse show">
+            <div class="card-body">
+                <div id="yoneticiOzetiContent" class="yonetici-ozeti-list">
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-hourglass-split" style="font-size:2rem;"></i>
+                        <p class="mt-2 mb-0">Veri yükleniyor…</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TREND ANALİZİ -->
+    <div class="card modern-card mb-4 shadow-sm karne-draggable-card" id="trendAnalizCard" data-card-id="trendAnalizCard">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-grip-vertical karne-drag-handle me-2" style="cursor:grab; opacity:0.9;" aria-label="Sürükle"></i>
+                <div>
+                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Performans Trend Analizi</h6>
+                    <small class="opacity-90">Dönemsel ortalama hedef tutturma grafiği</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="karne-card-id-badge me-2" title="Kart ID">trendAnalizCard</span>
+                <i class="bi bi-info-circle me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Grafik, tüm performans göstergelerinin ilgili dönemdeki (çeyrek bazında) ortalama hedef tutturma yüzdesini gösterir. Yükselen trend iyi performansı işaret eder."
+                    style="cursor:help; opacity:0.9;"></i>
+                <i class="bi bi-chevron-down karne-collapse-icon" data-bs-toggle="collapse"
+                    data-bs-target="#trendAnalizBody" style="cursor:pointer;" aria-label="Küçült/Genişlet"></i>
+            </div>
+        </div>
+        <div id="trendAnalizBody" class="collapse show" >
+        <div class="card-body">
+            <div style="height:250px; width:100%;">
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="text-center mt-2">
+                <small class="text-muted"><i class="bi bi-info-circle"></i> Grafik, tüm PG'lerin ilgili dönemdeki
+                    ortalama hedef tutturma yüzdesini gösterir.</small>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- PERFORMANS GÖSTERGELERİ (Karne Tablosu) -->
+    <div class="card modern-card mb-4 shadow-sm karne-draggable-card" data-card-id="pgTabloCard">
+        <div class="card-header bg-primary text-white karne-pg-card-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-grip-vertical karne-drag-handle me-2" style="cursor:grab; opacity:0.9;" aria-label="Sürükle"></i>
+                    <div>
+                        <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Süreç Karnesi — Performans Göstergeleri</h6>
+                        <small class="opacity-90">PG listesi, hedef/gerçekleşen değerler ve başarı puanı</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="karne-card-id-badge me-2" title="Kart ID">pgTabloCard</span>
+                    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Performans göstergeleri (PG) tablosu. Her PG için hedef, gerçekleşen değer ve başarı durumu görüntülenir. Hücrelere tıklayarak veri detayına erişebilirsiniz."
+                        style="cursor:help; opacity:0.9;"></i>
+                    <i class="bi bi-chevron-down karne-collapse-icon" data-bs-toggle="collapse"
+                        data-bs-target="#pgTabloBody" style="cursor:pointer;" aria-label="Küçült/Genişlet"></i>
+                    <button class="btn btn-light btn-sm" onclick="showAddPGForm()">
+                        <i class="bi bi-plus-circle"></i> PG Ekle
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 karne-header-filters">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 karne-filter-label">Süreç:</label>
+                    <select id="surecSelect" class="form-select form-select-sm" style="min-width:180px;">
+                        <option value="">-- Süreç Seçiniz --</option>
+                        {% for p in all_processes %}
+                        <option value="{{ p.id }}" {% if p.id==process.id %}selected{% endif %}>
+                            {% if p.code %}[{{ p.code }}] {% endif %}{{ p.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 karne-filter-label">Yıl:</label>
+                    <select id="yilSelect" class="form-select form-select-sm" style="min-width:90px;">
+                        {% for y in range(current_year + 2, current_year - 6, -1) %}
+                        <option value="{{ y }}" {% if y==current_year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 karne-filter-label">Gösterim:</label>
+                    <select id="periyotSelect" class="form-select form-select-sm" style="min-width:110px;">
+                        <option value="ceyrek">Çeyreklik</option>
+                        <option value="yillik">Yıllık</option>
+                        <option value="aylik">Aylık</option>
+                        <option value="haftalik">Haftalık</option>
+                        <option value="gunluk">Günlük</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="pgTabloBody" class="collapse show" >
+        <!-- Periyot Navigasyon -->
+        <div class="card-body border-bottom bg-light py-3" id="periyotNavigasyonPanel">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <button class="btn btn-outline-primary btn-sm" onclick="navigate('prev')">
+                    <i class="bi bi-chevron-left"></i> Önceki
+                </button>
+                <span class="badge bg-primary fs-6 px-3 py-2" id="periyotNavigasyonLabel">
+                    {{ current_year }} - Çeyrek Görünümü
+                </span>
+                <button class="btn btn-outline-primary btn-sm" onclick="navigate('next')">
+                    Sonraki <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sütun Kontrol Paneli -->
+        <div class="card-body border-bottom bg-light py-2 no-print" id="sutunGosterimKontrol">
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <strong class="me-2">Sütun Gösterimi:</strong>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_code_chk" checked
+                        onchange="toggleCol('.col-code')">
+                    <label class="form-check-label" for="col_code_chk">Kodu</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_strategy_chk" checked
+                        onchange="toggleCol('.col-strategy')">
+                    <label class="form-check-label" for="col_strategy_chk">Strateji</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_weight_chk" checked
+                        onchange="toggleCol('.col-weight')">
+                    <label class="form-check-label" for="col_weight_chk">Ağırlık</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_unit_chk" checked
+                        onchange="toggleCol('.col-unit')">
+                    <label class="form-check-label" for="col_unit_chk">Birim</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_period_chk" checked
+                        onchange="toggleCol('.col-period')">
+                    <label class="form-check-label" for="col_period_chk">Periyot</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="col_target_chk" checked
+                        onchange="toggleColByClass('col-target-main')">
+                    <label class="form-check-label" for="col_target_chk">Yıllık Hedef</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tablo -->
+        <div class="card-body p-0" style="overflow-x:auto;">
+            <table class="excel-table table table-bordered table-sm mb-0" id="performansTable">
+                <thead class="table-dark" id="performansTableHead">
+                    <tr>
+                        <th rowspan="2" class="col-code">Kodu</th>
+                        <th rowspan="2" class="col-strategy">Ana Strateji</th>
+                        <th rowspan="2" class="col-strategy">Alt Strateji</th>
+                        <th rowspan="2">Performans Adı</th>
+                        <th rowspan="2" class="col-weight">Ağırlık (%)</th>
+                        <th rowspan="2" class="col-unit">Birim</th>
+                        <th rowspan="2" class="col-period">Ölçüm Per.</th>
+                        <th rowspan="2" class="col-target-main">Yıllık Hedef</th>
+                        <th colspan="3" class="text-center">I. Çeyrek</th>
+                        <th colspan="3" class="text-center">II. Çeyrek</th>
+                        <th colspan="3" class="text-center">III. Çeyrek</th>
+                        <th colspan="3" class="text-center">IV. Çeyrek</th>
+                        <th rowspan="2" class="col-target">Yıl Sonu</th>
+                        <th rowspan="2" class="col-target">Başarı Puanı</th>
+                        <th rowspan="2" class="col-actions no-print">İşlemler</th>
+                    </tr>
+                    <tr>
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                        <th class="col-quarter">Hedef</th>
+                        <th class="col-quarter">Gerç.</th>
+                        <th class="col-quarter">Durum</th>
+                    </tr>
+                </thead>
+                <tbody id="performansTbody">
+                    {% if kpis %}
+                    {% for k in kpis %}
+                    <tr data-kpi-id="{{ k.id }}" data-kpi-period="{{ k.period }}"
+                        data-kpi-target="{{ k.target_value or '' }}"
+                        data-kpi-direction="{{ k.direction or 'Increasing' }}"
+                        data-kpi-basari="{{ k.basari_puani_araliklari or '' }}">
+                        <td class="col-code">{{ k.code or '' }}</td>
+                        <td class="col-strategy small">{{ k.sub_strategy.strategy.title[:20] if k.sub_strategy else '-'
+                            }}{% if k.sub_strategy and k.sub_strategy.strategy.title|length > 20 %}...{% endif %}</td>
+                        <td class="col-strategy small">{{ k.sub_strategy.title[:20] if k.sub_strategy else '-' }}{% if
+                            k.sub_strategy and k.sub_strategy.title|length > 20 %}...{% endif %}</td>
+                        <td class="fw-medium">{{ k.name }}</td>
+                        <td class="col-weight text-center">{{ k.weight or '-' }}</td>
+                        <td class="col-unit text-center">{{ k.unit or '-' }}</td>
+                        <td class="col-period text-center"><span class="badge bg-secondary">{{ k.period or '-' }}</span>
+                        </td>
+                        <td class="col-target-main text-center fw-bold text-primary">{{ k.target_value or '-' }}</td>
+                        <!-- Q1 -->
+                        <td class="col-quarter text-center kpi-hedef-cell">{{ k.target_value or '-' }}</td>
+                        <td class="col-quarter text-center kpi-data-cell" data-kpi="{{ k.id }}" data-period="ceyrek_1"
+                            style="cursor:pointer;" onclick="openVeriDetay({{ k.id }}, 'ceyrek_1')">—</td>
+                        <td class="col-quarter text-center kpi-durum-cell" data-kpi="{{ k.id }}"
+                            data-durum-period="ceyrek_1">—</td>
+                        <!-- Q2 -->
+                        <td class="col-quarter text-center kpi-hedef-cell">{{ k.target_value or '-' }}</td>
+                        <td class="col-quarter text-center kpi-data-cell" data-kpi="{{ k.id }}" data-period="ceyrek_2"
+                            style="cursor:pointer;" onclick="openVeriDetay({{ k.id }}, 'ceyrek_2')">—</td>
+                        <td class="col-quarter text-center kpi-durum-cell" data-kpi="{{ k.id }}"
+                            data-durum-period="ceyrek_2">—</td>
+                        <!-- Q3 -->
+                        <td class="col-quarter text-center kpi-hedef-cell">{{ k.target_value or '-' }}</td>
+                        <td class="col-quarter text-center kpi-data-cell" data-kpi="{{ k.id }}" data-period="ceyrek_3"
+                            style="cursor:pointer;" onclick="openVeriDetay({{ k.id }}, 'ceyrek_3')">—</td>
+                        <td class="col-quarter text-center kpi-durum-cell" data-kpi="{{ k.id }}"
+                            data-durum-period="ceyrek_3">—</td>
+                        <!-- Q4 -->
+                        <td class="col-quarter text-center kpi-hedef-cell">{{ k.target_value or '-' }}</td>
+                        <td class="col-quarter text-center kpi-data-cell" data-kpi="{{ k.id }}" data-period="ceyrek_4"
+                            style="cursor:pointer;" onclick="openVeriDetay({{ k.id }}, 'ceyrek_4')">—</td>
+                        <td class="col-quarter text-center kpi-durum-cell" data-kpi="{{ k.id }}"
+                            data-durum-period="ceyrek_4">—</td>
+                        <!-- Yıl Sonu — yillik_1 verisi buraya yazılır -->
+                        <td class="col-target text-center kpi-data-cell fw-bold" data-kpi="{{ k.id }}"
+                            data-period="yillik_1" style="cursor:pointer;"
+                            onclick="openVeriDetay({{ k.id }}, 'yillik_1')">—</td>
+                        <!-- Başarı Puanı -->
+                        <td class="col-target text-center kpi-skor-cell" data-kpi="{{ k.id }}">—</td>
+                        <td class="col-actions no-print">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-warning favori-kpi-btn" data-kpi-id="{{ k.id }}"
+                                    title="Favorilere ekle/kaldır" aria-label="Favori">
+                                    <i class="bi bi-star{% if k.id in favorite_kpi_ids %}-fill text-warning{% endif %}"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="editKPI({{ k.id }})" title="Düzenle"><i
+                                        class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger" onclick="deleteKPI({{ k.id }}, '{{ k.name|e }}')"
+                                    title="Sil"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="22" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size:3rem;"></i>
+                            <p class="mt-3">Henüz performans göstergesi eklenmemiş. "PG Ekle" butonunu kullanın.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+
+    <!-- FAALİYETLER -->
+    <div class="card modern-card mb-4 shadow-sm karne-draggable-card" data-card-id="faaliyetCard">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-grip-vertical karne-drag-handle me-2" style="cursor:grab; opacity:0.9;" aria-label="Sürükle"></i>
+                <div>
+                    <h6 class="mb-0"><i class="bi bi-list-check me-2"></i>Süreç Faaliyetleri</h6>
+                    <small class="opacity-90">Aylık faaliyet takip tablosu</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="karne-card-id-badge me-2" title="Kart ID">faaliyetCard</span>
+                <i class="bi bi-info-circle me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Süreç faaliyetlerinin aylık tamamlama durumunu takip eder. Hücrelere tıklayarak faaliyetin ilgili ayda yapılıp yapılmadığını işaretleyebilirsiniz."
+                    style="cursor:help; opacity:0.9;"></i>
+                <i class="bi bi-chevron-down karne-collapse-icon" data-bs-toggle="collapse"
+                    data-bs-target="#faaliyetBody" style="cursor:pointer;" aria-label="Küçült/Genişlet"></i>
+                <button class="btn btn-light btn-sm ms-2" onclick="showAddFaaliyetForm()">
+                    <i class="bi bi-plus-circle"></i> Yeni Faaliyet
+                </button>
+            </div>
+        </div>
+        <div id="faaliyetBody" class="collapse show">
+        <div class="card-body p-0" style="overflow-x:auto;">
+            <table class="excel-table table table-bordered table-sm mb-0" id="faaliyetTable">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>No</th>
+                        <th>Faaliyet Adı</th>
+                        <th class="ay-column text-center">Oca</th>
+                        <th class="ay-column text-center">Şub</th>
+                        <th class="ay-column text-center">Mar</th>
+                        <th class="ay-column text-center">Nis</th>
+                        <th class="ay-column text-center">May</th>
+                        <th class="ay-column text-center">Haz</th>
+                        <th class="ay-column text-center">Tem</th>
+                        <th class="ay-column text-center">Ağu</th>
+                        <th class="ay-column text-center">Eyl</th>
+                        <th class="ay-column text-center">Eki</th>
+                        <th class="ay-column text-center">Kas</th>
+                        <th class="ay-column text-center">Ara</th>
+                        <th>Durum</th>
+                        <th class="no-print">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="faaliyetTbody">
+                    {% if activities %}
+                    {% for a in activities %}
+                    <tr data-activity-id="{{ a.id }}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ a.name }}</strong>
+                            {% if a.description %}<br><small class="text-muted">{{ a.description[:50] }}...</small>{%
+                            endif %}
+                        </td>
+                        {% for m in range(1, 13) %}
+                        <td class="ay-column text-center faaliyet-ay-cell" data-activity-id="{{ a.id }}"
+                            data-ay="{{ m }}" onclick="toggleFaaliyet(this)" style="cursor:pointer; user-select:none;">
+                            {# Server-side initial state — JS will override after loading #}
+                            {% set sm = a.start_date.month if a.start_date else 0 %}
+                            {% set em = a.end_date.month if a.end_date else 0 %}
+                            {% if sm and em and sm <= m and m <=em %} <span
+                                class="badge {% if a.status == 'Tamamlandı' %}bg-success{% elif a.status == 'Devam Ediyor' %}bg-primary{% else %}bg-warning text-dark{% endif %}">
+                                P</span>
+                                {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td class="text-center">
+                            <span
+                                class="badge {% if a.status == 'Tamamlandı' %}bg-success{% elif a.status == 'Devam Ediyor' %}bg-primary{% elif a.status == 'İptal' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                {{ a.status or 'Planlandı' }}
+                            </span>
+                        </td>
+                        <td class="no-print">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-warning" onclick="editFaaliyet({{ a.id }})"
+                                    title="Düzenle"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger"
+                                    onclick="deleteFaaliyet({{ a.id }}, '{{ a.name|e }}')" title="Sil"><i
+                                        class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="16" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size:3rem;"></i>
+                            <p class="mt-3">Henüz faaliyet eklenmemiş.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+
+    </div><!-- /#karneCardsContainer -->
+
+</div>
+
+<!-- ═══════════════════ MODALLER ═══════════════════ -->
+
+<!-- PG Ekleme Modal -->
+<div class="modal fade" id="addPGModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-speedometer2 me-2"></i>Yeni Performans Göstergesi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPGForm">
+                    <input type="hidden" id="pg_process_id" value="{{ process.id }}">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Gösterge Adı *</label>
+                            <input type="text" class="form-control" id="pg_ad" required
+                                placeholder="Performans göstergesi adı">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kodu</label>
+                            <input type="text" class="form-control" id="pg_kod" placeholder="PG-01">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Hedef Değer</label>
+                            <input type="text" class="form-control" id="pg_hedef" placeholder="Hedef değer">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Ölçüm Birimi</label>
+                            <input type="text" class="form-control" id="pg_birim" placeholder="%, Gün, TL...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Skor Ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="pg_agirlik" min="0" max="100"
+                                placeholder="0-100">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ölçüm Periyodu</label>
+                            <select class="form-select" id="pg_periyot">
+                                <option value="Aylık">Aylık</option>
+                                <option value="Çeyreklik" selected>Çeyreklik</option>
+                                <option value="Yıllık">Yıllık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hedef Yönü</label>
+                            <select class="form-select" id="pg_direction">
+                                <option value="Increasing">Arttıkça İyi ↑</option>
+                                <option value="Decreasing">Azaldıkça İyi ↓</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hesaplama Yöntemi</label>
+                            <select class="form-select" id="pg_hesaplama">
+                                <option value="Ortalama">Ortalama</option>
+                                <option value="Toplama">Toplama</option>
+                                <option value="Son Değer">Son Değer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gösterge Türü</label>
+                            <select class="form-select" id="pg_gosterge_turu">
+                                <option value="">Seçiniz</option>
+                                <option value="İyileştirme">İyileştirme</option>
+                                <option value="Koruma">Koruma</option>
+                                <option value="Bilgi Amaçlı">Bilgi Amaçlı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hedef Belirleme Yöntemi</label>
+                            <select class="form-select" id="pg_hedef_yontemi">
+                                <option value="">Seçiniz</option>
+                                <option value="RG">Rakibe Göre (RG)</option>
+                                <option value="HKY">Hedef Katsayısı Yöntemi (HKY)</option>
+                                <option value="HK">Hedef Konulamaz (HK)</option>
+                                <option value="SH">Sabit Hedef (SH)</option>
+                                <option value="DH">Dalgalı Hedef (DH)</option>
+                                <option value="SGH">Sektöre Göre Hedef (SGH)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Strateji (Opsiyonel)</label>
+                            <select class="form-select" id="pg_alt_strateji">
+                                <option value="">-- Alt Strateji Seçiniz --</option>
+                                {% for ss in sub_strategies %}
+                                <option value="{{ ss.id }}"
+                                    data-parent="{{ ss.strategy.title if ss.strategy else '' }}">
+                                    {{ ss.code or '' }} {{ ss.title }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Önceki Yıl Ortalaması</label>
+                            <input type="number" class="form-control" id="pg_onceki_yil" step="0.01"
+                                placeholder="Opsiyonel baz değer">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="pg_aciklama" rows="2"></textarea>
+                        </div>
+                        <!-- Başarı Puanı Yapılandırması -->
+                        <div class="col-12">
+                            <div class="card bg-light border-success">
+                                <div class="card-header bg-success text-white py-2">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" id="pg_basari_puani_kullan"
+                                            onchange="toggleBasariPuaniForm('add')">
+                                        <label class="form-check-label fw-bold" for="pg_basari_puani_kullan">
+                                            <i class="bi bi-trophy me-1"></i>Başarı Puanı Yapılandırması (Opsiyonel)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="pg_basari_puani_div" style="display:none;">
+                                    <p class="text-muted small mb-3">Her puan seviyesi için aralık tanımlayın (min-max
+                                        formatı, örn: 0-40, 40-80, 80-).</p>
+                                    {% for i in range(1,6) %}
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-md-2"><strong>{{ i }} Puan</strong></div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="bp_aralik_{{ i }}"
+                                                placeholder="örn: {% if i == 1 %}0-40{% elif i == 2 %}40-60{% elif i == 3 %}60-80{% elif i == 4 %}80-100{% else %}100-{% endif %}">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="bp_aciklama_{{ i }}"
+                                                value="{% if i==1 %}Beklentinin Çok Altında{% elif i==2 %}İyileştirmeye Açık{% elif i==3 %}Hedefe Ulaşmış{% elif i==4 %}Hedefin Üzerinde{% else %}Mükemmel{% endif %}">
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success" id="savePGBtn">
+                    <i class="bi bi-plus-circle me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PG Düzenleme Modal -->
+<div class="modal fade" id="editPGModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Performans Göstergesini Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPGForm">
+                    <input type="hidden" id="edit_pg_id">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Gösterge Adı *</label>
+                            <input type="text" class="form-control" id="edit_pg_ad" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kodu</label>
+                            <input type="text" class="form-control" id="edit_pg_kod">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Hedef Değer</label>
+                            <input type="text" class="form-control" id="edit_pg_hedef">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Ölçüm Birimi</label>
+                            <input type="text" class="form-control" id="edit_pg_birim">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Skor Ağırlığı (%)</label>
+                            <input type="number" class="form-control" id="edit_pg_agirlik" min="0" max="100">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ölçüm Periyodu</label>
+                            <select class="form-select" id="edit_pg_periyot">
+                                <option value="Aylık">Aylık</option>
+                                <option value="Çeyreklik">Çeyreklik</option>
+                                <option value="Yıllık">Yıllık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hedef Yönü</label>
+                            <select class="form-select" id="edit_pg_direction">
+                                <option value="Increasing">Arttıkça İyi ↑</option>
+                                <option value="Decreasing">Azaldıkça İyi ↓</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hesaplama Yöntemi</label>
+                            <select class="form-select" id="edit_pg_hesaplama">
+                                <option value="Ortalama">Ortalama</option>
+                                <option value="Toplama">Toplama</option>
+                                <option value="Son Değer">Son Değer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gösterge Türü</label>
+                            <select class="form-select" id="edit_pg_gosterge_turu">
+                                <option value="">Seçiniz</option>
+                                <option value="İyileştirme">İyileştirme</option>
+                                <option value="Koruma">Koruma</option>
+                                <option value="Bilgi Amaçlı">Bilgi Amaçlı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hedef Belirleme Yöntemi</label>
+                            <select class="form-select" id="edit_pg_hedef_yontemi">
+                                <option value="">Seçiniz</option>
+                                <option value="RG">Rakibe Göre (RG)</option>
+                                <option value="HKY">Hedef Katsayısı Yöntemi (HKY)</option>
+                                <option value="HK">Hedef Konulamaz (HK)</option>
+                                <option value="SH">Sabit Hedef (SH)</option>
+                                <option value="DH">Dalgalı Hedef (DH)</option>
+                                <option value="SGH">Sektöre Göre Hedef (SGH)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alt Strateji (Opsiyonel)</label>
+                            <select class="form-select" id="edit_pg_alt_strateji">
+                                <option value="">-- Alt Strateji Seçiniz --</option>
+                                {% for ss in sub_strategies %}
+                                <option value="{{ ss.id }}">{{ ss.code or '' }} {{ ss.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Önceki Yıl Ortalaması</label>
+                            <input type="number" class="form-control" id="edit_pg_onceki_yil" step="0.01">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="edit_pg_aciklama" rows="2"></textarea>
+                        </div>
+                        <!-- Başarı Puanı -->
+                        <div class="col-12">
+                            <div class="card bg-light border-warning">
+                                <div class="card-header bg-warning text-dark py-2">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" id="edit_pg_basari_kullan"
+                                            onchange="toggleBasariPuaniForm('edit')">
+                                        <label class="form-check-label fw-bold" for="edit_pg_basari_kullan">
+                                            <i class="bi bi-trophy me-1"></i>Başarı Puanı Yapılandırması
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="edit_pg_basari_div" style="display:none;">
+                                    {% for i in range(1,6) %}
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-md-2"><strong>{{ i }} Puan</strong></div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="edit_bp_aralik_{{ i }}" placeholder="örn: 0-40">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="edit_bp_aciklama_{{ i }}">
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-warning" id="updatePGBtn">
+                    <i class="bi bi-check-circle me-1"></i>Güncelle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Faaliyet Ekleme Modal -->
+<div class="modal fade" id="addFaaliyetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-list-check me-2"></i>Yeni Faaliyet</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFaaliyetForm">
+                    <input type="hidden" id="faaliyet_process_id" value="{{ process.id }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Faaliyet Adı *</label>
+                        <input type="text" class="form-control" id="faaliyet_ad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İlişkili PG (Opsiyonel)</label>
+                        <select class="form-select" id="faaliyet_kpi">
+                            <option value="">Bağımsız</option>
+                            {% for k in kpis %}
+                            <option value="{{ k.id }}">{{ k.code or '' }} {{ k.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control" id="faaliyet_baslangic">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" id="faaliyet_bitis">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Durum</label>
+                        <select class="form-select" id="faaliyet_durum">
+                            <option value="Planlandı">Planlandı</option>
+                            <option value="Devam Ediyor">Devam Ediyor</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="İptal">İptal</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="faaliyet_aciklama" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success" id="saveFaaliyetBtn">
+                    <i class="bi bi-plus-circle me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Faaliyet Düzenleme Modal -->
+<div class="modal fade" id="editFaaliyetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Faaliyet Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFaaliyetForm">
+                    <input type="hidden" id="edit_faaliyet_id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Faaliyet Adı *</label>
+                        <input type="text" class="form-control" id="edit_faaliyet_ad" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control" id="edit_faaliyet_baslangic">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Bitiş Tarihi</label>
+                            <input type="date" class="form-control" id="edit_faaliyet_bitis">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Durum</label>
+                        <select class="form-select" id="edit_faaliyet_durum">
+                            <option value="Planlandı">Planlandı</option>
+                            <option value="Devam Ediyor">Devam Ediyor</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="İptal">İptal</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İlerleme (%)</label>
+                        <input type="number" class="form-control" id="edit_faaliyet_ilerleme" min="0" max="100"
+                            value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="edit_faaliyet_aciklama" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-warning" id="updateFaaliyetBtn">
+                    <i class="bi bi-check-circle me-1"></i>Güncelle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Veri Detay Modal -->
+<div class="modal fade" id="veriDetayModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-bar-chart-line me-2"></i>Veri Detayları</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="veriDetayContent">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Veri Düzenle Alt Modal (Veri Detayları üzerinde açılır) -->
+<div class="modal fade" id="veriDuzenleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Veri Düzenle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="veriDuzenleActual" class="form-label fw-bold">Gerçekleşen Değer *</label>
+                    <input type="text" id="veriDuzenleActual" class="form-control" placeholder="Örn: 42">
+                </div>
+                <div class="mb-0">
+                    <label for="veriDuzenleDesc" class="form-label fw-bold">Açıklama</label>
+                    <textarea id="veriDuzenleDesc" class="form-control" rows="2" placeholder="Opsiyonel"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-primary" id="veriDuzenleSaveBtn">
+                    <i class="bi bi-check-lg me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/process_karne.js') }}"></script>
+{% endblock %}

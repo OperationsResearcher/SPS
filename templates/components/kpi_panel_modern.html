@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/kpi_panel_modern.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div id="app">
+        <div class="kpi-panel-header">
+            <div>
+                <h1>KPI Paneli</h1>
+                <p class="text-muted">Performans göstergelerinizi görüntüleyin ve düzenleyin</p>
+            </div>
+            
+            <div class="kpi-filters">
+                <input 
+                    type="text" 
+                    class="form-control filter-input" 
+                    placeholder="Ara..."
+                    v-model="filters.search"
+                />
+                <select class="form-select" v-model="filters.status">
+                    <option value="all">Tüm Durumlar</option>
+                    <option value="success">Hedef Üstü</option>
+                    <option value="warning">Hedef Yakın</option>
+                    <option value="danger">Hedef Altı</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div v-if="loading" class="kpi-grid" id="kpi-skeleton">
+            <!-- Skeleton screens will be inserted here by LoadingManager -->
+        </div>
+        
+        <!-- KPI Grid -->
+        <div v-else class="kpi-grid">
+            <kpi-card 
+                v-for="kpi in filteredKpis" 
+                :key="kpi.id"
+                :kpi="kpi"
+                :editable="true"
+                @update="handleKpiUpdate">
+            </kpi-card>
+            
+            <!-- Empty State -->
+            <div v-if="filteredKpis.length === 0" class="col-12 text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h3 class="text-muted">KPI Bulunamadı</h3>
+                <p class="text-muted">Filtrelerinizi değiştirmeyi deneyin</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/components/kpi-card.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vue-app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/kpi_panel_modern.js') }}"></script>
+{% endblock %}

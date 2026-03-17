@@ -1,0 +1,50 @@
+0. 🚨 GÖRSEL DOĞRULAMA VE "YALAN" FİLTRESİ
+Kritik: Bir görevi bitirdiğinde sadece terminale bakma. Agent araçlarını kullanarak sayfayı aç ve F12 konsolunu tara.
+
+Dürüstlük Kuralı: Eğer teknik bir kısıt nedeniyle tarayıcıyı kontrol edemediysen, "kontrol ettim" deme; "Tarayıcı erişimi sağlanamadı, kod analizi yapıldı" şeklinde dürüst rapor ver.
+
+Rapor Sonu: "✅ Sayfa tarayıcıda/konsolda doğrulandı ve hata taranmadı."
+
+1. 🍭 BİLDİRİM STANDARTLARI (SWEETALERT2 ZORUNLULUĞU)
+YASAK: Tarayıcı varsayılanı olan alert(), confirm() ve prompt() kullanımı KESİNLİKLE yasaktır.
+
+Zorunluluk: Tüm kullanıcı etkileşimleri, onay pencereleri ve hata bildirimleri SweetAlert2 (Swal.fire) ile yapılacaktır.
+
+Dil: SweetAlert mesajları Türkçe, profesyonel ve kullanıcıyı yönlendiren bir tonda yazılacaktır.
+
+Örnek: Başarılı işlemde yeşil "Başarılı", hatada kırmızı "Hata" teması kullanılmalıdır.
+
+2. 🔍 TERMİNOLOJİ VE İŞ MANTIĞI (PG vs PostgreSQL)
+PG TANIMI: Projede geçen PG kısaltması Performans Göstergesi (Performance Indicator) demektir.
+
+YASAK: Kod içerisinde, değişken isimlerinde veya yorum satırlarında "PG" kısaltmasını asla PostgreSQL için kullanma.
+
+İsimlendirme: Performans göstergeleri için performance_indicator, pi_score, indicator_data gibi açık isimler kullan.
+
+3. 🏗️ TEKNİK ALTYAPI VE PORT DİSİPLİNİ
+PORT: Uygulama her zaman 5001 portunda çalışır. localhost:5000 KESİNLİKLE yasaktır.
+
+DİL AYRIMI: - Backend (Python/Logic/DB): %100 İngilizce (snake_case).
+
+Frontend (UI/Mesajlar): %100 Türkçe.
+
+HATA YÖNETİMİ: Boş except: pass blokları yasaktır. Her hata app.logger.error ile loglanmalı ve kullanıcıya Türkçe SweetAlert2 ile bilgi verilmelidir.
+
+4. 🛡️ VERİ GÜVENLİĞİ VE SİLME PROTOKOLÜ
+Hard Delete Yasak: Veritabanından fiziksel veri silme işlemi yapılmayacaktır.
+
+Soft Delete: Tüm modeller is_deleted (Boolean) alanına sahip olmalıdır. Veri silme isteklerinde bu alan True yapılır.
+
+Global Filtre: Veri çekerken daima .filter_by(is_deleted=False) kontrolü eklendiğinden emin olunmalıdır.
+
+5. 🎨 FRONTEND VE KATI KATMAN AYRIMI
+No Inline JS/CSS: HTML dosyaları içinde <script> veya <style> blokları bulunamaz. Tüm kodlar static/js/ ve static/css/ altındaki harici dosyalarda olmalıdır.
+
+Jinja2 Sınırı: Harici .js dosyaları içinde {{ }} (Jinja) ifadeleri kullanılamaz. Veri aktarımı için sadece data-* öznitelikleri kullanılacaktır.
+
+6. 📂 MİMARİ VE MODÜLERLİK
+Blueprint: app.py dosyasına yeni rota eklemek yasaktır. Her özellik kendi Blueprint modülü altında olmalıdır.
+
+Eski Kod İzolasyonu: eski_proje_referans klasörü sadece "okuma" amaçlıdır. Yeni standartlara (İngilizce isimlendirme, Soft Delete) göre modernize ederek taşı.
+
+Yetkilendirme: Tüm rotalar @login_required ile, modüle özel rotalar ise @require_component dekoratörü ile korunmalıdır.

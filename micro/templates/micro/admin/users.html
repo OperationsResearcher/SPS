@@ -1,0 +1,112 @@
+{% extends "micro/base.html" %}
+{% block title %}Kullanıcı Yönetimi{% endblock %}
+{% block page_title %}Kullanıcı Yönetimi{% endblock %}
+
+{% block content %}
+<div id="admin-users-root"
+     data-add-url="{{ url_for('micro_bp.admin_users_add') }}"
+     data-edit-base="/micro/admin/users/edit/"
+     data-toggle-base="/micro/admin/users/toggle/"
+     data-bulk-import-url="{{ url_for('micro_bp.admin_users_bulk_import') }}"
+     style="max-width:1100px; margin:0 auto;">
+
+  <!-- Sayfa başlığı -->
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Kullanıcı Yönetimi</h2>
+      <p class="mc-page-subtitle">Toplam {{ users|length }} kullanıcı</p>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="btn-bulk-import" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-file-import"></i> Toplu İçe Aktar
+      </button>
+      <button id="btn-user-add" class="mc-btn mc-btn-primary">
+        <i class="fas fa-plus"></i> Kullanıcı Ekle
+      </button>
+    </div>
+  </div>
+
+  <!-- Arama -->
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="mc-card-body" style="padding:12px 16px;">
+      <input type="text" id="user-search" class="mc-input" placeholder="Ad, e-posta veya rol ile ara…" style="max-width:360px;">
+    </div>
+  </div>
+
+  <!-- Tablo -->
+  <div class="mc-table-wrap">
+    <table class="mc-table" id="users-table">
+      <thead>
+        <tr>
+          <th>Ad Soyad</th>
+          <th>E-posta</th>
+          <th>Rol</th>
+          {% if tenants %}<th>Kurum</th>{% endif %}
+          <th style="text-align:center;">Durum</th>
+          <th style="text-align:center;">İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr data-search="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email ~ ' ' ~ (u.role.name if u.role else ''))|lower }}">
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="mc-avatar mc-avatar-sm">{{ (u.first_name or u.email)[0]|upper }}</div>
+              <span style="font-weight:500;">{{ u.first_name or '' }} {{ u.last_name or '' }}</span>
+            </div>
+          </td>
+          <td style="color:#64748b;">{{ u.email }}</td>
+          <td>
+            <span class="mc-badge mc-badge-indigo">{{ u.role.name if u.role else '—' }}</span>
+          </td>
+          {% if tenants %}
+          <td style="font-size:12px; color:#64748b;">{{ u.tenant.name if u.tenant else '—' }}</td>
+          {% endif %}
+          <td style="text-align:center;">
+            <span class="mc-badge {% if u.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}">
+              {{ 'Aktif' if u.is_active else 'Pasif' }}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit"
+                      data-user-id="{{ u.id }}"
+                      data-first-name="{{ u.first_name or '' | e }}"
+                      data-last-name="{{ u.last_name or '' | e }}"
+                      data-job-title="{{ u.job_title or '' | e }}"
+                      data-department="{{ u.department or '' | e }}"
+                      data-role-id="{{ u.role_id or '' }}">
+                <i class="fas fa-edit"></i> Düzenle
+              </button>
+              <button class="mc-btn mc-btn-sm {% if u.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-user-toggle"
+                      data-user-id="{{ u.id }}"
+                      data-name="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim | e }}"
+                      data-active="{{ 'true' if u.is_active else 'false' }}">
+                {{ 'Pasife Al' if u.is_active else 'Aktifleştir' }}
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">Kullanıcı bulunamadı.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# Rol ve kurum seçenekleri data-* ile JS'e aktarılır #}
+  <div id="admin-meta"
+       data-roles='{{ roles | map(attribute="id") | list | tojson }}'
+       data-role-names='{{ roles | map(attribute="name") | list | tojson }}'
+       data-tenants='{{ tenants | map(attribute="id") | list | tojson }}'
+       data-tenant-names='{{ tenants | map(attribute="name") | list | tojson }}'
+       style="display:none;"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/admin.js') }}"></script>
+{% endblock %}

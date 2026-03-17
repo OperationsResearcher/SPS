@@ -1,0 +1,81 @@
+/* Strategy Management - Admin flow structure */
+
+.strategy-mgmt-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.strategy-mgmt-flow-box {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    min-height: 100px;
+}
+
+.strategy-mgmt-flow-box:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.strategy-mgmt-flow-box.flow-blue { border-left: 4px solid #3498db; }
+.strategy-mgmt-flow-box.flow-purple { border-left: 4px solid #9b59b6; }
+.strategy-mgmt-flow-box.flow-green { border-left: 4px solid #27ae60; }
+.strategy-mgmt-flow-box.flow-orange { border-left: 4px solid #e67e22; }
+
+.strategy-mgmt-flow-box h5 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-mgmt-flow-box .content-preview {
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.strategy-mgmt-flow-box .empty-state {
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.strategy-mgmt-strategy-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.strategy-mgmt-strategy-card h6 {
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-mgmt-strategy-card .sub-item {
+    padding: 0.4rem 0.75rem;
+    margin: 0.25rem 0;
+    background: white;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    font-size: 0.9rem;
+}
+
+.strategy-mgmt-process-item {
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    border-left: 3px solid #10b981;
+}

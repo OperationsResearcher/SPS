@@ -1,0 +1,151 @@
+{% extends "micro/base.html" %}
+{% block title %}Kurum Paneli{% endblock %}
+{% block page_title %}Kurum Paneli{% endblock %}
+
+{% block content %}
+<div id="kurum-root"
+     data-update-strategy-url="{{ url_for('micro_bp.kurum_api_update_strategy') }}"
+     data-add-strategy-url="{{ url_for('micro_bp.kurum_api_add_strategy') }}"
+     data-add-sub-url="{{ url_for('micro_bp.kurum_api_add_sub_strategy') }}"
+     data-update-main-base="/micro/kurum/api/update-main-strategy/"
+     data-delete-main-base="/micro/kurum/api/delete-main-strategy/"
+     data-update-sub-base="/micro/kurum/api/update-sub-strategy/"
+     data-delete-sub-base="/micro/kurum/api/delete-sub-strategy/"
+     style="max-width:1000px; margin:0 auto;">
+
+  <!-- Özet kartlar -->
+  <div class="mc-grid-3" style="margin-bottom:20px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
+      <div class="mc-stat-label">Aktif Kullanıcı</div>
+      <div class="mc-stat-value">{{ user_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
+      <div class="mc-stat-label">Aktif Süreç</div>
+      <div class="mc-stat-value">{{ process_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-purple">
+      <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
+      <div class="mc-stat-label">Ana Strateji</div>
+      <div class="mc-stat-value">{{ strategy_count }}</div>
+    </div>
+  </div>
+
+  <!-- Stratejik Kimlik -->
+  <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-building" style="color:#6366f1; margin-right:8px;"></i>Stratejik Kimlik
+      </span>
+      <button id="btn-identity-edit" class="mc-btn mc-btn-primary mc-btn-sm">
+        <i class="fas fa-edit"></i> Düzenle
+      </button>
+    </div>
+    <div class="mc-card-body">
+      <div class="mc-grid-2" style="gap:20px;">
+        <div>
+          <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin-bottom:6px;">Amaç</div>
+          <p style="font-size:13.5px; color:#374151; line-height:1.6;">{{ tenant.purpose or '—' }}</p>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin-bottom:6px;">Vizyon</div>
+          <p style="font-size:13.5px; color:#374151; line-height:1.6;">{{ tenant.vision or '—' }}</p>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin-bottom:6px;">Temel Değerler</div>
+          <p style="font-size:13.5px; color:#374151; line-height:1.6;">{{ tenant.core_values or '—' }}</p>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin-bottom:6px;">Etik Kurallar</div>
+          <p style="font-size:13.5px; color:#374151; line-height:1.6;">{{ tenant.code_of_ethics or '—' }}</p>
+        </div>
+        <div style="grid-column:1/-1;">
+          <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin-bottom:6px;">Kalite Politikası</div>
+          <p style="font-size:13.5px; color:#374151; line-height:1.6;">{{ tenant.quality_policy or '—' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stratejiler -->
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-bullseye" style="color:#8b5cf6; margin-right:8px;"></i>Stratejiler
+      </span>
+      <button id="btn-strategy-add" class="mc-btn mc-btn-sm" style="background:#ede9fe; color:#6d28d9; border:1px solid #ddd6fe;">
+        <i class="fas fa-plus"></i> Strateji Ekle
+      </button>
+    </div>
+    <div>
+      {% for st in strategies %}
+      <div style="padding:14px 20px; border-bottom:1px solid #f1f5f9;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+            {% if st.code %}
+            <span class="mc-badge mc-badge-purple" style="font-family:monospace; flex-shrink:0;">{{ st.code }}</span>
+            {% endif %}
+            <span style="font-size:14px; font-weight:600; color:#1e293b;">{{ st.title }}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <button class="mc-btn mc-btn-secondary mc-btn-sm btn-sub-add" data-strategy-id="{{ st.id }}">
+              <i class="fas fa-plus"></i> Alt Strateji
+            </button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm btn-main-edit"
+                    data-strategy-id="{{ st.id }}"
+                    data-title="{{ st.title | e }}"
+                    data-code="{{ st.code or '' | e }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="mc-btn mc-btn-danger mc-btn-sm btn-main-delete"
+                    data-strategy-id="{{ st.id }}"
+                    data-title="{{ st.title | e }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+        {% if st.sub_strategies %}
+        <div style="margin-top:8px; margin-left:16px; display:flex; flex-direction:column; gap:2px;">
+          {% for ss in st.sub_strategies %}{% if ss.is_active %}
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:5px 0 5px 12px; border-left:2px solid #e2e8f0;">
+            <span style="font-size:12.5px; color:#475569;">
+              {% if ss.code %}<span style="font-family:monospace; color:#94a3b8; margin-right:4px;">{{ ss.code }}</span>{% endif %}
+              {{ ss.title }}
+            </span>
+            <div style="display:flex; gap:4px;">
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-sub-edit"
+                      data-sub-id="{{ ss.id }}"
+                      data-title="{{ ss.title | e }}"
+                      data-code="{{ ss.code or '' | e }}">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="mc-btn mc-btn-danger mc-btn-sm btn-sub-delete"
+                      data-sub-id="{{ ss.id }}"
+                      data-title="{{ ss.title | e }}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          {% endif %}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="mc-empty" style="padding:48px 20px;">
+        <div class="mc-empty-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="mc-empty-title">Henüz strateji eklenmemiş</div>
+        <button id="btn-strategy-add-empty" class="mc-btn mc-btn-primary" style="margin-top:12px;">
+          <i class="fas fa-plus"></i> Strateji Ekle
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/kurum.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr" x-data="microApp()" :class="darkMode ? 'dark' : ''">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Kokpitim{% endblock %}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('micro_bp.static', filename='micro/js/tailwind.config.js') }}"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <!-- Micro CSS -->
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/app.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if not request.endpoint or request.endpoint != 'micro_bp.login' %}micro-layout{% endif %}"
+      :class="darkMode ? 'dark' : ''">
+
+{% if current_user.is_authenticated %}
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="micro-sidebar" id="micro-sidebar">
+
+    <!-- Brand -->
+    <a href="{{ url_for('micro_bp.launcher') }}" class="sidebar-brand">
+        <div class="sidebar-brand-logo">K</div>
+        <div>
+            <div class="sidebar-brand-name">Kokpitim</div>
+            <span class="sidebar-brand-sub">
+                {% if current_user.tenant %}{{ current_user.tenant.short_name or current_user.tenant.name }}{% else %}Platform{% endif %}
+            </span>
+        </div>
+    </a>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+        {% set ep = request.endpoint or '' %}
+
+        <!-- Ana Modüller -->
+        <div class="sidebar-section-label">Ana Modüller</div>
+
+        <a href="{{ url_for('micro_bp.masaustu') }}"
+           class="sidebar-item {% if 'masaustu' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-home"></i></span>
+            <span class="sidebar-item-text">Masaüstüm</span>
+        </a>
+
+        {% set role_name = current_user.role.name if current_user.role else '' %}
+
+        {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+        <a href="{{ url_for('micro_bp.sp') }}"
+           class="sidebar-item {% if 'sp' in ep and 'admin' not in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
+            <span class="sidebar-item-text">Stratejik Planlama</span>
+        </a>
+
+        <a href="{{ url_for('micro_bp.surec') }}"
+           class="sidebar-item {% if 'surec' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-project-diagram"></i></span>
+            <span class="sidebar-item-text">Süreç Yönetimi</span>
+        </a>
+
+        <a href="{{ url_for('micro_bp.kurum') }}"
+           class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
+            <span class="sidebar-item-text">Kurum Paneli</span>
+        </a>
+        {% endif %}
+
+        <a href="{{ url_for('micro_bp.bireysel_karne') }}"
+           class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-user-chart"></i></span>
+            <span class="sidebar-item-text">Bireysel Performans</span>
+        </a>
+
+        {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+        <a href="{{ url_for('micro_bp.analiz') }}"
+           class="sidebar-item {% if 'analiz' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-chart-line"></i></span>
+            <span class="sidebar-item-text">Analiz Merkezi</span>
+        </a>
+        {% endif %}
+
+        <!-- Yönetim -->
+        {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+        <div class="sidebar-section-label">Yönetim</div>
+
+        <a href="{{ url_for('micro_bp.admin_users') }}"
+           class="sidebar-item {% if ep == 'micro_bp.admin_users' %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-users-cog"></i></span>
+            <span class="sidebar-item-text">Kullanıcılar</span>
+        </a>
+
+        <a href="{{ url_for('micro_bp.admin_tenants') }}"
+           class="sidebar-item {% if ep == 'micro_bp.admin_tenants' %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
+            <span class="sidebar-item-text">Kurumlar</span>
+        </a>
+
+        <a href="{{ url_for('micro_bp.admin_notifications') }}"
+           class="sidebar-item {% if ep == 'micro_bp.admin_notifications' %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-bell"></i></span>
+            <span class="sidebar-item-text">Bildirim Merkezi</span>
+        </a>
+
+        {% if role_name == 'Admin' %}
+        <a href="{{ url_for('micro_bp.admin_packages') }}"
+           class="sidebar-item {% if ep == 'micro_bp.admin_packages' %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-box"></i></span>
+            <span class="sidebar-item-text">SaaS Paketler</span>
+        </a>
+        {% endif %}
+
+        <a href="{{ url_for('micro_bp.api_docs') }}"
+           class="sidebar-item {% if 'api_docs' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-plug"></i></span>
+            <span class="sidebar-item-text">API Dokümantasyonu</span>
+        </a>
+        {% endif %}
+
+        <!-- Sistem -->
+        <div class="sidebar-section-label">Sistem</div>
+
+        <a href="{{ url_for('micro_bp.bildirim') }}"
+           class="sidebar-item {% if 'bildirim' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-bell"></i></span>
+            <span class="sidebar-item-text">Bildirimler</span>
+        </a>
+
+        <a href="{{ url_for('micro_bp.ayarlar') }}"
+           class="sidebar-item {% if 'ayarlar' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
+            <span class="sidebar-item-text">Ayarlar</span>
+        </a>
+
+        {% if role_name == 'Admin' %}
+        <a href="{{ url_for('micro_bp.hgs') }}"
+           class="sidebar-item {% if 'hgs' in ep %}active{% endif %}">
+            <span class="sidebar-item-icon"><i class="fas fa-bolt"></i></span>
+            <span class="sidebar-item-text">Hızlı Giriş</span>
+        </a>
+        {% endif %}
+    </nav>
+
+    <!-- Footer: kullanıcı -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user" x-data="{ open: false }" @click="open = !open" style="position:relative">
+            <div class="sidebar-avatar">
+                {{ (current_user.first_name or current_user.email)[0]|upper }}
+            </div>
+            <div style="flex:1; min-width:0;">
+                <div class="sidebar-user-name">{{ current_user.first_name or current_user.email }}</div>
+                <div class="sidebar-user-role">{{ current_user.role.name if current_user.role else 'Kullanıcı' }}</div>
+            </div>
+            <i class="fas fa-ellipsis-v" style="color:rgba(255,255,255,0.3); font-size:12px;"></i>
+
+            <!-- Popup menu -->
+            <div x-show="open" @click.outside="open=false" x-transition
+                 style="position:absolute; bottom:48px; left:0; right:0; background:#2d2a5e; border-radius:10px; border:1px solid rgba(255,255,255,0.1); padding:4px; z-index:200;">
+                <a href="{{ url_for('micro_bp.profil') }}"
+                   style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:background 0.15s;"
+                   onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+                    <i class="fas fa-user-circle" style="width:14px;"></i> Profilim
+                </a>
+                <button @click="toggleDark()"
+                        style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+                    <i class="fas fa-moon" style="width:14px;"></i>
+                    <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
+                </button>
+                <hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;">
+                <a href="{{ url_for('auth_bp.logout') }}"
+                   style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:#f87171; font-size:13px; text-decoration:none; transition:background 0.15s;"
+                   onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">
+                    <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
+                </a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+{% endif %}
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="{% if current_user.is_authenticated %}micro-main{% else %}w-full{% endif %}">
+
+    {% if current_user.is_authenticated %}
+    <!-- Topbar -->
+    <header class="micro-topbar">
+        <button class="topbar-hamburger" id="sidebar-hamburger" title="Menü">
+            <i class="fas fa-bars" style="font-size:15px;"></i>
+        </button>
+
+        <span class="topbar-title">{% block page_title %}Kokpitim{% endblock %}</span>
+
+        <div class="topbar-actions">
+            <!-- Bildirim -->
+            <a href="{{ url_for('micro_bp.bildirim') }}" class="topbar-icon-btn topbar-notif-btn" title="Bildirimler"
+               data-unread-url="{{ url_for('micro_bp.bildirim_api_unread_count') }}">
+                <i class="fas fa-bell"></i>
+                <span class="topbar-notif-badge" id="notif-badge" style="display:none;"></span>
+            </a>
+
+            <!-- Kullanıcı dropdown -->
+            <div x-data="{ open: false }" style="position:relative;">
+                <button @click="open = !open"
+                        class="topbar-icon-btn"
+                        style="width:auto; padding:0 8px; gap:6px; display:flex; align-items:center;">
+                    <div class="mc-avatar mc-avatar-sm">
+                        {{ (current_user.first_name or current_user.email)[0]|upper }}
+                    </div>
+                    <span style="font-size:13px; font-weight:500; color:#475569; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" class="hidden sm:block">
+                        {{ current_user.first_name or current_user.email }}
+                    </span>
+                    <i class="fas fa-chevron-down" style="font-size:10px; color:#94a3b8;"></i>
+                </button>
+                <div x-show="open" @click.outside="open=false" x-transition x-cloak
+                     style="position:absolute; right:0; top:calc(100% + 6px); width:200px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); border:1px solid #e2e8f0; padding:6px; z-index:200;">
+                    <a href="{{ url_for('micro_bp.profil') }}"
+                       style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; text-decoration:none; transition:background 0.15s;"
+                       onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                        <i class="fas fa-user-circle" style="color:#94a3b8; width:14px;"></i> Profilim
+                    </a>
+                    <a href="{{ url_for('micro_bp.ayarlar') }}"
+                       style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; text-decoration:none; transition:background 0.15s;"
+                       onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                        <i class="fas fa-cog" style="color:#94a3b8; width:14px;"></i> Ayarlar
+                    </a>
+                    <button @click="toggleDark(); open=false"
+                            style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
+                            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                        <i class="fas fa-moon" style="color:#94a3b8; width:14px;"></i>
+                        <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
+                    </button>
+                    <hr style="border:none; border-top:1px solid #f1f5f9; margin:4px 0;">
+                    <a href="{{ url_for('auth_bp.logout') }}"
+                       style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#dc2626; font-size:13px; text-decoration:none; transition:background 0.15s;"
+                       onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
+                        <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    <!-- Flash Mesajlar -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div id="flash-messages" style="padding: 12px 24px 0;">
+        {% for category, message in messages %}
+        <div class="mc-alert mc-alert-{% if category == 'success' %}success{% elif category in ('danger','error') %}danger{% elif category == 'warning' %}warning{% else %}info{% endif %} mc-fade-in">
+            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category in ('danger','error') %}fa-exclamation-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- İçerik -->
+    <main class="micro-page">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<!-- JS -->
+<script src="{{ url_for('micro_bp.static', filename='micro/js/app.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

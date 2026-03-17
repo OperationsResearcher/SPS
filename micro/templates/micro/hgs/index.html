@@ -1,0 +1,51 @@
+{% extends "micro/base.html" %}
+{% block title %}Hızlı Giriş{% endblock %}
+{% block page_title %}Hızlı Giriş Sistemi{% endblock %}
+
+{% block content %}
+<div style="max-width:800px; margin:0 auto;">
+
+  <div class="mc-alert mc-alert-warning" style="margin-bottom:20px;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Bu sayfa yalnızca geliştirme/demo ortamı içindir. Üretim ortamında devre dışı bırakın.</span>
+  </div>
+
+  {% for group in groups %}
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-building" style="color:#6366f1; margin-right:8px;"></i>{{ group.name }}
+      </span>
+      <span class="mc-badge mc-badge-gray">{{ group.users|length }} kullanıcı</span>
+    </div>
+    <div>
+      {% for u in group.users %}
+      <a href="{{ url_for('micro_bp.hgs_login', user_id=u.id) }}"
+         style="display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid #f1f5f9; text-decoration:none; transition:background 0.15s;"
+         onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+        <div class="mc-avatar mc-avatar-sm">{{ (u.first_name or u.email)[0]|upper }}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:13.5px; font-weight:500; color:#1e293b;">
+            {{ u.first_name or '' }} {{ u.last_name or '' }}
+          </div>
+          <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            {{ u.email }}
+          </div>
+        </div>
+        <span class="mc-badge mc-badge-indigo">{{ u.role.name if u.role else '—' }}</span>
+        <i class="fas fa-sign-in-alt" style="color:#cbd5e1; font-size:14px;"></i>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="mc-card">
+    <div class="mc-empty">
+      <div class="mc-empty-icon"><i class="fas fa-users"></i></div>
+      <div class="mc-empty-title">Aktif kullanıcı bulunamadı</div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+{% endblock %}

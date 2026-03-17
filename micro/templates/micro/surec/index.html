@@ -1,0 +1,166 @@
+{% extends "micro/base.html" %}
+{% block title %}Süreç Yönetimi — Kokpitim{% endblock %}
+{% block page_title %}Süreç Yönetimi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/surec.css') }}">
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1000px; margin:0 auto;"
+     id="surec-index"
+     data-add-url="{{ url_for('micro_bp.surec_api_add') }}"
+     data-delete-url-base="/micro/surec/api/delete/">
+
+    <!-- Sayfa Başlığı -->
+    <div class="mc-page-header">
+        <div>
+            <h2 class="mc-page-title">Süreç Listesi</h2>
+            <p class="mc-page-subtitle">{{ processes|length }} süreç tanımlı</p>
+        </div>
+        <button id="btn-surec-add" class="mc-btn mc-btn-primary">
+            <i class="fas fa-plus"></i> Yeni Süreç
+        </button>
+    </div>
+
+    <!-- Süreç Ağacı -->
+    {% if roots %}
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        {% macro render_process(p, depth) %}
+        <div class="mc-card surec-tree-item" style="{% if depth > 0 %}margin-left:{{ depth * 24 }}px;{% endif %}">
+            <div style="display:flex; align-items:center; gap:12px; padding:14px 18px;">
+
+                <!-- Derinlik göstergesi -->
+                {% if depth > 0 %}
+                <div style="width:3px; height:36px; background:linear-gradient(180deg,#6366f1,#8b5cf6); border-radius:2px; flex-shrink:0;"></div>
+                {% endif %}
+
+                <!-- Kod badge -->
+                {% if p.code %}
+                <span class="mc-badge mc-badge-indigo" style="font-family:monospace; font-size:12px; flex-shrink:0;">{{ p.code }}</span>
+                {% endif %}
+
+                <!-- Ad ve meta -->
+                <div style="flex:1; min-width:0;">
+                    <a href="{{ url_for('micro_bp.surec_karne', process_id=p.id) }}"
+                       style="font-size:14px; font-weight:600; color:#1e293b; text-decoration:none; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                       class="dark:text-white surec-name-link">
+                        {{ p.name }}
+                    </a>
+                    <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+                        <span style="font-size:11.5px; color:#94a3b8;">{{ p.kpis|length }} PG</span>
+                        <div class="mc-progress" style="width:80px;">
+                            <div class="mc-progress-fill {% if p.progress >= 80 %}success{% elif p.progress >= 50 %}{% else %}warning{% endif %}"
+                                 style="width:{{ p.progress }}%;"></div>
+                        </div>
+                        <span style="font-size:11.5px; color:#64748b;">{{ p.progress }}%</span>
+                        {% if p.status %}
+                        <span class="mc-badge {% if p.status == 'active' %}mc-badge-success{% elif p.status == 'inactive' %}mc-badge-gray{% else %}mc-badge-info{% endif %}" style="font-size:11px;">
+                            {{ p.status }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- İşlemler -->
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                    <a href="{{ url_for('micro_bp.surec_karne', process_id=p.id) }}"
+                       class="mc-btn mc-btn-secondary mc-btn-sm">
+                        <i class="fas fa-chart-bar"></i> Karne
+                    </a>
+                    <button class="mc-btn mc-btn-danger mc-btn-sm btn-surec-delete"
+                            data-surec-id="{{ p.id }}"
+                            data-surec-name="{{ p.name | e }}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alt süreçler -->
+            {% if children_map.get(p.id) %}
+            <div style="padding:0 18px 14px; display:flex; flex-direction:column; gap:8px;">
+                {% for child in children_map[p.id] %}
+                    {{ render_process(child, depth + 1) }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endmacro %}
+
+        {% for root in roots %}
+            {{ render_process(root, 0) }}
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="mc-card">
+        <div class="mc-empty">
+            <div class="mc-empty-icon"><i class="fas fa-sitemap"></i></div>
+            <div class="mc-empty-title">Henüz süreç tanımlanmamış</div>
+            <div class="mc-empty-text">İlk süreci ekleyerek başlayın.</div>
+            <button id="btn-surec-add-empty" class="mc-btn mc-btn-primary">
+                <i class="fas fa-plus"></i> İlk Süreci Ekle
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Süreç Ekleme Modal -->
+<div id="modal-surec-add" class="mc-modal-backdrop" style="display:none;">
+    <div class="mc-modal" style="max-width:580px;">
+        <div class="mc-modal-header">
+            <span class="mc-modal-title"><i class="fas fa-plus-circle" style="color:#6366f1; margin-right:8px;"></i>Yeni Süreç Ekle</span>
+            <button class="mc-modal-close" id="modal-surec-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mc-modal-body">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div class="mc-form-group">
+                    <label class="mc-label">Süreç Kodu</label>
+                    <input type="text" id="surec-code" class="mc-input" placeholder="Örn: SR1">
+                </div>
+                <div class="mc-form-group">
+                    <label class="mc-label">Süreç Adı <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="surec-name" class="mc-input" placeholder="Süreç adını girin">
+                </div>
+                <div class="mc-form-group">
+                    <label class="mc-label">İngilizce Adı</label>
+                    <input type="text" id="surec-english-name" class="mc-input" placeholder="English name">
+                </div>
+                <div class="mc-form-group">
+                    <label class="mc-label">Durum</label>
+                    <select id="surec-status" class="mc-select">
+                        <option value="active">Aktif</option>
+                        <option value="inactive">Pasif</option>
+                        <option value="draft">Taslak</option>
+                    </select>
+                </div>
+                <div class="mc-form-group">
+                    <label class="mc-label">Doküman No</label>
+                    <input type="text" id="surec-doc-no" class="mc-input" placeholder="DOC-001">
+                </div>
+                <div class="mc-form-group">
+                    <label class="mc-label">Revizyon No</label>
+                    <input type="text" id="surec-rev-no" class="mc-input" placeholder="Rev.01">
+                </div>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-label">Açıklama</label>
+                <textarea id="surec-description" class="mc-textarea" placeholder="Süreç açıklaması..."></textarea>
+            </div>
+        </div>
+        <div class="mc-modal-footer">
+            <button class="mc-btn mc-btn-secondary" id="modal-surec-cancel">İptal</button>
+            <button class="mc-btn mc-btn-primary" id="btn-surec-save">
+                <i class="fas fa-save"></i> Kaydet
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/surec.js') }}"></script>
+{% endblock %}

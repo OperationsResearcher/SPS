@@ -1,0 +1,249 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}Kullanıcı Yönetimi - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/admin_users.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block admin_content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 d-none">Kullanıcı Yönetimi</h1>
+            <div>
+                {% if current_user.role.name != 'standard_user' %}
+                <button type="button" class="btn btn-warning text-dark me-2" id="btnYeniKullanici">
+                    <i class="fas fa-plus me-1"></i>Yeni Kullanıcı Ekle
+                </button>
+                <button type="button" class="btn btn-success" id="btnTopluEkle" data-bs-toggle="modal"
+                    data-bs-target="#bulkImportModal">
+                    <i class="fas fa-file-excel me-1"></i>Toplu İçe Aktar
+                </button>
+                <a href="{{ url_for('admin_bp.users_bulk_template') }}" class="btn btn-outline-info ms-2"
+                    title="Örnek Excel Şablonunu İndir">
+                    <i class="fas fa-download me-1"></i>Şablon İndir
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Rol</th>
+                                <th>Kurum</th>
+                                <th>Durum</th>
+                                <th class="text-end pe-4">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users_list %}
+                            <tr>
+                                <td class="ps-4 fw-bold">{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim or
+                                    u.email }}</td>
+                                <td>{{ u.email }}</td>
+                                <td>
+                                    {% if u.role %}
+                                    <span class="badge bg-secondary rounded-pill">{{ u.role.name }}</span>
+                                    {% else %}
+                                    <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ u.tenant.short_name or u.tenant.name if u.tenant else '—' }}</td>
+                                <td>
+                                    {% if u.is_active %}
+                                    <span class="badge bg-success rounded-pill">Aktif</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary rounded-pill">Pasif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    {% set show_action_buttons = true %}
+                                    {% if current_user.role.name == 'standard_user' and current_user.id != u.id %}
+                                    {% set show_action_buttons = false %}
+                                    {% elif current_user.role.name == 'executive_manager' and u.role and u.role.name ==
+                                    'tenant_admin' %}
+                                    {% set show_action_buttons = false %}
+                                    {% endif %}
+
+                                    {% if show_action_buttons %}
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-user-edit"
+                                        data-user-id="{{ u.id }}" data-user-email="{{ u.email|e }}"
+                                        data-user-first-name="{{ (u.first_name or '')|e }}"
+                                        data-user-last-name="{{ (u.last_name or '')|e }}"
+                                        data-user-phone-number="{{ (u.phone_number or '')|e }}"
+                                        data-user-job-title="{{ (u.job_title or '')|e }}"
+                                        data-user-department="{{ (u.department or '')|e }}"
+                                        data-user-profile-picture="{{ (u.profile_picture or '')|e }}"
+                                        data-user-tenant-id="{{ u.tenant_id or '' }}"
+                                        data-user-role-id="{{ u.role_id or '' }}" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    {% if u.id != current_user.id and u.is_active %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-user-toggle"
+                                        data-user-id="{{ u.id }}" data-user-email="{{ u.email|e }}"
+                                        title="Devre dışı bırak">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    {% elif u.id != current_user.id and not u.is_active %}
+                                    <button type="button" class="btn btn-sm btn-outline-success btn-user-toggle"
+                                        data-user-id="{{ u.id }}" data-user-email="{{ u.email|e }}" title="Aktif et">
+                                        <i class="fas fa-user-check"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">Kayıtlı kullanıcı bulunamadı.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Kullanıcı Ekle / Düzenle -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="userForm" method="post" action="{{ url_for('admin_bp.users_add') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Yeni Kullanıcı Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="first_name">Ad</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" maxlength="64"
+                                placeholder="Ahmet">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="last_name">Soyad</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" maxlength="64"
+                                placeholder="Yılmaz">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="email">E-posta <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required maxlength="255"
+                                placeholder="ornek@kurum.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="phone_number">Telefon</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="20"
+                                placeholder="+90 212 000 00 00">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="job_title">Unvan</label>
+                            <input type="text" class="form-control" id="job_title" name="job_title" maxlength="100"
+                                placeholder="Örn: Proje Yöneticisi">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="department">Departman</label>
+                            <input type="text" class="form-control" id="department" name="department" maxlength="100"
+                                placeholder="Örn: Bilgi Teknolojileri">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="tenant_id">Kurum</label>
+                            <select class="form-select" id="tenant_id" name="tenant_id">
+                                <option value="">— Seçin —</option>
+                                {% for t in tenants_list %}
+                                <option value="{{ t.id }}">{{ t.short_name or t.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="role_id">Sistem Rolü</label>
+                            <select class="form-select" id="role_id" name="role_id">
+                                <option value="">— Seçin —</option>
+                                {% for r in roles_list %}
+                                <option value="{{ r.id }}">{{ r.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="profile_picture">Profil Fotoğrafı URL</label>
+                            <input type="url" class="form-control" id="profile_picture" name="profile_picture"
+                                maxlength="500" placeholder="https://example.com/photo.jpg">
+                            <small class="text-muted">İnternetten profil fotoğrafı URL'si girebilirsiniz.</small>
+                        </div>
+                        <div class="col-12" id="userPasswordGroup">
+                            <label class="form-label" for="password">Şifre <span class="text-danger"
+                                    id="userPasswordRequired">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="6"
+                                placeholder="En az 6 karakter">
+                            <small class="text-muted" id="userPasswordHint">Düzenlemede boş bırakırsanız şifre
+                                değişmez.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-warning text-dark" id="userFormSubmit">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Toplu Kullanıcı Ekle (Bulk Import) -->
+<div class="modal fade" id="bulkImportModal" tabindex="-1" aria-labelledby="bulkImportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="bulkImportModalLabel"><i class="fas fa-file-excel me-2"></i>Toplu Kullanıcı
+                    İçe Aktar</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p>Kullanıcılarınızı Excel (.xlsx, .xls) veya CSV formatındaki dosyalar ile topluca sisteme
+                    yükleyebilirsiniz.</p>
+                <div class="mb-4">
+                    <a href="{{ url_for('admin_bp.users_bulk_template') }}" class="btn btn-outline-info btn-sm w-100">
+                        <i class="fas fa-download me-1"></i>Örnek Excel Şablonunu İndir
+                    </a>
+                </div>
+                <form id="bulkImportForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="bulkFile" class="form-label fw-bold">Yüklenecek Dosyayı Seçin</label>
+                        <input class="form-control" type="file" id="bulkFile" name="file" accept=".xlsx, .xls, .csv"
+                            required>
+                        <div class="form-text">Ad, Soyad, E-posta zorunlu alanlardır. Şifre boş bırakılırsa varsayılan
+                            atanır.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success" id="btnSubmitBulkImport">
+                    <i class="fas fa-upload me-1"></i>Yükle ve Aktar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="userManagementData" data-add-url="{{ url_for('admin_bp.users_add') }}"
+    data-edit-url="{{ url_for('admin_bp.users_edit', user_id=0) }}"
+    data-toggle-url="{{ url_for('admin_bp.users_toggle', user_id=0) }}" style="display:none;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_users.js') }}"></script>
+{% endblock %}

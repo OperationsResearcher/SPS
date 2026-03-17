@@ -1,0 +1,136 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}Strateji Akış Yönetimi - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/strategy_mgmt.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block admin_content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="strategy-mgmt-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h1 class="h4 mb-1 text-white">
+                    <i class="fas fa-project-diagram me-2"></i>Stratejik Planlama Akış Yapısı
+                </h1>
+                <p class="mb-0 opacity-90 small">Kurum strateji hiyerarşisini görüntüleyin ve yapılandırın</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <form method="get" class="d-flex align-items-center gap-2">
+                    <label class="text-white small mb-0">Kurum:</label>
+                    <select name="tenant_id" class="form-select form-select-sm" style="min-width: 200px;" onchange="this.form.submit()">
+                        <option value="">— Seçin —</option>
+                        {% for t in tenants_list %}
+                        <option value="{{ t.id }}" {% if selected_tenant and selected_tenant.id == t.id %}selected{% endif %}>
+                            {{ t.short_name or t.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+                {% if selected_tenant %}
+                <a href="{{ url_for('strategy_bp.strategic_planning_dynamic', tenant_id=selected_tenant.id) }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-bolt me-1"></i>Dinamik Akış
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if selected_tenant %}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="strategy-mgmt-flow-box flow-blue">
+            <h5>Değerler ve Etik Kurallar</h5>
+            {% set core_vals = selected_tenant.core_values or '' %}
+            {% set ethics = selected_tenant.code_of_ethics or '' %}
+            {% if core_vals or ethics %}
+            <div class="content-preview">{{ (core_vals[:100] or ethics[:100]) }}{% if (core_vals|length or ethics|length) > 100 %}...{% endif %}</div>
+            {% else %}
+            <div class="empty-state">Henüz tanımlanmadı</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="strategy-mgmt-flow-box flow-purple">
+            <h5>Amaç (Purpose)</h5>
+            {% if selected_tenant.purpose %}
+            <div class="content-preview">{{ selected_tenant.purpose[:150] }}{% if selected_tenant.purpose|length > 150 %}...{% endif %}</div>
+            {% else %}
+            <div class="empty-state">Henüz tanımlanmadı</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="strategy-mgmt-flow-box flow-blue">
+            <h5>Kalite Politikası</h5>
+            {% if selected_tenant.quality_policy %}
+            <div class="content-preview">{{ selected_tenant.quality_policy[:150] }}{% if selected_tenant.quality_policy|length > 150 %}...{% endif %}</div>
+            {% else %}
+            <div class="empty-state">Henüz tanımlanmadı</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="strategy-mgmt-flow-box flow-purple">
+            <h5>Vizyon</h5>
+            {% if selected_tenant.vision %}
+            <div class="content-preview">{{ selected_tenant.vision[:300] }}{% if selected_tenant.vision|length > 300 %}...{% endif %}</div>
+            {% else %}
+            <div class="empty-state">Henüz tanımlanmadı</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h5 class="mb-3"><i class="fas fa-sitemap me-2 text-primary"></i>Ana ve Alt Stratejiler</h5>
+        {% if strategies %}
+        {% for st in strategies %}
+        <div class="strategy-mgmt-strategy-card">
+            <h6>{{ st.code or 'ST' }} — {{ st.title }}</h6>
+            {% for ss in (st.sub_strategies or []) if ss.is_active %}
+            <div class="sub-item">{{ ss.code or '' }} {{ ss.title }}</div>
+            {% endfor %}
+            {% if not (st.sub_strategies or []) %}
+            <div class="empty-state small">Alt strateji yok</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="strategy-mgmt-flow-box">
+            <div class="empty-state">Henüz strateji tanımlanmamış</div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h5 class="mb-3"><i class="fas fa-cogs me-2 text-success"></i>Süreçler</h5>
+        {% if processes %}
+        {% for p in processes %}
+        <div class="strategy-mgmt-process-item">{{ p.code or '' }} {{ p.name }}</div>
+        {% endfor %}
+        {% else %}
+        <div class="strategy-mgmt-flow-box">
+            <div class="empty-state">Henüz süreç tanımlanmamış</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-0">Strateji akışını görüntülemek için yukarıdan bir kurum seçin.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

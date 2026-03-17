@@ -1,0 +1,163 @@
+{% extends "micro/base.html" %}
+{% block title %}E-posta Ayarları — Kokpitim{% endblock %}
+{% block page_title %}E-posta Ayarları{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/ayarlar_eposta.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="eposta-page-wrap"
+     data-save-url="{{ url_for('micro_bp.ayarlar_eposta_save') }}"
+     data-test-url="{{ url_for('micro_bp.ayarlar_eposta_test') }}"
+     data-send-test-url="{{ url_for('micro_bp.ayarlar_eposta_send_test') }}">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">E-posta Bildirimleri</h2>
+      <p class="mc-page-subtitle">Kurumunuza ait e-posta gönderim ayarlarını yapılandırın.</p>
+    </div>
+  </div>
+
+  <!-- ── Sistem Bilgisi ── -->
+  <div class="mc-alert mc-alert-info eposta-info-banner">
+    <i class="fas fa-info-circle"></i>
+    <span>Özel SMTP yapılandırmazsanız bildirimler <strong>bildirim@kokpitim.com</strong> adresinden gönderilir.</span>
+  </div>
+
+  <!-- ── Özel SMTP Kartı ── -->
+  <div class="mc-card eposta-card">
+    <div class="eposta-section-header">
+      <div>
+        <div class="eposta-section-title"><i class="fas fa-server"></i> Özel SMTP Sunucusu</div>
+        <div class="eposta-section-sub">Kurumunuzun kendi e-posta sunucusunu kullanın.</div>
+      </div>
+      <!-- Toggle -->
+      <label class="eposta-toggle" title="Özel SMTP'yi etkinleştir">
+        <input type="checkbox" id="use_custom_smtp"
+               {% if cfg and cfg.use_custom_smtp %}checked{% endif %}>
+        <span class="eposta-toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- SMTP Alanları -->
+    <div id="smtp-fields" class="eposta-smtp-fields {% if not cfg or not cfg.use_custom_smtp %}eposta-hidden{% endif %}">
+      <div class="eposta-grid">
+        <div class="mc-form-group">
+          <label class="mc-label">SMTP Sunucu Adresi</label>
+          <input type="text" id="smtp_host" class="mc-input"
+                 placeholder="smtp.gmail.com"
+                 value="{{ cfg.smtp_host or '' if cfg else '' }}">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-label">Port</label>
+          <input type="number" id="smtp_port" class="mc-input"
+                 placeholder="587"
+                 value="{{ cfg.smtp_port or 587 if cfg else 587 }}">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-label">Kullanıcı Adı / E-posta</label>
+          <input type="text" id="smtp_username" class="mc-input"
+                 placeholder="bildirim@firma.com"
+                 value="{{ cfg.smtp_username or '' if cfg else '' }}">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-label">Şifre</label>
+          <input type="password" id="smtp_password" class="mc-input"
+                 placeholder="Değiştirmek için girin">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-label">Gönderici Adı</label>
+          <input type="text" id="sender_name" class="mc-input"
+                 placeholder="Firma Adı Bildirimleri"
+                 value="{{ cfg.sender_name or '' if cfg else '' }}">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-label">Gönderici E-posta</label>
+          <input type="email" id="sender_email" class="mc-input"
+                 placeholder="bildirim@firma.com"
+                 value="{{ cfg.sender_email or '' if cfg else '' }}">
+        </div>
+      </div>
+
+      <!-- TLS / SSL seçenekleri -->
+      <div class="eposta-tls-row">
+        <label class="eposta-check-label">
+          <input type="checkbox" id="smtp_use_tls"
+                 {% if not cfg or cfg.smtp_use_tls %}checked{% endif %}>
+          <span>STARTTLS kullan (port 587)</span>
+        </label>
+        <label class="eposta-check-label">
+          <input type="checkbox" id="smtp_use_ssl"
+                 {% if cfg and cfg.smtp_use_ssl %}checked{% endif %}>
+          <span>SSL/TLS kullan (port 465)</span>
+        </label>
+      </div>
+
+      <!-- Bağlantı Test -->
+      <div class="eposta-test-row">
+        <button id="btn-test-conn" class="mc-btn mc-btn-secondary mc-btn-sm">
+          <i class="fas fa-plug"></i> Bağlantıyı Test Et
+        </button>
+        <span id="test-conn-result" class="eposta-test-result"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bildirim Tercihleri Kartı ── -->
+  <div class="mc-card eposta-card">
+    <div class="eposta-section-title" style="margin-bottom:16px;">
+      <i class="fas fa-bell"></i> Hangi Olaylar İçin Mail Gitsin?
+    </div>
+
+    <div class="eposta-pref-list">
+      <label class="eposta-pref-item">
+        <div>
+          <div class="eposta-pref-name">Sürece Atama</div>
+          <div class="eposta-pref-desc">Kullanıcı bir sürece lider veya üye olarak atandığında</div>
+        </div>
+        <input type="checkbox" id="notify_on_process_assign" class="eposta-pref-check"
+               {% if not cfg or cfg.notify_on_process_assign %}checked{% endif %}>
+      </label>
+
+      <label class="eposta-pref-item">
+        <div>
+          <div class="eposta-pref-name">Performans Göstergesi Değişikliği</div>
+          <div class="eposta-pref-desc">Süreçte PG eklendiğinde veya güncellendiğinde</div>
+        </div>
+        <input type="checkbox" id="notify_on_kpi_change" class="eposta-pref-check"
+               {% if not cfg or cfg.notify_on_kpi_change %}checked{% endif %}>
+      </label>
+
+      <label class="eposta-pref-item">
+        <div>
+          <div class="eposta-pref-name">Faaliyet Ekleme</div>
+          <div class="eposta-pref-desc">Sürece yeni faaliyet eklendiğinde</div>
+        </div>
+        <input type="checkbox" id="notify_on_activity_add" class="eposta-pref-check"
+               {% if not cfg or cfg.notify_on_activity_add %}checked{% endif %}>
+      </label>
+
+      <label class="eposta-pref-item">
+        <div>
+          <div class="eposta-pref-name">Görev Atama</div>
+          <div class="eposta-pref-desc">Projede kullanıcıya görev atandığında</div>
+        </div>
+        <input type="checkbox" id="notify_on_task_assign" class="eposta-pref-check"
+               {% if not cfg or cfg.notify_on_task_assign %}checked{% endif %}>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── Kaydet / Test Mail ── -->
+  <div class="eposta-actions">
+    <button id="btn-send-test" class="mc-btn mc-btn-secondary">
+      <i class="fas fa-paper-plane"></i> Test Maili Gönder
+    </button>
+    <button id="btn-save" class="mc-btn mc-btn-primary">
+      <i class="fas fa-save"></i> Kaydet
+    </button>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends "micro/base.html" %}
+{% block title %}Kurum Yönetimi{% endblock %}
+{% block page_title %}Kurum Yönetimi{% endblock %}
+
+{% block content %}
+<div id="admin-tenants-root"
+     data-add-url="{{ url_for('micro_bp.admin_tenants_add') }}"
+     data-edit-base="/micro/admin/tenants/edit/"
+     data-toggle-base="/micro/admin/tenants/toggle/"
+     data-packages='{{ packages | map(attribute="id") | list | tojson }}'
+     data-package-names='{{ packages | map(attribute="name") | list | tojson }}'>
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Kurum Yönetimi</h2>
+      <p class="mc-page-subtitle">Toplam {{ tenants|length }} kurum</p>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="btn-toggle-archived" class="mc-btn mc-btn-secondary mc-btn-sm">
+        <i class="fas fa-archive"></i> Arşivlenenleri Göster
+      </button>
+      {% if current_user.role and current_user.role.name == 'Admin' %}
+      <button id="btn-tenant-add" class="mc-btn mc-btn-primary">
+        <i class="fas fa-plus"></i> Kurum Ekle
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mc-grid-4" style="margin-bottom:20px;">
+    <div class="mc-stat-card mc-stat-purple">
+      <div class="mc-stat-icon"><i class="fas fa-building"></i></div>
+      <div class="mc-stat-value">{{ tenants|length }}</div>
+      <div class="mc-stat-label">Toplam Kurum</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="mc-stat-value">{{ tenants|selectattr('is_active')|list|length }}</div>
+      <div class="mc-stat-label">Aktif Kurum</div>
+    </div>
+    <div class="mc-stat-card mc-stat-red">
+      <div class="mc-stat-icon"><i class="fas fa-archive"></i></div>
+      <div class="mc-stat-value">{{ tenants|rejectattr('is_active')|list|length }}</div>
+      <div class="mc-stat-label">Arşivlenmiş</div>
+    </div>
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
+      <div class="mc-stat-value">{{ total_users }}</div>
+      <div class="mc-stat-label">Toplam Kullanıcı</div>
+    </div>
+  </div>
+
+  <div class="mc-table-wrap">
+    <table class="mc-table" id="tenants-table">
+      <thead>
+        <tr>
+          <th>Kurum</th>
+          <th>Sektör</th>
+          <th>Paket</th>
+          <th>Lisans Bitiş</th>
+          <th style="text-align:center;">Maks. Kullanıcı</th>
+          <th style="text-align:center;">Durum</th>
+          <th style="text-align:center;">İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tenants %}
+        <tr data-archived="{{ 'true' if not t.is_active else 'false' }}">
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="mc-avatar mc-avatar-sm" style="background:#ede9fe; color:#7c3aed;">
+                {{ (t.short_name or t.name)[0]|upper }}
+              </div>
+              <div>
+                <div style="font-weight:600; color:#1e293b; font-size:13.5px;">{{ t.name }}</div>
+                <div style="font-size:11px; color:#94a3b8;">
+                  {{ t.short_name or '' }}{% if t.short_name and t.contact_email %} · {% endif %}{{ t.contact_email or '' }}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td style="color:#64748b; font-size:13px;">{{ t.sector or '—' }}</td>
+          <td>
+            {% if t.package %}
+            <span class="mc-badge mc-badge-indigo">{{ t.package.name }}</span>
+            {% else %}
+            <span style="color:#94a3b8; font-size:12px;">—</span>
+            {% endif %}
+          </td>
+          <td style="font-size:12px; color:#64748b;">
+            {{ t.license_end_date.strftime('%d.%m.%Y') if t.license_end_date else '—' }}
+          </td>
+          <td style="text-align:center;">
+            <span class="mc-badge mc-badge-gray">{{ t.max_user_count or 5 }}</span>
+          </td>
+          <td style="text-align:center;">
+            <span class="mc-badge {% if t.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}">
+              {{ 'Aktif' if t.is_active else 'Arşiv' }}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-tenant-detail"
+                      data-tenant-id="{{ t.id }}" title="Detay">
+                <i class="fas fa-eye"></i>
+              </button>
+              {% if current_user.role and current_user.role.name == 'Admin' or current_user.tenant_id == t.id %}
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-tenant-edit"
+                      data-tenant-id="{{ t.id }}"
+                      data-name="{{ t.name | e }}"
+                      data-short-name="{{ t.short_name or '' | e }}"
+                      data-sector="{{ t.sector or '' | e }}"
+                      data-activity-area="{{ t.activity_area or '' | e }}"
+                      data-employee-count="{{ t.employee_count or '' }}"
+                      data-contact-email="{{ t.contact_email or '' | e }}"
+                      data-phone-number="{{ t.phone_number or '' | e }}"
+                      data-website-url="{{ t.website_url or '' | e }}"
+                      data-tax-office="{{ t.tax_office or '' | e }}"
+                      data-tax-number="{{ t.tax_number or '' | e }}"
+                      data-max-user-count="{{ t.max_user_count or 5 }}"
+                      data-license-end-date="{{ t.license_end_date.strftime('%Y-%m-%d') if t.license_end_date else '' }}"
+                      data-package-id="{{ t.package_id or '' }}"
+                      data-package-name="{{ t.package.name if t.package else '' }}"
+                      title="Düzenle">
+                <i class="fas fa-edit"></i> Düzenle
+              </button>
+              {% endif %}
+              {% if current_user.role and current_user.role.name == 'Admin' %}
+              <button class="mc-btn mc-btn-sm {% if t.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-tenant-toggle"
+                      data-tenant-id="{{ t.id }}"
+                      data-name="{{ t.name | e }}"
+                      data-active="{{ 'true' if t.is_active else 'false' }}">
+                {{ 'Arşivle' if t.is_active else 'Aktifleştir' }}
+              </button>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">Kurum bulunamadı.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Detay Modal -->
+  <div id="tenant-detail-modal" class="mc-modal-overlay">
+    <div class="mc-modal">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-building"></i>
+          <span id="detail-modal-title">Kurum Detayı</span>
+        </div>
+        <button id="btn-close-detail" class="mc-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="detail-modal-body" class="mc-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Kurum Ekle / Düzenle Modal -->
+  <div id="tenant-edit-modal" class="mc-modal-overlay">
+    <div class="mc-modal mc-modal-lg">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-building"></i>
+          <span id="edit-modal-heading">Kurum Düzenle</span>
+        </div>
+        <button class="mc-modal-close" id="btn-edit-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="mc-modal-body">
+
+        <div class="tm-section-label">Temel Bilgiler</div>
+        <div class="tm-grid-2">
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Kurum Adı <span class="req">*</span></label>
+            <input id="em-name" class="mc-form-input" placeholder="Kurum adı">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Kısa Ad</label>
+            <input id="em-short" class="mc-form-input" placeholder="Kısa ad">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Sektör</label>
+            <input id="em-sector" class="mc-form-input" placeholder="Örn: Danışmanlık">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Faaliyet Alanı</label>
+            <input id="em-activity" class="mc-form-input" placeholder="Faaliyet alanı">
+          </div>
+        </div>
+
+        <div class="tm-section-label">İletişim</div>
+        <div class="tm-grid-2">
+          <div class="tm-field">
+            <label class="mc-form-label">E-posta</label>
+            <input id="em-email" class="mc-form-input" type="email" placeholder="kurum@ornek.com">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Telefon</label>
+            <input id="em-phone" class="mc-form-input" placeholder="+90 212 000 00 00">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Web Adresi</label>
+            <input id="em-web" class="mc-form-input" placeholder="https://www.ornek.com">
+          </div>
+        </div>
+
+        <div class="tm-section-label">Kurumsal & Lisans</div>
+        <div class="tm-grid-2">
+          <div class="tm-field">
+            <label class="mc-form-label">Çalışan Sayısı</label>
+            <input id="em-emp" class="mc-form-input" type="number" min="1" placeholder="0">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Maks. Kullanıcı</label>
+            <input id="em-maxu" class="mc-form-input" type="number" min="1" placeholder="5">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Lisans Bitiş Tarihi</label>
+            <input id="em-lic" class="mc-form-input" type="date">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Abonelik Paketi</label>
+            <select id="em-package" class="mc-form-input">
+              <option value="">— Paket Seç —</option>
+              {% for p in packages %}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Vergi Dairesi</label>
+            <input id="em-taxoff" class="mc-form-input" placeholder="Vergi dairesi">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Vergi No</label>
+            <input id="em-taxno" class="mc-form-input" placeholder="Vergi numarası">
+          </div>
+        </div>
+
+      </div>
+      <div class="mc-modal-footer">
+        <button id="btn-edit-modal-cancel" class="mc-btn mc-btn-secondary">İptal</button>
+        <button id="btn-edit-modal-save" class="mc-btn mc-btn-primary">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/admin.js') }}"></script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/admin.js') }}"></script>
+{% endblock %}

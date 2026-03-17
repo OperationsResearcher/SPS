@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block title %}Kurum Paneli - Sistem Kokpiti{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tenant_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box icon-box-primary bg-primary text-white d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px; border-radius: 12px; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-right: 1rem;">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div>
+                        <h2 class="mb-0 fw-bold">Kurum Paneli</h2>
+                        <p class="text-muted mb-0">Hoş Geldiniz, {{ current_user.first_name or current_user.username }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stratejik Kimlik Kartları -->
+    <div class="row mb-4">
+        <!-- 1. Satır: Amaç ve Vizyon -->
+        <div class="col-md-6 mb-3">
+            <div class="card modern-card border-primary h-100 shadow-sm" id="purposeCard" data-card-id="purposeCard">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Amaç</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">purposeCard</span>
+                        <i class="fa-solid fa-pen edit-trigger me-3" data-field="purpose" data-title="Amaç"
+                            style="opacity: 0.8;" data-bs-toggle="tooltip" data-bs-placement="top" title="Düzenle"></i>
+                        <i class="fa-solid fa-circle-info me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Kurumun kuruluş amacını ve varoluş nedenini açıklar."
+                            style="cursor:help; opacity:0.9;"></i>
+                        <i class="fas fa-chevron-down ms-1 collapse-btn-icon" data-bs-toggle="collapse"
+                            data-bs-target="#purposeBody" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div id="purposeBody" class="collapse show card-body p-4 bg-light">
+                    <div class="d-none raw-content" id="raw-purpose">{{ current_user.tenant.purpose or '' }}</div>
+                    <p class="mb-0" style="font-size: 1.1rem; line-height: 1.6;">{{ current_user.tenant.purpose or
+                        'Henüz kurum amacı tanımlanmamış.' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card modern-card border-success h-100 shadow-sm" id="visionCard" data-card-id="visionCard">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Vizyon</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">visionCard</span>
+                        <i class="fa-solid fa-pen edit-trigger me-3" data-field="vision" data-title="Vizyon"
+                            style="opacity: 0.8;" data-bs-toggle="tooltip" data-bs-placement="top" title="Düzenle"></i>
+                        <i class="fa-solid fa-circle-info me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Vizyon, kurumun gelecekte ulaşmak istediği ideal konumu tanımlar. Stratejik planlamanın temel taşıdır."
+                            style="cursor:help; opacity:0.9;"></i>
+                        <i class="fas fa-chevron-down ms-1 collapse-btn-icon" data-bs-toggle="collapse"
+                            data-bs-target="#visionBody" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div id="visionBody" class="collapse show card-body p-4 bg-light">
+                    <div class="d-none raw-content" id="raw-vision">{{ current_user.tenant.vision or '' }}</div>
+                    <p class="mb-0" style="font-size: 1.1rem; line-height: 1.6;">{{ current_user.tenant.vision or 'Henüz
+                        kurum vizyonu tanımlanmamış.' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Satır: Değerler, Etik Kurallar, Kalite Politikası -->
+        <div class="col-md-4 mb-3">
+            <div class="card modern-card h-100 shadow-sm border-info" id="coreValuesCard" data-card-id="coreValuesCard" style="border-top-color: #0dcaf0;">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Değerler</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">coreValuesCard</span>
+                        <i class="fa-solid fa-pen edit-trigger me-3" data-field="core_values" data-title="Değerler"
+                            style="opacity: 0.8;" data-bs-toggle="tooltip" data-bs-placement="top" title="Düzenle"></i>
+                        <i class="fa-solid fa-circle-info me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Kurum kültürünü oluşturan temel inanç ve prensiplerdir."
+                            style="cursor:help; opacity:0.9;"></i>
+                        <i class="fas fa-chevron-down ms-1 collapse-btn-icon" data-bs-toggle="collapse"
+                            data-bs-target="#coreValuesBody" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div id="coreValuesBody" class="collapse show card-body p-3 bg-light">
+                    <div class="d-none raw-content" id="raw-core_values">{{ current_user.tenant.core_values or '' }}
+                    </div>
+                    {% set values = current_user.tenant.core_values %}
+                    {% if values %}
+                    <ul class="strategy-list strategy-list-info">
+                        {% for val in values.split('\n') %}
+                        {% if val.strip() %}
+                        <li class="strategy-item">
+                            <div class="strategy-icon"><i class="fa-solid fa-heart"></i></div>
+                            <div class="strategy-content-box">
+                                <span class="strategy-text">{{ val.strip() }}</span>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="mb-0 text-muted">Değerler tanımlanmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card modern-card h-100 shadow-sm border-warning" id="ethicsCard" data-card-id="ethicsCard" style="border-top-color: #ffc107;">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-gavel me-2"></i>Etik Kurallar</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge bg-dark bg-opacity-25 text-dark me-2" title="Kart ID">ethicsCard</span>
+                        <i class="fa-solid fa-pen edit-trigger text-dark me-3" data-field="code_of_ethics"
+                            data-title="Etik Kurallar" style="opacity: 0.8;" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Düzenle"></i>
+                        <i class="fa-solid fa-circle-info text-dark me-3" data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Tüm paydaşlarla ilişkilerde uyulması gereken temel ahlaki kurallardır."
+                            style="cursor:help; opacity:0.9;"></i>
+                        <i class="fas fa-chevron-down text-dark ms-1 collapse-btn-icon" data-bs-toggle="collapse"
+                            data-bs-target="#ethicsBody" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div id="ethicsBody" class="collapse show card-body p-3 bg-light">
+                    <div class="d-none raw-content" id="raw-code_of_ethics">{{ current_user.tenant.code_of_ethics or ''
+                        }}</div>
+                    {% set ethics = current_user.tenant.code_of_ethics %}
+                    {% if ethics %}
+                    <ul class="strategy-list strategy-list-warning">
+                        {% for val in ethics.split('\n') %}
+                        {% if val.strip() %}
+                        <li class="strategy-item">
+                            <div class="strategy-icon"><i class="fa-solid fa-gavel"></i></div>
+                            <div class="strategy-content-box">
+                                <span class="strategy-text">{{ val.strip() }}</span>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="mb-0 text-muted">Etik kurallar tanımlanmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card modern-card h-100 shadow-sm border-danger" id="qualityPolicyCard" data-card-id="qualityPolicyCard" style="border-top-color: #dc3545;">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-award me-2"></i>Kalite Politikası</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">qualityPolicyCard</span>
+                        <i class="fa-solid fa-pen edit-trigger me-3" data-field="quality_policy"
+                            data-title="Kalite Politikası" style="opacity: 0.8;" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Düzenle"></i>
+                        <i class="fa-solid fa-circle-info me-3" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Kurumun kalite standartlarını ve müşteri odaklılığını ifade eder."
+                            style="cursor:help; opacity:0.9;"></i>
+                        <i class="fas fa-chevron-down ms-1 collapse-btn-icon" data-bs-toggle="collapse"
+                            data-bs-target="#qualityBody" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div id="qualityBody" class="collapse show card-body p-3 bg-light">
+                    <div class="d-none raw-content" id="raw-quality_policy">{{ current_user.tenant.quality_policy or ''
+                        }}</div>
+                    {% set quality = current_user.tenant.quality_policy %}
+                    {% if quality %}
+                    <ul class="strategy-list strategy-list-danger">
+                        {% for val in quality.split('\n') %}
+                        {% if val.strip() %}
+                        <li class="strategy-item">
+                            <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+                            <div class="strategy-content-box">
+                                <span class="strategy-text">{{ val.strip() }}</span>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="mb-0 text-muted">Kalite politikası tanımlanmamış.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategy Dynamic Update Modal -->
+    <div class="modal fade" id="dynamicStrategyModal" tabindex="-1" aria-labelledby="dynamicStrategyModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="dynamicStrategyModalLabel"><i class="fas fa-edit me-2"></i><span
+                            id="dsModalTitleText">Düzenle</span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="dynamicStrategyForm">
+                        <input type="hidden" name="field_name" id="dsFieldName">
+                        <div class="mb-3">
+                            <label for="dsFieldValue" class="form-label fw-bold text-muted small">İçerik (Liste görünümü
+                                için her maddeyi yeni bir satıra yazın)</label>
+                            <textarea class="form-control" id="dsFieldValue" name="field_value" rows="6"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="dsSaveBtn">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STRATEJİLER MODÜLÜ -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card modern-card shadow-sm border-0" id="strategyCard" data-card-id="strategyCard">
+                <div class="card-header gradient-header text-white d-flex justify-content-between align-items-center py-3 border-bottom border-0"
+                    data-bs-toggle="collapse" data-bs-target="#strategyPlanningBody" style="cursor: pointer;">
+                    <h4 class="mb-0 fw-bold d-flex align-items-center">
+                        <i class="fas fa-crown me-3 text-white"></i>Stratejiler
+                        <span class="badge bg-light text-dark ms-3 border">{{ strategies|length }} Ana Strateji</span>
+                    </h4>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">strategyCard</span>
+                        <button class="btn btn-sm btn-light text-primary fw-bold me-3 shadow-sm border-0"
+                            data-bs-toggle="modal" data-bs-target="#addMainStrategyModal"
+                            onclick="event.stopPropagation();">
+                            <i class="fas fa-plus me-1"></i> Yeni Ana Strateji
+                        </button>
+                        <i class="fa-solid fa-circle-info me-3 text-white" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Kurumun temel stratejileri ve onlara bağlı hedefler."
+                            style="cursor:help;"></i>
+                        <i class="fas fa-chevron-up ms-1 collapse-btn-icon text-white"></i>
+                    </div>
+                </div>
+                <div id="strategyPlanningBody" class="collapse show card-body p-4 bg-light">
+                    <div class="row flex-nowrap overflow-auto pb-3 px-2" style="gap: 20px;">
+                        {% for st in strategies %}
+                        {% set active_subs = st.sub_strategies|selectattr('is_active')|list %}
+                        <div class="col-12 col-md-5 col-lg-4 p-0">
+                            <div class="card h-100 border-0 shadow-sm"
+                                style="border-left: 4px solid #0d6efd !important; border-radius: 8px;"
+                                data-strategy-id="{{ st.id }}">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="fw-bold text-primary mb-0 d-flex align-items-start">
+                                            <i class="fas fa-layer-group me-2 mt-1"></i> {{ st.title }}
+                                        </h5>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-primary btn-sm edit-main-strategy-btn"
+                                                data-strategy-id="{{ st.id }}"
+                                                data-strategy-title="{{ st.title }}"
+                                                data-strategy-description="{{ st.description or '' }}"
+                                                title="Düzenle"><i class="fas fa-edit"></i></button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm delete-main-strategy-btn"
+                                                data-strategy-id="{{ st.id }}"
+                                                data-strategy-title="{{ st.title }}"
+                                                title="Sil"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small mb-3">{{ st.description }}</p>
+                                    <div
+                                        class="badge bg-success bg-opacity-10 text-success mb-4 px-3 py-2 border border-success border-opacity-25 rounded-pill">
+                                        <i class="fas fa-sitemap me-1"></i> {{ active_subs|length }} Alt Strateji
+                                    </div>
+
+                                    <div class="sub-strategies-list mb-4">
+                                        {% for sub in active_subs %}
+                                        <div class="card border mb-2 shadow-none rounded-3" data-sub-id="{{ sub.id }}">
+                                            <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa-solid fa-angles-right text-success me-3"></i>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold text-dark">{{ sub.title }}</h6>
+                                                        <p class="mb-0 small text-muted">{{ sub.description }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-sm btn-light border edit-sub-strategy-btn"
+                                                        data-sub-id="{{ sub.id }}"
+                                                        data-sub-title="{{ sub.title }}"
+                                                        data-sub-description="{{ sub.description or '' }}"
+                                                        title="Düzenle"><i class="fas fa-edit text-dark"></i></button>
+                                                    <button type="button" class="btn btn-sm btn-light border delete-sub-strategy-btn"
+                                                        data-sub-id="{{ sub.id }}"
+                                                        data-sub-title="{{ sub.title }}"
+                                                        title="Sil"><i class="fas fa-trash text-danger"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <p class="text-muted small fst-italic">Henüz alt strateji eklenmemiş.</p>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="btn btn-success w-100 text-white fw-bold shadow-sm add-sub-strategy-btn"
+                                        data-bs-toggle="modal" data-bs-target="#addSubStrategyModal"
+                                        data-strategy-id="{{ st.id }}">
+                                        + Alt Strateji
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted mb-0">Henüz stratejik planlama yapılmamış. "Yeni Ana Strateji Ekle"
+                                butonu ile başlayabilirsiniz.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Main Strategy Modal -->
+    <div class="modal fade" id="addMainStrategyModal" tabindex="-1" aria-labelledby="addMainStrategyModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addMainStrategyModalLabel"><i class="fas fa-plus-circle me-2"></i>Yeni
+                        Ana Strateji Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMainStrategyForm">
+                        <div class="mb-3">
+                            <label for="mainStrategyTitle" class="form-label fw-bold">Strateji Adı</label>
+                            <input type="text" class="form-control" id="mainStrategyTitle" name="title" required
+                                placeholder="Örn: KMF'nin stratejik yönünü belirlemek">
+                        </div>
+                        <div class="mb-3">
+                            <label for="mainStrategyDesc" class="form-label fw-bold text-muted small">Açıklama</label>
+                            <textarea class="form-control" id="mainStrategyDesc" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="saveMainStrategyBtn">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Sub Strategy Modal -->
+    <div class="modal fade" id="addSubStrategyModal" tabindex="-1" aria-labelledby="addSubStrategyModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="addSubStrategyModalLabel"><i class="fas fa-plus-circle me-2"></i>Alt Strateji Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSubStrategyForm">
+                        <input type="hidden" id="parentStrategyId" name="strategy_id">
+                        <input type="hidden" id="editSubStrategyId" name="edit_sub_id" value="">
+                        <div class="mb-3">
+                            <label for="subStrategyTitle" class="form-label fw-bold">Alt Strateji Adı</label>
+                            <input type="text" class="form-control" id="subStrategyTitle" name="title" required
+                                placeholder="Örn: Stratejik plan hazırlamak">
+                        </div>
+                        <div class="mb-3">
+                            <label for="subStrategyDesc" class="form-label fw-bold text-muted small">Açıklama</label>
+                            <textarea class="form-control" id="subStrategyDesc" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-success text-white" id="saveSubStrategyBtn">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Main Strategy Modal -->
+    <div class="modal fade" id="editMainStrategyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Ana Strateji Düzenle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMainStrategyForm">
+                        <input type="hidden" id="editMainStrategyId" value="">
+                        <div class="mb-3">
+                            <label for="editMainStrategyTitle" class="form-label fw-bold">Strateji Adı</label>
+                            <input type="text" class="form-control" id="editMainStrategyTitle" required
+                                placeholder="Örn: KMF'nin stratejik yönünü belirlemek">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMainStrategyDesc" class="form-label fw-bold text-muted small">Açıklama</label>
+                            <textarea class="form-control" id="editMainStrategyDesc" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="saveEditMainStrategyBtn">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card" id="statUsersCard" data-card-id="statUsersCard" style="border-left-color: #667eea;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box icon-box-primary me-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-primary">{{ stats.user_count }}</div>
+                            <div class="text-muted small">Aktif Kullanıcı</div>
+                        </div>
+                    </div>
+                    <span class="card-id-badge text-muted border" style="font-size:0.6rem;" title="Kart ID">statUsersCard</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card" id="statPackageCard" data-card-id="statPackageCard" style="border-left-color: #11998e;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box icon-box-success me-3">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-success" style="font-size: 1.5rem;">{{ stats.package_name }}</div>
+                            <div class="text-muted small">Mevcut Abonelik Paketi</div>
+                        </div>
+                    </div>
+                    <span class="card-id-badge text-muted border" style="font-size:0.6rem;" title="Kart ID">statPackageCard</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card" id="statUsageCard" data-card-id="statUsageCard" style="border-left-color: #4facfe;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box icon-box-info me-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-info">{{ stats.usage_percent }}%</div>
+                            <div class="text-muted small">Kullanıcı Limiti Doluluğu</div>
+                        </div>
+                    </div>
+                    <span class="card-id-badge text-muted border" style="font-size:0.6rem;" title="Kart ID">statUsageCard</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card" id="statTicketsCard" data-card-id="statTicketsCard" style="border-left-color: #f093fb;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box icon-box-warning me-3">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value text-danger">{{ stats.active_tickets }}</div>
+                            <div class="text-muted small">Bekleyen Talepler</div>
+                        </div>
+                    </div>
+                    <span class="card-id-badge text-muted border" style="font-size:0.6rem;" title="Kart ID">statTicketsCard</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Grafik Alanı -->
+        <div class="col-md-8 mb-4">
+            <div class="card modern-card h-100" id="overviewChartCard" data-card-id="overviewChartCard">
+                <div class="card-header gradient-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="fas fa-chart-pie me-3" style="font-size: 1.5rem;"></i>
+                        <h5 class="mb-0 text-white">Genel İzleme Grafiği</h5>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="card-id-badge me-2" title="Kart ID">overviewChartCard</span>
+                        <button class="btn btn-light btn-sm collapse-btn">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="card-body p-4 card-body-collapsible d-flex align-items-center justify-content-center">
+                    <!-- JS'e veri geçirmek için data attribute -->
+                    <div id="dashboardChartContainer" style="width: 100%; height: 350px;"
+                        data-chart-data='{{ dict(user_count=stats.user_count, max_limit=stats.package_limit, active_tickets=stats.active_tickets)|tojson|safe }}'>
+                        <canvas id="tenantOverviewChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Destek Talepleri Kartı -->
+        <div class="col-md-4 mb-4">
+            <div class="card modern-card h-100" id="recentActivitiesCard" data-card-id="recentActivitiesCard">
+                <div class="card-header gradient-header d-flex justify-content-between align-items-center"
+                    style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="fas fa-ticket-alt me-3" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h5 class="mb-0 text-white">Son Destek Talepleri</h5>
+                            <small class="opacity-90">Kurumunuzdan açılan son 5 talep</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center flex-shrink-0">
+                        <span class="card-id-badge me-2" title="Kart ID">recentActivitiesCard</span>
+                        <button class="btn btn-light btn-sm collapse-btn">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0 card-body-collapsible" style="overflow-y: auto; max-height: 280px;">
+                    {% if recent_activities %}
+                    <ul class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <li class="list-group-item border-0 border-bottom py-3 px-4">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="fw-semibold text-dark mb-1 text-break">{{ activity.subject }}</div>
+                                    <small class="text-muted d-flex align-items-center">
+                                        <i class="fas fa-clock me-1" style="font-size: 0.7rem;"></i>
+                                        {{ activity.date }}
+                                    </small>
+                                </div>
+                                <span class="badge rounded-pill flex-shrink-0
+                                    {% if activity.status == 'Bekliyor' %}bg-warning text-dark
+                                    {% elif activity.status == 'İnceleniyor' %}bg-info
+                                    {% elif activity.status == 'Çözüldü' %}bg-success
+                                    {% elif activity.status == 'Reddedildi' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ activity.status }}
+                                </span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center py-5 px-4">
+                        <i class="fas fa-inbox fa-3x mb-3 text-secondary opacity-50"></i>
+                        <p class="text-muted mb-0">Henüz destek talebi bulunmuyor.</p>
+                        <small class="text-muted">Kule üzerinden talep oluşturduğunuzda burada listelenecektir.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js and Custom JS for Dashboard -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/tenant_dashboard.js') }}"></script>
+{% endblock %}

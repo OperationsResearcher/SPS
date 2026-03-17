@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Yönetim Paneli - Kokpitim{% endblock %}
+
+{% block content %}
+<div class="container-fluid mb-4">
+    <div class="row align-items-center bg-white p-3 rounded shadow-sm border">
+        <div class="col-12 col-md-4">
+            <h2 class="h4 mb-0 text-primary fw-bold"><i class="fas fa-cogs me-2"></i>Yönetim Paneli</h2>
+        </div>
+        <div class="col-12 col-md-8 mt-3 mt-md-0">
+            <ul class="nav nav-pills justify-content-md-end nav-fill nav-justified-sm">
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'tenants' %}active fw-bold{% endif %}"
+                        href="{{ url_for('admin_bp.tenants') }}">
+                        <i class="fas fa-building me-1"></i>Kurumlar
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link {% if active_tab == 'users' %}active fw-bold{% endif %}"
+                        href="{{ url_for('admin_bp.users') }}">
+                        <i class="fas fa-users me-1"></i>Kullanıcılar
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link {% if active_tab == 'packages' %}active fw-bold{% endif %}"
+                        href="{{ url_for('admin_bp.packages') }}">
+                        <i class="fas fa-cubes me-1"></i>SaaS Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link {% if active_tab == 'strategy_mgmt' %}active fw-bold{% endif %}"
+                        href="{{ url_for('admin_bp.strategy_management') }}">
+                        <i class="fas fa-project-diagram me-1"></i>Strateji Akışı
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link disabled text-muted" href="#" tabindex="-1" aria-disabled="true">
+                        <i class="fas fa-sitemap me-1"></i>Yetki Matrisi
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link {% if active_tab == 'kule' %}active fw-bold{% endif %}"
+                        href="{{ url_for('admin_bp.kule_iletisim') }}">
+                        <i class="fas fa-broadcast-tower me-1"></i>Kule İletişim
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    {% block admin_content %}{% endblock %}
+</div>
+{% endblock %}

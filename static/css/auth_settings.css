@@ -1,0 +1,75 @@
+/* Ayarlar sayfasi - auth_settings */
+
+.settings-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.settings-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.fade-in-up {
+    animation: settingsFadeInUp 0.4s ease-out;
+}
+
+@keyframes settingsFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.settings-theme-option {
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.settings-theme-option:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.settings-theme-option:has(input:checked) {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.settings-color-buttons .btn {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+}
+
+.settings-guide-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.settings-avatar-pill {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-avatar-professional {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.settings-avatar-friendly {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.settings-avatar-minimal {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.settings-toast-container {
+    z-index: 11;
+}

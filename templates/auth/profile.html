@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Profilim - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/auth_profile.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div id="profileData"
+    data-upload-photo-url="{{ url_for('auth_bp.upload_profile_photo') }}"
+    style="display:none;"></div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-user-circle me-2"></i>
+            Profilim
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sol Kolon - Profil Bilgileri -->
+    <div class="col-lg-4 mb-4">
+        <div class="card profile-card fade-in-up">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-user me-2"></i>
+                <strong>Profil Bilgileri</strong>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4 position-relative">
+                    <div id="profilePhotoContainer">
+                        {% if current_user.profile_picture %}
+                            {% set photo_url = current_user.profile_picture %}
+                            {% if not photo_url.startswith('http://') and not photo_url.startswith('https://') %}
+                                {% set photo_url = photo_url if photo_url.startswith('/') else '/' ~ photo_url %}
+                            {% endif %}
+                            <img id="profilePhotoImg" src="{{ photo_url }}" alt="Profil" class="profile-photo-img rounded-circle">
+                        {% else %}
+                            <div id="profilePhotoPlaceholder" class="profile-photo-placeholder rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <input type="file" id="profilePhotoInput" accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml,image/webp" class="d-none">
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="profilePhotoUploadBtn">
+                            <i class="fas fa-camera me-2"></i>Fotoğraf Yükle
+                        </button>
+                    </div>
+                    <div id="photoUploadProgress" class="mt-2 profile-upload-progress">
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <small class="text-muted d-block mt-1">Fotoğraf yükleniyor...</small>
+                    </div>
+                </div>
+
+                <h4 class="mb-2">{{ ((current_user.first_name or '') ~ ' ' ~ (current_user.last_name or ''))|trim or current_user.email }}</h4>
+                <p class="text-muted mb-3">{{ current_user.email }}</p>
+
+                {% if current_user.role %}
+                <div class="mb-3">
+                    <span class="badge bg-primary px-3 py-2 profile-role-badge">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        {{ current_user.role.name }}
+                    </span>
+                </div>
+                {% endif %}
+
+                {% if current_user.tenant %}
+                <div class="alert alert-info">
+                    <i class="fas fa-building me-2"></i>
+                    <strong>{{ current_user.tenant.short_name or current_user.tenant.name }}</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sağ Kolon - Profil Düzenleme -->
+    <div class="col-lg-8 mb-4">
+        <div class="card profile-card fade-in-up">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-edit me-2"></i>
+                <strong>Profili Düzenle</strong>
+            </div>
+            <div class="card-body">
+                <form id="profileForm" method="post" action="{{ url_for('auth_bp.profile') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="first_name">Ad</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ current_user.first_name or '' }}" maxlength="64" placeholder="Ad">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="last_name">Soyad</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ current_user.last_name or '' }}" maxlength="64" placeholder="Soyad">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="email">E-posta <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required maxlength="255" placeholder="ornek@kurum.com">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="phone_number">Telefon</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ current_user.phone_number or '' }}" maxlength="20" placeholder="+90 212 000 00 00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="job_title">Unvan</label>
+                            <input type="text" class="form-control" id="job_title" name="job_title" value="{{ current_user.job_title or '' }}" maxlength="100" placeholder="Proje Yöneticisi">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="department">Departman</label>
+                            <input type="text" class="form-control" id="department" name="department" value="{{ current_user.department or '' }}" maxlength="100" placeholder="Bilgi İşlem">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label" for="profile_picture">Profil Fotoğrafı URL</label>
+                            <input type="text" class="form-control" id="profile_picture" name="profile_picture" value="{{ current_user.profile_picture or '' }}" maxlength="500" placeholder="https://... veya /static/uploads/...">
+                            <small class="text-muted">Tam URL veya static dosya yolu. Fotoğraf yükle butonuyla da ekleyebilirsiniz.</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h5 class="mb-3"><i class="fas fa-key me-2"></i>Şifre Değiştir</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label" for="current_password">Mevcut Şifre</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password" placeholder="Mevcut şifreniz">
+                            <small class="text-muted">Şifre değiştirmek için zorunlu</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label" for="new_password">Yeni Şifre</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" placeholder="Yeni şifre" minlength="6">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label" for="confirm_password">Yeni Şifre (Tekrar)</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Yeni şifre tekrar">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Not:</strong> Şifre değiştirmek istemiyorsanız şifre alanlarını boş bırakın.
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <a href="{{ url_for('dashboard_bp.index') }}" class="btn btn-secondary me-2">
+                            <i class="fas fa-times me-2"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="profileFormSubmit">
+                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3 profile-toast-container">
+    <div id="profileToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2 profile-toast-icon"></i>
+            <strong class="me-auto">Bildirim</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">İşlem başarılı!</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth_profile.js') }}"></script>
+{% endblock %}

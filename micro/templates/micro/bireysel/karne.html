@@ -1,0 +1,143 @@
+{% extends "micro/base.html" %}
+{% block title %}Bireysel Karne{% endblock %}
+{% block page_title %}Bireysel Performans Karnem{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/surec.css') }}">
+{% endblock %}
+
+{% block content %}
+<div id="bireysel-root"
+     data-karne-api-url="{{ url_for('micro_bp.bireysel_api_karne') }}"
+     data-pg-add-url="{{ url_for('micro_bp.bireysel_api_pg_add') }}"
+     data-veri-add-url="{{ url_for('micro_bp.bireysel_api_veri_add') }}"
+     data-faaliyet-add-url="{{ url_for('micro_bp.bireysel_api_faaliyet_add') }}"
+     data-pg-delete-base="/micro/bireysel/api/pg/delete/"
+     data-faaliyet-delete-base="/micro/bireysel/api/faaliyet/delete/"
+     data-faaliyet-track-base="/micro/bireysel/api/faaliyet/track/"
+     data-current-year="{{ current_year }}"
+     style="max-width:1200px; margin:0 auto;">
+
+  <!-- Üst bar -->
+  <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+      <div style="flex:1; min-width:0;">
+        <h2 class="mc-page-title" style="margin:0;">Bireysel Performans Karnem</h2>
+        <p class="mc-page-subtitle">Kişisel PG ve faaliyet takibi</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label class="mc-label" style="margin:0; white-space:nowrap;">Yıl:</label>
+        <select id="year-select" class="mc-select" style="width:auto;">
+          {% for y in range(current_year + 1, current_year - 5, -1) %}
+          <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Özet istatistikler -->
+  <div class="mc-grid-4" style="margin-bottom:20px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
+      <div class="mc-stat-label">Toplam PG</div>
+      <div class="mc-stat-value" id="stat-total-pg">—</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="mc-stat-label">Veri Girilen</div>
+      <div class="mc-stat-value" id="stat-filled-pg">—</div>
+    </div>
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
+      <div class="mc-stat-label">Faaliyetler</div>
+      <div class="mc-stat-value" id="stat-activities">—</div>
+    </div>
+    <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
+      <div class="mc-stat-label">Tamamlanan</div>
+      <div class="mc-stat-value" id="stat-done-pct">—</div>
+    </div>
+  </div>
+
+  <!-- Yükleniyor -->
+  <div id="karne-loading" class="mc-empty" style="display:none;">
+    <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
+    <div class="mc-empty-text" style="margin-top:8px;">Veriler yükleniyor…</div>
+  </div>
+
+  <!-- PG Tablosu -->
+  <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-bullseye" style="color:#6366f1; margin-right:8px;"></i>Performans Göstergelerim
+      </span>
+      <button id="btn-pg-add" class="mc-btn mc-btn-primary mc-btn-sm">
+        <i class="fas fa-plus"></i> PG Ekle
+      </button>
+    </div>
+    <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+      <table class="mc-table karne-table">
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th style="min-width:180px;">Gösterge</th>
+            <th style="text-align:center;">Hedef</th>
+            <th style="text-align:center;">Birim</th>
+            {% for m in range(1, 13) %}
+            <th class="month-col" style="text-align:center;">
+              {{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}
+            </th>
+            {% endfor %}
+            <th style="text-align:center;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="pg-tbody">
+          <tr>
+            <td colspan="17" style="text-align:center; padding:32px; color:#94a3b8;">Yükleniyor…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Faaliyet Tablosu -->
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>Faaliyetlerim
+      </span>
+      <button id="btn-faaliyet-add" class="mc-btn mc-btn-success mc-btn-sm">
+        <i class="fas fa-plus"></i> Faaliyet Ekle
+      </button>
+    </div>
+    <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+      <table class="mc-table karne-table">
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th style="min-width:180px;">Faaliyet</th>
+            <th style="text-align:center;">Durum</th>
+            {% for m in range(1, 13) %}
+            <th class="month-col" style="text-align:center;">
+              {{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}
+            </th>
+            {% endfor %}
+            <th style="text-align:center;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="faaliyet-tbody">
+          <tr>
+            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">Yükleniyor…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/bireysel.js') }}"></script>
+{% endblock %}

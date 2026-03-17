@@ -1,0 +1,10 @@
+/* Kullanici Yonetimi - Admin Users */
+
+.card.shadow.border-0 .btn-user-edit,
+.card.shadow.border-0 .btn-user-toggle {
+    padding: 0.25rem 0.5rem;
+}
+
+.card.shadow.border-0 .table th {
+    font-weight: 600;
+}

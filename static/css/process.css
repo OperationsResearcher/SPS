@@ -1,0 +1,103 @@
+/* Process Management Styles */
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.process-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.process-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1) !important;
+}
+
+.process-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem;
+    border: none;
+}
+
+.process-card .process-code {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.process-card .process-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.process-stat-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+}
+
+.process-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.process-stat-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.progress-thin {
+    height: 6px;
+    border-radius: 3px;
+}
+
+/* Timeline specific styles for detail view */
+.kpi-row {
+    border-left: 4px solid #dee2e6;
+    margin-left: 20px;
+    padding-left: 20px;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.kpi-row::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #667eea;
+}
+
+.activity-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.activity-badge.planned { background-color: #e9ecef; color: #495057; }
+.activity-badge.ongoing { background-color: #cff4fc; color: #055160; }
+.activity-badge.completed { background-color: #d1e7dd; color: #0f5132; }
+
+/* Modal specific */
+.modal-header.gradient-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}

@@ -1,0 +1,624 @@
+{% extends "base.html" %}
+
+{% block title %}Süreç Yönetim Paneli{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/process_panel.css') }}">
+{% endblock %}
+
+{# Veri aktarımı: Kural 5 — data-* attribute ile (inline script yok) #}
+{% set _strategies_json = strategies_json|tojson %}
+
+{% block content %}
+<div id="processPanelData" data-strategies='{{ _strategies_json }}' class="d-none" aria-hidden="true"></div>
+<div class="container-fluid mt-4">
+
+    <!-- Başlık -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary mb-1">
+                <i class="bi bi-diagram-3-fill"></i> Süreç Yönetim Paneli
+            </h2>
+            <p class="text-muted mb-0">
+                <i class="bi bi-building"></i>
+                <strong>{{ current_user.tenant.name if current_user.tenant else 'Kurum' }}</strong>
+                — Süreçlerinizi buradan yönetebilirsiniz
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if current_user.role and current_user.role.name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+            <button class="btn btn-success btn-lg shadow" data-bs-toggle="modal" data-bs-target="#newProcessModal">
+                <i class="bi bi-plus-circle-fill"></i> Yeni Süreç Oluştur
+            </button>
+            {% else %}
+            <div class="alert alert-info mb-0 py-2">
+                <i class="bi bi-info-circle"></i> Süreçlerinizi görüntüleyebilir ve karne verilerinizi girebilirsiniz
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Kullanıcı Rol Kartı -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-person-badge me-2"></i>Süreç Rolleriniz</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-primary">Lider Olduğunuz Süreçler:</h6>
+                    {% set my_led = [] %}
+                    {% for p in processes %}{% if current_user in p.leaders %}{% set _ = my_led.append(p) %}{% endif
+                    %}{% endfor %}
+                    {% if my_led %}
+                    {% for p in my_led %}
+                    <span class="badge bg-primary me-1 mb-1">{{ p.name }}</span>
+                    {% endfor %}
+                    {% else %}
+                    <span class="text-muted">Lider olduğunuz süreç yok</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-secondary">Üye Olduğunuz Süreçler:</h6>
+                    {% set my_mem = [] %}
+                    {% for p in processes %}{% if current_user in p.members %}{% set _ = my_mem.append(p) %}{% endif
+                    %}{% endfor %}
+                    {% if my_mem %}
+                    {% for p in my_mem %}
+                    <span class="badge bg-secondary me-1 mb-1">{{ p.name }}</span>
+                    {% endfor %}
+                    {% else %}
+                    <span class="text-muted">Üye olduğunuz süreç yok</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mevcut Süreçler Kartı -->
+    <div class="card shadow-sm mb-4">
+        <div
+            class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="mb-0">
+                <i class="bi bi-diagram-3"></i> Mevcut Süreçler
+                <span class="badge bg-light text-primary ms-2">{{ processes|length }}</span>
+            </h5>
+            {% if pagination and pagination.pages > 1 %}
+            <nav class="mb-0" aria-label="Süreç sayfalama">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link"
+                            href="{{ url_for('process_bp.index', page=pagination.prev_num) if pagination.has_prev else '#' }}">Önceki</a>
+                    </li>
+                    <li class="page-item disabled"><span class="page-link">{{ pagination.page }} / {{ pagination.pages
+                            }}</span></li>
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link"
+                            href="{{ url_for('process_bp.index', page=pagination.next_num) if pagination.has_next else '#' }}">Sonraki</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+            <small><i class="bi bi-building-fill"></i> {{ current_user.tenant.name if current_user.tenant else ''
+                }}</small>
+        </div>
+        <div class="card-body">
+            {% if processes %}
+            <div id="surec-tree-tbody" class="row g-4">
+
+                <!-- Kök Süreçler -->
+                {% for root in (processes_roots or []) %}
+                <div class="col-12">
+                    <div class="card surec-root-card shadow-sm surec-card-clickable"
+                        data-karne-url="{{ url_for('process_bp.karne', process_id=root.id) }}" style="cursor:pointer;">
+                        <div class="card-body"
+                            onclick="var t=event.target; if(!t.closest('.btn-group')) window.location.href=this.closest('.surec-card-clickable').dataset.karneUrl">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 process-icon-circle">
+                                        <i class="bi bi-diagram-2 text-primary fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 text-primary">{{ root.name }}</h6>
+                                        {% if root.description %}
+                                        <small class="text-muted">{{ root.description[:80] }}{% if
+                                            root.description|length > 80 %}...{% endif %}</small>
+                                        {% endif %}
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge bg-{% if root.status == 'Aktif' %}success{% elif root.status == 'Pasif' %}secondary{% elif root.status == 'Beklemede' %}warning text-dark{% else %}info{% endif %} me-1">{{
+                                                root.status }}</span>
+                                            {% if root.document_no %}<span
+                                                class="badge bg-light text-dark border me-1">{{ root.document_no
+                                                }}</span>{% endif %}
+                                            {% if root.code %}<span class="badge bg-secondary">{{ root.code }}</span>{%
+                                            endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('process_bp.karne', process_id=root.id) }}"
+                                        class="btn btn-outline-success" title="Süreç Karnesi">
+                                        <i class="bi bi-file-earmark-spreadsheet"></i> Karne
+                                    </a>
+                                    <button class="btn btn-outline-primary" onclick="viewProcess({{ root.id }})"
+                                        title="Detaylar">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                    {% if current_user.role and current_user.role.name in ['tenant_admin',
+                                    'executive_manager', 'Admin'] %}
+                                    <button class="btn btn-outline-warning text-dark"
+                                        onclick="editProcess({{ root.id }})" title="Düzenle">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger"
+                                        onclick="deleteProcess({{ root.id }}, '{{ root.name|e }}')" title="Sil">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3 small text-muted mb-2">
+                                <span><i class="bi bi-graph-up me-1"></i>İlerleme: <strong>{{ root.progress
+                                        }}%</strong></span>
+                                <span><i class="bi bi-star me-1"></i>Lider: {{ root.leaders|length }}</span>
+                                <span><i class="bi bi-people me-1"></i>Üye: {{ root.members|length }}</span>
+                                <span><i class="bi bi-bullseye me-1"></i>PG: {{ root.kpis|length }}</span>
+                            </div>
+
+                            <div class="progress mb-3" style="height:6px;">
+                                <div class="progress-bar bg-success" style="width:{{ root.progress }}%"></div>
+                            </div>
+
+                            <!-- Alt Süreçler -->
+                            {% set alt_list = (processes_children or {}).get(root.id, []) %}
+                            {% if alt_list %}
+                            <div class="surec-alt-list mt-3">
+                                <div class="small fw-bold text-primary mb-2">
+                                    <i class="bi bi-diagram-3 me-1"></i>Bağlı alt süreçler ({{ alt_list|length }})
+                                </div>
+                                {% for child in alt_list %}
+                                <div class="surec-alt-item d-flex justify-content-between align-items-center gap-2"
+                                    style="cursor:pointer;"
+                                    onclick="var t=event.target; if(!t.closest('.btn-group')) window.location.href='{{ url_for('process_bp.karne', process_id=child.id) }}'">
+                                    <div>
+                                        <span class="text-dark fw-medium">{{ child.name }}</span>
+                                        {% if child.document_no %}<span
+                                            class="badge bg-light text-dark border ms-1 small">{{ child.document_no
+                                            }}</span>{% endif %}
+                                    </div>
+                                    <div class="btn-group btn-group-sm flex-shrink-0">
+                                        <a href="{{ url_for('process_bp.karne', process_id=child.id) }}"
+                                            class="btn btn-outline-success btn-sm py-0 px-2" title="Karne">
+                                            <i class="bi bi-file-earmark-spreadsheet"></i>
+                                        </a>
+                                        <button class="btn btn-outline-primary btn-sm py-0 px-2"
+                                            onclick="viewProcess({{ child.id }})" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        {% if current_user.role and current_user.role.name in ['tenant_admin',
+                                        'executive_manager', 'Admin'] %}
+                                        <button class="btn btn-outline-warning btn-sm py-0 px-2 text-dark"
+                                            onclick="editProcess({{ child.id }})" title="Düzenle">
+                                            <i class="bi bi-pencil me-1"></i>Düzenle
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Orphan Süreçler -->
+                {% if processes_orphans %}
+                <div class="col-12">
+                    <div class="card border-secondary shadow-sm">
+                        <div class="card-header bg-light small fw-bold">
+                            <i class="bi bi-diagram-3 me-1"></i>Diğer süreçler (üst süreç bu sayfada değil)
+                        </div>
+                        <div class="card-body py-2">
+                            {% for s in processes_orphans %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light surec-orphan-row"
+                                style="cursor:pointer;"
+                                onclick="var t=event.target; if(!t.closest('.btn-group')) window.location.href='{{ url_for('process_bp.karne', process_id=s.id) }}'">
+                                <span>{{ s.name }}</span>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('process_bp.karne', process_id=s.id) }}"
+                                        class="btn btn-outline-success" title="Karne">
+                                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                                    </a>
+                                    <button class="btn btn-outline-primary btn-sm py-0"
+                                        onclick="viewProcess({{ s.id }})"><i class="bi bi-eye"></i></button>
+                                    {% if current_user.role and current_user.role.name in ['tenant_admin',
+                                    'executive_manager', 'Admin'] %}
+                                    <button class="btn btn-outline-warning btn-sm py-0 text-dark"
+                                        onclick="editProcess({{ s.id }})"><i class="bi bi-pencil"></i> Düzenle</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc; opacity: 0.3;"></i>
+                <h5 class="text-muted mt-3 mb-3">Henüz Süreç Eklenmemiş</h5>
+                <p class="text-muted mb-4">Kurumunuz için ilk süreci oluşturarak başlayabilirsiniz.</p>
+                {% if current_user.role and current_user.role.name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+                <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#newProcessModal">
+                    <i class="bi bi-plus-circle me-2"></i>İlk Süreci Oluştur
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- ── MODALS ───────────────────────────────────────────────────────────── -->
+
+<!-- Süreç Detay / Görüntüle Modal -->
+<div class="modal fade" id="viewProcessModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-diagram-2 me-2"></i><span id="view_process_title">Süreç
+                        Detayı</span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="viewProcessBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="view_karne_btn" href="#" class="btn btn-success"><i
+                        class="bi bi-file-earmark-spreadsheet me-1"></i>Karnesi</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Süreç Modal -->
+<div class="modal fade" id="newProcessModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>Yeni Süreç Oluştur</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newProcessForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="bi bi-bookmark-fill text-primary"></i> Süreç Adı
+                                *</label>
+                            <input type="text" class="form-control form-control-lg" id="np_name"
+                                placeholder="Örn: Satın Alma Süreci" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Süreç Kodu</label>
+                            <input type="text" class="form-control" id="np_code" placeholder="SR-01">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Durum</label>
+                            <select class="form-select" id="np_status">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Pasif">Pasif</option>
+                                <option value="Beklemede">Beklemede</option>
+                                <option value="Tamamlandı">Tamamlandı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Doküman No</label>
+                            <input type="text" class="form-control" id="np_document_no" placeholder="DOK-001">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Revizyon No</label>
+                            <input type="text" class="form-control" id="np_revision_no" placeholder="Rev-1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Revizyon Tarihi</label>
+                            <input type="date" class="form-control" id="np_revision_date">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">İlk Yayın Tarihi</label>
+                            <input type="date" class="form-control" id="np_first_publish_date">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label"><i class="bi bi-diagram-3"></i> Üst Süreç (Parent)</label>
+                            <select class="form-select" id="np_parent_id">
+                                <option value="">— Bağımsız (Üst Süreç Yok) —</option>
+                                {% for p, depth in parent_options_with_depth %}
+                                <option value="{{ p.id }}">{{ "— " * depth }}{{ p.name }}{% if p.code %} ({{ p.code
+                                    }}){% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="bi bi-box-arrow-right text-success"></i>
+                                Başlangıç Sınırı</label>
+                            <textarea class="form-control" id="np_start_boundary" rows="2"
+                                placeholder="Sürecin başlangıç noktası..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="bi bi-box-arrow-in-left text-danger"></i> Bitiş
+                                Sınırı</label>
+                            <textarea class="form-control" id="np_end_boundary" rows="2"
+                                placeholder="Sürecin bitiş noktası..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="np_description" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">İlerleme (%)</label>
+                            <input type="number" class="form-control" id="np_progress" min="0" max="100" value="0">
+                        </div>
+
+                        <!-- Liderler -->
+                        <div class="col-12">
+                            <div class="card bg-warning bg-opacity-10">
+                                <div class="card-header bg-warning"><strong><i class="bi bi-star-fill"></i> Süreç
+                                        Liderleri</strong></div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Kullanıcılar</label>
+                                            <select class="form-select" id="np_lider_source" multiple size="5">
+                                                {% for u in users %}
+                                                <option value="{{ u.id }}">{{ u.first_name }} {{ u.last_name }} ({{
+                                                    u.email }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div
+                                            class="col-md-2 d-flex flex-column align-items-center justify-content-center gap-2">
+                                            <button type="button" class="btn btn-success btn-sm w-100"
+                                                onclick="transferUsers('np_lider_source','np_lider_ids')"><i
+                                                    class="bi bi-arrow-right"></i> Ekle</button>
+                                            <button type="button" class="btn btn-danger btn-sm w-100"
+                                                onclick="transferUsers('np_lider_ids','np_lider_source')"><i
+                                                    class="bi bi-arrow-left"></i> Çıkar</button>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Seçilen Liderler</label>
+                                            <select class="form-select" id="np_lider_ids" multiple size="5"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Üyeler -->
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-header"><strong>Süreç Üyeleri</strong></div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Kullanıcılar</label>
+                                            <select class="form-select" id="np_uye_source" multiple size="5">
+                                                {% for u in users %}
+                                                <option value="{{ u.id }}">{{ u.first_name }} {{ u.last_name }} ({{
+                                                    u.email }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div
+                                            class="col-md-2 d-flex flex-column align-items-center justify-content-center gap-2">
+                                            <button type="button" class="btn btn-success btn-sm w-100"
+                                                onclick="transferUsers('np_uye_source','np_uye_ids')"><i
+                                                    class="bi bi-arrow-right"></i> Ekle</button>
+                                            <button type="button" class="btn btn-danger btn-sm w-100"
+                                                onclick="transferUsers('np_uye_ids','np_uye_source')"><i
+                                                    class="bi bi-arrow-left"></i> Çıkar</button>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Seçilen Üyeler</label>
+                                            <select class="form-select" id="np_uye_ids" multiple size="5"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success px-4" id="saveNewProcessBtn">
+                    <i class="bi bi-check-circle me-1"></i>Süreci Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Süreç Düzenle Modal -->
+<div class="modal fade" id="editProcessModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="bi bi-pencil-fill me-2"></i>Süreci Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProcessForm">
+                    <input type="hidden" id="ep_id">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Süreç Adı *</label>
+                            <input type="text" class="form-control" id="ep_name" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Süreç Kodu</label>
+                            <input type="text" class="form-control" id="ep_code">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Durum</label>
+                            <select class="form-select" id="ep_status">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Pasif">Pasif</option>
+                                <option value="Beklemede">Beklemede</option>
+                                <option value="Tamamlandı">Tamamlandı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Doküman No</label>
+                            <input type="text" class="form-control" id="ep_document_no">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Revizyon No</label>
+                            <input type="text" class="form-control" id="ep_revision_no">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Revizyon Tarihi</label>
+                            <input type="date" class="form-control" id="ep_revision_date">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">İlk Yayın Tarihi</label>
+                            <input type="date" class="form-control" id="ep_first_publish_date">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Üst Süreç</label>
+                            <select class="form-select" id="ep_parent_id">
+                                <option value="">— Bağımsız —</option>
+                                {% for p, depth in parent_options_with_depth %}
+                                <option value="{{ p.id }}">{{ "— " * depth }}{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Başlangıç Sınırı</label>
+                            <textarea class="form-control" id="ep_start_boundary" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bitiş Sınırı</label>
+                            <textarea class="form-control" id="ep_end_boundary" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="ep_description" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">İlerleme (%)</label>
+                            <input type="number" class="form-control" id="ep_progress" min="0" max="100">
+                        </div>
+
+                        <!-- Edit Liderler -->
+                        <div class="col-12">
+                            <div class="card bg-warning bg-opacity-10">
+                                <div class="card-header bg-warning"><strong><i class="bi bi-star-fill"></i> Süreç
+                                        Liderleri</strong></div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Kullanıcılar</label>
+                                            <select class="form-select" id="ep_lider_source" multiple size="5">
+                                                {% for u in users %}
+                                                <option value="{{ u.id }}">{{ u.first_name }} {{ u.last_name }} ({{
+                                                    u.email }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div
+                                            class="col-md-2 d-flex flex-column align-items-center justify-content-center gap-2">
+                                            <button type="button" class="btn btn-success btn-sm w-100"
+                                                onclick="transferUsers('ep_lider_source','ep_lider_ids')"><i
+                                                    class="bi bi-arrow-right"></i> Ekle</button>
+                                            <button type="button" class="btn btn-danger btn-sm w-100"
+                                                onclick="transferUsers('ep_lider_ids','ep_lider_source')"><i
+                                                    class="bi bi-arrow-left"></i> Çıkar</button>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Seçilen Liderler</label>
+                                            <select class="form-select" id="ep_lider_ids" multiple size="5"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Alt Stratejiler (katkı yüzdesi ile) -->
+                        <div class="col-12">
+                            <div class="card bg-primary bg-opacity-10 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <strong><i class="bi bi-bullseye me-1"></i>Alt Stratejiler (Katkı Dağılımı)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">Süreci alt stratejilerinize bağlayın; her bağlantı
+                                        için katkı yüzdesi girin (örn: %40, %60).</p>
+                                    <div id="ep_sub_strategy_links">
+                                        <!-- Satırlar JS ile eklenir -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mt-2"
+                                        id="ep_add_sub_strategy_row">
+                                        <i class="bi bi-plus-circle me-1"></i>Bağlantı Ekle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Üyeler -->
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-header"><strong>Süreç Üyeleri</strong></div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Kullanıcılar</label>
+                                            <select class="form-select" id="ep_uye_source" multiple size="5">
+                                                {% for u in users %}
+                                                <option value="{{ u.id }}">{{ u.first_name }} {{ u.last_name }} ({{
+                                                    u.email }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div
+                                            class="col-md-2 d-flex flex-column align-items-center justify-content-center gap-2">
+                                            <button type="button" class="btn btn-success btn-sm w-100"
+                                                onclick="transferUsers('ep_uye_source','ep_uye_ids')"><i
+                                                    class="bi bi-arrow-right"></i> Ekle</button>
+                                            <button type="button" class="btn btn-danger btn-sm w-100"
+                                                onclick="transferUsers('ep_uye_ids','ep_uye_source')"><i
+                                                    class="bi bi-arrow-left"></i> Çıkar</button>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Seçilen Üyeler</label>
+                                            <select class="form-select" id="ep_uye_ids" multiple size="5"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-warning px-4" id="saveEditProcessBtn">
+                    <i class="bi bi-check-circle me-1"></i>Değişiklikleri Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/process_panel.js') }}"></script>
+{% endblock %}

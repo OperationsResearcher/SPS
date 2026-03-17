@@ -1,0 +1,50 @@
+/* HGS - Hızlı Giriş Ekranı */
+
+.quick-login-btn {
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #051626 !important;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-login-btn:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+    color: #051626 !important;
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+}
+
+.quick-login-btn:active {
+    background: rgba(0, 0, 0, 0.08) !important;
+    transform: none;
+}
+
+.role-filter {
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #6c757d !important;
+}
+
+.role-filter:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
+    color: #051626 !important;
+}
+
+.role-filter.active {
+    background: rgba(5, 22, 38, 0.1) !important;
+    border-color: rgba(5, 22, 38, 0.3) !important;
+    color: #051626 !important;
+    font-weight: 600;
+}
+
+.hgs .input-group-text {
+    background: #f8f9fa !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #051626 !important;
+}

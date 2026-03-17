@@ -1,0 +1,146 @@
+/* Layout Toggle - Klasik / Sidebar */
+
+.layout-toggle {
+    position: relative;
+    z-index: 1051;
+}
+
+.layout-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    min-width: 200px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1060;
+}
+
+.layout-menu.show {
+    display: block;
+}
+
+.layout-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #212529;
+    text-decoration: none;
+}
+
+.layout-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.layout-option.active {
+    background: rgba(13, 110, 253, 0.15);
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.layout-option .layout-active-check {
+    margin-left: auto;
+    color: #198754;
+}
+
+.layout-option.active .layout-active-check {
+    color: #0d6efd;
+}
+
+/* Layout Classic: Sidebar gizli, main tam genislik */
+body.layout-classic .layout-sidebar-aside {
+    display: none !important;
+}
+
+body.layout-classic .layout-main {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Layout Sidebar: Sidebar gorunur */
+body.layout-sidebar .layout-sidebar-aside {
+    display: block;
+}
+
+/* Navbar User Avatar */
+.navbar-avatar {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.navbar-avatar:hover {
+    transform: scale(1.1);
+}
+
+/* Navbar Icon Buttons - Theme Toggle / Actions */
+.navbar-icon-btn {
+    background: #f8f9fa;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #051626;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.navbar-icon-btn:hover {
+    background: rgba(5, 22, 38, 0.1);
+    color: #051626;
+    border-color: rgba(5, 22, 38, 0.2);
+}
+
+.navbar-icon-btn i {
+    font-size: 1.1rem;
+}
+
+/* Kule İletişim Butonu */
+.navbar-icon-btn.kule-btn {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    color: #ff6b35;
+    animation: pulse-tower 2s infinite;
+}
+
+.navbar-icon-btn.kule-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+    border-color: rgba(255, 107, 53, 0.5);
+    color: #ff8c42;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+}
+
+.navbar-icon-btn.kule-btn i {
+    color: #ff6b35;
+}
+
+.navbar-icon-btn.kule-btn:hover i {
+    color: #ff8c42;
+}
+
+@keyframes pulse-tower {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(255, 107, 53, 0);
+    }
+}

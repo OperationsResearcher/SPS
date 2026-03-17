@@ -1,0 +1,34 @@
+{% extends "micro/base.html" %}
+{% block title %}Yetkisiz Erişim — Kokpitim{% endblock %}
+{% block page_title %}Erişim Reddedildi{% endblock %}
+
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:center; min-height:60vh;">
+  <div style="text-align:center; max-width:420px;">
+
+    <!-- İkon -->
+    <div style="width:96px; height:96px; border-radius:50%; background:#fee2e2; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:40px;">
+      <i class="fas fa-lock" style="color:#dc2626;"></i>
+    </div>
+
+    <!-- Hata kodu -->
+    <div style="font-size:72px; font-weight:800; color:#f1f5f9; line-height:1; margin-bottom:8px;">403</div>
+
+    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 8px;">Erişim Reddedildi</h2>
+    <p style="font-size:14px; color:#64748b; margin:0 0 28px; line-height:1.6;">
+      Bu sayfayı görüntüleme yetkiniz bulunmuyor.<br>
+      Yöneticinizle iletişime geçin.
+    </p>
+
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <a href="{{ url_for('micro_bp.launcher') }}" class="mc-btn mc-btn-primary">
+        <i class="fas fa-home"></i> Ana Sayfaya Dön
+      </a>
+      <button onclick="history.back()" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Git
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "micro/base.html" %}
+{% block title %}Stratejik Planlama — Kokpitim{% endblock %}
+{% block page_title %}Stratejik Planlama{% endblock %}
+
+{% block content %}
+<div style="max-width:900px; margin:0 auto;"
+     data-add-url="{{ url_for('micro_bp.sp_add_strategy') }}"
+     data-csrf="{{ csrf_token() }}">
+
+  <!-- Sayfa başlığı -->
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Stratejik Planlama</h2>
+      <p class="mc-page-subtitle">{{ strategies|length }} ana strateji tanımlı</p>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <a href="{{ url_for('micro_bp.sp_swot') }}" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-th-list"></i> SWOT Analizi
+      </a>
+      <a href="{{ url_for('micro_bp.sp_flow') }}" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-project-diagram"></i> Akış Görünümü
+      </a>
+      {% if current_user.role and current_user.role.name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+      <button id="btnAddStrategy" class="mc-btn mc-btn-primary">
+        <i class="fas fa-plus"></i> Strateji Ekle
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- SWOT özet kartları -->
+  {% if swot_counts %}
+  <div class="mc-grid-4" style="margin-bottom:20px;">
+    {% for cat, label, color in [
+        ('strength',    'Güçlü Yönler', 'emerald'),
+        ('weakness',    'Zayıf Yönler', 'red'),
+        ('opportunity', 'Fırsatlar',    'blue'),
+        ('threat',      'Tehditler',    'amber')
+    ] %}
+    <a href="{{ url_for('micro_bp.sp_swot') }}" class="mc-stat-card mc-stat-{{ color }}" style="text-decoration:none; display:block;">
+      <div class="mc-stat-label">{{ label }}</div>
+      <div class="mc-stat-value">{{ swot_counts.get(cat, 0) }}</div>
+      <div class="mc-stat-sub">SWOT maddesi</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Kurum kimliği -->
+  {% if tenant and (tenant.vision or tenant.purpose) %}
+  <div class="mc-alert mc-alert-info" style="margin-bottom:20px;">
+    {% if tenant.vision %}
+    <div>
+      <strong style="font-size:11px; text-transform:uppercase; letter-spacing:0.05em;">Vizyon</strong>
+      <p style="margin:4px 0 0; font-size:13px;">{{ tenant.vision }}</p>
+    </div>
+    {% endif %}
+    {% if tenant.purpose %}
+    <div style="margin-top:8px;">
+      <strong style="font-size:11px; text-transform:uppercase; letter-spacing:0.05em;">Amaç</strong>
+      <p style="margin:4px 0 0; font-size:13px;">{{ tenant.purpose }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Strateji listesi -->
+  <div style="display:flex; flex-direction:column; gap:10px;" id="strategyList">
+    {% for s in strategies %}
+    <div class="mc-card" data-strategy-id="{{ s.id }}">
+      <div style="display:flex; align-items:center; gap:12px; padding:16px 20px;">
+        <span class="mc-badge mc-badge-indigo" style="font-family:monospace; flex-shrink:0;">{{ s.code or '—' }}</span>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:14px; font-weight:600; color:#1e293b;">{{ s.title }}</div>
+          {% if s.description %}
+          <div 
+style="font-size:12px; color:#94a3b8; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ s.description }}</div>
+          {% endif %}
+        </div>
+        <span style="font-size:12px; color:#94a3b8; flex-shrink:0;">
+          {{ s.sub_strategies|selectattr('is_active')|list|length }} alt strateji
+        </span>
+        {% if current_user.role and current_user.role.name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+        <button class="mc-btn mc-btn-danger mc-btn-sm btn-delete-strategy"
+                data-id="{{ s.id }}" data-title="{{ s.title | e }}">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        {% endif %}
+      </div>
+
+      <!-- Alt stratejiler -->
+      {% set active_subs = s.sub_strategies|selectattr('is_active')|list %}
+      {% if active_subs %}
+      <div style="border-top:1px solid #f1f5f9; padding:10px 20px 14px; display:flex; flex-direction:column; gap:4px;">
+        {% for ss in active_subs %}
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0;">
+          <span style="font-size:11px; font-family:monospace; color:#94a3b8; flex-shrink:0;">{{ ss.code or '·' }}</span>
+          <span style="font-size:12.5px; color:#475569;">{{ ss.title }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="mc-card">
+      <div class="mc-empty">
+        <div class="mc-empty-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="mc-empty-title">Henüz strateji tanımlanmamış</div>
+        <div class="mc-empty-text">İlk stratejiyi ekleyerek başlayın.</div>
+        {% if current_user.role and current_user.role.name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+        <button id="btnAddStrategyEmpty" class="mc-btn mc-btn-primary">
+          <i class="fas fa-plus"></i> Strateji Ekle
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/sp.js') }}"></script>
+{% endblock %}
