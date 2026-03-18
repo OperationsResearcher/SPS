@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-017 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** users.html extra_js bloğundaki admin.js path'i düzeltildi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/templates/micro/admin/users.html` → `filename='micro/js/admin.js'` → `filename='js/admin.js'` olarak düzeltildi
+
+### Yapılan İşlem
+Blueprint static dosya yolu `micro/js/admin.js` yerine `js/admin.js` olarak düzeltildi. `micro_bp.static` zaten `micro/static/micro/` prefix'ini ekliyor, dolayısıyla `micro/js/` tekrarı 404'e yol açıyordu.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-016 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** JS/CSS dosyalarına cache busting için VERSION query string eklendi
