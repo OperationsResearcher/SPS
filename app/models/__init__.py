@@ -1,8 +1,7 @@
 """Models package - db instance and all models for Alembic discovery."""
 
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+# Tek bir db instance kullan — kök extensions.py'den import et
+from extensions import db  # noqa: F401
 
 # Import all models after db is defined (Alembic needs them)
 from app.models.core import Role, Tenant, User, Notification  # noqa: E402
