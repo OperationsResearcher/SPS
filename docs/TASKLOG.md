@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-007 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Micro modüllerinin kullandığı `app.models.db` instance'ı kök `__init__.py`'de `init_app` ile bağlandı
+**Modül:** micro / db
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `__init__.py` → `from app.models import db as app_db` import edildi, `app_db.init_app(app)` eklendi
+
+### Yapılan İşlem
+Projede 3 farklı `SQLAlchemy` instance'ı mevcut: `extensions.py::db`, `app/extensions.py::db`, `app/models/__init__.py::db`. Micro modülleri `app.models.db`'yi kullanıyor ancak kök `__init__.py` yalnızca `extensions.py::db`'yi `init_app` yapıyordu. `app_db.init_app(app)` eklenerek `RuntimeError: not registered with this SQLAlchemy instance` hatası giderildi.
+
+### Notlar
+Uzun vadede tek bir `db` instance'ına geçilmesi teknik borcu azaltır.
+
+---
+
 ## TASK-006 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** `__init__.py`'ye eksik `micro_bp` register satırı eklendi

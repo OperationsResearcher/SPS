@@ -11,6 +11,9 @@ from flask import Flask
 from config import get_config
 from extensions import db, migrate, login_manager, csrf, limiter, talisman, cache
 
+# Micro platform'un kullandığı app.models.db instance'ını da init_app ile bağla
+from app.models import db as app_db
+
 def create_app(config_name=None):
     """
     Flask uygulama örneğini (app instance) oluşturan ve yapılandıran fabrika fonksiyonu.
@@ -24,6 +27,7 @@ def create_app(config_name=None):
 
     # 2. Eklentileri (extensions) ilklendir
     db.init_app(app)
+    app_db.init_app(app)  # micro modüllerinin kullandığı db instance
     migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
