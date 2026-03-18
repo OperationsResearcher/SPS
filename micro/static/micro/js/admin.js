@@ -83,7 +83,7 @@
     document.getElementById("btn-user-add")?.addEventListener("click", async () => {
       const tenantHtml = buildTenantOptions("");
       const { value: vals } = await Swal.fire({
-        title: "Yeni Kullanıcı Ekle", width: 560,
+        title: "Yeni Kullanıcı Ekle", width: 780,
         html: `<div class="text-left space-y-3">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <div><label class="block text-xs text-gray-500 mb-1">Ad</label>
@@ -125,8 +125,9 @@
     document.getElementById("btn-bulk-import")?.addEventListener("click", async () => {
       const { value: file } = await Swal.fire({
         title: "Toplu Kullanıcı İçe Aktar",
-        html: `<p style="font-size:12px;color:#64748b;margin-bottom:8px;">CSV formatı: email, first_name, last_name</p>
-               <input id="bulk-file" type="file" accept=".csv" class="swal2-file">`,
+        html: `<a href="/micro/admin/users/sample-excel" class="mc-btn mc-btn-secondary" style="display:inline-block;margin-bottom:12px;">📥 Örnek Excel İndir</a>
+               <p style="font-size:12px;color:#64748b;margin-bottom:8px;">CSV formatı: email, first_name, last_name</p>
+               <input id="bulk-file" type="file" accept=".csv,.xlsx" class="swal2-file">`,
         focusConfirm: false, showCancelButton: true,
         confirmButtonText: "İçe Aktar", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
         preConfirm: () => {
@@ -151,7 +152,7 @@
       if (btnEdit) {
         const { userId, firstName, lastName, jobTitle, department, roleId, email } = btnEdit.dataset;
         const { value: vals } = await Swal.fire({
-          title: "Kullanıcı Düzenle", width: 520,
+          title: "Kullanıcı Düzenle", width: 780,
           html: `<div class="text-left space-y-3">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label class="block text-xs text-gray-500 mb-1">Ad</label>

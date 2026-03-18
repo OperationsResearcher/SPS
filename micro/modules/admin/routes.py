@@ -184,6 +184,35 @@ def admin_users_bulk_import():
         return jsonify({"success": False, "message": "İçe aktarma sırasında hata oluştu."}), 500
 
 
+@micro_bp.route("/admin/users/sample-excel")
+@login_required
+def admin_users_sample_excel():
+    """Toplu kullanıcı içe aktarma için örnek Excel dosyası indir."""
+    import io
+    import openpyxl
+    from flask import send_file
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Kullanicilar"
+    ws.append(["email", "first_name", "last_name"])
+    ws.append(["ornek1@kurum.com", "Ahmet", "Yilmaz"])
+    ws.append(["ornek2@kurum.com", "Ayse", "Kaya"])
+    ws.column_dimensions["A"].width = 30
+    ws.column_dimensions["B"].width = 15
+    ws.column_dimensions["C"].width = 15
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return send_file(
+        output,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="kullanici_sablonu.xlsx",
+    )
+
+
 # ── Kurum Yönetimi ────────────────────────────────────────────────────────────
 
 @micro_bp.route("/admin/tenants")

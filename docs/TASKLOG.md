@@ -5,6 +5,24 @@
 
 ---
 
+## TASK-011 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Kullanıcı Swal modal genişlikleri 780px yapıldı, örnek Excel endpoint ve indirme butonu eklendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/js/admin.js` → btn-user-add width 560→780, btn-user-edit width 520→780, toplu içe aktar Swal'ına indirme butonu eklendi
+- `micro/modules/admin/routes.py` → `/admin/users/sample-excel` GET endpoint'i eklendi (openpyxl ile xlsx üretir)
+
+### Yapılan İşlem
+Kullanıcı ekleme ve düzenleme Swal modalları tenant modal'ıyla aynı genişliğe (780px) getirildi. Toplu içe aktarma için örnek Excel şablonu üreten yeni bir endpoint eklendi. Swal'daki indirme butonu bu endpoint'e bağlandı; dosya kabul tipi `.csv,.xlsx` olarak güncellendi.
+
+### Notlar
+`openpyxl` paketi yüklü olmalı — `pip install openpyxl` ile kurulabilir.
+
+---
+
 ## TASK-010 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** users.html kullanıcı yönetimi sayfası iyileştirmeleri ve admin.js e-posta alanı eklendi
