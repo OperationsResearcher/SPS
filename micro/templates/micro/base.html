@@ -28,9 +28,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <!-- Micro CSS -->
-    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/sidebar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/components.css') }}">
-    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/sidebar.css') }}?v={{ config['VERSION'] }}">
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/components.css') }}?v={{ config['VERSION'] }}">
+    <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/app.css') }}?v={{ config['VERSION'] }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% if not request.endpoint or request.endpoint != 'micro_bp.login' %}micro-layout{% endif %}"
@@ -286,7 +286,7 @@
 </div>
 
 <!-- JS -->
-<script src="{{ url_for('micro_bp.static', filename='micro/js/app.js') }}"></script>
+<script src="{{ url_for('micro_bp.static', filename='micro/js/app.js') }}?v={{ config['VERSION'] }}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

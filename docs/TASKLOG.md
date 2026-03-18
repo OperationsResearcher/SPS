@@ -5,6 +5,25 @@
 
 ---
 
+## TASK-016 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** JS/CSS dosyalarına cache busting için VERSION query string eklendi
+**Modül:** admin / config / base
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → `Config` sınıfına `VERSION = "1.0.1"` eklendi
+- `micro/templates/micro/base.html` → 3 CSS + 1 JS include satırına `?v={{ config['VERSION'] }}` eklendi
+- `micro/templates/micro/admin/users.html` → `extra_js` bloğundaki `admin.js` satırına `?v={{ config['VERSION'] }}` eklendi
+
+### Yapılan İşlem
+Tarayıcı cache'inin eski JS/CSS dosyalarını sunmasını önlemek için `config.py`'ye `VERSION` sabiti eklendi. `base.html`'deki tüm yerel CSS/JS include'ları ve `users.html`'deki `admin.js` include'u bu versiyonu query string olarak kullanacak şekilde güncellendi. Bundan sonra her JS/CSS değişikliğinde `config.py`'deki `VERSION` değeri artırılmalıdır.
+
+### Notlar
+`tenants.html` ve diğer admin sayfalarının `extra_js` bloklarında da aynı pattern uygulanmalı.
+
+---
+
 ## TASK-015 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** admin.js ROLE_LABELS map'indeki ASCII Türkçe karakter hataları düzeltildi

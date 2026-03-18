@@ -36,6 +36,9 @@ class Config:
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
 
+    # Cache Busting
+    VERSION = "1.0.1"
+
     # E-posta (sistem varsayılan SMTP — kokpitim.com)
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))

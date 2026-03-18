@@ -233,5 +233,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('micro_bp.static', filename='micro/js/admin.js') }}"></script>
+<script src="{{ url_for('micro_bp.static', filename='micro/js/admin.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}
