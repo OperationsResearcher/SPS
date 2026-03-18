@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-006 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** `__init__.py`'ye eksik `micro_bp` register satırı eklendi
+**Modül:** micro / hgs
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `__init__.py` → `from micro import micro_bp` + `app.register_blueprint(micro_bp)` eklendi
+
+### Yapılan İşlem
+Kök `__init__.py`'de micro_bp hiç register edilmemişti; bu yüzden `/micro/*` altındaki tüm route'lar 404 veriyordu. Blueprint kaydı `v3_bp`'nin hemen altına eklendi. Doğrulama: `/micro/hgs` ve `/micro/hgs/login/<int:user_id>` route'ları artık url_map'te görünüyor.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-005 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Login sayfası CSP bloğu nedeniyle bozulan inline style/script harici dosyalara taşındı

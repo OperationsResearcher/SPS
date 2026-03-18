@@ -183,6 +183,10 @@ def create_app(config_name=None):
     from v3 import v3_bp
     app.register_blueprint(v3_bp)
 
+    # 4.9 Micro Platform (/micro)
+    from micro import micro_bp
+    app.register_blueprint(micro_bp)
+
     # 4.6 Custom Filters
     @app.template_filter('role_name')
     def role_name_filter(role):
