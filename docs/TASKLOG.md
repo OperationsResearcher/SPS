@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-019 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** micro_bp Blueprint'inden hatalı static_url_path parametresi kaldırıldı
+**Modül:** micro / blueprint
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/__init__.py` → `static_url_path="/micro/static"` parametresi kaldırıldı
+
+### Yapılan İşlem
+`static_url_path="/micro/static"` ile `url_prefix="/micro"` birleşince `url_for` `/micro/micro/static/...` üretiyordu. Parametre kaldırıldığında Flask `url_prefix` + `/static` = `/micro/static` kullanıyor; `url_for('micro_bp.static', filename='micro/js/admin.js')` artık doğru `/micro/static/micro/js/admin.js` URL'ini üretiyor. Kök `/static/` route'u ile çakışma yok.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-018 | 2026-03-18 | 🔄 Düzeltme
 
 **Görev:** users.html extra_js bloğundaki admin.js path'i orijinal haline döndürüldü
