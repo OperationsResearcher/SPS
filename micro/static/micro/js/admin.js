@@ -49,15 +49,15 @@
   // ── Rol / Kurum seçenekleri yardımcısı ──────────────────────────────────
   const ROLE_LABELS = {
     "Admin":              "Admin",
-    "User":               "Kullanici",
-    "tenant_admin":       "Kurum Yoneticisi",
-    "executive_manager":  "Kurum Ust Yonetimi",
-    "standard_user":      "Kurum Kullanicisi",
+    "User":               "Kullanıcı",
+    "tenant_admin":       "Kurum Yöneticisi",
+    "executive_manager":  "Kurum Üst Yönetimi",
+    "standard_user":      "Kurum Kullanıcısı",
   };
 
   function buildRoleOptions(selectedId) {
     const meta = document.getElementById("admin-meta");
-    if (!meta) return "<option value=''>— Rol Sec —</option>";
+    if (!meta) return "<option value=''>— Rol Seç —</option>";
     const ids   = JSON.parse(meta.dataset.roles    || "[]");
     const names = JSON.parse(meta.dataset.roleNames || "[]");
     return ids.map((id, i) => {

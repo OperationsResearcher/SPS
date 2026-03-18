@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-015 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** admin.js ROLE_LABELS map'indeki ASCII Türkçe karakter hataları düzeltildi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/js/admin.js` → `ROLE_LABELS` map'inde 4 değer ve `buildRoleOptions` fallback string'i Türkçe karakterlerle düzeltildi
+
+### Yapılan İşlem
+`ROLE_LABELS` map'indeki `"Kullanici"`, `"Kurum Yoneticisi"`, `"Kurum Ust Yonetimi"`, `"Kurum Kullanicisi"` değerleri sırasıyla `"Kullanıcı"`, `"Kurum Yöneticisi"`, `"Kurum Üst Yönetimi"`, `"Kurum Kullanıcısı"` olarak güncellendi. `buildRoleOptions` fallback'i `"— Rol Sec —"` → `"— Rol Seç —"` yapıldı.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-014 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Rol dropdown'ı Türkçe etiketlerle gösterilecek şekilde güncellendi
