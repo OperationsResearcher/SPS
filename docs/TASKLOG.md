@@ -5,6 +5,42 @@
 
 ---
 
+## TASK-003 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** TASKLOG.md UTF-8 BOM'suz yeniden yazıldı, eski_proje git'ten çıkarıldı
+**Modül:** setup / git
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/TASKLOG.md` → Python ile UTF-8 BOM'suz yeniden yazıldı
+- `.gitignore` → `eski_proje/` satırı eklendi
+- `eski_proje` → `git rm --cached` ile git index'ten kaldırıldı
+
+### Yapılan İşlem
+TASKLOG.md encoding sorunu giderildi; dosya artık BOM'suz saf UTF-8. eski_proje klasörü git'ten çıkarıldı ve .gitignore'a eklendi, git status'ta bir daha görünmeyecek.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-002 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Tüm `px` font-size değerleri `var(--text-*)` CSS değişkenlerine geçirildi
+**Modül:** css / tipografi
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/css/components.css` → Tüm sabit `px` font-size değerleri `var(--text-*)` token'larıyla değiştirildi; `html { font-size: 16px }` rem tabanı korundu
+
+### Yapılan İşlem
+`components.css` içindeki tüm sabit `px` font-size değerleri `:root` üzerinde tanımlı `--text-2xs` → `--text-3xl` token'larıyla değiştirildi. Böylece `html { font-size }` değeri değiştirildiğinde tüm tipografi orantılı ölçeklenir.
+
+### Notlar
+`sidebar.css` önceki oturumda güncellenmişti. `app.css` zaten `rem` kullanıyor, dokunulmadı.
+
+---
+
 ## TASK-001 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Proje kurulum ve GitHub entegrasyonu tamamlandı
@@ -21,23 +57,6 @@ Proje GitHub entegrasyonu kuruldu. Steering kuralları, TASKLOG takip sistemi ve
 
 ### Notlar
 Sistem test ediliyor. Sonraki görevlerden itibaren her değişiklikte TASKLOG otomatik güncellenecek ve push edilecek.
-
----
-
-## TASK-002 | 2026-03-18 | ✅ Tamamlandı
-
-**Görev:** Tüm `px` font-size değerleri `var(--text-*)` CSS değişkenlerine geçirildi
-**Modül:** css / tipografi
-**Durum:** ✅ Tamamlandı
-
-### Değiştirilen Dosyalar
-- `micro/static/micro/css/components.css` → Tüm sabit `px` font-size değerleri `var(--text-*)` token'larıyla değiştirildi; `html { font-size: 16px }` rem tabanı korundu
-
-### Yapılan İşlem
-`components.css` içindeki `.mc-modal-title`, `.mc-modal-close`, `.mc-page-title`, `.mc-page-subtitle`, `.mc-alert`, `.mc-avatar*`, `.mc-empty-*`, `.mc-stat-icon`, `.mc-form-label`, `.mc-form-input`, `.mc-form-section`, `.bildirim-*`, `.api-method`, `.topbar-notif-badge`, `.ayarlar-hub-*`, `.eposta-*`, `.tm-section-label` sınıflarındaki tüm sabit `px` font-size değerleri `:root` üzerinde tanımlı `--text-2xs` → `--text-3xl` token'larıyla değiştirildi. Böylece `html { font-size }` değeri değiştirildiğinde tüm tipografi orantılı ölçeklenir.
-
-### Notlar
-`sidebar.css` önceki oturumda güncellenmişti. `app.css` zaten `rem` kullanıyor, dokunulmadı.
 
 ---
 
