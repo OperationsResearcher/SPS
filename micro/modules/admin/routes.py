@@ -149,27 +149,44 @@ def admin_users_bulk_import():
     if not file:
         return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
 
+    filename = (file.filename or "").lower()
     try:
-        import io, csv
-        stream = io.StringIO(file.stream.read().decode("utf-8-sig"), newline=None)
-        reader = csv.DictReader(stream)
+        import io
         standard_role = Role.query.filter_by(name="standard_user").first()
         tid = current_user.tenant_id
+        rows = []
+
+        if filename.endswith(".xlsx") or filename.endswith(".xls"):
+            import openpyxl
+            wb = openpyxl.load_workbook(io.BytesIO(file.stream.read()), data_only=True)
+            ws = wb.active
+            headers = [str(c.value).strip() if c.value else "" for c in next(ws.iter_rows(min_row=1, max_row=1))]
+            for ws_row in ws.iter_rows(min_row=2, values_only=True):
+                rows.append(dict(zip(headers, [str(v).strip() if v is not None else "" for v in ws_row])))
+        else:
+            # CSV fallback
+            import csv
+            stream = io.StringIO(file.stream.read().decode("utf-8-sig"), newline=None)
+            rows = list(csv.DictReader(stream))
 
         created, skipped = 0, 0
-        for row in reader:
-            email = (row.get("email") or row.get("E-posta") or "").strip().lower()
+        for row in rows:
+            email = (row.get("E-posta") or row.get("email") or "").strip().lower()
             if not email:
                 skipped += 1
                 continue
             if User.query.filter_by(email=email).first():
                 skipped += 1
                 continue
+            raw_pass = (row.get("Sifre") or row.get("Şifre") or row.get("password") or "").strip()
+            password = raw_pass if raw_pass else "Changeme123!"
             u = User(
                 email=email,
-                password_hash=generate_password_hash("Changeme123!"),
-                first_name=(row.get("first_name") or row.get("Ad") or "").strip(),
-                last_name=(row.get("last_name") or row.get("Soyad") or "").strip(),
+                password_hash=generate_password_hash(password),
+                first_name=(row.get("Ad") or row.get("first_name") or "").strip(),
+                last_name=(row.get("Soyad") or row.get("last_name") or "").strip(),
+                job_title=(row.get("Unvan") or row.get("job_title") or "").strip() or None,
+                phone_number=(row.get("Telefon") or row.get("phone_number") or "").strip() or None,
                 tenant_id=tid,
                 role_id=standard_role.id if standard_role else None,
             )
@@ -195,9 +212,9 @@ def admin_users_sample_excel():
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Kullanicilar"
-    ws.append(["Ad", "Soyad", "E-posta", "Sifre", "Unvan", "Telefon"])
-    ws.append(["Ahmet", "Yilmaz", "ahmet@ornek.com", "123456", "Muhendis", "5551234567"])
-    ws.append(["Ayse", "Kaya", "ayse@ornek.com", "123456", "Uzman", "5559876543"])
+    ws.append(["Ad", "Soyad", "E-posta", "Şifre", "Unvan", "Telefon"])
+    ws.append(["Ahmet", "Yılmaz", "ahmet@ornek.com", "Gizli123!", "Mühendis", "5551234567"])
+    ws.append(["Ayşe", "Kaya", "ayse@ornek.com", "Gizli123!", "Uzman", "5559876543"])
     ws.column_dimensions["A"].width = 15
     ws.column_dimensions["B"].width = 15
     ws.column_dimensions["C"].width = 30

@@ -5,6 +5,25 @@
 
 ---
 
+## TASK-022 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Bulk import endpoint'i Excel desteği, şifre okuma ve ek alan eşleştirmesiyle güncellendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `admin_users_bulk_import`: Excel (.xlsx/.xls) desteği eklendi, `Şifre` kolonu okunuyor (yoksa `"Changeme123!"` fallback), `Unvan`→`job_title` ve `Telefon`→`phone_number` alanları eklendi
+- `micro/modules/admin/routes.py` → `admin_users_sample_excel`: Şablon başlığı `Sifre`→`Şifre` düzeltildi, örnek veriler Türkçe karakterlerle güncellendi
+- `micro/static/micro/js/admin.js` → Bulk import Swal açıklama metni güncellendi (Excel birincil format olarak belirtildi)
+
+### Yapılan İşlem
+Örnek Excel şablonu 6 kolon sunuyordu (`Şifre`, `Unvan`, `Telefon` dahil) ancak bulk import yalnızca 3 kolonu (`email`, `first_name`, `last_name`) okuyordu. Endpoint openpyxl ile Excel okuma desteği kazandı; `Şifre` kolonu okunup hash'leniyor, yoksa güvenli fallback kullanılıyor. `Unvan` ve `Telefon` kolonları User modelindeki `job_title` ve `phone_number` alanlarına eşlendi. CSV desteği korundu.
+
+### Notlar
+`openpyxl` paketi gerekli — `pip install openpyxl` ile kurulabilir (zaten sample-excel endpoint'i kullandığı için yüklü olmalı).
+
+---
+
 ## TASK-021 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** fillUserSelects fonksiyonuna ROLE_LABELS Türkçe çeviri map'i eklendi

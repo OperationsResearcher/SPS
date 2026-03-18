@@ -174,7 +174,7 @@
       const { value: file } = await Swal.fire({
         title: "Toplu Kullanıcı İçe Aktar",
         html: `<a href="/micro/admin/users/sample-excel" class="mc-btn mc-btn-secondary" style="display:inline-block;margin-bottom:12px;">📥 Örnek Excel İndir</a>
-               <p style="font-size:12px;color:#64748b;margin-bottom:8px;">CSV formatı: email, first_name, last_name</p>
+               <p style="font-size:12px;color:#64748b;margin-bottom:8px;">Excel (.xlsx) veya CSV — kolonlar: Ad, Soyad, E-posta, Şifre, Unvan, Telefon</p>
                <input id="bulk-file" type="file" accept=".csv,.xlsx" class="swal2-file">`,
         focusConfirm: false, showCancelButton: true,
         confirmButtonText: "İçe Aktar", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
