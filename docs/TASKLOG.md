@@ -5,6 +5,25 @@
 
 ---
 
+## TASK-012 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Excel şablonu sütunları güncellendi, Swal modal genişliği CSS ile sabitlendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → Excel şablonu başlıkları Ad/Soyad/E-posta/Sifre/Unvan/Telefon olarak güncellendi, 6 sütun genişliği ayarlandı
+- `micro/static/micro/js/admin.js` → btn-user-add ve btn-user-edit Swal'larına `customClass: { popup: 'mc-swal-wide' }` eklendi
+- `micro/static/micro/css/components.css` → `.mc-swal-wide` sınıfı eklendi (780px sabit genişlik)
+
+### Yapılan İşlem
+Excel şablonu kök yapıdaki kullanıcı alanlarıyla eşleştirildi. Swal modallarının gerçek genişliği tarayıcıda `width` parametresiyle tam uygulanmıyor olabildiğinden `customClass` + CSS ile 780px sabitlendi.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-011 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Kullanıcı Swal modal genişlikleri 780px yapıldı, örnek Excel endpoint ve indirme butonu eklendi

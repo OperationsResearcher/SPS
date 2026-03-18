@@ -1079,6 +1079,12 @@ body {
   max-width: 780px;
 }
 
+/* ── SweetAlert2 Geniş Popup ── */
+.mc-swal-wide {
+  width: 780px !important;
+  max-width: 780px !important;
+}
+
 /* ── Tenant Modal Form Grid ── */
 .tm-section-label {
   font-size: var(--text-xs);

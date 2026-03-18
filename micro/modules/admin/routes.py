@@ -195,12 +195,15 @@ def admin_users_sample_excel():
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Kullanicilar"
-    ws.append(["email", "first_name", "last_name"])
-    ws.append(["ornek1@kurum.com", "Ahmet", "Yilmaz"])
-    ws.append(["ornek2@kurum.com", "Ayse", "Kaya"])
-    ws.column_dimensions["A"].width = 30
+    ws.append(["Ad", "Soyad", "E-posta", "Sifre", "Unvan", "Telefon"])
+    ws.append(["Ahmet", "Yilmaz", "ahmet@ornek.com", "123456", "Muhendis", "5551234567"])
+    ws.append(["Ayse", "Kaya", "ayse@ornek.com", "123456", "Uzman", "5559876543"])
+    ws.column_dimensions["A"].width = 15
     ws.column_dimensions["B"].width = 15
-    ws.column_dimensions["C"].width = 15
+    ws.column_dimensions["C"].width = 30
+    ws.column_dimensions["D"].width = 15
+    ws.column_dimensions["E"].width = 20
+    ws.column_dimensions["F"].width = 15
 
     output = io.BytesIO()
     wb.save(output)

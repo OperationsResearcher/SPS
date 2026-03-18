@@ -84,6 +84,7 @@
       const tenantHtml = buildTenantOptions("");
       const { value: vals } = await Swal.fire({
         title: "Yeni Kullanıcı Ekle", width: 780,
+        customClass: { popup: 'mc-swal-wide' },
         html: `<div class="text-left space-y-3">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <div><label class="block text-xs text-gray-500 mb-1">Ad</label>
@@ -153,6 +154,7 @@
         const { userId, firstName, lastName, jobTitle, department, roleId, email } = btnEdit.dataset;
         const { value: vals } = await Swal.fire({
           title: "Kullanıcı Düzenle", width: 780,
+          customClass: { popup: 'mc-swal-wide' },
           html: `<div class="text-left space-y-3">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label class="block text-xs text-gray-500 mb-1">Ad</label>
