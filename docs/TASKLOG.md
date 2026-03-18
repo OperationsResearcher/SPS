@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-018 | 2026-03-18 | 🔄 Düzeltme
+
+**Görev:** users.html extra_js bloğundaki admin.js path'i orijinal haline döndürüldü
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/templates/micro/admin/users.html` → `filename='js/admin.js'` → `filename='micro/js/admin.js'` olarak geri alındı
+
+### Yapılan İşlem
+TASK-017'de yapılan path değişikliği geri alındı. `filename='micro/js/admin.js'` orijinal değerine döndürüldü.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-017 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** users.html extra_js bloğundaki admin.js path'i düzeltildi
