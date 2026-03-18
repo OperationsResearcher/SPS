@@ -118,6 +118,109 @@
     </table>
   </div>
 
+  <!-- Modal: Kullanıcı Ekle -->
+  <div id="modal-user-add" class="mc-modal-overlay">
+    <div class="mc-modal mc-modal-lg">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-user-plus"></i>
+          <span>Yeni Kullanıcı Ekle</span>
+        </div>
+        <button class="mc-modal-close" id="btn-add-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="mc-modal-body">
+        <div class="tm-grid-2">
+          <div class="tm-field">
+            <label class="mc-form-label">Ad</label>
+            <input id="ua-fname" class="mc-form-input" placeholder="Ad">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Soyad</label>
+            <input id="ua-lname" class="mc-form-input" placeholder="Soyad">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">E-posta <span class="req">*</span></label>
+            <input id="ua-email" class="mc-form-input" type="email" placeholder="ornek@kurum.com">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Şifre <span style="font-size:11px;color:#94a3b8;">(boş = varsayılan atanır)</span></label>
+            <input id="ua-pass" class="mc-form-input" type="password" placeholder="Şifre">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Rol</label>
+            <select id="ua-role" class="mc-form-input">
+              <option value="">— Rol Seç —</option>
+            </select>
+          </div>
+          <div class="tm-field" id="ua-tenant-wrap">
+            <label class="mc-form-label">Kurum</label>
+            <select id="ua-tenant" class="mc-form-input">
+              <option value="">— Kurum Seç —</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button id="btn-add-modal-cancel" class="mc-btn mc-btn-secondary">İptal</button>
+        <button id="btn-add-modal-save" class="mc-btn mc-btn-primary">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Kullanıcı Düzenle -->
+  <div id="modal-user-edit" class="mc-modal-overlay">
+    <div class="mc-modal mc-modal-lg">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-user-edit"></i>
+          <span>Kullanıcı Düzenle</span>
+        </div>
+        <button class="mc-modal-close" id="btn-edit-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="mc-modal-body">
+        <div class="tm-grid-2">
+          <div class="tm-field">
+            <label class="mc-form-label">Ad</label>
+            <input id="ue-fname" class="mc-form-input" placeholder="Ad">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Soyad</label>
+            <input id="ue-lname" class="mc-form-input" placeholder="Soyad">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">E-posta</label>
+            <input id="ue-email" class="mc-form-input" type="email" readonly
+                   style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Yeni Şifre <span style="font-size:11px;color:#94a3b8;">(boş = değişmez)</span></label>
+            <input id="ue-pass" class="mc-form-input" type="password" placeholder="Değiştirmek için girin">
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Rol</label>
+            <select id="ue-role" class="mc-form-input">
+              <option value="">— Rol Seç —</option>
+            </select>
+          </div>
+          <div class="tm-field" id="ue-tenant-wrap">
+            <label class="mc-form-label">Kurum</label>
+            <select id="ue-tenant" class="mc-form-input">
+              <option value="">— Kurum Seç —</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button id="btn-edit-modal-cancel" class="mc-btn mc-btn-secondary">İptal</button>
+        <button id="btn-edit-modal-save" class="mc-btn mc-btn-primary">
+          <i class="fas fa-save"></i> Güncelle
+        </button>
+      </div>
+    </div>
+  </div>
+
   {# Rol ve kurum seçenekleri data-* ile JS'e aktarılır #}
   <div id="admin-meta"
        data-roles='{{ roles | map(attribute="id") | list | tojson }}'

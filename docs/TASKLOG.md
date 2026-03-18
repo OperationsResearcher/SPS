@@ -5,6 +5,24 @@
 
 ---
 
+## TASK-013 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** users.html kullanıcı ekle/düzenle Swal modalları native HTML modal'a geçirildi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/templates/micro/admin/users.html` → `modal-user-add` ve `modal-user-edit` native modal'ları eklendi (mc-modal-overlay/mc-modal-lg yapısı)
+- `micro/static/micro/js/admin.js` → btn-user-add ve btn-user-edit Swal.fire blokları kaldırıldı, native modal open/close/save fonksiyonları eklendi
+
+### Yapılan İşlem
+tenants.html'deki mc-modal-overlay/mc-modal-lg yapısı referans alınarak iki native modal oluşturuldu. admin.js'de Swal.fire bağımlılığı kaldırıldı; rol ve kurum select'leri admin-meta data-* attribute'larından dinamik dolduruluyor. API endpoint'leri (ADD_URL, EDIT_BASE) değişmedi.
+
+### Notlar
+toggle ve bulk-import işlemleri Swal.fire kullanmaya devam ediyor — bu kasıtlı, değiştirilmedi.
+
+---
+
 ## TASK-012 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Excel şablonu sütunları güncellendi, Swal modal genişliği CSS ile sabitlendi

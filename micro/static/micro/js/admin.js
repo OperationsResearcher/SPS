@@ -80,46 +80,105 @@
     const TOGGLE_BASE = usersRoot.dataset.toggleBase;
     const BULK_URL    = usersRoot.dataset.bulkImportUrl;
 
-    document.getElementById("btn-user-add")?.addEventListener("click", async () => {
-      const tenantHtml = buildTenantOptions("");
-      const { value: vals } = await Swal.fire({
-        title: "Yeni Kullanıcı Ekle", width: 780,
-        customClass: { popup: 'mc-swal-wide' },
-        html: `<div class="text-left space-y-3">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><label class="block text-xs text-gray-500 mb-1">Ad</label>
-              <input id="u-fname" class="swal2-input" placeholder="Ad"></div>
-            <div><label class="block text-xs text-gray-500 mb-1">Soyad</label>
-              <input id="u-lname" class="swal2-input" placeholder="Soyad"></div>
-          </div>
-          <div><label class="block text-xs text-gray-500 mb-1">E-posta <span style="color:#dc2626">*</span></label>
-            <input id="u-email" class="swal2-input" type="email" placeholder="ornek@kurum.com"></div>
-          <div><label class="block text-xs text-gray-500 mb-1">Şifre</label>
-            <input id="u-pass" class="swal2-input" type="password" placeholder="Boş = varsayılan atanır"></div>
-          <div><label class="block text-xs text-gray-500 mb-1">Rol</label>
-            <select id="u-role" class="swal2-select">${buildRoleOptions("")}</select></div>
-          ${tenantHtml}
-        </div>`,
-        focusConfirm: false, showCancelButton: true,
-        confirmButtonText: "Kaydet", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
-        preConfirm: () => {
-          const email = document.getElementById("u-email").value.trim();
-          if (!email) { Swal.showValidationMessage("E-posta zorunludur."); return false; }
-          return {
-            email,
-            first_name: document.getElementById("u-fname").value.trim(),
-            last_name:  document.getElementById("u-lname").value.trim(),
-            password:   document.getElementById("u-pass").value || null,
-            role_id:    document.getElementById("u-role").value || null,
-            tenant_id:  document.getElementById("u-tenant")?.value || null,
-          };
-        },
-      });
-      if (!vals) return;
+    // ── Kullanıcı Ekle Modal ────────────────────────────────────────────────
+    const addModal  = document.getElementById("modal-user-add");
+    const editModal = document.getElementById("modal-user-edit");
+    let _editUserId = null;
+
+    function buildSelectOptions(ids, names, selectedId) {
+      return ids.map((id, i) =>
+        `<option value="${id}" ${String(id) === String(selectedId) ? "selected" : ""}>${escHtml(names[i])}</option>`
+      ).join("");
+    }
+
+    function fillUserSelects(roleSelId, tenantSelId, selectedRoleId, selectedTenantId) {
+      const meta = document.getElementById("admin-meta");
+      if (!meta) return;
+      const roleIds    = JSON.parse(meta.dataset.roles       || "[]");
+      const roleNames  = JSON.parse(meta.dataset.roleNames   || "[]");
+      const tenantIds  = JSON.parse(meta.dataset.tenants     || "[]");
+      const tenantNames= JSON.parse(meta.dataset.tenantNames || "[]");
+
+      const roleSel = document.getElementById(roleSelId);
+      if (roleSel) roleSel.innerHTML = `<option value="">— Rol Seç —</option>${buildSelectOptions(roleIds, roleNames, selectedRoleId)}`;
+
+      const tenantWrap = document.getElementById(tenantSelId.replace("tenant","tenant-wrap").replace("ua-","ua-").replace("ue-","ue-"));
+      const tenantSel  = document.getElementById(tenantSelId);
+      if (tenantSel) {
+        if (tenantIds.length) {
+          tenantSel.innerHTML = `<option value="">— Kurum Seç —</option>${buildSelectOptions(tenantIds, tenantNames, selectedTenantId)}`;
+          if (tenantWrap) tenantWrap.style.display = "";
+        } else {
+          if (tenantWrap) tenantWrap.style.display = "none";
+        }
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById("ua-fname").value  = "";
+      document.getElementById("ua-lname").value  = "";
+      document.getElementById("ua-email").value  = "";
+      document.getElementById("ua-pass").value   = "";
+      fillUserSelects("ua-role", "ua-tenant", "", "");
+      addModal.classList.add("open");
+      document.getElementById("ua-email").focus();
+    }
+
+    function closeAddModal() { addModal.classList.remove("open"); }
+
+    function openEditModal(data) {
+      _editUserId = data.userId;
+      document.getElementById("ue-fname").value  = data.firstName  || "";
+      document.getElementById("ue-lname").value  = data.lastName   || "";
+      document.getElementById("ue-email").value  = data.email      || "";
+      document.getElementById("ue-pass").value   = "";
+      fillUserSelects("ue-role", "ue-tenant", data.roleId, data.tenantId || "");
+      editModal.classList.add("open");
+      document.getElementById("ue-fname").focus();
+    }
+
+    function closeEditModal() { editModal.classList.remove("open"); _editUserId = null; }
+
+    document.getElementById("btn-user-add")?.addEventListener("click", openAddModal);
+    document.getElementById("btn-add-modal-close")?.addEventListener("click", closeAddModal);
+    document.getElementById("btn-add-modal-cancel")?.addEventListener("click", closeAddModal);
+    addModal?.addEventListener("click", (e) => { if (e.target === addModal) closeAddModal(); });
+
+    document.getElementById("btn-add-modal-save")?.addEventListener("click", async () => {
+      const email = document.getElementById("ua-email").value.trim();
+      if (!email) { showError("E-posta zorunludur."); document.getElementById("ua-email").focus(); return; }
+      const payload = {
+        email,
+        first_name: document.getElementById("ua-fname").value.trim(),
+        last_name:  document.getElementById("ua-lname").value.trim(),
+        password:   document.getElementById("ua-pass").value || null,
+        role_id:    document.getElementById("ua-role").value || null,
+        tenant_id:  document.getElementById("ua-tenant")?.value || null,
+      };
       try {
-        const d = await postJson(ADD_URL, vals);
-        if (d.success) { toastSuccess("Kullanıcı oluşturuldu."); reload(); }
+        const d = await postJson(ADD_URL, payload);
+        if (d.success) { closeAddModal(); toastSuccess("Kullanıcı oluşturuldu."); reload(); }
         else showError(d.message || "Kayıt başarısız.");
+      } catch (e) { showError("Sunucu hatası: " + e.message); }
+    });
+
+    document.getElementById("btn-edit-modal-close")?.addEventListener("click", closeEditModal);
+    document.getElementById("btn-edit-modal-cancel")?.addEventListener("click", closeEditModal);
+    editModal?.addEventListener("click", (e) => { if (e.target === editModal) closeEditModal(); });
+
+    document.getElementById("btn-edit-modal-save")?.addEventListener("click", async () => {
+      if (!_editUserId) return;
+      const payload = {
+        first_name: document.getElementById("ue-fname").value.trim(),
+        last_name:  document.getElementById("ue-lname").value.trim(),
+        role_id:    document.getElementById("ue-role").value || null,
+        tenant_id:  document.getElementById("ue-tenant")?.value || null,
+        password:   document.getElementById("ue-pass").value || null,
+      };
+      try {
+        const d = await postJson(`${EDIT_BASE}${_editUserId}`, payload);
+        if (d.success) { closeEditModal(); toastSuccess("Kullanıcı güncellendi."); reload(); }
+        else showError(d.message || "Güncelleme başarısız.");
       } catch (e) { showError("Sunucu hatası: " + e.message); }
     });
 
@@ -151,45 +210,7 @@
     document.addEventListener("click", async (e) => {
       const btnEdit = e.target.closest(".btn-user-edit");
       if (btnEdit) {
-        const { userId, firstName, lastName, jobTitle, department, roleId, email } = btnEdit.dataset;
-        const { value: vals } = await Swal.fire({
-          title: "Kullanıcı Düzenle", width: 780,
-          customClass: { popup: 'mc-swal-wide' },
-          html: `<div class="text-left space-y-3">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div><label class="block text-xs text-gray-500 mb-1">Ad</label>
-                <input id="ue-fname" class="swal2-input" value="${escHtml(firstName)}"></div>
-              <div><label class="block text-xs text-gray-500 mb-1">Soyad</label>
-                <input id="ue-lname" class="swal2-input" value="${escHtml(lastName)}"></div>
-            </div>
-            <div><label class="block text-xs text-gray-500 mb-1">E-posta</label>
-              <input id="ue-email" class="swal2-input" type="email" value="${escHtml(email)}" readonly style="background:#f1f5f9;color:#64748b;"></div>
-            <div><label class="block text-xs text-gray-500 mb-1">Unvan</label>
-              <input id="ue-title" class="swal2-input" value="${escHtml(jobTitle)}"></div>
-            <div><label class="block text-xs text-gray-500 mb-1">Departman</label>
-              <input id="ue-dept" class="swal2-input" value="${escHtml(department)}"></div>
-            <div><label class="block text-xs text-gray-500 mb-1">Rol</label>
-              <select id="ue-role" class="swal2-select">${buildRoleOptions(roleId)}</select></div>
-            <div><label class="block text-xs text-gray-500 mb-1">Yeni Şifre (boş = değişmez)</label>
-              <input id="ue-pass" class="swal2-input" type="password" placeholder="Değiştirmek için girin"></div>
-          </div>`,
-          focusConfirm: false, showCancelButton: true,
-          confirmButtonText: "Güncelle", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
-          preConfirm: () => ({
-            first_name: document.getElementById("ue-fname").value.trim(),
-            last_name:  document.getElementById("ue-lname").value.trim(),
-            job_title:  document.getElementById("ue-title").value.trim() || null,
-            department: document.getElementById("ue-dept").value.trim() || null,
-            role_id:    document.getElementById("ue-role").value || null,
-            password:   document.getElementById("ue-pass").value || null,
-          }),
-        });
-        if (!vals) return;
-        try {
-          const d = await postJson(`${EDIT_BASE}${userId}`, vals);
-          if (d.success) { toastSuccess("Kullanıcı güncellendi."); reload(); }
-          else showError(d.message || "Güncelleme başarısız.");
-        } catch (e) { showError("Sunucu hatası: " + e.message); }
+        openEditModal(btnEdit.dataset);
         return;
       }
 
