@@ -96,18 +96,17 @@ Dosya yoksa önce oluştur:
 
 [Kayıtlar buraya, en yeni en üstte]
 ```
-7.6 Otomatik GitHub Push — ZORUNLU
-Her görev tamamlandığında ve TASKLOG.md güncellendikten sonra,
-aşağıdaki komutu terminalde otomatik olarak çalıştır:
-bashpython github_sync.py "TASK-[NUMARA]: [kısa görev açıklaması]"
-Örnekler:
-bashpython github_sync.py "TASK-001: surec modulu listeleme sayfasi tamamlandi"
-python github_sync.py "TASK-002: admin kullanici ekleme formu duzeltildi"
-python github_sync.py "TASK-003: sp modulu anasayfa tasarimi guncellendi"
-Kurallar:
+### 7.6 Otomatik GitHub Push — KESİNLİKLE ZORUNLU
 
-Commit mesajı her zaman TASK numarası ile başlar
-Türkçe karakter kullanma (commit mesajında)
-Kod değişikliği yoksa çalıştırma
-Script hata verirse kullanıcıya bildir, manuel düzeltmesini iste
-github_sync.py proje kök dizininde olmalı — yoksa kullanıcıya haber ver
+⚠️ BU KURAL ATLANAMAZDIR. Her görev sonunda aşağıdaki adımlar SIRASYLA yapılır:
+
+**ADIM 1 — TASKLOG güncelle** (7.1 formatına göre)
+
+**ADIM 2 — Push et** (istisnasız, her seferinde):
+
+```bash
+python github_sync.py "TASK-[NUMARA]: [aciklama]"
+```
+
+Bu iki adım tamamlanmadan görev BİTMİŞ sayılmaz.
+Kullanıcı "bitti" dese bile, sen bu adımları tamamlamadan görevi kapatma.
