@@ -11,6 +11,13 @@ from app.models.core import User, Role, Tenant
 _ADMIN_ROLES   = ("Admin",)
 _MANAGER_ROLES = ("Admin", "tenant_admin", "executive_manager")
 
+# Hangi rol, hangi rolleri atayabilir
+ASSIGNABLE_ROLES = {
+    "Admin":             ["Admin", "User", "tenant_admin", "executive_manager", "standard_user"],
+    "tenant_admin":      ["executive_manager", "standard_user"],
+    "executive_manager": ["executive_manager", "standard_user"],
+}
+
 
 def _is_admin():
     return current_user.role and current_user.role.name in _ADMIN_ROLES
@@ -37,7 +44,7 @@ def admin_users():
     else:
         users = User.query.filter_by(tenant_id=current_user.tenant_id).order_by(User.first_name).all()
 
-    roles   = Role.query.all()
+    roles   = Role.query.filter(Role.name.in_(ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", []))).all()
     tenants = Tenant.query.filter_by(is_active=True).order_by(Tenant.name).all() if _is_admin() else []
     return render_template("micro/admin/users.html", users=users, roles=roles, tenants=tenants)
 
@@ -56,8 +63,14 @@ def admin_users_add():
     if User.query.filter_by(email=email).first():
         return jsonify({"success": False, "message": "Bu e-posta zaten kayıtlı."}), 400
 
-    # tenant_admin tekil kontrolü
+    # Rol atama yetki kontrolü
     role = Role.query.get(data.get("role_id"))
+    if role:
+        allowed = ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", [])
+        if role.name not in allowed:
+            return jsonify({"success": False, "message": "Bu rolü atama yetkiniz yok."}), 403
+
+    # tenant_admin tekil kontrolü
     tid  = int(data.get("tenant_id") or current_user.tenant_id or 0)
     if role and role.name == "tenant_admin":
         existing = User.query.join(Role).filter(
@@ -103,6 +116,11 @@ def admin_users_edit(user_id):
         u.job_title   = data.get("job_title",  u.job_title)
         u.department  = data.get("department", u.department)
         if data.get("role_id"):
+            new_role = Role.query.get(int(data["role_id"]))
+            if new_role:
+                allowed = ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", [])
+                if new_role.name not in allowed:
+                    return jsonify({"success": False, "message": "Bu rolü atama yetkiniz yok."}), 403
             u.role_id = int(data["role_id"])
         if data.get("password"):
             u.password_hash = generate_password_hash(data["password"])

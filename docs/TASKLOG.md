@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-023 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Rol atama yetki kontrolü ve dropdown filtrelemesi eklendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `ASSIGNABLE_ROLES` sabiti eklendi; `admin_users_add` ve `admin_users_edit`'e rol yetki kontrolü eklendi; `admin_users` view'ında `roles` listesi `current_user` rolüne göre filtreleniyor
+
+### Yapılan İşlem
+`tenant_admin` ve `executive_manager` rolündeki kullanıcılar daha önce `Admin` dahil tüm rolleri atayabiliyordu. `ASSIGNABLE_ROLES` map'i ile her rol için izin verilen roller tanımlandı. `admin_users_add` ve `admin_users_edit` endpoint'lerinde atanmak istenen rol bu listeye göre kontrol ediliyor; yetkisiz atamada 403 dönüyor. `admin_users` view'ı da `roles` listesini aynı map'e göre filtreliyor, böylece dropdown'da sadece atanabilir roller görünüyor.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-022 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Bulk import endpoint'i Excel desteği, şifre okuma ve ek alan eşleştirmesiyle güncellendi
