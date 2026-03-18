@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-014 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Rol dropdown'ı Türkçe etiketlerle gösterilecek şekilde güncellendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/js/admin.js` → `ROLE_LABELS` map eklendi, `buildRoleOptions` fonksiyonu çeviri map'ini kullanacak şekilde güncellendi
+
+### Yapılan İşlem
+Backend'den gelen İngilizce rol isimleri (Admin, User, tenant_admin, executive_manager, standard_user) frontend'de Türkçe karşılıklarıyla gösterilmek üzere `ROLE_LABELS` map'i eklendi. Bilinmeyen rol isimleri olduğu gibi gösterilmeye devam eder.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-013 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** users.html kullanıcı ekle/düzenle Swal modalları native HTML modal'a geçirildi

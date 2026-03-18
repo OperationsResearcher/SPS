@@ -47,14 +47,23 @@
   function reload() { setTimeout(() => location.reload(), 1200); }
 
   // ── Rol / Kurum seçenekleri yardımcısı ──────────────────────────────────
+  const ROLE_LABELS = {
+    "Admin":              "Admin",
+    "User":               "Kullanici",
+    "tenant_admin":       "Kurum Yoneticisi",
+    "executive_manager":  "Kurum Ust Yonetimi",
+    "standard_user":      "Kurum Kullanicisi",
+  };
+
   function buildRoleOptions(selectedId) {
     const meta = document.getElementById("admin-meta");
-    if (!meta) return "<option value=''>— Rol Seç —</option>";
+    if (!meta) return "<option value=''>— Rol Sec —</option>";
     const ids   = JSON.parse(meta.dataset.roles    || "[]");
     const names = JSON.parse(meta.dataset.roleNames || "[]");
-    return ids.map((id, i) =>
-      `<option value="${id}" ${String(id) === String(selectedId) ? "selected" : ""}>${escHtml(names[i])}</option>`
-    ).join("");
+    return ids.map((id, i) => {
+      const label = ROLE_LABELS[names[i]] || escHtml(names[i]);
+      return `<option value="${id}" ${String(id) === String(selectedId) ? "selected" : ""}>${label}</option>`;
+    }).join("");
   }
 
   function buildTenantOptions(selectedId) {
