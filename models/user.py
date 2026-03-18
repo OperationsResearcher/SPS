@@ -8,7 +8,7 @@ from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
 
-class User(UserMixin, db.Model):
+class LegacyUser(UserMixin, db.Model):
     """
     Kullanıcı Modeli
     
@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
     deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     
     # İlişki tanımları
-    deleter = db.relationship('User', remote_side=[id], foreign_keys=[deleted_by])
+    deleter = db.relationship('LegacyUser', remote_side=[id], foreign_keys=[deleted_by])
     
     # Geri Bildirim İlişkisi (Feedback modeli ile)
     # feedbacks relationship Feedback modelinde backref ile tanımlı
@@ -113,7 +113,7 @@ class Kurum(db.Model):
     
     # İlişkiler
     # users = db.relationship('User', backref='kurum', lazy=True)  # User modelinde backref var
-    deleter = db.relationship('User', foreign_keys=[deleted_by], backref='deleted_kurumlar')
+    deleter = db.relationship('LegacyUser', foreign_keys=[deleted_by], backref='deleted_kurumlar')
     
     def __repr__(self):
         return f'<Kurum {self.kisa_ad}>'
@@ -144,8 +144,8 @@ class OzelYetki(db.Model):
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    kullanici = db.relationship('User', foreign_keys=[kullanici_id], backref=db.backref('ozel_yetkiler', lazy=True))
-    veren_kullanici = db.relationship('User', foreign_keys=[veren_kullanici_id])
+    kullanici = db.relationship('LegacyUser', foreign_keys=[kullanici_id], backref=db.backref('ozel_yetkiler', lazy=True))
+    veren_kullanici = db.relationship('LegacyUser', foreign_keys=[veren_kullanici_id])
 
 class KullaniciYetki(db.Model):
     """Matris tabanlı yetki atamaları"""
@@ -159,8 +159,8 @@ class KullaniciYetki(db.Model):
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship('User', foreign_keys=[user_id], backref='yetkiler')
-    atayan = db.relationship('User', foreign_keys=[atayan_user_id])
+    user = db.relationship('LegacyUser', foreign_keys=[user_id], backref='yetkiler')
+    atayan = db.relationship('LegacyUser', foreign_keys=[atayan_user_id])
 
 class DashboardLayout(db.Model):
     """Kullanıcı bazlı dashboard düzeni"""
@@ -173,7 +173,7 @@ class DashboardLayout(db.Model):
     layout_data = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship('User', backref=db.backref('dashboard_layouts', lazy=True))
+    user = db.relationship('LegacyUser', backref=db.backref('dashboard_layouts', lazy=True))
 
 class Deger(db.Model):
     """Kurum Değerleri"""
@@ -202,7 +202,7 @@ class KalitePolitikasi(db.Model):
     aciklama = db.Column(db.Text)
     kurum = db.relationship('Kurum', backref=db.backref('kalite_politikalari', lazy=True))
 
-class Notification(db.Model):
+class LegacyNotification(db.Model):
     """Sistem Bildirimleri"""
     __tablename__ = 'notification'
     id = db.Column(db.Integer, primary_key=True)
@@ -223,7 +223,7 @@ class Notification(db.Model):
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('bildirimler', lazy=True))
+    user = db.relationship('LegacyUser', foreign_keys=[user_id], backref=db.backref('bildirimler', lazy=True))
 
 class UserActivityLog(db.Model):
     """Kullanıcı Aktivite Logları"""
@@ -242,7 +242,7 @@ class UserActivityLog(db.Model):
     bireysel_pg_id = db.Column(db.Integer, nullable=True)
     surec_pg_id = db.Column(db.Integer, nullable=True)
     
-    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('aktivite_loglari', lazy=True))
+    user = db.relationship('LegacyUser', foreign_keys=[user_id], backref=db.backref('aktivite_loglari', lazy=True))
 
 class Note(db.Model):
     """
@@ -258,5 +258,5 @@ class Note(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
     # İlişki
-    user = db.relationship('User', backref=db.backref('notes', lazy='dynamic', order_by='Note.created_at.desc()'))
+    user = db.relationship('LegacyUser', backref=db.backref('notes', lazy='dynamic', order_by='Note.created_at.desc()'))
 

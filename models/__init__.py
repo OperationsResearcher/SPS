@@ -9,10 +9,12 @@ Uygulamanın tüm veritabanı modellerini tek bir noktadan sunar.
 from extensions import db
 
 from .user import (
-    User, Kurum, YetkiMatrisi, OzelYetki, KullaniciYetki,
+    LegacyUser, Kurum, YetkiMatrisi, OzelYetki, KullaniciYetki,
     DashboardLayout, Deger, EtikKural, KalitePolitikasi,
-    Notification, UserActivityLog, Note
+    LegacyNotification, UserActivityLog, Note
 )
+User = LegacyUser  # Geriye dönük uyumluluk alias'ı
+Notification = LegacyNotification  # Geriye dönük uyumluluk alias'ı
 from .feedback import Feedback
 from .dashboard import UserDashboardSettings
 from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix, StrategyMapLink

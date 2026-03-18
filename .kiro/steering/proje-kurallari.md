@@ -6,8 +6,20 @@ inclusion: always
 
 Bu projede aşağıdaki kurallar **kesinlikle** uygulanır.
 
-## 0. Görsel Doğrulama
-Bir görevi bitirince sadece koda bakma; mümkünse tarayıcı/konsol doğrulaması yap. Eğer yapılamazsa "Tarayıcı erişimi sağlanamadı, kod analizi yapıldı" şeklinde dürüst rapor ver.
+## 0. ALTIN KURAL — Önce Analiz, Sonra Uygula
+
+Her görevde şu sırayı izle:
+
+1. İlgili dosyaları oku
+2. Planı kullanıcıya göster ("Şunu yapacağım: ...")
+3. Kullanıcı onayı al ("devam et" veya "evet")
+4. Uygula
+5. TASKLOG.md güncelle
+6. github_sync.py çalıştır
+
+**Kullanıcı onayı olmadan asla kod değiştirme.**
+**Zincirleme değişiklik yapma — tek seferde tek dosya veya tek sorun.**
+**Birden fazla dosyayı etkileyen değişikliklerde önce tam planı listele.**
 
 ## 1. Bildirim Standartları — SweetAlert2 Zorunluluğu
 - `alert()`, `confirm()`, `prompt()` **KESİNLİKLE YASAK**.

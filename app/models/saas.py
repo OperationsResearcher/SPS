@@ -1,6 +1,6 @@
 """SaaS hierarchy models: Package -> Module -> Component, RouteRegistry."""
 
-from app.models import db
+from extensions import db
 
 
 class RouteRegistry(db.Model):

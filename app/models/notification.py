@@ -3,13 +3,13 @@ Notification Model
 Sprint 7-9: Real-Time ve Bildirimler
 """
 
-from app.extensions import db
+from extensions import db
 from datetime import datetime
 
 class Notification(db.Model):
     """Bildirim tablosu"""
     
-    __tablename__ = 'notifications'
+    __tablename__ = 'notifications_ext'
     
     id = db.Column(db.Integer, primary_key=True)
     

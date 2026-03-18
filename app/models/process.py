@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy.ext.associationproxy import association_proxy
-from app.models import db
+from extensions import db
 from app.models.core import SubStrategy
 
 # Association Tables (Many-to-Many Relationships)

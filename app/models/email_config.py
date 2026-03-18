@@ -1,7 +1,7 @@
 """Tenant e-posta yapılandırma modeli."""
 
 from datetime import datetime, timezone
-from app.models import db
+from extensions import db
 
 
 class TenantEmailConfig(db.Model):

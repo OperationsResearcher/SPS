@@ -4,7 +4,7 @@ Sprint 5-6: Güvenlik ve Stabilite
 Kullanıcı aktivitelerini loglama
 """
 
-from app.models import db
+from extensions import db
 from datetime import datetime
 
 class AuditLog(db.Model):
