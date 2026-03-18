@@ -5,6 +5,25 @@
 
 ---
 
+## TASK-005 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** Login sayfası CSP bloğu nedeniyle bozulan inline style/script harici dosyalara taşındı
+**Modül:** auth / login
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `templates/login.html` → Inline `<style>` ve `<script>` blokları kaldırıldı, harici dosyalara bağlandı
+- `static/css/login.css` → Oluşturuldu (login sayfası tüm CSS'i)
+- `static/js/login.js` → Oluşturuldu (quick login toggle JS)
+
+### Yapılan İşlem
+Flask-Talisman'ın `content_security_policy_nonce_in` ayarı inline style ve script bloklarını engelliyordu. Login sayfasındaki tüm CSS `static/css/login.css`'e, JS ise `static/js/login.js`'e taşındı. HTML'de sadece `<link>` ve `<script src>` referansları kaldı.
+
+### Notlar
+Tarayıcı erişimi sağlanamadı, kod analizi yapıldı.
+
+---
+
 ## TASK-004 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** `config.py`'de eksik `get_config()` fonksiyonu eklendi
