@@ -8,7 +8,7 @@
      data-edit-base="/micro/admin/users/edit/"
      data-toggle-base="/micro/admin/users/toggle/"
      data-bulk-import-url="{{ url_for('micro_bp.admin_users_bulk_import') }}"
-     style="max-width:1100px; margin:0 auto;">
+     class="mc-page-content">
 
   <!-- Sayfa başlığı -->
   <div class="mc-page-header">
@@ -29,7 +29,26 @@
   <!-- Arama -->
   <div class="mc-card" style="margin-bottom:16px;">
     <div class="mc-card-body" style="padding:12px 16px;">
-      <input type="text" id="user-search" class="mc-input" placeholder="Ad, e-posta veya rol ile ara…" style="max-width:360px;">
+      <input type="text" id="user-search" class="mc-form-input" placeholder="Ad, e-posta veya rol ile ara…" style="max-width:360px;">
+    </div>
+  </div>
+
+  <!-- Stat Kartları -->
+  <div class="mc-grid-4" style="margin-bottom:20px;">
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
+      <div class="mc-stat-value">{{ users|length }}</div>
+      <div class="mc-stat-label">Toplam Kullanıcı</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="mc-stat-value">{{ users|selectattr('is_active','eq',true)|list|length }}</div>
+      <div class="mc-stat-label">Aktif</div>
+    </div>
+    <div class="mc-stat-card mc-stat-red">
+      <div class="mc-stat-icon"><i class="fas fa-ban"></i></div>
+      <div class="mc-stat-value">{{ users|rejectattr('is_active','eq',true)|list|length }}</div>
+      <div class="mc-stat-label">Pasif</div>
     </div>
   </div>
 
@@ -69,13 +88,15 @@
           </td>
           <td style="text-align:center;">
             <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+              {% if current_user.role and current_user.role.name == 'Admin' %}
               <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit"
                       data-user-id="{{ u.id }}"
                       data-first-name="{{ u.first_name or '' | e }}"
                       data-last-name="{{ u.last_name or '' | e }}"
                       data-job-title="{{ u.job_title or '' | e }}"
                       data-department="{{ u.department or '' | e }}"
-                      data-role-id="{{ u.role_id or '' }}">
+                      data-role-id="{{ u.role_id or '' }}"
+                      data-email="{{ u.email | e }}">
                 <i class="fas fa-edit"></i> Düzenle
               </button>
               <button class="mc-btn mc-btn-sm {% if u.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-user-toggle"
@@ -84,6 +105,7 @@
                       data-active="{{ 'true' if u.is_active else 'false' }}">
                 {{ 'Pasife Al' if u.is_active else 'Aktifleştir' }}
               </button>
+              {% endif %}
             </div>
           </td>
         </tr>

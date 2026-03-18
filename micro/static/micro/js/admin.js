@@ -149,7 +149,7 @@
     document.addEventListener("click", async (e) => {
       const btnEdit = e.target.closest(".btn-user-edit");
       if (btnEdit) {
-        const { userId, firstName, lastName, jobTitle, department, roleId } = btnEdit.dataset;
+        const { userId, firstName, lastName, jobTitle, department, roleId, email } = btnEdit.dataset;
         const { value: vals } = await Swal.fire({
           title: "Kullanıcı Düzenle", width: 520,
           html: `<div class="text-left space-y-3">
@@ -159,6 +159,8 @@
               <div><label class="block text-xs text-gray-500 mb-1">Soyad</label>
                 <input id="ue-lname" class="swal2-input" value="${escHtml(lastName)}"></div>
             </div>
+            <div><label class="block text-xs text-gray-500 mb-1">E-posta</label>
+              <input id="ue-email" class="swal2-input" type="email" value="${escHtml(email)}" readonly style="background:#f1f5f9;color:#64748b;"></div>
             <div><label class="block text-xs text-gray-500 mb-1">Unvan</label>
               <input id="ue-title" class="swal2-input" value="${escHtml(jobTitle)}"></div>
             <div><label class="block text-xs text-gray-500 mb-1">Departman</label>

@@ -5,6 +5,24 @@
 
 ---
 
+## TASK-010 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** users.html kullanıcı yönetimi sayfası iyileştirmeleri ve admin.js e-posta alanı eklendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/templates/micro/admin/users.html` → `data-email` eklendi, inline style kaldırıldı (`mc-page-content`), `mc-input`→`mc-form-input`, stat kartları eklendi, butonlar Admin kontrolüne alındı
+- `micro/static/micro/js/admin.js` → `btn-user-edit` listener'ında `email` okunuyor, Swal formuna readonly e-posta alanı eklendi
+
+### Yapılan İşlem
+`users.html`'de 5 iyileştirme yapıldı: `data-email` attribute eklendi, `max-width` inline style `mc-page-content` sınıfıyla değiştirildi, arama kutusu sınıfı `mc-form-input` olarak düzeltildi, 3 stat kartı (toplam/aktif/pasif) eklendi, Düzenle ve Pasife Al butonları `Admin` rolü kontrolüne alındı. `admin.js`'de düzenleme Swal'ına readonly e-posta alanı eklendi.
+
+### Notlar
+E-posta alanı readonly — değiştirilemez, sadece bilgi amaçlı gösteriliyor.
+
+---
+
 ## TASK-009 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** SQLAlchemy `Multiple classes found for path "User"` ve duplicate tablo hatası giderildi
