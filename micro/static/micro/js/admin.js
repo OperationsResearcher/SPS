@@ -46,6 +46,15 @@
 
   function reload() { setTimeout(() => location.reload(), 1200); }
 
+  // ── Rol etiketleri — backend İngilizce isim → Türkçe görünen ad ──────────
+  const ROLE_LABELS = {
+    "Admin":             "Admin",
+    "User":              "Kullanıcı",
+    "tenant_admin":      "Kurum Yöneticisi",
+    "executive_manager": "Kurum Üst Yönetimi",
+    "standard_user":     "Kurum Kullanıcısı",
+  };
+
   // ═══════════════════════════════════════════════════════════════════════════
   // KULLANICI YÖNETİMİ
   // ═══════════════════════════════════════════════════════════════════════════
@@ -76,7 +85,10 @@
       const tenantNames= JSON.parse(meta.dataset.tenantNames || "[]");
 
       const roleSel = document.getElementById(roleSelId);
-      if (roleSel) roleSel.innerHTML = `<option value="">— Rol Seç —</option>${buildSelectOptions(roleIds, roleNames, selectedRoleId)}`;
+      if (roleSel) roleSel.innerHTML = `<option value="">— Rol Seç —</option>${roleIds.map((id, i) => {
+        const label = ROLE_LABELS[roleNames[i]] || escHtml(roleNames[i]);
+        return `<option value="${id}" ${String(id) === String(selectedRoleId) ? "selected" : ""}>${label}</option>`;
+      }).join("")}`;
 
       const tenantWrap = document.getElementById(tenantSelId.replace("tenant","tenant-wrap").replace("ua-","ua-").replace("ue-","ue-"));
       const tenantSel  = document.getElementById(tenantSelId);

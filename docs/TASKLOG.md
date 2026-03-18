@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-021 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** fillUserSelects fonksiyonuna ROLE_LABELS Türkçe çeviri map'i eklendi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/js/admin.js` → `ROLE_LABELS` map eklendi; `fillUserSelects` içinde rol option'ları oluştururken `ROLE_LABELS[name] || name` kullanılıyor
+
+### Yapılan İşlem
+Kullanıcı ekle/düzenle modallarındaki rol dropdown'ı backend'den gelen İngilizce isimleri (Admin, User, tenant_admin, executive_manager, standard_user) artık Türkçe karşılıklarıyla gösteriyor. Bilinmeyen rol isimleri olduğu gibi gösterilmeye devam eder.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-020 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** admin.js'deki kullanılmayan buildRoleOptions ve buildTenantOptions dead code kaldırıldı
