@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-004 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** `config.py`'de eksik `get_config()` fonksiyonu eklendi
+**Modül:** config
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → `get_config()` fonksiyonu eklendi; `FLASK_ENV`'e göre `Config` veya `TestingConfig` döner
+
+### Yapılan İşlem
+`__init__.py` `get_config` adını import etmeye çalışıyordu ancak `config.py`'de yalnızca class tanımları vardı, fonksiyon yoktu. `TestingConfig`'in hemen altına `get_config()` factory fonksiyonu eklenerek `ImportError` giderildi.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-003 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** TASKLOG.md UTF-8 BOM'suz yeniden yazıldı, eski_proje git'ten çıkarıldı

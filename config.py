@@ -52,3 +52,11 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI", "sqlite:///:memory:")
     WTF_CSRF_ENABLED = False
+
+
+def get_config():
+    """Return the appropriate config object based on FLASK_ENV."""
+    env = os.environ.get("FLASK_ENV", "development")
+    if env == "testing":
+        return TestingConfig()
+    return Config()
