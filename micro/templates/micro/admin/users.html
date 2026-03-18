@@ -66,6 +66,13 @@
         </tr>
       </thead>
       <tbody>
+        {% set rol_etiket = {
+          'Admin': 'Admin',
+          'User': 'Kullanıcı',
+          'tenant_admin': 'Kurum Yöneticisi',
+          'executive_manager': 'Kurum Üst Yönetimi',
+          'standard_user': 'Kurum Kullanıcısı'
+        } %}
         {% for u in users %}
         <tr data-search="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email ~ ' ' ~ (u.role.name if u.role else ''))|lower }}">
           <td>
@@ -76,7 +83,7 @@
           </td>
           <td style="color:#64748b;">{{ u.email }}</td>
           <td>
-            <span class="mc-badge mc-badge-indigo">{{ u.role.name if u.role else '—' }}</span>
+            <span class="mc-badge mc-badge-indigo">{{ rol_etiket.get(u.role.name, u.role.name) if u.role else '—' }}</span>
           </td>
           {% if tenants %}
           <td style="font-size:12px; color:#64748b;">{{ u.tenant.name if u.tenant else '—' }}</td>
@@ -88,7 +95,7 @@
           </td>
           <td style="text-align:center;">
             <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
-              {% if current_user.role and current_user.role.name == 'Admin' %}
+              {% if current_user.role and current_user.role.name in ['Admin', 'tenant_admin', 'executive_manager'] %}
               <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit"
                       data-user-id="{{ u.id }}"
                       data-first-name="{{ u.first_name or '' | e }}"

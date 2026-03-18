@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-024 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** users.html'de buton görünürlüğü üç role genişletildi, rol badge'leri Türkçeleştirildi
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/templates/micro/admin/users.html` → Düzenle/Pasife Al buton koşulu `Admin` → `['Admin', 'tenant_admin', 'executive_manager']` olarak güncellendi; `rol_etiket` Jinja2 map'i eklendi, badge'ler Türkçe gösteriyor
+
+### Yapılan İşlem
+Daha önce Düzenle ve Pasife Al butonları yalnızca `Admin` rolüne görünüyordu; backend'de `tenant_admin` ve `executive_manager` de bu işlemleri yapabildiği için frontend koşulu üç role genişletildi. Tablodaki rol badge'leri `u.role.name` yerine `rol_etiket` map'inden Türkçe karşılıklarını gösteriyor; bilinmeyen roller olduğu gibi görünmeye devam eder.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-023 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** Rol atama yetki kontrolü ve dropdown filtrelemesi eklendi
