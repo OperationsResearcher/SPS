@@ -46,39 +46,6 @@
 
   function reload() { setTimeout(() => location.reload(), 1200); }
 
-  // ── Rol / Kurum seçenekleri yardımcısı ──────────────────────────────────
-  const ROLE_LABELS = {
-    "Admin":              "Admin",
-    "User":               "Kullanıcı",
-    "tenant_admin":       "Kurum Yöneticisi",
-    "executive_manager":  "Kurum Üst Yönetimi",
-    "standard_user":      "Kurum Kullanıcısı",
-  };
-
-  function buildRoleOptions(selectedId) {
-    const meta = document.getElementById("admin-meta");
-    if (!meta) return "<option value=''>— Rol Seç —</option>";
-    const ids   = JSON.parse(meta.dataset.roles    || "[]");
-    const names = JSON.parse(meta.dataset.roleNames || "[]");
-    return ids.map((id, i) => {
-      const label = ROLE_LABELS[names[i]] || escHtml(names[i]);
-      return `<option value="${id}" ${String(id) === String(selectedId) ? "selected" : ""}>${label}</option>`;
-    }).join("");
-  }
-
-  function buildTenantOptions(selectedId) {
-    const meta = document.getElementById("admin-meta");
-    if (!meta) return "";
-    const ids   = JSON.parse(meta.dataset.tenants     || "[]");
-    const names = JSON.parse(meta.dataset.tenantNames || "[]");
-    if (!ids.length) return "";
-    return `<div><label class="block text-xs text-gray-500 mb-1">Kurum</label>
-      <select id="u-tenant" class="swal2-select">
-        <option value="">— Kurum Seç —</option>
-        ${ids.map((id, i) => `<option value="${id}" ${String(id) === String(selectedId) ? "selected" : ""}>${escHtml(names[i])}</option>`).join("")}
-      </select></div>`;
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // KULLANICI YÖNETİMİ
   // ═══════════════════════════════════════════════════════════════════════════

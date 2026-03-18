@@ -5,6 +5,23 @@
 
 ---
 
+## TASK-020 | 2026-03-18 | ✅ Tamamlandı
+
+**Görev:** admin.js'deki kullanılmayan buildRoleOptions ve buildTenantOptions dead code kaldırıldı
+**Modül:** admin / users
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/static/micro/js/admin.js` → `buildRoleOptions`, `buildTenantOptions`, `ROLE_LABELS` kaldırıldı (dead code — native modal'a geçişte yerini `fillUserSelects` aldı)
+
+### Yapılan İşlem
+`fillUserSelects` ile HTML modal ID'leri (`ua-role`, `ua-tenant`, `ua-tenant-wrap`, `ue-role`, `ue-tenant`, `ue-tenant-wrap`) karşılaştırıldı — tam eşleşiyor, sorun yok. Eski Swal tabanlı koddan kalan `buildRoleOptions`, `buildTenantOptions` ve `ROLE_LABELS` artık hiçbir yerde çağrılmıyordu; kaldırıldı.
+
+### Notlar
+Yok.
+
+---
+
 ## TASK-019 | 2026-03-18 | ✅ Tamamlandı
 
 **Görev:** micro_bp Blueprint'inden hatalı static_url_path parametresi kaldırıldı
