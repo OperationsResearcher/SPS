@@ -5,6 +5,27 @@
 
 ---
 
+## TASK-034 | 2026-03-19 | ✅ Tamamlandı
+
+**Görev:** FakeLimiter kaldırıldı, gerçek Flask-Limiter aktif edildi ve login endpoint'lerine rate limit eklendi
+**Modül:** security / auth / micro-auth
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `extensions.py` → `FakeLimiter` tamamen kaldırıldı; gerçek `Limiter` import/instance eklendi
+- `__init__.py` → limiter'ı devre dışı bırakan `RATELIMIT_ENABLED = False` satırı kaldırıldı
+- `auth/routes.py` → `/auth/login` için `@limiter.limit("10 per minute")` eklendi
+- `micro/modules/shared/auth/routes.py` → `/micro/login` için `@limiter.limit("10 per minute")` eklendi
+- `requirements.txt` → `Flask-Limiter==3.5.0` olarak versiyon sabitlendi
+
+### Yapılan İşlem
+Rate limiting mekanizması mock/fake yapıdan gerçek Flask-Limiter'a geçirildi. Uygulama başlatma akışında `limiter.init_app(app)` çağrısı zaten mevcut olduğundan korunarak aktif hale getirildi. Auth ve micro login endpointlerine dakikada 10 istek limiti uygulandı.
+
+### Notlar
+Micro login route'u projede `/micro/login` olarak tanımlı; bu endpoint'e limit dekoratörü eklendi.
+
+---
+
 ## TASK-033 | 2026-03-19 | ✅ Tamamlandı
 
 **Görev:** Kokpitim tam derinlik analiz raporu oluşturuldu (`docs/analiz-antigravity.md`)

@@ -16,10 +16,11 @@ from werkzeug.utils import secure_filename
 from micro import micro_bp
 from app.models import db
 from app.models.core import User
-from extensions import csrf
+from extensions import csrf, limiter
 
 
 @micro_bp.route("/login")
+@limiter.limit("10 per minute")
 def micro_login():
     """Micro platform login sayfası — zaten giriş yapıldıysa launcher'a yönlendir."""
     if current_user.is_authenticated:

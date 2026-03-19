@@ -27,8 +27,6 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
-    # Rate Limiter - TAMAMEN DEVRE DIŞI (429 hatası önlemek için)
-    app.config["RATELIMIT_ENABLED"] = False
     limiter.init_app(app)
     cache.init_app(app)
     

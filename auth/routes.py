@@ -24,8 +24,7 @@ def index():
     return redirect(url_for('auth.login'))
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
-# @limiter.limit("10/minute;100/hour", error_message="Çok fazla giriş denemesi. Lütfen biraz bekleyip tekrar deneyin.")
-# DEVRE DIŞI: Toplantı sırasında 429 hatası önlemek için yorum satırı yapıldı
+@limiter.limit("10 per minute")
 def login():
     """Kullanıcı giriş sayfası"""
     if current_user.is_authenticated:

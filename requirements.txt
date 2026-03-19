@@ -3,7 +3,7 @@ Flask-WTF
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Login
-Flask-Limiter
+Flask-Limiter==3.5.0
 Flask-Caching
 Flask-SocketIO==5.3.5
 python-socketio==5.10.0

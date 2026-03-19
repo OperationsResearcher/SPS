@@ -1,4 +1,25 @@
 # TASKLOG — Son 10 Task
+## TASK-034 | 2026-03-19 | ✅ Tamamlandı
+
+**Görev:** FakeLimiter kaldırıldı, gerçek Flask-Limiter aktif edildi ve login endpoint'lerine rate limit eklendi
+**Modül:** security / auth / micro-auth
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `extensions.py` → `FakeLimiter` tamamen kaldırıldı; gerçek `Limiter` import/instance eklendi
+- `__init__.py` → limiter'ı devre dışı bırakan `RATELIMIT_ENABLED = False` satırı kaldırıldı
+- `auth/routes.py` → `/auth/login` için `@limiter.limit("10 per minute")` eklendi
+- `micro/modules/shared/auth/routes.py` → `/micro/login` için `@limiter.limit("10 per minute")` eklendi
+- `requirements.txt` → `Flask-Limiter==3.5.0` olarak versiyon sabitlendi
+
+### Yapılan İşlem
+Rate limiting mekanizması mock/fake yapıdan gerçek Flask-Limiter'a geçirildi. Uygulama başlatma akışında `limiter.init_app(app)` çağrısı zaten mevcut olduğundan korunarak aktif hale getirildi. Auth ve micro login endpointlerine dakikada 10 istek limiti uygulandı.
+
+### Notlar
+Micro login route'u projede `/micro/login` olarak tanımlı; bu endpoint'e limit dekoratörü eklendi.
+
+---
+
 ## TASK-033 | 2026-03-19 | ✅ Tamamlandı
 
 **Görev:** Kokpitim tam derinlik analiz raporu oluşturuldu (`docs/analiz-antigravity.md`)
@@ -157,22 +178,5 @@ Profil sayfası eski `auth_bp.profile` 307 redirect'inden kurtarıldı. `micro_b
 
 ### Notlar
 Eski `auth_bp.profile` ve `auth_bp.upload_profile_photo` endpoint'leri hâlâ çalışıyor — kök `templates/profile.html` kullananlar için dokunulmadı.
-
----
-
-## TASK-024 | 2026-03-18 | ✅ Tamamlandı
-
-**Görev:** users.html'de buton görünürlüğü üç role genişletildi, rol badge'leri Türkçeleştirildi
-**Modül:** admin / users
-**Durum:** ✅ Tamamlandı
-
-### Değiştirilen Dosyalar
-- `micro/templates/micro/admin/users.html` → Düzenle/Pasife Al buton koşulu `Admin` → `['Admin', 'tenant_admin', 'executive_manager']` olarak güncellendi; `rol_etiket` Jinja2 map'i eklendi, badge'ler Türkçe gösteriyor
-
-### Yapılan İşlem
-Daha önce Düzenle ve Pasife Al butonları yalnızca `Admin` rolüne görünüyordu; backend'de `tenant_admin` ve `executive_manager` de bu işlemleri yapabildiği için frontend koşulu üç role genişletildi. Tablodaki rol badge'leri `u.role.name` yerine `rol_etiket` map'inden Türkçe karşılıklarını gösteriyor; bilinmeyen roller olduğu gibi görünmeye devam eder.
-
-### Notlar
-Yok.
 
 ---
