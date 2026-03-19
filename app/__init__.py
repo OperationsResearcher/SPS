@@ -29,7 +29,6 @@ def create_app(config_class=None):
         config_class = Config
 
     app.config.from_object(config_class)
-    app.config["SECRET_KEY"] = app.config.get("SECRET_KEY") or "cok-gizli-kokpitim-anahtari-123"
 
     csrf.init_app(app)
     db.init_app(app)

@@ -5,6 +5,25 @@
 
 ---
 
+## TASK-035 | 2026-03-19 | ✅ Tamamlandı
+
+**Görev:** SECRET_KEY fallback kaldırıldı ve environment zorunlu hale getirildi
+**Modül:** config / app init / security
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → Hardcoded `SECRET_KEY` fallback kaldırıldı; environment yoksa `RuntimeError` atacak şekilde güncellendi
+- `app/__init__.py` → `app.config["SECRET_KEY"]` için hardcoded fallback satırı kaldırıldı
+- `.env` → `SECRET_KEY` güvenli rastgele değer ile eklendi/oluşturuldu (git'e eklenmedi)
+
+### Yapılan İşlem
+Uygulamanın gizli anahtarının yalnızca environment üzerinden okunması zorunlu hale getirildi. Hardcoded fallback'ler kaldırılarak production güvenlik riski düşürüldü. `.gitignore` içinde `.env` kuralı doğrulandı.
+
+### Notlar
+SECRET_KEY değeri güvenlik nedeniyle loglanmadı.
+
+---
+
 ## TASK-034 | 2026-03-19 | ✅ Tamamlandı
 
 **Görev:** FakeLimiter kaldırıldı, gerçek Flask-Limiter aktif edildi ve login endpoint'lerine rate limit eklendi

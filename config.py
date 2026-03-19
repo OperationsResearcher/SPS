@@ -9,7 +9,9 @@ load_dotenv()
 class Config:
     """Base configuration class."""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "cok-gizli-kokpitim-anahtari"
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise RuntimeError("SECRET_KEY environment variable is not set!")
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_URI", "sqlite:///kokpitim.db"
     )

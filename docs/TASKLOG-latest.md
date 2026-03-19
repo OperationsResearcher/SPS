@@ -1,4 +1,23 @@
 # TASKLOG — Son 10 Task
+## TASK-035 | 2026-03-19 | ✅ Tamamlandı
+
+**Görev:** SECRET_KEY fallback kaldırıldı ve environment zorunlu hale getirildi
+**Modül:** config / app init / security
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → Hardcoded `SECRET_KEY` fallback kaldırıldı; environment yoksa `RuntimeError` atacak şekilde güncellendi
+- `app/__init__.py` → `app.config["SECRET_KEY"]` için hardcoded fallback satırı kaldırıldı
+- `.env` → `SECRET_KEY` güvenli rastgele değer ile eklendi/oluşturuldu (git'e eklenmedi)
+
+### Yapılan İşlem
+Uygulamanın gizli anahtarının yalnızca environment üzerinden okunması zorunlu hale getirildi. Hardcoded fallback'ler kaldırılarak production güvenlik riski düşürüldü. `.gitignore` içinde `.env` kuralı doğrulandı.
+
+### Notlar
+SECRET_KEY değeri güvenlik nedeniyle loglanmadı.
+
+---
+
 ## TASK-034 | 2026-03-19 | ✅ Tamamlandı
 
 **Görev:** FakeLimiter kaldırıldı, gerçek Flask-Limiter aktif edildi ve login endpoint'lerine rate limit eklendi
@@ -159,24 +178,5 @@ Kamera ikonu yerine standart `mc-btn` butonu eklendi. Fotoğraf seçilince FileR
 
 ### Notlar
 Yok.
-
----
-
-## TASK-025 | 2026-03-18 | ✅ Tamamlandı
-
-**Görev:** Profil sayfası micro yapıya tam taşındı — backend JSON API, fotoğraf yükleme, template ve JS
-**Modül:** auth / profil
-**Durum:** ✅ Tamamlandı
-
-### Değiştirilen Dosyalar
-- `micro/modules/shared/auth/routes.py` → `profil` route'u JSON API POST handler'a dönüştürüldü; `profil_foto_yukle` endpoint'i eklendi
-- `micro/templates/micro/auth/profil.html` → `profile_picture` → `profile_photo` düzeltildi; `data-update-url` / `data-upload-url` eklendi; rol badge Türkçeleştirildi; inline script kaldırıldı
-- `micro/static/micro/js/profil.js` → Tamamen yeniden yazıldı: fetch URL'leri `data-*`'dan okunuyor, bildirimler SweetAlert2, form JSON API ile submit ediliyor
-
-### Yapılan İşlem
-Profil sayfası eski `auth_bp.profile` 307 redirect'inden kurtarıldı. `micro_bp.profil` artık kendi JSON API handler'ına sahip: şifre doğrulama, e-posta duplicate kontrolü, yeni model alan adları (`phone_number`, `job_title`). Fotoğraf yükleme `profil_foto_yukle` endpoint'inde — fiziksel silme yok, sadece DB güncelleniyor. `profil.js` SweetAlert2 ile yeniden yazıldı.
-
-### Notlar
-Eski `auth_bp.profile` ve `auth_bp.upload_profile_photo` endpoint'leri hâlâ çalışıyor — kök `templates/profile.html` kullananlar için dokunulmadı.
 
 ---
