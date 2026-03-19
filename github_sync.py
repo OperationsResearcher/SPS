@@ -172,7 +172,15 @@ def main():
     print(result.stdout.strip())
 
     adim("Dosyalar ekleniyor")
-    run("git add docs/TASKLOG-latest.md", hata_kritik=False)
+    # 1) Önce TASKLOG-latest dosyasını açıkça stage et
+    run('git add "docs/TASKLOG-latest.md"', hata_kritik=False)
+    latest_stage = run('git status --short -- "docs/TASKLOG-latest.md"', hata_kritik=False).stdout.strip()
+    if latest_stage:
+        print(f"OK: TASKLOG-latest stage durumu: {latest_stage}")
+    else:
+        print("OK: TASKLOG-latest stage edildi (ayri degisiklik yok).")
+
+    # 2) Sonra kalan tüm dosyaları stage et
     run("git add .")
     kontrol_env_staged()
     print("OK: Dosyalar eklendi.")
