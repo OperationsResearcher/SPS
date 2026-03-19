@@ -15,7 +15,6 @@ Her görevde şu sırayı izle:
 3. Kullanıcı onayı al ("devam et" veya "evet")
 4. Uygula
 5. TASKLOG.md güncelle
-6. github_sync.py çalıştır
 
 **Kullanıcı onayı olmadan asla kod değiştirme.**
 **Zincirleme değişiklik yapma — tek seferde tek dosya veya tek sorun.**
@@ -108,17 +107,12 @@ Dosya yoksa önce oluştur:
 
 [Kayıtlar buraya, en yeni en üstte]
 ```
-### 7.6 Otomatik GitHub Push — KESİNLİKLE ZORUNLU
+### 7.6 GitHub Push — Oturum Sonu
 
-⚠️ BU KURAL ATLANAMAZDIR. Her görev sonunda aşağıdaki adımlar SIRASYLA yapılır:
+`github_sync.py` her görev sonrası **DEĞİL**, yalnızca şu durumlarda çalıştırılır:
 
-**ADIM 1 — TASKLOG güncelle** (7.1 formatına göre)
+1. Kullanıcı "push et" veya "githuba yükle" dediğinde
+2. Oturumu kapatmadan önce kullanıcı istediğinde
+3. Kritik bir hata düzeltmesi tamamlandığında
 
-**ADIM 2 — Push et** (istisnasız, her seferinde):
-
-```bash
-python github_sync.py "TASK-[NUMARA]: [aciklama]"
-```
-
-Bu iki adım tamamlanmadan görev BİTMİŞ sayılmaz.
-Kullanıcı "bitti" dese bile, sen bu adımları tamamlamadan görevi kapatma.
+**TASKLOG.md her kod değişikliğinde güncellenir — push kullanıcı isteğiyle olur.**
