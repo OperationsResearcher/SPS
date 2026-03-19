@@ -1,50 +1,132 @@
-0. 🚨 GÖRSEL DOĞRULAMA VE "YALAN" FİLTRESİ
-Kritik: Bir görevi bitirdiğinde sadece terminale bakma. Agent araçlarını kullanarak sayfayı aç ve F12 konsolunu tara.
+# Kokpitim Proje Kuralları — Birleşik Çalışma Protokolü
 
-Dürüstlük Kuralı: Eğer teknik bir kısıt nedeniyle tarayıcıyı kontrol edemediysen, "kontrol ettim" deme; "Tarayıcı erişimi sağlanamadı, kod analizi yapıldı" şeklinde dürüst rapor ver.
+Bu projede aşağıdaki kurallar **kesinlikle** uygulanır.
+Tüm IDE'ler (Kiro, Cursor, AntiGravity, VSCode) bu kuralları benimser.
 
-Rapor Sonu: "✅ Sayfa tarayıcıda/konsolda doğrulandı ve hata taranmadı."
+---
 
-1. 🍭 BİLDİRİM STANDARTLARI (SWEETALERT2 ZORUNLULUĞU)
-YASAK: Tarayıcı varsayılanı olan alert(), confirm() ve prompt() kullanımı KESİNLİKLE yasaktır.
+## 0. 🏅 ALTIN KURAL — Önce Analiz, Sonra Uygula
 
-Zorunluluk: Tüm kullanıcı etkileşimleri, onay pencereleri ve hata bildirimleri SweetAlert2 (Swal.fire) ile yapılacaktır.
+Her görevde şu sırayı **kesinlikle** izle:
 
-Dil: SweetAlert mesajları Türkçe, profesyonel ve kullanıcıyı yönlendiren bir tonda yazılacaktır.
+1. İlgili dosyaları oku
+2. Planı kullanıcıya göster ("Şunu yapacağım: ...")
+3. Kullanıcı onayı al ("devam et" veya "evet")
+4. Uygula
+5. TASKLOG.md güncelle
+6. Test et
+7. github_sync.py çalıştır
 
-Örnek: Başarılı işlemde yeşil "Başarılı", hatada kırmızı "Hata" teması kullanılmalıdır.
+**Kullanıcı onayı olmadan asla kod değiştirme.**
+**Zincirleme değişiklik yapma — tek seferde tek dosya veya tek sorun.**
+**Birden fazla dosyayı etkileyen değişikliklerde önce tam planı listele.**
 
-2. 🔍 TERMİNOLOJİ VE İŞ MANTIĞI (PG vs PostgreSQL)
-PG TANIMI: Projede geçen PG kısaltması Performans Göstergesi (Performance Indicator) demektir.
+---
 
-YASAK: Kod içerisinde, değişken isimlerinde veya yorum satırlarında "PG" kısaltmasını asla PostgreSQL için kullanma.
+## 1. 🔍 GÖRSEL DOĞRULAMA VE DÜRÜSTLÜK FİLTRESİ
 
-İsimlendirme: Performans göstergeleri için performance_indicator, pi_score, indicator_data gibi açık isimler kullan.
+- Görevi bitirince sadece terminale bakma — agent araçlarıyla sayfayı aç, F12 konsolunu tara.
+- Tarayıcıya erişemediysen **"kontrol ettim"** deme. Şunu yaz: **"Tarayıcı erişimi sağlanamadı, kod analizi yapıldı."**
+- Her görev raporu şu cümleyle bitmeli: **"✅ Sayfa tarayıcıda/konsolda doğrulandı ve hata taranmadı."** veya dürüst alternatifi.
 
-3. 🏗️ TEKNİK ALTYAPI VE PORT DİSİPLİNİ
-PORT: Uygulama her zaman 5001 portunda çalışır. localhost:5000 KESİNLİKLE yasaktır.
+---
 
-DİL AYRIMI: - Backend (Python/Logic/DB): %100 İngilizce (snake_case).
+## 2. 🍭 BİLDİRİM STANDARTLARI — SweetAlert2 ZORUNLULUĞU
 
-Frontend (UI/Mesajlar): %100 Türkçe.
+- `alert()`, `confirm()`, `prompt()` **KESİNLİKLE YASAK**.
+- Tüm kullanıcı bildirimleri ve onay pencereleri **SweetAlert2 (`Swal.fire`)** ile yapılır.
+- Mesajlar Türkçe, profesyonel tonda; başarıda yeşil, hatada kırmızı tema.
 
-HATA YÖNETİMİ: Boş except: pass blokları yasaktır. Her hata app.logger.error ile loglanmalı ve kullanıcıya Türkçe SweetAlert2 ile bilgi verilmelidir.
+---
 
-4. 🛡️ VERİ GÜVENLİĞİ VE SİLME PROTOKOLÜ
-Hard Delete Yasak: Veritabanından fiziksel veri silme işlemi yapılmayacaktır.
+## 3. 🔤 TERMİNOLOJİ — PG = Performans Göstergesi
 
-Soft Delete: Tüm modeller is_deleted (Boolean) alanına sahip olmalıdır. Veri silme isteklerinde bu alan True yapılır.
+- `PG` kısaltması **Performans Göstergesi** demektir, asla PostgreSQL için kullanılmaz.
+- Değişken isimlerinde `performance_indicator`, `pi_score`, `indicator_data` gibi açık isimler kullan.
 
-Global Filtre: Veri çekerken daima .filter_by(is_deleted=False) kontrolü eklendiğinden emin olunmalıdır.
+---
 
-5. 🎨 FRONTEND VE KATI KATMAN AYRIMI
-No Inline JS/CSS: HTML dosyaları içinde <script> veya <style> blokları bulunamaz. Tüm kodlar static/js/ ve static/css/ altındaki harici dosyalarda olmalıdır.
+## 4. 🏗️ TEKNİK ALTYAPI VE PORT DİSİPLİNİ
 
-Jinja2 Sınırı: Harici .js dosyaları içinde {{ }} (Jinja) ifadeleri kullanılamaz. Veri aktarımı için sadece data-* öznitelikleri kullanılacaktır.
+- **Port: 5001** — `localhost:5000` yasaktır.
+- **Backend (Python/DB):** %100 İngilizce, snake_case.
+- **Frontend (UI/Mesajlar):** %100 Türkçe.
+- Boş `except: pass` yasak — her hata `app.logger.error` ile loglanır, kullanıcıya Türkçe SweetAlert2 ile bilgi verilir.
 
-6. 📂 MİMARİ VE MODÜLERLİK
-Blueprint: app.py dosyasına yeni rota eklemek yasaktır. Her özellik kendi Blueprint modülü altında olmalıdır.
+---
 
-Eski Kod İzolasyonu: eski_proje_referans klasörü sadece "okuma" amaçlıdır. Yeni standartlara (İngilizce isimlendirme, Soft Delete) göre modernize ederek taşı.
+## 5. 🛡️ VERİ GÜVENLİĞİ — SOFT DELETE
 
-Yetkilendirme: Tüm rotalar @login_required ile, modüle özel rotalar ise @require_component dekoratörü ile korunmalıdır.
+- **Hard delete yasak** — fiziksel veri silme yapılmaz.
+- Tüm modellerde `is_active` (Boolean) alanı kullanılır; silme = `is_active=False`.
+- Veri çekerken daima `.filter_by(is_active=True)` kontrolü eklenir.
+
+---
+
+## 6. 🎨 FRONTEND — KATI KATMAN AYRIMI
+
+- HTML içinde `<script>` veya `<style>` blokları **yasak** — tüm kod `static/js/` ve `static/css/` altında.
+- Harici `.js` dosyalarında `{{ }}` (Jinja2) ifadesi kullanılamaz; veri aktarımı için `data-*` öznitelikleri kullanılır.
+
+---
+
+## 7. 📂 MİMARİ VE MODÜLERLİK
+
+- `app.py`'ye doğrudan rota eklemek yasak — her özellik kendi Blueprint modülü altında.
+- `eski_proje/` klasörü sadece okuma amaçlıdır; yeni koda taşırken İngilizce isimlendirme + soft delete standartlarına uygun modernize et.
+- Tüm rotalar `@login_required` ile korunur; modüle özel rotalar `@require_component` dekoratörü ile.
+
+---
+
+## 8. 📋 TASKLOG — GÖREV TAKİP ZORUNLULUĞU
+
+Her kod değişikliği içeren görev tamamlandığında `docs/TASKLOG.md` **zorunlu olarak** güncellenir.
+
+### Format
+
+```markdown
+## TASK-[NUMARA] | [TARİH] | [DURUM EMOJİ] [DURUM]
+
+**Görev:** [Tek cümle görev tanımı]
+**Modül:** [Hangi micro modülü]
+**Durum:** ✅ Tamamlandı | ⚠️ Kısmi | ❌ Hata
+
+### Değiştirilen Dosyalar
+- `[dosya yolu]` → [ne değişti, tek satır]
+
+### Yapılan İşlem
+[2-4 cümle özet]
+
+### Notlar
+[Varsa: eksik kalan, dikkat edilmesi gereken, sonraki adım]
+
+---
+```
+
+### Durum Kodları
+
+| Emoji | Anlam |
+|-------|-------|
+| ✅ | Tam tamamlandı, test edildi |
+| ⚠️ | Kısmi tamamlandı, devam gerekiyor |
+| ❌ | Hata oluştu, çözülemedi |
+| 🔄 | Önceki task güncellendi/düzeltildi |
+
+### TASK Numarası
+`docs/TASKLOG.md` içindeki en son numarayı bul, bir artır.
+
+### Kod Değişikliği Olmayan Görevler
+Sadece analiz, soru-cevap veya araştırma → TASKLOG güncellenmez.
+Kod yazıldıysa, değiştirildiyse veya silindiyse → **zorunlu güncelleme**.
+
+---
+
+## 9. 🚀 GÖREV SONU PROTOKOLÜ
+
+Her görev şu üç adımla kapanır — istisnasız:
+
+```
+Test et → TASKLOG güncelle → github_sync.py çalıştır
+```
+
+Bu üç adım tamamlanmadan görev bitmemiş sayılır.

@@ -8,6 +8,7 @@ Kullanim:
 import subprocess
 import sys
 import os
+import re
 from datetime import datetime
 
 # ============================================================
@@ -99,6 +100,42 @@ def remote_ayarla():
         print(f"OK: Remote ayarlandi: {REMOTE_URL}")
 
 
+def tasklog_latest_olustur():
+    """docs/TASKLOG.md dosyasindan son 10 task blogunu üretip TASKLOG-latest.md'ye yazar."""
+    tasklog_path = os.path.join(PROJE_KLASORU, "docs", "TASKLOG.md")
+    latest_path = os.path.join(PROJE_KLASORU, "docs", "TASKLOG-latest.md")
+
+    if not os.path.exists(tasklog_path):
+        print("UYARI: docs/TASKLOG.md bulunamadi, TASKLOG-latest.md uretilemedi.")
+        return
+
+    with open(tasklog_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # "## TASK-" ile baslayan bloklari ayikla
+    starts = list(re.finditer(r"^## TASK-", content, flags=re.MULTILINE))
+    blocks = []
+    for i, match in enumerate(starts):
+        start = match.start()
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(content)
+        blocks.append(content[start:end].strip())
+
+    # TASKLOG en yeni üstte tutuldugu icin "son 10" burada ilk 10 bloktur
+    latest_blocks = blocks[:10]
+
+    output = "# TASKLOG — Son 10 Task\n"
+    if latest_blocks:
+        output += "\n\n".join(latest_blocks).rstrip() + "\n"
+    else:
+        output += "\n"
+
+    # UTF-8, BOM'suz yazim
+    with open(latest_path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(output)
+
+    print("OK: docs/TASKLOG-latest.md guncellendi.")
+
+
 def main():
     global OTOMATIK_MOD
     os.chdir(PROJE_KLASORU)
@@ -118,6 +155,7 @@ def main():
     print()
     kontrol_gitignore()
     git_kullanici_kontrol()
+    tasklog_latest_olustur()
 
     if not OTOMATIK_MOD:
         print()
@@ -134,6 +172,7 @@ def main():
     print(result.stdout.strip())
 
     adim("Dosyalar ekleniyor")
+    run("git add docs/TASKLOG-latest.md", hata_kritik=False)
     run("git add .")
     kontrol_env_staged()
     print("OK: Dosyalar eklendi.")
