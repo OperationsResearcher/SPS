@@ -1,0 +1,192 @@
+{% extends "micro/project/tools/base_tool.html" %}
+{% block tool_header_title %}Kural motoru{% endblock %}
+{% block tool_header_icon %}fas fa-cogs{% endblock %}
+{% block tool_info_key %}rules{% endblock %}
+{% block title %}Kurallar — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block tool_main %}
+<div class="mc-pt-alert">
+    <strong>Otomasyon kuralları:</strong> Tetikleyici + koşul + aksiyon ile görev olaylarında otomatik bildirim veya durum değişimi tanımlayabilirsiniz.
+</div>
+
+<div class="flex flex-wrap gap-2">
+    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddModal()"><i class="fas fa-plus"></i> Yeni kural</button>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Tanımlı kurallar</div>
+    <div class="mc-pt-table-wrap">
+        <table class="mc-pt-table" id="rules-table">
+            <thead>
+                <tr>
+                    <th>Kural adı</th>
+                    <th>Tetikleyici</th>
+                    <th>Koşul</th>
+                    <th>Aksiyon</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="ruleModal" class="hidden fixed inset-0 z-[240] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+     role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)mcPtModalClose('ruleModal')">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-900 z-10">
+            <h3 class="font-semibold">Kural ekle / düzenle</h3>
+            <button type="button" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onclick="mcPtModalClose('ruleModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4 space-y-3">
+            <input type="hidden" id="rule-id">
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="rule-name">Kural adı</label>
+                <input type="text" class="mc-input w-full" id="rule-name" placeholder="Örn: Tamamlanan görevleri bildir" required>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="trigger">Tetikleyici</label>
+                <select class="mc-select w-full" id="trigger" required>
+                    <option value="status_change">Durum değişikliği</option>
+                    <option value="assignee_change">Atanan kişi değişikliği</option>
+                    <option value="due_date_change">Bitiş tarihi değişikliği</option>
+                </select>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="condition-json">Koşul (JSON)</label>
+                <textarea class="mc-input w-full font-mono text-xs" id="condition-json" rows="3" placeholder='{"status": "Done"}'></textarea>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="action-json">Aksiyon (JSON)</label>
+                <textarea class="mc-input w-full font-mono text-xs" id="action-json" rows="3" placeholder='{"send_notification": true}'></textarea>
+            </div>
+            <label class="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                <input type="checkbox" id="is-active" class="rounded border-slate-300" checked>
+                Aktif
+            </label>
+        </div>
+        <div class="flex justify-end gap-2 px-4 py-3 border-t border-slate-200 dark:border-slate-700">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="mcPtModalClose('ruleModal')">İptal</button>
+            <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="saveRule()">Kaydet</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block tool_scripts %}
+<script>
+const R_PID = {{ project.id|int }};
+let rules = [];
+
+async function loadRules() {
+  try {
+    const res = await fetch('/api/projeler/' + R_PID + '/kurallar', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    rules = (data.rules || []).map(r => ({
+      id: r.id, name: r.name, trigger: r.trigger, condition: r.condition, actions: r.actions, is_active: r.is_active
+    }));
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Kurallar');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#rules-table tbody');
+  tbody.innerHTML = '';
+  if (rules.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">Henüz kural yok.</td></tr>';
+    return;
+  }
+  rules.forEach(rule => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${rule.name || 'Adsız'}</strong></td>
+      <td><span class="mc-pt-badge mc-pt-badge-muted">${rule.trigger}</span></td>
+      <td><code class="text-xs break-all">${JSON.stringify(rule.condition)}</code></td>
+      <td><code class="text-xs break-all">${JSON.stringify(rule.actions)}</code></td>
+      <td><span class="mc-pt-badge ${rule.is_active ? 'mc-pt-badge-ok' : 'mc-pt-badge-muted'}">${rule.is_active ? 'Aktif' : 'Pasif'}</span></td>
+      <td class="flex flex-wrap gap-1">
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="editRule(${rule.id})"><i class="fas fa-edit"></i></button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm text-rose-600" onclick="deleteRule(${rule.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('rule-id').value = '';
+  document.getElementById('rule-name').value = '';
+  document.getElementById('trigger').value = 'status_change';
+  document.getElementById('condition-json').value = '{"status": "Done"}';
+  document.getElementById('action-json').value = '{"send_notification": true}';
+  document.getElementById('is-active').checked = true;
+  mcPtModalOpen('ruleModal');
+}
+
+function editRule(id) {
+  const rule = rules.find(r => r.id === id);
+  if (!rule) return;
+  document.getElementById('rule-id').value = rule.id;
+  document.getElementById('rule-name').value = rule.name || '';
+  document.getElementById('trigger').value = rule.trigger;
+  document.getElementById('condition-json').value = JSON.stringify(rule.condition || {}, null, 2);
+  document.getElementById('action-json').value = JSON.stringify(rule.actions || {}, null, 2);
+  document.getElementById('is-active').checked = rule.is_active;
+  mcPtModalOpen('ruleModal');
+}
+
+async function saveRule() {
+  const id = document.getElementById('rule-id').value;
+  const name = document.getElementById('rule-name').value.trim();
+  const trigger = document.getElementById('trigger').value;
+  const conditionText = document.getElementById('condition-json').value.trim();
+  const actionText = document.getElementById('action-json').value.trim();
+  const is_active = document.getElementById('is-active').checked;
+  if (!name || !trigger) { showToast('error', 'Kural adı ve tetikleyici gerekli', 'Eksik'); return; }
+  let condition, actions;
+  try {
+    condition = JSON.parse(conditionText);
+    actions = JSON.parse(actionText);
+  } catch (e) {
+    showToast('error', 'Geçersiz JSON: ' + e.message, 'JSON');
+    return;
+  }
+  const body = { name, trigger, condition, actions, is_active };
+  const url = id ? '/api/projeler/' + R_PID + '/kurallar/' + id : '/api/projeler/' + R_PID + '/kurallar';
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    mcPtModalClose('ruleModal');
+    loadRules();
+    showToast('success', 'Kural kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Kayıt');
+  }
+}
+
+async function deleteRule(id) {
+  if (!confirm('Bu kuralı silmek istediğinizden emin misiniz?')) return;
+  try {
+    const res = await fetch('/api/projeler/' + R_PID + '/kurallar/' + id, { method: 'DELETE', credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    loadRules();
+    showToast('success', 'Silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Silme');
+  }
+}
+
+loadRules();
+</script>
+{% endblock %}

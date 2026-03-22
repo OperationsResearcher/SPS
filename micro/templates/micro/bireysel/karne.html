@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/surec.css') }}">
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/bireysel-karne.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,9 +13,10 @@
      data-pg-add-url="{{ url_for('micro_bp.bireysel_api_pg_add') }}"
      data-veri-add-url="{{ url_for('micro_bp.bireysel_api_veri_add') }}"
      data-faaliyet-add-url="{{ url_for('micro_bp.bireysel_api_faaliyet_add') }}"
-     data-pg-delete-base="/micro/bireysel/api/pg/delete/"
-     data-faaliyet-delete-base="/micro/bireysel/api/faaliyet/delete/"
-     data-faaliyet-track-base="/micro/bireysel/api/faaliyet/track/"
+     data-pg-delete-base="/bireysel/api/pg/delete/"
+     data-faaliyet-delete-base="/bireysel/api/faaliyet/delete/"
+     data-faaliyet-track-base="/bireysel/api/faaliyet/track/"
+     data-pg-series-url-template="{{ url_for('micro_bp.bireysel_api_pg_series', pg_id=999999) }}"
      data-current-year="{{ current_year }}"
      style="max-width:1200px; margin:0 auto;">
 
@@ -60,6 +62,35 @@
     </div>
   </div>
 
+  <!-- Yıl özeti / hedef–gerçekleşen (JS doldurur) -->
+  <div class="mc-card" id="karne-insights-card" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-lightbulb" style="color:#f59e0b; margin-right:8px;"></i>Yıl özeti &amp; dikkat
+      </span>
+    </div>
+    <div class="mc-card-body" style="padding-top:8px;">
+      <p class="mc-page-subtitle" style="margin:0 0 10px;">Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.</p>
+      <div id="karne-insights-strip" class="karne-insights-strip"></div>
+      <p class="mc-page-subtitle" style="margin:10px 0 0; font-size:11px; color:#94a3b8;">
+        Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir tahmindir</strong>; İK veya resmi ölçüm yerine geçmez.
+      </p>
+    </div>
+  </div>
+
+  <!-- Geçmişe dönük hareketler (PG verisi + faaliyet) -->
+  <div class="mc-card" id="karne-timeline-card" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-clock-rotate-left" style="color:#6366f1; margin-right:8px;"></i>Bu yıl ne yaptım?
+      </span>
+    </div>
+    <div class="mc-card-body" style="padding-top:8px;">
+      <ul id="karne-timeline-list" class="karne-timeline-list" aria-live="polite"></ul>
+      <p id="karne-timeline-empty" class="mc-page-subtitle" style="margin:12px 0 0; display:none;">Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını işaretleyin.</p>
+    </div>
+  </div>
+
   <!-- Yükleniyor -->
   <div id="karne-loading" class="mc-empty" style="display:none;">
     <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
@@ -75,6 +106,13 @@
       <button id="btn-pg-add" class="mc-btn mc-btn-primary mc-btn-sm">
         <i class="fas fa-plus"></i> PG Ekle
       </button>
+    </div>
+    <div class="mc-card-body" style="padding:0 20px 12px;">
+      <div class="karne-heat-legend">
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-fill" style="display:inline-block;width:14px;height:14px;"></span> Veri var</span>
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-empty" style="display:inline-block;width:14px;height:14px;"></span> Geçmiş/geçerli ay, veri yok</span>
+        <span style="margin-left:auto;">Satıra tıklayınca yıllık detay ve mini grafik açılır.</span>
+      </div>
     </div>
     <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
       <table class="mc-table karne-table">

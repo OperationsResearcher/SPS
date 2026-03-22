@@ -7,7 +7,7 @@ from datetime import datetime, date
 from flask import current_app
 from io import BytesIO
 from models import (
-    db, Project, Task, ProjectRisk, Surec, User
+    db, Project, Task, ProjectRisk, Surec, User, project_leaders
 )
 from services.project_analytics import calculate_surec_saglik_skoru
 from services.executive_dashboard import get_corporate_health_score, get_critical_risks
@@ -197,7 +197,17 @@ def generate_executive_dashboard_pdf(kurum_id, filters=None):
                     User.department == filters['department']
                 )
             if filters.get('manager_id'):
-                projects_query = projects_query.filter(Project.manager_id == filters['manager_id'])
+                mid = filters["manager_id"]
+                projects_query = projects_query.filter(
+                    or_(
+                        Project.manager_id == mid,
+                        Project.id.in_(
+                            db.session.query(project_leaders.c.project_id).filter(
+                                project_leaders.c.user_id == mid
+                            )
+                        ),
+                    )
+                )
             if filters.get('start_date') and filters.get('end_date'):
                 projects_query = projects_query.filter(
                     and_(

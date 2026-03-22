@@ -1,4 +1,3 @@
-// console.log('=== SÜREÇ KARNESİ SCRIPT BAŞLADI ===');
 
 let mevcutSurecId = null;
 let mevcutYil = new Date().getFullYear();
@@ -89,6 +88,7 @@ function showConfirmToast(message, onConfirm, onCancel = null) {
     if (!toastContainer) {
         // Hala bulunamadıysa confirm kullan (fallback)
         console.error('Toast container bulunamadı!');
+        // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
         if (confirm(message)) {
             if (onConfirm) onConfirm();
         } else {
@@ -162,7 +162,6 @@ function showConfirmToast(message, onConfirm, onCancel = null) {
 // Periyot değiştirme fonksiyonu - BASİT!
 function changePeriyot() {
     mevcutPeriyot = document.getElementById('periyotSelect').value;
-    console.log('Periyot değişti:', mevcutPeriyot);
 
     // Haftalık ve günlük görünümler için mevcut ayı ayarla
     if (mevcutPeriyot === 'haftalik' || mevcutPeriyot === 'gunluk') {
@@ -477,12 +476,10 @@ function updateTableHeaders() {
 
 // Debug fonksiyonu
 function debugSurecData() {
-    console.log('=== DEBUG SÜREÇ VERİLERİ ===');
 
     fetch('/debug/surec-data')
         .then(r => r.json())
         .then(data => {
-            console.log('Debug Data:', data);
 
             if (data.success) {
                 let message = `Kullanıcı: ${data.user_info.username} (${data.user_info.sistem_rol})\n`;
@@ -551,7 +548,6 @@ const KARNESI_MODAL_IDS = ['dataEntryWizardModal2', 'addPerformansModal', 'editP
 
 // Sayfa yüklendiğinde kullanıcının süreçlerini getir
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM Yüklendi!');
 
     cleanupOverlayAndBackdrop();
     KARNESI_MODAL_IDS.forEach(id => {
@@ -608,14 +604,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Kullanıcının üye olduğu süreçleri getir
 function loadKullaniciSurecleri() {
-    console.log('loadKullaniciSurecleri() çağrıldı');
     fetch('/api/kullanici/sureclerim')
         .then(r => {
-            console.log('API yanıtı geldi, status:', r.status);
             return r.json();
         })
         .then(data => {
-            console.log('API datası:', data);
             const select = document.getElementById('surecSelect');
             select.innerHTML = '<option value="">-- Süreç Seçiniz --</option>';
 
@@ -625,7 +618,6 @@ function loadKullaniciSurecleri() {
             }
 
             if (data.success && data.surecler.length > 0) {
-                console.log('Süreç sayısı:', data.surecler.length);
 
                 // Ana süreç seçimi için
                 data.surecler.forEach(surec => {
@@ -648,7 +640,6 @@ function loadKullaniciSurecleri() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const initialSurecId = urlParams.get('surec_id');
                 if (initialSurecId) {
-                    console.log('URL\'den başlangıç süreci tespit edildi:', initialSurecId);
                     select.value = initialSurecId;
                     if (select.value === initialSurecId) {
                         loadSurecKarnesi();
@@ -667,7 +658,6 @@ function loadKullaniciSurecleri() {
                     });
                 }
             } else {
-                console.log('Süreç bulunamadı veya success=false');
                 select.innerHTML = '<option value="">Henüz bir süreçte yer almıyorsunuz</option>';
 
                 // VGS için de boş yap
@@ -1029,8 +1019,6 @@ function filterAndRenderPGTable() {
 
 
 function loadPerformansGostergeleri(surecId, yil) {
-    console.log('=== PERFORMANS GÖSTERGELERİ YÜKLEME BAŞLADI ===');
-    console.log('Süreç ID:', surecId, 'Yıl:', yil, 'Periyot:', mevcutPeriyot, 'Ay:', mevcutAy);
 
     // API URL - yıl, periyot ve (haftalık/günlük için) ay
     let url = `/api/surec/${surecId}/karne/performans?yil=${yil}&periyot=${mevcutPeriyot}`;
@@ -1040,21 +1028,15 @@ function loadPerformansGostergeleri(surecId, yil) {
         url += `&ay=${mevcutAy}`;
     }
 
-    console.log('API URL:', url);
 
     fetch(url)
         .then(r => {
-            console.log('API Response Status:', r.status);
             if (!r.ok) {
                 throw new Error(`HTTP ${r.status}: ${r.statusText}`);
             }
             return r.json();
         })
         .then(data => {
-            console.log('API Data:', data);
-            console.log('Success:', data.success);
-            console.log('Göstergeler:', data.gostergeler);
-            console.log('Gösterge sayısı:', data.gostergeler ? data.gostergeler.length : 'undefined');
 
             const tbody = document.getElementById('performansTbody');
 
@@ -1065,14 +1047,12 @@ function loadPerformansGostergeleri(surecId, yil) {
             }
 
             if (!data.gostergeler || data.gostergeler.length === 0) {
-                console.log('Gösterge yok');
                 tbody.innerHTML = '<tr><td colspan="27" class="text-center text-muted py-3">Bu süreçte henüz performans göstergesi bulunmuyor</td></tr>';
                 return;
             }
 
             tbody.innerHTML = '';
 
-            console.log('Gösterge sayısı:', data.gostergeler.length);
 
             // Başarı puanı aralıkları var mı kontrol et (en az bir PG'de varsa göster)
             let basariPuaniVarMi = false;
@@ -1241,10 +1221,8 @@ function loadPerformansGostergeleri(surecId, yil) {
 
                 tr.innerHTML = html;
                 tbody.appendChild(tr);
-                // console.log(`PG ${index + 1} eklendi`);
             });
 
-            // console.log('=== PERFORMANS GÖSTERGELERİ YÜKLEME BİTTİ ===');
             updateDashboardSummary(data.gostergeler);
 
             // Trend Grafiğini güncelle
@@ -1802,7 +1780,6 @@ function kaydetTumVeriler() {
 // ============================================
 
 function showPGVeriDetay(surecPgId, ceyrek, pgAd, periyotAd) {
-    console.log('PG Veri Detay Modal açılıyor:', { surecPgId, ceyrek, pgAd, periyotAd });
 
     // Modal bilgilerini doldur
     document.getElementById('detay-pg-ad').textContent = pgAd;
@@ -1817,10 +1794,8 @@ function showPGVeriDetay(surecPgId, ceyrek, pgAd, periyotAd) {
     fetch(`/api/surec/karne/pg-veri-detay?surec_pg_id=${surecPgId}&ceyrek=${ceyrek}&yil=${mevcutYil}`)
         .then(r => r.json())
         .then(data => {
-            console.log('API Veri Detay Response:', data);
 
             if (data.success && data.veriler.length > 0) {
-                console.log('İlk veri:', data.veriler[0]);
 
                 let html = '<table class="table table-sm table-hover">';
                 html += '<thead class="table-light"><tr>';
@@ -1828,7 +1803,6 @@ function showPGVeriDetay(surecPgId, ceyrek, pgAd, periyotAd) {
                 html += '</tr></thead><tbody>';
 
                 data.veriler.forEach(v => {
-                    console.log('Veri satırı:', v);
                     const durumBadge = v.durum === 'Başarılı' ? 'success' : v.durum === 'Kısmen Başarılı' ? 'warning' : 'danger';
 
                     html += '<tr>';
@@ -2081,7 +2055,6 @@ function loadAltStratejiler(mode) {
         return Promise.resolve();
     }
 
-    console.log('loadAltStratejiler çağrıldı, mode:', mode, 'surecId:', mevcutSurecId);
 
     const selectId = mode === 'add' ? 'pg_alt_strateji' : 'edit_pg_alt_strateji';
     const select = document.getElementById(selectId);
@@ -2093,14 +2066,12 @@ function loadAltStratejiler(mode) {
     // Önce süreç bilgisini al (kurum_id için)
     return fetch(`/surec/${mevcutSurecId}`)
         .then(r => {
-            console.log('API yanıtı status:', r.status);
             if (!r.ok) {
                 throw new Error(`HTTP ${r.status}: ${r.statusText}`);
             }
             return r.json();
         })
         .then(data => {
-            console.log('Süreç bilgisi alındı:', data);
             if (!data.success || !data.surec) {
                 throw new Error('Süreç bilgisi alınamadı');
             }
@@ -2113,7 +2084,6 @@ function loadAltStratejiler(mode) {
                 kurumId = data.surec.kurum_id;
             }
 
-            console.log('Kurum ID:', kurumId, 'data.surec.kurum:', data.surec.kurum);
 
             if (!kurumId) {
                 console.error('Kurum ID bulunamadı. data.surec:', JSON.stringify(data.surec, null, 2));
@@ -2121,21 +2091,17 @@ function loadAltStratejiler(mode) {
                 return Promise.resolve();
             }
 
-            console.log('Kurum ID bulundu, alt stratejiler yükleniyor:', kurumId);
 
             // Süreçle ilgili alt stratejileri getir
             return fetch(`/api/kurum/${kurumId}/alt-stratejiler?surec_id=${mevcutSurecId}`)
                 .then(r => {
-                    console.log('Alt stratejiler API yanıtı status:', r.status);
                     if (!r.ok) {
                         throw new Error(`HTTP ${r.status}: ${r.statusText}`);
                     }
                     return r.json();
                 })
                 .then(altStratejilerData => {
-                    console.log('Alt stratejiler API yanıtı data:', altStratejilerData);
                     if (altStratejilerData && altStratejilerData.success && altStratejilerData.alt_stratejiler) {
-                        console.log('Süreçle ilgili alt strateji sayısı:', altStratejilerData.alt_stratejiler.length);
                         select.innerHTML = '<option value="">-- Alt Strateji Seçiniz --</option>';
 
                         // Alt stratejileri ana stratejiye göre sırala
@@ -2162,7 +2128,6 @@ function loadAltStratejiler(mode) {
                             option.dataset.anaStratejiAd = altStrateji.ana_strateji ? altStrateji.ana_strateji.ad : '';
                             select.appendChild(option);
                         });
-                        console.log('Kurumun alt stratejileri dropdown\'a eklendi');
                     } else {
                         console.warn('Kurumun alt stratejileri bulunamadı');
                         select.innerHTML = '<option value="">-- Alt Strateji Seçiniz (Alt strateji yok) --</option>';
@@ -2200,6 +2165,31 @@ function onAltStratejiChange(mode) {
     }
 }
 
+/** surec_karnesi: başarı puanı hücresi (string veya { aralik, aciklama }) */
+function parseBasariPuaniCellSurec(entry) {
+    if (entry == null) return { aralik: '', aciklama: '' };
+    if (typeof entry === 'object' && !Array.isArray(entry)) {
+        return {
+            aralik: String(entry.aralik || entry.range || '').trim(),
+            aciklama: String(entry.aciklama || entry.label || entry.description || '').trim()
+        };
+    }
+    return { aralik: String(entry).trim(), aciklama: '' };
+}
+
+function buildBasariPuaniJsonSurec(aralikBase, aciklamaBase) {
+    const o = {};
+    for (let i = 1; i <= 5; i++) {
+        const ar = document.getElementById(`${aralikBase}${i}`)?.value?.trim() || '';
+        const ac = document.getElementById(`${aciklamaBase}${i}`)?.value?.trim() || '';
+        if (ar || ac) {
+            if (ac) o[i] = { aralik: ar, aciklama: ac };
+            else o[i] = ar;
+        }
+    }
+    return Object.keys(o).length ? JSON.stringify(o) : null;
+}
+
 function addPerformansGostergesi(e) {
     e.preventDefault();
 
@@ -2214,17 +2204,7 @@ function addPerformansGostergesi(e) {
     let direction = 'Increasing';
 
     if (basariPuaniKullan) {
-        // Başarı puanı aralıklarını topla
-        const araliklar = {};
-        for (let i = 1; i <= 5; i++) {
-            const aralik = document.getElementById(`bp_aralik_${i}`).value.trim();
-            if (aralik) {
-                araliklar[i.toString()] = aralik;
-            }
-        }
-        if (Object.keys(araliklar).length > 0) {
-            basariPuaniAraliklari = JSON.stringify(araliklar);
-        }
+        basariPuaniAraliklari = buildBasariPuaniJsonSurec('bp_aralik_', 'bp_aciklama_');
         direction = document.getElementById('pg_direction').value || 'Increasing';
     }
 
@@ -2305,15 +2285,12 @@ function editPerformansGostergesi(pgId) {
 
                 // Modal açıldıktan sonra alt stratejileri yükle ve seçimi yap
                 function onModalShown() {
-                    console.log('Edit modal açıldı, alt stratejiler yükleniyor...');
                     loadAltStratejiler('edit').then(() => {
-                        console.log('Alt stratejiler yüklendi, seçim yapılıyor...');
                         // Alt strateji seçiliyse işaretle
                         if (pg.alt_strateji_id) {
                             const altStratejiSelect = document.getElementById('edit_pg_alt_strateji');
                             if (altStratejiSelect) {
                                 altStratejiSelect.value = pg.alt_strateji_id;
-                                console.log('Alt strateji seçildi:', pg.alt_strateji_id);
                                 // Ana stratejiyi göster
                                 onAltStratejiChange('edit');
                             }
@@ -2353,16 +2330,11 @@ function editPerformansGostergesi(pgId) {
                         for (let i = 1; i <= 5; i++) {
                             const aralikInput = document.getElementById(`edit_bp_aralik_${i}`);
                             const aciklamaInput = document.getElementById(`edit_bp_aciklama_${i}`);
-
-                            if (araliklar[i] || araliklar[i.toString()]) {
-                                aralikInput.value = araliklar[i] || araliklar[i.toString()] || '';
-                            } else {
-                                aralikInput.value = '';
-                            }
-
-                            // Açıklama varsa kullan, yoksa varsayılanı kullan
+                            const raw = araliklar[i] ?? araliklar[i.toString()];
+                            const cell = parseBasariPuaniCellSurec(raw);
+                            if (aralikInput) aralikInput.value = cell.aralik;
                             if (aciklamaInput) {
-                                aciklamaInput.value = varsayilanAciklamalar[i.toString()];
+                                aciklamaInput.value = cell.aciklama || varsayilanAciklamalar[i.toString()];
                             }
                         }
                     } catch (e) {
@@ -2428,7 +2400,6 @@ function deletePerformansGostergesi(pgId, pgAd) {
 
 function updatePerformansGostergesi(e) {
     e.preventDefault();
-    console.log('=== PG GÜNCELLEME BAŞLADI ===');
 
     if (!mevcutSurecId) {
         showToast('Lütfen önce bir süreç seçiniz!', 'warning');
@@ -2441,8 +2412,6 @@ function updatePerformansGostergesi(e) {
         return;
     }
 
-    console.log('PG ID:', pgId);
-    console.log('Süreç ID:', mevcutSurecId);
 
     // Başarı puanı kullanılıyor mu kontrol et
     const basariPuaniKullan = document.getElementById('edit_pg_basari_puani_kullan').checked;
@@ -2450,17 +2419,7 @@ function updatePerformansGostergesi(e) {
     let direction = 'Increasing';
 
     if (basariPuaniKullan) {
-        // Başarı puanı aralıklarını topla
-        const araliklar = {};
-        for (let i = 1; i <= 5; i++) {
-            const aralik = document.getElementById(`edit_bp_aralik_${i}`).value.trim();
-            if (aralik) {
-                araliklar[i.toString()] = aralik;
-            }
-        }
-        if (Object.keys(araliklar).length > 0) {
-            basariPuaniAraliklari = JSON.stringify(araliklar);
-        }
+        basariPuaniAraliklari = buildBasariPuaniJsonSurec('edit_bp_aralik_', 'edit_bp_aciklama_');
         direction = document.getElementById('edit_pg_direction').value || 'Increasing';
     }
 
@@ -2484,10 +2443,8 @@ function updatePerformansGostergesi(e) {
         weight: editPgWeight
     };
 
-    console.log('Form Data:', formData);
 
     const url = `/surec/${mevcutSurecId}/performans-gostergesi/${pgId}/update`;
-    console.log('API URL:', url);
 
     fetch(url, {
         method: 'POST',
@@ -2495,7 +2452,6 @@ function updatePerformansGostergesi(e) {
         body: JSON.stringify(formData)
     })
         .then(r => {
-            console.log('API Response Status:', r.status);
             if (!r.ok) {
                 return r.json().then(errData => {
                     throw new Error(errData.message || `HTTP ${r.status}: ${r.statusText}`);
@@ -2504,7 +2460,6 @@ function updatePerformansGostergesi(e) {
             return r.json();
         })
         .then(data => {
-            console.log('API Response Data:', data);
 
             // Toast'u göster
             if (data && data.message) {
@@ -2513,7 +2468,6 @@ function updatePerformansGostergesi(e) {
 
             // Başarılı ise modal'ı kapat ve yenile
             if (data && data.success === true) {
-                console.log('İşlem başarılı, modal kapatılıyor...');
 
                 // Modal'ı kapat - önce instance al, yoksa yeni oluştur
                 const modalElement = document.getElementById('editPerformansModal');
@@ -2703,7 +2657,6 @@ function openPGVeriDetay(veriIdleri) {
     if (!Array.isArray(veriIdleri)) {
         veriIdleri = [veriIdleri];
     }
-    console.log('PG Veri Detay açılıyor:', veriIdleri);
 
     // Önce mevcut backdrop'ları temizle (varsa)
     const existingBackdrops = document.querySelectorAll('.modal-backdrop');
@@ -2749,12 +2702,9 @@ function openPGVeriDetay(veriIdleri) {
 
     // Birden fazla veri ID'si varsa toplu endpoint kullan
     if (veriIdleri.length > 1) {
-        console.log('Toplu veri detay API çağrısı başlatılıyor:', `/api/pg-veri/detay/toplu`);
-        console.log('Gönderilen veri ID\'leri:', veriIdleri, 'Tip:', typeof veriIdleri[0]);
 
         // Veri ID'lerini integer'a çevir
         const veriIdleriInt = veriIdleri.map(id => parseInt(id)).filter(id => !isNaN(id));
-        console.log('Dönüştürülmüş veri ID\'leri:', veriIdleriInt);
 
         fetch('/api/pg-veri/detay/toplu', {
             method: 'POST',
@@ -2764,16 +2714,13 @@ function openPGVeriDetay(veriIdleri) {
             body: JSON.stringify({ veri_idleri: veriIdleriInt })
         })
             .then(response => {
-                console.log('API Response Status:', response.status);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('API Data alındı:', data);
                 if (data.success) {
-                    console.log('renderPGVeriDetayToplu çağrılıyor, veriler:', data.veriler, 'yetki:', data.yetki);
                     renderPGVeriDetayToplu(data.veriler || [], data.yetki || {});
                 } else {
                     throw new Error(data.message || 'Veri yüklenemedi');
@@ -2791,10 +2738,8 @@ function openPGVeriDetay(veriIdleri) {
     } else {
         // Tek veri ID'si varsa mevcut endpoint'i kullan
         const veriId = veriIdleri[0];
-        console.log('Tek veri detay API çağrısı başlatılıyor:', `/api/pg-veri/detay/${veriId}`);
         fetch(`/api/pg-veri/detay/${veriId}`)
             .then(response => {
-                console.log('API Response Status:', response.status);
                 if (response.status === 404) {
                     // Veri bulunamadı (silinmiş olabilir)
                     document.getElementById('pgVeriDetayContent').innerHTML = `
@@ -2822,9 +2767,7 @@ function openPGVeriDetay(veriIdleri) {
             })
             .then(data => {
                 if (!data) return; // 404 durumunda data yok, zaten uyarı gösterildi
-                console.log('API Data alındı:', data);
                 if (data.success) {
-                    console.log('renderPGVeriDetay çağrılıyor, veri:', data.veri, 'yetki:', data.yetki);
                     // Veriye bireysel_pg_id ve surec_pg_id ekle
                     if (data.bireysel_pg_id) {
                         data.veri.bireysel_pg_id = data.bireysel_pg_id;
@@ -2850,13 +2793,11 @@ function openPGVeriDetay(veriIdleri) {
 }
 
 function renderPGVeriDetay(veri, auditLog, yetki) {
-    console.log('renderPGVeriDetay çağrıldı', veri, auditLog, yetki);
     const content = document.getElementById('pgVeriDetayContent');
     if (!content) {
         console.error('pgVeriDetayContent bulunamadı!');
         return;
     }
-    console.log('İçerik render ediliyor...');
 
     // Yetki kontrolü
     const canEdit = yetki.can_edit || false;
@@ -3050,7 +2991,6 @@ function loadPGProjeGorevleri(bireysel_pg_id, surec_pg_id, periyot_tarih) {
 }
 
 function renderPGVeriDetayToplu(veriler, yetki) {
-    console.log('renderPGVeriDetayToplu çağrıldı', veriler, yetki);
     const content = document.getElementById('pgVeriDetayContent');
     if (!content) {
         console.error('pgVeriDetayContent bulunamadı!');

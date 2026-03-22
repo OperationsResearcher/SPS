@@ -1219,18 +1219,38 @@ function showAddFaaliyetForm() {
     new bootstrap.Modal(document.getElementById('addFaaliyetModal')).show();
 }
 
+/** Başarı puanı JSON hücresi: string veya { aralik, aciklama } */
+function parseBasariPuaniCell(entry) {
+    if (entry == null) return { aralik: '', aciklama: '' };
+    if (typeof entry === 'object' && !Array.isArray(entry)) {
+        return {
+            aralik: String(entry.aralik || entry.range || '').trim(),
+            aciklama: String(entry.aciklama || entry.label || entry.description || '').trim()
+        };
+    }
+    return { aralik: String(entry).trim(), aciklama: '' };
+}
+
+/** Formdan JSON: açıklama varsa nesne, yoksa eski uyumluluk için düz string */
+function buildBasariPuaniJson(aralikBase, aciklamaBase) {
+    const o = {};
+    for (let i = 1; i <= 5; i++) {
+        const ar = document.getElementById(`${aralikBase}${i}`)?.value?.trim() || '';
+        const ac = document.getElementById(`${aciklamaBase}${i}`)?.value?.trim() || '';
+        if (ar || ac) {
+            if (ac) o[i] = { aralik: ar, aciklama: ac };
+            else o[i] = ar;
+        }
+    }
+    return Object.keys(o).length ? JSON.stringify(o) : null;
+}
+
 /* ── PG Kaydet ─────────────────────── */
 function savePG() {
-    // Başarı puanı aralıklarını topla
     const basariKullan = document.getElementById('pg_basari_puani_kullan')?.checked;
     let basariAraliklari = null;
     if (basariKullan) {
-        const araliklar = {};
-        for (let i = 1; i <= 5; i++) {
-            const aralik = document.getElementById(`bp_aralik_${i}`)?.value?.trim();
-            if (aralik) araliklar[i] = aralik;
-        }
-        if (Object.keys(araliklar).length > 0) basariAraliklari = JSON.stringify(araliklar);
+        basariAraliklari = buildBasariPuaniJson('bp_aralik_', 'bp_aciklama_');
     }
 
     const data = {
@@ -1291,6 +1311,10 @@ function editKPI(id) {
             // Başarı puanı
             const basariCheckbox = document.getElementById('edit_pg_basari_kullan');
             const basariDiv = document.getElementById('edit_pg_basari_div');
+            const defaultBpLabels = {
+                1: 'Beklentinin Çok Altında', 2: 'İyileştirmeye Açık', 3: 'Hedefe Ulaşmış',
+                4: 'Hedefin Üzerinde', 5: 'Mükemmel'
+            };
             if (k.basari_puani_araliklari) {
                 try {
                     const araliklar = typeof k.basari_puani_araliklari === 'string'
@@ -1299,8 +1323,12 @@ function editKPI(id) {
                     if (basariCheckbox) basariCheckbox.checked = true;
                     if (basariDiv) basariDiv.style.display = 'block';
                     for (let i = 1; i <= 5; i++) {
+                        const raw = araliklar[i] ?? araliklar[String(i)];
+                        const cell = parseBasariPuaniCell(raw);
                         const el = document.getElementById(`edit_bp_aralik_${i}`);
-                        if (el) el.value = araliklar[i] || araliklar[String(i)] || '';
+                        const elAc = document.getElementById(`edit_bp_aciklama_${i}`);
+                        if (el) el.value = cell.aralik;
+                        if (elAc) elAc.value = cell.aciklama || defaultBpLabels[i] || '';
                     }
                 } catch (e) { /* ignore */ }
             } else {
@@ -1308,7 +1336,9 @@ function editKPI(id) {
                 if (basariDiv) basariDiv.style.display = 'none';
                 for (let i = 1; i <= 5; i++) {
                     const el = document.getElementById(`edit_bp_aralik_${i}`);
+                    const elAc = document.getElementById(`edit_bp_aciklama_${i}`);
                     if (el) el.value = '';
+                    if (elAc) elAc.value = defaultBpLabels[i] || '';
                 }
             }
 
@@ -1325,12 +1355,7 @@ function updatePG() {
     const basariKullan = document.getElementById('edit_pg_basari_kullan')?.checked;
     let basariAraliklari = null;
     if (basariKullan) {
-        const araliklar = {};
-        for (let i = 1; i <= 5; i++) {
-            const aralik = document.getElementById(`edit_bp_aralik_${i}`)?.value?.trim();
-            if (aralik) araliklar[i] = aralik;
-        }
-        if (Object.keys(araliklar).length > 0) basariAraliklari = JSON.stringify(araliklar);
+        basariAraliklari = buildBasariPuaniJson('edit_bp_aralik_', 'edit_bp_aciklama_');
     }
 
     const data = {

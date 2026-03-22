@@ -8,7 +8,7 @@ import re
 s = requests.Session()
 
 # 1) HGS sayfasını aç, Adil kullanıcısını bul ve login ol
-resp_hgs = s.get("http://127.0.0.1:5001/micro/hgs")
+resp_hgs = s.get("http://127.0.0.1:5001/hgs")
 match = re.search(r'href=["\'].*?/login/(\d+)["\'].*?adil@kalitesoleni\.com', resp_hgs.text, re.IGNORECASE | re.DOTALL)
 if not match:
     print("HATA: HGS sayfasında adil@kalitesoleni.com bulunamadı!")
@@ -16,11 +16,11 @@ if not match:
 
 uid = match.group(1)
 print(f"[1] Adil kullanıcısı bulundu (ID={uid}), giriş yapılıyor...")
-resp_login = s.get(f"http://127.0.0.1:5001/micro/hgs/login/{uid}")
+resp_login = s.get(f"http://127.0.0.1:5001/hgs/login/{uid}")
 print(f"    Login redirect sonucu: {resp_login.url}")
 
 # 2) Profil sayfasını aç, CSRF token al
-resp_profil = s.get("http://127.0.0.1:5001/micro/profil")
+resp_profil = s.get("http://127.0.0.1:5001/profil")
 csrf_match = re.search(r'<meta name="csrf-token" content="(.*?)"', resp_profil.text)
 csrf = csrf_match.group(1) if csrf_match else ""
 has_photo_before = "profilePhotoImg" in resp_profil.text
@@ -32,7 +32,7 @@ with open(r"c:\kokpitim\static\img\Kokpitlogo.png", "rb") as f:
 
 print(f"[3] Resim okundu: {len(img_bytes)} byte, yükleniyor...")
 resp_upload = s.post(
-    "http://127.0.0.1:5001/micro/profil/foto-yukle",
+    "http://127.0.0.1:5001/profil/foto-yukle",
     files={"file": ("Kokpitlogo.png", img_bytes, "image/png")},
     headers={"X-CSRFToken": csrf},
 )
@@ -47,7 +47,7 @@ except Exception as e:
     exit(1)
 
 # 4) Sayfayı yenile ve fotoğrafın gelip gelmediğini kontrol et
-resp_profil2 = s.get("http://127.0.0.1:5001/micro/profil")
+resp_profil2 = s.get("http://127.0.0.1:5001/profil")
 has_photo_after = "profilePhotoImg" in resp_profil2.text
 photo_src_ok = photo_url and photo_url in resp_profil2.text if photo_url else False
 

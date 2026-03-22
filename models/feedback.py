@@ -27,7 +27,11 @@ class Feedback(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
     # İlişki
-    user = db.relationship('User', backref=db.backref('feedbacks', lazy=True))
+    user = db.relationship(
+        'LegacyUser',
+        foreign_keys=[user_id],
+        backref=db.backref('feedbacks', lazy=True),
+    )
     
     def __repr__(self):
         return f'<Feedback {self.id} - {self.category} - {self.status}>'

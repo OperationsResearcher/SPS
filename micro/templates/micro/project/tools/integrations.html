@@ -1,0 +1,169 @@
+{% extends "micro/project/tools/base_tool.html" %}
+{% block tool_header_title %}Entegrasyonlar{% endblock %}
+{% block tool_header_icon %}fas fa-plug{% endblock %}
+{% block tool_info_key %}integrations{% endblock %}
+{% block title %}Entegrasyonlar — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block tool_main %}
+<div class="flex flex-wrap gap-2">
+    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddModal()"><i class="fas fa-plus"></i> Webhook ekle</button>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Kayıtlı webhook'lar</div>
+    <div class="mc-pt-table-wrap">
+        <table class="mc-pt-table" id="integrations-table">
+            <thead>
+                <tr>
+                    <th>Sağlayıcı</th>
+                    <th>Webhook URL</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mc-pt-alert">
+    <strong>Webhook:</strong> Görev güncellemelerinde Slack, Teams veya özel uç noktaya bildirim gönderilir.
+</div>
+
+<div id="integrationModal" class="hidden fixed inset-0 z-[240] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+     role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)mcPtModalClose('integrationModal')">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-full max-w-md" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="font-semibold">Webhook</h3>
+            <button type="button" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onclick="mcPtModalClose('integrationModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4 space-y-3">
+            <input type="hidden" id="hook-id">
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="provider">Sağlayıcı</label>
+                <select class="mc-select w-full" id="provider" required>
+                    <option value="slack">Slack</option>
+                    <option value="teams">Microsoft Teams</option>
+                    <option value="outlook">Outlook</option>
+                </select>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="webhook-url">Webhook URL</label>
+                <input type="url" class="mc-input w-full" id="webhook-url" placeholder="https://hooks.slack.com/..." required>
+            </div>
+            <label class="inline-flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" id="is-active" class="rounded border-slate-300" checked>
+                Aktif
+            </label>
+        </div>
+        <div class="flex justify-end gap-2 px-4 py-3 border-t border-slate-200 dark:border-slate-700">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="mcPtModalClose('integrationModal')">İptal</button>
+            <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="saveHook()">Kaydet</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block tool_scripts %}
+<script>
+const INT_PID = {{ project.id|int }};
+let hooks = [];
+
+async function loadIntegrations() {
+  try {
+    const res = await fetch('/api/projeler/' + INT_PID + '/integrations', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    hooks = data.hooks || [];
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Entegrasyonlar');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#integrations-table tbody');
+  tbody.innerHTML = '';
+  if (hooks.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Henüz webhook yok.</td></tr>';
+    return;
+  }
+  hooks.forEach(hook => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="mc-pt-badge mc-pt-badge-info">${hook.provider}</span></td>
+      <td><code class="text-xs break-all max-w-xs inline-block align-top">${hook.url}</code></td>
+      <td><span class="mc-pt-badge ${hook.is_active ? 'mc-pt-badge-ok' : 'mc-pt-badge-muted'}">${hook.is_active ? 'Aktif' : 'Pasif'}</span></td>
+      <td class="flex flex-wrap gap-1">
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="editHook(${hook.id})"><i class="fas fa-edit"></i></button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm text-rose-600" onclick="deleteHook(${hook.id})"><i class="fas fa-trash"></i></button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="testHook(${hook.id})" title="Test"><i class="fas fa-vial"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('hook-id').value = '';
+  document.getElementById('provider').value = 'slack';
+  document.getElementById('webhook-url').value = '';
+  document.getElementById('is-active').checked = true;
+  mcPtModalOpen('integrationModal');
+}
+
+function editHook(id) {
+  const hook = hooks.find(h => h.id === id);
+  if (!hook) return;
+  document.getElementById('hook-id').value = hook.id;
+  document.getElementById('provider').value = hook.provider;
+  document.getElementById('webhook-url').value = hook.url;
+  document.getElementById('is-active').checked = hook.is_active;
+  mcPtModalOpen('integrationModal');
+}
+
+async function saveHook() {
+  const id = document.getElementById('hook-id').value;
+  const provider = document.getElementById('provider').value;
+  const url = document.getElementById('webhook-url').value.trim();
+  const is_active = document.getElementById('is-active').checked;
+  if (!url) { showToast('error', 'Webhook URL gerekli', 'Eksik'); return; }
+  const body = { provider, url, is_active };
+  const endpoint = id ? '/api/projeler/' + INT_PID + '/integrations/' + id : '/api/projeler/' + INT_PID + '/integrations';
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(endpoint, { method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    mcPtModalClose('integrationModal');
+    loadIntegrations();
+    showToast('success', 'Webhook kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Kayıt');
+  }
+}
+
+async function deleteHook(id) {
+  if (!confirm('Bu webhook\'u silmek istediğinizden emin misiniz?')) return;
+  try {
+    const res = await fetch('/api/projeler/' + INT_PID + '/integrations/' + id, { method: 'DELETE', credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    loadIntegrations();
+    showToast('success', 'Silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Silme');
+  }
+}
+
+function testHook(id) {
+  showToast('info', 'Test mesajı simülasyonu (arka uç test ucu varsa bağlanır)', 'Test');
+}
+
+loadIntegrations();
+</script>
+{% endblock %}

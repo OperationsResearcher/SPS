@@ -111,12 +111,20 @@ def ayarlar_eposta_send_test():
         return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
 
     try:
+        if not (current_user.email or "").strip():
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Hesabınızda e-posta adresi tanımlı değil; test maili gönderilemez.",
+                }
+            )
+
         from micro.services.email_service import send_notification_email
         html = """\
 <h2>Test E-postası</h2>
 <p>Kokpitim e-posta ayarlarınız başarıyla yapılandırılmıştır.</p>
 """
-        ok = send_notification_email(
+        ok, err = send_notification_email(
             to_email=current_user.email,
             subject="Kokpitim — Test E-postası",
             html_body=html,
@@ -124,7 +132,12 @@ def ayarlar_eposta_send_test():
         )
         if ok:
             return jsonify({"success": True, "message": f"Test maili {current_user.email} adresine gönderildi."})
-        return jsonify({"success": False, "message": "Mail gönderilemedi. SMTP ayarlarını kontrol edin."})
+        return jsonify(
+            {
+                "success": False,
+                "message": err or "Mail gönderilemedi. SMTP ayarlarını kontrol edin.",
+            }
+        )
     except Exception as e:
         current_app.logger.error(f"[ayarlar_eposta_send_test] {e}")
         return jsonify({"success": False, "message": str(e)}), 400

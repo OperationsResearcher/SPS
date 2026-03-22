@@ -4,8 +4,8 @@ Proje Klonlama Servisi
 Projeleri derin kopyalama, tarih kaydırma ve şablonlama işlemleri
 """
 from datetime import datetime, timedelta
-from models import db, Project, Task, ProjectRisk, ProjectFile, TaskImpact
-from datetime import datetime, timedelta
+from models import db, Project, Task, ProjectRisk, ProjectFile, TaskImpact, project_leaders
+from sqlalchemy import insert
 
 
 def clone_project(project_id, new_name, new_start_date, keep_assignments=True, keep_completed_tasks=False):
@@ -56,6 +56,16 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
         
         db.session.add(new_project)
         db.session.flush()  # ID'yi almak için
+
+        # Proje liderlerini kopyala
+        if keep_assignments:
+            lids = [u.id for u in (source_project.leaders or [])]
+            if not lids and source_project.manager_id:
+                lids = [source_project.manager_id]
+            for lid in lids:
+                db.session.execute(
+                    insert(project_leaders).values(project_id=new_project.id, user_id=lid)
+                )
         
         # Proje üyelerini kopyala
         if source_project.members:

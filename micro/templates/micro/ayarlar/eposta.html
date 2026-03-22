@@ -22,8 +22,23 @@
   <!-- ── Sistem Bilgisi ── -->
   <div class="mc-alert mc-alert-info eposta-info-banner">
     <i class="fas fa-info-circle"></i>
-    <span>Özel SMTP yapılandırmazsanız bildirimler <strong>bildirim@kokpitim.com</strong> adresinden gönderilir.</span>
+    <div>
+      <span>
+        <strong>Özel SMTP kapalıyken</strong> sırayla kullanılır: sunucuda dolu ise <code>MAIL_*</code> ortam değişkenleri;
+        yoksa platform <strong>Admin</strong> hesabının kurumunda kayıtlı özel SMTP (varsayılan çıkış).
+        İsterseniz her zaman bu sayfadan kendi kurum SMTP’nizi açıp kullanabilirsiniz.
+      </span>
+      <p class="eposta-info-note" style="margin:8px 0 0; font-size:13px; opacity:0.9;">
+        «Test Maili Gönder» önce onay penceresi açar; <strong>Gönder</strong> dediğinizde işlem yapılır.
+      </p>
+    </div>
   </div>
+  {% if not cfg or not cfg.use_custom_smtp %}
+  <div class="mc-alert mc-alert-info" style="margin-top:12px;">
+    <i class="fas fa-info-circle"></i>
+    <span>Kurumunuz özel SMTP kullanmıyor; gönderim <code>MAIL_*</code> tanımlıysa onunla, değilse <strong>Admin kurumunun</strong> kayıtlı SMTP’siyle yapılır. Yine de kendi alan adınızdan çıkış için buradan özel SMTP açmanız önerilir.</span>
+  </div>
+  {% endif %}
 
   <!-- ── Özel SMTP Kartı ── -->
   <div class="mc-card eposta-card">

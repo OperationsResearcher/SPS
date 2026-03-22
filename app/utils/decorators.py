@@ -15,7 +15,7 @@ def require_component(component_code):
             if not current_user.is_authenticated:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Unauthorized"}), 401
-                return redirect(url_for("auth_bp.login"))
+                return redirect(url_for("public_login"))
             if current_user.role and current_user.role.name in ("Admin", "tenant_admin", "executive_manager"):
                 return f(*args, **kwargs)
             if not current_user.tenant:

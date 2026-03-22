@@ -26,6 +26,13 @@ project_observers = db.Table('project_observers',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
 )
 
+# Çoklu proje lideri (yönetici); `manager_id` birincil lider + API/rapor geriye dönük uyumu için korunur
+project_leaders = db.Table(
+    'project_leaders',
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
+)
+
 project_related_processes = db.Table('project_related_processes',
     db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
     db.Column('surec_id', db.Integer, db.ForeignKey('surec.id'), primary_key=True)
@@ -68,11 +75,12 @@ class Project(db.Model):
     
     # İlişkiler
     kurum = db.relationship('Kurum', backref=db.backref('projeler', lazy=True))
-    manager = db.relationship('User', foreign_keys=[manager_id], backref='yonettigi_projeler')
+    manager = db.relationship('LegacyUser', foreign_keys=[manager_id], backref='yonettigi_projeler')
     
     # Many-to-Many
-    members = db.relationship('User', secondary=project_members, backref='uye_oldugu_projeler')
-    observers = db.relationship('User', secondary=project_observers, backref='gozlemci_oldugu_projeler')
+    leaders = db.relationship('LegacyUser', secondary=project_leaders, backref='lider_oldugu_projeler')
+    members = db.relationship('LegacyUser', secondary=project_members, backref='uye_oldugu_projeler')
+    observers = db.relationship('LegacyUser', secondary=project_observers, backref='gozlemci_oldugu_projeler')
     related_processes = db.relationship('Surec', secondary=project_related_processes, backref='bagli_projeler')
     
     def __repr__(self):
@@ -83,7 +91,7 @@ class Project(db.Model):
         default_settings = {
             'reminder_days': [7, 3, 1],
             'overdue_frequency': 'daily',
-            'channels': {'in_app': True, 'email': False},
+            'channels': {'in_app': True, 'email': True},
             'notify_manager': True,
             'notify_observers': False
         }
@@ -96,6 +104,45 @@ class Project(db.Model):
             return default_settings
         except Exception:
             return default_settings
+
+    def leader_user_ids(self):
+        """Tüm proje lideri kullanıcı ID'leri — doğrudan `project_leaders` tablosundan (Core users.id ile uyum).
+
+        `leaders` ilişkisi LegacyUser üzerinden `user` tablosuna FK kullanır; Micro'da çoğu kurulumda
+        `user` boş olduğundan ORM listesi boş kalırdı. Kayıtlı ID'ler burada güvenilir.
+        """
+        rows = (
+            db.session.query(project_leaders.c.user_id)
+            .filter(project_leaders.c.project_id == self.id)
+            .all()
+        )
+        ids = [r[0] for r in rows]
+        mid = self.manager_id
+        if mid and mid in ids:
+            ids = [mid] + [i for i in ids if i != mid]
+        if ids:
+            return ids
+        if mid:
+            return [mid]
+        return []
+
+    def member_user_ids(self):
+        """Üye kullanıcı ID'leri — `project_members` tablosu (ORM `members` legacy user'a bağlı olabilir)."""
+        return [
+            r[0]
+            for r in db.session.query(project_members.c.user_id)
+            .filter(project_members.c.project_id == self.id)
+            .all()
+        ]
+
+    def observer_user_ids(self):
+        """Gözlemci kullanıcı ID'leri — `project_observers` tablosundan."""
+        return [
+            r[0]
+            for r in db.session.query(project_observers.c.user_id)
+            .filter(project_observers.c.project_id == self.id)
+            .all()
+        ]
 
 class Task(db.Model):
     """
@@ -129,6 +176,10 @@ class Task(db.Model):
     is_measurable = db.Column(db.Boolean, default=False)
     planned_output_value = db.Column(db.Float, nullable=True)
     related_indicator_id = db.Column(db.Integer, nullable=True)
+    # Micro: süreç PG (ProcessKpi) — en fazla bir PG; app.models.process.ProcessKpi
+    process_kpi_id = db.Column(
+        db.Integer, db.ForeignKey("process_kpis.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     
     # Durum
     status = db.Column(db.String(50), default='Yapılacak')
@@ -144,8 +195,8 @@ class Task(db.Model):
     
     # İlişkiler
     project = db.relationship('Project', backref=db.backref('tasks', lazy=True, cascade='all, delete-orphan'))
-    assignee = db.relationship('User', foreign_keys=[assignee_id], backref='assigned_tasks')
-    reporter = db.relationship('User', foreign_keys=[reporter_id], backref='reported_tasks')
+    assignee = db.relationship('LegacyUser', foreign_keys=[assignee_id], backref='assigned_tasks')
+    reporter = db.relationship('LegacyUser', foreign_keys=[reporter_id], backref='reported_tasks')
     parent = db.relationship('Task', remote_side=[id], backref=db.backref('children', lazy=True))
 
     # Bağımlılıklar: Öncel görevler (predecessors)
@@ -235,7 +286,7 @@ class TaskComment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     task = db.relationship('Task', backref=db.backref('comments', lazy=True))
-    user = db.relationship('User', backref='task_comments')
+    user = db.relationship('LegacyUser', backref='task_comments')
 
 class TaskMention(db.Model):
     """Görev içi kullanıcı etiketleme"""
@@ -392,7 +443,7 @@ class CapacityPlan(db.Model):
     end_date = db.Column(db.Date, nullable=True)
 
     project = db.relationship('Project', backref=db.backref('capacity_plans', lazy=True))
-    user = db.relationship('User', foreign_keys=[user_id])
+    user = db.relationship('LegacyUser', foreign_keys=[user_id])
 
 
 class RaidItem(db.Model):
@@ -427,7 +478,7 @@ class RaidItem(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     project = db.relationship('Project', backref=db.backref('raid_items', lazy=True))
-    owner = db.relationship('User', foreign_keys=[owner_id])
+    owner = db.relationship('LegacyUser', foreign_keys=[owner_id])
 
 
 class TaskBaseline(db.Model):

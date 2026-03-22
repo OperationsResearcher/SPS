@@ -2,12 +2,15 @@
 
 from datetime import datetime, timezone, date
 
-from flask import render_template, jsonify, request, current_app
+from flask import render_template, jsonify, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 
 from micro import micro_bp
+from micro.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
 from app.models.process import (
+    Process,
+    ProcessKpi,
     IndividualPerformanceIndicator,
     IndividualActivity,
     IndividualKpiData,
@@ -30,7 +33,83 @@ def bireysel_karne():
     )
 
 
+@micro_bp.route("/bireysel")
+@login_required
+def bireysel():
+    """Bireysel modül giriş yönlendirmesi."""
+    return redirect(url_for("micro_bp.bireysel_karne"))
+
+
 # ── API: Bireysel PG CRUD ─────────────────────────────────────────────────────
+
+@micro_bp.route("/bireysel/api/pg/ensure-from-process-kpi", methods=["POST"])
+@login_required
+def bireysel_api_pg_ensure_from_process_kpi():
+    """
+    Süreç PG'si için geçerli kullanıcıda bireysel PG yoksa oluşturur (aynı kullanıcı adına).
+    Süreç karnesi VGS — KpiData ile bireysel karneyi eşlemek için.
+    """
+    data = request.get_json() or {}
+    raw_id = data.get("process_kpi_id")
+    if raw_id is None:
+        return jsonify({"success": False, "message": "process_kpi_id gerekli."}), 400
+    try:
+        kpi_id = int(raw_id)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz process_kpi_id."}), 400
+
+    kpi = (
+        ProcessKpi.query.join(Process)
+        .filter(
+            ProcessKpi.id == kpi_id,
+            Process.tenant_id == current_user.tenant_id,
+            Process.is_active.is_(True),
+            ProcessKpi.is_active.is_(True),
+        )
+        .first()
+    )
+    if not kpi:
+        return jsonify({"success": False, "message": "PG bulunamadı."}), 404
+
+    proc = Process.query.filter_by(
+        id=kpi.process_id, tenant_id=current_user.tenant_id, is_active=True
+    ).first()
+    if not proc or not user_can_enter_pgv(current_user, proc):
+        return jsonify({"success": False, "message": "Bu PG için veri girişi yapamazsınız."}), 403
+
+    existing = IndividualPerformanceIndicator.query.filter_by(
+        user_id=current_user.id,
+        source_process_kpi_id=kpi.id,
+        is_active=True,
+    ).first()
+    if existing:
+        return jsonify({"success": True, "id": existing.id, "created": False})
+
+    try:
+        pg = IndividualPerformanceIndicator(
+            user_id=current_user.id,
+            name=kpi.name or f"PG #{kpi.id}",
+            description=kpi.description,
+            code=kpi.code,
+            target_value=kpi.target_value,
+            unit=kpi.unit,
+            period=kpi.period or "Çeyreklik",
+            weight=float(kpi.weight or 0),
+            direction=kpi.direction or "Increasing",
+            basari_puani_araliklari=kpi.basari_puani_araliklari,
+            source="Süreç",
+            source_process_id=kpi.process_id,
+            source_process_kpi_id=kpi.id,
+            is_active=True,
+        )
+        db.session.add(pg)
+        db.session.commit()
+        return jsonify({"success": True, "id": pg.id, "created": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
+        return jsonify({"success": False, "message": str(e)}), 400
+
 
 @micro_bp.route("/bireysel/api/pg/add", methods=["POST"])
 @login_required
@@ -119,8 +198,12 @@ def bireysel_api_veri_add():
         pm = data.get("period_month")
         period_month = int(pm) if pm is not None and str(pm).strip() else None
 
-        last_day = last_day_of_period(year_val, pt, pn, period_month)
-        data_date_val = last_day or date.today()
+        data_date_val = None
+        if data.get("data_date"):
+            data_date_val = datetime.strptime(data["data_date"], "%Y-%m-%d").date()
+        else:
+            last_day = last_day_of_period(year_val, pt, pn, period_month)
+            data_date_val = last_day or date.today()
 
         entry = IndividualKpiData(
             individual_pg_id=pg.id,
@@ -323,9 +406,114 @@ def bireysel_api_karne():
             "monthly_tracks": {t.month: t.completed for t in tracks},
         })
 
+    # Zaman çizgisi: PG veri girişleri + tamamlanan faaliyet ayları
+    pg_by_id = {p.id: p for p in pgs}
+    timeline_events = []
+
+    for d in (
+        IndividualKpiData.query.filter_by(user_id=uid, year=year)
+        .order_by(IndividualKpiData.created_at.desc())
+        .limit(45)
+        .all()
+    ):
+        pg = pg_by_id.get(d.individual_pg_id)
+        pname = pg.name if pg else "Performans göstergesi"
+        ts = d.created_at or d.updated_at
+        timeline_events.append({
+            "ts": ts.isoformat() if ts else None,
+            "kind": "pg_veri",
+            "title": pname,
+            "detail": str(d.actual_value) if d.actual_value is not None else "",
+            "sub": d.data_date.strftime("%d.%m.%Y") if d.data_date else "",
+        })
+
+    for t in (
+        IndividualActivityTrack.query.join(
+            IndividualActivity,
+            IndividualActivity.id == IndividualActivityTrack.individual_activity_id,
+        )
+        .filter(
+            IndividualActivityTrack.user_id == uid,
+            IndividualActivityTrack.year == year,
+            IndividualActivityTrack.completed.is_(True),
+            IndividualActivity.is_active.is_(True),
+        )
+        .order_by(IndividualActivityTrack.updated_at.desc())
+        .limit(30)
+        .all()
+    ):
+        act = t.individual_activity
+        if not act:
+            continue
+        ts = t.updated_at or t.created_at
+        aylar = ["", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
+        ay_ad = aylar[t.month] if 1 <= t.month <= 12 else str(t.month)
+        timeline_events.append({
+            "ts": ts.isoformat() if ts else None,
+            "kind": "faaliyet",
+            "title": act.name,
+            "detail": f"{ay_ad} ayı tamamlandı",
+            "sub": "",
+        })
+
+    timeline_events = [e for e in timeline_events if e.get("ts")]
+    timeline_events.sort(key=lambda x: x["ts"], reverse=True)
+    timeline_events = timeline_events[:40]
+
     return jsonify({
         "success": True,
         "year": year,
         "pgs": pg_list,
         "activities": act_list,
+        "timeline": timeline_events,
+    })
+
+
+@micro_bp.route("/bireysel/api/pg/<int:pg_id>/series")
+@login_required
+def bireysel_api_pg_series(pg_id):
+    """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
+    year = request.args.get("year", datetime.now().year, type=int)
+    pg = IndividualPerformanceIndicator.query.filter_by(
+        id=pg_id, user_id=current_user.id, is_active=True
+    ).first_or_404()
+
+    entries = (
+        IndividualKpiData.query.filter_by(individual_pg_id=pg.id, year=year)
+        .order_by(IndividualKpiData.data_date, IndividualKpiData.id)
+        .all()
+    )
+
+    series = []
+    monthly_last = {m: None for m in range(1, 13)}
+    for e in entries:
+        series.append({
+            "data_date": e.data_date.isoformat() if e.data_date else None,
+            "actual_value": e.actual_value,
+            "description": e.description,
+            "period_type": e.period_type,
+            "created_at": e.created_at.isoformat() if e.created_at else None,
+        })
+        if e.data_date:
+            for key in data_date_to_period_keys(e.data_date, year):
+                if key.startswith("aylik_"):
+                    try:
+                        m = int(key.split("_", 1)[1])
+                        if 1 <= m <= 12:
+                            monthly_last[m] = e.actual_value
+                    except (ValueError, IndexError):
+                        pass
+
+    return jsonify({
+        "success": True,
+        "pg": {
+            "id": pg.id,
+            "name": pg.name,
+            "target_value": pg.target_value,
+            "unit": pg.unit,
+            "direction": pg.direction,
+        },
+        "year": year,
+        "series": series,
+        "monthly": {str(k): v for k, v in monthly_last.items()},
     })

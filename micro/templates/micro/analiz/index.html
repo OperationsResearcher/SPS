@@ -4,12 +4,12 @@
 
 {% block content %}
 <div id="analiz-root"
-     data-trend-base="/micro/analiz/api/trend/"
-     data-health-base="/micro/analiz/api/health/"
-     data-forecast-base="/micro/analiz/api/forecast/"
+     data-trend-base="/analiz/api/trend/"
+     data-health-base="/analiz/api/health/"
+     data-forecast-base="/analiz/api/forecast/"
      data-comparison-url="{{ url_for('micro_bp.analiz_api_comparison') }}"
      data-anomalies-url="{{ url_for('micro_bp.analiz_api_anomalies') }}"
-     data-report-base="/micro/analiz/api/report/"
+     data-report-base="/analiz/api/report/"
      style="max-width:1000px; margin:0 auto;">
 
   <!-- Süreç seçici araç çubuğu -->

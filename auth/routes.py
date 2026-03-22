@@ -176,9 +176,11 @@ def easy_login():
 @login_required
 def logout():
     """Kullanıcı çıkış işlemi"""
-    current_app.logger.info(f'Kullanıcı çıkış yaptı: {current_user.username} (ID: {current_user.id})')
+    user_identifier = getattr(current_user, 'username', None) or getattr(current_user, 'email', str(current_user.id))
+    current_app.logger.info(f'Kullanıcı çıkış yaptı: {user_identifier} (ID: {current_user.id})')
     logout_user()
     return redirect(url_for('auth.login'))
+
 
 
 @auth_bp.route('/profile')

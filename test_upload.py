@@ -3,20 +3,20 @@ import re
 import json
 
 s = requests.Session()
-resp = s.get('http://127.0.0.1:5001/micro/hgs')
+resp = s.get('http://127.0.0.1:5001/Hgs_mfg')
 match = re.search(r'href=[\"\'].*?/login/(\d+)[\"\'].*?adil@kalitesoleni\.com', resp.text, re.IGNORECASE | re.DOTALL)
 if match:
     uid = match.group(1)
-    s.get(f'http://127.0.0.1:5001/micro/hgs/login/{uid}')
+    s.get(f'http://127.0.0.1:5001/Hgs_mfg/login/{uid}')
     
-    r_profil = s.get('http://127.0.0.1:5001/micro/profil')
+    r_profil = s.get('http://127.0.0.1:5001/profil')
     csrf_match = re.search(r'meta name=\"csrf-token\" content=\"(.*?)\"', r_profil.text)
     csrf = csrf_match.group(1) if csrf_match else ''
         
     print('Logged in via HGS. CSRF:', csrf)
     files = {'file': ('test.png', b'test', 'image/png')}
     headers = {'X-CSRFToken': csrf}
-    res = s.post('http://127.0.0.1:5001/micro/profil/foto-yukle', files=files, headers=headers)
+    res = s.post('http://127.0.0.1:5001/profil/foto-yukle', files=files, headers=headers)
     print("STATUS:", res.status_code)
     try:
         print("JSON:", res.json())

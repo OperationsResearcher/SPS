@@ -11,6 +11,9 @@ function microApp() {
         toggleDark() {
             this.darkMode = !this.darkMode;
             localStorage.setItem('micro_dark', this.darkMode);
+            try {
+                document.dispatchEvent(new CustomEvent('micro-theme-changed', { detail: { dark: this.darkMode } }));
+            } catch (e) { /* ignore */ }
         },
 
         openSidebar()  { this.sidebarOpen = true;  document.body.style.overflow = 'hidden'; },
@@ -104,13 +107,18 @@ var MicroUI = {
         });
     },
 
-    onayla: function (mesaj, onConfirm, baslik, confirmText) {
+    /**
+     * Onay penceresi — varsayılan: soru ikonu (turuncu uyarı değil).
+     * opts: { icon, confirmButtonColor } — yıkıcı işlemler için icon:'warning', confirmButtonColor:'#dc2626'
+     */
+    onayla: function (mesaj, onConfirm, baslik, confirmText, opts) {
+        opts = opts || {};
         Swal.fire({
-            icon: 'warning',
+            icon: opts.icon || 'question',
             title: baslik || 'Emin misiniz?',
             text: mesaj,
             showCancelButton: true,
-            confirmButtonColor: '#dc2626',
+            confirmButtonColor: opts.confirmButtonColor || '#6366f1',
             cancelButtonColor: '#6b7280',
             confirmButtonText: confirmText || 'Evet, devam et',
             cancelButtonText: 'İptal',
@@ -144,7 +152,15 @@ var MicroUI = {
             },
             body: JSON.stringify(data)
         })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+            var ct = (r.headers.get('content-type') || '');
+            if (ct.indexOf('application/json') === -1) {
+                return r.text().then(function (t) {
+                    throw new Error(r.status === 403 ? 'Bu işlem için yetkiniz yok.' : ('HTTP ' + r.status));
+                });
+            }
+            return r.json();
+        })
         .then(function (res) {
             if (res.success) {
                 if (typeof onSuccess === 'function') onSuccess(res);
@@ -155,8 +171,9 @@ var MicroUI = {
         })
         .catch(function (err) {
             console.error(err);
-            if (typeof onError === 'function') onError({ message: 'Sunucu bağlantı hatası.' });
-            else MicroUI.hata('Sunucu bağlantı hatası.');
+            var msg = (err && err.message) ? err.message : 'Sunucu bağlantı hatası.';
+            if (typeof onError === 'function') onError({ message: msg });
+            else MicroUI.hata(msg);
         });
     }
 };

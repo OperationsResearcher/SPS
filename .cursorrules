@@ -31,11 +31,47 @@ Her görevde şu sırayı **kesinlikle** izle:
 
 ---
 
-## 2. 🍭 BİLDİRİM STANDARTLARI — SweetAlert2 ZORUNLULUĞU
+## 2. 🍭 BİLDİRİM VE MODAL STANDARTLARI
 
-- `alert()`, `confirm()`, `prompt()` **KESİNLİKLE YASAK**.
-- Tüm kullanıcı bildirimleri ve onay pencereleri **SweetAlert2 (`Swal.fire`)** ile yapılır.
-- Mesajlar Türkçe, profesyonel tonda; başarıda yeşil, hatada kırmızı tema.
+### SweetAlert2 kullanım alanı
+SweetAlert2 (`Swal.fire`) yalnızca şu durumlar için uygundur:
+- Kısa **toast** bildirimleri (başarı, hata, uyarı)
+- **Onay** pencereleri (silme vb.)
+- Tek satırlık **bilgi** mesajları
+
+### Yerel modal kullanım alanı
+**Liste/düzenleme formları ve çok alanlı diyaloglar** için SweetAlert2 `html:` ile form üretme.
+Bunlar için tasarım setiyle uyumlu **yerel modal** kullan.
+
+### Yerel modal yapısı
+- Şablon referansı: `micro/templates/micro/admin/users.html` → `#modal-user-edit`
+- Süreç karnesi örneği: `micro/templates/micro/surec/karne.html` → `#modal-kpi-add`
+- Stiller: `micro/static/micro/css/components.css` → `.mc-modal-overlay`, `.mc-modal`, `.mc-modal-lg`, `.mc-modal-header`, `.mc-modal-title`, `.mc-modal-close`, `.mc-modal-body`, `.mc-modal-footer`, `.mc-form-label`, `.mc-form-input`, `.tm-grid-2`, `.tm-field`, `.tm-full`
+
+### HTML iskeleti
+1. Dış sarmalayıcı: `div.mc-modal-overlay` + benzersiz `id`; başlangıçta `aria-hidden="true"`
+2. İç kutu: `div.mc-modal` (geniş diyalog için `mc-modal-lg`); `role="dialog"` ve `aria-labelledby` ile başlık id'si bağlı
+3. **Header:** `mc-modal-header` içinde sol tarafta `mc-modal-title`: lavanta kutu içinde **tek** Font Awesome ikonu + `span` başlık metni; sağda `button.mc-modal-close` (`fa-times`)
+4. **Body:** `div.mc-modal-body`; form varsa içeride `form` + alanlar
+5. **Footer:** `mc-modal-footer`; sağa hizalı butonlar: önce **İptal** (`mc-btn mc-btn-secondary`), sonra birincil aksiyon (`mc-btn mc-btn-primary`) — ikon + metin örn. `<i class="fas fa-save"></i> Kaydet`
+
+### Form yerleşimi
+- İki sütunlu grid: `div.tm-grid-2` içinde her alan `div.tm-field`; tam satır için `tm-field tm-full`
+- Etiket: `label.mc-form-label` (`for` ile input id eşleşsin); zorunlu alanlarda `<span class="req">*</span>`
+- Girdi/select: `class="mc-form-input"`
+- Placeholder ve metinler Türkçe, kısa ve net
+
+### Açma / kapama (JS)
+- Açıkken overlay'e `classList.add("open")`, `aria-hidden="false"`
+- Kapatırken `open` kaldır, `aria-hidden="true"`; form varsa `reset()`
+- **Backdrop:** yalnızca `event.target === overlay` iken kapat
+- **Escape** ile kapat; global dinleyicide modal yoksa erken çık (`optional chaining`)
+- İlk odak: açılışta mantıklı ilk alana `focus()` (kısa `setTimeout` ile)
+
+### Kesinlikle yapma
+- `alert()`, `confirm()`, `prompt()` **KESİNLİKLE YASAK**
+- Çok alanlı iş için `Swal.fire({ html: ... })` ile uzun form üretme
+- Modal içinde Bootstrap/Tailwind utility ile sıfırdan kart stili uydurma; yalnızca `components.css` sınıfları kullan
 
 ---
 

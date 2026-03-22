@@ -1,14 +1,43 @@
 """Stratejik Planlama modülü."""
 
+from functools import wraps
+
 from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
 from micro import micro_bp
+from app.extensions import csrf
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.strategy import SwotAnalysis
 from app.models.process import Process, ProcessKpi
+
+_SP_ROLES = (
+    "Admin",
+    "admin",
+    "tenant_admin",
+    "executive_manager",
+    "kurum_yoneticisi",
+    "ust_yonetim",
+)
+
+
+def _check_sp_role():
+    """SP sayfasında düzenleme / silme yetkisi olan roller."""
+    return current_user.role and current_user.role.name in _SP_ROLES
+
+
+def sp_manage_required(f):
+    """SP CRUD API uçları için merkezi yetki kontrolü (403 JSON)."""
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not _check_sp_role():
+            return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return f(*args, **kwargs)
+
+    return decorated
 
 
 @micro_bp.route("/sp")
@@ -38,6 +67,7 @@ def sp():
         tenant=tenant,
         strategies=strategies,
         swot_counts=swot_counts,
+        sp_can_manage=_check_sp_role(),
     )
 
 
@@ -63,17 +93,54 @@ def sp_swot():
     return render_template("micro/sp/swot.html", grouped=grouped)
 
 
+@micro_bp.route("/sp/misyon")
+@login_required
+def sp_misyon():
+    return render_template("micro/sp/misyon.html")
+
+
+@micro_bp.route("/sp/vizyon")
+@login_required
+def sp_vizyon():
+    return render_template("micro/sp/vizyon.html")
+
+
+@micro_bp.route("/sp/degerler")
+@login_required
+def sp_degerler():
+    return render_template("micro/sp/degerler.html")
+
+
+# ── API: Stratejik kimlik (SP yöneticileri — Admin / kurum rolleri) ────────────
+
+@micro_bp.route("/sp/api/tenant-identity", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_tenant_identity():
+    """Tenant amaç/vizyon/değerler/etik alanları (Kurum API ile aynı alanlar)."""
+    tenant = Tenant.query.filter_by(id=current_user.tenant_id).first_or_404()
+    data = request.get_json() or {}
+    try:
+        for field in ("purpose", "vision", "core_values", "code_of_ethics", "quality_policy"):
+            if field in data:
+                setattr(tenant, field, data[field])
+        db.session.commit()
+        return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_tenant_identity] {e}")
+        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+
+
 # ── API: Strateji CRUD (mevcut dashboard_bp API'lerini yeniden kullanır) ──
 
 @micro_bp.route("/sp/api/strategy/add", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_add_strategy():
     """Ana strateji ekle."""
-    if not current_user.role or current_user.role.name not in (
-        "tenant_admin", "executive_manager", "Admin"
-    ):
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
     if not title:
@@ -82,8 +149,8 @@ def sp_add_strategy():
     new_strategy = Strategy(
         tenant_id=current_user.tenant_id,
         title=title,
-        code=data.get("code", "").strip() or None,
-        description=data.get("description", "").strip() or None,
+        code=(data.get("code") or "").strip() or None,
+        description=(data.get("description") or "").strip() or None,
     )
     try:
         db.session.add(new_strategy)
@@ -95,15 +162,40 @@ def sp_add_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
+@micro_bp.route("/sp/api/strategy/update/<int:strategy_id>", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
+def sp_update_strategy(strategy_id):
+    """Ana strateji güncelle."""
+    st = Strategy.query.filter_by(
+        id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
+    ).first_or_404()
+    data = request.get_json() or {}
+    try:
+        if "title" in data:
+            t = (data.get("title") or "").strip()
+            if not t:
+                return jsonify({"success": False, "message": "Başlık boş olamaz."}), 400
+            st.title = t
+        if "code" in data:
+            st.code = (data.get("code") or "").strip() or None
+        if "description" in data:
+            st.description = (data.get("description") or "").strip() or None
+        db.session.commit()
+        return jsonify({"success": True, "message": "Ana strateji güncellendi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_update_strategy] {e}")
+        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+
+
+@micro_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
 def sp_delete_strategy(strategy_id):
     """Ana strateji sil (soft delete)."""
-    if not current_user.role or current_user.role.name not in (
-        "tenant_admin", "executive_manager", "Admin"
-    ):
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-
     st = Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id
     ).first_or_404()
@@ -118,7 +210,9 @@ def sp_delete_strategy(strategy_id):
 
 
 @micro_bp.route("/sp/api/swot/add", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_add_swot():
     """SWOT maddesi ekle."""
     data = request.get_json() or {}
@@ -145,7 +239,9 @@ def sp_add_swot():
 
 
 @micro_bp.route("/sp/api/swot/delete/<int:item_id>", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_delete_swot(item_id):
     """SWOT maddesi sil (soft delete)."""
     item = SwotAnalysis.query.filter_by(
@@ -163,20 +259,12 @@ def sp_delete_swot(item_id):
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-_SP_ROLES = ("tenant_admin", "executive_manager", "Admin")
-
-
-def _check_sp_role():
-    return current_user.role and current_user.role.name in _SP_ROLES
-
-
 @micro_bp.route("/sp/api/sub-strategy/add", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_add_sub_strategy():
     """Alt strateji ekle."""
-    if not _check_sp_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-
     data = request.get_json() or {}
     strategy_id = data.get("strategy_id")
     title = (data.get("title") or "").strip()
@@ -204,12 +292,11 @@ def sp_add_sub_strategy():
 
 
 @micro_bp.route("/sp/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_update_sub_strategy(sub_id):
     """Alt strateji güncelle."""
-    if not _check_sp_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
         Strategy.tenant_id == current_user.tenant_id,
@@ -230,12 +317,11 @@ def sp_update_sub_strategy(sub_id):
 
 
 @micro_bp.route("/sp/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
+@csrf.exempt
 @login_required
+@sp_manage_required
 def sp_delete_sub_strategy(sub_id):
     """Alt strateji soft delete."""
-    if not _check_sp_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
         Strategy.tenant_id == current_user.tenant_id,

@@ -5,7 +5,7 @@ Flask Uygulama Giriş Noktası
 from dotenv import load_dotenv
 load_dotenv()  # .env dosyasını yükle
 
-from __init__ import create_app
+from app import create_app
 import atexit
 
 app = create_app()

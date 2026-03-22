@@ -1,0 +1,212 @@
+{% extends "micro/base.html" %}
+{% block title %}Proje Analizleri (geliştirme aşamasında) — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+{% set active_view = 'analyses' %}
+<div class="mx-auto px-1" style="max-width:1200px;">
+    <div class="mc-page-header">
+        <div>
+            <a href="{{ url_for('micro_bp.micro_project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2">
+                <i class="fas fa-arrow-left"></i> Projeye dön
+            </a>
+            <h2 class="mc-page-title mt-1">Proje Analizleri (geliştirme aşamasında)</h2>
+        </div>
+        {% include "micro/project/_project_views_nav.html" %}
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+        {# CPM #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Kritik yol metodu ile görev süreleri ve bağımlılıkları üzerinden en geç bitiş ve kritik görevleri görüntüleyin.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_cpm', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-300 text-xl">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">CPM analizi</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Kritik yol ve görev bağımlılıkları</p>
+                <span class="pa-badge pa-badge-plan mt-3">Planlama</span>
+            </a>
+        </div>
+
+        {# RAID — Micro #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Risk, varsayım, sorun ve bağımlılık kayıtlarını proje bağlamında yönetin.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_project_view_raid', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 text-xl">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">RAID yönetimi</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Risk, varsayım, sorun, bağımlılık</p>
+                <span class="pa-badge pa-badge-risk mt-3">Risk</span>
+            </a>
+        </div>
+
+        {# SLA #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Görevler için hedef süre ve SLA kurallarını tanımlayıp takip edin.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_sla', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300 text-xl">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">SLA tanımları</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Görev tamamlanma hedefleri</p>
+                <span class="pa-badge pa-badge-mgmt mt-3">Yönetim</span>
+            </a>
+        </div>
+
+        {# Kapasite #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Ekip üyelerinin kapasite ve yük planlaması için kaynak görünümü.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_kapasite', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 text-xl">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Kapasite planlama</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Ekip kapasite yönetimi</p>
+                <span class="pa-badge pa-badge-res mt-3">Kaynaklar</span>
+            </a>
+        </div>
+
+        {# Baseline #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Planlanan çizgiyi kaydedip gerçekleşen ile karşılaştırın.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_baseline', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 text-xl">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Baseline takibi</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Planlanan vs gerçek analiz</p>
+                <span class="pa-badge pa-badge-analiz mt-3">Analiz</span>
+            </a>
+        </div>
+
+        {# Bağımlılık matrisi #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Görevler arası öncül-ardıl ilişkilerini matris üzerinden inceleyin.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_bagimlilik_matrisi', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xl">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Bağımlılık matrisi</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Görev ilişkileri ve bağlantıları</p>
+                <span class="pa-badge pa-badge-plan mt-3">Planlama</span>
+            </a>
+        </div>
+
+        {# Kural motoru #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Durum değişimi veya tarih koşullarına göre otomatik aksiyonlar tanımlayın.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_kurallar', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-300 text-xl">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Kural motoru</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Otomatik aksiyonlar ve tetikleyiciler</p>
+                <span class="pa-badge pa-badge-auto mt-3">Otomasyon</span>
+            </a>
+        </div>
+
+        {# Entegrasyonlar #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Slack, Teams, Outlook ve webhook ile bildirim ve entegrasyon ayarları.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_integrations', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300 text-xl">
+                    <i class="fas fa-plug"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Entegrasyonlar</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Slack, Teams, Outlook webhook'ları</p>
+                <span class="pa-badge pa-badge-auto mt-3">Otomasyon</span>
+            </a>
+        </div>
+
+        {# Tekrarlayan görevler #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Periyodik görev şablonları ile otomatik görev oluşturma.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_tekrarlayan', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300 text-xl">
+                    <i class="fas fa-redo-alt"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Tekrarlayan görevler</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Zamanlanmış otomatik görev oluşturma</p>
+                <span class="pa-badge pa-badge-auto mt-3">Otomasyon</span>
+            </a>
+        </div>
+
+        {# Çalışma günleri #}
+        <div class="pa-tool-wrap relative rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900/80 shadow-sm hover:shadow-md transition-shadow">
+            <span class="pa-tool-tip" title="Tatiller ve çalışma takvimi; süre ve tarih hesaplarına yansır.">
+                <i class="fas fa-info-circle text-indigo-500 dark:text-indigo-400"></i>
+            </span>
+            <a href="{{ url_for('micro_bp.micro_proj_root_calisma_gunleri', project_id=project.id) }}" class="block p-5 pt-8 text-center no-underline text-inherit h-full">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xl">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Çalışma günleri</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Tatil ve çalışma günü yönetimi</p>
+                <span class="pa-badge pa-badge-mgmt mt-3">Yönetim</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="mc-card px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-slate-200/80 dark:border-slate-700">
+        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Proje ilerlemesi (tamamlanan görev oranı)</span>
+        <div class="flex items-center gap-3 flex-1 min-w-[200px] max-w-md">
+            <div class="flex-1 h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                <div class="h-full rounded-full bg-indigo-500 dark:bg-indigo-400 transition-all duration-300" style="width: {{ progress_pct }}%;"></div>
+            </div>
+            <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-300 tabular-nums w-10 text-right">{{ progress_pct }}%</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.pa-tool-tip {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    z-index: 2;
+    cursor: help;
+    font-size: 14px;
+    line-height: 1;
+}
+.pa-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.02em;
+}
+.pa-badge-plan { background: rgba(14, 165, 233, 0.15); color: #0369a1; }
+.dark .pa-badge-plan { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; }
+.pa-badge-risk { background: rgba(244, 63, 94, 0.12); color: #be123c; }
+.dark .pa-badge-risk { background: rgba(244, 63, 94, 0.2); color: #fda4af; }
+.pa-badge-mgmt { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+.dark .pa-badge-mgmt { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+.pa-badge-res { background: rgba(16, 185, 129, 0.15); color: #047857; }
+.dark .pa-badge-res { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.pa-badge-analiz { background: rgba(59, 130, 246, 0.15); color: #1d4ed8; }
+.dark .pa-badge-analiz { background: rgba(59, 130, 246, 0.22); color: #93c5fd; }
+.pa-badge-auto { background: rgba(132, 204, 22, 0.18); color: #3f6212; }
+.dark .pa-badge-auto { background: rgba(132, 204, 22, 0.22); color: #bef264; }
+</style>
+{% endblock %}

@@ -18,7 +18,7 @@ auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
 def login():
     """Handle login form - GET shows form, POST validates credentials."""
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard_bp.index"))
+        return redirect(url_for("micro_bp.launcher"))
 
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
@@ -35,7 +35,7 @@ def login():
 
         login_user(user)
         flash("Giriş başarılı.", "success")
-        next_url = request.args.get("next") or url_for("dashboard_bp.index")
+        next_url = request.args.get("next") or url_for("micro_bp.launcher")
         return redirect(next_url)
 
     return render_template("auth/login.html")
@@ -46,7 +46,7 @@ def login():
 def logout():
     """Log out user and redirect to login."""
     logout_user()
-    return redirect(url_for("auth_bp.login"))
+    return redirect(url_for("public_login"))
 
 
 @auth_bp.route("/profile", methods=["GET", "POST"])

@@ -5,18 +5,26 @@ Sprint 13-15: API ve Entegrasyonlar
 
 from flask_swagger_ui import get_swaggerui_blueprint
 
-# Swagger UI configuration
-SWAGGER_URL = '/api/docs'
-API_URL = '/api/v1/swagger.json'
 
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "Kokpitim API v1",
-        'defaultModelsExpandDepth': -1
-    }
-)
+def create_swagger_blueprint(legacy_prefix: str = "/kok"):
+    """Klasik REST API dokümantasyonu — yollar LEGACY_URL_PREFIX altında (örn. /kok/api/docs)."""
+    lp = (legacy_prefix or "/kok").rstrip("/") or "/kok"
+    swagger_url = f"{lp}/api/docs"
+    api_url = f"{lp}/api/v1/swagger.json"
+    return get_swaggerui_blueprint(
+        swagger_url,
+        api_url,
+        config={
+            "app_name": "Kokpitim API v1",
+            "defaultModelsExpandDepth": -1,
+        },
+    )
+
+
+# Geriye dönük uyumluluk (tercih: create_swagger_blueprint kullanın)
+SWAGGER_URL = "/kok/api/docs"
+API_URL = "/kok/api/v1/swagger.json"
+swaggerui_blueprint = create_swagger_blueprint("/kok")
 
 # OpenAPI Specification
 openapi_spec = {

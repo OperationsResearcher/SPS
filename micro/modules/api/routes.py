@@ -1,4 +1,4 @@
-"""REST API v1 katmanı — `/micro/api/v1/`"""
+"""REST API v1 katmanı — `/api/v1/` (Micro kök)."""
 
 from flask import jsonify, request, render_template, current_app, make_response
 from flask_login import login_required, current_user
@@ -287,17 +287,17 @@ def api_push_subscribe():
 def api_docs():
     """Swagger/OpenAPI dokümantasyon sayfası."""
     endpoints = [
-        {"method": "GET",    "url": "/micro/api/v1/processes",           "desc": "Süreç listesi"},
-        {"method": "GET",    "url": "/micro/api/v1/processes/<id>",       "desc": "Süreç detayı"},
-        {"method": "POST",   "url": "/micro/api/v1/kpi-data",             "desc": "KPI veri oluştur"},
-        {"method": "GET",    "url": "/micro/api/v1/kpi-data/<id>",        "desc": "KPI veri detayı"},
-        {"method": "PATCH",  "url": "/micro/api/v1/kpi-data/<id>",        "desc": "KPI veri güncelle"},
-        {"method": "DELETE", "url": "/micro/api/v1/kpi-data/<id>",        "desc": "KPI veri soft delete"},
-        {"method": "GET",    "url": "/micro/api/v1/analytics/trend/<id>", "desc": "Trend analizi"},
-        {"method": "GET",    "url": "/micro/api/v1/analytics/health/<id>","desc": "Sağlık skoru"},
-        {"method": "POST",   "url": "/micro/api/v1/analytics/comparison", "desc": "Karşılaştırma"},
-        {"method": "GET",    "url": "/micro/api/v1/analytics/forecast/<id>","desc": "Tahmin"},
-        {"method": "GET",    "url": "/micro/api/v1/reports/performance/<id>","desc": "Performans raporu"},
-        {"method": "GET",    "url": "/micro/api/v1/reports/dashboard",    "desc": "Dashboard raporu"},
+        {"method": "GET",    "url": "/api/v1/processes",           "desc": "Süreç listesi"},
+        {"method": "GET",    "url": "/api/v1/processes/<id>",       "desc": "Süreç detayı"},
+        {"method": "POST",   "url": "/api/v1/kpi-data",             "desc": "KPI veri oluştur"},
+        {"method": "GET",    "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri detayı"},
+        {"method": "PATCH",  "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri güncelle"},
+        {"method": "DELETE", "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri soft delete"},
+        {"method": "GET",    "url": "/api/v1/analytics/trend/<id>", "desc": "Trend analizi"},
+        {"method": "GET",    "url": "/api/v1/analytics/health/<id>","desc": "Sağlık skoru"},
+        {"method": "POST",   "url": "/api/v1/analytics/comparison", "desc": "Karşılaştırma"},
+        {"method": "GET",    "url": "/api/v1/analytics/forecast/<id>","desc": "Tahmin"},
+        {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": "Performans raporu"},
+        {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": "Dashboard raporu"},
     ]
     return render_template("micro/api/docs.html", endpoints=endpoints)

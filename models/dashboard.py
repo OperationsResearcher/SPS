@@ -16,7 +16,11 @@ class UserDashboardSettings(db.Model):
 
     # User ilişkisi (models/user.py içindeki User modeline referans)
     # backref eklemek yerine sadece ForeignKey tutuyoruz, gerekirse User modeline relationship eklenir.
-    user = db.relationship('User', backref=db.backref('dashboard_settings_v3', uselist=False))
+    user = db.relationship(
+        'LegacyUser',
+        foreign_keys=[user_id],
+        backref=db.backref('dashboard_settings_v3', uselist=False),
+    )
 
     def __repr__(self):
         return f'<UserDashboardSettings User:{self.user_id}>'

@@ -1,7 +1,6 @@
 """Auth sayfaları — micro platform için profil ve ayarlar.
 
-Login/logout işlemleri mevcut auth_bp'ye yönlendirilir.
-Micro'ya özel login sayfası da burada tanımlanır.
+Klasik giriş kökta `public_login` (`/login`); çıkış `public_logout` (`/logout`).
 """
 
 import json
@@ -16,16 +15,10 @@ from werkzeug.utils import secure_filename
 from micro import micro_bp
 from app.models import db
 from app.models.core import User
-from extensions import csrf, limiter
+from extensions import csrf
 
 
-@micro_bp.route("/login")
-@limiter.limit("10 per minute")
-def micro_login():
-    """Micro platform login sayfası — zaten giriş yapıldıysa launcher'a yönlendir."""
-    if current_user.is_authenticated:
-        return redirect(url_for("micro_bp.launcher"))
-    return render_template("micro/auth/login.html")
+# Giriş: kök `/login` → `public_login` (app factory). Eski `micro_bp.micro_login` kaldırıldı (URL çakışması).
 
 
 @micro_bp.route("/profil", methods=["GET", "POST"])
@@ -124,9 +117,9 @@ def ayarlar():
 @micro_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
-    """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""
+    """Kişisel hesap ayarları — mevcut auth.settings ile aynı mantık, micro UI."""
     if request.method == "POST":
-        return redirect(url_for("auth_bp.settings"), code=307)
+        return redirect(url_for("auth.settings"), code=307)
 
     # GET — mevcut ayarları yükle
     def _parse_json(val, default=None):

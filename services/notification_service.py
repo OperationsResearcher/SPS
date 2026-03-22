@@ -9,6 +9,24 @@ from models import db, Notification, Task, Project, User
 from utils.task_status import COMPLETED_STATUSES, normalize_task_status
 
 
+def _project_leader_ids(project):
+    """Bildirimler için tüm lider kullanıcı ID'leri."""
+    if not project:
+        return []
+    try:
+        ids = list(project.leader_user_ids())
+        seen = set()
+        out = []
+        for i in ids:
+            if i and i not in seen:
+                seen.add(i)
+                out.append(i)
+        return out
+    except Exception:
+        mid = getattr(project, "manager_id", None)
+        return [mid] if mid else []
+
+
 def create_task_assigned_notification(task_id, assigned_user_id, assigned_by_user_id):
     """
     Görev atama bildirimi oluştur
@@ -203,10 +221,12 @@ def create_task_status_change_notification(task_id, old_status, new_status, chan
         
         notifications = []
         
-        # Proje yöneticisine
-        if project.manager_id and project.manager_id != changed_by_user_id:
+        # Proje liderlerine (çoklu)
+        for lid in _project_leader_ids(project):
+            if not lid or lid == changed_by_user_id:
+                continue
             notification = Notification(
-                user_id=project.manager_id,
+                user_id=lid,
                 tip='task_status_changed',
                 baslik='Görev Durumu Değişti',
                 mesaj=f'{changed_by.first_name} {changed_by.last_name} "{task.title}" görevinin durumunu "{old_status}" → "{new_status}" olarak değiştirdi.',
@@ -428,19 +448,23 @@ def create_task_overdue_notification(task_id):
                     db.session.add(notification)
                     notifications.append(notification)
             
-            # Proje yöneticisine bildirim
-            if notify_manager and project.manager_id and project.manager_id != task.assigned_to_id:
-                existing_notification = Notification.query.filter_by(
-                    task_id=task_id,
-                    tip='task_overdue',
-                    user_id=project.manager_id,
-                ).filter(
-                    Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
-                ).first()
-                
-                if not existing_notification:
+            # Proje liderlerine bildirim
+            leader_ids = set(_project_leader_ids(project))
+            if notify_manager:
+                for lid in leader_ids:
+                    if not lid or lid == task.assigned_to_id:
+                        continue
+                    existing_notification = Notification.query.filter_by(
+                        task_id=task_id,
+                        tip='task_overdue',
+                        user_id=lid,
+                    ).filter(
+                        Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
+                    ).first()
+                    if existing_notification:
+                        continue
                     notification = Notification(
-                        user_id=project.manager_id,
+                        user_id=lid,
                         tip='task_overdue',
                         baslik='Projede Geciken Görev',
                         mesaj=f'"{task.title}" görevi {task.due_date.strftime("%d.%m.%Y")} tarihinde sona ermişti ve henüz tamamlanmadı.',
@@ -455,7 +479,7 @@ def create_task_overdue_notification(task_id):
             if notify_observers:
                 try:
                     for observer in getattr(project, 'observers', []) or []:
-                        if not observer or observer.id in [task.assigned_to_id, project.manager_id]:
+                        if not observer or observer.id == task.assigned_to_id or observer.id in leader_ids:
                             continue
                         existing_notification = Notification.query.filter_by(
                             task_id=task_id,
@@ -512,11 +536,14 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
             return None
         
         notifications = []
+        leader_ids = set(_project_leader_ids(project))
         
-        # Proje yöneticisine bildirim
-        if project.manager_id and project.manager_id != created_by_user_id:
+        # Proje liderlerine bildirim
+        for lid in leader_ids:
+            if not lid or lid == created_by_user_id:
+                continue
             notification = Notification(
-                user_id=project.manager_id,
+                user_id=lid,
                 tip='critical_risk',
                 baslik='Kritik Risk Tespit Edildi',
                 mesaj=f'"{risk.title}" adlı kritik risk (Skor: {risk.risk_score}) "{project.name}" projesine eklendi.',
@@ -535,7 +562,7 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
         member_ids = [row[0] for row in member_ids]
         
         for member_id in member_ids:
-            if member_id != created_by_user_id and member_id != project.manager_id:
+            if member_id != created_by_user_id and member_id not in leader_ids:
                 notification = Notification(
                     user_id=member_id,
                     tip='critical_risk',

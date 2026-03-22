@@ -5,8 +5,8 @@
 {% block content %}
 <div id="admin-tenants-root"
      data-add-url="{{ url_for('micro_bp.admin_tenants_add') }}"
-     data-edit-base="/micro/admin/tenants/edit/"
-     data-toggle-base="/micro/admin/tenants/toggle/"
+     data-edit-base="/admin/tenants/edit/"
+     data-toggle-base="/admin/tenants/toggle/"
      data-packages='{{ packages | map(attribute="id") | list | tojson }}'
      data-package-names='{{ packages | map(attribute="name") | list | tojson }}'>
 

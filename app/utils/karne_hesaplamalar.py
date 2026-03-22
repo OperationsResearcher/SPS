@@ -5,19 +5,31 @@ Excel formatına uygun başarı puanı ve ağırlıklı başarı puanı hesaplam
 Eski proje uyumluluğu için taşınmıştır.
 """
 import json
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, Tuple
+
+
+def _normalize_basari_cell(v: Any) -> Tuple[Optional[str], Optional[str]]:
+    if v is None:
+        return None, None
+    if isinstance(v, dict):
+        ar_raw = v.get("aralik")
+        if ar_raw is None:
+            ar_raw = v.get("range")
+        ar = str(ar_raw).strip() if ar_raw is not None and str(ar_raw).strip() else None
+        ac_raw = v.get("aciklama") or v.get("label") or v.get("description")
+        ac = str(ac_raw).strip() if ac_raw is not None and str(ac_raw).strip() else None
+        return ar, ac
+    if isinstance(v, str):
+        s = v.strip()
+        return (s if s else None), None
+    s = str(v).strip()
+    return (s if s else None), None
 
 
 def parse_basari_puani_araliklari(araliklar_str: Optional[str]) -> Dict[int, str]:
     """
-    Başarı puanı aralıklarını JSON string'den dictionary'ye çevirir
-
-    Args:
-        araliklar_str: JSON formatında string (örn: '{"1": "...", "2": "..."}')
-                      veya list formatında (örn: '["...", "...", "...", "...", "..."]')
-
-    Returns:
-        Dictionary: {1: "...", 2: "...", 3: "...", 4: "...", 5: "..."}
+    JSON'dan yalnızca aralık string'lerini döndürür (hesaplama için).
+    Değerler string veya {"aralik": "...", "aciklama": "..."} olabilir.
     """
     if not araliklar_str:
         return {}
@@ -26,14 +38,33 @@ def parse_basari_puani_araliklari(araliklar_str: Optional[str]) -> Dict[int, str
         araliklar = json.loads(araliklar_str)
 
         if isinstance(araliklar, list):
-            return {i + 1: v for i, v in enumerate(araliklar) if v}
+            out: Dict[int, str] = {}
+            for i, v in enumerate(araliklar):
+                ar, _ = _normalize_basari_cell(v)
+                if ar:
+                    out[i + 1] = ar
+            return out
 
         if isinstance(araliklar, dict):
-            return {int(k): v for k, v in araliklar.items()}
+            out = {}
+            for k, v in araliklar.items():
+                try:
+                    ki = int(k)
+                except (ValueError, TypeError):
+                    continue
+                ar, _ = _normalize_basari_cell(v)
+                if ar:
+                    out[ki] = ar
+            return out
 
         return {}
     except (json.JSONDecodeError, ValueError, TypeError):
         return {}
+
+
+def _coerce_aralik_str_for_hesap(v: Any) -> Optional[str]:
+    ar, _ = _normalize_basari_cell(v)
+    return ar
 
 
 def parse_aralik_degeri(aralik_str: str) -> Optional[tuple]:
@@ -109,7 +140,7 @@ def deger_aralikta_mi(deger: Union[int, float], aralik: Optional[tuple]) -> bool
 
 def hesapla_basari_puani(
     gerceklesen_deger: Optional[Union[int, float]],
-    basari_puani_araliklari: Optional[Dict[int, str]],
+    basari_puani_araliklari: Optional[Dict[int, Any]],
     direction: str = 'Increasing'
 ) -> Optional[int]:
     """
@@ -135,7 +166,10 @@ def hesapla_basari_puani(
         return None
 
     aralik_puan_ciftleri = []
-    for puan, aralik_str in basari_puani_araliklari.items():
+    for puan, raw in basari_puani_araliklari.items():
+        aralik_str = _coerce_aralik_str_for_hesap(raw)
+        if aralik_str is None:
+            continue
         aralik = parse_aralik_degeri(aralik_str)
         if aralik is not None:
             aralik_puan_ciftleri.append((puan, aralik))

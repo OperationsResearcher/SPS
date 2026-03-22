@@ -31,7 +31,7 @@ from .project import (
     ProjectFile, ProjectRisk, Tag, TaskSubtask, TimeEntry,
     TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,
     TaskDependency, IntegrationHook, RuleDefinition, SLA, RecurringTask, WorkingDay, CapacityPlan, RaidItem, TaskBaseline,
-    project_members, project_observers, project_related_processes, task_predecessors
+    project_members, project_observers, project_leaders, project_related_processes, task_predecessors
 )
 
 # V67 Activity Modeli
@@ -56,7 +56,7 @@ class AuditLog(db.Model):
     changes = db.Column(db.JSON, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.now, index=True)
 
-    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('audit_logs', lazy='dynamic'))
+    user = db.relationship('LegacyUser', foreign_keys=[user_id], backref=db.backref('audit_logs', lazy='dynamic'))
 
 class Activity(db.Model):
     """
@@ -84,7 +84,7 @@ class Activity(db.Model):
     due_date = db.Column(db.Date, nullable=True)
     
     project = db.relationship('Project', backref=db.backref('activities', lazy=True))
-    assigned_to = db.relationship('User', foreign_keys=[assigned_to_id])
+    assigned_to = db.relationship('LegacyUser', foreign_keys=[assigned_to_id])
 
 # Faz 2/3/4 için Placeholder Moderller
 class CorporateIdentity(db.Model):

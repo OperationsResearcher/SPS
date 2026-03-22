@@ -1,0 +1,165 @@
+{% extends "micro/project/tools/base_tool.html" %}
+{% block tool_header_title %}SLA tanımları{% endblock %}
+{% block tool_header_icon %}fas fa-clock{% endblock %}
+{% block tool_info_key %}sla{% endblock %}
+{% block title %}SLA — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block tool_main %}
+<div class="mc-pt-alert">
+    <strong>SLA nedir?</strong> Görevlerin tamamlanma süreleri için hedefler tanımlar; ihlal politikası ile otomasyon bağlanabilir.
+</div>
+
+<div class="flex flex-wrap gap-2">
+    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddModal()"><i class="fas fa-plus"></i> SLA tanımı ekle</button>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Tanımlı SLA'lar</div>
+    <div class="mc-pt-table-wrap">
+        <table class="mc-pt-table" id="sla-table">
+            <thead>
+                <tr>
+                    <th>SLA adı</th>
+                    <th>Hedef süre (saat)</th>
+                    <th>İhlal politikası</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="slaModal" class="hidden fixed inset-0 z-[240] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+     role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)mcPtModalClose('slaModal')">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-full max-w-md max-h-[90vh] overflow-y-auto"
+         onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="font-semibold text-slate-800 dark:text-slate-100">SLA tanımı</h3>
+            <button type="button" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onclick="mcPtModalClose('slaModal')" aria-label="Kapat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4 space-y-3">
+            <input type="hidden" id="sla-id">
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="sla-name">SLA adı</label>
+                <input type="text" class="mc-input w-full" id="sla-name" placeholder="Örn: Kritik görev SLA" required>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="target-hours">Hedef süre (saat)</label>
+                <input type="number" class="mc-input w-full" id="target-hours" value="48" required>
+            </div>
+            <div class="mc-form-group">
+                <label class="mc-form-label" for="breach-policy">İhlal politikası</label>
+                <select class="mc-select w-full" id="breach-policy">
+                    <option value="notify">Bildirim gönder</option>
+                    <option value="escalate">Yöneticiye bildir</option>
+                    <option value="auto_close">Otomatik kapat</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 px-4 py-3 border-t border-slate-200 dark:border-slate-700">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="mcPtModalClose('slaModal')">İptal</button>
+            <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="saveSLA()">Kaydet</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block tool_scripts %}
+<script>
+const SLA_PID = {{ project.id|int }};
+let slas = [];
+
+function openAddModal() {
+  document.getElementById('sla-id').value = '';
+  document.getElementById('sla-name').value = '';
+  document.getElementById('target-hours').value = '48';
+  document.getElementById('breach-policy').value = 'notify';
+  mcPtModalOpen('slaModal');
+}
+
+async function loadSLAs() {
+  try {
+    const res = await fetch('/api/projeler/' + SLA_PID + '/sla', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    slas = data.sla || data.slas || [];
+    renderTable();
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'SLA yükleme');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#sla-table tbody');
+  tbody.innerHTML = '';
+  if (slas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Henüz SLA eklenmedi.</td></tr>';
+    return;
+  }
+  slas.forEach(sla => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${sla.name || 'Adsız SLA'}</strong></td>
+      <td><span class="mc-pt-badge mc-pt-badge-info">${sla.target_hours} saat</span></td>
+      <td><span class="mc-pt-badge mc-pt-badge-muted">${sla.breach_policy}</span></td>
+      <td class="flex flex-wrap gap-1">
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="editSLA(${sla.id})" title="Düzenle"><i class="fas fa-edit"></i></button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm text-rose-600" onclick="deleteSLA(${sla.id})" title="Sil"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editSLA(id) {
+  const sla = slas.find(s => s.id === id);
+  if (!sla) return;
+  document.getElementById('sla-id').value = sla.id;
+  document.getElementById('sla-name').value = sla.name || '';
+  document.getElementById('target-hours').value = sla.target_hours;
+  document.getElementById('breach-policy').value = sla.breach_policy;
+  mcPtModalOpen('slaModal');
+}
+
+async function saveSLA() {
+  const id = document.getElementById('sla-id').value;
+  const name = document.getElementById('sla-name').value.trim();
+  const target_hours = parseFloat(document.getElementById('target-hours').value);
+  const breach_policy = document.getElementById('breach-policy').value;
+  if (!name || !target_hours) { showToast('error', 'SLA adı ve hedef süre gerekli', 'Eksik'); return; }
+  const body = { name, target_hours, breach_policy };
+  const url = id ? '/api/projeler/' + SLA_PID + '/sla/' + id : '/api/projeler/' + SLA_PID + '/sla';
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    mcPtModalClose('slaModal');
+    loadSLAs();
+    showToast('success', 'SLA kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Kayıt');
+  }
+}
+
+async function deleteSLA(id) {
+  if (!confirm('Bu SLA tanımını silmek istediğinizden emin misiniz?')) return;
+  try {
+    const res = await fetch('/api/projeler/' + SLA_PID + '/sla/' + id, { method: 'DELETE', credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    loadSLAs();
+    showToast('success', 'SLA silindi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Silme');
+  }
+}
+
+loadSLAs();
+</script>
+{% endblock %}

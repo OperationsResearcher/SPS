@@ -1,0 +1,181 @@
+/* Masaüstüm — komuta merkezi, sekmeler, widget sürükleme */
+
+.masaustu-hero {
+  margin-bottom: 20px;
+}
+
+.masaustu-command {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.masaustu-command-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.dark .masaustu-command-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.masaustu-command-item:hover {
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+  border-color: #c7d2fe;
+}
+
+.masaustu-command-item strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.1;
+  color: #1e293b;
+}
+
+.dark .masaustu-command-item strong {
+  color: #f1f5f9;
+}
+
+.masaustu-command-item span {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.masaustu-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.masaustu-quick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.dark .masaustu-quick-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.masaustu-quick-btn:hover {
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+.masaustu-quick-btn i {
+  font-size: 20px;
+  color: #6366f1;
+}
+
+.masaustu-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.dark .masaustu-tabs {
+  border-bottom-color: #334155;
+}
+
+.masaustu-tab {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.masaustu-tab.is-active {
+  background: #6366f1;
+  color: #fff;
+}
+
+.masaustu-tab-panel {
+  display: none;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.masaustu-tab-panel.is-active {
+  display: block;
+}
+
+.masaustu-widget-panel {
+  margin-bottom: 20px;
+}
+
+.masaustu-sortable-root .masaustu-widget-panel {
+  cursor: grab;
+}
+
+.masaustu-sortable-root .masaustu-widget-panel:active {
+  cursor: grabbing;
+}
+
+.masaustu-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.masaustu-scratch textarea {
+  width: 100%;
+  min-height: 72px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 10px;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.dark .masaustu-scratch textarea {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.masaustu-sortable-ghost {
+  opacity: 0.45;
+}
+
+.masaustu-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.masaustu-toolbar .mc-btn-sm {
+  font-size: 12px;
+}

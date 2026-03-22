@@ -2,7 +2,7 @@
 """Süreç tablosuna parent_id (üst süreç) sütunu ekler. Mevcut süreçler bağımsız kalır (parent_id=NULL).
 
 Revision ID: add_surec_parent
-Revises: b1a2c3d4e5f6
+Revises: e7a8b9c0d1e2
 Create Date: 2026-01-31
 
 """
@@ -12,32 +12,50 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'add_surec_parent'
-down_revision = 'b1a2c3d4e5f6'
+down_revision = 'e7a8b9c0d1e2'
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    # SQLite: ADD COLUMN parent_id, self-referencing FK. Mevcut kayıtlar NULL kalır.
+    # Eski şema: tablo adı `surec`. Güncel Alembic zincirinde süreçler `processes` + 461675'te parent_id var.
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    if not insp.has_table("surec"):
+        return
+    cols = {c["name"] for c in insp.get_columns("surec")}
+    if "parent_id" in cols:
+        return
     try:
-        op.add_column('surec', sa.Column('parent_id', sa.Integer(), nullable=True))
+        op.add_column("surec", sa.Column("parent_id", sa.Integer(), nullable=True))
         op.create_foreign_key(
-            'fk_surec_parent_id_surec',
-            'surec', 'surec',
-            ['parent_id'], ['id'],
-            ondelete='SET NULL'
+            "fk_surec_parent_id_surec",
+            "surec",
+            "surec",
+            ["parent_id"],
+            ["id"],
+            ondelete="SET NULL",
         )
-        op.create_index('ix_surec_parent_id', 'surec', ['parent_id'], unique=False)
+        op.create_index("ix_surec_parent_id", "surec", ["parent_id"], unique=False)
     except Exception:
-        # SQLite bazen FK adımında sorun çıkarabilir; sadece sütun ekle
-        op.add_column('surec', sa.Column('parent_id', sa.Integer(), nullable=True))
-        op.create_index('ix_surec_parent_id', 'surec', ['parent_id'], unique=False)
+        op.add_column("surec", sa.Column("parent_id", sa.Integer(), nullable=True))
+        op.create_index("ix_surec_parent_id", "surec", ["parent_id"], unique=False)
 
 
 def downgrade():
-    op.drop_index('ix_surec_parent_id', table_name='surec')
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    if not insp.has_table("surec"):
+        return
+    cols = {c["name"] for c in insp.get_columns("surec")}
+    if "parent_id" not in cols:
+        return
     try:
-        op.drop_constraint('fk_surec_parent_id_surec', 'surec', type_='foreignkey')
+        op.drop_index("ix_surec_parent_id", table_name="surec")
     except Exception:
         pass
-    op.drop_column('surec', 'parent_id')
+    try:
+        op.drop_constraint("fk_surec_parent_id_surec", "surec", type_="foreignkey")
+    except Exception:
+        pass
+    op.drop_column("surec", "parent_id")

@@ -78,9 +78,9 @@ class Surec(db.Model):
     # Alt süreçler: parent silindiğinde DB ON DELETE SET NULL ile parent_id null olur (yetim kalmaz).
 
     # Many-to-Many İlişkiler
-    liderler = db.relationship('User', secondary=surec_liderleri, backref='liderlik_yaptigi_surecler')
-    uyeler = db.relationship('User', secondary=surec_uyeleri, backref='uye_oldugu_surecler')
-    owners = db.relationship('User', secondary=process_owners, backref='sahip_oldugu_surecler')
+    liderler = db.relationship('LegacyUser', secondary=surec_liderleri, backref='liderlik_yaptigi_surecler')
+    uyeler = db.relationship('LegacyUser', secondary=surec_uyeleri, backref='uye_oldugu_surecler')
+    owners = db.relationship('LegacyUser', secondary=process_owners, backref='sahip_oldugu_surecler')
     alt_stratejiler = db.relationship('AltStrateji', secondary=surec_alt_stratejiler, backref='surecler')
     
     def __repr__(self):
@@ -126,7 +126,7 @@ class SurecPerformansGostergesi(db.Model):
     gosterge_turu = db.Column(db.String(50), nullable=True)
     basari_puani = db.Column(db.Integer, nullable=True)
     agirlikli_basari_puani = db.Column(db.Float, nullable=True)
-    basari_puani_araliklari = db.Column(db.Text, nullable=True)  # JSON
+    basari_puani_araliklari = db.Column(db.Text, nullable=True)  # JSON: aralık veya {aralik, aciklama}
     onceki_yil_ortalamasi = db.Column(db.Float, nullable=True)
     target_method = db.Column(db.String(10), nullable=True)
     unit = db.Column(db.String(20), nullable=True)
@@ -220,7 +220,7 @@ class BireyselPerformansGostergesi(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # İlişkiler
-    user = db.relationship('User', backref=db.backref('bireysel_performans_gostergeleri', lazy=True))
+    user = db.relationship('LegacyUser', backref=db.backref('bireysel_performans_gostergeleri', lazy=True))
     kaynak_surec = db.relationship('Surec', foreign_keys=[kaynak_surec_id], backref='atanan_performans_gostergeleri')
     kaynak_pg = db.relationship('SurecPerformansGostergesi', foreign_keys=[kaynak_surec_pg_id])
     
@@ -256,7 +256,7 @@ class BireyselFaaliyet(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # İlişkiler
-    user = db.relationship('User', backref=db.backref('bireysel_faaliyetler', lazy=True))
+    user = db.relationship('LegacyUser', backref=db.backref('bireysel_faaliyetler', lazy=True))
     kaynak_surec = db.relationship('Surec', foreign_keys=[kaynak_surec_id], backref='atanan_faaliyetler')
     kaynak_faaliyet = db.relationship('SurecFaaliyet', foreign_keys=[kaynak_surec_faaliyet_id])
     
@@ -311,9 +311,9 @@ class PerformansGostergeVeri(db.Model):
     
     # İlişkiler
     bireysel_pg = db.relationship('BireyselPerformansGostergesi', backref=db.backref('veriler', lazy=True))
-    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('pg_verileri', lazy=True))
-    olusturan = db.relationship('User', foreign_keys=[created_by])
-    guncelleyen = db.relationship('User', foreign_keys=[updated_by])
+    user = db.relationship('LegacyUser', foreign_keys=[user_id], backref=db.backref('pg_verileri', lazy=True))
+    olusturan = db.relationship('LegacyUser', foreign_keys=[created_by])
+    guncelleyen = db.relationship('LegacyUser', foreign_keys=[updated_by])
 
 class PerformansGostergeVeriAudit(db.Model):
     """PG Veri Değişiklik Geçmişi (Audit Log)"""
@@ -331,7 +331,7 @@ class PerformansGostergeVeriAudit(db.Model):
     islem_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     
     pg_veri = db.relationship('PerformansGostergeVeri', backref=db.backref('audit_log', lazy=True, passive_deletes=True))
-    islem_yapan = db.relationship('User', backref=db.backref('pg_veri_audit_islemleri', lazy=True))
+    islem_yapan = db.relationship('LegacyUser', backref=db.backref('pg_veri_audit_islemleri', lazy=True))
 
 class FaaliyetTakip(db.Model):
     """Faaliyet Takip Modeli"""
@@ -351,7 +351,7 @@ class FaaliyetTakip(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     bireysel_faaliyet = db.relationship('BireyselFaaliyet', backref=db.backref('takip', lazy=True))
-    user = db.relationship('User', backref=db.backref('faaliyet_takipleri', lazy=True))
+    user = db.relationship('LegacyUser', backref=db.backref('faaliyet_takipleri', lazy=True))
 
 class FavoriKPI(db.Model):
     """Favori KPI Modeli"""
@@ -363,7 +363,7 @@ class FavoriKPI(db.Model):
     sira = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship('User', backref=db.backref('favori_kpiler', lazy=True))
+    user = db.relationship('LegacyUser', backref=db.backref('favori_kpiler', lazy=True))
     surec_pg = db.relationship('SurecPerformansGostergesi', backref=db.backref('favori_olanlar', lazy=True))
 
 # Aliases for English compatibility

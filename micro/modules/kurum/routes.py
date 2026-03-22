@@ -1,12 +1,14 @@
 """Kurum Paneli modülü."""
 
-from flask import render_template, jsonify, request, current_app
+from datetime import datetime, timezone
+
+from flask import render_template, jsonify, request, current_app, abort
 from flask_login import login_required, current_user
 
 from micro import micro_bp
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant, User
-from app.models.process import Process
+from micro.modules.kurum.kurum_overview import build_kurum_overview
 
 _KURUM_ROLES = ("tenant_admin", "executive_manager")
 
@@ -15,20 +17,117 @@ def _check_kurum_role():
     return current_user.role and current_user.role.name in _KURUM_ROLES
 
 
+@micro_bp.route("/kurum/ayarlar", methods=["GET", "POST"])
+@login_required
+def kurum_ayarlar():
+    """Kurum bilgileri ayarları + logo yükleme."""
+    if not _check_kurum_role():
+        abort(403)
+
+    tenant = current_user.tenant
+    if tenant is None:
+        abort(404)
+
+    if request.method == "GET":
+        import os
+
+        logo_url = None
+        upload_folder = os.path.join(current_app.static_folder, "uploads", "logos")
+        base = f"tenant_{tenant.id}_logo"
+        for ext in ("png", "jpg", "jpeg", "gif", "webp"):
+            candidate = os.path.join(upload_folder, f"{base}.{ext}")
+            if os.path.exists(candidate):
+                logo_url = f"/static/uploads/logos/{base}.{ext}"
+                break
+
+        return render_template("micro/kurum/ayarlar.html", tenant=tenant, logo_url=logo_url)
+
+    # POST
+    try:
+        data = request.get_json() if request.is_json else (request.form.to_dict() if request.form else {})
+
+        # Alanları güncelle (boş gelirse mevcut değeri koru)
+        kurum_adi = (data.get("kurum_adi") or "").strip()
+        if kurum_adi:
+            tenant.name = kurum_adi
+
+        sektor = (data.get("sektor") or "").strip()
+        if sektor:
+            tenant.sector = sektor
+
+        vergi_no = (data.get("vergi_no") or "").strip()
+        if vergi_no:
+            tenant.tax_number = vergi_no
+
+        adres = (data.get("adres") or "").strip()
+        if adres:
+            tenant.activity_area = adres
+
+        telefon = (data.get("telefon") or "").strip()
+        if telefon:
+            tenant.phone_number = telefon
+
+        email = (data.get("email") or "").strip()
+        if email:
+            tenant.contact_email = email
+
+        website = (data.get("website") or "").strip()
+        if website:
+            tenant.website_url = website
+
+        # Logo yükleme (multipart/form-data)
+        logo_file = request.files.get("logo")
+        if logo_file and logo_file.filename:
+            allowed_ext = {"png", "jpg", "jpeg", "gif", "webp"}
+            allowed_mime = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
+            max_size = 2 * 1024 * 1024  # 2MB
+
+            ext = logo_file.filename.rsplit(".", 1)[-1].lower() if "." in logo_file.filename else ""
+            if ext not in allowed_ext:
+                return jsonify({"success": False, "message": "Geçersiz logo dosya uzantısı."}), 400
+
+            if logo_file.mimetype and logo_file.mimetype not in allowed_mime:
+                return jsonify({"success": False, "message": "Geçersiz logo MIME tipi."}), 400
+
+            logo_file.seek(0, 2)
+            size = logo_file.tell()
+            logo_file.seek(0)
+            if size > max_size:
+                return jsonify({"success": False, "message": "Logo dosyası 2MB'dan büyük olamaz."}), 400
+
+            import os
+            upload_folder = os.path.join(current_app.static_folder, "uploads", "logos")
+            os.makedirs(upload_folder, exist_ok=True)
+            base = f"tenant_{tenant.id}_logo"
+            filename = f"{base}.{ext}"
+            file_path = os.path.join(upload_folder, filename)
+            logo_file.save(file_path)
+
+        db.session.commit()
+        return jsonify({"success": True, "message": "Kurum ayarları kaydedildi."}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[kurum_ayarlar] {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
 @micro_bp.route("/kurum")
 @login_required
 def kurum():
-    """Kurum Paneli ana sayfası."""
-    if not _check_kurum_role():
-        return render_template("micro/errors/403.html"), 403
+    """Kurum Paneli ana sayfası — tüm giriş yapmış tenant kullanıcıları; düzenleme API’leri rol ile sınırlı."""
+    tenant = current_user.tenant
+    if tenant is None:
+        abort(404)
 
     tid = current_user.tenant_id
-    tenant = current_user.tenant
+    kid = getattr(current_user, "kurum_id", None) or tid
 
-    user_count    = User.query.filter_by(tenant_id=tid, is_active=True).count()
-    process_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
+    user_count = User.query.filter_by(tenant_id=tid, is_active=True).count()
+    overview = build_kurum_overview(current_user, tid, kid)
+    process_count = overview["process"]["process_count"]
     strategy_count = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
 
     strategies = (
@@ -38,6 +137,8 @@ def kurum():
         .all()
     )
 
+    can_edit_kurum = _check_kurum_role()
+
     return render_template(
         "micro/kurum/index.html",
         tenant=tenant,
@@ -45,6 +146,33 @@ def kurum():
         process_count=process_count,
         strategy_count=strategy_count,
         strategies=strategies,
+        overview=overview,
+        can_edit_kurum=can_edit_kurum,
+    )
+
+
+@micro_bp.route("/kurum/api/overview")
+@login_required
+def kurum_api_overview():
+    """Panel özet metrikleri (yenileme / yarı-gerçek zamanlı)."""
+    if current_user.tenant is None:
+        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 404
+
+    tid = current_user.tenant_id
+    kid = getattr(current_user, "kurum_id", None) or tid
+    overview = build_kurum_overview(current_user, tid, kid)
+
+    user_n = User.query.filter_by(tenant_id=tid, is_active=True).count()
+    strategy_n = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
+
+    return jsonify(
+        {
+            "success": True,
+            "overview": overview,
+            "user_count": user_n,
+            "strategy_count": strategy_n,
+            "server_time": datetime.now(timezone.utc).isoformat(),
+        }
     )
 
 

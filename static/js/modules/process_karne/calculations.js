@@ -3,9 +3,21 @@
  * Başarı puanı, skor hesaplamaları.
  */
 
+function coerceBasariAralikStr(v) {
+    if (v == null) return null;
+    if (typeof v === 'object' && !Array.isArray(v)) {
+        const r = v.aralik ?? v.range;
+        if (r == null || String(r).trim() === '') return null;
+        return String(r).trim();
+    }
+    const s = String(v).trim();
+    return s || null;
+}
+
 export function hesaplaBasariPuani(pct, araliklar) {
     for (let puan = 1; puan <= 5; puan++) {
-        const aralik = araliklar[puan] || araliklar[String(puan)];
+        const raw = araliklar[puan] || araliklar[String(puan)];
+        const aralik = coerceBasariAralikStr(raw);
         if (!aralik) continue;
         const [minStr, maxStr] = aralik.split('-');
         const min = parseFloat(minStr) || 0;

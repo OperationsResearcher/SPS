@@ -1,0 +1,48 @@
+{# Child şablonlar: block tool_header_title, tool_header_icon, tool_info_key (boş bırakılırsa bilgi butonu yok), tool_main, title, page_title #}
+{% extends "micro/base.html" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/project_tools.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+{% block content %}
+{% set active_view = 'analyses' %}
+<div class="mx-auto px-1 pb-10" style="max-width:1200px;">
+    {% set analyses_url = url_for('micro_bp.micro_project_analyses', project_id=project.id) %}
+    {% set project_url = url_for('micro_bp.micro_project_detail', project_id=project.id) %}
+    {% set _info_key = self.tool_info_key()|trim %}
+    <div class="mc-page-header">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div class="min-w-0">
+                <a href="{{ analyses_url }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2 inline-flex">
+                    <i class="fas fa-arrow-left"></i> Proje analizleri
+                </a>
+                <h2 class="mc-page-title mt-1 flex flex-wrap items-center gap-2">
+                    <i class="{% block tool_header_icon %}fas fa-wrench{% endblock %} text-indigo-500 dark:text-indigo-400"></i>
+                    <span>{% block tool_header_title %}Proje aracı{% endblock %}</span>
+                    <span class="text-slate-500 dark:text-slate-400 font-normal text-base">— {{ project.name }}</span>
+                </h2>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center shrink-0">
+                {% if _info_key %}
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="showToolInfo('{{ _info_key }}')" title="Bu araç hakkında bilgi">
+                    <i class="fas fa-info-circle"></i> Nasıl kullanılır?
+                </button>
+                {% endif %}
+                <a href="{{ project_url }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+                    <i class="fas fa-th-large"></i> Proje özeti
+                </a>
+            </div>
+        </div>
+        {% include "micro/project/_project_views_nav.html" %}
+    </div>
+    <div class="mt-4 space-y-4">
+        {% block tool_main %}{% endblock %}
+    </div>
+</div>
+{% include "micro/project/tools/_tool_info_modal_micro.html" %}
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('micro_bp.static', filename='micro/js/project_tool_info_data.js') }}?v={{ config['VERSION'] }}"></script>
+<script src="{{ url_for('micro_bp.static', filename='micro/js/project_tools_micro.js') }}?v={{ config['VERSION'] }}"></script>
+{% block tool_scripts %}{% endblock %}
+{% endblock %}
+{% block tool_info_key %}{% endblock %}

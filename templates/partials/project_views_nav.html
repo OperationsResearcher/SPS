@@ -12,7 +12,7 @@
         <i class="fas fa-calendar-day me-1"></i>Takvim
     </a>
     <a class="btn {{ active_btn_style if active_view == 'gantt' else btn_style }}"
-       href="{{ url_for('main.proje_gantt', project_id=project.id) }}">
+       href="{{ url_for('main.project_gantt', project_id=project.id) }}">
         <i class="fas fa-chart-gantt me-1"></i>Gantt
     </a>
 </div>

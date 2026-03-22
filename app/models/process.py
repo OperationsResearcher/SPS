@@ -131,7 +131,7 @@ class ProcessKpi(db.Model):
     # Eski proje uyumluluğu — Yeni alanlar
     gosterge_turu = db.Column(db.String(50), nullable=True)       # İyileştirme, Koruma, Bilgi Amaçlı
     target_method = db.Column(db.String(10), nullable=True)       # RG, HKY, HK, SH, DH, SGH
-    basari_puani_araliklari = db.Column(db.Text, nullable=True)   # JSON: {"1": "0-40", ...}
+    basari_puani_araliklari = db.Column(db.Text, nullable=True)   # JSON: {"1":"0-40"} veya {"1":{"aralik":"0-40","aciklama":"..."}}
     onceki_yil_ortalamasi = db.Column(db.Float, nullable=True)    # Önceki yıl performans bazı
 
     # Configuration
@@ -246,10 +246,13 @@ class KpiData(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)  # Soft delete: is_active=False
-    
+    deleted_at = db.Column(db.DateTime, nullable=True, index=True)
+    deleted_by_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
+
     # Relationships
     process_kpi = db.relationship('ProcessKpi', backref=db.backref('data_entries', lazy=True, cascade='all, delete-orphan'))
     user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('entered_kpi_data', lazy=True))
+    deleted_by = db.relationship('User', foreign_keys=[deleted_by_id], backref=db.backref('deleted_kpi_data_rows', lazy=True))
     
     __table_args__ = (
         db.Index('idx_kpi_data_lookup', 'process_kpi_id', 'year', 'data_date'),

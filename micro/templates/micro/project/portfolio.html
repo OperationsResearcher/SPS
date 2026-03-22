@@ -1,0 +1,75 @@
+{% extends "micro/base.html" %}
+{% block title %}Stratejik proje portföyü — Kokpitim{% endblock %}
+{% block page_title %}Stratejik proje portföyü{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;">
+    <div class="mc-page-header">
+        <div>
+            <h2 class="mc-page-title">Stratejik proje portföyü</h2>
+            <p class="mc-page-subtitle">
+                Süreç–strateji matrisi puanlarına göre sıralı
+                {% if portfolio_source == 'app_tenant' %}
+                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">Tenant (App süreç)</span>
+                {% else %}
+                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">Kurum (klasik matris)</span>
+                {% endif %}
+            </p>
+        </div>
+        <a href="{{ url_for('micro_bp.micro_project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+            <i class="fas fa-list"></i> Proje listesi
+        </a>
+    </div>
+
+    {% if projects_with_scores|length == 0 %}
+    <div class="mc-card" style="padding:32px; text-align:center;">
+        <p style="color:#64748b;">Henüz proje tanımlanmamış.</p>
+        <a href="{{ url_for('micro_bp.micro_project_new') }}" class="mc-btn mc-btn-primary mt-2">Yeni proje</a>
+    </div>
+    {% else %}
+    <div class="mc-card mc-table-wrap">
+        <table class="mc-table" style="width:100%; font-size:13px;">
+            <thead>
+                <tr>
+                    <th style="width:48px;">#</th>
+                    <th>Proje</th>
+                    <th>Bağlı süreçler</th>
+                    <th style="text-align:center;">Skor</th>
+                    <th style="text-align:center;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in projects_with_scores %}
+                {% set project = item.project %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <a href="{{ url_for('micro_bp.micro_project_detail', project_id=project.id) }}" style="font-weight:600; color:#4f46e5;">{{ project.name }}</a>
+                        <br>
+                        <a href="{{ url_for('micro_bp.micro_project_strategy', project_id=project.id) }}" style="font-size:11px; color:#64748b;">Stratejik analiz</a>
+                    </td>
+                    <td>
+                        {% if item.related_processes %}
+                        {% for proc in item.related_processes %}
+                        <span class="mc-badge mc-badge-gray" style="font-size:10px; margin:2px;">{{ proc.code }} ({{ proc.score }})</span>
+                        {% endfor %}
+                        {% else %}
+                        <span style="color:#94a3b8;">—</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align:center;">
+                        <span class="mc-badge {% if item.strategic_score >= 50 %}mc-badge-success{% elif item.strategic_score >= 30 %}mc-badge-warning{% else %}mc-badge-gray{% endif %}">
+                            {{ item.strategic_score }}
+                        </span>
+                    </td>
+                    <td style="text-align:center;">
+                        <a href="{{ url_for('micro_bp.micro_project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm">Görevler</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

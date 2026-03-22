@@ -1,88 +1,91 @@
-"""Modül kayıt sistemi — erişim kontrolü ve modül tanımları."""
+"""Modül kayıt sistemi — erişim kontrolü ve modül tanımları.
+
+URL'ler Micro kökündedir (önceden /micro öneki vardı).
+"""
 
 # Her modül: id, ad, url, ikon, açıklama
 MODULES = [
     {
         "id": "masaustu",
         "name": "Masaüstüm",
-        "url": "/micro/masaustu",
+        "url": "/masaustu",
         "icon": "🏠",
         "description": "Kişisel özet — tüm modüllerden gelen görevler, KPI'lar ve iş planları",
     },
     {
         "id": "sp",
         "name": "Stratejik Planlama",
-        "url": "/micro/sp",
+        "url": "/sp",
         "icon": "🎯",
         "description": "Stratejiler, alt stratejiler ve hedef takibi",
     },
     {
         "id": "surec",
         "name": "Süreç Yönetimi",
-        "url": "/micro/surec",
+        "url": "/process",
         "icon": "⚙️",
         "description": "Süreçler, KPI'lar ve faaliyet takibi",
     },
     {
         "id": "kurum",
         "name": "Kurum Paneli",
-        "url": "/micro/kurum",
+        "url": "/kurum",
         "icon": "🏢",
         "description": "Stratejik kimlik, kurum bilgileri ve strateji yönetimi",
     },
     {
         "id": "bireysel",
         "name": "Bireysel Performans",
-        "url": "/micro/bireysel/karne",
+        "url": "/bireysel/karne",
         "icon": "👤",
         "description": "Bireysel PG'ler, faaliyetler ve kişisel karne",
     },
     {
         "id": "proje",
         "name": "Proje Yönetimi",
-        "url": "/micro/proje",
+        "url": "/project",
         "icon": "📋",
-        "description": "Projeler, görevler ve zaman çizelgesi",
+        "description": "Projeler, görevler, Kanban ve stratejik portföy",
     },
     {
         "id": "analiz",
         "name": "Analiz Merkezi",
-        "url": "/micro/analiz",
+        "url": "/analiz",
         "icon": "📊",
         "description": "Raporlar, grafikler ve performans analizleri",
     },
     {
         "id": "admin",
         "name": "Yönetim Paneli",
-        "url": "/micro/admin/users",
+        "url": "/admin/users",
         "icon": "🛡️",
         "description": "Kullanıcı, kurum ve paket yönetimi",
     },
     {
         "id": "hgs",
         "name": "Hızlı Giriş",
-        "url": "/micro/hgs",
+        "url": "/Hgs_mfg",
         "icon": "⚡",
         "description": "Demo/geliştirme ortamı için hızlı kullanıcı girişi",
     },
     {
         "id": "api",
         "name": "API Dokümantasyonu",
-        "url": "/micro/api/docs",
+        "url": "/api/docs",
         "icon": "📡",
         "description": "REST API v1 endpoint referansı",
     },
     {
         "id": "ayarlar",
         "name": "Ayarlar",
-        "url": "/micro/ayarlar",
+        "url": "/ayarlar",
         "icon": "⚙️",
         "description": "Kurum ve kullanıcı ayarları",
     },
     {
         "id": "bildirim",
         "name": "Bildirim Merkezi",
-        "url": "/micro/bildirim",
+        "url": "/bildirim",
         "icon": "🔔",
         "description": "Sistem bildirimleri ve uyarılar",
     },
@@ -93,7 +96,6 @@ _MINIMUM_MODULE_IDS = {"masaustu", "bildirim", "ayarlar"}
 
 # Rol bazlı kısıtlamalar
 _ROLE_RESTRICTED = {
-    "kurum":    {"tenant_admin", "executive_manager", "Admin"},
     "admin":    {"tenant_admin", "executive_manager", "Admin"},
     "hgs":      {"Admin"},
     "api":      {"tenant_admin", "executive_manager", "Admin"},

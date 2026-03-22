@@ -173,7 +173,7 @@
     document.getElementById("btn-bulk-import")?.addEventListener("click", async () => {
       const { value: file } = await Swal.fire({
         title: "Toplu Kullanıcı İçe Aktar",
-        html: `<a href="/micro/admin/users/sample-excel" class="mc-btn mc-btn-secondary" style="display:inline-block;margin-bottom:12px;">📥 Örnek Excel İndir</a>
+        html: `<a href="/admin/users/sample-excel" class="mc-btn mc-btn-secondary" style="display:inline-block;margin-bottom:12px;">📥 Örnek Excel İndir</a>
                <p style="font-size:12px;color:#64748b;margin-bottom:8px;">Excel (.xlsx) veya CSV — kolonlar: Ad, Soyad, E-posta, Şifre, Unvan, Telefon</p>
                <input id="bulk-file" type="file" accept=".csv,.xlsx" class="swal2-file">`,
         focusConfirm: false, showCancelButton: true,
@@ -569,7 +569,7 @@
           <div><label class="block text-xs text-gray-500 mb-1">Mesaj <span style="color:#dc2626">*</span></label>
             <textarea id="bc-message" class="swal2-textarea" placeholder="Bildirim mesajı" rows="3"></textarea></div>
           <div><label class="block text-xs text-gray-500 mb-1">Bağlantı (opsiyonel)</label>
-            <input id="bc-link" class="swal2-input" placeholder="/micro/..."></div>
+            <input id="bc-link" class="swal2-input" placeholder="/admin/... veya /process/..."></div>
           ${tenantHtml}
         </div>`,
         focusConfirm: false, showCancelButton: true,

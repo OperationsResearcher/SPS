@@ -37,7 +37,7 @@ import os
 import re
 import uuid
 from werkzeug.utils import secure_filename
-from utils.task_status import COMPLETED_STATUSES, normalize_task_status
+from utils.task_status import COMPLETED_STATUSES
 from decorators import role_required
 
 main_bp = Blueprint('main', __name__)
@@ -52,6 +52,14 @@ def _get_user_project_role_for_page(project: Project):
     user_id = current_user.id
 
     if project.manager_id == user_id:
+        return 'manager'
+
+    from models import project_leaders
+    if (
+        db.session.query(project_leaders)
+        .filter(project_leaders.c.project_id == project.id, project_leaders.c.user_id == user_id)
+        .first()
+    ):
         return 'manager'
 
     member_exists = db.session.query(project_members).filter(
@@ -92,7 +100,7 @@ def index():
     """Ana sayfa - Login sayfasına yönlendir"""
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    return redirect(url_for('auth.login'))
+    return redirect(url_for("public_login"))
 
 
 @main_bp.route('/offline')
@@ -3308,8 +3316,7 @@ def project_kanban(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        tasks = Task.query.filter_by(project_id=project_id).all()
-        return render_template('projects/kanban.html', project=project, tasks=tasks)
+        return redirect(url_for('micro_bp.micro_project_view_kanban', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Kanban sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3323,8 +3330,7 @@ def project_calendar(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        tasks = Task.query.filter_by(project_id=project_id).all()
-        return render_template('projects/calendar.html', project=project, tasks=tasks)
+        return redirect(url_for('micro_bp.micro_project_view_calendar', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Takvim sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3338,8 +3344,7 @@ def project_gantt(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        tasks = Task.query.filter_by(project_id=project_id).all()
-        return render_template('projects/gantt.html', project=project, tasks=tasks)
+        return redirect(url_for('micro_bp.micro_project_view_gantt', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Gantt sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3367,7 +3372,7 @@ def project_raid(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        return render_template('projects/raid.html', project=project)
+        return redirect(url_for('micro_bp.micro_project_view_raid', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'RAID sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -5251,296 +5256,49 @@ def strategy_kpi_add():
 @main_bp.route('/projeler')
 @login_required
 def projeler():
-    """Proje listesi sayfası - Kart görünümü"""
-    from sqlalchemy.orm import joinedload
-    
-    try:
-        # Pagination parametreleri
-        page = request.args.get('page', 1, type=int)
-        per_page = 20  # Sayfa başına proje sayısı
-        
-        # Kullanıcının kurumundaki tüm projeleri getir (eager loading ile N+1 çözümü)
-        pagination = Project.query.options(
-            joinedload(Project.manager),
-            joinedload(Project.related_processes)
-        ).filter_by(
-            kurum_id=current_user.kurum_id
-        ).paginate(
-            page=page,
-            per_page=per_page,
-            error_out=False
-        )
-        
-        projeler = pagination.items
-        
-        return render_template('project_list.html', 
-                             projeler=projeler,
-                             pagination=pagination)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Proje listesi sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Kök /kok/projeler → Micro proje listesi (/project)."""
+    return redirect(url_for('micro_bp.micro_project_list', **request.args))
 
 
 @main_bp.route('/projeler/yeni')
 @login_required
 def proje_yeni():
-    """Yeni proje oluşturma sayfası"""
-    try:
-        # Kurumdaki tüm süreçleri getir
-        surecler = Surec.query.all()
-        
-        # Kurumdaki tüm kullanıcıları getir
-        kullanicilar = User.query.all()
-        
-        # Şablon olarak kullanılabilecek projeleri getir (aynı kurumdaki projeler)
-        sablon_projeler = Project.query.filter_by(kurum_id=current_user.kurum_id).order_by(Project.created_at.desc()).limit(20).all()
-        
-        return render_template('project_form.html',
-                             project=None,
-                             surecler=surecler,
-                             kullanicilar=kullanicilar,
-                             sablon_projeler=sablon_projeler)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Yeni proje sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Yeni proje → Micro form (/project/new)."""
+    return redirect(url_for('micro_bp.micro_project_new'))
 
 
 @main_bp.route('/projeler/<int:project_id>/duzenle')
 @login_required
 def proje_duzenle(project_id):
-    """Proje düzenleme sayfası"""
-    try:
-        project = Project.query.get_or_404(project_id)
-
-        if project.kurum_id != current_user.kurum_id:
-            flash('Bu projeye erişim yetkiniz yok.', 'danger')
-            return redirect(url_for('main.projeler'))
-
-        user_project_role = _get_user_project_role_for_page(project)
-        if user_project_role not in ['manager', 'member']:
-            flash('Bu projeyi düzenleme yetkiniz yok.', 'danger')
-            return redirect(url_for('main.proje_detay', project_id=project_id))
-
-        surecler = Surec.query.all()
-        kullanicilar = User.query.all()
-        sablon_projeler = Project.query.filter_by(
-            kurum_id=current_user.kurum_id
-        ).order_by(Project.created_at.desc()).limit(20).all()
-
-        return render_template(
-            'project_form.html',
-            project=project,
-            surecler=surecler,
-            kullanicilar=kullanicilar,
-            sablon_projeler=sablon_projeler
-        )
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Proje düzenleme sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Proje düzenleme → Micro (/project/<id>/edit)."""
+    return redirect(url_for('micro_bp.micro_project_edit', project_id=project_id))
 
 
 @main_bp.route('/projeler/<int:project_id>')
 @login_required
 def proje_detay(project_id):
-    """Proje detay sayfası - Kanban ve Liste görünümü"""
-    from sqlalchemy.orm import joinedload
-    
-    try:
-        project = Project.query.options(
-            joinedload(Project.manager),
-            joinedload(Project.members)
-        ).get_or_404(project_id)
-        
-        # Yetki kontrolü - Proje kullanıcının kurumunda olmalı
-        if project.kurum_id != current_user.kurum_id:
-            flash('Bu projeye erişim yetkiniz yok.', 'danger')
-            return redirect(url_for('main.projeler'))
-
-        user_project_role = _get_user_project_role_for_page(project)
-        if user_project_role is None:
-            flash('Bu projede yetkiniz yok.', 'danger')
-            return redirect(url_for('main.projeler'))
-        
-        # Projenin görevlerini getir (eager loading ile assigned_to ve reporter)
-        tasks = Task.query.options(
-            joinedload(Task.assignee),
-            joinedload(Task.reporter)
-        ).filter_by(project_id=project_id).order_by(Task.created_at.desc()).all()
-        
-        # Durumlara göre görevleri grupla (Kanban için)
-        def _normalized_status(task):
-            return normalize_task_status(task.status) or task.status
-
-        tasks_by_status = {
-            'Yapılacak': [t for t in tasks if _normalized_status(t) == 'Yapılacak'],
-            'Devam Ediyor': [t for t in tasks if _normalized_status(t) == 'Devam Ediyor'],
-            'Beklemede': [t for t in tasks if _normalized_status(t) == 'Beklemede'],
-            'Tamamlandı': [t for t in tasks if _normalized_status(t) == 'Tamamlandı']
-        }
-        
-        # Gecikme analizi için bugünün tarihini al
-        from datetime import date
-        today = date.today()
-        
-        # Geciken görevleri işaretle
-        geciken_gorevler = [
-            t for t in tasks
-            if t.due_date and t.due_date < today and _normalized_status(t) != 'Tamamlandı'
-        ]
-        
-        return render_template('project_detail.html', 
-                             project=project, 
-                             tasks=tasks,
-                             tasks_by_status=tasks_by_status,
-                             today=today,
-                             geciken_gorevler=geciken_gorevler,
-                             user_project_role=user_project_role)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Proje detay sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Proje detay → Micro (/project/<id>)."""
+    return redirect(url_for('micro_bp.micro_project_detail', project_id=project_id))
 
 
 @main_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>')
 @login_required
 def gorev_detay(project_id, task_id):
-    """Görev detay/duzenleme sayfası"""
-    try:
-        project = Project.query.get_or_404(project_id)
-        task = Task.query.get_or_404(task_id)
-        
-        # Yetki kontrolü
-        if project.kurum_id != current_user.kurum_id or task.project_id != project_id:
-            flash('Bu göreve erişim yetkiniz yok.', 'danger')
-            return redirect(url_for('main.proje_detay', project_id=project_id))
-
-        user_project_role = _get_user_project_role_for_page(project)
-        if user_project_role is None:
-            flash('Bu projede yetkiniz yok.', 'danger')
-            return redirect(url_for('main.proje_detay', project_id=project_id))
-
-        can_edit = user_project_role in ['manager', 'member']
-        
-        # Kullanıcının bireysel PG'lerini getir (form için)
-        bireysel_pgler_rows = BireyselPerformansGostergesi.query.filter_by(
-            user_id=current_user.id
-        ).with_entities(
-            BireyselPerformansGostergesi.id,
-            BireyselPerformansGostergesi.ad,
-            BireyselPerformansGostergesi.kodu,
-        ).all()
-        bireysel_pgler = [
-            {'id': pg_id, 'ad': ad, 'kodu': kodu}
-            for pg_id, ad, kodu in bireysel_pgler_rows
-        ]
-        
-        # Kullanıcının bireysel faaliyetlerini getir (form için)
-        bireysel_faaliyetler_rows = BireyselFaaliyet.query.filter_by(
-            user_id=current_user.id
-        ).with_entities(
-            BireyselFaaliyet.id,
-            BireyselFaaliyet.ad,
-        ).all()
-        bireysel_faaliyetler = [
-            {'id': faaliyet_id, 'ad': ad}
-            for faaliyet_id, ad in bireysel_faaliyetler_rows
-        ]
-        
-        # Görevin mevcut impact'lerini getir
-        task_impacts = TaskImpact.query.filter_by(task_id=task_id).all()
-        
-        # Görevin yorumlarını getir
-        task_comments = TaskComment.query.filter_by(task_id=task_id).order_by(TaskComment.created_at.desc()).all()
-        
-        # Proje üyelerini ve kurum kullanıcılarını getir (görev atama için)
-        proje_uyeleri = project.members if project.members else []
-        kurum_kullanicilar = User.query.filter_by(kurum_id=project.kurum_id).all()
-        
-        return render_template('task_form.html',
-                             project=project,
-                             task=task,
-                             bireysel_pgler=bireysel_pgler,
-                             bireysel_faaliyetler=bireysel_faaliyetler,
-                             task_impacts=task_impacts,
-                             task_comments=task_comments,
-                             kullanicilar=kurum_kullanicilar,
-                             proje_uyeleri=proje_uyeleri,
-                             can_edit=can_edit,
-                             user_project_role=user_project_role)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Görev detay sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Görev detay → Micro (/project/<pid>/task/<tid>)."""
+    return redirect(
+        url_for(
+            'micro_bp.micro_project_task_detail',
+            project_id=project_id,
+            task_id=task_id,
+        )
+    )
 
 
 @main_bp.route('/projeler/<int:project_id>/gorevler/yeni')
 @login_required
 def gorev_yeni(project_id):
-    """Yeni görev oluşturma sayfası"""
-    try:
-        project = Project.query.get_or_404(project_id)
-        
-        # Yetki kontrolü
-        if project.kurum_id != current_user.kurum_id:
-            flash('Bu projede görev oluşturma yetkiniz yok.', 'danger')
-            return redirect(url_for('main.projeler'))
-
-        user_project_role = _get_user_project_role_for_page(project)
-        if user_project_role not in ['manager', 'member']:
-            flash('Bu projede görev oluşturma yetkiniz yok.', 'danger')
-            return redirect(url_for('main.proje_detay', project_id=project_id))
-        
-        # Kullanıcının bireysel PG'lerini ve faaliyetlerini getir
-        bireysel_pgler_rows = BireyselPerformansGostergesi.query.filter_by(
-            user_id=current_user.id
-        ).with_entities(
-            BireyselPerformansGostergesi.id,
-            BireyselPerformansGostergesi.ad,
-            BireyselPerformansGostergesi.kodu,
-        ).all()
-        bireysel_pgler = [
-            {'id': pg_id, 'ad': ad, 'kodu': kodu}
-            for pg_id, ad, kodu in bireysel_pgler_rows
-        ]
-
-        bireysel_faaliyetler_rows = BireyselFaaliyet.query.filter_by(
-            user_id=current_user.id
-        ).with_entities(
-            BireyselFaaliyet.id,
-            BireyselFaaliyet.ad,
-        ).all()
-        bireysel_faaliyetler = [
-            {'id': faaliyet_id, 'ad': ad}
-            for faaliyet_id, ad in bireysel_faaliyetler_rows
-        ]
-        
-        # Proje üyelerini ve kurum kullanıcılarını getir (görev atama için)
-        proje_uyeleri = project.members if project.members else []
-        kurum_kullanicilar = User.query.filter_by(kurum_id=project.kurum_id).all()
-        
-        return render_template('task_form.html',
-                             project=project,
-                             task=None,  # Yeni görev
-                             bireysel_pgler=bireysel_pgler,
-                             bireysel_faaliyetler=bireysel_faaliyetler,
-                             task_impacts=[],
-                             kullanicilar=kurum_kullanicilar,
-                             proje_uyeleri=proje_uyeleri,
-                             can_edit=True,
-                             user_project_role=user_project_role)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Yeni görev sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
+    """Yeni görev → Micro (/project/<id>/task/new)."""
+    return redirect(url_for('micro_bp.micro_project_task_new', project_id=project_id))
 
 
 @main_bp.route('/dokuman-merkezi')
@@ -5600,67 +5358,6 @@ def executive_dashboard():
     except Exception as e:
         import traceback
         current_app.logger.error(f'Executive dashboard sayfası hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
-
-
-@main_bp.route('/projeler/<int:project_id>/gantt')
-@login_required
-def proje_gantt(project_id):
-    """Proje Gantt şeması görünümü"""
-    try:
-        project = Project.query.get_or_404(project_id)
-        
-        # Yetki kontrolü
-        if project.kurum_id != current_user.kurum_id:
-            flash('Bu projeye erişim yetkiniz yok.', 'danger')
-            return redirect(url_for('main.projeler'))
-        
-        # Projenin görevlerini getir (predecessor ilişkileriyle birlikte)
-        tasks = Task.query.filter_by(project_id=project_id).all()
-        
-        # Gantt verisi için görevleri hazırla
-        gantt_data = []
-        for task in tasks:
-            start_date = task.start_date or task.due_date
-            end_date = task.due_date or task.start_date
-            gantt_item = {
-                'id': task.id,
-                'name': task.title,
-                'start': start_date.strftime('%Y-%m-%d') if start_date else None,
-                'end': end_date.strftime('%Y-%m-%d') if end_date else None,
-                'progress': 0,
-                'dependencies': []
-            }
-            
-            # Tamamlanmış görevler için progress %100
-            normalized_status = normalize_task_status(task.status) or task.status
-            if normalized_status == 'Tamamlandı':
-                gantt_item['progress'] = 100
-            elif normalized_status == 'Devam Ediyor':
-                gantt_item['progress'] = 50
-            elif normalized_status == 'Beklemede':
-                gantt_item['progress'] = 25
-            
-            # Predecessor'ları (bağımlılıkları) ekle
-            if task.predecessors:
-                for predecessor in task.predecessors:
-                    gantt_item['dependencies'].append(str(predecessor.id))
-            
-            # Başlangıç tarihi yoksa varsayılan bir tarih ekle
-            if not gantt_item['start']:
-                gantt_item['start'] = (datetime.now().date() - timedelta(days=30)).strftime('%Y-%m-%d')
-                gantt_item['end'] = datetime.now().date().strftime('%Y-%m-%d')
-            
-            gantt_data.append(gantt_item)
-        
-        return render_template('project_gantt.html',
-                             project=project,
-                             tasks=tasks,
-                             gantt_data=gantt_data)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Proje Gantt sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         return f"Sayfa yüklenirken hata oluştu: {str(e)}", 500
 

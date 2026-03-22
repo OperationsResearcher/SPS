@@ -84,8 +84,15 @@ def _get_user_project_role(project, user_id):
         'observer': Gözlemci
         None: Yetkisi yok
     """
-    # Proje yöneticisi kontrolü
+    # Proje yöneticisi / lider kontrolü
     if project.manager_id == user_id:
+        return 'manager'
+    from models import project_leaders
+    if (
+        db.session.query(project_leaders)
+        .filter(project_leaders.c.project_id == project.id, project_leaders.c.user_id == user_id)
+        .first()
+    ):
         return 'manager'
     
     # Üye kontrolü (association table üzerinden)

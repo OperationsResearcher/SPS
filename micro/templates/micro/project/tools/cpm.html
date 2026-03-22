@@ -1,0 +1,128 @@
+{% extends "micro/project/tools/base_tool.html" %}
+{% block tool_header_title %}CPM / Kritik yol{% endblock %}
+{% block tool_header_icon %}fas fa-project-diagram{% endblock %}
+{% block tool_info_key %}cpm{% endblock %}
+{% block title %}CPM — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block tool_main %}
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Proje özeti</div>
+    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Proje bitiş tarihi</div>
+            <div id="finish-date" class="text-lg font-semibold text-slate-800 dark:text-slate-100">—</div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Toplam görev</div>
+            <div id="total-tasks" class="text-lg font-semibold text-slate-800 dark:text-slate-100">—</div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Kritik görevler</div>
+            <div id="critical-count" class="text-lg font-semibold text-rose-600 dark:text-rose-400">—</div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Toplam float</div>
+            <div id="total-float" class="text-lg font-semibold text-slate-800 dark:text-slate-100">— gün</div>
+        </div>
+    </div>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Görev zamanlama tablosu</div>
+    <div class="mc-pt-table-wrap">
+        <table class="mc-pt-table" id="schedule-table">
+            <thead>
+                <tr>
+                    <th>Görev</th>
+                    <th>Süre (gün)</th>
+                    <th>ES</th>
+                    <th>EF</th>
+                    <th>LS</th>
+                    <th>LF</th>
+                    <th>Slack</th>
+                    <th>Kritik?</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Kritik yol görselleştirme</div>
+    <div class="p-4">
+        <div id="critical-path-viz" class="min-h-[200px] flex items-center justify-center text-slate-500 dark:text-slate-400 text-sm">
+            Kritik yol hesaplanıyor...
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block tool_scripts %}
+<script>
+(function () {
+  const MC_PROJECT_DETAIL = {{ url_for('micro_bp.micro_project_detail', project_id=project.id)|tojson }};
+  const PID = {{ project.id|int }};
+
+  (async function loadCPM() {
+    try {
+      const res = await fetch('/api/projeler/' + PID + '/cpm', { credentials: 'same-origin' });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'CPM verileri alınamadı');
+
+      document.getElementById('finish-date').textContent = data.project_finish || '—';
+      document.getElementById('total-tasks').textContent = data.schedule.length;
+      document.getElementById('critical-count').textContent = data.critical_task_ids.length;
+
+      const totalFloat = data.schedule.reduce((sum, t) => sum + (t.slack || 0), 0);
+      document.getElementById('total-float').textContent = totalFloat.toFixed(1) + ' gün';
+
+      const tbody = document.querySelector('#schedule-table tbody');
+      tbody.innerHTML = '';
+
+      data.schedule.forEach(row => {
+        const tr = document.createElement('tr');
+        if (row.is_critical) tr.classList.add('mc-pt-row-critical');
+
+        const duration = row.duration != null ? row.duration : 0;
+        const es = row.es != null ? row.es : 0;
+        const ef = row.ef != null ? row.ef : 0;
+        const ls = row.ls != null ? row.ls : 0;
+        const lf = row.lf != null ? row.lf : 0;
+        const slack = row.slack != null ? row.slack : 0;
+
+        const slackCls = row.slack === 0 ? 'mc-pt-badge-danger' : 'mc-pt-badge-muted';
+        tr.innerHTML = `
+          <td><a href="${MC_PROJECT_DETAIL}#task-${row.task_id}" class="text-indigo-600 dark:text-indigo-400 hover:underline">${row.title || row.task_name || 'N/A'}</a></td>
+          <td>${duration.toFixed(1)}</td>
+          <td>${es.toFixed(1)}</td>
+          <td>${ef.toFixed(1)}</td>
+          <td>${ls.toFixed(1)}</td>
+          <td>${lf.toFixed(1)}</td>
+          <td><span class="mc-pt-badge ${slackCls}">${slack.toFixed(1)}</span></td>
+          <td>${row.is_critical ? '<i class="fas fa-exclamation-triangle text-rose-500"></i>' : '—'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const criticalTasks = data.schedule.filter(t => t.is_critical).map(t => t.title || t.task_name || 'N/A');
+      const vizDiv = document.getElementById('critical-path-viz');
+      if (criticalTasks.length > 0) {
+        vizDiv.className = 'flex flex-wrap gap-2 items-center justify-start';
+        vizDiv.innerHTML = criticalTasks.map((name, i) => `
+          <span class="mc-pt-badge mc-pt-badge-danger text-xs py-1.5 px-3">${name}</span>
+          ${i < criticalTasks.length - 1 ? '<i class="fas fa-arrow-right text-rose-400 text-sm"></i>' : ''}
+        `).join('');
+      } else {
+        vizDiv.className = 'min-h-[120px] flex items-center justify-center text-slate-500';
+        vizDiv.textContent = 'Kritik yol bulunamadı.';
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('error', e.message, 'CPM yükleme');
+    }
+  })();
+})();
+</script>
+{% endblock %}

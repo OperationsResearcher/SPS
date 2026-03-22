@@ -1,0 +1,117 @@
+{% extends "micro/base.html" %}
+{% block title %}Takvim — {{ project.name }} — Kokpitim{% endblock %}
+{% block page_title %}Takvim — {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/project_views.css') }}?v={{ config['VERSION'] }}">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+{% set active_view = 'calendar' %}
+<div style="max-width:1280px; margin:0 auto;">
+    <div class="micro-project-view-toolbar">
+        <div>
+            <a href="{{ url_for('micro_bp.micro_project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> Projeye dön</a>
+            <div class="micro-project-view-title"><i class="fas fa-calendar-alt text-sky-600"></i> Takvim</div>
+        </div>
+        {% include "micro/project/_project_views_nav.html" %}
+    </div>
+    <div class="mc-card" style="padding:16px;">
+        <div id="calendar-loading" style="text-align:center; padding:48px 16px; color:#64748b; font-size:14px;">
+            <i class="fas fa-spinner fa-spin"></i> Takvim yükleniyor…
+        </div>
+        <div id="calendar"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% set task_url_sample = url_for('micro_bp.micro_project_task_detail', project_id=project.id, task_id=900000001) %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script>
+(function () {
+  var TASK_URL_TMPL = {{ task_url_sample|tojson }};
+  function taskDetailUrl(taskId) {
+    return TASK_URL_TMPL.replace('900000001', String(taskId));
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var projectId = {{ project.id|int }};
+
+    async function updateTaskDates(id, start, end) {
+      var body = { start_date: start, due_date: end };
+      var res = await fetch('/api/projeler/' + projectId + '/gorevler/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+    }
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      editable: true,
+      eventDurationEditable: true,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: async function (fetchInfo, success, fail) {
+        try {
+          var res = await fetch('/api/projeler/' + projectId + '/gorevler');
+          var data = await res.json();
+          if (!data.success) throw new Error(data.message || 'Listeleme hatası');
+          var evts = (data.gorevler || []).filter(function (t) { return t.due_date || t.start_date; }).map(function (t) {
+            return {
+              id: t.id,
+              title: t.title,
+              start: t.start_date || t.due_date,
+              end: t.due_date || t.start_date,
+              color: t.status === 'Tamamlandı' ? '#16a34a' : undefined
+            };
+          });
+          var ld = document.getElementById('calendar-loading');
+          if (ld) ld.style.display = 'none';
+          success(evts);
+        } catch (e) {
+          var ld2 = document.getElementById('calendar-loading');
+          if (ld2) ld2.innerHTML = '<span style="color:#dc2626;">Yüklenemedi: ' + (e.message || '') + '</span>';
+          if (window.showToast) showToast('error', e.message || 'Takvim yüklenemedi');
+          fail(e);
+        }
+      },
+      eventClick: function (info) {
+        window.location.href = taskDetailUrl(info.event.id);
+      },
+      eventDrop: async function (info) {
+        try {
+          var start = info.event.startStr.slice(0, 10);
+          var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
+          await updateTaskDates(info.event.id, start, end);
+          showToast('success', 'Tarih güncellendi');
+        } catch (e) {
+          info.revert();
+          showToast('error', e.message || 'Güncellenemedi');
+        }
+      },
+      eventResize: async function (info) {
+        try {
+          var start = info.event.startStr.slice(0, 10);
+          var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
+          await updateTaskDates(info.event.id, start, end);
+          showToast('success', 'Süre güncellendi');
+        } catch (e) {
+          info.revert();
+          showToast('error', e.message || 'Güncellenemedi');
+        }
+      }
+    });
+    calendar.render();
+  });
+})();
+</script>
+{% endblock %}

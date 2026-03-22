@@ -73,8 +73,19 @@ def create_app(config_name=None):
     # LoginManager user_loader callback
     @login_manager.user_loader
     def load_user(user_id):
-        from models import User
-        return User.query.get(int(user_id))
+        try:
+            uid = int(user_id)
+        except (TypeError, ValueError):
+            return None
+
+        # Micro (new schema) kullanıcısını önce dene; yoksa legacy tabloya düş.
+        from app.models.core import User as CoreUser
+        u = CoreUser.query.get(uid)
+        if u:
+            return u
+
+        from models import User as LegacyUser
+        return LegacyUser.query.get(uid)
 
     # 2.5. Background task executor'ı başlat
     from services.background_tasks import init_background_executor
@@ -181,7 +192,7 @@ def create_app(config_name=None):
     from v3 import v3_bp
     app.register_blueprint(v3_bp)
 
-    # 4.9 Micro Platform (/micro)
+    # 4.9 Micro Platform — güncel kurulum için app.create_app (app/__init__.py) kullanın; kök URL orada.
     from micro import micro_bp
     app.register_blueprint(micro_bp)
 

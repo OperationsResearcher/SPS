@@ -2,7 +2,7 @@ from flask import render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from extensions import db
 from models.dashboard import UserDashboardSettings
-from models import Task, Note, Project, Surec, Notification, BireyselPerformansGostergesi, PerformansGostergeVeri
+from models import Task, Note, Project, Surec, Notification, BireyselPerformansGostergesi, PerformansGostergeVeri, project_leaders
 import json
 from datetime import date, timedelta, datetime
 
@@ -21,6 +21,9 @@ def calculate_strategic_summary(user):
     user_projects = Project.query.filter(
         db.or_(
             Project.manager_id == user.id,
+            Project.id.in_(
+                db.session.query(project_leaders.c.project_id).filter(project_leaders.c.user_id == user.id)
+            ),
             Project.members.any(id=user.id),
             Project.observers.any(id=user.id)
         ),
@@ -399,6 +402,9 @@ def dashboard():
     my_projects = Project.query.filter(
         db.or_(
             Project.manager_id == current_user.id,
+            Project.id.in_(
+                db.session.query(project_leaders.c.project_id).filter(project_leaders.c.user_id == current_user.id)
+            ),
             Project.members.any(id=current_user.id)
         ),
         Project.is_archived == False

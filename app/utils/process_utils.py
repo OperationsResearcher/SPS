@@ -72,6 +72,10 @@ def data_date_to_period_keys(d: date, year: int) -> list[str]:
     week_in_month = min(week_in_month, 5)
     keys.append(f'haftalik_{week_in_month}_{month}')
     keys.append(f'gunluk_{day}_{month}')
+    if 1 <= month <= 6:
+        keys.append('halfyear_1')
+    else:
+        keys.append('halfyear_2')
     return keys
 
 

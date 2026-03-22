@@ -1,0 +1,6147 @@
+{
+  "kaynak_dosya": "C:\\kokpitim\\docs\\KMF\\s11.xlsx",
+  "sayfalar": [
+    {
+      "sheet": "Veriler",
+      "yil": null,
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2021-04-15T00:00:00",
+        "publish_date": "2020-02-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Salih YALÇIN",
+        "process_team": "Emre Koşar, Ebru Takcı, M. Arif",
+        "parametre_basari_baslik": "2020 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Eğitim Gelirleri",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 100006.66666666667,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -399000,
+            "400.000-449.000",
+            "450.000-499.000",
+            "500.000-549.000",
+            "550.000-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 118750,
+              "q2": 118750,
+              "q3": 118750,
+              "q4": 118750
+            },
+            "yil_sonu": 475000
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 213333.33333333334,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -799000,
+            "800.000 - 899.000",
+            "900.000-999.000",
+            "1.000.000-1.099.000",
+            "1.100.000 - "
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 237500,
+              "q2": 237500,
+              "q3": 237500,
+              "q4": 237500
+            },
+            "yil_sonu": 950000
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -5999,
+            "6.000 - 6.999",
+            "7.000-7.999",
+            "8.000 - 8.999",
+            "9.000 -"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 7500
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Pazarlama Stratejileri Yönetimi \nGider Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 7,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "15-23",
+            "24-29",
+            "30-35",
+            "36-41",
+            "42-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": 10,
+              "q3": 6,
+              "q4": 8
+            },
+            "yil_sonu": 32
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.875,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "%40-49",
+            "%50-59",
+            "%60-69",
+            "%70-79",
+            "%80-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.65,
+              "q2": 0.65,
+              "q3": 0.65,
+              "q4": 0.65
+            },
+            "yil_sonu": 0.65
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.1",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.06,
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.15
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.06,
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.15
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.2.",
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -39,
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 17,
+              "q4": 10
+            },
+            "yil_sonu": 55
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 18,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -39,
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 17,
+              "q4": 10
+            },
+            "yil_sonu": 55
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3.",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 5,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 3,
+              "q2": 1,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": 8
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 170,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-249",
+            "250-349",
+            "350-449",
+            "450-549",
+            "550-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 150,
+              "q2": 50,
+              "q3": 100,
+              "q4": 100
+            },
+            "yil_sonu": 400
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 0.95,
+              "q3": null,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": "ST4",
+          "alt_strateji_kod": "ST4.1",
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "-",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "-",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.03,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 1,
+              "q3": null,
+              "q4": 2
+            },
+            "yil_sonu": 3
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştaylarına Katılan Dış Paydaş  Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.02,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 1,
+              "q3": null,
+              "q4": 2
+            },
+            "yil_sonu": 3
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST4.4",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-%29",
+            "%30-39",
+            "%40-49",
+            "%50-59",
+            "%60-"
+          ],
+          "excel_fiili_row": 41,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.4
+          },
+          "excel_hedef_row": 42
+        }
+      ]
+    },
+    {
+      "sheet": "2021",
+      "yil": "2021",
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2022-04-15T00:00:00",
+        "publish_date": "2021-02-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Salih YALÇIN",
+        "process_team": "Beyza Kaçar, M. Arif",
+        "parametre_basari_baslik": "2022 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": "-",
+              "q3": "-",
+              "q4": "-"
+            },
+            "yil_sonu": "-",
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": "-",
+              "q3": "-",
+              "q4": "-"
+            },
+            "yil_sonu": "-"
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 7,
+              "q2": 10,
+              "q3": 9,
+              "q4": 10
+            },
+            "yil_sonu": 36,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "15-23",
+            "24-29",
+            "30-35",
+            "36-41",
+            "42-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": 10,
+              "q3": 6,
+              "q4": 8
+            },
+            "yil_sonu": "30-35"
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.54,
+              "q2": 0.54,
+              "q3": 0.54,
+              "q4": 0.54
+            },
+            "yil_sonu": 0.54,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.16
+          },
+          "basari_esikleri": [
+            "%40-49",
+            "%50-59",
+            "%60-69",
+            "%70-79",
+            "%80-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%60-69",
+              "q2": "%60-69",
+              "q3": "%60-69",
+              "q4": "%60-69"
+            },
+            "yil_sonu": "%60-69"
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.2.",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.06,
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%12-16"
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.06,
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%12-16"
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": 10,
+              "q3": 14,
+              "q4": 13
+            },
+            "yil_sonu": 53,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.12
+          },
+          "basari_esikleri": [
+            -39,
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 17,
+              "q4": 10
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": 12,
+              "q3": 16,
+              "q4": 10
+            },
+            "yil_sonu": 48,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.08
+          },
+          "basari_esikleri": [
+            -39,
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 17,
+              "q4": 10
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3.",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 4,
+              "q2": 5,
+              "q3": 7,
+              "q4": 4
+            },
+            "yil_sonu": 20,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.3
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 3,
+              "q2": 1,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "8"
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 170,
+              "q2": 77,
+              "q3": 59,
+              "q4": 113
+            },
+            "yil_sonu": 419,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.18
+          },
+          "basari_esikleri": [
+            "-249",
+            "250-349",
+            "350-449",
+            "450-549",
+            "550-"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 150,
+              "q2": 50,
+              "q3": 100,
+              "q4": 100
+            },
+            "yil_sonu": 400
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.96,
+              "q2": null,
+              "q3": 0.96,
+              "q4": null
+            },
+            "yil_sonu": 0.9597222222222223,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.24
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%90-100",
+              "q2": null,
+              "q3": "%90-100",
+              "q4": null
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": "ST4",
+          "alt_strateji_kod": "ST4.1",
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "-",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "-",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.03,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 2,
+              "q3": null,
+              "q4": 1
+            },
+            "yil_sonu": 3,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.09
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 1,
+              "q3": null,
+              "q4": 2
+            },
+            "yil_sonu": 3
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştaylarına Katılan Dış Paydaş  Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.02,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 0,
+              "q3": null,
+              "q4": 1
+            },
+            "yil_sonu": 1,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.04
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 1,
+              "q3": null,
+              "q4": 2
+            },
+            "yil_sonu": 3
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST4.4",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "-%29",
+            "%30-39",
+            "%40-49",
+            "%50-59",
+            "%60-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%40-49"
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Pazarlama Stratejileri Yönetimi \nGider Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            -0.79,
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 47,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95
+          },
+          "excel_hedef_row": 48
+        }
+      ]
+    },
+    {
+      "sheet": "2022",
+      "yil": "2022",
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2022-11-22T00:00:00",
+        "publish_date": "2022-04-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Salih YALÇIN",
+        "process_team": "Emre Koşar, Ebru Takcı, M. Arif",
+        "parametre_basari_baslik": "2022 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-",
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-"
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 9,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": 10,
+              "q3": 19,
+              "q4": 21
+            },
+            "yil_sonu": 66,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.15000000000000002
+          },
+          "basari_esikleri": [
+            "39-44",
+            "45-49",
+            "50-54",
+            "55-60",
+            "61-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 11,
+              "q2": 11,
+              "q3": 11,
+              "q4": 11
+            },
+            "yil_sonu": "50-54"
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.54,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.31,
+              "q2": 0.28,
+              "q3": 0.16,
+              "q4": 0.48
+            },
+            "yil_sonu": 0.31,
+            "basari_puani": 0,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "%40-49",
+            "%50-59",
+            "%60-69",
+            "%70-79",
+            "%80-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%60-69",
+              "q2": "%60-69",
+              "q3": "%60-69",
+              "q4": "%60-69"
+            },
+            "yil_sonu": "%60-69"
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.2",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.15,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.15,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.44999999999999996
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%12-16",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%12-16"
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.1,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%12-16",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%12-16"
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 13.25,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 22,
+              "q2": 13,
+              "q3": 15,
+              "q4": 22
+            },
+            "yil_sonu": 50,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.08
+          },
+          "basari_esikleri": [
+            -49,
+            "50-59",
+            "60-69",
+            "70-79",
+            "79-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": 16,
+              "q3": 16,
+              "q4": 16
+            },
+            "yil_sonu": "60-69"
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 12,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 9,
+              "q2": 16,
+              "q3": 18,
+              "q4": 6
+            },
+            "yil_sonu": 43,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.08
+          },
+          "basari_esikleri": [
+            "29-39",
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 14,
+              "q4": 14
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3.",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 1,
+              "q2": 2,
+              "q3": 3,
+              "q4": 1
+            },
+            "yil_sonu": 7,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.18
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 1,
+              "q2": 2,
+              "q3": 3,
+              "q4": 2
+            },
+            "yil_sonu": "6-8"
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 419,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 155,
+              "q2": 290,
+              "q3": 325,
+              "q4": 100
+            },
+            "yil_sonu": 870,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.3
+          },
+          "basari_esikleri": [
+            "250-349",
+            "350-449",
+            "450-549",
+            "550-599",
+            "600+"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 100,
+              "q2": 250,
+              "q3": 100,
+              "q4": 50
+            },
+            "yil_sonu": "350-449"
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 0.96,
+              "q3": null,
+              "q4": 0.97
+            },
+            "yil_sonu": 0.96,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.24
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": "%90-100",
+              "q3": null,
+              "q4": "%90-100"
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": "ST4",
+          "alt_strateji_kod": "ST4.1",
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": "-"
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.03,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": "-",
+              "q3": "-",
+              "q4": null
+            },
+            "yil_sonu": 0,
+            "basari_puani": 0,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": 1,
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştaylarına Katılan Dış Paydaş  Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.02,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": "-",
+              "q3": "-",
+              "q4": "-"
+            },
+            "yil_sonu": 0,
+            "basari_puani": 0,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": "-",
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST4.4",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.89,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "-%29",
+            "%30-39",
+            "%40-49",
+            "%50-59",
+            "%60-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%40-49"
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "VERİLEN EĞİTİMLERE KATILAN KURUM VE KURULUŞ SAYISI",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 39,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": 10,
+              "q3": 3,
+              "q4": 8
+            },
+            "yil_sonu": 33,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.56
+          },
+          "basari_esikleri": [
+            -19,
+            "20-29",
+            "30-35",
+            "36-41",
+            "42-"
+          ],
+          "excel_fiili_row": 66,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": 8,
+              "q3": 8,
+              "q4": 8
+            },
+            "yil_sonu": "40-45"
+          },
+          "excel_hedef_row": 67
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimlere Katılımcı Sayısı (Deneyimsel)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 396,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 101,
+              "q2": 56,
+              "q3": 143,
+              "q4": 110
+            },
+            "yil_sonu": 410,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.7000000000000001
+          },
+          "basari_esikleri": [
+            -99,
+            "100-139",
+            "140-179",
+            "180-219",
+            "220-"
+          ],
+          "excel_fiili_row": 70,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 40,
+              "q2": 40,
+              "q3": 40,
+              "q4": 40
+            },
+            "yil_sonu": "140-179"
+          },
+          "excel_hedef_row": 71
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimlere Katılan Katılımcı Sayısı (Danışmanlık İçi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.1,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 262,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 47,
+              "q2": 50,
+              "q3": 42,
+              "q4": 105
+            },
+            "yil_sonu": 244,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.5
+          },
+          "basari_esikleri": [
+            -29,
+            "30-89",
+            "90-135",
+            "136-179",
+            "180-"
+          ],
+          "excel_fiili_row": 72,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 30,
+              "q2": 30,
+              "q3": 30,
+              "q4": 30
+            },
+            "yil_sonu": "90-135"
+          },
+          "excel_hedef_row": 73
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimler Gerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 99,
+              "q2": 64.5,
+              "q3": 35,
+              "q4": 132
+            },
+            "yil_sonu": 330.5,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.28
+          },
+          "basari_esikleri": [
+            -249,
+            "250-399",
+            "400-549",
+            "550-699",
+            "700- "
+          ],
+          "excel_fiili_row": 74,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 120,
+              "q2": 120,
+              "q3": 120,
+              "q4": 120
+            },
+            "yil_sonu": "400-549"
+          },
+          "excel_hedef_row": 75
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimler \nGerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 6,
+              "q2": 3,
+              "q3": 16,
+              "q4": null
+            },
+            "yil_sonu": 25,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.22
+          },
+          "basari_esikleri": [
+            -39,
+            "40-79",
+            "80-119",
+            "120-159",
+            "160-"
+          ],
+          "excel_fiili_row": 76,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 24,
+              "q2": 24,
+              "q3": 24,
+              "q4": 24
+            },
+            "yil_sonu": "80-119"
+          },
+          "excel_hedef_row": 77
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Verilen Yeni Firma Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 16,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 21,
+              "q2": null,
+              "q3": 19,
+              "q4": null
+            },
+            "yil_sonu": 40,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "15-17",
+            "18 - 22",
+            "22 - 26",
+            "26 - 30",
+            "30 -"
+          ],
+          "excel_fiili_row": 80,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": null,
+              "q3": 12,
+              "q4": null
+            },
+            "yil_sonu": "22-26"
+          },
+          "excel_hedef_row": 81
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Verilen Danışmanlık Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0,
+          "birim": "gün",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 111,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 284,
+              "q2": 227,
+              "q3": 158,
+              "q4": 64.5
+            },
+            "yil_sonu": 733.5,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "150-379",
+            "380 - 419",
+            "420 - 449",
+            "450 - 479",
+            "480 -"
+          ],
+          "excel_fiili_row": 82,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 108,
+              "q2": 108,
+              "q3": 108,
+              "q4": 108
+            },
+            "yil_sonu": "420-449"
+          },
+          "excel_hedef_row": 83
+        }
+      ]
+    },
+    {
+      "sheet": "2023",
+      "yil": "2023",
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2022-11-22T00:00:00",
+        "publish_date": "2022-04-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Salih YALÇIN",
+        "process_team": "Emre Koşar, Ebru Takcı, M. Arif",
+        "parametre_basari_baslik": "2022 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.1,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "FVÖK/Net Satışlar",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 0.1,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.2,
+              "q2": null,
+              "q3": 0.2,
+              "q4": null
+            },
+            "yil_sonu": 0.2,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "%5-10",
+            "%11-17",
+            "%18-22",
+            "%23-29",
+            "%30-üzeri"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.2,
+              "q2": null,
+              "q3": 0.2,
+              "q4": null
+            },
+            "yil_sonu": 0.2
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 0.1,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-",
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            null,
+            null,
+            null,
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-"
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 17,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": 28,
+              "q3": 27,
+              "q4": 19
+            },
+            "yil_sonu": 86,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.25
+          },
+          "basari_esikleri": [
+            "49-54",
+            "55-59",
+            "60-64",
+            "65-70",
+            "71-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": 16,
+              "q3": 16,
+              "q4": 16
+            },
+            "yil_sonu": "60-64"
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.07,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.31,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.5,
+              "q2": 0.64,
+              "q3": 0.74,
+              "q4": 0.68
+            },
+            "yil_sonu": 0.64,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.28
+          },
+          "basari_esikleri": [
+            "%25-34",
+            "%35-44",
+            "%45-54",
+            "%55-64",
+            "%65-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%45-54",
+              "q2": "%45-54",
+              "q3": "%45-54",
+              "q4": "%45-54"
+            },
+            "yil_sonu": "%45-54"
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.1",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": null,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": null,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yeşil Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": null,
+          "birim": null,
+          "olcum_periyodu_excel": null,
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.2",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 4,
+              "q2": 6,
+              "q3": 3,
+              "q4": 5
+            },
+            "yil_sonu": 18,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.25
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 2,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "6-8"
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 215,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 186,
+              "q2": 174,
+              "q3": 180,
+              "q4": 192
+            },
+            "yil_sonu": 732,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.25
+          },
+          "basari_esikleri": [
+            "250-349",
+            "350-449",
+            "450-549",
+            "550-599",
+            "600+"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 150,
+              "q2": 150,
+              "q3": 150,
+              "q4": 150
+            },
+            "yil_sonu": "350-449"
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3",
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 Ay",
+          "onceki_yil_ortalamasi": 18,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 19,
+              "q2": 23,
+              "q3": 21,
+              "q4": 15
+            },
+            "yil_sonu": 78,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.16
+          },
+          "basari_esikleri": [
+            -49,
+            "50-59",
+            "60-69",
+            "70-79",
+            "79-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 18,
+              "q2": 18,
+              "q3": 18,
+              "q4": 18
+            },
+            "yil_sonu": "60-69"
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 12,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 15,
+              "q2": 13,
+              "q3": 8,
+              "q4": 17
+            },
+            "yil_sonu": 53,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.12
+          },
+          "basari_esikleri": [
+            "29-39",
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 14,
+              "q4": 14
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 750,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 750,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1yıl",
+          "onceki_yil_ortalamasi": 6,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 4,
+            "basari_puani": "-",
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 1,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": "-",
+              "q4": 1
+            },
+            "yil_sonu": 2,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.12
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": 1,
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştaylarına Katılan Dış Paydaş  Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": "-",
+              "q4": 1
+            },
+            "yil_sonu": 0,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.12
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": "-",
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Verilen Yeni Firma Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.07,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 16,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 21,
+              "q2": null,
+              "q3": 16,
+              "q4": null
+            },
+            "yil_sonu": 37,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.35000000000000003
+          },
+          "basari_esikleri": [
+            "12-16",
+            "17-21",
+            "22-26",
+            "27-31",
+            "32-"
+          ],
+          "excel_fiili_row": 41,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": null,
+              "q3": 12,
+              "q4": null
+            },
+            "yil_sonu": "22-26"
+          },
+          "excel_hedef_row": 42
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Verilen Danışmanlık Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.06,
+          "birim": "gün",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 111,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 284,
+              "q2": 227,
+              "q3": 158,
+              "q4": 112
+            },
+            "yil_sonu": 781,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.3
+          },
+          "basari_esikleri": [
+            "360-389",
+            "390-421",
+            "420-449",
+            "450-479",
+            "480-"
+          ],
+          "excel_fiili_row": 43,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 108,
+              "q2": 108,
+              "q3": 108,
+              "q4": 108
+            },
+            "yil_sonu": "420-449"
+          },
+          "excel_hedef_row": 44
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Yeşil Dönüşüm/Sürdürülebilirlik Çalışma(Eğitim-Proje-Etkinlik) Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0,
+              "q2": 0,
+              "q3": 0,
+              "q4": 1
+            },
+            "yil_sonu": 1,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.08
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 45,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 1,
+              "q3": 2,
+              "q4": 1
+            },
+            "yil_sonu": "5-7"
+          },
+          "excel_hedef_row": 46
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.4",
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.1,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": 0.96,
+              "q3": null,
+              "q4": 0.97
+            },
+            "yil_sonu": 0.96,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.30000000000000004
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 47,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": "%90-100",
+              "q3": null,
+              "q4": "%90-100"
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 48
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.5",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.89,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.25
+          },
+          "basari_esikleri": [
+            "-%29",
+            "%30-39",
+            "%40-49",
+            "%50-59",
+            "%60-"
+          ],
+          "excel_fiili_row": 49,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%40-49"
+          },
+          "excel_hedef_row": 50
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "VERİLEN EĞİTİMLERE KATILAN KURUM VE KURULUŞ SAYISI",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 39,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": 10,
+              "q3": 3,
+              "q4": null
+            },
+            "yil_sonu": 25,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.56
+          },
+          "basari_esikleri": [
+            -19,
+            "20-29",
+            "30-35",
+            "36-41",
+            "42-"
+          ],
+          "excel_fiili_row": 72,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": 8,
+              "q3": 8,
+              "q4": 8
+            },
+            "yil_sonu": "40-45"
+          },
+          "excel_hedef_row": 73
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": null,
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 17,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 4,
+              "q2": 3,
+              "q3": 4,
+              "q4": null
+            },
+            "yil_sonu": 11,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.55
+          },
+          "basari_esikleri": [
+            -10,
+            "15-18",
+            "19-21",
+            "22-24",
+            "25-"
+          ],
+          "excel_fiili_row": 74,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 2,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "19-21"
+          },
+          "excel_hedef_row": 75
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimlere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 396,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 101,
+              "q2": 56,
+              "q3": 143,
+              "q4": null
+            },
+            "yil_sonu": 300,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.7000000000000001
+          },
+          "basari_esikleri": [
+            -99,
+            "100-139",
+            "140-179",
+            "180-219",
+            "220-"
+          ],
+          "excel_fiili_row": 76,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 40,
+              "q2": 40,
+              "q3": 40,
+              "q4": 40
+            },
+            "yil_sonu": "140-179"
+          },
+          "excel_hedef_row": 77
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimlere Katılan Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.1,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 262,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 47,
+              "q2": 50,
+              "q3": 42,
+              "q4": null
+            },
+            "yil_sonu": 139,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.5
+          },
+          "basari_esikleri": [
+            -29,
+            "30-89",
+            "90-135",
+            "136-179",
+            "180-"
+          ],
+          "excel_fiili_row": 78,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 30,
+              "q2": 30,
+              "q3": 30,
+              "q4": 30
+            },
+            "yil_sonu": "90-135"
+          },
+          "excel_hedef_row": 79
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimler Gerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 99,
+              "q2": 64.5,
+              "q3": 35,
+              "q4": null
+            },
+            "yil_sonu": 198.5,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.28
+          },
+          "basari_esikleri": [
+            -249,
+            "250-399",
+            "400-549",
+            "550-699",
+            "700- "
+          ],
+          "excel_fiili_row": 80,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 120,
+              "q2": 120,
+              "q3": 120,
+              "q4": 120
+            },
+            "yil_sonu": "400-549"
+          },
+          "excel_hedef_row": 81
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimler \nGerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 6,
+              "q2": 3,
+              "q3": 16,
+              "q4": null
+            },
+            "yil_sonu": 25,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.22
+          },
+          "basari_esikleri": [
+            -39,
+            "40-79",
+            "80-119",
+            "120-159",
+            "160-"
+          ],
+          "excel_fiili_row": 82,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 24,
+              "q2": 24,
+              "q3": 24,
+              "q4": 24
+            },
+            "yil_sonu": "80-119"
+          },
+          "excel_hedef_row": 83
+        }
+      ]
+    },
+    {
+      "sheet": "2024",
+      "yil": "2024",
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2024-12-16T00:00:00",
+        "publish_date": "2022-04-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Salih YALÇIN",
+        "process_team": "Tuğba Sorkulu",
+        "parametre_basari_baslik": "2024 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 86,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 6,
+              "q2": 9,
+              "q3": 7,
+              "q4": 8
+            },
+            "yil_sonu": 30,
+            "basari_puani": 1,
+            "agirlikli_basari_puani": 0.05
+          },
+          "basari_esikleri": [
+            "29-34",
+            "35-39",
+            "40-44",
+            "45-60",
+            "61-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": 10,
+              "q3": 12,
+              "q4": 10
+            },
+            "yil_sonu": "40-44"
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.64,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.5,
+              "q2": 0.4444444444444444,
+              "q3": 0.62,
+              "q4": 0.5
+            },
+            "yil_sonu": 0.48,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.16
+          },
+          "basari_esikleri": [
+            "%35-44",
+            "%45-54",
+            "%55-64",
+            "65-74",
+            "75-"
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%45-54",
+              "q2": "%45-54",
+              "q3": "%45-54",
+              "q4": "%45-54"
+            },
+            "yil_sonu": "%45-54"
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "FVÖK/Net Satış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.11,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 0.2,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.18,
+              "q2": null,
+              "q3": 0.28,
+              "q4": null
+            },
+            "yil_sonu": 0.23,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.44
+          },
+          "basari_esikleri": [
+            "%5-10",
+            "%11-17",
+            "%18-22",
+            "%23-29",
+            "%30-üzeri"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.2,
+              "q2": null,
+              "q3": 0.2,
+              "q4": null
+            },
+            "yil_sonu": 0.2
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Gelir Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.11,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.9,
+              "q3": 0.98,
+              "q4": 0.98
+            },
+            "yil_sonu": 0.94,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.33
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.9,
+              "q3": 0.98,
+              "q4": 0.98
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.9,
+              "q3": 0.98,
+              "q4": 0.98
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Gider Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.11,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.9,
+              "q3": 0.98,
+              "q4": 0.98
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.33
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.9,
+              "q3": 0.98,
+              "q4": 0.98
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-",
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-"
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.1",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.2",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 18,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 1,
+              "q2": 1,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": 6,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.15000000000000002
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 2,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "6-8"
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 732,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 300,
+              "q2": 29,
+              "q3": 86,
+              "q4": 490
+            },
+            "yil_sonu": 905,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.1
+          },
+          "basari_esikleri": [
+            "601-800",
+            "801-1000",
+            "1001-1200",
+            "1201-1400",
+            "1401-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 350,
+              "q2": 150,
+              "q3": 250,
+              "q4": 350
+            },
+            "yil_sonu": "1001-1200"
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3",
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 Ay",
+          "onceki_yil_ortalamasi": 78,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 7,
+              "q2": 10,
+              "q3": 12,
+              "q4": 10
+            },
+            "yil_sonu": 39,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.08
+          },
+          "basari_esikleri": [
+            "29-34",
+            "35-39",
+            "40-44",
+            "45-60",
+            "61-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 18,
+              "q2": 18,
+              "q3": 18,
+              "q4": 18
+            },
+            "yil_sonu": "60-69"
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 53,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": 14,
+              "q3": 18,
+              "q4": 22
+            },
+            "yil_sonu": 64,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.16
+          },
+          "basari_esikleri": [
+            "29-39",
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 41,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 14,
+              "q4": 14
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 42
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 750,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 43,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 750
+          },
+          "excel_hedef_row": 44
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1yıl",
+          "onceki_yil_ortalamasi": 5,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 6,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 45,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 46
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 2,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0,
+              "q2": 1,
+              "q3": 2,
+              "q4": 3
+            },
+            "yil_sonu": 6,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.16
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 47,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": 1,
+              "q3": 1,
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 48
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Verilen Yeni Firma Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.07,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 37,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 16,
+              "q2": null,
+              "q3": 15,
+              "q4": null
+            },
+            "yil_sonu": 31,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.28
+          },
+          "basari_esikleri": [
+            "12-16",
+            "17-21",
+            "22-26",
+            "27-31",
+            "32-"
+          ],
+          "excel_fiili_row": 49,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": null,
+              "q3": 12,
+              "q4": null
+            },
+            "yil_sonu": "22-26"
+          },
+          "excel_hedef_row": 50
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Yeşil Dönüşüm/Sürdürülebilirlik Çalışma(Eğitim-Proje-Etkinlik) Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 0,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0,
+              "q2": 0,
+              "q3": 1,
+              "q4": 1
+            },
+            "yil_sonu": 2,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.12
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 51,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": null,
+              "q3": 2,
+              "q4": null
+            },
+            "yil_sonu": 4
+          },
+          "excel_hedef_row": 52
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.4",
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 96,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.99,
+              "q2": 0.98,
+              "q3": 0.99,
+              "q4": 0.97
+            },
+            "yil_sonu": 0.98,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.33
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 53,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%90-100",
+              "q2": "%90-100",
+              "q3": "%90-100",
+              "q4": "%90-100"
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 54
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.5",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 89,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.85,
+              "q3": 0.75,
+              "q4": 0.8
+            },
+            "yil_sonu": 0.85,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "%40-49",
+            "%50-59",
+            "%60-69",
+            "%70-79",
+            "%80-"
+          ],
+          "excel_fiili_row": 55,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "60-69%",
+              "q2": "60-69%",
+              "q3": "60-69%",
+              "q4": "60-69%"
+            },
+            "yil_sonu": "60-69%"
+          },
+          "excel_hedef_row": 56
+        },
+        {
+          "ana_strateji_kod": "ST4",
+          "alt_strateji_kod": "ST4.2",
+          "gosterge_adi": "Ödüle Başvuran Kurum ve Kuruluş Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 yıl",
+          "onceki_yil_ortalamasi": 0,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 11,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 11,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.18
+          },
+          "basari_esikleri": [
+            "-",
+            "4-7",
+            "8-11",
+            "12-15",
+            "16-"
+          ],
+          "excel_fiili_row": 57,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "8-11"
+          },
+          "excel_hedef_row": 58
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "VERİLEN EĞİTİMLERE KATILAN KURUM VE KURULUŞ SAYISI",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 39,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": 10,
+              "q3": 3,
+              "q4": null
+            },
+            "yil_sonu": 25,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.56
+          },
+          "basari_esikleri": [
+            -19,
+            "20-29",
+            "30-35",
+            "36-41",
+            "42-"
+          ],
+          "excel_fiili_row": 80,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": 8,
+              "q3": 8,
+              "q4": 8
+            },
+            "yil_sonu": "40-45"
+          },
+          "excel_hedef_row": 81
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": null,
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 17,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 4,
+              "q2": 3,
+              "q3": 4,
+              "q4": null
+            },
+            "yil_sonu": 11,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.55
+          },
+          "basari_esikleri": [
+            -10,
+            "15-18",
+            "19-21",
+            "22-24",
+            "25-"
+          ],
+          "excel_fiili_row": 82,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 2,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "19-21"
+          },
+          "excel_hedef_row": 83
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimlere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 396,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 101,
+              "q2": 56,
+              "q3": 143,
+              "q4": null
+            },
+            "yil_sonu": 300,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.7000000000000001
+          },
+          "basari_esikleri": [
+            -99,
+            "100-139",
+            "140-179",
+            "180-219",
+            "220-"
+          ],
+          "excel_fiili_row": 84,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 40,
+              "q2": 40,
+              "q3": 40,
+              "q4": 40
+            },
+            "yil_sonu": "140-179"
+          },
+          "excel_hedef_row": 85
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimlere Katılan Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.1,
+          "birim": "insan",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 262,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 47,
+              "q2": 50,
+              "q3": 42,
+              "q4": null
+            },
+            "yil_sonu": 139,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.5
+          },
+          "basari_esikleri": [
+            -29,
+            "30-89",
+            "90-135",
+            "136-179",
+            "180-"
+          ],
+          "excel_fiili_row": 86,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 30,
+              "q2": 30,
+              "q3": 30,
+              "q4": 30
+            },
+            "yil_sonu": "90-135"
+          },
+          "excel_hedef_row": 87
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Genel Katılıma Açık Eğitimler Gerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.14,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 99,
+              "q2": 64.5,
+              "q3": 35,
+              "q4": null
+            },
+            "yil_sonu": 198.5,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.28
+          },
+          "basari_esikleri": [
+            -249,
+            "250-399",
+            "400-549",
+            "550-699",
+            "700- "
+          ],
+          "excel_fiili_row": 88,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 120,
+              "q2": 120,
+              "q3": 120,
+              "q4": 120
+            },
+            "yil_sonu": "400-549"
+          },
+          "excel_hedef_row": 89
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kurum İçi Eğitimler \nGerçekleştirilen Toplam Eğitim Süresi",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "sa",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 6,
+              "q2": 3,
+              "q3": 16,
+              "q4": null
+            },
+            "yil_sonu": 25,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.22
+          },
+          "basari_esikleri": [
+            -39,
+            "40-79",
+            "80-119",
+            "120-159",
+            "160-"
+          ],
+          "excel_fiili_row": 90,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 24,
+              "q2": 24,
+              "q3": 24,
+              "q4": 24
+            },
+            "yil_sonu": "80-119"
+          },
+          "excel_hedef_row": 91
+        }
+      ]
+    },
+    {
+      "sheet": "2025",
+      "yil": "2025",
+      "meta": {
+        "sheet_title": "SR4 - PAZARLAMA STRATEJİLERİ YÖNETİMİ SÜREÇ KARNESİ",
+        "revision_date": "2024-12-16T00:00:00",
+        "publish_date": "2022-04-01T00:00:00",
+        "document_no": null,
+        "process_leader": "Tuğba Sorkulu",
+        "process_team": "Salih Yalçın",
+        "parametre_basari_baslik": "2024 Yılı Parametre Başarı Puanları",
+        "basari_band_genel": [
+          "Beklentinin Çok Altında  \n (1 puan)",
+          "İyileştirmeye Açık\n(2 puan)",
+          "Hedefe Ulaşmış \n(3 puan)",
+          "Hedefin Üzerinde\n(4 puan)",
+          "Mükemmel \n(5 puan)"
+        ]
+      },
+      "header_row": 6,
+      "uyarilar": [],
+      "gostergeler": [
+        {
+          "ana_strateji_kod": "ST2",
+          "alt_strateji_kod": "ST2.1",
+          "gosterge_adi": "Verilen Teklif Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 86,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 18,
+              "q2": 22,
+              "q3": 15,
+              "q4": 17
+            },
+            "yil_sonu": 72,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.25
+          },
+          "basari_esikleri": [
+            "29-34",
+            "35-39",
+            "40-44",
+            "45-60",
+            "61-"
+          ],
+          "excel_fiili_row": 7,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": 10,
+              "q3": 12,
+              "q4": 10
+            },
+            "yil_sonu": "40-44"
+          },
+          "excel_hedef_row": 8
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Tekliflerin Sözleşmeye Dönüşme Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.08,
+          "birim": "%",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.64,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.17,
+              "q2": 0.19,
+              "q3": 0.33,
+              "q4": 0.24
+            },
+            "yil_sonu": 0.25,
+            "basari_puani": 0,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "%35-44",
+            "%45-54",
+            "%55-64",
+            "65-74",
+            "75-"
+          ],
+          "excel_fiili_row": 9,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%45-54",
+              "q2": "%45-54",
+              "q3": "%45-54",
+              "q4": "%45-54"
+            },
+            "yil_sonu": "%45-54"
+          },
+          "excel_hedef_row": 10
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "FVÖK/Net Satış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": 0.11,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 0.2,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.03,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "%5-10",
+            "%11-17",
+            "%18-22",
+            "%23-29",
+            "%30-üzeri"
+          ],
+          "excel_fiili_row": 11,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.2,
+              "q2": null,
+              "q3": 0.2,
+              "q4": null
+            },
+            "yil_sonu": 0.2
+          },
+          "excel_hedef_row": 12
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST2.2",
+          "gosterge_adi": "Gelir Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.11,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.65,
+              "q2": 0.65,
+              "q3": 0.6,
+              "q4": 0.6
+            },
+            "yil_sonu": 0.01,
+            "basari_puani": 1,
+            "agirlikli_basari_puani": 0.11
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 13,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 14
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 15,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 16
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 17,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 18
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 19,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 20
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Gider Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.11,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": 0.95,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.33
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 21,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 22
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Eğitim Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 23,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": 0.95,
+              "q3": 0.95,
+              "q4": 0.95
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 24
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 0.95,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 25,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 0.95,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 26
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ödül Süreci Gelirleri Bütçesine Uyum Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": null,
+          "birim": "TL",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 27,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "-",
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "-"
+          },
+          "excel_hedef_row": 28
+        },
+        {
+          "ana_strateji_kod": "ST3",
+          "alt_strateji_kod": "ST3.1",
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 29,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 30
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 31,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 32
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "SH",
+          "agirlik_yuzde": "-",
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": null,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "4%-6%",
+            "%7-11",
+            "%12-16",
+            "%17-21",
+            "%22-"
+          ],
+          "excel_fiili_row": 33,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 34
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.2",
+          "gosterge_adi": "Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 18,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 5,
+              "q2": 2,
+              "q3": 1,
+              "q4": 2
+            },
+            "yil_sonu": 10,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "1-2",
+            "3-5",
+            "6-8",
+            "9-11",
+            "12-"
+          ],
+          "excel_fiili_row": 35,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": 2,
+              "q3": 2,
+              "q4": 2
+            },
+            "yil_sonu": "6-8"
+          },
+          "excel_hedef_row": 36
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Etkinliklere Katılımcı Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.05,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 732,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 150,
+              "q2": 150,
+              "q3": 150,
+              "q4": 400
+            },
+            "yil_sonu": 850,
+            "basari_puani": 2,
+            "agirlikli_basari_puani": 0.1
+          },
+          "basari_esikleri": [
+            "601-800",
+            "801-1000",
+            "1001-1200",
+            "1201-1400",
+            "1401-"
+          ],
+          "excel_fiili_row": 37,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 350,
+              "q2": 150,
+              "q3": 250,
+              "q4": 350
+            },
+            "yil_sonu": "1001-1200"
+          },
+          "excel_hedef_row": 38
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.3",
+          "gosterge_adi": "Ziyaret Edilen Yeni Kurum Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 Ay",
+          "onceki_yil_ortalamasi": 78,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 45,
+              "q2": 40,
+              "q3": 10,
+              "q4": 35
+            },
+            "yil_sonu": 130,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "29-34",
+            "35-39",
+            "40-44",
+            "45-60",
+            "61-"
+          ],
+          "excel_fiili_row": 39,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 18,
+              "q2": 18,
+              "q3": 18,
+              "q4": 18
+            },
+            "yil_sonu": "60-69"
+          },
+          "excel_hedef_row": 40
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Mevcut Müşterileri Ziyaret Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "3 ay",
+          "onceki_yil_ortalamasi": 53,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": 4,
+              "q3": 12,
+              "q4": 8
+            },
+            "yil_sonu": null,
+            "basari_puani": 1,
+            "agirlikli_basari_puani": 0.04
+          },
+          "basari_esikleri": [
+            "29-39",
+            "40-49",
+            "50-59",
+            "60-69",
+            "70-"
+          ],
+          "excel_fiili_row": 41,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 14,
+              "q2": 14,
+              "q3": 14,
+              "q4": 14
+            },
+            "yil_sonu": "50-59"
+          },
+          "excel_hedef_row": 42
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Hedef Pazardaki Müşteri Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 750,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 43,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 750
+          },
+          "excel_hedef_row": 44
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı",
+          "gosterge_turu_excel": "ist.",
+          "gosterge_turu_kokpitim_oneri": null,
+          "hedef_belirleme_yontemi": "-",
+          "agirlik_yuzde": "-",
+          "birim": "adet",
+          "olcum_periyodu_excel": "1yıl",
+          "onceki_yil_ortalamasi": 5,
+          "fiili": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null,
+            "basari_puani": null,
+            "agirlikli_basari_puani": null
+          },
+          "basari_esikleri": [
+            "-",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 45,
+          "hedef": {
+            "ceyrekler": {
+              "q1": null,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": null
+          },
+          "excel_hedef_row": 46
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Ürün/Hizmet Geliştirme Çalıştay Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 2,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 3,
+              "q2": 5,
+              "q3": 4,
+              "q4": 3
+            },
+            "yil_sonu": 15,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 49,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 1,
+              "q2": 1,
+              "q3": 1,
+              "q4": 1
+            },
+            "yil_sonu": "2-4"
+          },
+          "excel_hedef_row": 50
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Danışmanlık Hizmeti Verilen Yeni Firma Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.07,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 37,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 5,
+              "q2": null,
+              "q3": 7,
+              "q4": null
+            },
+            "yil_sonu": 12,
+            "basari_puani": 1,
+            "agirlikli_basari_puani": 0.07
+          },
+          "basari_esikleri": [
+            "12-16",
+            "17-21",
+            "22-26",
+            "27-31",
+            "32-"
+          ],
+          "excel_fiili_row": 51,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 12,
+              "q2": null,
+              "q3": 12,
+              "q4": null
+            },
+            "yil_sonu": "22-26"
+          },
+          "excel_hedef_row": 52
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": null,
+          "gosterge_adi": "Yeşil Dönüşüm/Sürdürülebilirlik Çalışma(Eğitim-Proje-Etkinlik) Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "Adet",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 0,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 1,
+              "q2": 5,
+              "q3": 10,
+              "q4": 5
+            },
+            "yil_sonu": 21,
+            "basari_puani": 5,
+            "agirlikli_basari_puani": 0.2
+          },
+          "basari_esikleri": [
+            "-",
+            "1",
+            "2-4",
+            "5-7",
+            "8-"
+          ],
+          "excel_fiili_row": 53,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 2,
+              "q2": null,
+              "q3": 2,
+              "q4": null
+            },
+            "yil_sonu": 4
+          },
+          "excel_hedef_row": 54
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.4",
+          "gosterge_adi": "Tavsiye Edilebilirlik Oranı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.11,
+          "birim": "%",
+          "olcum_periyodu_excel": "6 ay",
+          "onceki_yil_ortalamasi": 96,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.9,
+              "q2": 0.92,
+              "q3": 0.93,
+              "q4": 0.92
+            },
+            "yil_sonu": 0.92,
+            "basari_puani": 4,
+            "agirlikli_basari_puani": 0.44
+          },
+          "basari_esikleri": [
+            "60% - 79%",
+            "%80-89",
+            "%90-100",
+            "-",
+            "-"
+          ],
+          "excel_fiili_row": 55,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "%90-100",
+              "q2": "%90-100",
+              "q3": "%90-100",
+              "q4": "%90-100"
+            },
+            "yil_sonu": "%90-100"
+          },
+          "excel_hedef_row": 56
+        },
+        {
+          "ana_strateji_kod": null,
+          "alt_strateji_kod": "ST3.5",
+          "gosterge_adi": "Satışlarda Hibe/Teşvik Payı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "DH",
+          "agirlik_yuzde": 0.04,
+          "birim": "%",
+          "olcum_periyodu_excel": "1 Yıl",
+          "onceki_yil_ortalamasi": 89,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 0.25,
+              "q2": 0.5,
+              "q3": 0.6,
+              "q4": 0
+            },
+            "yil_sonu": 0.34,
+            "basari_puani": 0,
+            "agirlikli_basari_puani": 0
+          },
+          "basari_esikleri": [
+            "%40-49",
+            "%50-59",
+            "%60-69",
+            "%70-79",
+            "%80-"
+          ],
+          "excel_fiili_row": 57,
+          "hedef": {
+            "ceyrekler": {
+              "q1": "60-69%",
+              "q2": "60-69%",
+              "q3": "60-69%",
+              "q4": "60-69%"
+            },
+            "yil_sonu": "60-69%"
+          },
+          "excel_hedef_row": 58
+        },
+        {
+          "ana_strateji_kod": "ST4",
+          "alt_strateji_kod": "ST4.2",
+          "gosterge_adi": "Ödüle Başvuran Kurum ve Kuruluş Sayısı",
+          "gosterge_turu_excel": "iylş.",
+          "gosterge_turu_kokpitim_oneri": "İyileştirme",
+          "hedef_belirleme_yontemi": "HKY",
+          "agirlik_yuzde": 0.06,
+          "birim": "adet",
+          "olcum_periyodu_excel": "1 yıl",
+          "onceki_yil_ortalamasi": 0,
+          "fiili": {
+            "ceyrekler": {
+              "q1": 8,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": 8,
+            "basari_puani": 3,
+            "agirlikli_basari_puani": 0.18
+          },
+          "basari_esikleri": [
+            "-",
+            "4-7",
+            "8-11",
+            "12-15",
+            "16-"
+          ],
+          "excel_fiili_row": 59,
+          "hedef": {
+            "ceyrekler": {
+              "q1": 10,
+              "q2": null,
+              "q3": null,
+              "q4": null
+            },
+            "yil_sonu": "8-11"
+          },
+          "excel_hedef_row": 60
+        }
+      ]
+    }
+  ],
+  "kokpitim_notlari": {
+    "KpiData": "Her çeyrek fiili değeri için ayrı kayıt: year, period_type=ceyrek, period_no=1..4, data_date=çeyrek son günü, actual_value.",
+    "ProcessKpi.target_value": "Exceldeki hedef satırı sayısal değilse (ör. '40-44') Kokpitim hedef alanına nasıl yazılacağı manuel karar."
+  },
+  "sizden_beklenen_netlestirmeler": [
+    "Alt strateji kodları (ST2.1, ST3.2 …) Kokpitim’de SubStrategy kaydı ile nasıl eşlenecek? (kod alanı mı, başlık metni mi — süreçte hangi alt stratejiler bağlı?)",
+    "'iylş.' dışında başka Göst. Türü kısaltmaları var mı? Hepsi İyileştirme / Koruma / Bilgi Amaçlı üçlüsüne nasıl map edilsin?",
+    "Ölçüm '3 ay', '6 ay', '1 Yıl' ifadeleri Kokpitim PG alanı `period` (Aylık/Çeyreklik/Yıllık) için kesin kuralınız nedir? (Örn. 6 ay → Çeyreklik mi, özel takvim mi?)",
+    "'Veriler' sayfasındaki fiili satırlar hangi rapor yılına aittir yoksa yalnızca şablon/parametre mü?",
+    "Hedef satırında çeyrek hücrelerinde sayı yerine metin aralığı (ör. %90-100) olduğunda hedefi sisteme ne olarak girmeliyiz?",
+    "Süreç lideri / ekip isimleri Kokpitim kullanıcı hesaplarına otomatik bağlansın mı, yoksa yalnızca metin meta olarak mı kalsın?"
+  ]
+}

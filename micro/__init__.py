@@ -2,12 +2,14 @@
 
 from flask import Blueprint
 
+# Kök URL: Micro "/" altında. Statik dosyalar uygulama /static ile çakışmasın diye /m/...
 micro_bp = Blueprint(
     "micro_bp",
     __name__,
-    url_prefix="/micro",
+    url_prefix="",
     template_folder="templates",
     static_folder="static",
+    static_url_path="m",
 )
 
 # ── Mevcut modüller ───────────────────────────────────────────────────────────

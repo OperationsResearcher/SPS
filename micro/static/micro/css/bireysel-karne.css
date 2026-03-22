@@ -1,0 +1,157 @@
+/* Bireysel karne — zaman çizgisi, ısı hücreleri, özet şeridi */
+
+.karne-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.karne-timeline-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+}
+
+.dark .karne-timeline-item {
+  border-bottom-color: #334155;
+}
+
+.karne-timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.karne-timeline-dot--pg {
+  background: #6366f1;
+}
+
+.karne-timeline-dot--faaliyet {
+  background: #10b981;
+}
+
+.karne-timeline-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.karne-insights-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.karne-insight-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.dark .karne-insight-pill {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.karne-insight-pill--ok {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.karne-insight-pill--warn {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.karne-heat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.karne-heat-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.karne-heat-swatch span {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.karne-cell-heat-empty {
+  background: rgba(254, 226, 226, 0.35) !important;
+}
+
+.dark .karne-cell-heat-empty {
+  background: rgba(127, 29, 29, 0.25) !important;
+}
+
+.karne-cell-heat-fill {
+  background: rgba(209, 250, 229, 0.45) !important;
+}
+
+.dark .karne-cell-heat-fill {
+  background: rgba(6, 78, 59, 0.35) !important;
+}
+
+.karne-pg-row {
+  cursor: pointer;
+}
+
+.karne-pg-row:hover td {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.dark .karne-pg-row:hover td {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.karne-spark-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 64px;
+  margin-top: 12px;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.dark .karne-spark-wrap {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.karne-spark-bar {
+  flex: 1;
+  min-width: 4px;
+  background: linear-gradient(180deg, #6366f1, #a5b4fc);
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+}

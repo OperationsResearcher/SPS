@@ -1,0 +1,28 @@
+{# Beklenen bağlam: project, tool_title, tool_icon, tool_key (opsiyonel) #}
+{% set analyses_url = url_for('micro_bp.micro_project_analyses', project_id=project.id) %}
+{% set project_url = url_for('micro_bp.micro_project_detail', project_id=project.id) %}
+<div class="mc-page-header">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div class="min-w-0">
+            <a href="{{ analyses_url }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2 inline-flex">
+                <i class="fas fa-arrow-left"></i> Proje analizleri
+            </a>
+            <h2 class="mc-page-title mt-1 flex flex-wrap items-center gap-2">
+                <i class="{{ tool_icon }} text-indigo-500 dark:text-indigo-400"></i>
+                <span>{{ tool_title }}</span>
+                <span class="text-slate-500 dark:text-slate-400 font-normal text-base">— {{ project.name }}</span>
+            </h2>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center shrink-0">
+            {% if tool_key %}
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="showToolInfo('{{ tool_key }}')" title="Bu araç hakkında bilgi">
+                <i class="fas fa-info-circle"></i> Nasıl kullanılır?
+            </button>
+            {% endif %}
+            <a href="{{ project_url }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+                <i class="fas fa-th-large"></i> Proje özeti
+            </a>
+        </div>
+    </div>
+    {% include "micro/project/_project_views_nav.html" %}
+</div>

@@ -52,19 +52,20 @@
     text-decoration: none;
 }
 
+/* Kaynak görsel: docs/kokpitim-logo.png — koyu sidebar’da okunması için beyaz zemin */
 .sidebar-brand-logo {
-    width: 34px;
-    height: 34px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    font-weight: 800;
-    color: white;
+    width: auto;
+    max-width: 132px;
+    height: 36px;
+    object-fit: contain;
+    object-position: center center;
+    display: block;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    border-radius: 10px;
+    padding: 6px 8px;
+    box-sizing: content-box;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-brand-name {

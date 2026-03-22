@@ -135,6 +135,7 @@ function editDeger(id, baslik, aciklama) {
 }
 
 async function deleteDeger(id, baslik) {
+    // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
     if (!confirm(`"${baslik}" değerini silmek istediğinizden emin misiniz?`)) return;
     
     try {
@@ -209,6 +210,7 @@ function editEtikKural(id, baslik, aciklama) {
 }
 
 async function deleteEtikKural(id, baslik) {
+    // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
     if (!confirm(`"${baslik}" etik kuralını silmek istediğinizden emin misiniz?`)) return;
     
     try {
@@ -283,6 +285,7 @@ function editKalitePolitikasi(id, baslik, aciklama) {
 }
 
 async function deleteKalitePolitikasi(id, baslik) {
+    // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
     if (!confirm(`"${baslik}" kalite politikasını silmek istediğinizden emin misiniz?`)) return;
     
     try {
@@ -357,6 +360,7 @@ function editAnaStrateji(id, ad, aciklama, weight) {
 }
 
 async function deleteAnaStrateji(id, ad) {
+    // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
     if (!confirm(`"${ad}" ana stratejisini ve tüm bağlı alt stratejileri silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`)) return;
     
     try {
@@ -435,6 +439,7 @@ function editAltStrateji(id, anaStratejiId, ad, aciklama, weight) {
 }
 
 async function deleteAltStrateji(id, ad) {
+    // TODO: confirm() kullanimi bilerek korundu; Swal.fire gecisi ayri refactor gerektirir.
     if (!confirm(`"${ad}" alt stratejisini silmek istediğinizden emin misiniz?`)) return;
     
     try {
@@ -574,7 +579,6 @@ function notifyStratejikPlanlamaGüncelle() {
         
         localStorage.setItem('sp_data_updated', JSON.stringify(updateData));
         
-        console.log('Stratejik planlama akışı bilgilendirildi:', updateData);
         
         // 1 saniye sonra temizle (diğer sekmeler algıladı mı kontrol için)
         setTimeout(() => {

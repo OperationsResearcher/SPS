@@ -1,0 +1,16 @@
+/* Kurum paneli — özet grafik alanları */
+.kurum-chart-wrap {
+  position: relative;
+  min-height: 200px;
+}
+.kurum-chart-wrap--tall {
+  min-height: 240px;
+}
+@media (min-width: 640px) {
+  .kurum-chart-wrap {
+    min-height: 220px;
+  }
+  .kurum-chart-wrap--tall {
+    min-height: 260px;
+  }
+}

@@ -52,6 +52,19 @@
       </div>
       <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
     </a>
+
+    {% if current_user.role.name in ['tenant_admin', 'executive_manager'] %}
+      <a href="{{ url_for('micro_bp.kurum_ayarlar') }}" class="ayarlar-hub-item">
+        <div class="ayarlar-hub-icon" style="background:#eff6ff;">
+          <i class="fas fa-building" style="color:#3b82f6;"></i>
+        </div>
+        <div class="ayarlar-hub-body">
+          <div class="ayarlar-hub-title">Kurum Ayarları</div>
+          <div class="ayarlar-hub-desc">İletişim bilgileri ve logo</div>
+        </div>
+        <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
+      </a>
+    {% endif %}
   </div>
   {% endif %}
 

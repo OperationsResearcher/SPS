@@ -112,7 +112,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 );
             },
             'Test Maili',
-            'Gönder'
+            'Gönder',
+            { icon: 'info', confirmButtonColor: '#6366f1' }
         );
     });
 

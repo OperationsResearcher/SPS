@@ -30,11 +30,52 @@ from models import (
     Notification, UserActivityLog, FavoriKPI, DashboardLayout,
     KullaniciYetki, Project, Task, TaskImpact, TaskComment, TaskMention, ProjectFile,  # Proje Yönetimi modelleri
     Tag, TaskSubtask, TimeEntry, TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,  # Yeni modeller
-    ProjectRisk, TaskDependency, IntegrationHook, RuleDefinition, SLA, RecurringTask, WorkingDay, CapacityPlan, RaidItem, TaskBaseline  # Risk ve bağımlılıklar
+    ProjectRisk, TaskDependency, IntegrationHook, RuleDefinition, SLA, RecurringTask, WorkingDay, CapacityPlan, RaidItem, TaskBaseline,  # Risk ve bağımlılıklar
+    project_leaders,
 )
 from models import task_predecessors
-from sqlalchemy import or_, and_, text
+from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
+
+
+def _resolve_project_leader_ids_api(data: dict, kurum_id: int) -> list:
+    """JSON: manager_ids (liste) veya geriye dönük manager_id (tek)."""
+    out: list = []
+    raw = data.get("manager_ids")
+    if isinstance(raw, list):
+        for x in raw:
+            try:
+                out.append(int(x))
+            except (TypeError, ValueError):
+                continue
+    elif data.get("manager_id") is not None:
+        try:
+            out.append(int(data["manager_id"]))
+        except (TypeError, ValueError):
+            pass
+    seen_ids = set()
+    result: list = []
+    for uid in out:
+        if uid in seen_ids:
+            continue
+        u = User.query.get(uid)
+        if u and getattr(u, "kurum_id", None) == kurum_id:
+            seen_ids.add(uid)
+            result.append(uid)
+    return result
+
+
+def _sync_project_leaders_api(project: Project, kurum_id: int, leader_ids: list) -> None:
+    if not leader_ids:
+        return
+    db.session.execute(delete(project_leaders).where(project_leaders.c.project_id == project.id))
+    for uid in leader_ids:
+        u = User.query.get(uid)
+        if u and getattr(u, "kurum_id", None) == kurum_id:
+            db.session.execute(insert(project_leaders).values(project_id=project.id, user_id=uid))
+    project.manager_id = leader_ids[0]
+
+
 from services.performance_service import (
     generatePeriyotVerileri, calculateHedefDeger, hesapla_durum,
     get_ceyrek_aylari, get_ay_ceyreği, get_ay_haftalari, get_ay_gunleri
@@ -57,6 +98,30 @@ import uuid
 import mimetypes
 import json
 import re
+
+
+def _notify_project_team_changes_api(
+    project: Project,
+    kurum_id: int,
+    old_leader_ids: set,
+    old_member_ids: set,
+) -> None:
+    """Yeni atanan proje liderleri ve üyelerine uygulama içi + e-posta bildirimi."""
+    try:
+        from app.models.core import User as CoreUser
+        from micro.services.notification_triggers import (
+            notify_project_leaders_added,
+            notify_project_members_added,
+        )
+    except Exception:
+        return
+    actor = CoreUser.query.get(current_user.id)
+    if not actor:
+        return
+    new_l = set(project.leader_user_ids())
+    new_m = set(project.member_user_ids())
+    notify_project_leaders_added(project, list(new_l - old_leader_ids), actor, kurum_id)
+    notify_project_members_added(project, list(new_m - old_member_ids), actor, kurum_id)
 
 
 def _parse_date_safe(val):
@@ -2183,6 +2248,7 @@ def api_projeler_list():
                     'name': p.name,
                     'description': p.description,
                     'manager_id': p.manager_id,
+                    'leader_ids': p.leader_user_ids(),
                     'manager_name': f"{p.manager.first_name} {p.manager.last_name}" if p.manager else None,
                     'created_at': p.created_at.isoformat() if p.created_at else None
                 } for p in projeler]
@@ -2200,8 +2266,9 @@ def api_projeler_list():
             # Zorunlu alan kontrolü
             if not data.get('name') or not data.get('name').strip():
                 return jsonify({'success': False, 'message': 'Proje adı zorunludur'}), 400
-            if not data.get('manager_id'):
-                return jsonify({'success': False, 'message': 'Proje yöneticisi zorunludur'}), 400
+            leader_ids = _resolve_project_leader_ids_api(data, current_user.kurum_id)
+            if not leader_ids:
+                return jsonify({'success': False, 'message': 'En az bir proje yöneticisi (lider) zorunludur'}), 400
             if not data.get('start_date'):
                 return jsonify({'success': False, 'message': 'Başlangıç tarihi zorunludur'}), 400
             if not data.get('end_date'):
@@ -2218,17 +2285,12 @@ def api_projeler_list():
             except ValueError:
                 return jsonify({'success': False, 'message': 'Geçersiz tarih formatı (YYYY-MM-DD bekleniyor)'}), 400
             
-            # Yöneticinin kurumda olup olmadığını kontrol et
-            manager = User.query.get(data.get('manager_id'))
-            if not manager or manager.kurum_id != current_user.kurum_id:
-                return jsonify({'success': False, 'message': 'Geçersiz proje yöneticisi'}), 400
-            
             # Yeni proje oluştur
             new_project = Project(
                 kurum_id=current_user.kurum_id,
                 name=data.get('name', '').strip(),
                 description=data.get('description', '').strip() if data.get('description') else None,
-                manager_id=data.get('manager_id'),
+                manager_id=leader_ids[0],
                 start_date=start_date,
                 end_date=end_date,
                 priority=data.get('priority', 'Orta')
@@ -2265,6 +2327,7 @@ def api_projeler_list():
             
             db.session.add(new_project)
             db.session.flush()  # ID'yi almak için
+            _sync_project_leaders_api(new_project, current_user.kurum_id, leader_ids)
             
             # İlişkili süreçleri ekle (silinmiş süreç kontrolü)
             if data.get('related_process_ids'):
@@ -2299,6 +2362,9 @@ def api_projeler_list():
                     elif user.kurum_id != current_user.kurum_id:
                         current_app.logger.warning(f"Proje oluşturulurken farklı kuruma ait gözlemci kullanıcı ID'si tespit edildi: {user_id}")
             
+            _notify_project_team_changes_api(
+                new_project, current_user.kurum_id, set(), set()
+            )
             db.session.commit()
             
             # Yeni proje oluşturulduğunda dashboard cache'i temizle
@@ -2336,6 +2402,7 @@ def api_proje_detay(project_id):
                     'name': project.name,
                     'description': project.description,
                     'manager_id': project.manager_id,
+                    'leader_ids': project.leader_user_ids(),
                     'manager_name': f"{project.manager.first_name} {project.manager.last_name}" if project.manager else None,
                     'start_date': project.start_date.isoformat() if project.start_date else None,
                     'end_date': project.end_date.isoformat() if project.end_date else None,
@@ -2352,14 +2419,18 @@ def api_proje_detay(project_id):
                 return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
             
             data = request.get_json()
+            old_leader_ids = set(project.leader_user_ids())
+            old_member_ids = set(project.member_user_ids())
             
             # Proje bilgilerini güncelle
             if data.get('name'):
                 project.name = data.get('name', '').strip()
             if 'description' in data:
                 project.description = data.get('description', '').strip() if data.get('description') else None
-            if data.get('manager_id'):
-                project.manager_id = data.get('manager_id')
+            if 'manager_ids' in data or 'manager_id' in data:
+                lids = _resolve_project_leader_ids_api(data, current_user.kurum_id)
+                if lids:
+                    _sync_project_leaders_api(project, current_user.kurum_id, lids)
 
             # Bildirim ayarları
             if 'notification_settings' in data:
@@ -2414,6 +2485,9 @@ def api_proje_detay(project_id):
                     if user and user.kurum_id == current_user.kurum_id:
                         project.observers.append(user)
             
+            _notify_project_team_changes_api(
+                project, current_user.kurum_id, old_leader_ids, old_member_ids
+            )
             db.session.commit()
             
             return jsonify({
@@ -2443,15 +2517,18 @@ def api_proje_guncelle(project_id):
         if project.kurum_id != current_user.kurum_id:
             return jsonify({'success': False, 'message': 'Bu projeyi güncelleme yetkiniz yok'}), 403
         
+        old_leader_ids = set(project.leader_user_ids())
+        old_member_ids = set(project.member_user_ids())
+        
         # Proje bilgilerini güncelle
         if 'name' in data:
             project.name = data['name'].strip()
         if 'description' in data:
             project.description = data['description'].strip() if data.get('description') else None
-        if 'manager_id' in data:
-            manager = User.query.get(data['manager_id'])
-            if manager and manager.kurum_id == current_user.kurum_id:
-                project.manager_id = data['manager_id']
+        if 'manager_ids' in data or 'manager_id' in data:
+            lids = _resolve_project_leader_ids_api(data, current_user.kurum_id)
+            if lids:
+                _sync_project_leaders_api(project, current_user.kurum_id, lids)
         
         # İlişkili süreçleri güncelle
         if 'related_process_ids' in data:
@@ -2477,6 +2554,9 @@ def api_proje_guncelle(project_id):
                 if user and user.kurum_id == current_user.kurum_id:
                     project.observers.append(user)
         
+        _notify_project_team_changes_api(
+            project, current_user.kurum_id, old_leader_ids, old_member_ids
+        )
         db.session.commit()
         
         return jsonify({

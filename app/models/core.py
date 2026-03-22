@@ -86,6 +86,31 @@ class User(UserMixin, db.Model):
     tenant = db.relationship("Tenant", back_populates="users")
     role = db.relationship("Role", back_populates="users")
 
+    @property
+    def kurum_id(self):
+        """Legacy `main` rotaları (proje portföyü, matris) ile uyum.
+
+        Veritabanında `tenants.id` ile eski `kurum.id` aynı değerleri kullanmalıdır.
+        """
+        return self.tenant_id
+
+    @property
+    def sistem_rol(self):
+        """Legacy `decorators.role_required` ve strateji şablonları için rol kodu."""
+        if not self.role or not self.role.name:
+            return "kurum_kullanici"
+        r = self.role.name.strip()
+        aliases = {
+            "Admin": "admin",
+            "tenant_admin": "kurum_yoneticisi",
+            "executive_manager": "ust_yonetim",
+            "yonetici": "surec_lideri",
+            "calisan": "kurum_kullanici",
+            "kurum_kullanici": "kurum_kullanici",
+            "izleyici": "kurum_kullanici",
+        }
+        return aliases.get(r, r.lower().replace(" ", "_"))
+
 
 class Ticket(db.Model):
     """Kule İletişim (Ticket) Modeli."""

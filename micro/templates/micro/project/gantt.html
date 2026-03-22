@@ -1,0 +1,107 @@
+{% extends "micro/base.html" %}
+{% block title %}Gantt — {{ project.name }} — Kokpitim{% endblock %}
+{% block page_title %}Gantt — {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/project_views.css') }}?v={{ config['VERSION'] }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+{% endblock %}
+
+{% block content %}
+{% set active_view = 'gantt' %}
+<div style="max-width:1280px; margin:0 auto;">
+    <div class="micro-project-view-toolbar">
+        <div>
+            <a href="{{ url_for('micro_bp.micro_project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> Projeye dön</a>
+            <div class="micro-project-view-title"><i class="fas fa-bars text-indigo-600"></i> Gantt</div>
+        </div>
+        {% include "micro/project/_project_views_nav.html" %}
+    </div>
+    <div class="micro-gantt-wrap">
+        <svg id="gantt"></svg>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% set task_url_sample = url_for('micro_bp.micro_project_task_detail', project_id=project.id, task_id=900000001) %}
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+<script>
+(function () {
+  window.showToast = window.showToast || function (type, msg) {
+    if (typeof Swal !== 'undefined') {
+      var icon = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+      Swal.fire({ toast: true, position: 'top-end', icon: icon, title: msg, showConfirmButton: false, timer: 2800 });
+    }
+  };
+  var TASK_URL_TMPL = {{ task_url_sample|tojson }};
+  function taskDetailUrl(taskId) {
+    return TASK_URL_TMPL.replace('900000001', String(taskId));
+  }
+  var projectId = {{ project.id|int }};
+
+  (async function init() {
+    try {
+      var baseTasks = [
+        {% for t in tasks %}
+        {
+          id: '{{ t.id }}',
+          name: {{ (t.title or '')|tojson }},
+          start: '{{ (t.start_date or t.due_date)|string }}',
+          end: '{{ (t.due_date or t.start_date)|string }}',
+          progress: {{ t.progress or 0 }},
+          custom_class: ''
+        },
+        {% endfor %}
+      ].filter(function (t) { return t.start && t.end; });
+
+      var critical = [];
+      try {
+        var res = await fetch('/api/projeler/' + projectId + '/cpm');
+        var data = await res.json();
+        if (data.success && Array.isArray(data.critical_task_ids)) {
+          critical = data.critical_task_ids.map(String);
+        }
+      } catch (e) { /* yoksay */ }
+
+      var ganttTasks = baseTasks.map(function (t) {
+        return Object.assign({}, t, {
+          custom_class: critical.indexOf(String(t.id)) >= 0 ? 'critical-task' : ''
+        });
+      });
+
+      if (typeof Gantt === 'undefined') {
+        showToast('error', 'Gantt kütüphanesi yüklenemedi');
+        return;
+      }
+      new Gantt('#gantt', ganttTasks, {
+        view_mode: 'Week',
+        on_click: function (task) {
+          window.location.href = taskDetailUrl(task.id);
+        },
+        on_date_change: async function (task, start, end) {
+          try {
+            var body = {
+              start_date: start.toISOString().slice(0, 10),
+              due_date: end.toISOString().slice(0, 10)
+            };
+            var r = await fetch('/api/projeler/' + projectId + '/gorevler/' + task.id, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            var d = await r.json();
+            if (!d.success) throw new Error(d.message || 'Güncelleme hatası');
+            showToast('success', 'Tarih güncellendi');
+          } catch (e) {
+            showToast('error', e.message || 'Güncelleme hatası');
+          }
+        }
+      });
+    } catch (e) {
+      showToast('error', e.message || 'Gantt yüklenemedi');
+    }
+  })();
+})();
+</script>
+{% endblock %}

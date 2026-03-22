@@ -1,13 +1,9 @@
-"""Proje Yönetimi modülü (iskelet — ilerleyen sprintlerde geliştirilecek)."""
+# -*- coding: utf-8 -*-
+"""Micro Proje Yönetimi — rotalar alt modüllerde kayıtlıdır."""
 
-from flask import render_template
-from flask_login import login_required
-
-from micro import micro_bp
-
-
-@micro_bp.route("/proje")
-@login_required
-def proje():
-    """Proje Yönetimi ana sayfası."""
-    return render_template("micro/proje/index.html")
+from micro.modules.proje import routes_list  # noqa: F401
+from micro.modules.proje import routes_project_crud  # noqa: F401
+from micro.modules.proje import routes_views  # noqa: F401
+from micro.modules.proje import routes_tasks  # noqa: F401
+from micro.modules.proje import routes_analyses  # noqa: F401
+from micro.modules.proje import routes_project_tools_root  # noqa: F401

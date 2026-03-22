@@ -1,0 +1,163 @@
+{% extends "micro/project/tools/base_tool.html" %}
+{% block tool_header_title %}Baseline &amp; varyans{% endblock %}
+{% block tool_header_icon %}fas fa-chart-bar{% endblock %}
+{% block tool_info_key %}baseline{% endblock %}
+{% block title %}Baseline — {{ project.name }}{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block tool_main %}
+<div class="mc-pt-alert">
+    <strong>Baseline nedir?</strong> Planlanan görev tarih ve efor bilgisini dondurur; ilerleyen süreçte gerçekleşenle karşılaştırarak sapma analizi yaparsınız.
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h flex flex-wrap items-center justify-between gap-2">
+        <span>Görev baseline bilgileri</span>
+        <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="captureBaseline()"><i class="fas fa-camera"></i> Yeni baseline kaydet</button>
+    </div>
+    <div class="mc-pt-table-wrap">
+        <table class="mc-pt-table" id="baseline-table">
+            <thead>
+                <tr>
+                    <th>Görev</th>
+                    <th>Plan başlangıç</th>
+                    <th>Gerçek başlangıç</th>
+                    <th>Plan bitiş</th>
+                    <th>Gerçek bitiş</th>
+                    <th>Plan efor</th>
+                    <th>Gerçek efor</th>
+                    <th>Varyans</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mc-pt-card overflow-hidden">
+    <div class="mc-pt-card-h">Varyans grafiği</div>
+    <div class="p-4">
+        <canvas id="varianceChart" height="120"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block tool_scripts %}
+<script>
+const BL_PID = {{ project.id|int }};
+const MC_PROJECT_DETAIL = {{ url_for('micro_bp.micro_project_detail', project_id=project.id)|tojson }};
+let tasks = [];
+let baselines = [];
+let __varianceChart = null;
+
+async function loadData() {
+  try {
+    const resT = await fetch('/api/projeler/' + BL_PID + '/gorevler', { credentials: 'same-origin' });
+    const dataT = await resT.json();
+    if (!dataT.success) throw new Error(dataT.message);
+    tasks = dataT.tasks || [];
+
+    const resB = await fetch('/api/projeler/' + BL_PID + '/baseline', { credentials: 'same-origin' });
+    const dataB = await resB.json();
+    if (!dataB.success) throw new Error(dataB.message);
+    baselines = dataB.baselines || [];
+
+    renderTable();
+    renderChart();
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Veri yükleme');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#baseline-table tbody');
+  tbody.innerHTML = '';
+  tasks.forEach(task => {
+    const baseline = baselines.find(b => b.task_id === task.id);
+    const plannedStart = baseline?.planned_start || '—';
+    const plannedEnd = baseline?.planned_end || '—';
+    const plannedEffort = baseline?.planned_effort || 0;
+    const actualStart = task.start_date || '—';
+    const actualEnd = task.due_date || '—';
+    const actualEffort = task.actual_time || 0;
+    const variance = actualEffort - plannedEffort;
+    const vCls = variance > 0 ? 'text-rose-600 dark:text-rose-400' : variance < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><a href="${MC_PROJECT_DETAIL}#task-${task.id}" class="text-indigo-600 dark:text-indigo-400 hover:underline">${task.title}</a></td>
+      <td>${plannedStart}</td>
+      <td>${actualStart}</td>
+      <td>${plannedEnd}</td>
+      <td>${actualEnd}</td>
+      <td>${plannedEffort}</td>
+      <td>${actualEffort}</td>
+      <td class="${vCls} font-semibold">${variance > 0 ? '+' : ''}${variance} saat</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderChart() {
+  const ctx = document.getElementById('varianceChart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  if (__varianceChart) { __varianceChart.destroy(); __varianceChart = null; }
+  const labels = tasks.map(t => (t.title && t.title.length > 24) ? t.title.slice(0, 22) + '…' : t.title);
+  const planned = tasks.map(t => {
+    const b = baselines.find(bl => bl.task_id === t.id);
+    return b?.planned_effort || 0;
+  });
+  const actual = tasks.map(t => t.actual_time || 0);
+  const dark = document.documentElement.classList.contains('dark');
+  __varianceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Planlanan', data: planned, backgroundColor: dark ? 'rgba(99,102,241,0.55)' : 'rgba(54, 162, 235, 0.7)' },
+        { label: 'Gerçekleşen', data: actual, backgroundColor: dark ? 'rgba(244,63,94,0.5)' : 'rgba(255, 99, 132, 0.7)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'top', labels: { color: dark ? '#e2e8f0' : '#334155' } } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Efor (saat)', color: dark ? '#94a3b8' : '#64748b' }, ticks: { color: dark ? '#94a3b8' : '#64748b' } },
+        x: { ticks: { color: dark ? '#94a3b8' : '#64748b', maxRotation: 45, minRotation: 0 } }
+      }
+    }
+  });
+}
+
+async function captureBaseline() {
+  if (!confirm('Tüm görevlerin mevcut planlı bilgilerini baseline olarak kaydetmek istiyor musunuz?')) return;
+  try {
+    for (const task of tasks) {
+      const body = {
+        task_id: task.id,
+        planned_start: task.start_date,
+        planned_end: task.due_date,
+        planned_effort: task.estimated_time || 0
+      };
+      const res = await fetch('/api/projeler/' + BL_PID + '/baseline', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+    }
+    loadData();
+    showToast('success', 'Baseline kaydedildi', 'Başarılı');
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message, 'Baseline');
+  }
+}
+
+document.addEventListener('micro-theme-changed', () => { renderChart(); });
+loadData();
+</script>
+{% endblock %}

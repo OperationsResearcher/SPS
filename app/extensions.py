@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 from flask_caching import Cache
 from flask_socketio import SocketIO
 
@@ -18,7 +19,7 @@ migrate = Migrate()
 
 # Authentication
 login_manager = LoginManager()
-login_manager.login_view = 'auth_bp.login'
+login_manager.login_view = "public_login"
 login_manager.login_message = 'Lütfen giriş yapın.'
 
 # CSRF Protection
@@ -33,6 +34,9 @@ limiter = Limiter(
 
 # Caching
 cache = Cache()
+
+# Security Headers
+talisman = Talisman()
 
 # WebSocket (Flask-SocketIO)
 socketio = SocketIO(

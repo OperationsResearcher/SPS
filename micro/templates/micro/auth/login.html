@@ -39,7 +39,7 @@
         {% endif %}
         {% endwith %}
 
-        <form method="post" action="{{ url_for('auth_bp.login') }}" id="loginForm" novalidate>
+        <form method="post" action="{{ url_for('public_login') }}" id="loginForm" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
           <div class="mc-form-group">

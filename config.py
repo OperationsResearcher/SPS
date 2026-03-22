@@ -5,6 +5,33 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Flask CLI `app.py` → `kokpitim.app` importu göreli sqlite yolunu C:\\instance\\... yapabiliyor.
+# Tek DB: proje köküne sabit mutlak yol (Flask import yolundan bağımsız).
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_DEFAULT_SQLITE_FILE = os.path.join(_BASE_DIR, "instance", "kokpitim.db")
+_DEFAULT_SQLITE_URI = "sqlite:///" + _DEFAULT_SQLITE_FILE.replace("\\", "/")
+
+
+def _resolve_sqlalchemy_uri() -> str:
+    """Göreli sqlite URI'yi proje köküne göre çözer; yalnızca dosya adı ise instance/ altına koyar."""
+    raw = os.environ.get("SQLALCHEMY_DATABASE_URI", _DEFAULT_SQLITE_URI)
+    if not raw.startswith("sqlite:///"):
+        return raw
+    rest = raw[len("sqlite:///") :]
+    if rest.startswith(":memory:"):
+        return raw
+    if os.path.isabs(rest):
+        return raw
+    base_norm = os.path.normpath(_BASE_DIR)
+    # sqlite:///kokpitim.db → instance/kokpitim.db
+    if "/" not in rest and "\\" not in rest:
+        abs_path = os.path.normpath(os.path.join(_BASE_DIR, "instance", rest))
+    else:
+        abs_path = os.path.normpath(os.path.join(_BASE_DIR, rest))
+    if not abs_path.startswith(base_norm):
+        return _DEFAULT_SQLITE_URI
+    return "sqlite:///" + abs_path.replace("\\", "/")
+
 
 class Config:
     """Base configuration class."""
@@ -12,10 +39,13 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY environment variable is not set!")
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "SQLALCHEMY_DATABASE_URI", "sqlite:///kokpitim.db"
-    )
+    SQLALCHEMY_DATABASE_URI = _resolve_sqlalchemy_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    REMEMBER_COOKIE_SECURE = True
+    REMEMBER_COOKIE_HTTPONLY = True
     
     # CSRF Protection
     WTF_CSRF_ENABLED = True
@@ -30,6 +60,7 @@ class Config:
     # Rate Limiting
     RATELIMIT_STORAGE_URL = os.environ.get("REDIS_URL", "memory://")
     RATELIMIT_ENABLED = True
+    HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
     
     # Error Tracking (Sentry - optional)
     SENTRY_DSN = os.environ.get("SENTRY_DSN")
@@ -40,6 +71,9 @@ class Config:
 
     # Cache Busting
     VERSION = "1.0.1"
+
+    # Klasik (kök) Kokpitim arayüzü — Micro artık "/" kökünde. Örn. /kok/dashboard
+    LEGACY_URL_PREFIX = os.environ.get("LEGACY_URL_PREFIX", "/kok").strip() or "/kok"
 
     # E-posta (sistem varsayılan SMTP — kokpitim.com)
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
@@ -59,9 +93,17 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
 
 
+class DevelopmentConfig(Config):
+    """Development configuration."""
+    SESSION_COOKIE_SECURE = False
+    REMEMBER_COOKIE_SECURE = False
+
+
 def get_config():
     """Return the appropriate config object based on FLASK_ENV."""
     env = os.environ.get("FLASK_ENV", "development")
+    if env == "development":
+        return DevelopmentConfig()
     if env == "testing":
         return TestingConfig()
     return Config()

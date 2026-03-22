@@ -47,7 +47,9 @@
 
         <!-- Brand -->
         <a href="{{ url_for('micro_bp.launcher') }}" class="sidebar-brand">
-            <div class="sidebar-brand-logo">K</div>
+            <img class="sidebar-brand-logo"
+                src="{{ url_for('micro_bp.static', filename='micro/img/kokpitim-logo.png') }}?v={{ config['VERSION'] }}"
+                alt="Kokpitim" width="120" height="36" loading="lazy" decoding="async">
             <div>
                 <div class="sidebar-brand-name">Kokpitim</div>
                 <span class="sidebar-brand-sub">
@@ -70,6 +72,17 @@
                 <span class="sidebar-item-text">Masaüstüm</span>
             </a>
 
+            <a href="{{ url_for('micro_bp.surec') }}" class="sidebar-item {% if 'surec' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-project-diagram"></i></span>
+                <span class="sidebar-item-text">Süreç Yönetimi</span>
+            </a>
+
+            <a href="{{ url_for('micro_bp.micro_project_list') }}"
+                class="sidebar-item {% if 'micro_project' in ep or 'proje_legacy_redirect' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-folder-open"></i></span>
+                <span class="sidebar-item-text">Proje Yönetimi</span>
+            </a>
+
             {% set role_name = current_user.role.name if current_user.role else '' %}
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
@@ -77,11 +90,6 @@
                 class="sidebar-item {% if 'sp' in ep and 'admin' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
                 <span class="sidebar-item-text">Stratejik Planlama</span>
-            </a>
-
-            <a href="{{ url_for('micro_bp.surec') }}" class="sidebar-item {% if 'surec' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-project-diagram"></i></span>
-                <span class="sidebar-item-text">Süreç Yönetimi</span>
             </a>
 
             <a href="{{ url_for('micro_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
@@ -162,6 +170,10 @@
             {% endif %}
         </nav>
 
+        <div class="sidebar-legacy-link" style="padding:6px 14px 0;font-size:11px;opacity:0.55;">
+            <a href="{{ legacy_url_prefix }}/" style="color:rgba(255,255,255,0.7);text-decoration:none;" title="Önceki Kokpitim arayüzü">↩ Klasik arayüz ({{ legacy_url_prefix }})</a>
+        </div>
+
         <!-- Footer: kullanıcı -->
         <div class="sidebar-footer">
             <div class="sidebar-user" x-data="{ open: false }" @click="open = !open" style="position:relative">
@@ -197,7 +209,7 @@
                         <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
                     </button>
                     <hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;">
-                    <a href="{{ url_for('auth_bp.logout') }}"
+                    <a href="{{ url_for('public_logout') }}"
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:#f87171; font-size:13px; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">
                         <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
@@ -269,7 +281,7 @@
                             <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
                         </button>
                         <hr style="border:none; border-top:1px solid #f1f5f9; margin:4px 0;">
-                        <a href="{{ url_for('auth_bp.logout') }}"
+                        <a href="{{ url_for('public_logout') }}"
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#dc2626; font-size:13px; text-decoration:none; transition:background 0.15s;"
                             onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
                             <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
@@ -302,7 +314,33 @@
         </main>
     </div>
 
+    <!-- Genel form modalı (admin kullanıcı düzenle ile aynı mc-modal stili) -->
+    <div id="mc-modal-form-global" class="mc-modal-overlay" aria-hidden="true">
+        <div class="mc-modal mc-modal-lg" role="dialog" aria-modal="true" aria-labelledby="mc-modal-form-title">
+            <div class="mc-modal-header">
+                <div class="mc-modal-title">
+                    <i class="fas fa-pen-to-square" id="mc-modal-form-icon"></i>
+                    <span id="mc-modal-form-title">Düzenle</span>
+                </div>
+                <button type="button" class="mc-modal-close" id="mc-modal-form-close" aria-label="Kapat"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="mc-modal-body">
+                <div id="mc-modal-form-validation" class="mc-modal-form-validation" hidden></div>
+                <div id="mc-modal-form-body"></div>
+            </div>
+            <div class="mc-modal-footer">
+                <button type="button" class="mc-btn mc-btn-secondary" id="mc-modal-form-cancel">İptal</button>
+                <button type="button" class="mc-btn mc-btn-primary" id="mc-modal-form-save">
+                    <i class="fas fa-save" id="mc-modal-form-save-icon"></i> <span id="mc-modal-form-save-label">Kaydet</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JS -->
+    <script src="{{ url_for('micro_bp.static', filename='micro/js/mc-modal-form.js') }}?v={{ config['VERSION'] }}"></script>
+    <script src="{{ url_for('micro_bp.static', filename='micro/js/micro-notify.js') }}?v={{ config['VERSION'] }}"></script>
     <script src="{{ url_for('micro_bp.static', filename='micro/js/app.js') }}?v={{ config['VERSION'] }}"></script>
     {% block extra_js %}{% endblock %}
 </body>

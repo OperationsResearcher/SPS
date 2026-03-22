@@ -1,0 +1,481 @@
+{% extends "micro/base.html" %}
+{% block title %}Proje listesi — Kokpitim{% endblock %}
+{% block page_title %}Proje Yönetimi{% endblock %}
+
+{% block content %}
+<script type="application/json" id="mc-overview-data">{{ overview | tojson }}</script>
+<div class="mx-auto px-1" style="max-width:1240px;">
+    <div class="mc-page-header">
+        <div>
+            <h2 class="mc-page-title">Projeler</h2>
+            {% set a = request.args %}
+            {% set has_active_filters = a.get('q') or a.get('priority') or a.get('end_from') or a.get('end_to') or a.get('start_from') or a.get('start_to') or a.get('leader_id') or a.get('surec_id') or a.get('overdue_only') or a.get('due_soon') or (a.get('sort') and a.get('sort') != 'updated') or (privileged and a.get('scope') == 'my') %}
+            <p class="mc-page-subtitle text-slate-600 dark:text-slate-400">
+                Proje listesi en üstte. Filtreleri akordeondan açın; operasyon özeti altta. Özet, seçili filtrelere göre güncellenir.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            {% if show_portfolio %}
+            <a href="{{ url_for('micro_bp.micro_project_portfolio') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+                <i class="fas fa-layer-group"></i> Stratejik portföy
+            </a>
+            {% endif %}
+            <a href="{{ export_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="UTF-8 CSV (Excel uyumlu)">
+                <i class="fas fa-file-csv"></i> CSV
+            </a>
+            <a href="{{ ics_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Proje bitiş tarihleri">
+                <i class="fas fa-calendar-alt"></i> .ics
+            </a>
+            <a href="{{ url_for('micro_bp.micro_project_new') }}" class="mc-btn mc-btn-primary">
+                <i class="fas fa-plus"></i> Yeni proje
+            </a>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Proje listesi</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            Yaklaşık <strong>10 proje</strong> yüksekliği görünür; sayfadaki diğer kayıtlar için alanı <strong>aşağı kaydırın</strong> (kaydırma çubuğu).
+        </p>
+        {% if projects %}
+        <div class="mc-card p-2 sm:p-3 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-700">
+            <div class="mc-project-list-scroll max-h-[min(52rem,72vh)] overflow-y-auto overflow-x-hidden pr-1 -mr-1 scroll-smooth" tabindex="0" aria-label="Proje listesi, kaydırılabilir">
+                <div class="flex flex-col gap-2 p-1">
+                    {% for p in projects %}
+                    <div class="mc-card p-3 flex flex-wrap gap-3 items-start justify-between bg-white dark:bg-slate-900/90">
+                        <div class="flex gap-3 items-start min-w-0 flex-1">
+                            {% if bulk_allowed %}
+                            <label class="mt-1 shrink-0 cursor-pointer"><input type="checkbox" name="project_ids" value="{{ p.id }}" form="mc-bulk-form" class="mc-bulk-pid"/></label>
+                            {% endif %}
+                            <div class="min-w-0 flex-1">
+                                <a href="{{ url_for('micro_bp.micro_project_detail', project_id=p.id) }}" class="text-[15px] font-semibold text-indigo-600 dark:text-indigo-300 hover:underline">{{ p.name }}</a>
+                                {% if p.description %}
+                                <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ p.description }}</p>
+                                {% endif %}
+                                <div class="text-[11px] text-slate-400 mt-2">
+                                    <i class="fas fa-user-tie"></i>
+                                    {% set plids = p.leader_user_ids() %}
+                                    {% if plids %}{% for lid in plids %}{{ user_display(user_labels, lid, none) }}{% if not loop.last %} · {% endif %}{% endfor %}
+                                    {% else %}{{ user_display(user_labels, p.manager_id, p.manager) }}{% endif %}
+                                    <span class="ms-2"><i class="fas fa-flag"></i> {{ p.priority or '—' }}</span>
+                                    {% if p.health_score is not none %}<span class="ms-2"><i class="fas fa-heartbeat"></i> {{ p.health_score }}</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 shrink-0">
+                            <a href="{{ url_for('micro_bp.micro_project_new', clone_from=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Benzer proje oluştur"><i class="fas fa-copy"></i> Kopya</a>
+                            <a href="{{ url_for('micro_bp.micro_project_detail', project_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-columns"></i> Aç</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% if pagination.pages > 1 %}
+        <div class="flex justify-center gap-2 mt-4 flex-wrap">
+            {% if list_url_prev %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_prev }}">Önceki</a>{% endif %}
+            <span class="text-sm text-slate-500 self-center">Sayfa {{ pagination.page }} / {{ pagination.pages }}</span>
+            {% if list_url_next %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_next }}">Sonraki</a>{% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="mc-card p-10 text-center">
+            <p class="text-slate-500">Filtreye uygun proje yok.</p>
+            <a href="{{ url_for('micro_bp.micro_project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm mt-3">Filtreleri sıfırla</a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if bulk_allowed %}
+    <form method="post" action="{{ url_for('micro_bp.micro_project_bulk_notifications') }}" id="mc-bulk-form" class="mb-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="flex flex-wrap gap-2 items-center text-sm text-slate-600 dark:text-slate-400">
+            <span class="font-medium text-slate-700 dark:text-slate-200"><i class="fas fa-tasks"></i> Toplu bildirim (seçili projeler):</span>
+            <button type="submit" name="action" value="email_on" class="mc-btn mc-btn-secondary mc-btn-sm">E-posta aç</button>
+            <button type="submit" name="action" value="email_off" class="mc-btn mc-btn-secondary mc-btn-sm">E-posta kapat</button>
+        </div>
+    </form>
+    {% endif %}
+
+    <details class="mc-filters-accordion mc-card mb-6 border border-slate-200/80 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900/50 shadow-sm" {% if has_active_filters %}open{% endif %}>
+        <summary class="mc-filters-accordion-summary flex items-center justify-between gap-3 cursor-pointer px-4 py-3.5 select-none text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <span class="flex items-center gap-2 flex-wrap">
+                <i class="fas fa-sliders-h text-indigo-500"></i>
+                Filtreler ve sıralama
+                {% if has_active_filters %}<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200">Aktif filtre</span>{% endif %}
+            </span>
+            <i class="fas fa-chevron-down text-slate-400 mc-acc-chevron transition-transform duration-200 shrink-0" aria-hidden="true"></i>
+        </summary>
+        <div class="border-t border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40">
+            <form method="get" class="p-4" id="mc-project-filter-form">
+                <div class="flex flex-wrap gap-3 mb-3 items-end">
+                    {% if privileged %}
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Kapsam</label>
+                        <select name="scope" class="mc-select" style="min-width:160px;">
+                            <option value="all" {% if filters.scope == 'all' %}selected{% endif %}>Tüm kurum projeleri</option>
+                            <option value="my" {% if filters.scope == 'my' %}selected{% endif %}>Benim projelerim</option>
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="flex-1 min-w-[160px]">
+                        <label class="mc-label text-xs mb-1 block">Ara</label>
+                        <input type="search" name="q" class="mc-input" value="{{ filters.q }}" placeholder="Ad / açıklama" autocomplete="off"/>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Öncelik</label>
+                        <select name="priority" class="mc-select" style="min-width:120px;">
+                            <option value="">Tümü</option>
+                            {% for o in ['Düşük','Orta','Yüksek','Kritik'] %}
+                            <option value="{{ o }}" {% if filters.priority == o %}selected{% endif %}>{{ o }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Sırala</label>
+                        <select name="sort" class="mc-select" style="min-width:150px;">
+                            <option value="updated" {% if filters.sort == 'updated' %}selected{% endif %}>Son güncelleme</option>
+                            <option value="end_date" {% if filters.sort == 'end_date' %}selected{% endif %}>Proje bitiş tarihi</option>
+                            <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>Ad (A-Z)</option>
+                            <option value="overdue" {% if filters.sort == 'overdue' %}selected{% endif %}>Geciken görev (çoğa)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-3">
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Bitiş ≥</label>
+                        <input type="date" name="end_from" class="mc-input" value="{{ filters.end_from.isoformat() if filters.end_from else '' }}"/>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Bitiş ≤</label>
+                        <input type="date" name="end_to" class="mc-input" value="{{ filters.end_to.isoformat() if filters.end_to else '' }}"/>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Başlangıç ≥</label>
+                        <input type="date" name="start_from" class="mc-input" value="{{ filters.start_from.isoformat() if filters.start_from else '' }}"/>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Başlangıç ≤</label>
+                        <input type="date" name="start_to" class="mc-input" value="{{ filters.start_to.isoformat() if filters.start_to else '' }}"/>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Lider</label>
+                        <select name="leader_id" class="mc-select" style="width:100%;">
+                            <option value="">Tümü</option>
+                            {% for u in filter_leaders %}
+                            {% set lname = ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim %}
+                            <option value="{{ u.id }}" {% if filters.leader_id == u.id %}selected{% endif %}>{{ lname or u.email or ('#' ~ u.id|string) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mc-label text-xs mb-1 block">Süreç</label>
+                        <select name="surec_id" class="mc-select" style="width:100%;">
+                            <option value="">Tümü</option>
+                            {% for s in surecler %}
+                            <option value="{{ s.id }}" {% if filters.surec_id == s.id %}selected{% endif %}>{{ s.code or '—' }} — {{ s.ad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-4 items-center mb-3">
+                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="overdue_only" value="1" {% if filters.overdue_only %}checked{% endif %}/> Yalnız geciken (görev veya plan)</label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="due_soon" value="1" {% if filters.due_soon_only %}checked{% endif %}/> Yakında bitiş (≤7 gün)</label>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="submit" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-filter"></i> Uygula</button>
+                    <a href="{{ url_for('micro_bp.micro_project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm">Sıfırla</a>
+                </div>
+            </form>
+        </div>
+    </details>
+
+    <section class="mb-6" aria-label="Proje operasyon özeti">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-pie text-indigo-500"></i> Operasyon özeti
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 mb-4">
+            <div class="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-indigo-600/80 dark:text-indigo-300 font-medium">Projeler</div>
+                <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.total_projects }}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-slate-500 font-medium">Açık görev</div>
+                <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.open_tasks }}</div>
+                <div class="text-[9px] text-slate-400">/ {{ overview.total_tasks }}</div>
+            </div>
+            <div class="rounded-xl border p-2.5 shadow-sm {% if overview.overdue_tasks %}border-rose-300 bg-gradient-to-br from-rose-50 to-white dark:border-rose-800 dark:from-rose-950/50 dark:to-slate-900{% else %}border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900{% endif %}">
+                <div class="text-[10px] uppercase {% if overview.overdue_tasks %}text-rose-600{% else %}text-slate-500{% endif %} font-medium">Geciken görev</div>
+                <div class="text-xl font-bold {% if overview.overdue_tasks %}text-rose-700 dark:text-rose-200{% else %}text-slate-800 dark:text-slate-100{% endif %}">{{ overview.overdue_tasks }}</div>
+            </div>
+            <div class="rounded-xl border border-amber-200/80 dark:border-amber-900/60 bg-gradient-to-br from-amber-50/80 to-white dark:from-amber-950/30 dark:to-slate-900 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-amber-700 dark:text-amber-300 font-medium">Görev ≤7g</div>
+                <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.tasks_due_7d }}</div>
+            </div>
+            <div class="rounded-xl border p-2.5 shadow-sm {% if overview.overdue_projects %}border-orange-300 bg-orange-50/80 dark:border-orange-800 dark:bg-orange-950/30{% else %}border-slate-200/80 dark:border-slate-700{% endif %}">
+                <div class="text-[10px] uppercase font-medium {% if overview.overdue_projects %}text-orange-700 dark:text-orange-300{% else %}text-slate-500{% endif %}">Plan geciken</div>
+                <div class="text-xl font-bold">{{ overview.overdue_projects }}</div>
+            </div>
+            <div class="rounded-xl border border-cyan-200/80 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-cyan-700 dark:text-cyan-300 font-medium">Proje ≤7g</div>
+                <div class="text-xl font-bold">{{ overview.projects_end_7d }}</div>
+            </div>
+            <div class="rounded-xl border border-violet-200/80 dark:border-violet-900/50 bg-violet-50/50 dark:bg-violet-950/20 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-violet-700 dark:text-violet-300 font-medium">Açık RAID</div>
+                <div class="text-xl font-bold">{{ overview.raid_open_total }}</div>
+            </div>
+            <div class="rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 p-2.5 shadow-sm">
+                <div class="text-[10px] uppercase text-emerald-700 dark:text-emerald-300 font-medium">Sağlık Ø</div>
+                <div class="text-xl font-bold">{% if overview.avg_health_score is not none %}{{ '%.0f'|format(overview.avg_health_score) }}{% else %}—{% endif %}</div>
+                <div class="text-[9px] text-slate-500">&lt;50: {{ overview.low_health_projects }}</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-4">
+            <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Haftalık tamamlanan</h4>
+                {% if overview.total_tasks %}
+                <div class="relative h-[140px] w-full"><canvas id="mcChartWeekly" aria-label="Haftalık trend"></canvas></div>
+                {% else %}<p class="text-xs text-slate-500 py-6 text-center">Görev yok</p>{% endif %}
+            </div>
+            <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Görev durumu</h4>
+                {% if overview.total_tasks %}
+                <div class="relative h-[180px] w-full max-w-[200px] mx-auto"><canvas id="mcProjectChartTaskStatus"></canvas></div>
+                {% else %}<p class="text-xs text-slate-500 py-6 text-center">—</p>{% endif %}
+            </div>
+            <div class="xl:col-span-3 mc-card p-3 dark:bg-slate-900/80">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Öncelik</h4>
+                {% if overview.total_projects %}
+                <div class="relative h-[200px] w-full"><canvas id="mcProjectChartPriority"></canvas></div>
+                {% else %}<p class="text-xs text-slate-500 py-6">—</p>{% endif %}
+            </div>
+            <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">RAID (açık)</h4>
+                {% if overview.raid_open_total %}
+                <div class="relative h-[200px] w-full"><canvas id="mcChartRaid"></canvas></div>
+                {% else %}<p class="text-xs text-slate-500 py-8 text-center">Açık RAID yok</p>{% endif %}
+            </div>
+            <div class="xl:col-span-3 mc-card p-3 dark:bg-slate-900/80">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Tamamlanan görev — 4 hafta (ısı)</h4>
+                <p class="text-[10px] text-slate-500 mb-2">Pzt→Paz; koyu = daha çok tamamlanan.</p>
+                <div id="mcHeatmap" class="heatmap-grid text-[10px]"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
+            <div class="mc-card p-4 dark:bg-slate-900/80 xl:col-span-4">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2"><i class="fas fa-exclamation-triangle text-amber-500"></i> Dikkat</h4>
+                {% if overview.attention %}
+                <ul class="grid sm:grid-cols-2 gap-2 text-sm max-h-[200px] overflow-y-auto">
+                    {% for row in overview.attention %}
+                    <li>
+                        <a href="{{ url_for('micro_bp.micro_project_detail', project_id=row.id) }}" class="block rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/80">
+                            <span class="font-medium text-indigo-600 dark:text-indigo-300 line-clamp-1">{{ row.name }}</span>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                {% if row.project_deadline_overdue %}<span class="text-[10px] px-1.5 rounded bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200">Plan</span>{% endif %}
+                                {% if row.overdue_tasks %}<span class="text-[10px] px-1.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">{{ row.overdue_tasks }} görev</span>{% endif %}
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-xs text-slate-500">Gecikme yok.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+</div>
+<style>
+.mc-filters-accordion > summary { list-style: none; }
+.mc-filters-accordion > summary::-webkit-details-marker { display: none; }
+.mc-filters-accordion[open] .mc-acc-chevron { transform: rotate(180deg); }
+.mc-project-list-scroll { scrollbar-gutter: stable; }
+.dark .mc-project-list-scroll { scrollbar-color: #475569 #1e293b; }
+.heatmap-grid { display: grid; grid-template-columns: 26px repeat(7, minmax(0, 1fr)); gap: 3px; max-width: 300px; }
+.heatmap-cell { aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: rgba(255,255,255,.92); }
+.heatmap-row-label { font-size: 9px; color: #64748b; align-self: center; padding-right: 4px; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var overview = {};
+  try { overview = JSON.parse(document.getElementById('mc-overview-data').textContent || '{}'); } catch (e) {}
+
+  window.mcProjListCharts = window.mcProjListCharts || [];
+
+  function destroyMcProjCharts() {
+    (window.mcProjListCharts || []).forEach(function (c) { try { c.destroy(); } catch (e) {} });
+    window.mcProjListCharts = [];
+  }
+
+  function chartTextColors() {
+    var dark = document.documentElement.classList.contains('dark');
+    return {
+      tick: dark ? '#94a3b8' : '#64748b',
+      grid: dark ? 'rgba(148,163,184,0.15)' : 'rgba(100,116,139,0.12)',
+      legend: dark ? '#cbd5e1' : '#475569',
+    };
+  }
+
+  var palette = ['#6366f1', '#22c55e', '#f59e0b', '#94a3b8', '#ec4899', '#06b6d4', '#a855f7'];
+
+  function renderHeatmap() {
+    var el = document.getElementById('mcHeatmap');
+    if (!el || !overview.heatmap_weeks) return;
+    var weeks = overview.heatmap_weeks;
+    var maxV = 0;
+    weeks.forEach(function (row) {
+      (row || []).forEach(function (v) { if (v != null && v > maxV) maxV = v; });
+    });
+    var html = '';
+    var dayNames = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+    html += '<div></div>';
+    dayNames.forEach(function (d) { html += '<div class="text-center text-slate-400" style="font-size:9px">' + d + '</div>'; });
+    weeks.forEach(function (row, ri) {
+      html += '<div class="heatmap-row-label">H' + (ri + 1) + '</div>';
+      for (var c = 0; c < 7; c++) {
+        var v = row[c];
+        var bg = '#e2e8f0';
+        var fg = '#475569';
+        if (v == null) { bg = 'transparent'; fg = '#94a3b8'; }
+        else if (maxV > 0) {
+          var t = v / maxV;
+          var r = Math.round(99 + t * 56);
+          var g = Math.round(102 + t * 80);
+          var b = Math.round(241 - t * 100);
+          bg = 'rgb(' + r + ',' + g + ',' + b + ')';
+        }
+        html += '<div class="heatmap-cell" style="background:' + bg + ';color:' + fg + '">' + (v == null ? '·' : v) + '</div>';
+      }
+    });
+    el.innerHTML = html;
+  }
+
+  function initMcProjListCharts() {
+    if (typeof Chart === 'undefined') return;
+    destroyMcProjCharts();
+    var tc = chartTextColors();
+
+    if (overview.total_tasks && document.getElementById('mcChartWeekly')) {
+      var wl = overview.weekly_labels || [];
+      var wd = overview.weekly_completed || [];
+      var ch = new Chart(document.getElementById('mcChartWeekly'), {
+        type: 'line',
+        data: {
+          labels: wl,
+          datasets: [{
+            label: 'Tamamlanan',
+            data: wd,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99,102,241,0.12)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#6366f1',
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: tc.tick, font: { size: 10 } }, grid: { color: tc.grid } },
+            y: { beginAtZero: true, ticks: { color: tc.tick, precision: 0 }, grid: { color: tc.grid } },
+          },
+        },
+      });
+      window.mcProjListCharts.push(ch);
+    }
+
+    if (overview.total_tasks && document.getElementById('mcProjectChartTaskStatus')) {
+      var ts = overview.charts.task_status;
+      window.mcProjListCharts.push(new Chart(document.getElementById('mcProjectChartTaskStatus'), {
+        type: 'doughnut',
+        data: {
+          labels: ts.labels,
+          datasets: [{
+            data: ts.data,
+            backgroundColor: ts.labels.map(function (_, i) { return palette[i % palette.length]; }),
+            borderWidth: 0,
+            hoverOffset: 8,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '58%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: tc.legend, boxWidth: 10, font: { size: 10 } } },
+          },
+        },
+      }));
+    }
+
+    if (overview.total_projects && document.getElementById('mcProjectChartPriority')) {
+      var pr = overview.charts.project_priority;
+      window.mcProjListCharts.push(new Chart(document.getElementById('mcProjectChartPriority'), {
+        type: 'bar',
+        data: {
+          labels: pr.labels,
+          datasets: [{
+            label: 'Proje',
+            data: pr.data,
+            backgroundColor: pr.labels.map(function (_, i) { return palette[i % palette.length]; }),
+            borderRadius: 8,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, ticks: { color: tc.tick, precision: 0 }, grid: { color: tc.grid } },
+            y: { ticks: { color: tc.tick, font: { size: 10 } }, grid: { display: false } },
+          },
+        },
+      }));
+    }
+
+    if (overview.raid_open_total && document.getElementById('mcChartRaid')) {
+      var rd = overview.charts.raid_by_type;
+      window.mcProjListCharts.push(new Chart(document.getElementById('mcChartRaid'), {
+        type: 'doughnut',
+        data: {
+          labels: rd.labels,
+          datasets: [{
+            data: rd.data,
+            backgroundColor: rd.labels.map(function (_, i) { return palette[(i + 2) % palette.length]; }),
+            borderWidth: 0,
+            hoverOffset: 6,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '45%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: tc.legend, boxWidth: 8, font: { size: 9 } } },
+          },
+        },
+      }));
+    }
+
+    renderHeatmap();
+  }
+
+  document.addEventListener('DOMContentLoaded', initMcProjListCharts);
+  document.addEventListener('micro-theme-changed', function () {
+    initMcProjListCharts();
+  });
+})();
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-"""Launcher — /micro ana sayfası, modül seçim ekranı."""
+"""Launcher — kök ana sayfa (modül seçim ekranı)."""
 
 from flask import render_template
 from flask_login import login_required, current_user
