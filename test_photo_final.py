@@ -8,7 +8,7 @@ import re
 s = requests.Session()
 
 # 1) HGS sayfasını aç, Adil kullanıcısını bul ve login ol
-resp_hgs = s.get("http://127.0.0.1:5001/hgs")
+resp_hgs = s.get("http://127.0.0.1:5001/MfG_hgs")
 match = re.search(r'href=["\'].*?/login/(\d+)["\'].*?adil@kalitesoleni\.com', resp_hgs.text, re.IGNORECASE | re.DOTALL)
 if not match:
     print("HATA: HGS sayfasında adil@kalitesoleni.com bulunamadı!")
@@ -16,7 +16,7 @@ if not match:
 
 uid = match.group(1)
 print(f"[1] Adil kullanıcısı bulundu (ID={uid}), giriş yapılıyor...")
-resp_login = s.get(f"http://127.0.0.1:5001/hgs/login/{uid}")
+resp_login = s.get(f"http://127.0.0.1:5001/MfG_hgs/login/{uid}")
 print(f"    Login redirect sonucu: {resp_login.url}")
 
 # 2) Profil sayfasını aç, CSRF token al

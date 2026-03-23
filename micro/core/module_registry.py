@@ -64,7 +64,7 @@ MODULES = [
     {
         "id": "hgs",
         "name": "Hızlı Giriş",
-        "url": "/Hgs_mfg",
+        "url": "/MfG_hgs",
         "icon": "⚡",
         "description": "Demo/geliştirme ortamı için hızlı kullanıcı girişi",
     },

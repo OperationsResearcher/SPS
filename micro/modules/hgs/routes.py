@@ -2,10 +2,11 @@
 
 Bu modül @login_required KULLANMAZ — geliştirme/demo ortamı için hızlı giriş sağlar.
 
-Ana URL: /Hgs_mfg (eski /hgs ve /hgs/login/... 301 ile yönlendirilir).
+Gizli giriş yolu: yalnızca /MfG_hgs ve /MfG_hgs/login/<id>.
+/hgs, /Hgs_mfg ve eski yollar bilinçli olarak 404 döner.
 """
 
-from flask import render_template, redirect, url_for, current_app, request, flash
+from flask import render_template, redirect, url_for, current_app, request, flash, abort
 from flask_login import login_user
 
 from micro import micro_bp
@@ -53,26 +54,20 @@ def _hgs_login(user_id: int):
     return redirect(url_for("micro_bp.launcher"))
 
 
-@micro_bp.route("/Hgs_mfg")
+@micro_bp.route("/MfG_hgs")
 def hgs():
     return _hgs_index()
 
 
-@micro_bp.route("/hgs")
-def hgs_legacy_redirect():
-    """Eski yer imleri için kalıcı yönlendirme."""
-    q = request.query_string.decode() if request.query_string else ""
-    dest = url_for("micro_bp.hgs")
-    if q:
-        dest = dest + "?" + q
-    return redirect(dest, code=301)
-
-
-@micro_bp.route("/Hgs_mfg/login/<int:user_id>")
+@micro_bp.route("/MfG_hgs/login/<int:user_id>")
 def hgs_login(user_id):
     return _hgs_login(user_id)
 
 
+@micro_bp.route("/hgs")
 @micro_bp.route("/hgs/login/<int:user_id>")
-def hgs_login_legacy_redirect(user_id):
-    return redirect(url_for("micro_bp.hgs_login", user_id=user_id), code=301)
+@micro_bp.route("/Hgs_mfg")
+@micro_bp.route("/Hgs_mfg/login/<int:user_id>")
+def hgs_public_paths_disabled(user_id=None):
+    """Eski / hatalı URL'ler — kasıtlı 404."""
+    abort(404)

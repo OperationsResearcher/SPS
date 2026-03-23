@@ -138,8 +138,6 @@
                             class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
                     {% if current_user.role and current_user.role.name == 'Admin' %}
                     <span class="nav-link text-muted small text-uppercase mt-2">Yönetici Paneli</span>
-                    <a class="nav-link ps-4" href="{{ url_for('hgs_bp.index') }}"><i class="fas fa-bolt me-2"></i>HGS
-                        Ekranı</a>
                     <a class="nav-link ps-4" href="{{ url_for('admin_bp.index') }}"><i
                             class="fas fa-chart-bar me-2"></i>Özet</a>
                     <a class="nav-link ps-4" href="{{ url_for('admin_bp.packages') }}"><i

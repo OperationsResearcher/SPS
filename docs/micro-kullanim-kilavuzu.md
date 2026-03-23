@@ -146,9 +146,10 @@ REST API referansı; geliştirici ve entegrasyon kullanımı.
 
 ---
 
-## 14. Hızlı giriş (`/Hgs_mfg`)
+## 14. Hızlı giriş (gizli yol: `/MfG_hgs`)
 
-Yalnızca geliştirme/demo; üretimde çoğu kurulumda kapatılır veya kısıtlanır. Eski adres **`/hgs`** otomatik olarak **`/Hgs_mfg`** adresine yönlendirilir (301).
+Yalnızca geliştirme/demo; üretimde çoğu kurulumda kapatılır veya kısıtlanır (`HGS_BYPASS_ENABLED`).  
+**`/hgs`**, **`/Hgs_mfg`** ve legacy **`/kok/hgs`** kasıtlı olarak **404** döner; sayfaya yalnızca **`/MfG_hgs`** (ve `/MfG_hgs/login/<id>`) ile erişilir.
 
 ---
 
