@@ -18,3 +18,5 @@ marshmallow-sqlalchemy==0.29.0
 eventlet==0.33.3
 PyJWT==2.8.0
 flask-swagger-ui
+gunicorn
+
