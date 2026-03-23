@@ -13,7 +13,9 @@ app = create_app()
 # Uygulama kapanırken scheduler'ı temiz şekilde kapat
 def cleanup():
     from services.task_reminder_scheduler import shutdown_scheduler
+    from services.process_activity_scheduler import shutdown_process_activity_scheduler
     shutdown_scheduler()
+    shutdown_process_activity_scheduler()
 
 atexit.register(cleanup)
 

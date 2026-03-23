@@ -14,6 +14,33 @@
   }
 
   // ── Yardımcı: JSON POST ───────────────────────────────────────────────────
+  function isLikelyLoginRedirect(res) {
+    try {
+      const finalUrl = String(res?.url || "").toLowerCase();
+      return res?.redirected && finalUrl.includes("/login");
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function redirectToLogin() {
+    const next = `${window.location.pathname}${window.location.search || ""}`;
+    window.location.href = `/login?next=${encodeURIComponent(next)}`;
+  }
+
+  async function parseJsonOrThrow(res) {
+    if (isLikelyLoginRedirect(res) || res.status === 401) {
+      const err = new Error("Oturum süresi doldu. Lütfen yeniden giriş yapın.");
+      err.code = "AUTH_REQUIRED";
+      throw err;
+    }
+    const contentType = String(res.headers.get("content-type") || "").toLowerCase();
+    if (!contentType.includes("application/json")) {
+      throw new Error("Sunucudan beklenmeyen yanıt alındı.");
+    }
+    return res.json();
+  }
+
   async function postJson(url, body) {
     const res = await fetch(url, {
       method: "POST",
@@ -21,9 +48,10 @@
         "Content-Type": "application/json",
         "X-CSRFToken": getCsrf(),
       },
+      credentials: "same-origin",
       body: JSON.stringify(body),
     });
-    return res.json();
+    return parseJsonOrThrow(res);
   }
 
   async function getJson(url) {
@@ -32,12 +60,7 @@
       headers: { Accept: "application/json" },
       credentials: "same-origin",
     });
-    let data = {};
-    try {
-      data = await res.json();
-    } catch (_) {
-      data = {};
-    }
+    const data = await parseJsonOrThrow(res);
     if (!res.ok) {
       throw new Error(data.message || `HTTP ${res.status}`);
     }
@@ -88,8 +111,10 @@
 
   const viewRoot = document.getElementById("karne-root") || document.getElementById("faaliyet-root");
   if (!viewRoot) return;
+  const currentProcessId = parseInt(viewRoot.dataset.processId || "0", 10) || 0;
 
   const PAGE_MODE = viewRoot.dataset.pageMode || "karne";
+  const INITIAL_TAB = (viewRoot.dataset.initialTab || "").toLowerCase();
 
   const KARNE_API = viewRoot.dataset.karneApiUrl;
   const KARNE_EXPORT_XLSX_URL = viewRoot.dataset.karneExportXlsxUrl || "";
@@ -205,6 +230,9 @@
   let cachedKpis = [];
   const processSelect = document.getElementById("process-select");
   const actTbody = document.getElementById("activity-tbody");
+  const activityTableWrap = document.getElementById("activity-table-wrap");
+  const activityKanbanRoot = document.getElementById("activity-kanban-root");
+  const activityViewModeSelect = document.getElementById("activity-view-mode");
   const loadingEl = document.getElementById("karne-loading");
 
   const MONTHS = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
@@ -406,6 +434,9 @@
   let canEnterPgv = viewRoot.dataset.canEnterPgv === "true";
   let canCrudActivity = viewRoot.dataset.canCrudActivity === "true";
   let canTrackActivity = viewRoot.dataset.canTrackActivity === "true";
+  let cachedProcessUsers = [];
+  let cachedActivities = [];
+  let activityViewMode = "kanban";
 
   function applyPermissionUi() {
     const bk = document.getElementById("btn-kpi-add");
@@ -414,6 +445,200 @@
     if (ba) ba.style.display = canCrudActivity ? "" : "none";
   }
   applyPermissionUi();
+
+  function resolveActivityViewMode() {
+    const selected = String(activityViewModeSelect?.value || activityViewMode || "kanban").toLowerCase();
+    return selected === "table" ? "table" : "kanban";
+  }
+
+  function applyActivityViewUi() {
+    activityViewMode = resolveActivityViewMode();
+    if (activityKanbanRoot) activityKanbanRoot.style.display = activityViewMode === "kanban" ? "" : "none";
+    if (activityTableWrap) activityTableWrap.style.display = activityViewMode === "table" ? "" : "none";
+  }
+
+  function buildKpiOptionsHtml(selectedId) {
+    const list = Array.isArray(cachedKpis) ? cachedKpis : [];
+    const opts = ['<option value="">Bağımsız</option>'];
+    list.forEach((k) => {
+      const sel = String(selectedId || "") === String(k.id) ? " selected" : "";
+      const code = (k.code || "").trim();
+      const title = (k.name || "").trim();
+      const label = `${code ? code + " " : ""}${title}`.trim() || `KPI #${k.id}`;
+      opts.push(`<option value="${k.id}"${sel}>${escHtml(label)}</option>`);
+    });
+    return opts.join("");
+  }
+
+  function buildAssigneeCheckboxHtml(selectedIds) {
+    const list = Array.isArray(cachedProcessUsers) ? cachedProcessUsers : [];
+    const selected = new Set((selectedIds || []).map((x) => String(x)));
+    const rows = [];
+    list.forEach((u) => {
+      const checked = selected.has(String(u.id)) ? " checked" : "";
+      const label = u.full_name || u.email || `#${u.id}`;
+      rows.push(
+        `<label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;">
+          <input class="mc-act-assignee-chk" type="checkbox" value="${u.id}"${checked}>
+          <span style="font-size:13px;">${escHtml(label)}</span>
+        </label>`
+      );
+    });
+    if (!rows.length) {
+      return `<div style="font-size:12px;color:#94a3b8;">Süreçte atanabilir kullanıcı bulunamadı.</div>`;
+    }
+    return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;max-height:220px;overflow:auto;padding:4px;">${rows.join("")}</div>`;
+  }
+
+  function getCheckedReminderOffsets(prefix = "mc-act-rem-") {
+    const ids = ["60", "1440", "4320", "7200"];
+    return ids
+      .map((v) => document.getElementById(`${prefix}${v}`))
+      .filter((el) => el && el.checked)
+      .map((el) => parseInt(el.value, 10))
+      .filter((v) => !Number.isNaN(v));
+  }
+
+  async function openAddActivityModal() {
+    if (!canCrudActivity) {
+      showError("Faaliyet ekleme yetkiniz yok.");
+      return;
+    }
+    if (typeof window.openMcFormModal !== "function") {
+      showError("Form modali yüklenemedi.");
+      return;
+    }
+    if ((!Array.isArray(cachedKpis) || cachedKpis.length === 0) || (!Array.isArray(cachedProcessUsers) || cachedProcessUsers.length === 0)) {
+      try {
+        const r = await fetch(`${KARNE_API}?year=${getDataYearForKarneLoad()}`);
+        const d = await r.json();
+        if (d.success) {
+          cachedKpis = d.kpis || [];
+          cachedProcessUsers = d.process_users || [];
+        }
+      } catch (_) {}
+    }
+    const bodyHtml = `
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Faaliyet Adı *</label>
+          <input id="mc-act-name" class="mc-form-input" type="text" placeholder="Örn: Müşteri Ziyareti">
+        </div>
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">İlişkili PG</label>
+          <select id="mc-act-kpi" class="mc-form-input">${buildKpiOptionsHtml("")}</select>
+        </div>
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Atananlar *</label>
+          ${buildAssigneeCheckboxHtml([currentUserId])}
+          <small style="color:#94a3b8;">Süreç lideri birden fazla kişi seçebilir.</small>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Başlangıç Tarihi</label>
+          <input id="mc-act-start" class="mc-form-input" type="datetime-local">
+        </div>
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Bitiş Tarihi</label>
+          <input id="mc-act-end" class="mc-form-input" type="datetime-local">
+        </div>
+        </div>
+        <div class="mc-form-field">
+          <label class="mc-form-label">Hatırlatmalar (başlangıca göre)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <label><input id="mc-act-rem-60" type="checkbox" value="60"> 1 saat önce</label>
+            <label><input id="mc-act-rem-1440" type="checkbox" value="1440"> 1 gün önce</label>
+            <label><input id="mc-act-rem-4320" type="checkbox" value="4320"> 3 gün önce</label>
+            <label><input id="mc-act-rem-7200" type="checkbox" value="7200"> 5 gün önce</label>
+          </div>
+        </div>
+        <div class="mc-form-field">
+          <label class="mc-form-label"><input id="mc-act-notify-email" type="checkbox"> E-posta da gönder</label>
+        </div>
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Durum</label>
+          <select id="mc-act-status" class="mc-form-input">
+            <option value="Planlandı">Planlandı</option>
+            <option value="Devam Ediyor">Devam Ediyor</option>
+            <option value="Tamamlandı">Tamamlandı</option>
+            <option value="İptal">İptal</option>
+          </select>
+        </div>
+        <div class="mc-form-field" style="width:100%;">
+          <label class="mc-form-label">Açıklama</label>
+          <textarea id="mc-act-desc" class="mc-form-input" rows="3" placeholder="Opsiyonel"></textarea>
+        </div>
+      </div>
+    `;
+
+    const payload = await window.openMcFormModal({
+      title: "Yeni Faaliyet",
+      iconClass: "fas fa-list-check",
+      bodyHtml,
+      confirmText: "Kaydet",
+      onConfirm: ({ showValidation }) => {
+        const name = (document.getElementById("mc-act-name")?.value || "").trim();
+        if (!name) {
+          showValidation("Faaliyet adı zorunludur.");
+          return false;
+        }
+        const startAt = document.getElementById("mc-act-start")?.value || null;
+        const endAt = document.getElementById("mc-act-end")?.value || null;
+        if (!startAt || !endAt) {
+          showValidation("Başlangıç ve bitiş tarih/saat zorunludur.");
+          return false;
+        }
+        if (endAt < startAt) {
+          showValidation("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+          return false;
+        }
+        const assigneeIds = Array.from(document.querySelectorAll(".mc-act-assignee-chk:checked"))
+          .map((o) => parseInt(o.value, 10))
+          .filter((x) => !Number.isNaN(x));
+        if (!assigneeIds.length) {
+          showValidation("En az bir atanan seçiniz.");
+          return false;
+        }
+        return {
+          process_id: Number(currentProcessId || viewRoot.dataset.processId || 0),
+          name,
+          process_kpi_id: document.getElementById("mc-act-kpi")?.value || null,
+          start_at: startAt,
+          end_at: endAt,
+          status: document.getElementById("mc-act-status")?.value || "Planlandı",
+          description: (document.getElementById("mc-act-desc")?.value || "").trim(),
+          assignee_ids: assigneeIds,
+          reminder_offsets: getCheckedReminderOffsets("mc-act-rem-"),
+          notify_email: !!document.getElementById("mc-act-notify-email")?.checked,
+        };
+      },
+    });
+
+    if (!payload) return;
+    try {
+      const data = await postJson("/process/api/activity/add", payload);
+      if (!data.success) throw new Error(data.message || "Faaliyet kaydedilemedi.");
+      toastSuccess(data.message || "Faaliyet eklendi.");
+      await loadKarne();
+    } catch (err) {
+      showError(err.message || "Faaliyet eklenemedi.");
+    }
+  }
+
+  const btnActivityAdd = document.getElementById("btn-activity-add");
+  if (btnActivityAdd) {
+    btnActivityAdd.addEventListener("click", (e) => {
+      e.preventDefault();
+      openAddActivityModal();
+    });
+  }
+
+  const currentUserId = parseInt(
+    document.querySelector('[data-current-user-id]')?.getAttribute('data-current-user-id') ||
+    viewRoot.dataset.currentUserId ||
+    "0",
+    10
+  ) || 0;
 
   function escHtml(str) {
     if (!str) return "";
@@ -431,8 +656,7 @@
     if (actTbody) actTbody.innerHTML = "";
 
     try {
-      const res = await fetch(`${KARNE_API}?year=${year}`);
-      const data = await res.json();
+      const data = await getJson(`${KARNE_API}?year=${year}`);
       if (!data.success) throw new Error(data.message || "Veri alınamadı.");
       if (data.permissions) {
         canCrudPg = !!data.permissions.can_crud_pg;
@@ -442,6 +666,7 @@
         applyPermissionUi();
       }
       cachedKpis = data.kpis || [];
+      cachedProcessUsers = data.process_users || [];
       lastFavoriteKpiIds = data.favorite_kpi_ids || [];
       if (PAGE_MODE === "karne") {
         updateStatsKarne(data.kpis);
@@ -450,11 +675,18 @@
         renderKanbanGauge(data.kpis, lastFavoriteKpiIds, year);
         syncPgGunlukAyHiddenSelect();
         updateKarneKanbanNavLabel();
-      } else {
-        updateStatsFaaliyet(data.activities);
-        renderActivityTable(data.activities, year);
       }
+      // Faaliyet kartı hem karne hem faaliyet görünümünde ortak render edilir.
+      cachedActivities = data.activities || [];
+      updateStatsFaaliyet(cachedActivities);
+      renderActivityKanban(cachedActivities);
+      renderActivityTable(cachedActivities, year);
+      applyActivityViewUi();
     } catch (err) {
+      if (err && err.code === "AUTH_REQUIRED") {
+        redirectToLogin();
+        return;
+      }
       showError("Veriler yüklenirken hata oluştu: " + err.message);
     } finally {
       if (loadingEl) loadingEl.style.display = "none";
@@ -810,28 +1042,42 @@
     },
   };
 
-  const { openDataEntryModal, closeKpiDataEntryModal, closeVgsHistoryNestedModals } = initSurecVgs({
-    MONTHS,
-    parsePeriodKeyForApi,
-    escHtml,
-    showError,
-    toastSuccess,
-    postJson,
-    viewRoot,
-    modalKpiDataEntry,
-    formKpiDataEntry,
-    getCanEnterPgv: () => canEnterPgv,
-    cachedKpisRef,
-    KPI_DATA_ADD_URL,
-    KPI_DATA_HISTORY_URL_TEMPLATE,
-    KPI_DATA_UPDATE_URL_TEMPLATE,
-    KPI_DATA_DELETE_URL_TEMPLATE,
-    expandKpiUrl,
-    expandKpiDataRowUrl,
-    BIREYSEL_ENSURE_PG_URL,
-    BIREYSEL_VERI_ADD_URL,
-    loadKarne,
-  });
+  const safeNoop = () => {};
+  const defaultVgsApi = {
+    openDataEntryModal: safeNoop,
+    closeKpiDataEntryModal: safeNoop,
+    closeVgsHistoryNestedModals: safeNoop,
+  };
+  const vgsApi =
+    typeof globalThis.initSurecVgs === "function"
+      ? globalThis.initSurecVgs({
+          MONTHS,
+          parsePeriodKeyForApi,
+          escHtml,
+          showError,
+          toastSuccess,
+          postJson,
+          viewRoot,
+          modalKpiDataEntry,
+          formKpiDataEntry,
+          getCanEnterPgv: () => canEnterPgv,
+          cachedKpisRef,
+          KPI_DATA_ADD_URL,
+          KPI_DATA_HISTORY_URL_TEMPLATE,
+          KPI_DATA_UPDATE_URL_TEMPLATE,
+          KPI_DATA_DELETE_URL_TEMPLATE,
+          expandKpiUrl,
+          expandKpiDataRowUrl,
+          BIREYSEL_ENSURE_PG_URL,
+          BIREYSEL_VERI_ADD_URL,
+          loadKarne,
+        })
+      : defaultVgsApi;
+  const {
+    openDataEntryModal = safeNoop,
+    closeKpiDataEntryModal = safeNoop,
+    closeVgsHistoryNestedModals = safeNoop,
+  } = vgsApi || defaultVgsApi;
 
   /** Kök karne «Performans Göstergeleri» tablosu — PG kartına tıklanınca */
   let microPgTablo = null;
@@ -1762,6 +2008,82 @@
     if (cd) cd.textContent = String(counts.disi);
   }
 
+  function renderActivityKanban(activities) {
+    const colPlan = document.getElementById("act-col-plan");
+    const colProgress = document.getElementById("act-col-progress");
+    const colDone = document.getElementById("act-col-done");
+    const emptyEl = document.getElementById("activity-kanban-empty");
+    if (!colPlan || !colProgress || !colDone) return;
+    colPlan.innerHTML = "";
+    colProgress.innerHTML = "";
+    colDone.innerHTML = "";
+
+    if (!activities || activities.length === 0) {
+      if (emptyEl) emptyEl.classList.remove("is-hidden");
+      document.getElementById("act-count-plan").textContent = "0";
+      document.getElementById("act-count-progress").textContent = "0";
+      document.getElementById("act-count-done").textContent = "0";
+      return;
+    }
+    if (emptyEl) emptyEl.classList.add("is-hidden");
+
+    const counts = { plan: 0, progress: 0, done: 0 };
+    const normalizeStatusText = (status) =>
+      String(status || "")
+        .toLowerCase()
+        .replace(/ı/g, "i")
+        .replace(/İ/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u")
+        .replace(/�/g, "");
+    const statusBucket = (status) => {
+      const s = normalizeStatusText(status);
+      if (s.includes("devam")) return "progress";
+      if (s.includes("gercek") || s.includes("tamam") || s.includes("iptal")) return "done";
+      return "plan";
+    };
+
+    activities.forEach((a) => {
+      const bucket = statusBucket(a.status);
+      counts[bucket] += 1;
+      const plan = [a.start_at || a.start_date || "—", a.end_at || a.end_date || "—"].join(" → ");
+      const assignees = Array.isArray(a.assignees) && a.assignees.length
+        ? a.assignees.map((u) => u.full_name || u.email || `#${u.id}`).join(", ")
+        : "Atama yok";
+      const kpiLabel = a.process_kpi_name || "Bağımsız faaliyet";
+      const card = `
+        <div class="kb-card" data-act-id="${a.id}">
+          <div class="kb-card-top">
+            <div class="kb-card-name-block">
+              <div><span class="kb-code-badge">FAALİYET</span> <span class="kb-card-name">${escHtml(a.name || "—")}</span></div>
+              <div class="kb-card-subline">${escHtml(a.status || "Planlandı")}</div>
+            </div>
+            <div class="kb-card-actions no-print">
+              ${canCrudActivity ? `<button type="button" class="btn-act-postpone text-amber-500 hover:text-amber-700 text-xs" data-act-id="${a.id}" title="Ertele"><i class="fas fa-clock"></i></button>` : ""}
+              ${canCrudActivity ? `<button type="button" class="btn-act-cancel text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="İptal"><i class="fas fa-ban"></i></button>` : ""}
+              ${canCrudActivity ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil"><i class="fas fa-trash"></i></button>` : ""}
+            </div>
+          </div>
+          <div class="kb-card-divider"></div>
+          <div class="kb-card-meta">
+            <div class="kb-card-meta-item"><span class="kb-meta-label">Plan</span><span class="kb-meta-val">${escHtml(plan)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">Atanan</span><span class="kb-meta-val">${escHtml(assignees)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">İlişkili PG</span><span class="kb-meta-val">${escHtml(kpiLabel)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">Hatırlatma</span><span class="kb-meta-val">${(a.reminder_offsets || []).length || 0} kayıt</span></div>
+          </div>
+        </div>`;
+      if (bucket === "plan") colPlan.insertAdjacentHTML("beforeend", card);
+      else if (bucket === "progress") colProgress.insertAdjacentHTML("beforeend", card);
+      else colDone.insertAdjacentHTML("beforeend", card);
+    });
+    document.getElementById("act-count-plan").textContent = String(counts.plan);
+    document.getElementById("act-count-progress").textContent = String(counts.progress);
+    document.getElementById("act-count-done").textContent = String(counts.done);
+  }
+
   // ── Faaliyet tablosu render ───────────────────────────────────────────────
   function renderActivityTable(activities, year) {
     if (!actTbody) return;
@@ -1782,12 +2104,24 @@
         </td>`;
       }).join("");
 
-      const statusColor = {
-        "Tamamlandı": "text-emerald-600",
-        "Devam Ediyor": "text-blue-600",
-        "Planlandı": "text-gray-500",
-        "İptal": "text-red-400",
-      }[a.status] || "text-gray-500";
+      const sNorm = String(a.status || "")
+        .toLowerCase()
+        .replace(/ı/g, "i")
+        .replace(/İ/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u")
+        .replace(/�/g, "");
+      const statusColor =
+        sNorm.includes("gercek") || sNorm.includes("tamam")
+          ? "text-emerald-600"
+          : sNorm.includes("devam")
+            ? "text-blue-600"
+            : sNorm.includes("iptal")
+              ? "text-red-400"
+              : "text-gray-500";
 
       return `<tr data-act-id="${a.id}">
         <td class="px-3 py-2 text-gray-400">${i + 1}</td>
@@ -1805,6 +2139,62 @@
         }</td>
       </tr>`;
     }).join("");
+  }
+
+  function toDateTimeLocalValue(input) {
+    if (!input) return "";
+    const s = String(input).replace(" ", "T");
+    return s.length >= 16 ? s.slice(0, 16) : s;
+  }
+
+  async function openPostponeActivityModal(actId) {
+    if (!canCrudActivity) return;
+    const activity = (cachedActivities || []).find((a) => String(a.id) === String(actId));
+    const startVal = toDateTimeLocalValue(activity?.start_at || activity?.start_date || "");
+    const endVal = toDateTimeLocalValue(activity?.end_at || activity?.end_date || "");
+    if (typeof window.openMcFormModal !== "function") {
+      showError("Form modali yüklenemedi.");
+      return;
+    }
+    const payload = await window.openMcFormModal({
+      title: "Faaliyet Ertele",
+      iconClass: "fas fa-clock",
+      confirmText: "Ertele",
+      bodyHtml: `
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="mc-form-field">
+            <label class="mc-form-label">Yeni Başlangıç</label>
+            <input id="mc-postpone-start" class="mc-form-input" type="datetime-local" value="${escHtml(startVal)}">
+          </div>
+          <div class="mc-form-field">
+            <label class="mc-form-label">Yeni Bitiş</label>
+            <input id="mc-postpone-end" class="mc-form-input" type="datetime-local" value="${escHtml(endVal)}">
+          </div>
+        </div>
+      `,
+      onConfirm: ({ showValidation }) => {
+        const startAt = document.getElementById("mc-postpone-start")?.value || "";
+        const endAt = document.getElementById("mc-postpone-end")?.value || "";
+        if (!startAt || !endAt) {
+          showValidation("Başlangıç ve bitiş zorunludur.");
+          return false;
+        }
+        if (endAt <= startAt) {
+          showValidation("Bitiş başlangıçtan sonra olmalıdır.");
+          return false;
+        }
+        return { start_at: startAt, end_at: endAt };
+      },
+    });
+    if (!payload) return;
+    try {
+      const data = await postJson(`/process/api/activity/postpone/${actId}`, payload);
+      if (!data.success) throw new Error(data.message || "Faaliyet ertelenemedi.");
+      toastSuccess(data.message || "Faaliyet ertelendi.");
+      await loadKarne();
+    } catch (err) {
+      showError(err.message || "Erteleme işlemi başarısız.");
+    }
   }
 
   // ── Event delegation ──────────────────────────────────────────────────────
@@ -1879,6 +2269,29 @@
         if (data.success) { toastSuccess("Faaliyet silindi."); loadKarne(); }
         else showError(data.message);
       } catch (err) { showError(err.message); }
+      return;
+    }
+
+    const btnActCancel = e.target.closest(".btn-act-cancel");
+    if (btnActCancel) {
+      if (!canCrudActivity) return;
+      const ok = await confirmDelete("Faaliyet iptal edilsin mi?", "Faaliyet durumu 'İptal' olarak güncellenecek.");
+      if (!ok) return;
+      try {
+        const data = await postJson(`/process/api/activity/cancel/${btnActCancel.dataset.actId}`, {});
+        if (!data.success) throw new Error(data.message || "Faaliyet iptal edilemedi.");
+        toastSuccess(data.message || "Faaliyet iptal edildi.");
+        loadKarne();
+      } catch (err) {
+        showError(err.message || "İşlem başarısız.");
+      }
+      return;
+    }
+
+    const btnActPostpone = e.target.closest(".btn-act-postpone");
+    if (btnActPostpone) {
+      if (!canCrudActivity) return;
+      await openPostponeActivityModal(btnActPostpone.dataset.actId);
       return;
     }
   });
@@ -2067,8 +2480,13 @@
 
   processSelect.addEventListener("change", () => {
     const pid = processSelect.value;
-    const sub = PAGE_MODE === "faaliyetler" ? "faaliyetler" : "karne";
-    window.location.href = `/process/${pid}/${sub}`;
+    const wantsActivities = (() => {
+      const q = new URLSearchParams(window.location.search);
+      const tab = (q.get("tab") || INITIAL_TAB || "").toLowerCase();
+      return tab === "activities";
+    })();
+    const qs = wantsActivities ? "?tab=activities" : "";
+    window.location.href = `/process/${pid}/karne${qs}`;
   });
 
   document.getElementById("btn-kpi-add")?.addEventListener("click", openAddKpiModal);
@@ -2143,6 +2561,36 @@
     if (wrap) wrap.classList.add("is-hidden");
   }
 
+  function exportActivitiesCsv() {
+    const rows = (cachedActivities || []).map((a) => ({
+      id: a.id ?? "",
+      faaliyet: a.name ?? "",
+      durum: a.status ?? "",
+      baslangic: a.start_at || a.start_date || "",
+      bitis: a.end_at || a.end_date || "",
+      iliskili_pg: a.process_kpi_name || "",
+      atananlar: (a.assignees || []).map((u) => u.full_name || u.email || `#${u.id}`).join(", "),
+      hatirlatma: (a.reminder_offsets || []).join(", "),
+    }));
+    const headers = ["ID", "Faaliyet", "Durum", "Başlangıç", "Bitiş", "İlişkili PG", "Atananlar", "Hatırlatmalar (dk)"];
+    const lines = [headers.join(";")];
+    rows.forEach((r) => {
+      const vals = [r.id, r.faaliyet, r.durum, r.baslangic, r.bitis, r.iliskili_pg, r.atananlar, r.hatirlatma]
+        .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
+      lines.push(vals.join(";"));
+    });
+    const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const y = yearSelect ? yearSelect.value : String(new Date().getFullYear());
+    a.download = `surec-faaliyetleri-${currentProcessId}-${y}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   document.getElementById("pg-karne-yil-select")?.addEventListener("change", (e) => {
     if (!yearSelect || PAGE_MODE !== "karne") return;
     yearSelect.value = e.target.value;
@@ -2161,6 +2609,16 @@
     updateKarneKanbanNavLabel();
     loadKarne();
   });
+
+  activityViewModeSelect?.addEventListener("change", () => {
+    applyActivityViewUi();
+  });
+
+  document.getElementById("btn-activity-excel")?.addEventListener("click", () => {
+    exportActivitiesCsv();
+    toastSuccess("Faaliyet listesi dışa aktarıldı.");
+  });
+  document.getElementById("btn-activity-print")?.addEventListener("click", () => window.print());
 
   document.getElementById("pg-periyot-select")?.addEventListener("change", () => {
     updatePgPeriyotGunlukAyVisibility();
@@ -2217,7 +2675,32 @@
   })();
 
   // ── İlk yükleme ───────────────────────────────────────────────────────────
+  function applyTabLayout() {
+    if (PAGE_MODE !== "karne") return;
+    const q = new URLSearchParams(window.location.search);
+    const tab = (q.get("tab") || INITIAL_TAB || "kpi").toLowerCase();
+    const isActivities = tab === "activities";
+    const kpiSection = document.getElementById("kpi-section");
+    const trendSection = document.getElementById("trend-chart-card");
+    const activityStats = document.getElementById("faaliyet-stats");
+    const activitySection = document.getElementById("activity-section");
+    if (kpiSection) kpiSection.style.display = isActivities ? "none" : "";
+    if (trendSection) trendSection.style.display = isActivities ? "none" : "";
+    if (activityStats) activityStats.style.display = isActivities ? "" : "none";
+    if (activitySection) activitySection.style.display = isActivities ? "" : "none";
+  }
+
+  applyTabLayout();
   loadKarne();
+  if (PAGE_MODE === "karne") {
+    const q = new URLSearchParams(window.location.search);
+    const tab = (q.get("tab") || INITIAL_TAB || "").toLowerCase();
+    if (tab === "activities") {
+      setTimeout(() => {
+        document.getElementById("activity-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
+  }
 
 })();
 

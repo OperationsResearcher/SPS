@@ -16,6 +16,8 @@ _NOTIF_PREF_FIELD = {
     "process_assigned": "notify_on_process_assign",
     "kpi_changed":      "notify_on_kpi_change",
     "activity_added":   "notify_on_activity_add",
+    "activity_reminder": "notify_on_activity_add",
+    "activity_auto_completed": "notify_on_activity_add",
     "task_assigned":    "notify_on_task_assign",
     "task_status_changed": "notify_on_task_assign",
     "project_leader_assigned": "notify_on_task_assign",
@@ -233,6 +235,41 @@ def notify_activity_assignment(activity, process, actor=None):
         )
         if uid in users:
             _send_email(users[uid], title, message, process.tenant_id, "activity_added", link)
+
+
+def notify_activity_reminder(activity, process, user, minutes_before: int, send_email: bool):
+    """Faaliyet başlangıç hatırlatması."""
+    title = f"Faaliyet Hatırlatması: {process.name}"
+    when_text = "şimdi" if int(minutes_before) == 0 else f"{int(minutes_before)} dk sonra"
+    message = f"'{activity.name}' faaliyeti {when_text} başlıyor."
+    link = f"/process/{process.id}/karne"
+    _create(
+        user_id=user.id,
+        tenant_id=process.tenant_id,
+        notification_type="activity_reminder",
+        title=title,
+        message=message,
+        link=link,
+    )
+    if send_email:
+        _send_email_async(user, title, message, process.tenant_id, "activity_reminder", link)
+
+
+def notify_activity_auto_completed(activity, process, user, send_email: bool):
+    """Faaliyet otomatik gerçekleşme bildirimi."""
+    title = f"Faaliyet Gerçekleşti: {process.name}"
+    message = f"'{activity.name}' faaliyeti bitiş zamanına göre otomatik gerçekleşti olarak işaretlendi."
+    link = f"/process/{process.id}/karne"
+    _create(
+        user_id=user.id,
+        tenant_id=process.tenant_id,
+        notification_type="activity_auto_completed",
+        title=title,
+        message=message,
+        link=link,
+    )
+    if send_email:
+        _send_email_async(user, title, message, process.tenant_id, "activity_auto_completed", link)
 
 
 def _project_channels(project) -> dict:

@@ -15,6 +15,8 @@ from app.models.process import (
     ProcessSubStrategyLink,
     ProcessKpi,
     ProcessActivity,
+    ProcessActivityAssignee,
+    ProcessActivityReminder,
     KpiData,
     KpiDataAudit,
     ActivityTrack,
@@ -25,11 +27,124 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.services.cache_service import CacheService
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
 
 
 process_bp = Blueprint('process_bp', __name__, url_prefix='/process')
+
+
+_PRIVILEGED_ACTIVITY_ASSIGN_ROLES = {'tenant_admin', 'executive_manager', 'Admin'}
+
+
+def _parse_local_datetime(value):
+    if not value:
+        return None
+    val = str(value).strip()
+    for fmt in ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M', '%Y-%m-%dT%H:%M:%S'):
+        try:
+            return datetime.strptime(val, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _activity_datetime_fallback(start_date, end_date):
+    start_at = datetime.combine(start_date, datetime.min.time()) if start_date else None
+    end_at = datetime.combine(end_date, datetime.max.time().replace(microsecond=0)) if end_date else None
+    return start_at, end_at
+
+
+def _activity_allowed_assignee_ids(process):
+    allowed = set()
+    for u in (process.leaders + process.members + process.owners):
+        if u and u.is_active:
+            allowed.add(int(u.id))
+    return allowed
+
+
+def _is_process_leader(process):
+    return any(int(u.id) == int(current_user.id) for u in (process.leaders or []))
+
+
+def _can_assign_multiple(process):
+    role_name = current_user.role.name if current_user.role else ''
+    return role_name in _PRIVILEGED_ACTIVITY_ASSIGN_ROLES or _is_process_leader(process)
+
+
+def _normalize_assignee_ids(raw_ids, process):
+    # JSON list veya tek değer gelebilir
+    if raw_ids is None:
+        return []
+    if not isinstance(raw_ids, list):
+        raw_ids = [raw_ids]
+    ids = []
+    for rid in raw_ids:
+        try:
+            ids.append(int(rid))
+        except (TypeError, ValueError):
+            continue
+    # sıralı + uniq koru
+    uniq = []
+    seen = set()
+    for uid in ids:
+        if uid not in seen:
+            seen.add(uid)
+            uniq.append(uid)
+    if not uniq:
+        return []
+    if _can_assign_multiple(process):
+        allowed = _activity_allowed_assignee_ids(process)
+        return [uid for uid in uniq if uid in allowed]
+    # Süreç üyesi/lider olmayan kullanıcı sadece kendine atayabilir
+    return [int(current_user.id)]
+
+
+def _normalize_reminder_offsets(offsets_raw):
+    if not offsets_raw:
+        return []
+    if not isinstance(offsets_raw, list):
+        offsets_raw = [offsets_raw]
+    out = []
+    seen = set()
+    for val in offsets_raw:
+        try:
+            m = int(val)
+        except (TypeError, ValueError):
+            continue
+        if m < 0 or m > 60 * 24 * 60:
+            continue
+        if m not in seen:
+            seen.add(m)
+            out.append(m)
+    out.sort(reverse=True)
+    return out
+
+
+def _replace_activity_assignees(activity, assignee_ids):
+    ProcessActivityAssignee.query.filter_by(activity_id=activity.id).delete(synchronize_session=False)
+    for idx, uid in enumerate(assignee_ids, start=1):
+        db.session.add(ProcessActivityAssignee(
+            activity_id=activity.id,
+            user_id=uid,
+            order_no=idx,
+            assigned_by=current_user.id,
+            assigned_at=datetime.now(timezone.utc),
+        ))
+
+
+def _replace_activity_reminders(activity, offsets, notify_email):
+    ProcessActivityReminder.query.filter_by(activity_id=activity.id).delete(synchronize_session=False)
+    if not activity.start_at:
+        return
+    for off in offsets:
+        remind_at = activity.start_at - timedelta(minutes=off)
+        db.session.add(ProcessActivityReminder(
+            activity_id=activity.id,
+            minutes_before=off,
+            remind_at=remind_at,
+            channel_email=bool(notify_email),
+        ))
 
 
 @process_bp.route('/')
@@ -155,6 +270,13 @@ def karne(process_id):
     )
 
     current_year = datetime.now().year
+    process_users = []
+    seen_ids = set()
+    for u in (process.leaders + process.members + process.owners):
+        if not u or not u.is_active or u.id in seen_ids:
+            continue
+        seen_ids.add(u.id)
+        process_users.append(u)
 
     return render_template(
         'process/karne.html',
@@ -162,6 +284,7 @@ def karne(process_id):
         all_processes=all_processes,
         kpis=kpis,
         activities=activities,
+        process_users=process_users,
         sub_strategies=sub_strategies,
         current_year=current_year,
         favorite_kpi_ids=favorite_kpi_ids
@@ -489,10 +612,29 @@ def list_kpis(process_id):
 @process_bp.route('/api/activity/add', methods=['POST'])
 @login_required
 def add_activity():
-    data = request.get_json()
+    data = request.get_json() or {}
     process_id = data.get('process_id') or data.get('surec_id')
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
     try:
+        start_at = _parse_local_datetime(data.get('start_at')) or _parse_local_datetime(data.get('start_date'))
+        end_at = _parse_local_datetime(data.get('end_at')) or _parse_local_datetime(data.get('end_date'))
+        if not start_at and data.get('start_date'):
+            start_at = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        if not end_at and data.get('end_date'):
+            end_at = datetime.strptime(data['end_date'], '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+        if not start_at or not end_at:
+            return jsonify({'success': False, 'message': 'Başlangıç ve bitiş zamanı zorunludur.'}), 400
+        if start_at and end_at and end_at <= start_at:
+            return jsonify({'success': False, 'message': 'Bitiş zamanı başlangıçtan sonra olmalıdır.'}), 400
+
+        assignee_ids = _normalize_assignee_ids(
+            data.get('assignee_ids') if data.get('assignee_ids') is not None else data.get('assigned_user_ids'),
+            p,
+        )
+        if not assignee_ids:
+            assignee_ids = [int(current_user.id)]
+        reminder_offsets = _normalize_reminder_offsets(data.get('reminder_offsets'))
+
         new_act = ProcessActivity(
             process_id=p.id,
             process_kpi_id=data.get('process_kpi_id') or None,
@@ -500,12 +642,19 @@ def add_activity():
             description=data.get('description'),
             status=data.get('status', 'Planlandı'),
             progress=int(data.get('progress', 0) or 0),
+            notify_email=bool(data.get('notify_email', False)),
+            auto_complete_enabled=bool(data.get('auto_complete_enabled', True)),
+            start_at=start_at,
+            end_at=end_at,
         )
-        if data.get('start_date'):
-            new_act.start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        if data.get('end_date'):
-            new_act.end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+        if start_at:
+            new_act.start_date = start_at.date()
+        if end_at:
+            new_act.end_date = end_at.date()
         db.session.add(new_act)
+        db.session.flush()
+        _replace_activity_assignees(new_act, assignee_ids)
+        _replace_activity_reminders(new_act, reminder_offsets, new_act.notify_email)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Faaliyet eklendi.', 'id': new_act.id})
     except Exception as e:
@@ -522,8 +671,57 @@ def delete_activity(act_id):
     ).first_or_404()
     try:
         act.is_active = False
+        act.status = 'İptal'
+        act.cancelled_at = datetime.now(timezone.utc)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Faaliyet silindi.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@process_bp.route('/api/activity/cancel/<int:act_id>', methods=['POST'])
+@login_required
+def cancel_activity(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id
+    ).first_or_404()
+    try:
+        act.status = 'İptal'
+        act.cancelled_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Faaliyet iptal edildi.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@process_bp.route('/api/activity/postpone/<int:act_id>', methods=['POST'])
+@login_required
+def postpone_activity(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id
+    ).first_or_404()
+    data = request.get_json() or {}
+    new_start = _parse_local_datetime(data.get('start_at'))
+    new_end = _parse_local_datetime(data.get('end_at'))
+    if not new_start or not new_end:
+        return jsonify({'success': False, 'message': 'Yeni başlangıç ve bitiş zamanı zorunludur.'}), 400
+    if new_end <= new_start:
+        return jsonify({'success': False, 'message': 'Bitiş zamanı başlangıçtan sonra olmalıdır.'}), 400
+    try:
+        act.start_at = new_start
+        act.end_at = new_end
+        act.start_date = new_start.date()
+        act.end_date = new_end.date()
+        act.status = 'Ertelendi'
+        act.postponed_at = datetime.now(timezone.utc)
+        offsets = [int(r.minutes_before) for r in act.reminders]
+        _replace_activity_reminders(act, offsets, act.notify_email)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Faaliyet ertelendi.'})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 400
@@ -691,6 +889,24 @@ def karne_data(process_id):
         # Faaliyet ay takibi
         tracks = ActivityTrack.query.filter_by(activity_id=a.id, year=year).all()
         tracks_map = {t.month: t.completed for t in tracks}
+        start_at, end_at = a.start_at, a.end_at
+        if not start_at and a.start_date:
+            start_at = datetime.combine(a.start_date, datetime.min.time())
+        if not end_at and a.end_date:
+            end_at = datetime.combine(a.end_date, datetime.max.time().replace(microsecond=0))
+        assignee_links = sorted(a.assignment_links, key=lambda x: x.order_no or 0)
+        assignees = []
+        for link in assignee_links:
+            u = link.user
+            if not u:
+                continue
+            full_name = f"{(u.first_name or '').strip()} {(u.last_name or '').strip()}".strip() or (u.email or '')
+            assignees.append({
+                'id': int(u.id),
+                'full_name': full_name,
+                'email': u.email,
+                'order_no': link.order_no,
+            })
 
         act_list.append({
             'id': a.id,
@@ -700,6 +916,15 @@ def karne_data(process_id):
             'progress': a.progress,
             'start_date': str(a.start_date) if a.start_date else None,
             'end_date': str(a.end_date) if a.end_date else None,
+            'start_at': start_at.isoformat(timespec='minutes') if start_at else None,
+            'end_at': end_at.isoformat(timespec='minutes') if end_at else None,
+            'notify_email': bool(a.notify_email),
+            'process_kpi_id': a.process_kpi_id,
+            'process_kpi_name': a.process_kpi.name if a.process_kpi else None,
+            'assignee_ids': [x['id'] for x in assignees],
+            'assignees': assignees,
+            'first_assignee_id': a.first_assignee_id,
+            'reminder_offsets': [int(r.minutes_before) for r in sorted(a.reminders, key=lambda x: x.minutes_before, reverse=True)],
             'monthly_tracks': tracks_map,  # {1: True, 3: True, ...}
         })
 
@@ -739,6 +964,11 @@ def get_activity(act_id):
             'progress': act.progress,
             'start_date': str(act.start_date) if act.start_date else '',
             'end_date': str(act.end_date) if act.end_date else '',
+            'start_at': act.start_at.strftime('%Y-%m-%dT%H:%M') if act.start_at else '',
+            'end_at': act.end_at.strftime('%Y-%m-%dT%H:%M') if act.end_at else '',
+            'notify_email': bool(act.notify_email),
+            'assignee_ids': [int(l.user_id) for l in sorted(act.assignment_links, key=lambda x: x.order_no or 0)],
+            'reminder_offsets': [int(r.minutes_before) for r in sorted(act.reminders, key=lambda x: x.minutes_before, reverse=True)],
         }
     })
 
@@ -756,10 +986,38 @@ def update_activity(act_id):
         act.description = data.get('description', act.description)
         act.status = data.get('status', act.status)
         act.progress = int(data.get('progress', act.progress) or 0)
-        if data.get('start_date'):
-            act.start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        if data.get('end_date'):
-            act.end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+        if 'notify_email' in data:
+            act.notify_email = bool(data.get('notify_email'))
+        if 'process_kpi_id' in data:
+            act.process_kpi_id = data.get('process_kpi_id') or None
+
+        parsed_start = _parse_local_datetime(data.get('start_at')) or _parse_local_datetime(data.get('start_date'))
+        parsed_end = _parse_local_datetime(data.get('end_at')) or _parse_local_datetime(data.get('end_date'))
+        if data.get('start_date') and not parsed_start:
+            parsed_start = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        if data.get('end_date') and not parsed_end:
+            parsed_end = datetime.strptime(data['end_date'], '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+        if parsed_start:
+            act.start_at = parsed_start
+            act.start_date = parsed_start.date()
+        if parsed_end:
+            act.end_at = parsed_end
+            act.end_date = parsed_end.date()
+        if act.start_at and act.end_at and act.end_at <= act.start_at:
+            return jsonify({'success': False, 'message': 'Bitiş zamanı başlangıçtan sonra olmalıdır.'}), 400
+
+        if data.get('assignee_ids') is not None or data.get('assigned_user_ids') is not None:
+            assignee_ids = _normalize_assignee_ids(
+                data.get('assignee_ids') if data.get('assignee_ids') is not None else data.get('assigned_user_ids'),
+                act.process,
+            )
+            if not assignee_ids:
+                assignee_ids = [int(current_user.id)]
+            _replace_activity_assignees(act, assignee_ids)
+
+        if 'reminder_offsets' in data:
+            reminder_offsets = _normalize_reminder_offsets(data.get('reminder_offsets'))
+            _replace_activity_reminders(act, reminder_offsets, act.notify_email)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Faaliyet güncellendi.'})
     except Exception as e:

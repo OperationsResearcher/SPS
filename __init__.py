@@ -93,8 +93,10 @@ def create_app(config_name=None):
     
     # 2.6. Görev Hatırlatma Scheduler'ı başlat
     from services.task_reminder_scheduler import init_scheduler
+    from services.process_activity_scheduler import init_process_activity_scheduler
     with app.app_context():
         init_scheduler(app)
+        init_process_activity_scheduler(app)
         app.logger.info('Görev hatırlatma scheduler başlatıldı')
     
     # 3. Logging'i yapılandır

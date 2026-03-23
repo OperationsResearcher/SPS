@@ -21,6 +21,8 @@
      class="karne-page-root"
      data-page-mode="karne"
      data-process-id="{{ process.id }}"
+     data-current-user-id="{{ current_user.id }}"
+     data-initial-tab="{{ initial_tab }}"
      data-process-name="{{ process.name | e }}"
      data-document-no="{{ process.document_no or '' | e }}"
      data-revision-no="{{ process.revision_no or '' | e }}"
@@ -41,6 +43,8 @@
      data-faaliyet-url="{{ url_for('micro_bp.surec_faaliyetler', process_id=process.id) }}"
      data-can-crud-pg="{{ 'true' if page_flags.can_crud_pg else 'false' }}"
      data-can-enter-pgv="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
+     data-can-crud-activity="{{ 'true' if page_flags.can_crud_pg else 'false' }}"
+     data-can-track-activity="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
      data-favorite-toggle-url="{{ url_for('process_bp.favorite_kpi_toggle') }}"
      data-bireysel-ensure-pg-url="{{ url_for('micro_bp.bireysel_api_pg_ensure_from_process_kpi') }}"
      data-bireysel-veri-add-url="{{ url_for('micro_bp.bireysel_api_veri_add') }}"
@@ -95,6 +99,19 @@
             </option>
             {% endfor %}
           </select>
+        </div>
+        <div class="karne-banner-process-block">
+          <label class="karne-banner-field-label">Görünüm</label>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a href="{{ url_for('micro_bp.surec_karne', process_id=process.id, tab='kpi') }}"
+               class="mc-btn mc-btn-sm {{ 'mc-btn-primary' if initial_tab == 'kpi' else 'mc-btn-secondary' }}">
+              <i class="fas fa-chart-line"></i> Süreç Karnesi
+            </a>
+            <a href="{{ url_for('micro_bp.surec_karne', process_id=process.id, tab='activities') }}"
+               class="mc-btn mc-btn-sm {{ 'mc-btn-success' if initial_tab == 'activities' else 'mc-btn-secondary' }}">
+              <i class="fas fa-list-check"></i> Süreç Faaliyetleri
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -274,7 +291,7 @@
             <i class="fas fa-plus-circle" aria-hidden="true"></i> PG ekle
           </button>
           {% endif %}
-          <a href="{{ url_for('micro_bp.surec_faaliyetler', process_id=process.id) }}" class="mc-btn mc-btn-sm karne-btn-faaliyet-soft">
+          <a href="{{ url_for('micro_bp.surec_karne', process_id=process.id, tab='activities') }}" class="mc-btn mc-btn-sm karne-btn-faaliyet-soft">
             <i class="fas fa-plus-circle" aria-hidden="true"></i> Faaliyet ekle
           </a>
           <button type="button" class="mc-btn mc-btn-sm karne-btn-excel-soft" id="btn-karne-excel">
@@ -317,6 +334,112 @@
         </section>
       </div>
       <div id="kb-kanban-empty" class="kb-kanban-empty is-hidden" role="status">Henüz performans göstergesi eklenmemiş.</div>
+    </div>
+  </div>
+
+  <div class="mc-grid-4" style="margin:20px 0;" id="faaliyet-stats">
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
+      <div class="mc-stat-label">Faaliyetler</div>
+      <div class="mc-stat-value" id="stat-activities">—</div>
+      <div class="mc-stat-sub">Toplam</div>
+    </div>
+    <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
+      <div class="mc-stat-label">Tamamlanan</div>
+      <div class="mc-stat-value" id="stat-done-pct">—</div>
+      <div class="mc-stat-sub">Özet görünüm</div>
+    </div>
+  </div>
+
+  <div class="mc-card karne-kpi-section" id="activity-section">
+    <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
+      <div class="karne-pg-card-head-text karne-kanban-head-main">
+        <span class="mc-card-title">
+          <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>Süreç Faaliyetleri
+        </span>
+      </div>
+      <div class="karne-kanban-header-tools no-print">
+        <div class="karne-pg-toolbar-unified">
+          <div class="karne-pg-toolbar-start">
+            <div class="karne-pg-filter-group">
+              <label class="karne-pg-filter-label" for="activity-view-mode">Gösterim</label>
+              <select id="activity-view-mode" class="mc-select karne-pg-periyot-select" aria-label="Faaliyet görünümü">
+                <option value="kanban" selected>Kanban</option>
+                <option value="table">Aylık takip tablosu</option>
+              </select>
+            </div>
+          </div>
+          <div class="karne-pg-toolbar-center">
+            <div class="karne-pg-nav-inline">
+              <span class="karne-pg-nav-badge">
+                <span class="karne-pg-nav-badge-primary">Faaliyet paneli</span>
+                <span class="karne-pg-nav-badge-sub">Özet kartlar + detay görünüm</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="karne-kanban-actions-row">
+          <button type="button" id="btn-activity-add" class="mc-btn mc-btn-sm mc-btn-success" style="display:none;">
+            <i class="fas fa-plus"></i> Faaliyet Ekle
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm karne-btn-excel-soft" id="btn-activity-excel">
+            <i class="fas fa-file-download" aria-hidden="true"></i> Excel'e aktar
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-btn-print-muted" id="btn-activity-print">
+            <i class="fas fa-print" aria-hidden="true"></i> Yazdır
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="activity-kanban-root" class="kb-kanban-root">
+      <div class="kb-kanban-grid">
+        <section class="kb-col kb-col--hedefte" aria-labelledby="act-col-title-plan">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--hedefte" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-plan">Planlananlar</h3>
+            <span class="kb-col-count" id="act-count-plan">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-plan"></div>
+        </section>
+        <section class="kb-col kb-col--risk" aria-labelledby="act-col-title-progress">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--risk" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-progress">Devam Edenler</h3>
+            <span class="kb-col-count" id="act-count-progress">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-progress"></div>
+        </section>
+        <section class="kb-col kb-col--disi" aria-labelledby="act-col-title-done">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--disi" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-done">Tamamlanan / İptal</h3>
+            <span class="kb-col-count" id="act-count-done">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-done"></div>
+        </section>
+      </div>
+      <div id="activity-kanban-empty" class="kb-kanban-empty is-hidden" role="status">Henüz faaliyet eklenmemiş.</div>
+    </div>
+    <div class="mc-table-wrap" id="activity-table-wrap" style="border:none; border-radius:0; box-shadow:none; display:none;">
+      <table class="mc-table karne-table">
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th style="min-width:180px;">Faaliyet</th>
+            <th style="text-align:center;">Durum</th>
+            {% for m in range(1, 13) %}
+            <th class="month-col" style="text-align:center;">{{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}</th>
+            {% endfor %}
+            <th style="text-align:center;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="activity-tbody">
+          <tr>
+            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">Veriler yükleniyor…</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 

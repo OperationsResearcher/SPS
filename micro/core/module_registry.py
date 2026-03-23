@@ -91,8 +91,43 @@ MODULES = [
     },
 ]
 
-# Minimum modül seti — paketsiz tenant'lar için
+# Minimum modül seti — paketsiz + standart kullanıcı için (launcher kartları)
 _MINIMUM_MODULE_IDS = {"masaustu", "bildirim", "ayarlar"}
+
+# Kurum yöneticisi / üst yönetim: sidebar ile uyum — paket yokken tüm modülleri göster
+_PRIVILEGED_ROLES_FULL_LAUNCHER = frozenset(
+    {"tenant_admin", "executive_manager", "Admin"}
+)
+
+# system_modules.code (seed / Excel `turkish_to_slug` çıktısı) → launcher modül id
+# Launcher id'leri MODULES["id"] ile aynı olmalı.
+_SYSTEM_CODE_TO_LAUNCHER_ID = {
+    # Doğrudan eşleşme (elle girilmiş kısa kodlar)
+    "sp": "sp",
+    "surec": "surec",
+    "kurum": "kurum",
+    "bireysel": "bireysel",
+    "proje": "proje",
+    "analiz": "analiz",
+    "masaustu": "masaustu",
+    "ayarlar": "ayarlar",
+    "bildirim": "bildirim",
+    # Modülleşme_V2 / seed.py `turkish_to_slug` tipik çıktılar
+    "stratejik_planlama": "sp",
+    "strategic_planlama": "sp",
+    "strategic_planning": "sp",
+    "surec_yonetimi": "surec",
+    "process_yonetimi": "surec",
+    "kurum_paneli": "kurum",
+    "kurumsal_kimlik": "kurum",
+    "bireysel_performans": "bireysel",
+    "proje_yonetimi": "proje",
+    "project_yonetimi": "proje",
+    "analiz_merkezi": "analiz",
+    "analysis_merkezi": "analiz",
+}
+
+_LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
 
 # Rol bazlı kısıtlamalar
 _ROLE_RESTRICTED = {
@@ -102,13 +137,41 @@ _ROLE_RESTRICTED = {
 }
 
 
+def _map_system_code_to_launcher_id(code: str) -> str | None:
+    c = (code or "").strip().lower()
+    if not c:
+        return None
+    if c in _LAUNCHER_MODULE_IDS:
+        return c
+    return _SYSTEM_CODE_TO_LAUNCHER_ID.get(c)
+
+
+def _package_modules_to_launcher_ids(package) -> set[str] | None:
+    """SubscriptionPackage.modules → launcher id kümesi. Tanınmayan kodlar yok sayılır."""
+    try:
+        mods = list(package.modules) if package.modules else []
+    except Exception:
+        return None
+    if not mods:
+        return None
+    out: set[str] = set()
+    for sm in mods:
+        lid = _map_system_code_to_launcher_id(getattr(sm, "code", "") or "")
+        if lid:
+            out.add(lid)
+    # Pakette modül var ama hiçbiri launcher ile eşleşmediyse filtreyi devre dışı bırak
+    if not out:
+        return None
+    return out
+
+
 def get_accessible_modules(user):
     """Kullanıcının erişebileceği modülleri döndür.
 
     Kontrol sırası:
-    1. Tenant paketi → SystemModule → ModuleComponentSlug zinciri
+    1. Tenant paketi → SubscriptionPackage.modules (SystemModule.code) → launcher id
     2. Rol kısıtlamaları
-    3. Paketsiz tenant → minimum set
+    3. Paketsiz tenant → standart kullanıcıya yalnızca minimum set; kurum yöneticisi vb. tam liste
     """
     if user is None:
         return []
@@ -119,17 +182,14 @@ def get_accessible_modules(user):
     if role_name == "Admin":
         return MODULES
 
-    # Paket kontrolü
+    # Paket → modül kodları (doğru ilişki adı: `modules`, alan: `code`)
     allowed_module_ids = None
     try:
         tenant = user.tenant
         if tenant and tenant.package:
-            pkg = tenant.package
-            # SubscriptionPackage → SystemModule ilişkisi varsa kullan
-            if hasattr(pkg, "system_modules") and pkg.system_modules:
-                allowed_module_ids = {m.slug for m in pkg.system_modules if m.slug}
+            allowed_module_ids = _package_modules_to_launcher_ids(tenant.package)
     except Exception:
-        pass
+        allowed_module_ids = None
 
     result = []
     for mod in MODULES:
@@ -147,8 +207,13 @@ def get_accessible_modules(user):
 
         result.append(mod)
 
-    # Paketsiz tenant → yalnızca minimum set
-    if allowed_module_ids is None and not (user.tenant and getattr(user.tenant, "package", None)):
+    # Paketsiz tenant → yalnızca minimum set (kurum yöneticisi / üst yönetim hariç)
+    has_package = bool(user.tenant and getattr(user.tenant, "package_id", None))
+    if (
+        allowed_module_ids is None
+        and not has_package
+        and role_name not in _PRIVILEGED_ROLES_FULL_LAUNCHER
+    ):
         result = [m for m in result if m["id"] in _MINIMUM_MODULE_IDS]
 
     return result

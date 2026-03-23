@@ -546,6 +546,9 @@
                     <tr>
                         <th>No</th>
                         <th>Faaliyet Adı</th>
+                        <th>Plan</th>
+                        <th>Atananlar</th>
+                        <th>Hatırlatma</th>
                         <th class="ay-column text-center">Oca</th>
                         <th class="ay-column text-center">Şub</th>
                         <th class="ay-column text-center">Mar</th>
@@ -572,6 +575,35 @@
                             {% if a.description %}<br><small class="text-muted">{{ a.description[:50] }}...</small>{%
                             endif %}
                         </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ a.start_at.strftime('%d.%m.%Y %H:%M') if a.start_at else (a.start_date|string if a.start_date else '-') }}
+                                <br>→
+                                {{ a.end_at.strftime('%d.%m.%Y %H:%M') if a.end_at else (a.end_date|string if a.end_date else '-') }}
+                            </small>
+                        </td>
+                        <td>
+                            {% if a.assignment_links %}
+                                {% for al in a.assignment_links|sort(attribute='order_no') %}
+                                    {% if al.user %}
+                                        <span class="badge bg-light text-dark border">
+                                            {{ (al.user.first_name or '') ~ ' ' ~ (al.user.last_name or '') if (al.user.first_name or al.user.last_name) else al.user.email }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if a.reminders %}
+                                {% for rr in a.reminders|sort(attribute='minutes_before', reverse=true) %}
+                                    <span class="badge bg-info text-dark">{{ rr.minutes_before }} dk</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
                         {% for m in range(1, 13) %}
                         <td class="ay-column text-center faaliyet-ay-cell" data-activity-id="{{ a.id }}"
                             data-ay="{{ m }}" onclick="toggleFaaliyet(this)" style="cursor:pointer; user-select:none;">
@@ -594,6 +626,10 @@
                             <div class="btn-group btn-group-sm">
                                 <button class="btn btn-outline-warning" onclick="editFaaliyet({{ a.id }})"
                                     title="Düzenle"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-secondary" onclick="showPostponeFaaliyet({{ a.id }})"
+                                    title="Ertele"><i class="bi bi-calendar-event"></i></button>
+                                <button class="btn btn-outline-danger" onclick="cancelFaaliyet({{ a.id }}, '{{ a.name|e }}')"
+                                    title="İptal"><i class="bi bi-x-circle"></i></button>
                                 <button class="btn btn-outline-danger"
                                     onclick="deleteFaaliyet({{ a.id }}, '{{ a.name|e }}')" title="Sil"><i
                                         class="bi bi-trash"></i></button>
@@ -603,7 +639,7 @@
                     {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="16" class="text-center text-muted py-5">
+                        <td colspan="19" class="text-center text-muted py-5">
                             <i class="bi bi-inbox" style="font-size:3rem;"></i>
                             <p class="mt-3">Henüz faaliyet eklenmemiş.</p>
                         </td>
@@ -927,20 +963,43 @@
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label">Başlangıç Tarihi</label>
-                            <input type="date" class="form-control" id="faaliyet_baslangic">
+                            <label class="form-label">Başlangıç Tarih/Saat *</label>
+                            <input type="datetime-local" class="form-control" id="faaliyet_baslangic" required>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label">Bitiş Tarihi</label>
-                            <input type="date" class="form-control" id="faaliyet_bitis">
+                            <label class="form-label">Bitiş Tarih/Saat *</label>
+                            <input type="datetime-local" class="form-control" id="faaliyet_bitis" required>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Atanan Kullanıcılar *</label>
+                        <select class="form-select" id="faaliyet_assignees" multiple size="5">
+                            {% for u in process_users %}
+                            <option value="{{ u.id }}">
+                                {{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '')).strip() or u.email }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Süreç lideri birden fazla kullanıcı seçebilir.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Hatırlatma Zamanları (başlangıca göre)</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check"><input class="form-check-input faaliyet-reminder" type="checkbox" value="60" id="rem1h"><label class="form-check-label" for="rem1h">1 saat önce</label></div>
+                            <div class="form-check"><input class="form-check-input faaliyet-reminder" type="checkbox" value="1440" id="rem1d"><label class="form-check-label" for="rem1d">1 gün önce</label></div>
+                            <div class="form-check"><input class="form-check-input faaliyet-reminder" type="checkbox" value="4320" id="rem3d"><label class="form-check-label" for="rem3d">3 gün önce</label></div>
+                            <div class="form-check"><input class="form-check-input faaliyet-reminder" type="checkbox" value="7200" id="rem5d"><label class="form-check-label" for="rem5d">5 gün önce</label></div>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" id="faaliyet_notify_email">
+                        <label class="form-check-label" for="faaliyet_notify_email">E-posta hatırlatması da gönderilsin</label>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Durum</label>
                         <select class="form-select" id="faaliyet_durum">
                             <option value="Planlandı">Planlandı</option>
-                            <option value="Devam Ediyor">Devam Ediyor</option>
-                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="Ertelendi">Ertelendi</option>
                             <option value="İptal">İptal</option>
                         </select>
                     </div>
@@ -977,20 +1036,43 @@
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label">Başlangıç Tarihi</label>
-                            <input type="date" class="form-control" id="edit_faaliyet_baslangic">
+                            <label class="form-label">Başlangıç Tarih/Saat *</label>
+                            <input type="datetime-local" class="form-control" id="edit_faaliyet_baslangic">
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label">Bitiş Tarihi</label>
-                            <input type="date" class="form-control" id="edit_faaliyet_bitis">
+                            <label class="form-label">Bitiş Tarih/Saat *</label>
+                            <input type="datetime-local" class="form-control" id="edit_faaliyet_bitis">
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Atanan Kullanıcılar *</label>
+                        <select class="form-select" id="edit_faaliyet_assignees" multiple size="5">
+                            {% for u in process_users %}
+                            <option value="{{ u.id }}">
+                                {{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '')).strip() or u.email }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Hatırlatma Zamanları</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check"><input class="form-check-input edit-faaliyet-reminder" type="checkbox" value="60" id="editRem1h"><label class="form-check-label" for="editRem1h">1 saat önce</label></div>
+                            <div class="form-check"><input class="form-check-input edit-faaliyet-reminder" type="checkbox" value="1440" id="editRem1d"><label class="form-check-label" for="editRem1d">1 gün önce</label></div>
+                            <div class="form-check"><input class="form-check-input edit-faaliyet-reminder" type="checkbox" value="4320" id="editRem3d"><label class="form-check-label" for="editRem3d">3 gün önce</label></div>
+                            <div class="form-check"><input class="form-check-input edit-faaliyet-reminder" type="checkbox" value="7200" id="editRem5d"><label class="form-check-label" for="editRem5d">5 gün önce</label></div>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" id="edit_faaliyet_notify_email">
+                        <label class="form-check-label" for="edit_faaliyet_notify_email">E-posta hatırlatması gönder</label>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Durum</label>
                         <select class="form-select" id="edit_faaliyet_durum">
                             <option value="Planlandı">Planlandı</option>
-                            <option value="Devam Ediyor">Devam Ediyor</option>
-                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="Ertelendi">Ertelendi</option>
+                            <option value="Gerçekleşti">Gerçekleşti</option>
                             <option value="İptal">İptal</option>
                         </select>
                     </div>

@@ -5,6 +5,30 @@
 
 ---
 
+## TASK-137 | 2026-03-23 | ✅ Tamamlandı
+
+**Görev:** Süreç Faaliyetleri V2 — süreç karne faaliyetlerine `datetime` planı, çoklu atama, çoklu hatırlatma (in-app + opsiyonel e-posta), ertele/iptal aksiyonları, scheduler ile otomatik gerçekleşme ve bağlı PG için `KpiData(actual_value=1)` otomatik üretimi
+**Modül:** `app/models/process.py`, `migrations/versions/4f3a2b1c9d8e_process_activity_v2_datetime_reminders.py`, `app/routes/process.py`, `app/services/process_activity_service.py`, `services/process_activity_scheduler.py`, `micro/services/notification_triggers.py`, `templates/process/karne.html`, `static/js/process_karne.js`, `__init__.py`, `app.py`, `docs/TASKLOG.md`
+**Durum:** ✅ Tamamlandı
+
+---
+
+## TASK-136 | 2026-03-23 | ✅ Tamamlandı
+
+**Görev:** Micro launcher’da az modül kartı — `get_accessible_modules` paket için yanlış ilişki (`system_modules`/`slug`); paketsiz kurumda kurum yöneticisine de yalnızca minimum 3 kart; düzeltme: `SubscriptionPackage.modules` + `SystemModule.code` eşlemesi, kod→launcher id sözlüğü, ayrıcalıklı rollerde tam liste
+**Modül:** `micro/core/module_registry.py`, `docs/TASKLOG.md`
+**Durum:** ✅ Tamamlandı
+
+---
+
+## TASK-135 | 2026-03-23 | ✅ Tamamlandı
+
+**Görev:** Veritabanından **`1KMF`** kurumu (`tenants.id=9`, KMF Yonetim Danismanligi) kalıcı silindi; yedek `instance/kokpitim_before_tenant_delete_*.db`; tekrar kullanım için `scripts/delete_tenant_permanent.py`
+**Modül:** `scripts/delete_tenant_permanent.py`, `docs/TASKLOG.md`
+**Durum:** ✅ Tamamlandı
+
+---
+
 ## TASK-134 | 2026-03-19 | ✅ Tamamlandı
 
 **Görev:** Micro hızlı giriş URL’leri **`/Hgs_mfg`** ve **`/Hgs_mfg/login/<id>`**; eski **`/hgs`** ve **`/hgs/login/<id>`** → 301 yönlendirme; `module_registry`, kullanım kılavuzu, `test_upload.py`

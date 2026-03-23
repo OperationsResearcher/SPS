@@ -1426,16 +1426,27 @@ function deleteKPI(id, name) {
 
 /* ── Faaliyet Kaydet ─────────────────── */
 function saveFaaliyet() {
+    const assigneeSelect = document.getElementById('faaliyet_assignees');
+    const assigneeIds = assigneeSelect
+        ? Array.from(assigneeSelect.selectedOptions).map(o => parseInt(o.value, 10)).filter(Boolean)
+        : [];
+    const reminderOffsets = Array.from(document.querySelectorAll('.faaliyet-reminder:checked'))
+        .map(el => parseInt(el.value, 10))
+        .filter(v => !Number.isNaN(v));
     const data = {
         process_id: document.getElementById('faaliyet_process_id').value,
         name: document.getElementById('faaliyet_ad').value.trim(),
         process_kpi_id: document.getElementById('faaliyet_kpi').value || null,
-        start_date: document.getElementById('faaliyet_baslangic').value || null,
-        end_date: document.getElementById('faaliyet_bitis').value || null,
+        start_at: document.getElementById('faaliyet_baslangic').value || null,
+        end_at: document.getElementById('faaliyet_bitis').value || null,
         status: document.getElementById('faaliyet_durum')?.value || 'Planlandı',
         description: document.getElementById('faaliyet_aciklama').value,
+        assignee_ids: assigneeIds,
+        reminder_offsets: reminderOffsets,
+        notify_email: document.getElementById('faaliyet_notify_email')?.checked || false,
     };
     if (!data.name) { Swal.fire('Uyarı', 'Faaliyet adı zorunludur.', 'warning'); return; }
+    if (!data.start_at || !data.end_at) { Swal.fire('Uyarı', 'Başlangıç ve bitiş zamanı zorunludur.', 'warning'); return; }
 
     postJSON('/process/api/activity/add', data).then(res => {
         if (res.success) {
@@ -1454,11 +1465,23 @@ function editFaaliyet(id) {
             const a = res.activity;
             document.getElementById('edit_faaliyet_id').value = a.id;
             document.getElementById('edit_faaliyet_ad').value = a.name || '';
-            document.getElementById('edit_faaliyet_baslangic').value = a.start_date || '';
-            document.getElementById('edit_faaliyet_bitis').value = a.end_date || '';
+            document.getElementById('edit_faaliyet_baslangic').value = a.start_at || '';
+            document.getElementById('edit_faaliyet_bitis').value = a.end_at || '';
             document.getElementById('edit_faaliyet_durum').value = a.status || 'Planlandı';
             document.getElementById('edit_faaliyet_ilerleme').value = a.progress || 0;
             document.getElementById('edit_faaliyet_aciklama').value = a.description || '';
+            const editAssignees = document.getElementById('edit_faaliyet_assignees');
+            if (editAssignees) {
+                Array.from(editAssignees.options).forEach(opt => {
+                    opt.selected = (a.assignee_ids || []).includes(parseInt(opt.value, 10));
+                });
+            }
+            document.querySelectorAll('.edit-faaliyet-reminder').forEach(el => {
+                const val = parseInt(el.value, 10);
+                el.checked = (a.reminder_offsets || []).includes(val);
+            });
+            const mailCb = document.getElementById('edit_faaliyet_notify_email');
+            if (mailCb) mailCb.checked = !!a.notify_email;
             new bootstrap.Modal(document.getElementById('editFaaliyetModal')).show();
         })
         .catch(() => Swal.fire('Hata!', 'Sunucu hatası.', 'error'));
@@ -1468,15 +1491,26 @@ function editFaaliyet(id) {
 function updateFaaliyet() {
     const id = document.getElementById('edit_faaliyet_id').value;
     if (!id) return;
+    const editAssignees = document.getElementById('edit_faaliyet_assignees');
+    const assigneeIds = editAssignees
+        ? Array.from(editAssignees.selectedOptions).map(o => parseInt(o.value, 10)).filter(Boolean)
+        : [];
+    const reminderOffsets = Array.from(document.querySelectorAll('.edit-faaliyet-reminder:checked'))
+        .map(el => parseInt(el.value, 10))
+        .filter(v => !Number.isNaN(v));
     const data = {
         name: document.getElementById('edit_faaliyet_ad').value.trim(),
-        start_date: document.getElementById('edit_faaliyet_baslangic').value || null,
-        end_date: document.getElementById('edit_faaliyet_bitis').value || null,
+        start_at: document.getElementById('edit_faaliyet_baslangic').value || null,
+        end_at: document.getElementById('edit_faaliyet_bitis').value || null,
         status: document.getElementById('edit_faaliyet_durum').value,
         progress: document.getElementById('edit_faaliyet_ilerleme').value || 0,
         description: document.getElementById('edit_faaliyet_aciklama').value,
+        assignee_ids: assigneeIds,
+        reminder_offsets: reminderOffsets,
+        notify_email: document.getElementById('edit_faaliyet_notify_email')?.checked || false,
     };
     if (!data.name) { Swal.fire('Uyarı', 'Faaliyet adı zorunludur.', 'warning'); return; }
+    if (!data.start_at || !data.end_at) { Swal.fire('Uyarı', 'Başlangıç ve bitiş zamanı zorunludur.', 'warning'); return; }
 
     postJSON(`/process/api/activity/update/${id}`, data).then(res => {
         if (res.success) {
@@ -1500,6 +1534,60 @@ function deleteFaaliyet(id, name) {
                 Swal.fire({ icon: 'success', timer: 800, showConfirmButton: false })
                     .then(() => location.reload());
             } else Swal.fire('Hata!', res.message, 'error');
+        });
+    });
+}
+
+function cancelFaaliyet(id, name) {
+    Swal.fire({
+        title: 'Faaliyet iptal edilsin mi?',
+        html: `<strong>"${name}"</strong> iptal edilecek.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'İptal Et',
+        cancelButtonText: 'Vazgeç',
+        confirmButtonColor: '#dc3545'
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        postJSON(`/process/api/activity/cancel/${id}`, {}).then(res => {
+            if (res.success) {
+                Swal.fire({ icon: 'success', timer: 900, showConfirmButton: false }).then(() => location.reload());
+            } else {
+                Swal.fire('Hata!', res.message || 'İptal edilemedi.', 'error');
+            }
+        });
+    });
+}
+
+function showPostponeFaaliyet(id) {
+    Swal.fire({
+        title: 'Faaliyeti ertele',
+        html: `
+            <label class="form-label text-start w-100 mt-1">Yeni başlangıç</label>
+            <input id="postpone_start" type="datetime-local" class="form-control mb-2">
+            <label class="form-label text-start w-100">Yeni bitiş</label>
+            <input id="postpone_end" type="datetime-local" class="form-control">
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Kaydet',
+        cancelButtonText: 'Vazgeç',
+        preConfirm: () => {
+            const startAt = document.getElementById('postpone_start').value;
+            const endAt = document.getElementById('postpone_end').value;
+            if (!startAt || !endAt) {
+                Swal.showValidationMessage('Başlangıç ve bitiş zamanı zorunlu.');
+                return false;
+            }
+            return { start_at: startAt, end_at: endAt };
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+        postJSON(`/process/api/activity/postpone/${id}`, result.value).then(res => {
+            if (res.success) {
+                Swal.fire({ icon: 'success', timer: 900, showConfirmButton: false }).then(() => location.reload());
+            } else {
+                Swal.fire('Hata!', res.message || 'Erteleme başarısız.', 'error');
+            }
         });
     });
 }
@@ -1531,6 +1619,8 @@ if (typeof window !== 'undefined') {
     window.toggleFaaliyet = toggleFaaliyet;
     window.editFaaliyet = editFaaliyet;
     window.deleteFaaliyet = deleteFaaliyet;
+    window.cancelFaaliyet = cancelFaaliyet;
+    window.showPostponeFaaliyet = showPostponeFaaliyet;
     window.toggleCol = toggleCol;
     window.toggleColByClass = toggleColByClass;
     window.toggleBasariPuaniForm = toggleBasariPuaniForm;

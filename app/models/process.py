@@ -171,11 +171,25 @@ class ProcessActivity(db.Model):
     name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     
+    # Legacy date-only alanları (geriye dönük uyumluluk)
     start_date = db.Column(db.Date, nullable=True)
     end_date = db.Column(db.Date, nullable=True)
+
+    # V2 zaman planı (asıl işleyen alanlar)
+    start_at = db.Column(db.DateTime, nullable=True, index=True)
+    end_at = db.Column(db.DateTime, nullable=True, index=True)
     
     status = db.Column(db.String(50), default='Planlandı')
     progress = db.Column(db.Integer, default=0)
+    notify_email = db.Column(db.Boolean, default=False, nullable=False)
+    auto_complete_enabled = db.Column(db.Boolean, default=True, nullable=False)
+    auto_pgv_created = db.Column(db.Boolean, default=False, nullable=False, index=True)
+    auto_pgv_kpi_data_id = db.Column(db.Integer, db.ForeignKey('kpi_data.id', ondelete='SET NULL'), nullable=True, index=True)
+
+    completed_at = db.Column(db.DateTime, nullable=True)
+    cancelled_at = db.Column(db.DateTime, nullable=True)
+    postponed_at = db.Column(db.DateTime, nullable=True)
+
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
     
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -184,9 +198,75 @@ class ProcessActivity(db.Model):
     # Relationships
     process = db.relationship('Process', backref=db.backref('activities', lazy=True, cascade='all, delete-orphan'))
     process_kpi = db.relationship('ProcessKpi', backref=db.backref('activities', lazy=True))
+    auto_pgv_kpi_data = db.relationship('KpiData', foreign_keys=[auto_pgv_kpi_data_id], uselist=False)
+    assignees = db.relationship(
+        'User',
+        secondary='process_activity_assignees',
+        primaryjoin='ProcessActivity.id == ProcessActivityAssignee.activity_id',
+        secondaryjoin='User.id == ProcessActivityAssignee.user_id',
+        foreign_keys='[ProcessActivityAssignee.activity_id, ProcessActivityAssignee.user_id]',
+        backref=db.backref('assigned_process_activities', lazy=True),
+        overlaps='assignment_links,process_activity_assignments,activity,user',
+        lazy=True,
+    )
     
     def __repr__(self):
         return f'<ProcessActivity {self.name}>'
+
+    @property
+    def first_assignee_id(self):
+        links = sorted(self.assignment_links, key=lambda x: (x.order_no or 0, x.created_at or datetime.min))
+        return links[0].user_id if links else None
+
+
+class ProcessActivityAssignee(db.Model):
+    """V2: Süreç faaliyeti çoklu atama ilişkisi."""
+    __tablename__ = 'process_activity_assignees'
+
+    activity_id = db.Column(db.Integer, db.ForeignKey('process_activities.id', ondelete='CASCADE'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    order_no = db.Column(db.Integer, nullable=False, default=1)
+    assigned_by = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
+    assigned_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    activity = db.relationship(
+        'ProcessActivity',
+        backref=db.backref('assignment_links', lazy=True, cascade='all, delete-orphan', overlaps='assignees,assigned_process_activities'),
+        overlaps='assignees,assigned_process_activities',
+    )
+    user = db.relationship(
+        'User',
+        foreign_keys=[user_id],
+        backref=db.backref('process_activity_assignments', lazy=True, overlaps='assignees,assigned_process_activities'),
+        overlaps='assignees,assigned_process_activities',
+    )
+    assigner = db.relationship('User', foreign_keys=[assigned_by], backref=db.backref('assigned_process_activities_links', lazy=True))
+
+    def __repr__(self):
+        return f'<ProcessActivityAssignee a={self.activity_id} u={self.user_id} o={self.order_no}>'
+
+
+class ProcessActivityReminder(db.Model):
+    """V2: Süreç faaliyeti için çoklu hatırlatma satırları."""
+    __tablename__ = 'process_activity_reminders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey('process_activities.id', ondelete='CASCADE'), nullable=False, index=True)
+    minutes_before = db.Column(db.Integer, nullable=False)
+    remind_at = db.Column(db.DateTime, nullable=False, index=True)
+    channel_email = db.Column(db.Boolean, default=False, nullable=False)
+    sent_at = db.Column(db.DateTime, nullable=True, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    activity = db.relationship('ProcessActivity', backref=db.backref('reminders', lazy=True, cascade='all, delete-orphan'))
+
+    __table_args__ = (
+        db.UniqueConstraint('activity_id', 'minutes_before', name='uq_activity_reminder_offset'),
+    )
+
+    def __repr__(self):
+        return f'<ProcessActivityReminder a={self.activity_id} m={self.minutes_before}>'
 
 
 class ActivityTrack(db.Model):

@@ -18,6 +18,8 @@ from app.models.process import (  # noqa: E402
     Process,
     ProcessKpi,
     ProcessActivity,
+    ProcessActivityAssignee,
+    ProcessActivityReminder,
     KpiData,
     KpiDataAudit,
     IndividualPerformanceIndicator,
