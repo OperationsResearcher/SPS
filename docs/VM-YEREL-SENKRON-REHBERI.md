@@ -129,3 +129,34 @@ Flask-Kokpitim **`SQLALCHEMY_DATABASE_URI`** okur. VM'deki `.env` icinde bu yoks
 
 **2026-03-24:** VM'de yedek alindi, `.env.postgres` olusturuldu, PostgreSQL `listen_addresses` acildi, container + migration basariyla **PostgreSQL** uzerinde calisti; `tenants`/`users` sayilari onceki ile uyumlu kaldi.
 
+## 11) Bu sorunlari bir daha yasamamak — ders ozeti
+
+### Tek kaynak hakikati
+
+- **Sema:** Sadece Alembic migration; “sunucuda bir komutla tablo ac” yaklasimi sayac ve ortamlari ayirir.
+- **Ortam:** Yerel ve VM’de **aynı degisken adi** ile PostgreSQL URI (`SQLALCHEMY_DATABASE_URI`). MSSQL tarzi `SQL_*` degiskenleri uygulamayi **baglamaz**; kafa karisikligi yaratir — ya kaldirin ya da dokümante ayirin.
+
+### Deploy sablonu (sirasyla)
+
+1. **Yedek:** `pg_dump` (ve isterseniz SQLite volume).
+2. **Kod:** `git pull`, image build.
+3. **Container:** Uygulamanin **gercekte** hangi DB’ye baktigini dogrulayin (`docker exec … python3 -c "from run import app; print(app.config['SQLALCHEMY_DATABASE_URI'][:40])"` benzeri veya log’da `PostgreSQLImpl`).
+4. **Migration:** `run_db_upgrade.py` (Flask CLI kok `__init__.py` cakismasindan kacinmak icin).
+5. **Dogrulama:** `alembic current`, `/health`, kritik sayfalar + **bir onceki deploy’daki satir sayilari** ile karsilastirma (`vm_smoke_check.ps1` mantigi).
+
+### PostgreSQL + Docker
+
+- Docker icinden host PG’ye gidecekseniz: **URI host’u** (`host.docker.internal` + `host-gateway`) **ve** sunucuda PG’nin TCP’de dinlemesi (`listen_addresses`, `restart`) uyumlu olmali; sadece `pg_hba` yetmez.
+- **Migration’i SQLite’a karsi calistirdiginizi** anlamak icin Alembic log’ta `SQLiteImpl` / `PostgreSQLImpl` ayrımına bakin.
+
+### Semantik / miras kod
+
+- ORM’de `user` / `surec` ile `users` / `processes` karisimi; tablo yoksa **fallback** veya migration ile doldurmak — “sessizce 0” veya patlama arasinda secim bilincli olsun.
+- Iliiski tablolari (`project_leaders` vb.) modelde var ama migration atlanmissa production’da **UndefinedTable** — yeni tablolar icin her zaman **idempotent** migration ( `has_table` ) veya net zincir.
+
+### Guvenlik ve operasyon
+
+- `.env.postgres` **git’te olmamali**; sunucuda izinler sinirli.
+- `listen_addresses = '*'` ile PG tum arayuzlere acilir; **firewall / sadece gerekli kaynak** kuralını gözden geçirin.
+- Sunucuda **commitlenmemis `git stash` / yerel patch** birikirse `git pull` kilitlenir; deploy oncesi ya repoya alın ya da stash’i etiketleyip geri donus planı yazın.
+
