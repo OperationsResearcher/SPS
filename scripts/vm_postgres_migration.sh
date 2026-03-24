@@ -85,6 +85,7 @@ echo "==> 5/7 PostgreSQL schema olusturuluyor (flask db upgrade)..."
 sudo docker build -t "$IMAGE_NAME" . -q
 sudo docker run --rm \
   -v "$APP_DIR:/app" \
+  -e FLASK_APP=app.py \
   -e SQLALCHEMY_DATABASE_URI="$PG_URI" \
   -w /app \
   "$IMAGE_NAME" \

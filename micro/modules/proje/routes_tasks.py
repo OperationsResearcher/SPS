@@ -13,7 +13,12 @@ from app.models.core import User as CoreUser
 from micro import micro_bp
 from models import Task, db
 from micro.modules.proje.helpers import kurum_id, load_project, tenant_core_users, kpis_for_tenant
-from micro.modules.proje.permissions import user_can_access_project, user_can_edit_tasks
+from micro.modules.proje.permissions import (
+    can_crud_project_portfolio,
+    user_can_access_project,
+    user_can_edit_tasks,
+    user_can_manage_task,
+)
 from micro.services.notification_triggers import (
     notify_project_task_status_change,
     notify_task_assignment,
@@ -52,6 +57,12 @@ def micro_project_task_new(project_id: int):
             process_kpi_id = None
 
     assignee_id = request.form.get("assignee_id", type=int) or None
+    if assignee_id:
+        assignee_user = CoreUser.query.get(assignee_id)
+        if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
+            flash("Geçersiz görev ataması.", "danger")
+            return redirect(url_for("micro_bp.micro_project_task_new", project_id=project_id))
+
     due = None
     if request.form.get("due_date"):
         try:
@@ -107,7 +118,7 @@ def micro_project_task_detail(project_id: int, task_id: int):
         project=proj,
         task=task,
         linked_kpi=kpi,
-        can_edit=user_can_edit_tasks(current_user, proj),
+        can_edit=user_can_manage_task(current_user, proj, task),
     )
 
 
@@ -115,11 +126,10 @@ def micro_project_task_detail(project_id: int, task_id: int):
 @login_required
 def micro_project_task_edit(project_id: int, task_id: int):
     proj = load_project(project_id)
-    if not user_can_edit_tasks(current_user, proj):
+    task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
+    if not user_can_manage_task(current_user, proj, task):
         flash("Düzenleyemezsiniz.", "danger")
         return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
-
-    task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     kpis = kpis_for_tenant()
 
     if request.method == "GET":
@@ -138,7 +148,13 @@ def micro_project_task_edit(project_id: int, task_id: int):
     task.description = (request.form.get("description") or "").strip() or None
     task.status = request.form.get("status") or task.status
     task.priority = request.form.get("priority") or task.priority
-    task.assignee_id = request.form.get("assignee_id", type=int) or None
+    next_assignee_id = request.form.get("assignee_id", type=int) or None
+    if next_assignee_id:
+        assignee_user = CoreUser.query.get(next_assignee_id)
+        if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
+            flash("Geçersiz görev ataması.", "danger")
+            return redirect(url_for("micro_bp.micro_project_task_edit", project_id=project_id, task_id=task_id))
+    task.assignee_id = next_assignee_id
 
     pk_raw = request.form.get("process_kpi_id")
     if pk_raw == "" or pk_raw is None:
@@ -182,3 +198,17 @@ def micro_project_task_edit(project_id: int, task_id: int):
     db.session.commit()
     flash("Görev güncellendi.", "success")
     return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
+
+
+@micro_bp.route("/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
+@login_required
+def micro_project_task_delete(project_id: int, task_id: int):
+    proj = load_project(project_id)
+    if not can_crud_project_portfolio(current_user):
+        flash("Görev silme yetkiniz yok.", "danger")
+        return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
+    task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
+    task.is_archived = True
+    db.session.commit()
+    flash("Görev silindi.", "success")
+    return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))

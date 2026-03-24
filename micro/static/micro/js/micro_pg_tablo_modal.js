@@ -159,8 +159,10 @@
       kpiDataDeleteTemplate,
       kpiDataRowPlaceholder,
       openAddKpiModal,
+      openDataEntryModal,
       onAfterMutation,
       canCrudPg,
+      getCanEnterPgv,
     } = ctx;
 
     const overlay = document.getElementById("modal-micro-pg-tablo");
@@ -178,6 +180,7 @@
     let currentOffset = 0;
     let gunlukViewYear = new Date().getFullYear();
     let gunlukViewMonth = new Date().getMonth() + 1;
+    let lastLoadedKpis = [];
     let highlightKpiId = null;
     let _veriDetayKpiId = null;
     let _veriDetayPeriodKey = "";
@@ -228,17 +231,14 @@
       };
       const y = getViewedYear();
       if (currentPeriyot === "gunluk") {
-        navLabel.textContent = `${gunlukViewYear} — ${AYLAR_TR_FULL[gunlukViewMonth - 1]} — Günlük`;
+        navLabel.textContent = `${gunlukViewYear} — Günlük görünümü`;
       } else {
         navLabel.textContent = `${y} — ${names[currentPeriyot] || currentPeriyot} görünümü`;
       }
       if (navSub) {
-        let sub = "—";
-        if (typeof globalThis.kokpitimKarneBadgeDetail === "function") {
-          const gm = currentPeriyot === "gunluk" ? gunlukViewMonth : undefined;
-          sub = globalThis.kokpitimKarneBadgeDetail(String(y), currentPeriyot, gm);
-        }
-        navSub.textContent = sub;
+        // Alt bilgi sadece günlükte gösterilsin: ay adı.
+        navSub.textContent =
+          currentPeriyot === "gunluk" ? (AYLAR_TR_FULL[gunlukViewMonth - 1] || "") : "";
       }
     }
 
@@ -263,6 +263,7 @@
 
     function rebuildPGTableByPeriyot(kpis, favoriteKpiIds) {
       if (!thead || !tbody) return;
+      lastLoadedKpis = Array.isArray(kpis) ? kpis : [];
       const favSet = new Set(favoriteKpiIds || []);
       const periods = getPeriodsForPeriyot();
       const isGunluk = currentPeriyot === "gunluk" && periods.length > 0 && periods[0].isDay;
@@ -721,6 +722,28 @@
 
     document.getElementById("btn-micro-pg-tablo-add-pg")?.addEventListener("click", () => {
       if (typeof openAddKpiModal === "function") openAddKpiModal();
+    });
+    document.getElementById("btn-micro-pg-tablo-add-pgv")?.addEventListener("click", () => {
+      const canEnterPgv = typeof getCanEnterPgv === "function" ? !!getCanEnterPgv() : false;
+      if (!canEnterPgv) {
+        showError("PG verisi girme yetkiniz yok.");
+        return;
+      }
+      if (typeof openDataEntryModal !== "function") {
+        showError("Veri girişi sihirbazı şu an kullanılamıyor.");
+        return;
+      }
+      if (!lastLoadedKpis.length) {
+        showError("Önce bu sürece performans göstergesi ekleyin.");
+        return;
+      }
+
+      // PG Ekle ile aynı sadelikte akış: ek seçim popup'ı açmadan doğrudan VGS aç.
+      const selectedKpiId = String(lastLoadedKpis[0].id);
+
+      const selectedYear = String(getViewedYear());
+      // Tablo görünümü açık kalsın; VGS bunun üstünde açılsın.
+      openDataEntryModal(selectedKpiId, selectedYear, { keepTableModalOpen: true });
     });
 
     yilSel?.addEventListener("change", () => {

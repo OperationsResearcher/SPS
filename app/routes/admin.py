@@ -472,7 +472,8 @@ def users():
             .all()
         )
         tenants_list = Tenant.query.filter_by(id=current_user.tenant_id).all()
-        roles_list = Role.query.filter(Role.name.in_(["tenant_admin", "executive_manager", "standard_user"])).order_by(Role.name).all()
+        # tenant_admin atama/değiştirme yalnızca Admin'de kalır.
+        roles_list = Role.query.filter(Role.name.in_(["executive_manager", "standard_user"])).order_by(Role.name).all()
 
     return render_template(
         "admin/users.html",
@@ -523,6 +524,9 @@ def users_add():
         return redirect(url_for("admin_bp.users"))
         
     target_role = Role.query.get(int(data["role_id"])) if data["role_id"] else None
+    if current_user.role.name != "Admin" and target_role and target_role.name == "tenant_admin":
+        flash("Kurum Yöneticisi atama işlemi sadece Admin tarafından yapılabilir.", "danger")
+        return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin":
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
@@ -564,8 +568,8 @@ def users_edit(user_id):
     if current_user.role.name == "standard_user" and u.id != current_user.id:
         abort(403)
         
-    if current_user.role.name == "executive_manager" and u.role and u.role.name == "tenant_admin":
-        flash("Üst yöneticiler, kurum yöneticisi hesabını düzenleyemez.", "danger")
+    if current_user.role.name != "Admin" and u.role and u.role.name == "tenant_admin":
+        flash("Kurum Yöneticisi hesabını sadece Admin düzenleyebilir.", "danger")
         return redirect(url_for("admin_bp.users"))
 
     data = _parse_user_form()
@@ -582,6 +586,9 @@ def users_edit(user_id):
         return redirect(url_for("admin_bp.users"))
         
     target_role = Role.query.get(int(data["role_id"])) if data["role_id"] else None
+    if current_user.role.name != "Admin" and target_role and target_role.name == "tenant_admin":
+        flash("Kurum Yöneticisi rolü sadece Admin tarafından atanabilir/değiştirilebilir.", "danger")
+        return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin" and (not u.role or u.role.name != "tenant_admin"):
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
@@ -620,8 +627,8 @@ def users_toggle(user_id):
     if current_user.role.name == "standard_user":
         abort(403)
         
-    if current_user.role.name == "executive_manager" and u.role and u.role.name == "tenant_admin":
-        flash("Üst yöneticiler, kurum yöneticisi hesabını silemez/devre dışı bırakamaz.", "danger")
+    if current_user.role.name != "Admin" and u.role and u.role.name == "tenant_admin":
+        flash("Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir.", "danger")
         return redirect(url_for("admin_bp.users"))
         
     if u.id == current_user.id:

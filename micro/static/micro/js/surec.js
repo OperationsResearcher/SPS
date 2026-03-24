@@ -35,10 +35,37 @@
       throw err;
     }
     const contentType = String(res.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      throw new Error("Sunucudan beklenmeyen yanıt alındı.");
+    if (contentType.includes("application/json")) {
+      try {
+        return await res.json();
+      } catch (_) {
+        throw new Error(`Sunucu JSON yanıtı okunamadı (HTTP ${res.status}).`);
+      }
     }
-    return res.json();
+
+    // JSON dışı (çoğunlukla HTML hata sayfası) döndüğünde kullanıcıya daha net mesaj ver.
+    let raw = "";
+    try {
+      raw = (await res.text()).trim();
+    } catch (_) {
+      raw = "";
+    }
+
+    if (res.status === 429) {
+      throw new Error("İstek limiti aşıldı. Lütfen bir süre sonra tekrar deneyin.");
+    }
+    if (res.status === 403) {
+      throw new Error("Bu işlem için yetkiniz yok (403).");
+    }
+    if (res.status === 404) {
+      throw new Error("İstenen kayıt bulunamadı (404).");
+    }
+    if (res.status >= 500) {
+      throw new Error(`Sunucu hatası oluştu (HTTP ${res.status}).`);
+    }
+
+    const short = raw ? raw.replace(/\s+/g, " ").slice(0, 120) : "";
+    throw new Error(short || `Sunucudan beklenmeyen yanıt alındı (HTTP ${res.status}).`);
   }
 
   async function postJson(url, body) {
@@ -455,6 +482,27 @@
     activityViewMode = resolveActivityViewMode();
     if (activityKanbanRoot) activityKanbanRoot.style.display = activityViewMode === "kanban" ? "" : "none";
     if (activityTableWrap) activityTableWrap.style.display = activityViewMode === "table" ? "" : "none";
+  }
+
+  function normalizeTrText(input) {
+    return String(input || "")
+      .toLowerCase()
+      .replace(/ı/g, "i")
+      .replace(/İ/g, "i")
+      .replace(/ç/g, "c")
+      .replace(/ğ/g, "g")
+      .replace(/ö/g, "o")
+      .replace(/ş/g, "s")
+      .replace(/ü/g, "u")
+      .replace(/�/g, "");
+  }
+
+  function isActivityCompleted(activity) {
+    const s = normalizeTrText(activity?.status || "");
+    if (s.includes("tamam") || s.includes("gercek")) return true;
+    if ((Number(activity?.progress) || 0) >= 100) return true;
+    const vals = Object.values(activity?.monthly_tracks || {});
+    return vals.some((v) => v === true);
   }
 
   function buildKpiOptionsHtml(selectedId) {
@@ -995,10 +1043,8 @@
     }
 
     const acts = activities || [];
-    const actPct =
-      acts.length === 0
-        ? 0
-        : Math.round(acts.reduce((s, a) => s + (Number(a.progress) || 0), 0) / acts.length);
+    const doneCount = acts.filter((a) => isActivityCompleted(a)).length;
+    const actPct = acts.length === 0 ? 0 : Math.round((doneCount / acts.length) * 100);
     const barA = document.getElementById("karne-bar-activities");
     const pctA = document.getElementById("karne-pct-activities");
     if (barA) barA.style.width = actPct + "%";
@@ -1020,7 +1066,7 @@
 
     const hint = document.getElementById("karne-activity-counts");
     if (hint) {
-      const done = acts.filter((a) => (Number(a.progress) || 0) >= 100).length;
+      const done = doneCount;
       hint.textContent =
         acts.length === 0
           ? "Tanımlı faaliyet yok"
@@ -1095,8 +1141,10 @@
       kpiDataDeleteTemplate: KPI_DATA_DELETE_URL_TEMPLATE,
       kpiDataRowPlaceholder: KPI_DATA_ROW_PLACEHOLDER,
       openAddKpiModal: () => openAddKpiModal(),
+      openDataEntryModal: (kpiId, year, opts) => openDataEntryModal(kpiId, year, opts),
       onAfterMutation: () => loadKarne(),
       canCrudPg,
+      getCanEnterPgv: () => canEnterPgv,
     });
   }
 
@@ -1323,13 +1371,7 @@
 
   function updateStatsFaaliyet(activities) {
     const totalAct = activities ? activities.length : 0;
-    let doneAct = 0;
-    if (activities) {
-      activities.forEach((a) => {
-        const vals = Object.values(a.monthly_tracks || {});
-        if (vals.some((v) => v === true)) doneAct++;
-      });
-    }
+    const doneAct = (activities || []).filter((a) => isActivityCompleted(a)).length;
     const pct = totalAct > 0 ? Math.round((doneAct / totalAct) * 100) : 0;
     const el = (id) => document.getElementById(id);
     if (el("stat-activities")) el("stat-activities").textContent = totalAct;
@@ -1405,6 +1447,36 @@
     const kpi = cachedKpis.find(k => String(k.id) === this.value);
     renderTrendChart(kpi || null);
   });
+
+  // Trend kartı accordion (varsayılan kapalı)
+  (function initTrendAccordion() {
+    const toggle = document.getElementById("trend-accordion-toggle");
+    const panel = document.getElementById("trend-accordion-panel");
+    if (!toggle || !panel) return;
+
+    function setOpen(isOpen) {
+      toggle.classList.toggle("is-open", isOpen);
+      panel.classList.toggle("is-collapsed", !isOpen);
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      panel.setAttribute("aria-hidden", isOpen ? "false" : "true");
+    }
+
+    // Sayfa açılışında kapalı gelsin.
+    setOpen(false);
+
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      setOpen(!isOpen);
+    });
+
+    toggle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        setOpen(!isOpen);
+      }
+    });
+  })();
 
   // ── Kanban + gauge (PG kartları) ──────────────────────────────────────────
   function formatTargetDisplay(cellTarget, targetValRaw) {
@@ -2054,6 +2126,7 @@
         ? a.assignees.map((u) => u.full_name || u.email || `#${u.id}`).join(", ")
         : "Atama yok";
       const kpiLabel = a.process_kpi_name || "Bağımsız faaliyet";
+      const canManage = !!a.can_manage || !!canCrudActivity;
       const card = `
         <div class="kb-card" data-act-id="${a.id}">
           <div class="kb-card-top">
@@ -2062,9 +2135,10 @@
               <div class="kb-card-subline">${escHtml(a.status || "Planlandı")}</div>
             </div>
             <div class="kb-card-actions no-print">
-              ${canCrudActivity ? `<button type="button" class="btn-act-postpone text-amber-500 hover:text-amber-700 text-xs" data-act-id="${a.id}" title="Ertele"><i class="fas fa-clock"></i></button>` : ""}
-              ${canCrudActivity ? `<button type="button" class="btn-act-cancel text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="İptal"><i class="fas fa-ban"></i></button>` : ""}
-              ${canCrudActivity ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil"><i class="fas fa-trash"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-complete text-emerald-500 hover:text-emerald-700 text-xs" data-act-id="${a.id}" title="Tamamlandı olarak işaretle"><i class="fas fa-check"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-postpone text-amber-500 hover:text-amber-700 text-xs" data-act-id="${a.id}" title="Ertele"><i class="fas fa-clock"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-cancel text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="İptal"><i class="fas fa-ban"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil"><i class="fas fa-trash"></i></button>` : ""}
             </div>
           </div>
           <div class="kb-card-divider"></div>
@@ -2096,7 +2170,8 @@
       const monthCells = Array.from({ length: 12 }, (_, idx) => {
         const month = idx + 1;
         const done = a.monthly_tracks[month] === true;
-        const dis = canTrackActivity ? "" : " disabled";
+        const canTrackThisActivity = !!(a.can_manage || canCrudActivity);
+        const dis = (canTrackActivity && canTrackThisActivity) ? "" : " disabled";
         return `<td class="px-2 py-2 text-center">
           <input type="checkbox" class="track-checkbox w-4 h-4 accent-emerald-600 cursor-pointer"
                  data-act-id="${a.id}" data-month="${month}" data-year="${year}"
@@ -2131,7 +2206,7 @@
         <td class="px-3 py-2 text-center text-xs ${statusColor}">${escHtml(a.status || "—")}</td>
         ${monthCells}
         <td class="px-3 py-2 text-center">${
-          canCrudActivity
+          (a.can_manage || canCrudActivity)
             ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil">
             <i class="fas fa-trash"></i>
           </button>`
@@ -2148,8 +2223,8 @@
   }
 
   async function openPostponeActivityModal(actId) {
-    if (!canCrudActivity) return;
     const activity = (cachedActivities || []).find((a) => String(a.id) === String(actId));
+    if (!activity || !(activity.can_manage || canCrudActivity)) return;
     const startVal = toDateTimeLocalValue(activity?.start_at || activity?.start_date || "");
     const endVal = toDateTimeLocalValue(activity?.end_at || activity?.end_date || "");
     if (typeof window.openMcFormModal !== "function") {
@@ -2261,7 +2336,8 @@
     // Faaliyet sil
     const btnActDel = e.target.closest(".btn-act-delete");
     if (btnActDel) {
-      if (!canCrudActivity) return;
+      const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActDel.dataset.actId));
+      if (!activity || !(activity.can_manage || canCrudActivity)) return;
       const ok = await confirmDelete("Faaliyet silinsin mi?", "Faaliyet pasife alınacak.");
       if (!ok) return;
       try {
@@ -2274,7 +2350,8 @@
 
     const btnActCancel = e.target.closest(".btn-act-cancel");
     if (btnActCancel) {
-      if (!canCrudActivity) return;
+      const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActCancel.dataset.actId));
+      if (!activity || !(activity.can_manage || canCrudActivity)) return;
       const ok = await confirmDelete("Faaliyet iptal edilsin mi?", "Faaliyet durumu 'İptal' olarak güncellenecek.");
       if (!ok) return;
       try {
@@ -2290,8 +2367,26 @@
 
     const btnActPostpone = e.target.closest(".btn-act-postpone");
     if (btnActPostpone) {
-      if (!canCrudActivity) return;
+      const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActPostpone.dataset.actId));
+      if (!activity || !(activity.can_manage || canCrudActivity)) return;
       await openPostponeActivityModal(btnActPostpone.dataset.actId);
+      return;
+    }
+
+    const btnActComplete = e.target.closest(".btn-act-complete");
+    if (btnActComplete) {
+      const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActComplete.dataset.actId));
+      if (!activity || !(activity.can_manage || canCrudActivity)) return;
+      const ok = await confirmDelete("Faaliyet tamamlandı olarak işaretlensin mi?", "Durum 'Tamamlandı', ilerleme %100 olacak.");
+      if (!ok) return;
+      try {
+        const data = await postJson(`/process/api/activity/complete/${btnActComplete.dataset.actId}`, {});
+        if (!data.success) throw new Error(data.message || "Faaliyet tamamlanamadı.");
+        toastSuccess(data.message || "Faaliyet tamamlandı.");
+        loadKarne();
+      } catch (err) {
+        showError(err.message || "İşlem başarısız.");
+      }
       return;
     }
   });

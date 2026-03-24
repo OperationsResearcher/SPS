@@ -67,6 +67,59 @@ def _is_process_leader(process):
     return any(int(u.id) == int(current_user.id) for u in (process.leaders or []))
 
 
+def _can_manage_activity(process, activity):
+    if _can_crud_pg_and_activity(process):
+        return True
+    return any(int(l.user_id) == int(current_user.id) for l in (activity.assignment_links or []))
+
+
+def _role_name() -> str:
+    return current_user.role.name if current_user and current_user.role else ""
+
+
+def _is_privileged_process_role() -> bool:
+    return _role_name() in _PRIVILEGED_ACTIVITY_ASSIGN_ROLES
+
+
+def _user_assigned_to_process(process) -> bool:
+    if not process:
+        return False
+    uid = int(current_user.id)
+    return (
+        any(int(u.id) == uid for u in (process.leaders or []))
+        or any(int(u.id) == uid for u in (process.members or []))
+        or any(int(u.id) == uid for u in (process.owners or []))
+    )
+
+
+def _can_access_process(process) -> bool:
+    return _is_privileged_process_role() or _user_assigned_to_process(process)
+
+
+def _can_edit_process_record(process) -> bool:
+    if _is_privileged_process_role():
+        return True
+    uid = int(current_user.id)
+    return (
+        any(int(u.id) == uid for u in (process.leaders or []))
+        or any(int(u.id) == uid for u in (process.owners or []))
+    )
+
+
+def _can_crud_pg_and_activity(process) -> bool:
+    return _can_edit_process_record(process)
+
+
+def _can_enter_pgv(process) -> bool:
+    return _can_access_process(process)
+
+
+def _can_edit_kpi_data_row(entry, process) -> bool:
+    if _is_privileged_process_role() or _can_edit_process_record(process):
+        return True
+    return bool(entry and int(entry.user_id) == int(current_user.id))
+
+
 def _can_assign_multiple(process):
     role_name = current_user.role.name if current_user.role else ''
     return role_name in _PRIVILEGED_ACTIVITY_ASSIGN_ROLES or _is_process_leader(process)
@@ -163,6 +216,8 @@ def index():
         tenant_id=current_user.tenant_id,
         is_active=True
     ).order_by(Process.code.asc()).all()
+    if not _is_privileged_process_role():
+        all_processes = [p for p in all_processes if _user_assigned_to_process(p)]
 
     # Hiyerarşi: root (parent_id=None) ve child'lar
     all_ids = {p.id for p in all_processes}
@@ -246,12 +301,16 @@ def karne(process_id):
         tenant_id=current_user.tenant_id,
         is_active=True
     ).first_or_404()
+    if not _can_access_process(process):
+        abort(403)
 
     # Tüm süreçler — karne içindeki süreç seçici için
     all_processes = Process.query.filter_by(
         tenant_id=current_user.tenant_id,
         is_active=True
     ).order_by(Process.code.asc()).all()
+    if not _is_privileged_process_role():
+        all_processes = [p for p in all_processes if _user_assigned_to_process(p)]
 
     # Performans Göstergeleri
     kpis = ProcessKpi.query.filter_by(process_id=process.id, is_active=True).all()
@@ -299,6 +358,8 @@ def karne(process_id):
 @login_required
 def add_process():
     data = request.get_json()
+    if not _is_privileged_process_role():
+        return jsonify({'success': False, 'message': 'Süreç oluşturma yetkiniz yok.'}), 403
     try:
         parent_id_raw = data.get('parent_id') or None
         parent_id = validate_process_parent_id(None, parent_id_raw, current_user.tenant_id)
@@ -330,11 +391,11 @@ def add_process():
 
         # Leaders / Members
         for uid in (data.get('leader_ids') or []):
-            u = User.query.get(int(uid))
+            u = User.query.filter_by(id=int(uid), tenant_id=current_user.tenant_id, is_active=True).first()
             if u:
                 new_process.leaders.append(u)
         for uid in (data.get('member_ids') or []):
-            u = User.query.get(int(uid))
+            u = User.query.filter_by(id=int(uid), tenant_id=current_user.tenant_id, is_active=True).first()
             if u:
                 new_process.members.append(u)
 
@@ -350,6 +411,8 @@ def add_process():
 def get_process(process_id):
     """Süreç bilgilerini düzenle modalı için döner."""
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _can_edit_process_record(p):
+        return jsonify({'success': False, 'message': 'Bu süreci düzenleme yetkiniz yok.'}), 403
     sub_strategy_links = [
         {'sub_strategy_id': link.sub_strategy_id, 'contribution_pct': link.contribution_pct}
         for link in p.process_sub_strategy_links
@@ -384,6 +447,8 @@ def get_process(process_id):
 @login_required
 def update_process(process_id):
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _can_edit_process_record(p):
+        return jsonify({'success': False, 'message': 'Bu süreci güncelleme yetkiniz yok.'}), 403
     data = request.get_json()
     try:
         p.code = data.get('code', p.code)
@@ -411,9 +476,19 @@ def update_process(process_id):
 
         # Reset and reassign M2M
         if 'leader_ids' in data:
-            p.leaders = [User.query.get(int(i)) for i in data['leader_ids'] if User.query.get(int(i))]
+            p.leaders = [
+                u for u in (
+                    User.query.filter_by(id=int(i), tenant_id=current_user.tenant_id, is_active=True).first()
+                    for i in data['leader_ids']
+                ) if u
+            ]
         if 'member_ids' in data:
-            p.members = [User.query.get(int(i)) for i in data['member_ids'] if User.query.get(int(i))]
+            p.members = [
+                u for u in (
+                    User.query.filter_by(id=int(i), tenant_id=current_user.tenant_id, is_active=True).first()
+                    for i in data['member_ids']
+                ) if u
+            ]
 
         # Alt Strateji bağlantıları (katkı yüzdesi ile)
         if 'sub_strategy_links' in data:
@@ -446,6 +521,8 @@ def update_process(process_id):
 @login_required
 def delete_process(process_id):
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _is_privileged_process_role():
+        return jsonify({'success': False, 'message': 'Süreç silme yetkiniz yok.'}), 403
     try:
         p.is_active = False
         p.deleted_at = datetime.now(timezone.utc)
@@ -467,6 +544,8 @@ def add_kpi():
     data = request.get_json()
     process_id = data.get('process_id') or data.get('surec_id')
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _can_crud_pg_and_activity(p):
+        return jsonify({'success': False, 'message': 'PG ekleme yetkiniz yok.'}), 403
     try:
         new_kpi = ProcessKpi(
             process_id=p.id,
@@ -509,6 +588,8 @@ def get_kpi(kpi_id):
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_access_process(kpi.process):
+        return jsonify({'success': False, 'message': 'Bu PG için erişim yetkiniz yok.'}), 403
     return jsonify({
         'success': True,
         'kpi': {
@@ -538,6 +619,8 @@ def update_kpi(kpi_id):
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_crud_pg_and_activity(kpi.process):
+        return jsonify({'success': False, 'message': 'PG güncelleme yetkiniz yok.'}), 403
     data = request.get_json()
     try:
         kpi.name = data.get('name', kpi.name)
@@ -573,6 +656,8 @@ def delete_kpi(kpi_id):
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_crud_pg_and_activity(kpi.process):
+        return jsonify({'success': False, 'message': 'PG silme yetkiniz yok.'}), 403
     try:
         kpi.is_active = False
         db.session.commit()
@@ -586,6 +671,8 @@ def delete_kpi(kpi_id):
 @login_required
 def list_kpis(process_id):
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _can_access_process(p):
+        return jsonify({'success': False, 'message': 'Bu süreç için erişim yetkiniz yok.'}), 403
     kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
     result = []
     for k in kpis:
@@ -615,6 +702,8 @@ def add_activity():
     data = request.get_json() or {}
     process_id = data.get('process_id') or data.get('surec_id')
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    if not _can_access_process(p):
+        return jsonify({'success': False, 'message': 'Faaliyet ekleme yetkiniz yok.'}), 403
     try:
         start_at = _parse_local_datetime(data.get('start_at')) or _parse_local_datetime(data.get('start_date'))
         end_at = _parse_local_datetime(data.get('end_at')) or _parse_local_datetime(data.get('end_date'))
@@ -669,6 +758,8 @@ def delete_activity(act_id):
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet silme yetkiniz yok.'}), 403
     try:
         act.is_active = False
         act.status = 'İptal'
@@ -687,6 +778,8 @@ def cancel_activity(act_id):
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet iptal yetkiniz yok.'}), 403
     try:
         act.status = 'İptal'
         act.cancelled_at = datetime.now(timezone.utc)
@@ -704,6 +797,8 @@ def postpone_activity(act_id):
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet erteleme yetkiniz yok.'}), 403
     data = request.get_json() or {}
     new_start = _parse_local_datetime(data.get('start_at'))
     new_end = _parse_local_datetime(data.get('end_at'))
@@ -727,6 +822,26 @@ def postpone_activity(act_id):
         return jsonify({'success': False, 'message': str(e)}), 400
 
 
+@process_bp.route('/api/activity/complete/<int:act_id>', methods=['POST'])
+@login_required
+def complete_activity(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id
+    ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet tamamlama yetkiniz yok.'}), 403
+    try:
+        act.status = 'Tamamlandı'
+        act.progress = 100
+        act.completed_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Faaliyet tamamlandı.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
 # ──────────────────────────────────────────────────
 # API — KPI Data Entry (Karne veri girişi)
 # ──────────────────────────────────────────────────
@@ -740,6 +855,8 @@ def add_kpi_data():
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_enter_pgv(kpi.process):
+        return jsonify({'success': False, 'message': 'PG verisi girme yetkiniz yok.'}), 403
     try:
         year_val = int(data.get('year', datetime.now().year))
         pt = (data.get('period_type') or 'yillik').lower().strip()
@@ -799,8 +916,13 @@ def list_kpi_data(kpi_id):
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_access_process(kpi.process):
+        return jsonify({'success': False, 'message': 'Bu PG verilerine erişim yetkiniz yok.'}), 403
     year = request.args.get('year', datetime.now().year, type=int)
-    entries = KpiData.query.filter_by(process_kpi_id=kpi.id, year=year, is_active=True).order_by(KpiData.data_date).all()
+    q = KpiData.query.filter_by(process_kpi_id=kpi.id, year=year, is_active=True).order_by(KpiData.data_date)
+    if not _can_crud_pg_and_activity(kpi.process):
+        q = q.filter_by(user_id=current_user.id)
+    entries = q.all()
     return jsonify({
         'success': True,
         'data': [{
@@ -821,6 +943,8 @@ def list_kpi_data(kpi_id):
 def karne_data(process_id):
     """Karne sayfasının AJAX ile çektiği tüm veriyi döner."""
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
+    if not _can_access_process(p):
+        return jsonify({'success': False, 'message': 'Bu süreç için erişim yetkiniz yok.'}), 403
     year = request.args.get('year', datetime.now().year, type=int)
 
     kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
@@ -908,6 +1032,7 @@ def karne_data(process_id):
                 'order_no': link.order_no,
             })
 
+        can_manage = _can_manage_activity(p, a)
         act_list.append({
             'id': a.id,
             'name': a.name,
@@ -926,6 +1051,7 @@ def karne_data(process_id):
             'first_assignee_id': a.first_assignee_id,
             'reminder_offsets': [int(r.minutes_before) for r in sorted(a.reminders, key=lambda x: x.minutes_before, reverse=True)],
             'monthly_tracks': tracks_map,  # {1: True, 3: True, ...}
+            'can_manage': bool(can_manage),
         })
 
     return jsonify({
@@ -954,6 +1080,8 @@ def get_activity(act_id):
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_access_process(act.process):
+        return jsonify({'success': False, 'message': 'Bu faaliyet için erişim yetkiniz yok.'}), 403
     return jsonify({
         'success': True,
         'activity': {
@@ -980,6 +1108,8 @@ def update_activity(act_id):
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet güncelleme yetkiniz yok.'}), 403
     data = request.get_json() or {}
     try:
         act.name = data.get('name', act.name)
@@ -1039,6 +1169,8 @@ def toggle_activity_track():
         ProcessActivity.id == act_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_manage_activity(act.process, act):
+        return jsonify({'success': False, 'message': 'Faaliyet takibi için yetkiniz yok.'}), 403
 
     try:
         track = ActivityTrack.query.filter_by(
@@ -1567,6 +1699,8 @@ def kpi_data_update(data_id):
         KpiData.id == data_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_edit_kpi_data_row(entry, entry.process_kpi.process):
+        return jsonify({'success': False, 'message': 'Bu veriyi güncelleme yetkiniz yok.'}), 403
     if not entry.is_active:
         return jsonify({'success': False, 'message': 'Silinmiş veri düzenlenemez.'}), 400
 
@@ -1615,6 +1749,8 @@ def kpi_data_delete(data_id):
         KpiData.id == data_id,
         Process.tenant_id == current_user.tenant_id
     ).first_or_404()
+    if not _can_edit_kpi_data_row(entry, entry.process_kpi.process):
+        return jsonify({'success': False, 'message': 'Bu veriyi silme yetkiniz yok.'}), 403
     if not entry.is_active:
         return jsonify({'success': False, 'message': 'Veri zaten silinmiş.'}), 400
 

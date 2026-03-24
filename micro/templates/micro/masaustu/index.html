@@ -4,13 +4,15 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('micro_bp.static', filename='micro/css/masaustu.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
 <div id="masaustu-root"
      class="masaustu-page"
      style="max-width:1100px; margin:0 auto;"
-     data-mark-read-url-template="{{ url_for('micro_bp.bildirim_api_mark_read', notif_id=888888) }}">
+     data-mark-read-url-template="{{ url_for('micro_bp.bildirim_api_mark_read', notif_id=888888) }}"
+     data-calendar-events-url="{{ url_for('micro_bp.masaustu_calendar_events') }}">
 
     <div class="masaustu-toolbar">
         <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="masaustu-widget-manage" title="Widget görünürlüğü">
@@ -121,6 +123,23 @@
                 <a class="masaustu-quick-btn" href="{{ url_for('micro_bp.micro_project_list') }}"><i class="fas fa-folder-open"></i>Projeler</a>
                 <a class="masaustu-quick-btn" href="{{ url_for('micro_bp.kurum') }}"><i class="fas fa-building"></i>Kurum</a>
             </div>
+        </div>
+    </div>
+
+    <!-- Takvimim -->
+    <div class="mc-card masaustu-widget-panel" data-widget-id="calendar" style="margin-bottom:20px;">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-calendar-days" style="color:#0ea5e9; margin-right:6px;"></i>Takvimim</span>
+            <div class="masaustu-calendar-legend">
+                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle" style="color:#10b981;"></i> Süreç</span>
+                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle" style="color:#3b82f6;"></i> Proje</span>
+            </div>
+        </div>
+        <div class="mc-card-body">
+            <div id="masaustu-calendar-loading" class="mc-page-subtitle" style="margin-bottom:8px;">
+                <i class="fas fa-spinner fa-spin"></i> Takvim yükleniyor…
+            </div>
+            <div id="masaustu-calendar"></div>
         </div>
     </div>
 
@@ -340,5 +359,6 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 <script src="{{ url_for('micro_bp.static', filename='micro/js/masaustu.js') }}"></script>
 {% endblock %}

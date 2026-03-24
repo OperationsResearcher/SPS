@@ -108,6 +108,12 @@ def admin_users_edit(user_id):
     u = User.query.get_or_404(user_id)
     if not _is_admin() and u.tenant_id != current_user.tenant_id:
         return _403()
+    if (
+        not _is_admin()
+        and u.role
+        and u.role.name == "tenant_admin"
+    ):
+        return jsonify({"success": False, "message": "Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."}), 403
 
     data = request.get_json() or {}
     try:
@@ -141,6 +147,12 @@ def admin_users_toggle(user_id):
     u = User.query.get_or_404(user_id)
     if not _is_admin() and u.tenant_id != current_user.tenant_id:
         return _403()
+    if (
+        not _is_admin()
+        and u.role
+        and u.role.name == "tenant_admin"
+    ):
+        return jsonify({"success": False, "message": "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."}), 403
     if u.id == current_user.id:
         return jsonify({"success": False, "message": "Kendi hesabınızı pasife alamazsınız."}), 400
 

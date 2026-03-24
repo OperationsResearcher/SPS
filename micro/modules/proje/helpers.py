@@ -220,12 +220,9 @@ def sync_project_members_observers(project: Project, kid: int) -> None:
 
 
 def load_project(project_id: int) -> Project:
-    return Project.query.options(
-        joinedload(Project.manager),
-        joinedload(Project.leaders),
-        joinedload(Project.members),
-        joinedload(Project.observers),
-    ).get_or_404(project_id)
+    # Legacy `user` tablosuna joinedload denemesi PostgreSQL kurulumlarında
+    # "relation user does not exist" hatasına yol açabiliyor. Projeyi yalın yükle.
+    return Project.query.get_or_404(project_id)
 
 
 def kpis_for_tenant():

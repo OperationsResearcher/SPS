@@ -7,6 +7,7 @@ from io import BytesIO
 
 from flask import render_template, jsonify, request, current_app, redirect, abort, send_file, url_for
 from flask_login import login_required, current_user
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload, selectinload
 
 from micro import micro_bp
@@ -24,6 +25,7 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.models.core import User, Strategy
+from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
     validate_process_parent_id,
     last_day_of_period,
@@ -51,6 +53,32 @@ def _user_display_name(user: User | None) -> str:
         return f"{fn} {ln}".strip()
     em = getattr(user, "email", None) or ""
     return em.strip() or f"#{user.id}"
+
+
+def _user_can_manage_activity(user: User, proc: Process, act: ProcessActivity) -> bool:
+    """Faaliyet yönetimi: süreç lideri/sahibi veya faaliyete atanmış kişi."""
+    if not user or not proc or not act:
+        return False
+    if user_can_crud_pg_and_activity(user, proc):
+        return True
+    return any(int(link.user_id) == int(user.id) for link in (act.assignment_links or []))
+
+
+def _user_can_add_activity(user: User, proc: Process) -> bool:
+    """Faaliyet ekleme: süreçte atanan herkes + üst roller."""
+    return user_can_access_process(user, proc)
+
+
+def _is_process_activity_pk_duplicate(err: Exception) -> bool:
+    return is_pk_duplicate(err, "process_activities")
+
+
+def _is_notification_pk_duplicate(err: Exception) -> bool:
+    return is_pk_duplicate(err, "notifications")
+
+
+def _is_kpi_data_audit_pk_duplicate(err: Exception) -> bool:
+    return is_pk_duplicate(err, "kpi_data_audits")
 
 
 def _latest_delete_audit_by_kpi_data_ids(data_ids: list[int]) -> dict[int, KpiDataAudit]:
@@ -762,28 +790,39 @@ def surec_api_kpi_data_add():
         if data_date_val is None:
             data_date_val = date.today()
 
-        entry = KpiData(
-            process_kpi_id=kpi.id,
-            year=year_val,
-            data_date=data_date_val,
-            period_type=pt,
-            period_no=pn,
-            period_month=period_month,
-            target_value=data.get("target_value"),
-            actual_value=data.get("actual_value", ""),
-            description=data.get("description"),
-            user_id=current_user.id,
-        )
-        db.session.add(entry)
-        db.session.flush()
-        db.session.add(KpiDataAudit(
-            kpi_data_id=entry.id,
-            action_type="CREATE",
-            new_value=entry.actual_value,
-            action_detail="Micro platform veri girişi",
-            user_id=current_user.id,
-        ))
-        db.session.commit()
+        entry = None
+        for attempt in (1, 2):
+            try:
+                entry = KpiData(
+                    process_kpi_id=kpi.id,
+                    year=year_val,
+                    data_date=data_date_val,
+                    period_type=pt,
+                    period_no=pn,
+                    period_month=period_month,
+                    target_value=data.get("target_value"),
+                    actual_value=data.get("actual_value", ""),
+                    description=data.get("description"),
+                    user_id=current_user.id,
+                )
+                db.session.add(entry)
+                db.session.flush()
+                db.session.add(KpiDataAudit(
+                    kpi_data_id=entry.id,
+                    action_type="CREATE",
+                    new_value=entry.actual_value,
+                    action_detail="Micro platform veri girişi",
+                    user_id=current_user.id,
+                ))
+                db.session.commit()
+                break
+            except Exception as e:
+                db.session.rollback()
+                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
+                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                    db.session.commit()
+                    continue
+                raise
 
         try:
             from app.services.score_engine_service import recalc_on_pg_data_change
@@ -959,16 +998,26 @@ def surec_api_kpi_data_update(data_id):
         changed_labels.append("hedef")
 
     try:
-        if changed_labels:
-            db.session.add(KpiDataAudit(
-                kpi_data_id=entry.id,
-                action_type="UPDATE",
-                old_value=old_actual,
-                new_value=new_actual,
-                action_detail="Micro platform PGV güncelleme: " + ", ".join(changed_labels),
-                user_id=current_user.id,
-            ))
-        db.session.commit()
+        for attempt in (1, 2):
+            try:
+                if changed_labels:
+                    db.session.add(KpiDataAudit(
+                        kpi_data_id=entry.id,
+                        action_type="UPDATE",
+                        old_value=old_actual,
+                        new_value=new_actual,
+                        action_detail="Micro platform PGV güncelleme: " + ", ".join(changed_labels),
+                        user_id=current_user.id,
+                    ))
+                db.session.commit()
+                break
+            except Exception as e:
+                db.session.rollback()
+                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
+                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                    db.session.commit()
+                    continue
+                raise
         try:
             from app.services.score_engine_service import recalc_on_pg_data_change
             recalc_on_pg_data_change(current_user.tenant_id, entry.year)
@@ -1001,18 +1050,28 @@ def surec_api_kpi_data_delete(data_id):
         return jsonify({"success": False, "message": "Bu veriyi silme yetkiniz yok."}), 403
     try:
         now = datetime.now(timezone.utc)
-        db.session.add(KpiDataAudit(
-            kpi_data_id=entry.id,
-            action_type="DELETE",
-            old_value=entry.actual_value,
-            new_value=None,
-            action_detail="Micro platform PGV silme (soft)",
-            user_id=current_user.id,
-        ))
-        entry.is_active = False
-        entry.deleted_at = now
-        entry.deleted_by_id = current_user.id
-        db.session.commit()
+        for attempt in (1, 2):
+            try:
+                db.session.add(KpiDataAudit(
+                    kpi_data_id=entry.id,
+                    action_type="DELETE",
+                    old_value=entry.actual_value,
+                    new_value=None,
+                    action_detail="Micro platform PGV silme (soft)",
+                    user_id=current_user.id,
+                ))
+                entry.is_active = False
+                entry.deleted_at = now
+                entry.deleted_by_id = current_user.id
+                db.session.commit()
+                break
+            except Exception as e:
+                db.session.rollback()
+                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
+                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                    db.session.commit()
+                    continue
+                raise
         try:
             from app.services.score_engine_service import recalc_on_pg_data_change
             recalc_on_pg_data_change(current_user.tenant_id, entry.year)
@@ -1127,7 +1186,7 @@ def surec_api_activity_add():
     p = _process_for_user(int(process_id)) if process_id else None
     if not p:
         abort(404)
-    if not user_can_crud_pg_and_activity(current_user, p):
+    if not _user_can_add_activity(current_user, p):
         return jsonify({"success": False, "message": "Faaliyet ekleme yetkiniz yok."}), 403
     try:
         def _parse_dt(v):
@@ -1197,21 +1256,31 @@ def surec_api_activity_add():
             r_seen.add(m)
             reminder_offsets.append(m)
 
-        act = ProcessActivity(
-            process_id=p.id,
-            process_kpi_id=data.get("process_kpi_id") or None,
-            name=data.get("name"),
-            description=data.get("description"),
-            status=data.get("status", "Planlandı"),
-            progress=int(data.get("progress") or 0),
-            start_at=start_at,
-            end_at=end_at,
-            start_date=start_at.date(),
-            end_date=end_at.date(),
-            notify_email=bool(data.get("notify_email", False)),
-        )
-        db.session.add(act)
-        db.session.flush()
+        act = None
+        for attempt in (1, 2):
+            act = ProcessActivity(
+                process_id=p.id,
+                process_kpi_id=data.get("process_kpi_id") or None,
+                name=data.get("name"),
+                description=data.get("description"),
+                status=data.get("status", "Planlandı"),
+                progress=int(data.get("progress") or 0),
+                start_at=start_at,
+                end_at=end_at,
+                start_date=start_at.date(),
+                end_date=end_at.date(),
+                notify_email=bool(data.get("notify_email", False)),
+            )
+            db.session.add(act)
+            try:
+                db.session.flush()
+                break
+            except IntegrityError as ie:
+                db.session.rollback()
+                if attempt == 1 and _is_process_activity_pk_duplicate(ie):
+                    sync_pg_sequence_if_needed("process_activities", "id")
+                    continue
+                raise
 
         ProcessActivityAssignee.query.filter_by(activity_id=act.id).delete(synchronize_session=False)
         for idx, uid in enumerate(assignee_ids, start=1):
@@ -1224,6 +1293,8 @@ def surec_api_activity_add():
             ))
 
         ProcessActivityReminder.query.filter_by(activity_id=act.id).delete(synchronize_session=False)
+        # PostgreSQL sequence kayması varsa reminder insert'i patlamasın.
+        sync_pg_sequence_if_needed("process_activity_reminders", "id")
         for off in reminder_offsets:
             remind_at = start_at - timedelta(minutes=int(off))
             db.session.add(ProcessActivityReminder(
@@ -1235,16 +1306,23 @@ def surec_api_activity_add():
         db.session.commit()
 
         # Faaliyet ekleme bildirimi
-        try:
-            from sqlalchemy.orm import joinedload as _joinedload
-            from micro.services.notification_triggers import notify_activity_assignment
-            p_with_users = Process.query.options(
-                _joinedload(Process.leaders), _joinedload(Process.members)
-            ).get(p.id)
-            notify_activity_assignment(act, p_with_users, actor=current_user)
-            db.session.commit()
-        except Exception as notif_err:
-            current_app.logger.warning(f"[surec_api_activity_add] notification: {notif_err}")
+        from sqlalchemy.orm import joinedload as _joinedload
+        from micro.services.notification_triggers import notify_activity_assignment
+        for n_attempt in (1, 2):
+            try:
+                p_with_users = Process.query.options(
+                    _joinedload(Process.leaders), _joinedload(Process.members)
+                ).get(p.id)
+                notify_activity_assignment(act, p_with_users, actor=current_user)
+                db.session.commit()
+                break
+            except Exception as notif_err:
+                db.session.rollback()
+                if n_attempt == 1 and _is_notification_pk_duplicate(notif_err):
+                    sync_pg_sequence_if_needed("notifications", "id")
+                    continue
+                current_app.logger.warning(f"[surec_api_activity_add] notification: {notif_err}")
+                break
 
         return jsonify({"success": True, "message": "Faaliyet eklendi.", "id": act.id})
     except Exception as e:
@@ -1293,7 +1371,7 @@ def surec_api_activity_update(act_id):
         Process.is_active.is_(True),
     ).first_or_404()
     proc = _process_for_user(act.process_id)
-    if not proc or not user_can_crud_pg_and_activity(current_user, proc):
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
         return jsonify({"success": False, "message": "Faaliyet güncelleme yetkiniz yok."}), 403
     data = request.get_json() or {}
     try:
@@ -1409,7 +1487,7 @@ def surec_api_activity_delete(act_id):
         Process.is_active.is_(True),
     ).first_or_404()
     proc = _process_for_user(act.process_id)
-    if not proc or not user_can_crud_pg_and_activity(current_user, proc):
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
         return jsonify({"success": False, "message": "Faaliyet silme yetkiniz yok."}), 403
     try:
         act.is_active = False
@@ -1418,6 +1496,29 @@ def surec_api_activity_delete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_delete] {e}")
+        return jsonify({"success": False, "message": str(e)}), 400
+
+
+@micro_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
+@login_required
+def surec_api_activity_complete(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id,
+        Process.is_active.is_(True),
+    ).first_or_404()
+    proc = _process_for_user(act.process_id)
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
+        return jsonify({"success": False, "message": "Faaliyet tamamlama yetkiniz yok."}), 403
+    try:
+        act.status = "Tamamlandı"
+        act.progress = 100
+        act.completed_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Faaliyet tamamlandı."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[surec_api_activity_complete] {e}")
         return jsonify({"success": False, "message": str(e)}), 400
 
 
@@ -1431,7 +1532,7 @@ def surec_api_activity_track(act_id):
         Process.is_active.is_(True),
     ).first_or_404()
     proc = _process_for_user(act.process_id)
-    if not proc or not user_can_enter_pgv(current_user, proc):
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
         return jsonify({"success": False, "message": "Faaliyet takibi için yetkiniz yok."}), 403
     data = request.get_json() or {}
     year = int(data.get("year", datetime.now().year))
@@ -1561,6 +1662,9 @@ def surec_api_karne(process_id):
                 "email": u.email,
                 "order_no": link.order_no,
             })
+        can_manage = user_can_crud_pg_and_activity(current_user, p) or any(
+            int(x["id"]) == int(current_user.id) for x in assignees
+        )
         act_list.append({
             "id": a.id,
             "name": a.name,
@@ -1579,6 +1683,7 @@ def surec_api_karne(process_id):
             "first_assignee_id": a.first_assignee_id,
             "reminder_offsets": [int(r.minutes_before) for r in sorted(a.reminders, key=lambda z: z.minutes_before, reverse=True)],
             "monthly_tracks": tracks_map,
+            "can_manage": bool(can_manage),
         })
 
     process_users = []
@@ -1606,8 +1711,8 @@ def surec_api_karne(process_id):
         "permissions": {
             "can_crud_pg": user_can_crud_pg_and_activity(current_user, p),
             "can_enter_pgv": user_can_enter_pgv(current_user, p),
-            "can_crud_activity": user_can_crud_pg_and_activity(current_user, p),
-            "can_track_activity": user_can_enter_pgv(current_user, p),
+            "can_crud_activity": _user_can_add_activity(current_user, p),
+            "can_track_activity": user_can_access_process(current_user, p),
         },
     })
 

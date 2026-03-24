@@ -515,9 +515,40 @@
       if (!modalKpiDataEntry) return;
       modalKpiDataEntry.classList.remove("open");
       modalKpiDataEntry.setAttribute("aria-hidden", "true");
+      modalKpiDataEntry.style.display = "";
+      modalKpiDataEntry.style.zIndex = "";
       vgsState = null;
       if (formKpiDataEntry) formKpiDataEntry.reset();
       resetHistoryAccordion();
+    }
+
+    function syncVgsSelectedKpi(selectedId) {
+      if (!vgsState) return false;
+      const allKpis = cachedKpisRef.kpis || [];
+      const k = allKpis.find((x) => String(x.id) === String(selectedId));
+      if (!k) return false;
+      vgsState.kpiId = String(k.id);
+      vgsState.kpiName = k.name || "PG";
+      vgsState.kpiCode = k.code || "";
+      vgsState.kpiPeriod = k.period || "";
+      vgsState.kpiTarget = k.target_value != null ? String(k.target_value) : "";
+      vgsState.periodFamily = inferPeriodFamily(k.period);
+      return true;
+    }
+
+    function renderVgsKpiSelect(selectedId) {
+      const sel = document.getElementById("vgs-kpi-select");
+      if (!sel) return;
+      const allKpis = cachedKpisRef.kpis || [];
+      const opts = allKpis.map((k) => {
+        const code = String(k.code || "").trim();
+        const name = String(k.name || `PG #${k.id}`).trim();
+        const label = code ? `${code} - ${name}` : name;
+        const selected = String(k.id) === String(selectedId) ? " selected" : "";
+        return `<option value="${String(k.id)}"${selected}>${escHtml(label)}</option>`;
+      });
+      sel.innerHTML = opts.join("");
+      if (!sel.value && allKpis.length) sel.value = String(allKpis[0].id);
     }
 
     function openDataEntryModal(kpiId, year, opts) {
@@ -530,7 +561,7 @@
         return;
       }
       const kpis = cachedKpisRef.kpis || [];
-      const k = kpis.find((x) => String(x.id) === String(kpiId));
+      const k = kpis.find((x) => String(x.id) === String(kpiId)) || (kpis.length ? kpis[0] : null);
       if (!k) {
         showError("PG bulunamadı; sayfayı yenileyin.");
         return;
@@ -540,7 +571,7 @@
       const yearNum = parseInt(String(year), 10) || new Date().getFullYear();
       resetHistoryAccordion();
       vgsState = {
-        kpiId: String(kpiId),
+        kpiId: String(k.id),
         processId: String(viewRoot.dataset.processId || ""),
         processName: procName,
         kpiName: k.name || "PG",
@@ -572,8 +603,25 @@
 
       const pl = document.getElementById("vgs-process-label");
       if (pl) pl.textContent = procName;
-      const kl = document.getElementById("vgs-kpi-label");
-      if (kl) kl.textContent = `${k.name || ""}${k.code ? " · " + k.code : ""}`;
+      renderVgsKpiSelect(String(k.id));
+
+      const keepTableModalOpen = !!(opts && opts.keepTableModalOpen);
+      if (!keepTableModalOpen) {
+        const microPgModal = document.getElementById("modal-micro-pg-tablo");
+        if (microPgModal && microPgModal.classList.contains("open")) {
+          microPgModal.classList.remove("open");
+          microPgModal.setAttribute("aria-hidden", "true");
+        }
+      }
+
+      // Overlay'i body sonuna taşı: parent stacking context etkilerinden bağımsız olsun.
+      if (modalKpiDataEntry.parentElement !== document.body) {
+        document.body.appendChild(modalKpiDataEntry);
+      }
+
+      // Farklı tema/css kombinasyonlarında daima üstte görünmesi için zorla.
+      modalKpiDataEntry.style.display = "flex";
+      modalKpiDataEntry.style.zIndex = "2147483000";
       modalKpiDataEntry.classList.add("open");
       modalKpiDataEntry.setAttribute("aria-hidden", "false");
       document.getElementById("kpi-data-entry-value")?.focus();
@@ -672,6 +720,16 @@
     formKpiDataEntry?.addEventListener("submit", (e) => {
       e.preventDefault();
       onVgsSave();
+    });
+
+    document.getElementById("vgs-kpi-select")?.addEventListener("change", (e) => {
+      const nextId = String(e.target?.value || "").trim();
+      if (!nextId) return;
+      if (!syncVgsSelectedKpi(nextId)) {
+        showError("Seçilen PG bulunamadı.");
+        return;
+      }
+      resetHistoryAccordion();
     });
 
     document.getElementById("vgs-history-toggle")?.addEventListener("click", onHistoryToggleClick);

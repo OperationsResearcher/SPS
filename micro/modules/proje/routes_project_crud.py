@@ -57,6 +57,9 @@ def micro_project_new():
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
         return redirect(url_for("micro_bp.launcher"))
+    if not can_crud_project_portfolio(current_user):
+        flash("Yeni proje oluşturma yetkiniz yok.", "danger")
+        return redirect(url_for("micro_bp.micro_project_list"))
 
     if request.method == "GET":
         surecler = Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()

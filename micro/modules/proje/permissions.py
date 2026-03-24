@@ -6,7 +6,7 @@ from __future__ import annotations
 from sqlalchemy import or_
 
 from app.models.core import User
-from models import Project, db, project_members, project_observers, project_leaders
+from models import Project, Task, db, project_members, project_observers, project_leaders
 
 
 # Kurum / platform yöneticileri (süreç modülüyle aynı)
@@ -117,6 +117,20 @@ def user_can_edit_tasks(user, project: Project) -> bool:
     if user_is_project_member(user, project):
         return True
     return False
+
+
+def user_can_manage_task(user, project: Project, task: Task) -> bool:
+    """Görev üzerinde değişiklik/tamamlama: lider/manager veya atanan üye."""
+    if is_privileged(user):
+        return True
+    if not user or not project or not task:
+        return False
+    kurum_id = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
+    if project.kurum_id != kurum_id:
+        return False
+    if user_is_project_manager(user, project):
+        return True
+    return bool(task.assignee_id and int(task.assignee_id) == int(user.id))
 
 
 def can_crud_project_portfolio(user) -> bool:

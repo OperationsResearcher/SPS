@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from micro import micro_bp
 from micro.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
+from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import (
     Process,
     ProcessKpi,
@@ -18,6 +19,10 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.utils.process_utils import last_day_of_period, data_date_to_period_keys
+
+
+def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
+    return is_pk_duplicate(err, "individual_performance_indicators")
 
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
@@ -85,60 +90,70 @@ def bireysel_api_pg_ensure_from_process_kpi():
     if existing:
         return jsonify({"success": True, "id": existing.id, "created": False})
 
-    try:
-        pg = IndividualPerformanceIndicator(
-            user_id=current_user.id,
-            name=kpi.name or f"PG #{kpi.id}",
-            description=kpi.description,
-            code=kpi.code,
-            target_value=kpi.target_value,
-            unit=kpi.unit,
-            period=kpi.period or "Çeyreklik",
-            weight=float(kpi.weight or 0),
-            direction=kpi.direction or "Increasing",
-            basari_puani_araliklari=kpi.basari_puani_araliklari,
-            source="Süreç",
-            source_process_id=kpi.process_id,
-            source_process_kpi_id=kpi.id,
-            is_active=True,
-        )
-        db.session.add(pg)
-        db.session.commit()
-        return jsonify({"success": True, "id": pg.id, "created": True})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+    for attempt in (1, 2):
+        try:
+            pg = IndividualPerformanceIndicator(
+                user_id=current_user.id,
+                name=kpi.name or f"PG #{kpi.id}",
+                description=kpi.description,
+                code=kpi.code,
+                target_value=kpi.target_value,
+                unit=kpi.unit,
+                period=kpi.period or "Çeyreklik",
+                weight=float(kpi.weight or 0),
+                direction=kpi.direction or "Increasing",
+                basari_puani_araliklari=kpi.basari_puani_araliklari,
+                source="Süreç",
+                source_process_id=kpi.process_id,
+                source_process_kpi_id=kpi.id,
+                is_active=True,
+            )
+            db.session.add(pg)
+            db.session.commit()
+            return jsonify({"success": True, "id": pg.id, "created": True})
+        except Exception as e:
+            db.session.rollback()
+            if attempt == 1 and _is_individual_pg_pk_duplicate(e):
+                sync_pg_sequence_if_needed("individual_performance_indicators", "id")
+                db.session.commit()
+                continue
+            current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
+            return jsonify({"success": False, "message": str(e)}), 400
 
 
 @micro_bp.route("/bireysel/api/pg/add", methods=["POST"])
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
-    try:
-        pg = IndividualPerformanceIndicator(
-            user_id=current_user.id,
-            name=data.get("name"),
-            description=data.get("description"),
-            code=data.get("code"),
-            target_value=data.get("target_value"),
-            unit=data.get("unit"),
-            period=data.get("period", "Aylık"),
-            weight=float(data.get("weight") or 0),
-            direction=data.get("direction", "Increasing"),
-            basari_puani_araliklari=data.get("basari_puani_araliklari"),
-        )
-        if data.get("start_date"):
-            pg.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
-        if data.get("end_date"):
-            pg.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
-        db.session.add(pg)
-        db.session.commit()
-        return jsonify({"success": True, "message": "Bireysel PG eklendi.", "id": pg.id})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"[bireysel_api_pg_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+    for attempt in (1, 2):
+        try:
+            pg = IndividualPerformanceIndicator(
+                user_id=current_user.id,
+                name=data.get("name"),
+                description=data.get("description"),
+                code=data.get("code"),
+                target_value=data.get("target_value"),
+                unit=data.get("unit"),
+                period=data.get("period", "Aylık"),
+                weight=float(data.get("weight") or 0),
+                direction=data.get("direction", "Increasing"),
+                basari_puani_araliklari=data.get("basari_puani_araliklari"),
+            )
+            if data.get("start_date"):
+                pg.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
+            if data.get("end_date"):
+                pg.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
+            db.session.add(pg)
+            db.session.commit()
+            return jsonify({"success": True, "message": "Bireysel PG eklendi.", "id": pg.id})
+        except Exception as e:
+            db.session.rollback()
+            if attempt == 1 and _is_individual_pg_pk_duplicate(e):
+                sync_pg_sequence_if_needed("individual_performance_indicators", "id")
+                db.session.commit()
+                continue
+            current_app.logger.error(f"[bireysel_api_pg_add] {e}")
+            return jsonify({"success": False, "message": str(e)}), 400
 
 
 @micro_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])

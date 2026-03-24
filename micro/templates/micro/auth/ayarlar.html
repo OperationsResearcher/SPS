@@ -4,7 +4,7 @@
 
 {% block content %}
 <div style="max-width:720px; margin:0 auto;">
-  <form id="settingsForm" method="post" action="{{ url_for('auth.settings') }}">
+  <form id="settingsForm" method="post" action="{{ url_for('auth_bp.settings') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="action" value="all">
 

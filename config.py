@@ -57,9 +57,10 @@ class Config:
     CACHE_REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     CACHE_KEY_PREFIX = "kokpitim_"
     
-    # Rate Limiting
+    # Rate Limiting (yüksek trafik/çoklu modal istekleri için geniş limitler)
     RATELIMIT_STORAGE_URL = os.environ.get("REDIS_URL", "memory://")
     RATELIMIT_ENABLED = True
+    RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
     HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
     
     # Error Tracking (Sentry - optional)

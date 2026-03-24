@@ -1,80 +1,431 @@
-import os
-import shutil
-import zipfile
+"""
+Kokpitim Yedekleyici — PostgreSQL + SQLite destekli, dogrulamali yedekleme.
+
+- backup: Tam yedek (kod + DB dump), sonra dogrulama
+- restore: Geri yukleme, oncesi/sonrasi kontroller
+- verify: Yedek zip icerigini dogrula (restore yapmadan)
+
+PostgreSQL icin pg_dump ve psql PATH'te olmali.
+Windows: PostgreSQL kurulumundan bin/ klasorunu PATH'e ekleyin.
+"""
+import argparse
 import datetime
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import zipfile
+from urllib.parse import urlparse
 
-def create_backup():
-    # 1. Klasör Ayarları
-    BASE_DIR = os.getcwd()
-    BACKUP_DIR = os.path.join(BASE_DIR, 'Yedekler')
-    
-    if not os.path.exists(BACKUP_DIR):
-        os.makedirs(BACKUP_DIR)
-        print(f"Yedek klasörü oluşturuldu: {BACKUP_DIR}")
 
-    # 2. Dosya İsmi
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-    zip_filename = f'Kokpitim_Tam_Yedek_{timestamp}.zip'
-    zip_path = os.path.join(BACKUP_DIR, zip_filename)
+EXCLUDE_DIRS = {
+    ".venv",
+    ".git",
+    "__pycache__",
+    ".vscode",
+    ".idea",
+    "Yedekler",
+    ".gemini",
+    ".tmp",
+    "node_modules",
+}
+EXCLUDE_EXTENSIONS = {".log", ".tmp", ".pyc", ".pyo"}
 
-    # 3. Hariç Tutulacaklar
-    EXCLUDE_DIRS = {'.venv', '.git', '__pycache__', '.vscode', '.idea', 'Yedekler', '.gemini', '.tmp', 'node_modules', 'instance'}
-    EXCLUDE_EXTENSIONS = {'.log', '.tmp', '.pyc', '.pyo'}
 
-    # Ekstra önemli dosyaları manuel ekle (Veritabanı vb. instance/ altında olabilir)
-    # Flask default olarak DB'yi instance/ klasöründe tutar, onu ayrı kontrol edeceğiz.
-    
-    print(f"Yedekleme başlatılıyor... Hedef: {zip_path}")
-    
+def resolve_db_uri() -> str:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    return os.environ.get("SQLALCHEMY_DATABASE_URI", "").strip()
+
+
+def is_postgres_uri(uri: str) -> bool:
+    return uri.startswith("postgresql://") or uri.startswith("postgresql+psycopg2://")
+
+
+def make_backup_dirs(base_dir: str) -> str:
+    backup_dir = os.path.join(base_dir, "Yedekler")
+    os.makedirs(backup_dir, exist_ok=True)
+    return backup_dir
+
+
+def _pg_bin(tool: str) -> str:
+    """pg_dump/psql yolunu dondur. PG_BIN env ile klasor belirtilebilir."""
+    pg_bin = os.environ.get("PG_BIN", "").strip().rstrip("/\\")
+    if pg_bin and os.path.isdir(pg_bin):
+        full = os.path.join(pg_bin, tool + (".exe" if os.name == "nt" else ""))
+        if os.path.isfile(full):
+            return full
+    return tool
+
+
+def run_pg_dump(db_uri: str, output_sql_path: str) -> None:
+    parsed = urlparse(db_uri)
+    if not parsed.hostname or not parsed.path:
+        raise RuntimeError("PostgreSQL URI parse edilemedi.")
+
+    db_name = parsed.path.lstrip("/").split("?")[0]
+    env = os.environ.copy()
+    if parsed.password:
+        env["PGPASSWORD"] = parsed.password
+
+    pg_dump_cmd = _pg_bin("pg_dump")
+    cmd = [
+        pg_dump_cmd,
+        "-h",
+        parsed.hostname,
+        "-p",
+        str(parsed.port or 5432),
+        "-U",
+        parsed.username or "postgres",
+        "-d",
+        db_name,
+        "-F",
+        "p",  # plain SQL
+        "-f",
+        output_sql_path,
+    ]
+    subprocess.run(cmd, check=True, env=env)
+
+
+def run_psql_restore(db_uri: str, input_sql_path: str) -> None:
+    parsed = urlparse(db_uri)
+    if not parsed.hostname or not parsed.path:
+        raise RuntimeError("PostgreSQL URI parse edilemedi.")
+
+    db_name = parsed.path.lstrip("/").split("?")[0]
+    env = os.environ.copy()
+    if parsed.password:
+        env["PGPASSWORD"] = parsed.password
+
+    psql_cmd = _pg_bin("psql")
+    cmd = [
+        psql_cmd,
+        "-h",
+        parsed.hostname,
+        "-p",
+        str(parsed.port or 5432),
+        "-U",
+        parsed.username or "postgres",
+        "-d",
+        db_name,
+        "-f",
+        input_sql_path,
+    ]
+    subprocess.run(cmd, check=True, env=env)
+
+
+# --- Dogrulama fonksiyonlari ---
+
+def _run_psql_query(db_uri: str, query: str) -> tuple[bool, str]:
+    """Tek bir SQL sorgusu calistir, (basarili, cikti) dondur."""
+    parsed = urlparse(db_uri)
+    db_name = parsed.path.lstrip("/").split("?")[0]
+    env = os.environ.copy()
+    if parsed.password:
+        env["PGPASSWORD"] = parsed.password
+    cmd = [
+        "psql", "-h", parsed.hostname or "localhost",
+        "-p", str(parsed.port or 5432),
+        "-U", parsed.username or "postgres",
+        "-d", db_name, "-t", "-A", "-c", query,
+    ]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=10)
+        return r.returncode == 0, (r.stdout or "").strip()
+    except Exception as e:
+        return False, str(e)
+
+
+def verify_db_connection(db_uri: str) -> list[str]:
+    """PostgreSQL baglantisini dogrula. Hata listesi dondur (bos = OK)."""
+    errs = []
+    ok, out = _run_psql_query(db_uri, "SELECT 1")
+    if not ok:
+        errs.append("PostgreSQL baglantisi basarisiz.")
+    return errs
+
+
+def verify_backup_zip(zip_path: str, expect_pg_dump: bool = True) -> list[str]:
+    """
+    Yedek zip icerigini dogrula. Hata listesi dondur (bos = OK).
+    expect_pg_dump: PostgreSQL dump dosyasi bekleniyor mu.
+    """
+    errs = []
+    if not os.path.isfile(zip_path):
+        return [f"Yedek dosyasi bulunamadi: {zip_path}"]
+
+    try:
+        with zipfile.ZipFile(zip_path, "r") as z:
+            names = z.namelist()
+    except zipfile.BadZipFile:
+        return ["Yedek dosyasi gecersiz veya bozuk (zip format hatasi)."]
+
+    if "backup_meta.json" not in names:
+        errs.append("backup_meta.json eksik.")
+
+    if expect_pg_dump:
+        dump_path = "db_backup/postgres_dump.sql"
+        if dump_path not in names:
+            errs.append(f"{dump_path} eksik. Bu yedek PostgreSQL dump icermiyor.")
+        else:
+            with zipfile.ZipFile(zip_path, "r") as z:
+                info = z.getinfo(dump_path)
+                if info.file_size < 100:
+                    errs.append("PostgreSQL dump dosyasi cok kucuk veya bos.")
+
+    # metadata icerigini dogrula
+    if "backup_meta.json" in names:
+        try:
+            with zipfile.ZipFile(zip_path, "r") as z:
+                with z.open("backup_meta.json") as f:
+                    meta = json.loads(f.read().decode("utf-8"))
+            if not isinstance(meta.get("created_at"), str):
+                errs.append("backup_meta.json gecersiz (created_at eksik).")
+        except Exception as e:
+            errs.append(f"backup_meta.json okunamadi: {e}")
+
+    return errs
+
+
+def verify_restored_db(db_uri: str) -> list[str]:
+    """
+    Restore sonrasi veritabanini dogrula.
+    Kritik tablolarin varligi ve minimum veri kontrolu.
+    """
+    errs = []
+    critical_tables = ["tenants", "users", "roles"]
+    for tbl in critical_tables:
+        ok, out = _run_psql_query(
+            db_uri,
+            f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='{tbl}'",
+        )
+        if not ok:
+            errs.append(f"Tablo kontrolu yapilamadi: {tbl}")
+            continue
+        if (out or "").strip() != "1":
+            errs.append(f"Kritik tablo eksik: {tbl}")
+
+    # En az bir tenant ve user olmali (anlamli restore)
+    ok, cnt = _run_psql_query(db_uri, "SELECT COUNT(*) FROM tenants")
+    if ok and cnt and int(cnt) < 1:
+        errs.append("tenants tablosu bos; restore eksik veya basarisiz olabilir.")
+
+    ok, cnt = _run_psql_query(db_uri, "SELECT COUNT(*) FROM users")
+    if ok and cnt and int(cnt) < 1:
+        errs.append("users tablosu bos; restore eksik veya basarisiz olabilir.")
+
+    return errs
+
+
+def add_project_files_to_zip(zipf: zipfile.ZipFile, base_dir: str, zip_filename: str) -> int:
     file_count = 0
-    
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        # Kök dizindeki her şeyi gez
-        for root, dirs, files in os.walk(BASE_DIR):
-            # Hariç tutulan klasörleri listeden çıkar (yerinde değişiklik)
-            dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
-            
-            for file in files:
-                file_path = os.path.join(root, file)
-                rel_path = os.path.relpath(file_path, BASE_DIR)
-                
-                # Uzantı kontrolü
-                _, ext = os.path.splitext(file)
-                if ext.lower() in EXCLUDE_EXTENSIONS:
-                    continue
-                
-                # Kendi oluşturduğumuz zip dosyasını hariç tut (gerçi dirs exclusion ile YEDEKLER haricinde ama yine de)
-                if file == zip_filename:
-                    continue
+    for root, dirs, files in os.walk(base_dir):
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        for file_name in files:
+            if file_name == zip_filename:
+                continue
+            _, ext = os.path.splitext(file_name)
+            if ext.lower() in EXCLUDE_EXTENSIONS:
+                continue
+            full_path = os.path.join(root, file_name)
+            rel_path = os.path.relpath(full_path, base_dir)
+            try:
+                zipf.write(full_path, rel_path)
+                file_count += 1
+            except Exception as exc:
+                print(f"Hata - Dosya eklenemedi: {rel_path} ({exc})")
+    return file_count
 
-                try:
-                    zipf.write(file_path, rel_path)
-                    file_count += 1
-                except Exception as e:
-                    print(f"Hata - Dosya eklenemedi: {rel_path} ({e})")
 
-        # Özel Olarak Veritabanlarını Ekle (Eğer instance altındaysa ve exclusion'a takıldıysa)
-        # Genellikle instance/ hariç tutulur ama DB oradaysa manuel eklenmeli
-        # Sizin projenizde DB nerede? Root'ta 'sps.db' veya 'instance/sps.db' olabilir.
-        # Root'takiler zaten yukarıdaki döngüde eklendi.
-        # Instance altındakileri manuel ekleyelim (eğer instance exclusion'daysa)
-        if 'instance' in EXCLUDE_DIRS and os.path.exists(os.path.join(BASE_DIR, 'instance')):
-             for db_file in os.listdir(os.path.join(BASE_DIR, 'instance')):
-                 if db_file.endswith('.db') or db_file.endswith('.sqlite'):
-                     full_path = os.path.join(BASE_DIR, 'instance', db_file)
-                     zipf.write(full_path, os.path.join('instance', db_file))
-                     print(f"Veritabanı (Instance) eklendi: {db_file}")
+def create_backup() -> str:
+    base_dir = os.getcwd()
+    backup_dir = make_backup_dirs(base_dir)
 
-    # 4. Sonuç Bilgisi
-    size_bytes = os.path.getsize(zip_path)
-    size_mb = size_bytes / (1024 * 1024)
-    
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    zip_filename = f"Kokpitim_Tam_Yedek_{timestamp}.zip"
+    zip_path = os.path.join(backup_dir, zip_filename)
+
+    db_uri = resolve_db_uri()
+    using_postgres = is_postgres_uri(db_uri)
+
+    print(f"Yedekleme baslatiliyor... Hedef: {zip_path}")
+    print(f"Veritabani turu: {'PostgreSQL' if using_postgres else 'SQLite/Other'}")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        db_dump_rel = None
+        metadata = {
+            "created_at": timestamp,
+            "db_uri_scheme": db_uri.split("://", 1)[0] if "://" in db_uri else "unknown",
+            "db_backup_file": None,
+        }
+
+        if using_postgres:
+            db_dump_rel = "db_backup/postgres_dump.sql"
+            db_dump_abs = os.path.join(temp_dir, "postgres_dump.sql")
+            try:
+                run_pg_dump(db_uri, db_dump_abs)
+                metadata["db_backup_file"] = db_dump_rel
+                print("PostgreSQL dump alindi (pg_dump).")
+            except FileNotFoundError:
+                raise RuntimeError("pg_dump bulunamadi. PostgreSQL bin klasoru PATH'e eklenmeli.")
+
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            file_count = add_project_files_to_zip(zipf, base_dir, zip_filename)
+
+            # SQLite dosyalari varsa yine de ekleyelim (fallback/legacy)
+            instance_dir = os.path.join(base_dir, "instance")
+            if os.path.isdir(instance_dir):
+                for db_file in os.listdir(instance_dir):
+                    if db_file.endswith(".db") or db_file.endswith(".sqlite"):
+                        full_path = os.path.join(instance_dir, db_file)
+                        zipf.write(full_path, os.path.join("instance", db_file))
+
+            if using_postgres and db_dump_rel:
+                zipf.write(db_dump_abs, db_dump_rel)
+
+            metadata_path = os.path.join(temp_dir, "backup_meta.json")
+            with open(metadata_path, "w", encoding="utf-8") as meta_f:
+                json.dump(metadata, meta_f, ensure_ascii=False, indent=2)
+            zipf.write(metadata_path, "backup_meta.json")
+
+    size_mb = os.path.getsize(zip_path) / (1024 * 1024)
     print("-" * 50)
-    print(f"Yedekleme başarıyla tamamlandı: {zip_filename}")
-    print(f"Toplam Dosya Sayısı: {file_count}")
+    print(f"Yedekleme basariyla tamamlandi: {zip_filename}")
+    print(f"Toplam Dosya Sayisi: {file_count}")
     print(f"Toplam Yedek Boyutu: {size_mb:.2f} MB")
-    print("Veritabanı yedeği alındı.")
+    if using_postgres:
+        print("PostgreSQL SQL dump yedege eklendi.")
+
+    # Dogrulama
+    check_errors = verify_backup_zip(zip_path, expect_pg_dump=using_postgres)
+    if check_errors:
+        for e in check_errors:
+            print(f"  UYARI: {e}")
+        raise RuntimeError("Yedek dogrulama basarisiz.")
+    print("Dogrulama: Yedek icerigi OK.")
     print("-" * 50)
+    return zip_path
+
+
+def restore_backup(zip_path: str, dry_run: bool = False, skip_post_verify: bool = False) -> None:
+    if not os.path.isfile(zip_path):
+        raise FileNotFoundError(f"Yedek dosyasi bulunamadi: {zip_path}")
+
+    db_uri = resolve_db_uri()
+    if not is_postgres_uri(db_uri):
+        raise RuntimeError("Geri yukleme icin SQLALCHEMY_DATABASE_URI PostgreSQL olmalidir.")
+
+    # On dogrulama: yedek zip
+    print("On dogrulama: Yedek dosyasi kontrol ediliyor...")
+    zip_errs = verify_backup_zip(zip_path, expect_pg_dump=True)
+    if zip_errs:
+        for e in zip_errs:
+            print(f"  HATA: {e}")
+        raise RuntimeError("Yedek dogrulamasi basarisiz. Geri yukleme iptal edildi.")
+
+    # On dogrulama: hedef baglanti
+    print("On dogrulama: PostgreSQL baglantisi kontrol ediliyor...")
+    conn_errs = verify_db_connection(db_uri)
+    if conn_errs:
+        for e in conn_errs:
+            print(f"  HATA: {e}")
+        raise RuntimeError("Hedef veritabani baglantisi basarisiz.")
+
+    print("On dogrulama: OK.")
+
+    if dry_run:
+        print("--dry-run: Gercek geri yukleme atlandi. Tum on kontroller basarili.")
+        return
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(zip_path, "r") as zipf:
+            zipf.extractall(temp_dir)
+
+        sql_dump = os.path.join(temp_dir, "db_backup", "postgres_dump.sql")
+        if not os.path.isfile(sql_dump):
+            raise RuntimeError("Yedek icinde postgres_dump.sql yok. Bu yedek PostgreSQL dump icermiyor.")
+
+        print("UYARI: Mevcut PostgreSQL verisi uzerine geri yukleme yapilacak.")
+        print("Geri yukleme baslatiliyor (psql)...")
+        try:
+            run_psql_restore(db_uri, sql_dump)
+        except FileNotFoundError:
+            raise RuntimeError("psql bulunamadi. PostgreSQL bin klasoru PATH'e eklenmeli.")
+
+    # Sonra dogrulama
+    if not skip_post_verify:
+        print("Sonra dogrulama: Restore edilmis veritabani kontrol ediliyor...")
+        post_errs = verify_restored_db(db_uri)
+        if post_errs:
+            for e in post_errs:
+                print(f"  UYARI: {e}")
+            raise RuntimeError("Restore sonrasi dogrulama basarisiz. Veritabani tutarsiz olabilir.")
+        print("Sonra dogrulama: OK.")
+
+    print("Geri yukleme tamamlandi.")
+
+
+def verify_command(zip_path: str) -> None:
+    """Yedek zip icerigini dogrula (restore yapmadan)."""
+    if not os.path.isfile(zip_path):
+        raise FileNotFoundError(f"Yedek dosyasi bulunamadi: {zip_path}")
+
+    print(f"Dogrulaniyor: {zip_path}")
+    errs = verify_backup_zip(zip_path, expect_pg_dump=True)
+    if errs:
+        for e in errs:
+            print(f"  HATA: {e}")
+        raise RuntimeError("Yedek dogrulamasi basarisiz.")
+
+    # Metadata goster
+    with zipfile.ZipFile(zip_path, "r") as z:
+        with z.open("backup_meta.json") as f:
+            meta = json.loads(f.read().decode("utf-8"))
+        info = z.getinfo("db_backup/postgres_dump.sql")
+    print("  backup_meta.json:", json.dumps(meta, ensure_ascii=False, indent=2))
+    print(f"  postgres_dump.sql: {info.file_size:,} byte")
+    print("Dogrulama: OK. Yedek guvenilir.")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Kokpitim yedekleyici (PostgreSQL destekli, dogrulamali)."
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    sub.add_parser("backup", help="Tam yedek al (kod + db dump), sonra dogrula")
+
+    restore_p = sub.add_parser("restore", help="Yedekten PostgreSQL'e geri yukle")
+    restore_p.add_argument("--zip", required=True, help="Yedek zip dosya yolu")
+    restore_p.add_argument("--dry-run", action="store_true", help="Sadece on kontrolleri yap, geri yukleme yapma")
+    restore_p.add_argument("--skip-post-verify", action="store_true", help="Restore sonrasi dogrulamayi atla")
+
+    verify_p = sub.add_parser("verify", help="Yedek zip icerigini dogrula (restore yapmadan)")
+    verify_p.add_argument("--zip", required=True, help="Yedek zip dosya yolu")
+
+    return parser
+
 
 if __name__ == "__main__":
-    create_backup()
+    cli = build_parser()
+    args = cli.parse_args()
+
+    try:
+        if args.command in (None, "backup"):
+            create_backup()
+        elif args.command == "restore":
+            restore_backup(
+                args.zip,
+                dry_run=getattr(args, "dry_run", False),
+                skip_post_verify=getattr(args, "skip_post_verify", False),
+            )
+        elif args.command == "verify":
+            verify_command(args.zip)
+        else:
+            cli.print_help()
+            sys.exit(1)
+    except Exception as err:
+        print(f"HATA: {err}")
+        sys.exit(1)

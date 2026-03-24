@@ -2017,6 +2017,21 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   width: min(1080px, calc(100% - 32px));
 }
 
+/* PG tablo modalı (10055) üstünde açılsın */
+.vgs-modal-overlay {
+  z-index: 10070 !important;
+}
+
+/* PG Ekle ile aynı şekilde kesin ön katman */
+#modal-kpi-data-entry {
+  z-index: 10090 !important;
+}
+
+#modal-kpi-data-entry .mc-modal {
+  position: relative;
+  z-index: 10091 !important;
+}
+
 .vgs-history-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -2026,7 +2041,7 @@ textarea.mc-form-input.karne-kpi-add-textarea {
 
 /* VGS üstünde açılan alt modallar (düzenle / sil onayı) — MicroUI, daha yüksek katman */
 .vgs-nested-modal-overlay {
-  z-index: 10060 !important;
+  z-index: 10080 !important;
 }
 
 .vgs-nested-modal-overlay .mc-modal.vgs-nested-modal {
@@ -2231,6 +2246,40 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   color: #b91c1c;
 }
 
+/* KPI trend kartı — accordion */
+.karne-trend-accordion-toggle {
+  cursor: pointer;
+}
+
+.karne-trend-accordion-chevron {
+  transition: transform 0.2s ease;
+  opacity: 0.8;
+}
+
+.karne-trend-accordion-toggle.is-open .karne-trend-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.karne-trend-accordion-panel {
+  max-height: 420px;
+  overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.2s ease;
+}
+
+.karne-trend-accordion-panel.is-collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.karne-trend-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 .vgs-history-table {
   width: 100%;
   border-collapse: collapse;
@@ -2321,35 +2370,27 @@ textarea.mc-form-input.karne-kpi-add-textarea {
 /* Sol: PG + filtreler | Kalan alan: Önceki / rozet / Sonraki ortada */
 .micro-pg-tablo-toolbar--unified {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 10px 14px;
   width: 100%;
   margin-bottom: 12px;
 }
 
-.micro-pg-toolbar-start {
-  display: flex;
-  flex-wrap: wrap;
+.micro-pg-toolbar-navline {
+  display: inline-flex;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 10px 14px;
+  gap: 10px;
   flex: 0 1 auto;
   min-width: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.micro-pg-toolbar-center {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.micro-pg-tablo-filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
+.micro-pg-toolbar-add {
+  flex: 0 0 auto;
 }
 
 .micro-pg-filter-group {
@@ -2372,16 +2413,6 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   color: #94a3b8;
 }
 
-.micro-pg-periyot-nav--inline {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 0;
-  max-width: 100%;
-}
-
 .mc-form-input--sm {
   min-width: 88px;
   padding: 6px 10px;
@@ -2401,6 +2432,15 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   width: auto;
   min-width: 6.5rem;
   flex: 0 1 auto;
+}
+
+.micro-pg-periyot-badge--hidden {
+  display: none !important;
+}
+
+/* Micro modal içinden açılan PG ekle modalı arkada kalmasın */
+#modal-kpi-add {
+  z-index: 10080;
 }
 
 .micro-pg-gunluk-ay-wrap.is-hidden {
@@ -2453,13 +2493,12 @@ textarea.mc-form-input.karne-kpi-add-textarea {
 }
 
 @media (max-width: 768px) {
-  .micro-pg-tablo-toolbar--unified {
+  .micro-pg-toolbar-navline {
     flex-wrap: wrap;
+    width: 100%;
   }
-  .micro-pg-toolbar-center {
-    flex: 1 1 100%;
-    justify-content: center;
-    padding-top: 2px;
+  .micro-pg-toolbar-add {
+    width: 100%;
   }
 }
 

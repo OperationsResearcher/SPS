@@ -1,0 +1,88 @@
+{% extends "micro/base.html" %}
+{% block title %}Takvim — Kokpitim{% endblock %}
+{% block page_title %}Takvim{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<div id="org-calendar-root" style="max-width:1100px; margin:0 auto;" data-events-url="{{ url_for('micro_bp.kurum_calendar_events') }}">
+    <div class="mc-card">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-calendar-days" style="color:#0ea5e9; margin-right:6px;"></i>Kurum Takvimi</span>
+            <div style="display:inline-flex; gap:12px; font-size:12px; color:#64748b;">
+                <span><i class="fas fa-circle" style="color:#10b981;"></i> Süreç</span>
+                <span><i class="fas fa-circle" style="color:#3b82f6;"></i> Proje</span>
+            </div>
+        </div>
+        <div class="mc-card-body">
+            <div id="org-calendar-loading" class="mc-page-subtitle" style="margin-bottom:8px;">
+                <i class="fas fa-spinner fa-spin"></i> Takvim yükleniyor…
+            </div>
+            <div id="org-calendar" style="min-height:620px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script>
+(function () {
+  const root = document.getElementById("org-calendar-root");
+  const calEl = document.getElementById("org-calendar");
+  const loadingEl = document.getElementById("org-calendar-loading");
+  if (!root || !calEl || typeof FullCalendar === "undefined") return;
+  const eventsUrl = root.dataset.eventsUrl;
+
+  const calendar = new FullCalendar.Calendar(calEl, {
+    locale: "tr",
+    timeZone: "Europe/Istanbul",
+    initialView: "dayGridMonth",
+    firstDay: 1,
+    height: "auto",
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,timeGridDay",
+    },
+    buttonText: {
+      today: "Bugün",
+      month: "Ay",
+      week: "Hafta",
+      day: "Gün",
+    },
+    events: async function (fetchInfo, successCallback, failureCallback) {
+      try {
+        const url = `${eventsUrl}?start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}`;
+        const res = await fetch(url, {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error((data && data.message) || `HTTP ${res.status}`);
+        if (loadingEl) loadingEl.style.display = "none";
+        successCallback(data.events || []);
+      } catch (err) {
+        if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">Takvim yüklenemedi: ${String(err.message || err)}</span>`;
+        failureCallback(err);
+      }
+    },
+    eventClick: function (info) {
+      const u = info.event.url || (info.event.extendedProps && info.event.extendedProps.url);
+      if (u) {
+        info.jsEvent.preventDefault();
+        window.location.href = u;
+      }
+    },
+    eventTimeFormat: {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    },
+  });
+  calendar.render();
+})();
+</script>
+{% endblock %}

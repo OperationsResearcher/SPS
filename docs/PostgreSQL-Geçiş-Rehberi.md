@@ -44,6 +44,12 @@ Alternatif (Chocolatey):
 choco install postgresql
 ```
 
+**Yerel PostgreSQL dizinleri (bu proje):**
+| Amaç | Yol |
+|------|-----|
+| Veri dizini (PGDATA) | `C:\pgdata2` |
+| Bin (pg_dump, psql) | Kuruluma göre `C:\Program Files\PostgreSQL\<versiyon>\bin` — yedekleyici için PATH'e eklenmeli |
+
 ### 2.3 Yerel Veritabanı ve Kullanıcı Oluşturma
 
 **pgAdmin** veya **psql** ile:
@@ -164,13 +170,15 @@ EOF
 
 ### 3.5 Veri Taşıma (VM'de)
 
-**pgloader ile:**
+**Not:** 3.0 Tek Komutla Geçiş kullanıyorsanız bu adım otomatik yapılır (Python script ile).
+
+**Alternatif — pgloader (manuel adımlar için):**
 ```bash
 sudo apt-get install -y pgloader
 SQLITE_PATH="/home/kokpitim.com/public_html/instance/kokpitim.db"
-# veya: sudo docker cp sps-web:/app/instance/kokpitim.db /tmp/kokpitim.db
 pgloader "${SQLITE_PATH}" "postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE@localhost/kokpitim_db"
 ```
+> Uyarı: pgloader schema uyumsuzluklarında hata verebilir. Önerilen: 3.0 script.
 
 ### 3.6 pg_hba.conf — Docker Erişimi
 
@@ -246,6 +254,10 @@ Get-Service postgresql*
 
 # Bağlantı testi
 psql -U kokpitim_user -d kokpitim_db -h localhost -c "\dt"
+
+# pg_dump/psql icin PATH (yedekleyici kullanacaksaniz)
+$env:PATH = "C:\Program Files\PostgreSQL\16\bin;" + $env:PATH
+# veya kalici: Sistem Ozellikleri > Ortam Degiskenleri > Path'e ekleyin
 ```
 
 **VM:**

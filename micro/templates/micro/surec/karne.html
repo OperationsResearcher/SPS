@@ -208,13 +208,17 @@
   {% endif %}
 
   <div class="mc-card karne-trend-card" id="trend-chart-card">
-    <div class="mc-card-header">
+    <div class="mc-card-header karne-trend-accordion-toggle" id="trend-accordion-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="trend-accordion-panel">
       <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>KPI / performans trend analizi</span>
-      <select id="trend-kpi-select" class="mc-select" style="width:auto; max-width:220px; font-size:12px;">
-        <option value="">— PG seçin —</option>
-      </select>
+      <i class="fas fa-chevron-down karne-trend-accordion-chevron" aria-hidden="true"></i>
     </div>
-    <div class="mc-card-body">
+    <div class="mc-card-body karne-trend-accordion-panel is-collapsed" id="trend-accordion-panel" aria-hidden="true">
+      <div class="karne-trend-filter-row">
+        <label class="karne-pg-filter-label" for="trend-kpi-select">Gösterge</label>
+        <select id="trend-kpi-select" class="mc-select" style="width:auto; max-width:220px; font-size:12px;">
+          <option value="">— PG seçin —</option>
+        </select>
+      </div>
       <canvas id="trend-chart" style="max-height:240px;"></canvas>
       <div id="trend-empty" class="mc-empty" style="padding:30px 20px; display:none;">
         <div class="mc-empty-icon"><i class="fas fa-chart-line"></i></div>
@@ -291,9 +295,6 @@
             <i class="fas fa-plus-circle" aria-hidden="true"></i> PG ekle
           </button>
           {% endif %}
-          <a href="{{ url_for('micro_bp.surec_karne', process_id=process.id, tab='activities') }}" class="mc-btn mc-btn-sm karne-btn-faaliyet-soft">
-            <i class="fas fa-plus-circle" aria-hidden="true"></i> Faaliyet ekle
-          </a>
           <button type="button" class="mc-btn mc-btn-sm karne-btn-excel-soft" id="btn-karne-excel">
             <i class="fas fa-file-download" aria-hidden="true"></i> Excel'e aktar
           </button>
@@ -638,8 +639,8 @@
               <div class="vgs-readonly-box" id="vgs-process-label">—</div>
             </div>
             <div class="tm-field tm-full">
-              <label class="mc-form-label">Performans göstergesi <span class="req">*</span></label>
-              <div class="vgs-readonly-box" id="vgs-kpi-label">—</div>
+              <label class="mc-form-label" for="vgs-kpi-select">Performans göstergesi <span class="req">*</span></label>
+              <select id="vgs-kpi-select" class="mc-form-input" required aria-required="true"></select>
             </div>
           </div>
 
@@ -761,44 +762,43 @@
       </div>
       <div class="mc-modal-body micro-pg-tablo-body">
         <div class="micro-pg-tablo-toolbar micro-pg-tablo-toolbar--unified">
-          <div class="micro-pg-toolbar-start">
-            {% if page_flags.can_crud_pg %}
-            <button type="button" class="mc-btn mc-btn-success mc-btn-sm micro-pg-toolbar-add" id="btn-micro-pg-tablo-add-pg">
-              <i class="fas fa-plus-circle" aria-hidden="true"></i> PG Ekle
+          <div class="micro-pg-toolbar-navline">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-prev">
+              <i class="fas fa-chevron-left" aria-hidden="true"></i> Önceki
             </button>
-            {% endif %}
-            <div class="micro-pg-tablo-filters">
-              <div class="micro-pg-filter-group">
-                <label class="micro-pg-filter-label" for="micro-pg-yil-select">Yıl</label>
-                <select id="micro-pg-yil-select" class="mc-form-input mc-form-input--sm micro-pg-select-yil"></select>
-              </div>
-              <div class="micro-pg-filter-group">
-                <label class="micro-pg-filter-label" for="micro-pg-periyot-select">Gösterim</label>
-                <select id="micro-pg-periyot-select" class="mc-form-input mc-form-input--sm micro-pg-select-gosterim">
-                  <option value="yillik">Yıllık</option>
-                  <option value="alti_ay">6 aylık</option>
-                  <option value="ceyrek" selected>Çeyreklik</option>
-                  <option value="aylik">Aylık</option>
-                  <option value="haftalik">Haftalık</option>
-                  <option value="gunluk">Günlük</option>
-                </select>
-              </div>
+            <div class="micro-pg-filter-group">
+              <label class="micro-pg-filter-label" for="micro-pg-yil-select">Yıl</label>
+              <select id="micro-pg-yil-select" class="mc-form-input mc-form-input--sm micro-pg-select-yil"></select>
             </div>
-          </div>
-          <div class="micro-pg-toolbar-center">
-            <div class="micro-pg-periyot-nav micro-pg-periyot-nav--inline">
-              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-prev">
-                <i class="fas fa-chevron-left" aria-hidden="true"></i> Önceki
-              </button>
-              <span class="micro-pg-periyot-badge" id="micro-pg-periyot-nav-badge">
-                <span class="micro-pg-periyot-badge-primary" id="micro-pg-periyot-nav-label">—</span>
-                <span class="micro-pg-periyot-badge-sub" id="micro-pg-periyot-nav-sub"></span>
-              </span>
-              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-next">
-                Sonraki <i class="fas fa-chevron-right" aria-hidden="true"></i>
-              </button>
+            <div class="micro-pg-filter-group">
+              <label class="micro-pg-filter-label" for="micro-pg-periyot-select">Gösterim</label>
+              <select id="micro-pg-periyot-select" class="mc-form-input mc-form-input--sm micro-pg-select-gosterim">
+                <option value="yillik">Yıllık</option>
+                <option value="alti_ay">6 aylık</option>
+                <option value="ceyrek" selected>Çeyreklik</option>
+                <option value="aylik">Aylık</option>
+                <option value="haftalik">Haftalık</option>
+                <option value="gunluk">Günlük</option>
+              </select>
             </div>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-next">
+              Sonraki <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
           </div>
+          {% if page_flags.can_crud_pg %}
+          <button type="button" class="mc-btn mc-btn-success mc-btn-sm micro-pg-toolbar-add" id="btn-micro-pg-tablo-add-pg">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i> PG Ekle
+          </button>
+          {% endif %}
+          {% if page_flags.can_enter_pgv %}
+          <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-pg-toolbar-add micro-pg-toolbar-add--pgv" id="btn-micro-pg-tablo-add-pgv">
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i> PGV Ekle
+          </button>
+          {% endif %}
+          <span class="micro-pg-periyot-badge micro-pg-periyot-badge--hidden" id="micro-pg-periyot-nav-badge" aria-hidden="true">
+            <span class="micro-pg-periyot-badge-primary" id="micro-pg-periyot-nav-label">—</span>
+            <span class="micro-pg-periyot-badge-sub" id="micro-pg-periyot-nav-sub"></span>
+          </span>
         </div>
         <div class="micro-pg-col-panel">
           <strong>Sütun gösterimi:</strong>

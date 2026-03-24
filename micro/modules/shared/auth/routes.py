@@ -117,9 +117,9 @@ def ayarlar():
 @micro_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
-    """Kişisel hesap ayarları — mevcut auth.settings ile aynı mantık, micro UI."""
+    """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""
     if request.method == "POST":
-        return redirect(url_for("auth.settings"), code=307)
+        return redirect(url_for("auth_bp.settings"), code=307)
 
     # GET — mevcut ayarları yükle
     def _parse_json(val, default=None):
