@@ -34,6 +34,8 @@ TABLES = [
     ("integration_hook", "id"),
     ("rule_definition", "id"),
     ("sla", "id"),
+    ("strategies", "id"),
+    ("sub_strategies", "id"),
 ]
 
 

@@ -10,6 +10,7 @@ from micro import micro_bp
 from app.extensions import csrf
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant
+from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.strategy import SwotAnalysis
 from app.models.process import Process, ProcessKpi
 
@@ -146,18 +147,35 @@ def sp_add_strategy():
     if not title:
         return jsonify({"success": False, "message": "Strateji adı zorunludur."}), 400
 
-    new_strategy = Strategy(
-        tenant_id=current_user.tenant_id,
-        title=title,
-        code=(data.get("code") or "").strip() or None,
-        description=(data.get("description") or "").strip() or None,
-    )
+    tenant_id = current_user.tenant_id
+    if not tenant_id:
+        return jsonify({"success": False, "message": "Kurum (tenant) bilgisi eksik."}), 400
+
+    def _make_strategy():
+        return Strategy(
+            tenant_id=tenant_id,
+            title=title,
+            code=(data.get("code") or "").strip() or None,
+            description=(data.get("description") or "").strip() or None,
+        )
+
     try:
+        new_strategy = _make_strategy()
         db.session.add(new_strategy)
         db.session.commit()
         return jsonify({"success": True, "message": "Strateji eklendi.", "id": new_strategy.id})
     except Exception as e:
         db.session.rollback()
+        if is_pk_duplicate(e, "strategies"):
+            try:
+                sync_pg_sequence_if_needed("strategies", "id")
+                new_strategy = _make_strategy()
+                db.session.add(new_strategy)
+                db.session.commit()
+                return jsonify({"success": True, "message": "Strateji eklendi.", "id": new_strategy.id})
+            except Exception as e2:
+                db.session.rollback()
+                current_app.logger.error(f"[sp_add_strategy/retry] {e2}")
         current_app.logger.error(f"[sp_add_strategy] {e}")
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
@@ -266,27 +284,45 @@ def sp_delete_swot(item_id):
 def sp_add_sub_strategy():
     """Alt strateji ekle."""
     data = request.get_json() or {}
-    strategy_id = data.get("strategy_id")
+    raw_sid = data.get("strategy_id")
     title = (data.get("title") or "").strip()
-    if not strategy_id or not title:
+    if not raw_sid or not title:
         return jsonify({"success": False, "message": "Strateji ve başlık zorunludur."}), 400
+
+    try:
+        strategy_id = int(raw_sid)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz strateji numarası."}), 400
 
     parent = Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
     ).first_or_404()
 
-    sub = SubStrategy(
-        strategy_id=parent.id,
-        title=title,
-        code=(data.get("code") or "").strip() or None,
-        description=(data.get("description") or "").strip() or None,
-    )
+    def _make_sub():
+        return SubStrategy(
+            strategy_id=parent.id,
+            title=title,
+            code=(data.get("code") or "").strip() or None,
+            description=(data.get("description") or "").strip() or None,
+        )
+
     try:
+        sub = _make_sub()
         db.session.add(sub)
         db.session.commit()
         return jsonify({"success": True, "message": "Alt strateji eklendi.", "id": sub.id})
     except Exception as e:
         db.session.rollback()
+        if is_pk_duplicate(e, "sub_strategies"):
+            try:
+                sync_pg_sequence_if_needed("sub_strategies", "id")
+                sub = _make_sub()
+                db.session.add(sub)
+                db.session.commit()
+                return jsonify({"success": True, "message": "Alt strateji eklendi.", "id": sub.id})
+            except Exception as e2:
+                db.session.rollback()
+                current_app.logger.error(f"[sp_add_sub_strategy/retry] {e2}")
         current_app.logger.error(f"[sp_add_sub_strategy] {e}")
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
