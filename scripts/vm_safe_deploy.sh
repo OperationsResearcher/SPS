@@ -44,7 +44,8 @@ sudo docker run -d --name "$CONTAINER" -p 80:5000 \
 
 echo "==> 5/6 flask db upgrade (yalnızca şema genişletme; transactional)"
 sleep 5
-sudo docker exec "$CONTAINER" bash -lc 'cd /app && export FLASK_APP=app.py && flask db upgrade'
+# Dockerfile CMD run:app ile aynı hedef (app.py degil)
+sudo docker exec "$CONTAINER" bash -lc 'cd /app && export FLASK_APP=run:app && flask db upgrade'
 
 echo "==> 6/6 Satır sayıları (sonra) — önceki ile aynı olmalı"
 COUNT_AFTER="$BACKUP_DIR/rowcounts_after_${TS}.txt"
