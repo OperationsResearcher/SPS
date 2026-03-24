@@ -29,6 +29,9 @@ from app.models.process import (
 from app.models.core import Notification, Strategy
 from models import Project, Task, project_members, project_leaders
 
+from micro.modules.proje.permissions import is_privileged, user_can_edit_tasks
+from micro.modules.surec.permissions import user_can_access_process
+
 
 def _table_exists(table_name: str) -> bool:
     bind = db.session.get_bind() if hasattr(db.session, "get_bind") else None
@@ -242,6 +245,84 @@ def _parse_iso_date(raw: str | None) -> date | None:
         return None
 
 
+def _processes_for_activity_quick_create(user) -> list[dict]:
+    """Takvimden faaliyet eklenebilecek süreçler.
+
+    Kurum yöneticisi / üst yönetim: kurumdaki tüm aktif süreçler (faaliyet ekleme API’si de erişime göre izin verir).
+    Diğer kullanıcılar: yalnızca üye veya lider oldukları süreçler.
+    """
+    if is_privileged(user):
+        rows = (
+            Process.query.filter(
+                Process.tenant_id == user.tenant_id,
+                Process.is_active.is_(True),
+            )
+            .order_by(Process.name)
+            .limit(400)
+            .all()
+        )
+    else:
+        member_process_ids = db.session.query(process_members.c.process_id).filter(
+            process_members.c.user_id == user.id
+        )
+        leader_process_ids = db.session.query(process_leaders.c.process_id).filter(
+            process_leaders.c.user_id == user.id
+        )
+        process_ids_sq = member_process_ids.union(leader_process_ids).subquery()
+        rows = (
+            Process.query.filter(
+                Process.id.in_(process_ids_sq),
+                Process.is_active.is_(True),
+                Process.tenant_id == user.tenant_id,
+            )
+            .order_by(Process.name)
+            .limit(400)
+            .all()
+        )
+    return [{"id": p.id, "name": (p.name or f"Süreç #{p.id}")} for p in rows]
+
+
+def _projects_for_task_quick_create(user) -> list[dict]:
+    """Görev oluşturma yetkisi olan projeler."""
+    kid = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
+    if not kid:
+        return []
+    rows = (
+        Project.query.filter(Project.kurum_id == kid, Project.is_archived.is_(False))
+        .order_by(Project.name)
+        .limit(500)
+        .all()
+    )
+    out: list[dict] = []
+    for p in rows:
+        if user_can_edit_tasks(user, p):
+            out.append({"id": p.id, "name": (p.name or f"Proje #{p.id}")})
+    return out
+
+
+def _task_form_meta_calendar(user) -> dict:
+    """Proje görevi formu (task_form.html) ile uyumlu PG listesi + kurum kullanıcıları."""
+    from micro.modules.proje.helpers import kpis_for_tenant, tenant_core_users, kurum_id
+
+    kid = kurum_id()
+    kpis = kpis_for_tenant()
+    out_kpis = []
+    for k in kpis:
+        proc = k.process
+        code = (getattr(proc, "code", None) or "?") if proc else "?"
+        kc = (k.code or "").strip()
+        nm = (k.name or "").strip()
+        out_kpis.append({"id": k.id, "label": f"[{code}] {kc} {nm}".strip()})
+    users = tenant_core_users(kid)
+    out_users = []
+    for u in users:
+        fn = (u.first_name or "").strip()
+        ln = (u.last_name or "").strip()
+        full_name = f"{fn} {ln}".strip() or (u.email or "")
+        out_users.append({"id": int(u.id), "full_name": full_name, "email": u.email or ""})
+    return {"kpis": out_kpis, "users": out_users}
+
+
 def _collect_calendar_events(start_d: date, end_d: date, *, org_scope: bool) -> list[dict]:
     """Takvim etkinliklerini derle (atananlar veya kurum geneli)."""
     start_dt = datetime.combine(start_d, time.min)
@@ -399,6 +480,33 @@ def _collect_calendar_events(start_d: date, end_d: date, *, org_scope: bool) -> 
             }
         )
 
+    # 3) Kendime görev (bireysel faaliyet) — yalnızca oturum kullanıcısı
+    indiv_rows = IndividualActivity.query.filter(
+        IndividualActivity.user_id == user.id,
+        IndividualActivity.is_active.is_(True),
+    ).all()
+    for ia in indiv_rows:
+        sd = ia.start_date or ia.end_date
+        ed = ia.end_date or ia.start_date
+        if not sd:
+            continue
+        if ed < start_d or sd > end_d:
+            continue
+        events.append(
+            {
+                "id": f"indiv-{ia.id}",
+                "title": f"Kendime Görev: {ia.name}",
+                "start": sd.isoformat(),
+                "end": (ed + timedelta(days=1)).isoformat(),
+                "allDay": True,
+                "backgroundColor": "#f59e0b",
+                "borderColor": "#d97706",
+                "textColor": "#ffffff",
+                "url": "/bireysel/karne",
+                "extendedProps": {"sourceType": "individual_activity"},
+            }
+        )
+
     return events
 
 
@@ -436,6 +544,76 @@ def kurum_calendar_events():
 
     events = _collect_calendar_events(start_d, end_d, org_scope=True)
     return jsonify({"success": True, "events": events, "timezone": "Europe/Istanbul"})
+
+
+@micro_bp.route("/api/calendar/quick-create-meta", methods=["GET"])
+@login_required
+def api_calendar_quick_create_meta():
+    """Takvimden hızlı oluşturma: süreç / proje / bireysel için seçenek listeleri ve bayraklar."""
+    processes = _processes_for_activity_quick_create(current_user)
+    projects = _projects_for_task_quick_create(current_user)
+    return jsonify(
+        {
+            "success": True,
+            "processes": processes,
+            "projects": projects,
+            "can_process": len(processes) > 0,
+            "can_project": len(projects) > 0,
+            "can_individual": True,
+            "task_form": _task_form_meta_calendar(current_user),
+        }
+    )
+
+
+@micro_bp.route("/api/calendar/process/<int:process_id>/activity-form-meta", methods=["GET"])
+@login_required
+def api_calendar_activity_form_meta(process_id: int):
+    """Süreç faaliyeti modalı: PG listesi, atanabilir kullanıcılar, çoklu atama izni (karne ile aynı veri)."""
+    p = Process.query.filter_by(
+        id=process_id,
+        tenant_id=current_user.tenant_id,
+        is_active=True,
+    ).first()
+    if not p:
+        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+    if not user_can_access_process(current_user, p):
+        return jsonify({"success": False, "message": "Bu sürece erişiminiz yok."}), 403
+
+    kpis = (
+        ProcessKpi.query.filter_by(process_id=p.id, is_active=True)
+        .order_by(ProcessKpi.code)
+        .all()
+    )
+    kpi_list = []
+    for k in kpis:
+        kc = (k.code or "").strip() or "?"
+        nm = (k.name or "").strip()
+        kpi_list.append({"id": k.id, "label": f"[{kc}] {nm}".strip()})
+
+    process_users = []
+    seen_uids = set()
+    for u in (p.leaders + p.members + p.owners):
+        if not u or not getattr(u, "is_active", True) or int(u.id) in seen_uids:
+            continue
+        seen_uids.add(int(u.id))
+        fn = (u.first_name or "").strip()
+        ln = (u.last_name or "").strip()
+        full_name = f"{fn} {ln}".strip() or (u.email or "")
+        process_users.append({"id": int(u.id), "full_name": full_name, "email": u.email or ""})
+
+    rn = getattr(current_user.role, "name", None) if current_user.role else None
+    can_multi = rn in ("tenant_admin", "executive_manager", "Admin") or any(
+        int(u.id) == int(current_user.id) for u in (p.leaders or [])
+    )
+
+    return jsonify(
+        {
+            "success": True,
+            "kpis": kpi_list,
+            "process_users": process_users,
+            "can_multi_assign": bool(can_multi),
+        }
+    )
 
 
 @micro_bp.route("/takvim", methods=["GET"])

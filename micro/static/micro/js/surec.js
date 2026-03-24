@@ -1488,25 +1488,43 @@
     return escHtml(String(targetValRaw ?? "—"));
   }
 
-  /** Eski PG tablosu ile aynı başarı yüzdesi (kolon ayrımı için); veri yok → null */
-  function computeKpiKanbanScorePct(k) {
-    const entries = k.entries || {};
+  /** Seçili kanban periyodu için sayısal gerçekleşen (meta satırı ile aynı kaynak). */
+  function getKanbanPeriodActualNumeric(k, view, periodKey) {
+    const ent = k.entries || {};
+    const hesap = k.data_collection_method || "Ortalama";
+    if (view === "alti_ay") {
+      const raw = ent[periodKey];
+      if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+        return parseNum(raw);
+      }
+      const half = periodKey === "halfyear_2" ? 2 : 1;
+      const agg = aggregateMonthlyForHalf(ent, half, hesap);
+      return agg.hasVal ? agg.val : null;
+    }
+    const raw = ent[periodKey];
+    if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+      return parseNum(raw);
+    }
+    return null;
+  }
+
+  /**
+   * Kart gauge / kolon: seçili periyottaki gerçekleşen ÷ aynı periyot hücre hedefi.
+   * (Eski davranış tüm entries toplamını yıllık hedefe bölüyordu; Q1 boşken diğer dönem verisi %75 gibi yanıltıcı sonuç veriyordu.)
+   */
+  function computeKpiKanbanScorePct(k, view, periodKey, gosterimPeriyot) {
     const hesap = k.data_collection_method || "Ortalama";
     const olcumPer = k.period || "";
-    const yillikHedef = computeYillikHedefMicro(k.target_value, olcumPer, hesap);
-    const allVals = Object.values(entries)
-      .map((v) => parseNum(v))
-      .filter((v) => v != null);
-    const skorTarget = yillikHedef != null ? yillikHedef : parseNum(k.target_value);
-    if (allVals.length === 0 || skorTarget == null || Number.isNaN(skorTarget) || skorTarget <= 0) {
+    const compareVal = getKanbanPeriodActualNumeric(k, view, periodKey);
+    if (compareVal == null) return null;
+    const gp = view === "alti_ay" ? "alti_ay" : gosterimPeriyot;
+    const skorTarget = computeCellTargetMicro(k.target_value, olcumPer, hesap, gp);
+    if (skorTarget == null || Number.isNaN(skorTarget) || skorTarget <= 0) {
       return null;
     }
-    const compareVal =
-      hesap === "Toplama" || hesap === "Toplam"
-        ? allVals.reduce((a, b) => a + b, 0)
-        : allVals[allVals.length - 1];
+    const dec = String(k.direction || "Increasing").toLowerCase() === "decreasing";
     let pct = Math.round((compareVal / skorTarget) * 100);
-    if (k.direction === "Decreasing") {
+    if (dec) {
       pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
     }
     return Math.max(0, Math.min(100, pct));
@@ -1994,7 +2012,7 @@
     };
 
     kpis.forEach((k) => {
-      const pctRaw = computeKpiKanbanScorePct(k);
+      const pctRaw = computeKpiKanbanScorePct(k, view, ctx.periodKey, ctx.gosterimPeriyot);
       const bucket = kanbanBucketFromPct(pctRaw);
       counts[bucket.col] += 1;
 

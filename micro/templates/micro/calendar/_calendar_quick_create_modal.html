@@ -1,0 +1,193 @@
+<div id="cal-quick-backdrop" class="cal-quick-backdrop" hidden></div>
+<div id="cal-quick-modal" class="cal-quick-panel mc-card" hidden role="dialog" aria-modal="true" aria-labelledby="cal-quick-title">
+  <div class="mc-card-header flex flex-row items-center justify-between gap-2" style="padding:14px 16px;">
+    <div>
+      <div class="mc-modal-title flex items-center gap-2" style="font-size:1.05rem; font-weight:600;">
+        <i id="cal-quick-head-icon" class="fas fa-calendar-plus text-sky-500" aria-hidden="true"></i>
+        <span id="cal-quick-title">Takvime ne ekleyelim?</span>
+      </div>
+      <div id="cal-quick-badge" class="hidden text-xs font-medium mt-1 text-slate-500"></div>
+    </div>
+    <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary shrink-0" id="cal-quick-close" title="Kapat">&times;</button>
+  </div>
+  <div class="mc-card-body" style="padding:14px 16px 18px;">
+    <div id="cal-quick-step-type">
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-1" id="cal-quick-dates"></p>
+      <p class="text-xs text-slate-500 mb-3">Aynı formlar süreç karnesi ve proje görevi sayfalarındakiyle uyumludur.</p>
+      <div class="flex flex-col gap-2">
+        <button type="button" class="cal-type-btn mc-btn mc-btn-secondary flex flex-col items-stretch" id="cal-opt-process" disabled>
+          <span><i class="fas fa-list-check text-emerald-500 mr-2"></i><strong>Süreç faaliyeti</strong></span>
+          <span class="cal-type-sub">Karne «Yeni Faaliyet» ile aynı alanlar (PG, atananlar, tarih-saat, hatırlatma…).</span>
+        </button>
+        <button type="button" class="cal-type-btn mc-btn mc-btn-secondary flex flex-col items-stretch" id="cal-opt-project" disabled>
+          <span><i class="fas fa-clipboard-list text-blue-500 mr-2"></i><strong>Proje görevi</strong></span>
+          <span class="cal-type-sub">Proje «Yeni görev» formu ile aynı (durum, öncelik, atanan, PG bağlantısı…).</span>
+        </button>
+        <button type="button" class="cal-type-btn mc-btn mc-btn-secondary flex flex-col items-stretch" id="cal-opt-self">
+          <span><i class="fas fa-user text-amber-500 mr-2"></i><strong>Kendime görev</strong></span>
+          <span class="cal-type-sub">Bireysel faaliyet; turuncu takvim, bireysel karne.</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="cal-quick-step-form" class="hidden">
+      <p class="text-xs text-slate-500 mb-3 pb-2 border-b border-slate-200 dark:border-slate-600" id="cal-quick-form-dates-recap"></p>
+
+      <div id="cal-form-process" class="hidden space-y-3">
+        <div>
+          <label class="mc-label" for="cal-select-process">Süreç *</label>
+          <select id="cal-select-process" class="mc-input w-full"></select>
+        </div>
+        <div id="cal-act-meta-loading" class="hidden text-sm text-slate-500"><i class="fas fa-spinner fa-spin mr-1"></i> Süreç bilgileri yükleniyor…</div>
+        <p id="cal-act-meta-hint" class="text-xs text-slate-500">Önce süreç seçin; PG ve atananlar listesi yüklenecektir.</p>
+        <div id="cal-act-meta-box" class="hidden space-y-3">
+          <div>
+            <label class="mc-label" for="cal-act-name">Faaliyet adı *</label>
+            <input id="cal-act-name" type="text" class="mc-input w-full" placeholder="Örn: Müşteri Ziyareti" autocomplete="off" />
+          </div>
+          <div>
+            <label class="mc-label" for="cal-act-kpi">İlişkili PG</label>
+            <select id="cal-act-kpi" class="mc-input w-full"></select>
+          </div>
+          <div>
+            <label class="mc-label">Atananlar *</label>
+            <div id="cal-act-assignee-box" class="cal-assignee-grid"></div>
+            <p id="cal-act-assignee-hint" class="text-xs text-slate-500 mt-1">Süreç lideri birden fazla kişi seçebilir.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="mc-label" for="cal-act-start">Başlangıç tarihi / saat</label>
+              <input id="cal-act-start" type="datetime-local" class="mc-input w-full" />
+            </div>
+            <div>
+              <label class="mc-label" for="cal-act-end">Bitiş tarihi / saat</label>
+              <input id="cal-act-end" type="datetime-local" class="mc-input w-full" />
+            </div>
+          </div>
+          <div>
+            <label class="mc-label">Hatırlatmalar (başlangıca göre)</label>
+            <div class="flex flex-wrap gap-3 text-sm">
+              <label class="inline-flex items-center gap-1"><input type="checkbox" id="cal-act-rem-60" value="60" /> 1 saat önce</label>
+              <label class="inline-flex items-center gap-1"><input type="checkbox" id="cal-act-rem-1440" value="1440" /> 1 gün önce</label>
+              <label class="inline-flex items-center gap-1"><input type="checkbox" id="cal-act-rem-4320" value="4320" /> 3 gün önce</label>
+              <label class="inline-flex items-center gap-1"><input type="checkbox" id="cal-act-rem-7200" value="7200" /> 5 gün önce</label>
+            </div>
+          </div>
+          <label class="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" id="cal-act-notify-email" /> E-posta da gönder
+          </label>
+          <div>
+            <label class="mc-label" for="cal-act-status">Durum</label>
+            <select id="cal-act-status" class="mc-input w-full">
+              <option value="Planlandı">Planlandı</option>
+              <option value="Devam Ediyor">Devam Ediyor</option>
+              <option value="Tamamlandı">Tamamlandı</option>
+              <option value="İptal">İptal</option>
+            </select>
+          </div>
+          <div>
+            <label class="mc-label" for="cal-act-desc">Açıklama</label>
+            <textarea id="cal-act-desc" class="mc-input w-full" rows="3" placeholder="Opsiyonel"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div id="cal-form-project" class="hidden space-y-3">
+        <div>
+          <label class="mc-label" for="cal-select-project">Proje *</label>
+          <select id="cal-select-project" class="mc-input w-full"></select>
+        </div>
+        <div>
+          <label class="mc-label" for="cal-proj-title">Başlık *</label>
+          <input id="cal-proj-title" type="text" class="mc-input w-full" />
+        </div>
+        <div>
+          <label class="mc-label" for="cal-proj-desc">Açıklama</label>
+          <textarea id="cal-proj-desc" class="mc-input w-full" rows="3"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="mc-label" for="cal-proj-status">Durum</label>
+            <select id="cal-proj-status" class="mc-input w-full">
+              <option value="Yapılacak">Yapılacak</option>
+              <option value="Devam Ediyor">Devam Ediyor</option>
+              <option value="Beklemede">Beklemede</option>
+              <option value="Tamamlandı">Tamamlandı</option>
+            </select>
+          </div>
+          <div>
+            <label class="mc-label" for="cal-proj-priority">Öncelik</label>
+            <select id="cal-proj-priority" class="mc-input w-full">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="mc-label" for="cal-proj-assignee">Atanan</label>
+          <select id="cal-proj-assignee" class="mc-input w-full">
+            <option value="">—</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="mc-label" for="cal-proj-start">Başlangıç tarihi</label>
+            <input type="date" id="cal-proj-start" class="mc-input w-full" />
+          </div>
+          <div>
+            <label class="mc-label" for="cal-proj-due">Bitiş tarihi</label>
+            <input type="date" id="cal-proj-due" class="mc-input w-full" />
+          </div>
+        </div>
+        <div>
+          <label class="mc-label" for="cal-proj-kpi">Bağlı süreç PG (en fazla bir)</label>
+          <select id="cal-proj-kpi" class="mc-input w-full">
+            <option value="">— PG seçilmedi —</option>
+          </select>
+          <p id="cal-proj-kpi-empty" class="hidden text-xs text-slate-500 mt-1">Bu kurumda aktif süreç/PG bulunamadı.</p>
+        </div>
+      </div>
+
+      <div id="cal-form-self" class="hidden space-y-3">
+        <p class="text-sm text-slate-600 dark:text-slate-400">Bireysel karnenize kaydedilir; yalnızca siz görürsünüz.</p>
+        <div>
+          <label class="mc-label" for="cal-self-title">Görev başlığı *</label>
+          <input id="cal-self-title" type="text" class="mc-input w-full" placeholder="Örn. Eğitim modülünü tamamla" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="mc-label" for="cal-self-start">Başlangıç tarihi</label>
+            <input type="date" id="cal-self-start" class="mc-input w-full" />
+          </div>
+          <div>
+            <label class="mc-label" for="cal-self-end">Bitiş / hedef tarihi</label>
+            <input type="date" id="cal-self-end" class="mc-input w-full" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="mc-label" for="cal-self-t-start">Başlangıç saati <span class="font-normal opacity-70">(opsiyonel)</span></label>
+            <input type="time" id="cal-self-t-start" class="mc-input w-full" />
+          </div>
+          <div>
+            <label class="mc-label" for="cal-self-t-end">Bitiş saati <span class="font-normal opacity-70">(opsiyonel)</span></label>
+            <input type="time" id="cal-self-t-end" class="mc-input w-full" />
+          </div>
+        </div>
+        <div>
+          <label class="mc-label" for="cal-self-desc">Detay / notlar</label>
+          <textarea id="cal-self-desc" class="mc-input w-full" rows="3"></textarea>
+        </div>
+        <p class="text-xs text-slate-500">Saatler açıklama metnine eklenir (hatırlatma notu olarak).</p>
+      </div>
+
+      <div class="flex gap-2 justify-end mt-4 pt-2 border-t border-slate-200 dark:border-slate-600">
+        <button type="button" class="mc-btn mc-btn-secondary" id="cal-quick-back">İptal</button>
+        <button type="button" class="mc-btn mc-btn-primary" id="cal-quick-submit"><i class="fas fa-save mr-1"></i> Kaydet</button>
+      </div>
+    </div>
+    <p id="cal-quick-err" class="text-sm text-red-600 mt-2 hidden"></p>
+  </div>
+</div>

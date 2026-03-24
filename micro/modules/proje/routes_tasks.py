@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.models.process import ProcessKpi
@@ -98,6 +98,102 @@ def micro_project_task_new(project_id: int):
     db.session.commit()
     flash("Görev eklendi.", "success")
     return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+
+
+@micro_bp.route("/project/api/task/quick-add", methods=["POST"])
+@login_required
+def micro_project_task_quick_add():
+    """Takvim vb. için JSON ile hızlı proje görevi oluşturma."""
+    data = request.get_json() or {}
+    try:
+        project_id = int(data.get("project_id"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz proje."}), 400
+
+    proj = load_project(project_id)
+    if not user_can_edit_tasks(current_user, proj):
+        return jsonify({"success": False, "message": "Bu projede görev oluşturma yetkiniz yok."}), 403
+
+    title = (data.get("title") or "").strip()
+    if not title:
+        return jsonify({"success": False, "message": "Görev başlığı zorunludur."}), 400
+
+    start_d = None
+    due_d = None
+    raw_start = data.get("start_date")
+    raw_due = data.get("due_date")
+    if raw_start:
+        try:
+            start_d = datetime.strptime(str(raw_start)[:10], "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    if raw_due:
+        try:
+            due_d = datetime.strptime(str(raw_due)[:10], "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    if start_d is None and due_d is not None:
+        start_d = due_d
+    if due_d is None and start_d is not None:
+        due_d = start_d
+
+    process_kpi_id = None
+    pk_raw = data.get("process_kpi_id")
+    if pk_raw is not None and str(pk_raw).strip() != "":
+        try:
+            pk_int = int(pk_raw)
+            kpi = ProcessKpi.query.get(pk_int)
+            if kpi and kpi.process.tenant_id == current_user.tenant_id:
+                process_kpi_id = pk_int
+        except (TypeError, ValueError):
+            pass
+
+    aid = int(current_user.id)
+    raw_aid = data.get("assignee_id")
+    if raw_aid is not None and str(raw_aid).strip() != "":
+        try:
+            tmp = int(raw_aid)
+            assignee_user = CoreUser.query.get(tmp)
+            if assignee_user and assignee_user.tenant_id == current_user.tenant_id:
+                aid = tmp
+        except (TypeError, ValueError):
+            pass
+
+    task = Task(
+        project_id=project_id,
+        title=title,
+        description=(data.get("description") or "").strip() or None,
+        status=data.get("status") or "Yapılacak",
+        priority=data.get("priority") or "Medium",
+        assignee_id=aid,
+        reporter_id=current_user.id,
+        due_date=due_d,
+        start_date=start_d,
+        process_kpi_id=process_kpi_id,
+    )
+    db.session.add(task)
+    db.session.flush()
+    if aid and int(aid) != int(current_user.id):
+        assignee_user = CoreUser.query.get(aid)
+        if assignee_user and assignee_user.tenant_id == current_user.tenant_id:
+            actor = CoreUser.query.get(current_user.id)
+            notify_task_assignment(
+                task.title,
+                assignee_user,
+                proj.kurum_id,
+                actor=actor,
+                task_link=f"/project/{project_id}/task/{task.id}",
+                project=proj,
+            )
+    db.session.commit()
+    return jsonify(
+        {
+            "success": True,
+            "message": "Görev eklendi.",
+            "id": task.id,
+            "url": url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task.id),
+        }
+    )
 
 
 @micro_bp.route("/project/<int:project_id>/task/<int:task_id>")

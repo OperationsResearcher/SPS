@@ -11,6 +11,8 @@ from sqlalchemy.orm import validates
 from utils.task_status import normalize_task_status
 import json
 
+from app.models.core import User as CoreUser
+
 # Association Tables
 task_predecessors = db.Table('task_predecessors',
     db.Column('task_id', db.Integer, db.ForeignKey('task.id'), primary_key=True),
@@ -18,19 +20,19 @@ task_predecessors = db.Table('task_predecessors',
 )
 project_members = db.Table('project_members',
     db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
 )
 
 project_observers = db.Table('project_observers',
     db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
 )
 
 # Çoklu proje lideri (yönetici); `manager_id` birincil lider + API/rapor geriye dönük uyumu için korunur
 project_leaders = db.Table(
     'project_leaders',
     db.Column('project_id', db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True),
 )
 
 project_related_processes = db.Table('project_related_processes',
@@ -53,7 +55,7 @@ class Project(db.Model):
     # Temel Bilgiler
     name = db.Column(db.String(200), nullable=False, index=True)
     description = db.Column(db.Text)
-    manager_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    manager_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     
     # Zamanlama
     start_date = db.Column(db.Date, nullable=True, index=True)
@@ -75,12 +77,12 @@ class Project(db.Model):
     
     # İlişkiler
     kurum = db.relationship('Kurum', backref=db.backref('projeler', lazy=True))
-    manager = db.relationship('LegacyUser', foreign_keys=[manager_id], backref='yonettigi_projeler')
+    manager = db.relationship(CoreUser, foreign_keys=[manager_id], backref='yonettigi_projeler')
     
     # Many-to-Many
-    leaders = db.relationship('LegacyUser', secondary=project_leaders, backref='lider_oldugu_projeler')
-    members = db.relationship('LegacyUser', secondary=project_members, backref='uye_oldugu_projeler')
-    observers = db.relationship('LegacyUser', secondary=project_observers, backref='gozlemci_oldugu_projeler')
+    leaders = db.relationship(CoreUser, secondary=project_leaders, backref='lider_oldugu_projeler')
+    members = db.relationship(CoreUser, secondary=project_members, backref='uye_oldugu_projeler')
+    observers = db.relationship(CoreUser, secondary=project_observers, backref='gozlemci_oldugu_projeler')
     related_processes = db.relationship('Surec', secondary=project_related_processes, backref='bagli_projeler')
     
     def __repr__(self):
@@ -159,8 +161,8 @@ class Task(db.Model):
     description = db.Column(db.Text)
     
     # Atamalar
-    assignee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assignee_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reporter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     # Dış kaynak / sistemde olmayan sorumlu (opsiyonel)
     external_assignee_name = db.Column(db.String(200), nullable=True)
@@ -195,8 +197,8 @@ class Task(db.Model):
     
     # İlişkiler
     project = db.relationship('Project', backref=db.backref('tasks', lazy=True, cascade='all, delete-orphan'))
-    assignee = db.relationship('LegacyUser', foreign_keys=[assignee_id], backref='assigned_tasks')
-    reporter = db.relationship('LegacyUser', foreign_keys=[reporter_id], backref='reported_tasks')
+    assignee = db.relationship(CoreUser, foreign_keys=[assignee_id], backref='assigned_tasks')
+    reporter = db.relationship(CoreUser, foreign_keys=[reporter_id], backref='reported_tasks')
     parent = db.relationship('Task', remote_side=[id], backref=db.backref('children', lazy=True))
 
     # Bağımlılıklar: Öncel görevler (predecessors)
@@ -281,19 +283,19 @@ class TaskComment(db.Model):
     __tablename__ = 'task_comment'
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     task = db.relationship('Task', backref=db.backref('comments', lazy=True))
-    user = db.relationship('LegacyUser', backref='task_comments')
+    user = db.relationship(CoreUser, backref='task_comments')
 
 class TaskMention(db.Model):
     """Görev içi kullanıcı etiketleme"""
     __tablename__ = 'task_mention'
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    mentioned_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    mentioned_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment_id = db.Column(db.Integer, db.ForeignKey('task_comment.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -302,7 +304,7 @@ class ProjectFile(db.Model):
     __tablename__ = 'project_file'
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
-    uploader_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    uploader_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(500), nullable=False)
     file_type = db.Column(db.String(50))
@@ -338,7 +340,7 @@ class TimeEntry(db.Model):
     __tablename__ = 'time_entry'
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     duration_minutes = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text)
     date = db.Column(db.Date)
@@ -347,7 +349,7 @@ class TaskActivity(db.Model):
     __tablename__ = 'task_activity'
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     activity_type = db.Column(db.String(50))
     details = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -437,13 +439,13 @@ class CapacityPlan(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     weekly_hours = db.Column(db.Float, nullable=False, default=40.0)
     start_date = db.Column(db.Date, nullable=True)
     end_date = db.Column(db.Date, nullable=True)
 
     project = db.relationship('Project', backref=db.backref('capacity_plans', lazy=True))
-    user = db.relationship('LegacyUser', foreign_keys=[user_id])
+    user = db.relationship(CoreUser, foreign_keys=[user_id])
 
 
 class RaidItem(db.Model):
@@ -454,7 +456,7 @@ class RaidItem(db.Model):
     item_type = db.Column(db.String(20), nullable=False)  # Risk, Assumption, Issue, Dependency
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     status = db.Column(db.String(50), default='Open')
     
     # Risk alanları
@@ -478,7 +480,7 @@ class RaidItem(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     project = db.relationship('Project', backref=db.backref('raid_items', lazy=True))
-    owner = db.relationship('LegacyUser', foreign_keys=[owner_id])
+    owner = db.relationship(CoreUser, foreign_keys=[owner_id])
 
 
 class TaskBaseline(db.Model):
