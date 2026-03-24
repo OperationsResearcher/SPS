@@ -35,11 +35,17 @@ cd "$APP_DIR"
 sudo git pull origin main
 
 echo "==> 4/6 Docker image + container"
+if [ ! -f "$APP_DIR/.env" ]; then
+  echo "HATA: $APP_DIR/.env yok — SQLALCHEMY_DATABASE_URI (PostgreSQL) burada olmali."
+  exit 1
+fi
 sudo docker build -t "$IMAGE" .
 sudo docker stop "$CONTAINER" 2>/dev/null || true
 sudo docker rm "$CONTAINER" 2>/dev/null || true
+# Sunucudaki .env (PostgreSQL) container ortamina aktarilir; imaj icindeki sqlite varsayimi ezilir.
 sudo docker run -d --name "$CONTAINER" -p 80:5000 \
   -v /home/kokpitim.com/public_html/instance:/app/instance \
+  --env-file "$APP_DIR/.env" \
   "$IMAGE"
 
 echo "==> 5/6 Alembic upgrade (Flask CLI yerine run_db_upgrade.py)"
