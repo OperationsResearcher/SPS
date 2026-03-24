@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash
 from micro import micro_bp
 from app.models import db
 from app.models.core import User, Role, Tenant
+from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 
 _ADMIN_ROLES   = ("Admin",)
 _MANAGER_ROLES = ("Admin", "tenant_admin", "executive_manager")
@@ -95,6 +96,25 @@ def admin_users_add():
         return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
     except Exception as e:
         db.session.rollback()
+        if is_pk_duplicate(e, "users"):
+            try:
+                sync_pg_sequence_if_needed("users", "id")
+                u = User(
+                    email=email,
+                    password_hash=generate_password_hash(data.get("password") or "Changeme123!"),
+                    first_name=(data.get("first_name") or "").strip(),
+                    last_name=(data.get("last_name") or "").strip(),
+                    tenant_id=tid or None,
+                    role_id=data.get("role_id"),
+                    job_title=(data.get("job_title") or "").strip() or None,
+                    department=(data.get("department") or "").strip() or None,
+                )
+                db.session.add(u)
+                db.session.commit()
+                return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
+            except Exception as e2:
+                db.session.rollback()
+                current_app.logger.error(f"[admin_users_add/retry] {e2}")
         current_app.logger.error(f"[admin_users_add] {e}")
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
@@ -300,7 +320,7 @@ def admin_tenants_add():
     try:
         t = Tenant(
             name=name,
-            short_name=data.get("short_name", "").strip() or None,
+            short_name=(data.get("short_name") or "").strip() or None,
             sector=data.get("sector") or None,
             activity_area=data.get("activity_area") or None,
             employee_count=int(data["employee_count"]) if data.get("employee_count") else None,
@@ -320,6 +340,32 @@ def admin_tenants_add():
         return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
     except Exception as e:
         db.session.rollback()
+        if is_pk_duplicate(e, "tenants"):
+            try:
+                sync_pg_sequence_if_needed("tenants", "id")
+                t = Tenant(
+                    name=name,
+                    short_name=(data.get("short_name") or "").strip() or None,
+                    sector=data.get("sector") or None,
+                    activity_area=data.get("activity_area") or None,
+                    employee_count=int(data["employee_count"]) if data.get("employee_count") else None,
+                    contact_email=data.get("contact_email") or None,
+                    phone_number=data.get("phone_number") or None,
+                    website_url=data.get("website_url") or None,
+                    tax_office=data.get("tax_office") or None,
+                    tax_number=data.get("tax_number") or None,
+                    max_user_count=int(data["max_user_count"]) if data.get("max_user_count") else 5,
+                    package_id=int(data["package_id"]) if data.get("package_id") else None,
+                )
+                if data.get("license_end_date"):
+                    from datetime import date
+                    t.license_end_date = date.fromisoformat(data["license_end_date"])
+                db.session.add(t)
+                db.session.commit()
+                return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
+            except Exception as e2:
+                db.session.rollback()
+                current_app.logger.error(f"[admin_tenants_add/retry] {e2}")
         current_app.logger.error(f"[admin_tenants_add] {e}")
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
@@ -336,7 +382,8 @@ def admin_tenants_edit(tenant_id):
     data = request.get_json() or {}
     try:
         t.name            = (data.get("name") or t.name).strip()
-        t.short_name      = data.get("short_name", t.short_name) or None
+        if "short_name" in data:
+            t.short_name = ((data.get("short_name") or "").strip() or None)
         t.sector          = data.get("sector") or None
         t.activity_area   = data.get("activity_area") or None
         t.employee_count  = int(data["employee_count"]) if data.get("employee_count") else None

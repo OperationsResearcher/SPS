@@ -229,5 +229,7 @@ def build_filtered_projects_query(user, kid: int, filters: ProjectListFilters) -
 def filtered_project_ids(user, kid: int, filters: ProjectListFilters) -> list[int]:
     q = build_filtered_projects_query(user, kid, filters)
     # overdue sıralamasında outer join tekrar satır üretebilir
-    rows = q.with_entities(Project.id).distinct().all()
+    # PostgreSQL: DISTINCT sorgusunda ORDER BY kolonları select listede olmalı.
+    # Burada yalnızca ID kümesi gerektiği için sıralamayı temizleyip distinct alıyoruz.
+    rows = q.order_by(None).with_entities(Project.id).distinct().all()
     return sorted({int(r[0]) for r in rows})

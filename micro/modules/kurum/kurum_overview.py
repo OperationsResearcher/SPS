@@ -6,6 +6,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from sqlalchemy import func, or_
+from sqlalchemy.exc import ProgrammingError
 
 from app.models import db
 from app.models.process import (
@@ -353,15 +354,20 @@ def build_kurum_overview(user, tenant_id: int, kurum_id: int | None) -> dict:
             .scalar()
             or 0
         )
-        open_raid_items = (
-            db.session.query(func.count(RaidItem.id))
-            .filter(
-                RaidItem.project_id.in_(proj_ids_q),
-                ~RaidItem.status.in_(_RAID_CLOSED_STATUSES),
+        try:
+            open_raid_items = (
+                db.session.query(func.count(RaidItem.id))
+                .filter(
+                    RaidItem.project_id.in_(proj_ids_q),
+                    ~RaidItem.status.in_(_RAID_CLOSED_STATUSES),
+                )
+                .scalar()
+                or 0
             )
-            .scalar()
-            or 0
-        )
+        except ProgrammingError:
+            # PostgreSQL'de raid_item henüz yoksa (SQLite/migration farkı); panel açılsın.
+            db.session.rollback()
+            open_raid_items = 0
 
         return {
             "project_count": project_count,

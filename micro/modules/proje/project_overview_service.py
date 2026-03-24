@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import func, or_
+from sqlalchemy.exc import ProgrammingError
 
 from models import Project, RaidItem, Task, db
 from micro.modules.proje.project_list_query import ProjectListFilters, filtered_project_ids
@@ -215,37 +216,46 @@ def build_project_list_overview(
         pri_labels.append("Diğer")
         pri_data.append(other_pri)
 
-    # — RAID (açık) —
-    raid_open_q = db.session.query(func.count(RaidItem.id)).filter(
-        RaidItem.project_id.in_(pids),
-        or_(RaidItem.status.is_(None), ~RaidItem.status.in_(_RAID_CLOSED)),
-    )
-    raid_open_total = int(raid_open_q.scalar() or 0)
-
-    raid_rows = (
-        db.session.query(RaidItem.item_type, func.count(RaidItem.id))
-        .filter(
+    # — RAID (açık); tablo yoksa (PG şeması) grafik/sayaç 0 —
+    raid_labels: list[str] = list(_RAID_TYPES)
+    raid_data: list[int] = [0, 0, 0, 0]
+    raid_open_total = 0
+    try:
+        raid_open_q = db.session.query(func.count(RaidItem.id)).filter(
             RaidItem.project_id.in_(pids),
-            or_(RaidItem.status.is_(None), RaidItem.status.notin_(_RAID_CLOSED)),
+            or_(RaidItem.status.is_(None), ~RaidItem.status.in_(_RAID_CLOSED)),
         )
-        .group_by(RaidItem.item_type)
-        .all()
-    )
-    rmap: dict[str, int] = {}
-    for typ, cnt in raid_rows:
-        k = (typ or "").strip() or "Diğer"
-        rmap[k] = rmap.get(k, 0) + int(cnt)
-    raid_labels: list[str] = []
-    raid_data: list[int] = []
-    other_raid = 0
-    for label in _RAID_TYPES:
-        raid_labels.append(label)
-        raid_data.append(rmap.pop(label, 0))
-    for k, v in sorted(rmap.items(), key=lambda x: -x[1]):
-        other_raid += v
-    if other_raid:
-        raid_labels.append("Diğer")
-        raid_data.append(other_raid)
+        raid_open_total = int(raid_open_q.scalar() or 0)
+
+        raid_rows = (
+            db.session.query(RaidItem.item_type, func.count(RaidItem.id))
+            .filter(
+                RaidItem.project_id.in_(pids),
+                or_(RaidItem.status.is_(None), RaidItem.status.notin_(_RAID_CLOSED)),
+            )
+            .group_by(RaidItem.item_type)
+            .all()
+        )
+        rmap: dict[str, int] = {}
+        for typ, cnt in raid_rows:
+            k = (typ or "").strip() or "Diğer"
+            rmap[k] = rmap.get(k, 0) + int(cnt)
+        raid_labels = []
+        raid_data = []
+        other_raid = 0
+        for label in _RAID_TYPES:
+            raid_labels.append(label)
+            raid_data.append(rmap.pop(label, 0))
+        for k, v in sorted(rmap.items(), key=lambda x: -x[1]):
+            other_raid += v
+        if other_raid:
+            raid_labels.append("Diğer")
+            raid_data.append(other_raid)
+    except ProgrammingError:
+        db.session.rollback()
+        raid_open_total = 0
+        raid_labels = list(_RAID_TYPES)
+        raid_data = [0, 0, 0, 0]
 
     # — Sağlık skoru —
     avg_health = db.session.query(func.avg(Project.health_score)).filter(Project.id.in_(pids)).scalar()

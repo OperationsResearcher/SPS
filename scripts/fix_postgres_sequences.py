@@ -25,6 +25,15 @@ TABLES = [
     ("individual_kpi_data_audits", "id"),
     ("project", "id"),
     ("task", "id"),
+    ("raid_item", "id"),
+    ("project_risk", "id"),
+    ("working_day", "id"),
+    ("capacity_plan", "id"),
+    ("recurring_task", "id"),
+    ("task_baseline", "id"),
+    ("integration_hook", "id"),
+    ("rule_definition", "id"),
+    ("sla", "id"),
 ]
 
 

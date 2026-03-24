@@ -7,14 +7,16 @@ import csv
 import io
 import json
 from datetime import date
+from types import SimpleNamespace
 
 from flask import Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import ProgrammingError
 
 from micro import micro_bp
 from models import Project, Surec, Task, db
+from app.models.process import Process as AppProcess
 from micro.modules.proje.display import build_user_labels_map, collect_projects_user_ids, user_display
 from micro.modules.proje.helpers import kurum_id, tenant_core_users
 from micro.modules.proje.permissions import (
@@ -31,6 +33,24 @@ from micro.modules.proje.project_list_query import (
 from micro.modules.proje.project_overview_service import build_project_list_overview, overview_for_export_summary
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
+
+
+def _load_filter_surecler(kid: int):
+    """Proje filtreleri için süreç listesi (legacy `surec` yoksa modern `processes` fallback)."""
+    try:
+        return Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()
+    except ProgrammingError:
+        # Yerel PostgreSQL'de legacy `surec` tablosu bulunmayabilir.
+        db.session.rollback()
+        rows = (
+            AppProcess.query.filter_by(tenant_id=kid, is_active=True)
+            .order_by(AppProcess.code)
+            .all()
+        )
+        return [
+            SimpleNamespace(id=r.id, code=r.code, ad=(r.name or r.english_name or ""))
+            for r in rows
+        ]
 
 
 @micro_bp.route("/proje")
@@ -53,7 +73,6 @@ def micro_project_list():
     per_page = 20
 
     q = build_filtered_projects_query(current_user, kid, flt)
-    q = q.options(joinedload(Project.manager), joinedload(Project.leaders))
     pagination = q.paginate(page=page, per_page=per_page, error_out=False)
 
     uids = collect_projects_user_ids(pagination.items)
@@ -61,7 +80,7 @@ def micro_project_list():
     overview = build_project_list_overview(current_user, kid, flt)
     show_portfolio = can_crud_project_portfolio(current_user)
 
-    surecler = Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()
+    surecler = _load_filter_surecler(kid)
     filter_leaders = tenant_core_users(kid)
 
     def _page_url(pnum: int) -> str:

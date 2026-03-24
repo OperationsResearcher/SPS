@@ -27,7 +27,16 @@
   }
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({
+      icon: "error",
+      title: "Hata",
+      text: msg,
+      confirmButtonColor: "#dc2626",
+      didOpen: () => {
+        const c = Swal.getContainer();
+        if (c) c.style.zIndex = "200000";
+      },
+    });
   }
 
   async function confirmAction(title, text, confirmText, color) {
@@ -35,6 +44,10 @@
       title, text, icon: "warning", showCancelButton: true,
       confirmButtonColor: color || "#dc2626", cancelButtonColor: "#6b7280",
       confirmButtonText: confirmText || "Evet", cancelButtonText: "İptal",
+      didOpen: () => {
+        const c = Swal.getContainer();
+        if (c) c.style.zIndex = "200000";
+      },
     });
     return r.isConfirmed;
   }
