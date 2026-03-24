@@ -42,10 +42,9 @@ sudo docker run -d --name "$CONTAINER" -p 80:5000 \
   -v /home/kokpitim.com/public_html/instance:/app/instance \
   "$IMAGE"
 
-echo "==> 5/6 flask db upgrade (yalnızca şema genişletme; transactional)"
+echo "==> 5/6 Alembic upgrade (Flask CLI yerine run_db_upgrade.py)"
 sleep 5
-# Dockerfile CMD run:app ile aynı hedef (app.py degil)
-sudo docker exec "$CONTAINER" bash -lc 'cd /app && export FLASK_APP=run:app && flask db upgrade'
+sudo docker exec "$CONTAINER" bash -lc 'cd /app && python3 scripts/run_db_upgrade.py'
 
 echo "==> 6/6 Satır sayıları (sonra) — önceki ile aynı olmalı"
 COUNT_AFTER="$BACKUP_DIR/rowcounts_after_${TS}.txt"
