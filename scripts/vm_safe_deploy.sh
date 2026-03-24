@@ -36,16 +36,32 @@ sudo git pull origin main
 
 echo "==> 4/6 Docker image + container"
 if [ ! -f "$APP_DIR/.env" ]; then
-  echo "HATA: $APP_DIR/.env yok — SQLALCHEMY_DATABASE_URI (PostgreSQL) burada olmali."
+  echo "HATA: $APP_DIR/.env yok (SECRET_KEY vb. icin gerekli)."
   exit 1
 fi
+_pg_uri_ok() {
+  grep -qE '^[[:space:]]*SQLALCHEMY_DATABASE_URI=.*postgresql' "$APP_DIR/.env" 2>/dev/null && return 0
+  [ -f "$APP_DIR/.env.postgres" ] && grep -qE '^[[:space:]]*SQLALCHEMY_DATABASE_URI=.*postgresql' "$APP_DIR/.env.postgres" 2>/dev/null && return 0
+  return 1
+}
+if ! _pg_uri_ok; then
+  echo "HATA: PostgreSQL URI yok. Asagidakilerden biri:"
+  echo "  - $APP_DIR/.env icinde: SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://..."
+  echo "  - veya $APP_DIR/.env.postgres dosyasi (ornek: scripts/env.postgres.example)"
+  exit 1
+fi
+
 sudo docker build -t "$IMAGE" .
 sudo docker stop "$CONTAINER" 2>/dev/null || true
 sudo docker rm "$CONTAINER" 2>/dev/null || true
-# Sunucudaki .env (PostgreSQL) container ortamina aktarilir; imaj icindeki sqlite varsayimi ezilir.
+# .env.postgres varsa ikinci env-file (sonraki ustun yazar) — sadece PG URI icin.
+DOCKER_ENV=(--env-file "$APP_DIR/.env")
+if [ -f "$APP_DIR/.env.postgres" ]; then
+  DOCKER_ENV+=(--env-file "$APP_DIR/.env.postgres")
+fi
 sudo docker run -d --name "$CONTAINER" -p 80:5000 \
   -v /home/kokpitim.com/public_html/instance:/app/instance \
-  --env-file "$APP_DIR/.env" \
+  "${DOCKER_ENV[@]}" \
   "$IMAGE"
 
 echo "==> 5/6 Alembic upgrade (Flask CLI yerine run_db_upgrade.py)"
