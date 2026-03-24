@@ -29,3 +29,4 @@ celery
 # app/services/anomaly_service.py, ml_service.py
 numpy
 scikit-learn
+psycopg2-binary>=2.9.0
