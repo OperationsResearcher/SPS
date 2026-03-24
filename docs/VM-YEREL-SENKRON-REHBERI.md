@@ -113,16 +113,19 @@ Opsiyonel (log da goster):
 - Repo icinde **bilerek silinen/bozulan kaynak dosya yok**; degisiklikler commit'li migration + micro/script yollarinda.
 - **Takip disi (normal):** `Yedekler/*.zip`, `backups/` gibi dizinler cogu zaman `git status`'ta `??` kalir; commitlenmezse sorun degildir.
 
-## 10) Kritik: VM `.env` ve PostgreSQL URI
+## 10) Kritik: VM `.env`, PostgreSQL URI ve Docker
 
 Flask-Kokpitim **`SQLALCHEMY_DATABASE_URI`** okur. VM'deki `.env` icinde bu yoksa:
 
 - Uygulama **SQLite** (`config.py` varsayilan + `instance` volume) kullanir.
-- `flask db upgrade` / `run_db_upgrade.py` de ayni sebeple SQLite'a gider; **PostgreSQL semasi guncellenmez**.
+- `run_db_upgrade.py` de ayni sebeple SQLite'a gider; **PostgreSQL semasi guncellenmez**.
 
-**Yapilacak (tek seferlik / kalici):** Sunucu `.env` dosyasina ornek:
+**Kalici cozum:**
 
-`SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://KULLANICI:SIFRE@172.17.0.1:5432/kokpitim_db`
+1. `/home/kokpitim.com/public_html/.env.postgres` (git'e eklenmez) — ornek: `scripts/env.postgres.example`
+2. Icerik ornegi: `SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://KULLANICI:SIFRE@host.docker.internal:5432/kokpitim_db`
+3. `vm_safe_deploy.sh`: `--env-file .env` + varsa `.env.postgres`; Docker icin `--add-host=host.docker.internal:host-gateway`
+4. **PostgreSQL dinleme adresi:** Varsayilan yalnizca `127.0.0.1` ise Docker koprusunden baglanti **reddedilir**. `/etc/postgresql/14/main/postgresql.conf` icinde `listen_addresses = '*'` yapildiktan sonra **`systemctl restart postgresql`** gerekir (`reload` yetmeyebilir). `pg_hba.conf` icinde `172.17.0.0/16` icin kural zaten varsa yeterlidir.
 
-(Host adresi kurulumunuza gore `127.0.0.1` veya Docker bridge IP degisebilir.) Ardindan container `--env-file` ile kaldirilmali ve `python3 scripts/run_db_upgrade.py` tekrar denenmeli.
+**2026-03-24:** VM'de yedek alindi, `.env.postgres` olusturuldu, PostgreSQL `listen_addresses` acildi, container + migration basariyla **PostgreSQL** uzerinde calisti; `tenants`/`users` sayilari onceki ile uyumlu kaldi.
 
