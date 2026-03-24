@@ -59,7 +59,9 @@ DOCKER_ENV=(--env-file "$APP_DIR/.env")
 if [ -f "$APP_DIR/.env.postgres" ]; then
   DOCKER_ENV+=(--env-file "$APP_DIR/.env.postgres")
 fi
+# Linux Docker: VM'deki PostgreSQL (genelde 127.0.0.1) — host.docker.internal icin:
 sudo docker run -d --name "$CONTAINER" -p 80:5000 \
+  --add-host=host.docker.internal:host-gateway \
   -v /home/kokpitim.com/public_html/instance:/app/instance \
   "${DOCKER_ENV[@]}" \
   "$IMAGE"
