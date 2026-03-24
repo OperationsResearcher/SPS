@@ -22,10 +22,12 @@ def _column_exists(bind, table: str, col: str) -> bool:
 
 def upgrade():
     bind = op.get_bind()
+    insp = sa.inspect(bind)
+    if not insp.has_table("task"):
+        return  # task tablosu yoksa (örn. temiz PostgreSQL) atla
     if _column_exists(bind, "task", "process_kpi_id"):
         return
 
-    insp = sa.inspect(bind)
     has_pk_table = insp.has_table("process_kpis")
 
     if has_pk_table:
@@ -46,9 +48,11 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
+    insp = sa.inspect(bind)
+    if not insp.has_table("task"):
+        return
     if not _column_exists(bind, "task", "process_kpi_id"):
         return
-    insp = sa.inspect(bind)
     has_pk = insp.has_table("process_kpis")
     with op.batch_alter_table("task", schema=None) as batch_op:
         if has_pk:

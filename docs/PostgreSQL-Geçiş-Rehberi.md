@@ -1,110 +1,146 @@
 # PostgreSQL Geçiş Rehberi
 
-> **Plan B:** Mevcut GCP VM'de PostgreSQL kurulumu — ek maliyet yok.
+> **Amaç:** Yerel ve yayın ortamını aynı yapıya getirmek — her ikisinde de PostgreSQL.
+> Yerelde geliştirip test ediyoruz, VM'de yayınlıyoruz.
 >
-> Son güncelleme: 2026-03-23
+> Son güncelleme: 2026-03-24
 
 ---
 
 ## 1. Genel Bakış
 
-Bu rehber, Kokpitim uygulamasının SQLite'dan PostgreSQL'e geçişini adım adım açıklar. İşlemler **yerel makine** ve **VM** olmak üzere iki aşamada yapılır.
+| Ortam   | Veritabanı   | Kullanım                         |
+|---------|--------------|-----------------------------------|
+| Yerel   | PostgreSQL   | Geliştirme, test                  |
+| VM      | PostgreSQL   | Yayın (kokpitim.com)              |
 
-| Önceki | Sonraki |
-|--------|---------|
-| SQLite (`instance/kokpitim.db`) | PostgreSQL (VM'de lokal) |
-| Tek dosya, dosya kilidi | Eşzamanlı bağlantı, satır kilidi |
+**Akış:** Yerelde PostgreSQL ile geliştir → Test et → VM'ye deploy et.
+
+| Önceki           | Sonraki        |
+|------------------|----------------|
+| SQLite (tek dosya)| PostgreSQL (yerel + VM) |
 | ~20–50 kullanıcı sınırı | 30–40+ rahat kapasite |
 
 ---
 
 ## 2. Yerel Makinede Yapılacaklar
 
-Tüm bu adımlar **geliştirme bilgisayarınızda** (örn. Windows + Cursor) yapılır. VM'ye bağlanmadan önce tamamlanmalıdır.
+Tüm adımlar **geliştirme bilgisayarınızda** (Windows + Cursor) yapılır.
 
-### 2.1 requirements.txt Güncellemesi
+### 2.1 requirements.txt
 
-`requirements.txt` dosyasına PostgreSQL driver ekleyin:
+`psycopg2-binary>=2.9.0` eklendi. (`requirements.txt`)
+
+### 2.2 PostgreSQL Kurulumu (Windows)
+
+1. İndir: https://www.postgresql.org/download/windows/
+2. **EDB Installer** ile kurun; kurulum sırasında:
+   - Port: `5432` (varsayılan)
+   - postgres kullanıcısı için şifre belirleyin
+3. Kurulum sonrası **pgAdmin** veya **psql** ile bağlantıyı test edin.
+
+Alternatif (Chocolatey):
+```powershell
+choco install postgresql
+```
+
+### 2.3 Yerel Veritabanı ve Kullanıcı Oluşturma
+
+**pgAdmin** veya **psql** ile:
+
+```sql
+CREATE USER kokpitim_user WITH PASSWORD 'kokpitim_dev_123';
+CREATE DATABASE kokpitim_db OWNER kokpitim_user;
+GRANT ALL PRIVILEGES ON DATABASE kokpitim_db TO kokpitim_user;
+\c kokpitim_db
+GRANT ALL ON SCHEMA public TO kokpitim_user;
+```
+
+> Yerelde basit şifre kullanılabilir; VM'de güçlü şifre kullanın.
+
+### 2.4 SQLite → PostgreSQL Veri Taşıma (Yerelde)
+
+**Seçenek A — pgloader (Windows):**
+
+- pgloader: https://github.com/dimitri/pgloader/releases
+- Çalıştır:
+```cmd
+pgloader instance/kokpitim.db postgresql://kokpitim_user:kokpitim_dev_123@localhost/kokpitim_db
+```
+
+**Seçenek B — Alembic + Python script:**
+
+1. Boş schema oluştur:
+```powershell
+$env:SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:kokpitim_dev_123@localhost/kokpitim_db"
+flask db upgrade
+```
+
+2. Veri taşıma scripti çalıştır (projede `scripts/sqlite_to_postgres.py` varsa).
+
+### 2.5 .env Ayarları (Yerel)
+
+Proje kökündeki `.env` dosyasına ekleyin veya güncelleyin:
 
 ```
-psycopg2-binary>=2.9.0
+SQLALCHEMY_DATABASE_URI=postgresql://kokpitim_user:kokpitim_dev_123@localhost/kokpitim_db
 ```
 
-Proje kökündeki `requirements.txt` dosyasının sonuna veya uygun bir yerine ekleyin.
+> SQLite URI satırını yorum satırı yapın veya silin.
 
-### 2.2 Yerel DB Yedeği Al (önemli)
-
-Yerelde geliştirme sırasında kullandığınız SQLite veritabanının yedeğini alın:
+### 2.6 Yerel Çalıştırma ve Test
 
 ```powershell
-# PowerShell (Windows)
-Copy-Item -Path "instance\kokpitim.db" -Destination "instance\kokpitim_backup_$(Get-Date -Format 'yyyyMMdd_HHmm').db"
+pip install -r requirements.txt
+python app.py
+# veya: flask run
 ```
 
-veya manuel olarak `instance\kokpitim.db` dosyasını güvenli bir yere kopyalayın.
+Tarayıcıda `http://127.0.0.1:5001` — giriş, süreç, karne, faaliyet sayfalarını test edin.
 
-### 2.3 .env Örneği (opsiyonel)
+### 2.7 Yerel Kontrol Listesi
 
-PostgreSQL geçişi sonrası kullanılacak ortam değişkenini not edin. Yerelde test etmeyecekseniz sadece referans için:
-
-```
-# VM'de container çalışırken kullanılacak
-SQLALCHEMY_DATABASE_URI=postgresql://kokpitim_user:ŞİFRE@172.17.0.1/kokpitim_db
-```
-
-> Yerelde geliştirmeye SQLite ile devam edebilirsiniz. Sadece VM deploy'da PostgreSQL kullanılacak.
-
-### 2.4 Değişiklikleri Git'e Gönder
-
-Kod değişikliklerini (requirements.txt, varsa config değişiklikleri) commit edip push edin:
-
-```bash
-git add requirements.txt
-git add -A
-git commit -m "PostgreSQL geçişi: psycopg2-binary eklendi"
-git push origin main
-```
-
-### 2.5 Yerel Özet Kontrol Listesi
-
-- [ ] `requirements.txt`'e `psycopg2-binary>=2.9.0` eklendi
-- [ ] Yerel `instance/kokpitim.db` yedeklendi
-- [ ] Değişiklikler `git push` ile remote'a gönderildi
+- [ ] PostgreSQL kuruldu
+- [ ] `kokpitim_db` ve `kokpitim_user` oluşturuldu
+- [ ] SQLite verisi PostgreSQL'e taşındı
+- [ ] `.env` içinde `SQLALCHEMY_DATABASE_URI` PostgreSQL'e ayarlandı
+- [ ] Uygulama yerelde çalışıyor ve test edildi
 
 ---
 
-## 3. Ön Hazırlık (VM)
+## 3. VM'de Yapılacaklar (Yayın)
 
-### 3.1 Yedek Al (zorunlu)
+Yerelde her şey çalıştıktan sonra VM tarafına geçin.
 
-**VM'de:**
+### 3.0 Tek Komutla Geçiş (Önerilen)
+
+Önce kodu VM'ye alın, sonra:
+
 ```bash
-sudo docker cp sps-web:/app/instance/kokpitim.db /home/kokpitim.com/backups/kokpitim_sqlite_$(date +%Y%m%d_%H%M).db
+gcloud compute ssh sps-server-v2 --zone=europe-west3-c
+cd /home/kokpitim.com/public_html
+sudo git pull origin main
+export PG_PASSWORD='GÜÇLÜ_ŞİFRE_BURAYA'
+chmod +x scripts/vm_postgres_migration.sh
+./scripts/vm_postgres_migration.sh
 ```
 
-**Yerelde (opsiyonel, yedek kopya):**
-```bash
-gcloud compute scp sps-server-v2:/home/kokpitim.com/backups/kokpitim_sqlite_*.db ./ --zone=europe-west3-c
-```
+Bu script: SQLite yedeği → PostgreSQL kurulum → DB oluşturma → `flask db upgrade` → veri taşıma → container'ı PostgreSQL ile başlatma adımlarını otomatik yapar.
 
-### 3.2 Tahmini Süre
-
-- PostgreSQL kurulum: ~5 dk  
-- Veri taşıma: ~5–15 dk (veri boyutuna göre)  
-- Config + test: ~10 dk  
-- **Toplam:** ~30–45 dk  
-
----
-
-## 4. VM'de PostgreSQL Kurulumu
-
-### 4.1 VM'ye Bağlan
+### 3.1 VM'ye Bağlan
 
 ```bash
 gcloud compute ssh sps-server-v2 --zone=europe-west3-c
 ```
 
-### 4.2 PostgreSQL Kur ve Başlat
+### 3.2 SQLite Yedeği Al (geçiş öncesi zorunlu)
+
+```bash
+mkdir -p /home/kokpitim.com/backups
+sudo docker cp sps-web:/app/instance/kokpitim.db /home/kokpitim.com/backups/kokpitim_sqlite_$(date +%Y%m%d_%H%M).db
+```
+
+### 3.3 PostgreSQL Kur ve Başlat
 
 ```bash
 sudo apt-get update
@@ -113,7 +149,7 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 ```
 
-### 4.3 Kokpitim Veritabanı ve Kullanıcı Oluştur
+### 3.4 VM'de Veritabanı ve Kullanıcı
 
 ```bash
 sudo -u postgres psql << 'EOF'
@@ -126,191 +162,95 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO kokpitim_user;
 EOF
 ```
 
-> **Güvenlik:** `GÜÇLÜ_ŞİFRE_BURAYA` yerine güçlü bir şifre koyun. Production'da `.env` veya Secret Manager kullanın.
+### 3.5 Veri Taşıma (VM'de)
 
-### 4.4 Yerel Bağlantıyı Etkinleştir
-
-PostgreSQL varsayılan olarak `localhost`'tan bağlantı kabul eder. Container ile aynı host'ta çalışacağı için ek ayar gerekmez. Güvenlik için sadece localhost:
-
-```bash
-# Kontrol (varsayılan genelde doğrudur)
-sudo cat /etc/postgresql/*/main/pg_hba.conf | grep -v '^#' | grep -v '^$'
-# local   all   all   peer veya md5 olmalı
-```
-
----
-
-## 5. Veri Taşıma (SQLite → PostgreSQL)
-
-### 5.1 pgloader ile Otomatik Taşıma (önerilen)
-
+**pgloader ile:**
 ```bash
 sudo apt-get install -y pgloader
-```
-
-SQLite dosyasını container'dan veya host'tan alıp taşıyın:
-
-```bash
 SQLITE_PATH="/home/kokpitim.com/public_html/instance/kokpitim.db"
-# veya container içindeki: önce kopyalayın
-# sudo docker cp sps-web:/app/instance/kokpitim.db /tmp/kokpitim.db
-# SQLITE_PATH="/tmp/kokpitim.db"
-
-pgloader "${SQLITE_PATH}" \
-  "postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE_BURAYA@localhost/kokpitim_db"
+# veya: sudo docker cp sps-web:/app/instance/kokpitim.db /tmp/kokpitim.db
+pgloader "${SQLITE_PATH}" "postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE@localhost/kokpitim_db"
 ```
 
-### 5.2 pgloader Yoksa — Alembic + Manuel Script
+### 3.6 pg_hba.conf — Docker Erişimi
 
-1. Önce boş PostgreSQL schema oluştur:
-   ```bash
-   cd /home/kokpitim.com/public_html
-   export SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE@localhost/kokpitim_db"
-   flask db upgrade
-   ```
-
-2. SQLite verisini Python ile aktaran script kullanın (örnek: `scripts/sqlite_to_postgres.py` — projede yoksa ayrı oluşturulmalı).
-
----
-
-## 6. Uygulama Konfigürasyonu
-
-### 6.1 requirements.txt
-
-`psycopg2-binary` yerel makinede `requirements.txt`'e eklenmiş olmalı (Bölüm 2.1). VM'de `git pull` ile alınır.
-
-### 6.2 Ortam Değişkeni
-
-VM'de veya Docker run ile `.env` / ortam değişkeni:
+Container, host PostgreSQL'e bağlanacak. `pg_hba.conf`'a ekleyin:
 
 ```bash
-export SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE@host.docker.internal/kokpitim_db"
+sudo nano /etc/postgresql/*/main/pg_hba.conf
 ```
 
-> **Not:** Container içinden host PostgreSQL'e erişim için:
-> - Linux'ta `host.docker.internal` yerine host IP veya `172.17.0.1` (Docker bridge) kullanılabilir.
-> - Alternatif: PostgreSQL'i container ile aynı Docker network'te çalıştırmak (ayrı PostgreSQL container).
-
-### 6.3 Docker + Host PostgreSQL Bağlantısı
-
-Container, host'taki PostgreSQL'e bağlanacaksa:
-
-```bash
-sudo docker run -d \
-  --name sps-web \
-  -p 80:5000 \
-  -e SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:ŞİFRE@172.17.0.1/kokpitim_db" \
-  --add-host=host.docker.internal:host-gateway \
-  sps_web_final:latest
+Ek satır:
 ```
-
-Veya `172.17.0.1` yerine host IP:
-```bash
-ip addr show docker0 | grep inet
-# Örn. 172.17.0.1
-```
-
-`pg_hba.conf` içinde Docker bridge IP aralığını kabul etmek gerekebilir:
-```
-# /etc/postgresql/*/main/pg_hba.conf
 host    kokpitim_db    kokpitim_user    172.17.0.0/16    md5
+host    kokpitim_db    kokpitim_user    127.0.0.1/32     md5
 ```
 
-Sonra:
 ```bash
 sudo systemctl reload postgresql
 ```
 
----
+### 3.7 Kod Güncelle ve Container Başlat
 
-## 7. config.py Uyumu
-
-Mevcut `config.py` zaten `SQLALCHEMY_DATABASE_URI` ortam değişkenini kullanıyor. `sqlite:///` ile başlamıyorsa olduğu gibi kabul edilir. Ek kod değişikliği gerekmez — sadece env değerini güncelleyin.
-
----
-
-## 8. Deploy Script Güncellemesi
-
-PostgreSQL geçişi sonrası:
-
-- `instance/` volume mount'u SQLite için kullanılıyordu. PostgreSQL'de bu mount opsiyonel (log/upload vb. için kalabilir).
-- Container başlatırken `-e SQLALCHEMY_DATABASE_URI=...` mutlaka verilmeli.
-
-**Güncellenmiş run örneği:**
 ```bash
+cd /home/kokpitim.com/public_html
+sudo git pull origin main
+sudo docker build -t sps_web_final:latest .
+sudo docker stop sps-web 2>/dev/null; sudo docker rm sps-web 2>/dev/null
 sudo docker run -d \
   --name sps-web \
   -p 80:5000 \
   -v /home/kokpitim.com/public_html/instance:/app/instance \
-  -e SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:ŞİFRE@172.17.0.1/kokpitim_db" \
+  -e SQLALCHEMY_DATABASE_URI="postgresql://kokpitim_user:GÜÇLÜ_ŞİFRE@172.17.0.1/kokpitim_db" \
   sps_web_final:latest
 ```
 
+> `172.17.0.1` — Docker bridge; `ip addr show docker0` ile doğrulayın.
+
+### 3.8 VM Kontrol Listesi
+
+- [ ] SQLite yedeği alındı
+- [ ] PostgreSQL kuruldu
+- [ ] `kokpitim_db` ve `kokpitim_user` oluşturuldu
+- [ ] Veri taşındı
+- [ ] `pg_hba.conf` güncellendi
+- [ ] Container doğru env ile başlatıldı
+- [ ] https://kokpitim.com test edildi
+
 ---
 
-## 9. Test ve Doğrulama
+## 4. Günlük Akış (Özet)
 
-```bash
-# Container log
-sudo docker logs sps-web --tail=100
+| Adım | Yerel | VM |
+|------|-------|-----|
+| Geliştirme | Kod yaz, `app.py` ile çalıştır, PostgreSQL'e bağlan | — |
+| Test | http://127.0.0.1:5001 üzerinden test et | — |
+| Deploy | `git add`, `git commit`, `git push` | `git pull`, `docker build`, container restart |
 
-# Hata kontrolü
-sudo docker logs sps-web 2>&1 | grep -i "error\|OperationalError\|connect"
+---
 
-# Sağlık kontrolü
-curl -I http://127.0.0.1/
+## 5. Rollback (Acil)
+
+**Yerel:** `.env` içinde `SQLALCHEMY_DATABASE_URI` tekrar SQLite yap; yedek `kokpitim.db` geri koy.
+
+**VM:** Container'ı `SQLALCHEMY_DATABASE_URI=sqlite:////app/instance/kokpitim.db` ile başlat; yedek SQLite dosyasını geri koy.
+
+---
+
+## 6. Faydalı Komutlar
+
+**Yerel (PowerShell):**
+```powershell
+# PostgreSQL servis durumu
+Get-Service postgresql*
+
+# Bağlantı testi
+psql -U kokpitim_user -d kokpitim_db -h localhost -c "\dt"
 ```
 
-Tarayıcıda:
-- https://kokpitim.com
-- Giriş yap
-- Süreç, karne, faaliyet sayfalarını kontrol et
-
----
-
-## 10. Rollback (SQLite'a Dönüş)
-
-Sorun çıkarsa:
-
-1. Container'ı durdur/sil.
-2. `SQLALCHEMY_DATABASE_URI` tekrar SQLite yap:
-   ```bash
-   -e SQLALCHEMY_DATABASE_URI="sqlite:////app/instance/kokpitim.db"
-   ```
-3. Yedek SQLite dosyasını `instance/kokpitim.db` olarak geri koy.
-4. Container'ı eski parametrelerle yeniden başlat.
-
----
-
-## 11. Kontrol Listesi
-
-**Yerel (Bölüm 2):**
-- [ ] `requirements.txt`'e `psycopg2-binary` eklendi
-- [ ] Yerel DB yedeklendi
-- [ ] `git push` yapıldı
-
 **VM:**
-- [ ] SQLite yedeği alındı
-- [ ] PostgreSQL kuruldu ve çalışıyor
-- [ ] `kokpitim_db` ve `kokpitim_user` oluşturuldu
-- [ ] Veri taşıma tamamlandı (pgloader veya script)
-- [ ] `requirements.txt`'e `psycopg2-binary` eklendi
-- [ ] `SQLALCHEMY_DATABASE_URI` ortam değişkeni güncellendi
-- [ ] `pg_hba.conf` Docker/host erişimine izin veriyor
-- [ ] Container yeniden build edildi ve doğru env ile çalışıyor
-- [ ] Login, süreç, karne, faaliyet test edildi
-
----
-
-## 12. Faydalı Komutlar
-
 ```bash
-# PostgreSQL durumu
 sudo systemctl status postgresql
-
-# Kokpitim DB'ye bağlan
 sudo -u postgres psql -d kokpitim_db -c "\dt"
-
-# Tablo satır sayıları
-sudo -u postgres psql -d kokpitim_db -c "SELECT relname, n_live_tup FROM pg_stat_user_tables ORDER BY n_live_tup DESC LIMIT 10;"
+sudo docker logs sps-web --tail=50
 ```

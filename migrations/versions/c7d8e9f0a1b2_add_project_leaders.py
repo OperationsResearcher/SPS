@@ -18,6 +18,11 @@ depends_on = None
 
 
 def upgrade():
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    if not insp.has_table("project"):
+        return  # project tablosu yoksa (temiz PostgreSQL) atla
+
     op.create_table(
         "project_leaders",
         sa.Column("project_id", sa.Integer(), nullable=False),
@@ -35,4 +40,7 @@ def upgrade():
 
 
 def downgrade():
+    insp = sa.inspect(op.get_bind())
+    if not insp.has_table("project_leaders"):
+        return
     op.drop_table("project_leaders")

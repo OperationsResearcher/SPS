@@ -33,8 +33,9 @@ def upgrade():
     # KpiData: is_deleted -> is_active (reverse logic)
     # 1. Add is_active with default True (SQLite-friendly: no ALTER needed)
     op.add_column('kpi_data', sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.true()))
-    # 2. Migrate: is_active = 0 WHERE is_deleted = 1 (soft-deleted rows)
-    op.execute("UPDATE kpi_data SET is_active = 0 WHERE is_deleted = 1")
+    # 2. Migrate: is_active = FALSE WHERE is_deleted = TRUE (soft-deleted rows)
+    # PostgreSQL: boolean; SQLite: 0/1 kabul eder, TRUE/FALSE da calisir
+    op.execute(sa.text("UPDATE kpi_data SET is_active = FALSE WHERE is_deleted = TRUE"))
     # 3. Drop is_deleted
     op.drop_column('kpi_data', 'is_deleted')
     # 4. Create index
@@ -44,7 +45,7 @@ def upgrade():
 def downgrade():
     # KpiData: revert is_active -> is_deleted
     op.add_column('kpi_data', sa.Column('is_deleted', sa.Boolean(), nullable=False, server_default=sa.false()))
-    op.execute("UPDATE kpi_data SET is_deleted = 1 WHERE is_active = 0")
+    op.execute(sa.text("UPDATE kpi_data SET is_deleted = TRUE WHERE is_active = FALSE"))
     op.drop_index('ix_kpi_data_is_active', table_name='kpi_data')
     op.drop_column('kpi_data', 'is_active')
 

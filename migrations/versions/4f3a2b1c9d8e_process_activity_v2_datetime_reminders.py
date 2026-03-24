@@ -69,23 +69,27 @@ def upgrade():
     op.create_index("ix_process_activity_reminders_remind_at", "process_activity_reminders", ["remind_at"], unique=False)
     op.create_index("ix_process_activity_reminders_sent_at", "process_activity_reminders", ["sent_at"], unique=False)
 
-    # Legacy start_date/end_date -> start_at/end_at
-    op.execute(
-        sa.text(
-            """
-            UPDATE process_activities
-            SET
-              start_at = CASE
-                WHEN start_date IS NOT NULL THEN datetime(start_date || ' 00:00:00')
-                ELSE NULL
-              END,
-              end_at = CASE
-                WHEN end_date IS NOT NULL THEN datetime(end_date || ' 23:59:59')
-                ELSE NULL
-              END
-            """
+    # Legacy start_date/end_date -> start_at/end_at (SQLite vs PostgreSQL)
+    bind = op.get_bind()
+    if bind.dialect.name == "sqlite":
+        op.execute(
+            sa.text(
+                "UPDATE process_activities SET start_at = CASE WHEN start_date IS NOT NULL "
+                "THEN datetime(start_date || ' 00:00:00') ELSE NULL END, "
+                "end_at = CASE WHEN end_date IS NOT NULL "
+                "THEN datetime(end_date || ' 23:59:59') ELSE NULL END"
+            )
         )
-    )
+    else:
+        # PostgreSQL: datetime() yok, ::timestamp kullan
+        op.execute(
+            sa.text(
+                "UPDATE process_activities SET start_at = CASE WHEN start_date IS NOT NULL "
+                "THEN (start_date::text || ' 00:00:00')::timestamp ELSE NULL END, "
+                "end_at = CASE WHEN end_date IS NOT NULL "
+                "THEN (end_date::text || ' 23:59:59')::timestamp ELSE NULL END"
+            )
+        )
 
 
 def downgrade():
