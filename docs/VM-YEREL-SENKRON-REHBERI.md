@@ -1,15 +1,19 @@
 # VM - Yerel Senkron Rehberi
 
-Son guncelleme: 2026-03-24
+Son guncelleme: 2026-03-24 (durum degerlendirmesi)
 
 ## 1) Mevcut Durum Ozeti
 
-- Kod tabani su an hem yerelde hem VM'de ayni committe: `b3506d8`
-- `/project` icin PostgreSQL uyumluluk fixleri her iki ortama da uygulandi:
-  - `micro/modules/proje/routes_list.py`
-  - `micro/modules/proje/project_list_query.py`
-  - `micro/templates/micro/project/list.html`
-- VM uygulama saglik durumu: `healthy` (database `ok`)
+- **Kaynak dogruluk:** Uretim ve gelistirme hedefi **PostgreSQL**; SQLite artik ana DB degildir (yerel ve VM'deki `instance/*.db` yedek/artik dosya olabilir).
+- **Git (origin/main):** Son deploy/script commitleri (orneğin `7d96be6`); yerel `main` ile `origin/main` esit tutulmali; VM `git pull` ile ayni committe olmali.
+- `/project` PostgreSQL uyumluluk fixleri: `routes_list.py`, `project_list_query.py`, `list.html`.
+- **RAID / kurum ozeti:** `raid_item` vb. tablolar icin Alembic migration eklendi (`eab1c2d3f4a5`); VM'de bu migration'in **PostgreSQL'e** uygulanmasi, bolum 10 (`.env` URI) ile baglidir.
+
+### 2026-03-24 aksami — VM deploy denemesi ozeti
+
+- VM'de `pg_dump` alindi; **PostgreSQL tarafindaki veri** bu islemle silinmedi.
+- Container icinde `run_db_upgrade.py` calisirken log **SQLiteImpl** gosterdi: VM'deki `/home/kokpitim.com/public_html/.env` dosyasinda **`SQLALCHEMY_DATABASE_URI` yok** (yalnizca `SQL_*` MSSQL tarzi degiskenler var). Bu yuzden Flask varsayilan olarak **volume altindaki SQLite** dosyasina baglandi; Alembic de orada takildi (`tenants.purpose` duplicate). Bu, **PG verisini degil**, monte `instance` sqlite dosyasini etkiler.
+- Cozum yolu: VM `.env` veya `docker run -e` ile **acik `SQLALCHEMY_DATABASE_URI=postgresql://.../kokpitim_db`** tanimlanmali; sonra migration yalnizca PG'ye karsı calistirilmali.
 
 ## 2) Bu Sorunlar Neden Cikti?
 
@@ -74,7 +78,8 @@ Onereilen model:
 - VM/yerel proje listesi PostgreSQL uyumlu hale getirildi.
 - `user` ve `surec` kaynakli patlamalar icin kod fallback/yumusatma uygulandi.
 - VM DB, yerel referansla senkronlandi (bilinen 1 kayit istisnasi haric).
-- VM container rebuild/restart yapildi ve health dogrulandi.
+- RAID ozeti icin yumusatma + PG yardimci tablolar migration'i (kod) eklendi.
+- `scripts/vm_safe_deploy.sh` (yedek + pull + build + `--env-file`) ve `scripts/run_db_upgrade.py` eklendi; VM `.env`'de PostgreSQL URI eksikligi tespit edildi (bkz. bolum 10).
 
 ## 8) Tek Komut Kontrol Scripti
 
@@ -102,4 +107,22 @@ Opsiyonel (log da goster):
 ```powershell
 .\scripts\vm_smoke_check.ps1 -ShowDockerLogs
 ```
+
+## 9) Dosyalar / Git
+
+- Repo icinde **bilerek silinen/bozulan kaynak dosya yok**; degisiklikler commit'li migration + micro/script yollarinda.
+- **Takip disi (normal):** `Yedekler/*.zip`, `backups/` gibi dizinler cogu zaman `git status`'ta `??` kalir; commitlenmezse sorun degildir.
+
+## 10) Kritik: VM `.env` ve PostgreSQL URI
+
+Flask-Kokpitim **`SQLALCHEMY_DATABASE_URI`** okur. VM'deki `.env` icinde bu yoksa:
+
+- Uygulama **SQLite** (`config.py` varsayilan + `instance` volume) kullanir.
+- `flask db upgrade` / `run_db_upgrade.py` de ayni sebeple SQLite'a gider; **PostgreSQL semasi guncellenmez**.
+
+**Yapilacak (tek seferlik / kalici):** Sunucu `.env` dosyasina ornek:
+
+`SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://KULLANICI:SIFRE@172.17.0.1:5432/kokpitim_db`
+
+(Host adresi kurulumunuza gore `127.0.0.1` veya Docker bridge IP degisebilir.) Ardindan container `--env-file` ile kaldirilmali ve `python3 scripts/run_db_upgrade.py` tekrar denenmeli.
 
