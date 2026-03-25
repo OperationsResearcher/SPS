@@ -160,3 +160,92 @@ Flask-Kokpitim **`SQLALCHEMY_DATABASE_URI`** okur. VM'deki `.env` icinde bu yoks
 - `listen_addresses = '*'` ile PG tum arayuzlere acilir; **firewall / sadece gerekli kaynak** kuralını gözden geçirin.
 - Sunucuda **commitlenmemis `git stash` / yerel patch** birikirse `git pull` kilitlenir; deploy oncesi ya repoya alın ya da stash’i etiketleyip geri donus planı yazın.
 
+## 12) Tam Teslim Protokolü (Yereldeki Her Şeyi, Veri Kaybı Olmadan)
+
+Amaç:
+- Yereldeki tum kod degisikliklerini atlamadan VM'ye almak
+- VM PostgreSQL verisini korumak
+- Deploy sonrasi VM DB'yi yerele cekip esit duruma getirmek
+
+### 12.1 Yerelde on-hazirlik (kod + DB yedek)
+
+1. Kaynak zip yedek:
+```powershell
+Set-Location c:\kokpitim
+$ts = Get-Date -Format "yyyyMMdd_HHmmss"
+Compress-Archive -Path app,micro,models,migrations,scripts,config.py,requirements.txt,Dockerfile,run.py,wsgi.py `
+  -DestinationPath "Yedekler\Kokpitim_Kaynak_$ts.zip" -Force
+```
+
+2. Yerel PostgreSQL yedek (zorunlu):
+```powershell
+pg_dump -h localhost -U kokpitim_user -d kokpitim_db -F c -f "backups\local_pg_before_deploy_$ts.dump"
+```
+
+3. Yerel calisan DB'nin PostgreSQL oldugunu dogrula:
+```powershell
+python -c "from app import create_app; app=create_app(); print(app.config['SQLALCHEMY_DATABASE_URI'])"
+```
+`postgresql://` ile baslamali.
+
+### 12.2 Yerelde tum kodu commit/push (atlama riskini sifirla)
+
+Not:
+- `Yedekler/` ve `backups/` commitlenmez.
+- `.env*`, gizli anahtar dosyalari commitlenmez.
+
+```powershell
+Set-Location c:\kokpitim
+git add -A
+git reset -- Yedekler/ backups/ .env .env.* *.pem *.key
+git status
+git commit -m "Tam teslim: yerel degisikliklerin tamami"
+git push origin main
+```
+
+### 12.3 VM deploy (DB kayipsiz standart akis)
+
+```powershell
+gcloud compute ssh sps-server-v2 --zone europe-west3-c --command "cd /home/kokpitim.com/public_html && sudo git fetch origin main && sudo git reset --hard origin/main && sudo bash scripts/vm_safe_deploy.sh"
+```
+
+Bu script sunlari yapar:
+1. VM PostgreSQL tam yedek (`pg_dump`)
+2. Satir sayisi snapshot (once)
+3. Kod guncelleme + container rebuild
+4. Alembic upgrade (`PostgresqlImpl` beklenir)
+5. Satir sayisi snapshot (sonra) + diff (degismemeli)
+6. `/health` kontrolu
+
+### 12.4 VM DB'yi yerele cekme (deploy sonrasi senkron)
+
+1. VM'de yeni dump al:
+```powershell
+$ts = Get-Date -Format "yyyyMMdd_HHmmss"
+gcloud compute ssh sps-server-v2 --zone europe-west3-c --command "sudo -u postgres pg_dump -F c -d kokpitim_db -f /home/kokpitim.com/public_html/backups/vm_after_deploy_$ts.dump"
+```
+
+2. Dump'i yerel makineye kopyala:
+```powershell
+gcloud compute scp sps-server-v2:/home/kokpitim.com/public_html/backups/vm_after_deploy_$ts.dump "c:\kokpitim\backups\" --zone europe-west3-c
+```
+
+3. Yerel DB'yi yedekten geri donulebilir sekilde temizleyip restore et:
+```powershell
+dropdb   -h localhost -U kokpitim_user kokpitim_db
+createdb -h localhost -U kokpitim_user kokpitim_db
+pg_restore -h localhost -U kokpitim_user -d kokpitim_db --no-owner --no-privileges "backups\vm_after_deploy_$ts.dump"
+```
+
+4. Kontrol:
+```powershell
+python -c "from app import create_app; app=create_app(); print(app.config['SQLALCHEMY_DATABASE_URI'])"
+```
+ve uygulamada kritik sayfalar: `/`, `/masaustu`, `/project`, `/project/new`, `/takvim`, `/ayarlar/eposta`.
+
+### 12.5 Kirmizi cizgiler
+
+- `pg_restore --clean` veya tablo truncate islemleri canli VM DB'de uygulanmaz.
+- VM'de dogrudan SQLite'a gecis yapilmaz; `SQLALCHEMY_DATABASE_URI` daima PostgreSQL olmalidir.
+- Deploy adimlarinda hata varsa rollback icin en son VM dump dosyasi saklanir.
+
