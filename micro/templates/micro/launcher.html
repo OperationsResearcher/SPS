@@ -4,6 +4,13 @@
 
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
+    {% set role_code = current_user.role.name if current_user.role else '' %}
+    {% set role_label = 'Kurum Kullanıcısı' %}
+    {% if role_code == 'tenant_admin' %}
+      {% set role_label = 'Kurum Yöneticisi' %}
+    {% elif role_code in ['executive_manager', 'Admin'] %}
+      {% set role_label = 'Kurum Üst Yönetimi' %}
+    {% endif %}
 
     <!-- Karşılama -->
     <div style="margin-bottom:28px;">
@@ -12,7 +19,7 @@
         </h1>
         <p style="font-size:13.5px; color:#64748b; margin:0;">
             {% if current_user.tenant %}{{ current_user.tenant.name }}{% endif %}
-            {% if current_user.role %} &middot; {{ current_user.role.name }}{% endif %}
+            {% if current_user.role %} &middot; {{ role_label }}{% endif %}
             &middot; Çalışmak istediğiniz modülü seçin.
         </p>
     </div>

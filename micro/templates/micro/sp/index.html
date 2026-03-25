@@ -81,7 +81,7 @@
       {% else %}
       <span class="mc-badge mc-badge-gray mc-sp-role-badge"><i class="fas fa-eye"></i> Görüntüleyici</span>
       {% endif %}
-      {% if role_name %}
+      {% if role_name and role_name != 'tenant_admin' %}
       <span class="mc-sp-role-name" title="Sistem rolü">{{ role_name }}</span>
       {% endif %}
     </div>

@@ -2,15 +2,19 @@
 E-posta Gönderim Servisi — Micro Platform
 Öncelik:
 1) Kurum özel SMTP (ayarlarda açık ve eksiksiz)
-2) Ortam değişkeni MAIL_* (sunucu + en az kullanıcı veya şifre)
-3) Platform Admin kullanıcısının kurumunda kayıtlı özel SMTP (varsayılan çıkış)
+2) Platform Admin kullanıcısının kurumunda kayıtlı özel SMTP (varsayılan çıkış)
+3) Ortam değişkeni MAIL_* (sunucu + en az kullanıcı veya şifre)
 4) Son çare: yalnızca MAIL_* (kimliksiz; çoğu sunucuda başarısız olur)
 """
 
 import smtplib
 import ssl
+import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import formatdate, make_msgid
+from email.utils import formataddr
 
 from flask import current_app
 
@@ -91,12 +95,23 @@ def _get_tenant_smtp_config(tenant_id):
 def _send_raw(smtp_cfg, to_email, subject, html_body, text_body=None):
     """Verilen SMTP config ile tek bir mail gönderir. (başarı, hata_metni)"""
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = f"{smtp_cfg['sender_name']} <{smtp_cfg['sender_email']}>"
+    msg["Subject"] = str(Header(subject or "", "utf-8"))
+    msg["From"] = formataddr((str(Header(smtp_cfg["sender_name"] or "Kokpitim", "utf-8")), smtp_cfg["sender_email"]))
     msg["To"] = to_email
+    msg["Date"] = formatdate(localtime=True)
+    sender_domain = (smtp_cfg.get("sender_email") or "").split("@")[-1].strip() or None
+    msg["Message-ID"] = make_msgid(domain=sender_domain)
+    msg["Reply-To"] = smtp_cfg["sender_email"]
+    msg["X-Mailer"] = "Kokpitim"
 
-    if text_body:
-        msg.attach(MIMEText(text_body, "plain", "utf-8"))
+    if not text_body:
+        # Basit HTML->text fallback: Gmail spam skorunda "yalnız HTML" riskini azaltır.
+        plain = re.sub(r"<\s*br\s*/?>", "\n", html_body or "", flags=re.IGNORECASE)
+        plain = re.sub(r"<[^>]+>", " ", plain)
+        plain = re.sub(r"\s+\n", "\n", plain)
+        plain = re.sub(r"\n{3,}", "\n\n", plain).strip()
+        text_body = plain or "Bu e-posta HTML içerik barındırır."
+    msg.attach(MIMEText(text_body, "plain", "utf-8"))
     msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     try:
@@ -106,6 +121,10 @@ def _send_raw(smtp_cfg, to_email, subject, html_body, text_body=None):
                 if smtp_cfg["username"]:
                     server.login(smtp_cfg["username"], smtp_cfg["password"])
                 server.sendmail(smtp_cfg["sender_email"], to_email, msg.as_string())
+                current_app.logger.info(
+                    f"[email_service._send_raw] accepted by {smtp_cfg['host']}:{smtp_cfg['port']} "
+                    f"from={smtp_cfg['sender_email']} to={to_email}"
+                )
         else:
             with smtplib.SMTP(smtp_cfg["host"], smtp_cfg["port"], timeout=30) as server:
                 server.ehlo()
@@ -115,6 +134,10 @@ def _send_raw(smtp_cfg, to_email, subject, html_body, text_body=None):
                 if smtp_cfg["username"]:
                     server.login(smtp_cfg["username"], smtp_cfg["password"])
                 server.sendmail(smtp_cfg["sender_email"], to_email, msg.as_string())
+                current_app.logger.info(
+                    f"[email_service._send_raw] accepted by {smtp_cfg['host']}:{smtp_cfg['port']} "
+                    f"from={smtp_cfg['sender_email']} to={to_email}"
+                )
         return True, ""
     except smtplib.SMTPAuthenticationError as e:
         err = "SMTP kimlik doğrulaması başarısız. Kullanıcı adı veya şifreyi kontrol edin."
@@ -150,20 +173,18 @@ def send_notification_email(to_email, subject, html_body, tenant_id=None, text_b
             used_tenant_custom = True
 
     if smtp_cfg is None:
-        sys_cfg = _get_system_smtp_config()
-        if sys_cfg.get("host") and _smtp_has_credentials(sys_cfg):
-            smtp_cfg = sys_cfg
+        # Beklenen davranış: kurum özel SMTP yoksa önce Admin tenant SMTP'si,
+        # o da yoksa/bozuksa ortam MAIL_* ayarları.
+        admin_cfg = _get_platform_admin_tenant_smtp_config()
+        if admin_cfg:
+            smtp_cfg = admin_cfg
+            current_app.logger.info(
+                "[email_service] Kurum özel SMTP yok — "
+                "platform Admin kurumunun SMTP'si kullanılıyor "
+                f"(istek tenant_id={tenant_id})."
+            )
         else:
-            admin_cfg = _get_platform_admin_tenant_smtp_config()
-            if admin_cfg:
-                smtp_cfg = admin_cfg
-                current_app.logger.info(
-                    "[email_service] Kurum özel SMTP yok / MAIL_* eksik — "
-                    "platform Admin kurumunun SMTP'si kullanılıyor "
-                    f"(istek tenant_id={tenant_id})."
-                )
-            else:
-                smtp_cfg = sys_cfg
+            smtp_cfg = _get_system_smtp_config()
 
     if not smtp_cfg.get("host"):
         hint = (

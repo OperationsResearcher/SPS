@@ -133,7 +133,8 @@ _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
 _ROLE_RESTRICTED = {
     "admin":    {"tenant_admin", "executive_manager", "Admin"},
     "hgs":      {"Admin"},
-    "api":      {"tenant_admin", "executive_manager", "Admin"},
+    # Home sayfasındaki "API Dokümantasyonu" kartı yalnızca Admin'de görünsün.
+    "api":      {"Admin"},
 }
 
 

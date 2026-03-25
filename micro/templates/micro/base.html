@@ -141,11 +141,13 @@
             </a>
             {% endif %}
 
+            {% if role_name == 'Admin' %}
             <a href="{{ url_for('micro_bp.api_docs') }}"
                 class="sidebar-item {% if 'api_docs' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-plug"></i></span>
                 <span class="sidebar-item-text">API Dokümantasyonu</span>
             </a>
+            {% endif %}
             {% endif %}
 
             <!-- Sistem -->
@@ -169,10 +171,6 @@
             </a>
             {% endif %}
         </nav>
-
-        <div class="sidebar-legacy-link" style="padding:6px 14px 0;font-size:11px;opacity:0.55;">
-            <a href="{{ legacy_url_prefix }}/" style="color:rgba(255,255,255,0.7);text-decoration:none;" title="Önceki Kokpitim arayüzü">↩ Klasik arayüz ({{ legacy_url_prefix }})</a>
-        </div>
 
         <!-- Footer: kullanıcı -->
         <div class="sidebar-footer">
