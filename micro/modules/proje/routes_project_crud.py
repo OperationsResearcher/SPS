@@ -236,7 +236,7 @@ def micro_project_edit(project_id: int):
 
     kid = kurum_id()
     if request.method == "GET":
-        surecler = Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()
+        surecler = _load_project_form_surecler(kid)
         kullanicilar = tenant_core_users(kid)
         sablon_projeler = Project.query.filter_by(kurum_id=kid).order_by(Project.created_at.desc()).limit(20).all()
         return render_template(
