@@ -5,13 +5,16 @@ from __future__ import annotations
 
 import json
 from datetime import date, datetime
+from types import SimpleNamespace
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import joinedload
 
 from micro import micro_bp
 from app.models.core import User as CoreUser
+from app.models.process import Process as AppProcess
 from models import Project, Surec, Task, db
 from utils.task_status import normalize_task_status
 
@@ -50,6 +53,23 @@ def _notify_new_project_team(proj: Project, kid: int, old_leader_ids: set, old_m
     notify_project_members_added(proj, list(new_m - old_member_ids), actor, kid)
 
 
+def _load_project_form_surecler(kid: int):
+    """Proje formu için süreç listesi (legacy `surec` yoksa modern `processes` fallback)."""
+    try:
+        return Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()
+    except ProgrammingError:
+        db.session.rollback()
+        rows = (
+            AppProcess.query.filter_by(tenant_id=kid, is_active=True)
+            .order_by(AppProcess.code)
+            .all()
+        )
+        return [
+            SimpleNamespace(id=r.id, code=r.code, ad=(r.name or r.english_name or ""))
+            for r in rows
+        ]
+
+
 @micro_bp.route("/project/new", methods=["GET", "POST"])
 @login_required
 def micro_project_new():
@@ -62,7 +82,7 @@ def micro_project_new():
         return redirect(url_for("micro_bp.micro_project_list"))
 
     if request.method == "GET":
-        surecler = Surec.query.filter_by(kurum_id=kid, silindi=False).order_by(Surec.code).all()
+        surecler = _load_project_form_surecler(kid)
         kullanicilar = tenant_core_users(kid)
         sablon_projeler = (
             Project.query.filter_by(kurum_id=kid).order_by(Project.created_at.desc()).limit(20).all()
