@@ -90,7 +90,7 @@ Script dosyasi:
 Ne yapar:
 
 1. VM'de PostgreSQL backup alir
-2. VM'deki SQLite dosyasini (varsa) backup alir
+2. VM'deki `instance/*.db` (varsa) dosya artefact'ini yedekler (canli DB değil; bu dosya sadece fallback/volume içeriği olabilir)
 3. `/health` kontrolu yapar
 4. Temel metrik sayimlarini verir:
    - Kurum, Kullanici, Surec, PG, PGV, Surec Faaliyeti, Proje, Proje Faaliyeti
@@ -117,8 +117,8 @@ Opsiyonel (log da goster):
 
 Flask-Kokpitim **`SQLALCHEMY_DATABASE_URI`** okur. VM'deki `.env` icinde bu yoksa:
 
-- Uygulama **SQLite** (`config.py` varsayilan + `instance` volume) kullanir.
-- `run_db_upgrade.py` de ayni sebeple SQLite'a gider; **PostgreSQL semasi guncellenmez**.
+- Uygulama DB bağlantısını bulamazsa (geçici olarak) **SQLite** (`config.py` fallback + `instance` volume) kullanmaya düşebilir.
+- `run_db_upgrade.py` de aynı env fallback’ı üzerinden çalışabilir; bu durumda **PostgreSQL’de şema/güncelleme yapılmaz**.
 
 **Kalici cozum:**
 
