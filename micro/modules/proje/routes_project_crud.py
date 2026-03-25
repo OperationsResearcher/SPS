@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import joinedload
 
@@ -68,6 +69,38 @@ def _load_project_form_surecler(kid: int):
             SimpleNamespace(id=r.id, code=r.code, ad=(r.name or r.english_name or ""))
             for r in rows
         ]
+
+
+def _legacy_project_process_links_available() -> bool:
+    """Legacy proje-süreç ilişki tabloları mevcut mu?"""
+    try:
+        row = db.session.execute(
+            text(
+                "SELECT to_regclass('public.surec') AS surec_tbl, "
+                "to_regclass('public.project_related_processes') AS rel_tbl"
+            )
+        ).first()
+        if not row:
+            return False
+        return bool(row[0] and row[1])
+    except Exception:
+        db.session.rollback()
+        return False
+
+
+def _sync_project_process_links_legacy(proj: Project, kid: int, selected_ids: list[str]) -> None:
+    """Legacy `surec` / `project_related_processes` varsa proje-süreç ilişkilerini günceller."""
+    if not _legacy_project_process_links_available():
+        return
+    proj.related_processes.clear()
+    for sid in selected_ids:
+        try:
+            sid_int = int(sid)
+        except ValueError:
+            continue
+        sc = Surec.query.filter_by(id=sid_int, kurum_id=kid).first()
+        if sc:
+            proj.related_processes.append(sc)
 
 
 @micro_bp.route("/project/new", methods=["GET", "POST"])
@@ -164,14 +197,7 @@ def micro_project_new():
         flash(str(e) or "Lider kaydı oluşturulamadı.", "danger")
         return redirect(url_for("micro_bp.micro_project_new"))
 
-    for sid in request.form.getlist("surec_ids"):
-        try:
-            sid_int = int(sid)
-        except ValueError:
-            continue
-        sc = Surec.query.filter_by(id=sid_int, kurum_id=kid).first()
-        if sc:
-            proj.related_processes.append(sc)
+    _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
 
     sync_project_members_observers(proj, kid)
     _notify_new_project_team(proj, kid, set(), set())
@@ -291,15 +317,7 @@ def micro_project_edit(project_id: int):
     except Exception:
         pass
 
-    proj.related_processes.clear()
-    for sid in request.form.getlist("surec_ids"):
-        try:
-            sid_int = int(sid)
-        except ValueError:
-            continue
-        sc = Surec.query.filter_by(id=sid_int, kurum_id=kid).first()
-        if sc:
-            proj.related_processes.append(sc)
+    _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
 
     sync_project_members_observers(proj, kid)
     _notify_new_project_team(proj, kid, old_leader_ids, old_member_ids)
