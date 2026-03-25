@@ -8,6 +8,7 @@ from extensions import db
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
+from sqlalchemy.exc import ProgrammingError
 from utils.task_status import normalize_task_status
 import json
 
@@ -146,6 +147,7 @@ class Project(db.Model):
             .all()
         ]
 
+    @property
     def related_process_ids(self) -> list[int]:
         """Bağlı süreç (legacy `surec`) id'leri.
 
@@ -153,12 +155,18 @@ class Project(db.Model):
         association tablosundan `surec_id` değerlerini okur. Böylece canlı DB'de legacy `surec`
         yoksa bile proje formu 500'a düşmez.
         """
-        return [
-            int(r[0])
-            for r in db.session.query(project_related_processes.c.surec_id)
-            .filter(project_related_processes.c.project_id == self.id)
-            .all()
-        ]
+        try:
+            rows = (
+                db.session.query(project_related_processes.c.surec_id)
+                .filter(project_related_processes.c.project_id == self.id)
+                .all()
+            )
+            return [int(r[0]) for r in rows]
+        except ProgrammingError:
+            # Legacy DB'de `project_related_processes` tablosu olmayabilir.
+            # Bu durumda sayfanın render'ı devam etmeli; checkbox'lar boş kalsın.
+            db.session.rollback()
+            return []
 
 class Task(db.Model):
     """
