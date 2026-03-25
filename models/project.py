@@ -146,6 +146,20 @@ class Project(db.Model):
             .all()
         ]
 
+    def related_process_ids(self) -> list[int]:
+        """Bağlı süreç (legacy `surec`) id'leri.
+
+        Önemli: Bu property `surec` tablosunu join etmez; sadece `project_related_processes`
+        association tablosundan `surec_id` değerlerini okur. Böylece canlı DB'de legacy `surec`
+        yoksa bile proje formu 500'a düşmez.
+        """
+        return [
+            int(r[0])
+            for r in db.session.query(project_related_processes.c.surec_id)
+            .filter(project_related_processes.c.project_id == self.id)
+            .all()
+        ]
+
 class Task(db.Model):
     """
     Görev Modeli

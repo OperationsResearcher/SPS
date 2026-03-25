@@ -84,7 +84,7 @@
             {% for s in surecler %}
             <label style="display:flex; align-items:center; gap:8px; font-size:13px; padding:4px 0;">
                 <input type="checkbox" name="surec_ids" value="{{ s.id }}"
-                       {% if pref and s in pref.related_processes %}checked{% endif %}/>
+                       {% if pref and (s.id in pref.related_process_ids) %}checked{% endif %}/>
                 <span>{{ s.code or '—' }} — {{ s.ad }}</span>
             </label>
             {% endfor %}
