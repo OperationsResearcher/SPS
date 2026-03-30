@@ -33,6 +33,15 @@ def _resolve_sqlalchemy_uri() -> str:
     return "sqlite:///" + abs_path.replace("\\", "/")
 
 
+def _sqlalchemy_engine_options() -> dict:
+    """PostgreSQL için connect_timeout; sqlite ile uyumlu (yalnızca pool seçenekleri). VM / Cloudflare 524."""
+    raw = (os.environ.get("SQLALCHEMY_DATABASE_URI") or "").lower()
+    opts: dict = {"pool_pre_ping": True, "pool_recycle": 280}
+    if "postgresql" in raw or raw.startswith("postgres"):
+        opts["connect_args"] = {"connect_timeout": 15}
+    return opts
+
+
 class Config:
     """Base configuration class."""
 
@@ -56,9 +65,12 @@ class Config:
     CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes
     CACHE_REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     CACHE_KEY_PREFIX = "kokpitim_"
+
+    SQLALCHEMY_ENGINE_OPTIONS = _sqlalchemy_engine_options()
     
     # Rate Limiting (yüksek trafik/çoklu modal istekleri için geniş limitler)
-    RATELIMIT_STORAGE_URL = os.environ.get("REDIS_URL", "memory://")
+    # REDIS_URL otomatik kullanılmaz: konteynerde Redis yoksa limiter kilitlenir (CF 524).
+    RATELIMIT_STORAGE_URL = os.environ.get("RATELIMIT_STORAGE_URL", "memory://")
     RATELIMIT_ENABLED = True
     RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
     HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
@@ -91,6 +103,7 @@ class TestingConfig(Config):
     """Test configuration."""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI", "sqlite:///:memory:")
+    SQLALCHEMY_ENGINE_OPTIONS = {}
     WTF_CSRF_ENABLED = False
 
 

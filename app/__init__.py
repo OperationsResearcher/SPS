@@ -42,6 +42,16 @@ def create_app(config_class=None):
     legacy = raw_legacy.rstrip("/") or "/kok"
     app.config["LEGACY_URL_PREFIX"] = legacy
 
+    # Cloudflare / ters vekil — X-Forwarded-Proto (HTTPS) ve Host.
+    _env = (os.environ.get("FLASK_ENV") or "").lower()
+    _trust = (os.environ.get("TRUST_PROXY") or "").lower()
+    if _env == "production" or _trust in ("1", "true", "yes"):
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(
+            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1
+        )
+
     csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
