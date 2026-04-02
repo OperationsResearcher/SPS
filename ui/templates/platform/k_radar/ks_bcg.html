@@ -1,0 +1,13 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KS BCG{% endblock %}
+{% block page_title %}KS-Radar BCG{% endblock %}
+{% block content %}
+<div id="k-radar-ks-bcg-root" data-url="{{ url_for('app_bp.k_radar_api_ks_bcg') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">BCG Özeti</h3>
+    <div><strong>Portföy Sayısı:</strong> <span id="ks-bcg-portfolio">-</span></div>
+    <div><strong>Denge Skoru:</strong> <span id="ks-bcg-balance">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

@@ -91,46 +91,6 @@
     margin-bottom: 1rem;
 }
 
-.strategy-flow-analysis-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-}
-
-.strategy-flow-analysis-card {
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    background: white;
-    transition: all 0.2s ease;
-}
-
-.strategy-flow-analysis-card:hover {
-    border-color: #667eea;
-}
-
-.strategy-flow-analysis-card .card-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.strategy-flow-analysis-card.swot .card-icon { color: #27ae60; }
-.strategy-flow-analysis-card.pestle .card-icon { color: #3498db; }
-.strategy-flow-analysis-card.tows .card-icon { color: #f39c12; }
-
-.strategy-flow-analysis-card .card-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #334155;
-}
-
-.strategy-flow-analysis-card .card-status {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin-top: 0.25rem;
-}
-
 .strategy-flow-bsc-box {
     border: 2px solid #e2e8f0;
     border-radius: 12px;

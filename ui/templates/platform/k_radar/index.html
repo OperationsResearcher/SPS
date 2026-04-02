@@ -1,0 +1,130 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar{% endblock %}
+{% block page_title %}K-Radar Hub{% endblock %}
+
+{% block content %}
+<div id="k-radar-root"
+     data-hub-url="{{ url_for('app_bp.k_radar_api_hub_summary') }}"
+     data-rec-url="{{ url_for('app_bp.k_radar_api_recommendations') }}"
+     data-rec-action-url="{{ url_for('app_bp.k_radar_api_recommendation_action') }}"
+     data-rec-history-url="{{ url_for('app_bp.k_radar_api_recommendation_history') }}"
+     data-rec-history-csv-url="{{ url_for('app_bp.k_radar_api_recommendation_history_csv') }}"
+     data-can-manage="{{ '1' if can_manage_k_radar else '0' }}"
+     style="max-width:1100px; margin:0 auto;">
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="mc-card-body">
+      <h3 style="margin:0 0 8px 0;">Kurum Capi K-Radar</h3>
+      <p style="margin:0; color:#64748b;">KS + KP + KPR + Bireysel bilesenlerinden olusan hibrit skor panosu.</p>
+    </div>
+  </div>
+
+  <div class="mc-grid-4" style="margin-bottom:16px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-label">Toplam Skor</div>
+      <div class="mc-stat-value" id="kr-total">-</div>
+      <div class="mc-stat-sub" id="kr-total-band">-</div>
+    </div>
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-label">KS-Radar</div>
+      <div class="mc-stat-value" id="kr-ks">-</div>
+      <div class="mc-stat-sub" id="kr-ks-sub">-</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-label">KP-Radar</div>
+      <div class="mc-stat-value" id="kr-kp">-</div>
+      <div class="mc-stat-sub" id="kr-kp-sub">-</div>
+    </div>
+    <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-label">KPR-Radar</div>
+      <div class="mc-stat-value" id="kr-kpr">-</div>
+      <div class="mc-stat-sub" id="kr-kpr-sub">-</div>
+    </div>
+  </div>
+
+  <div class="mc-card">
+    <div class="mc-card-body" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks') }}">KS-Radar</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp') }}">KP-Radar</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr') }}">KPR-Radar</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_cross') }}">Cross</a>
+    </div>
+  </div>
+
+  <div class="mc-card" style="margin-top:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">Onerilen Aksiyonlar</span>
+      {% if not can_manage_k_radar %}
+      <span class="mc-badge">Salt Okunur</span>
+      {% endif %}
+    </div>
+    <div class="mc-card-body" id="kr-recommendations">Yukleniyor...</div>
+  </div>
+
+  <div class="mc-card" style="margin-top:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">Kural Tetikleyiciler (Faz E)</span>
+    </div>
+    <div class="mc-card-body" id="kr-triggers">Yukleniyor...</div>
+  </div>
+
+  <div class="mc-card" style="margin-top:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">K-Radar Takvim</span>
+    </div>
+    <div class="mc-card-body">
+      {% if can_manage_k_radar %}
+      <form method="post" action="{{ url_for('app_bp.k_radar_schedule_save') }}" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label><input type="checkbox" name="enabled" {% if schedule.enabled %}checked{% endif %}> Gunluk ozet aktif</label>
+        <label>Saat: <input type="time" name="time" value="{{ schedule.time or '08:30' }}"></label>
+        <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">Kaydet</button>
+      </form>
+      {% else %}
+      <div style="color:#64748b;">Takvim ayarlarini yalnizca yonetici roller guncelleyebilir.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mc-card" style="margin-top:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">Aksiyon Gecmisi</span>
+    </div>
+    <div class="mc-card-body">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+        <label>Durum:
+          <select id="kr-history-state" class="mc-select" style="min-width:160px;">
+            <option value="">Tum</option>
+            <option value="approved">approved</option>
+            <option value="rejected">rejected</option>
+            <option value="pending">pending</option>
+          </select>
+        </label>
+        {% if can_manage_k_radar %}
+        <label>Kullanici ID:
+          <input id="kr-history-user-id" class="mc-input" type="number" min="1" placeholder="orn: 12" style="width:140px;">
+        </label>
+        {% endif %}
+        <label>Sayfa Boyutu:
+          <select id="kr-history-per-page" class="mc-select" style="min-width:110px;">
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+        <button id="kr-history-apply" class="mc-btn mc-btn-sm">Filtrele</button>
+        <a id="kr-history-csv" class="mc-btn mc-btn-sm" href="#">CSV Indir</a>
+      </div>
+      <div id="kr-history">Yukleniyor...</div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+        <button id="kr-history-prev" class="mc-btn mc-btn-sm">Onceki</button>
+        <span id="kr-history-page-info" style="color:#64748b;">-</span>
+        <button id="kr-history-next" class="mc-btn mc-btn-sm">Sonraki</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

@@ -59,7 +59,7 @@ def log_item(msg):
 from models import (
     User, Kurum, AnaStrateji, StrategyMapLink,
     Surec, SurecPerformansGostergesi, BireyselPerformansGostergesi,
-    PerformansGostergeVeri, AnalysisItem, TowsMatrix,
+    PerformansGostergeVeri,
     Project, Task, UserActivityLog, AuditLog, Notification
 )
 import models # For lazy getattr usage
@@ -96,8 +96,6 @@ def seed_technova_full():
                     # 3. Strategy & Analysis
                     StrategyMapLink.query.filter(StrategyMapLink.source.has(kurum_id=k.id)).delete()
                     AnaStrateji.query.filter_by(kurum_id=k.id).delete()
-                    TowsMatrix.query.filter_by(kurum_id=k.id).delete()
-                    AnalysisItem.query.filter_by(kurum_id=k.id).delete()
                     
                     # 4. Users (and their data like BPG)
                     users = User.query.filter_by(kurum_id=k.id).all()
@@ -178,83 +176,9 @@ def seed_technova_full():
             print_success(f"Created {len(user_map)} Users.")
 
             # ---------------------------------------------------------
-            # PHASE 2: ANALYTICS CENTER (SWOT/PESTLE)
+            # PHASE 2: PROCESS MANAGEMENT (Processes, KPIs, Data)
             # ---------------------------------------------------------
-            log_phase(2, "ANALYTICS CENTER")
-            
-            analysis_data = [
-                # SWOT
-                ("SWOT", "STRENGTH", "Patentli NLP Motoru", 5),
-                ("SWOT", "STRENGTH", "Güçlü Ar-Ge Ekibi", 5),
-                ("SWOT", "STRENGTH", "Yüksek Müşteri Sadakati", 4),
-                ("SWOT", "STRENGTH", "Esnek Altyapı", 4),
-                ("SWOT", "WEAKNESS", "Yüksek Sunucu Maliyetleri", 3),
-                ("SWOT", "WEAKNESS", "Yetersiz Pazarlama Bütçesi", 4),
-                ("SWOT", "WEAKNESS", "Uzun Satış Döngüsü", 2),
-                ("SWOT", "WEAKNESS", "Personel Devir Hızı", 3),
-                ("SWOT", "OPPORTUNITY", "Global SaaS Pazarı", 5),
-                ("SWOT", "OPPORTUNITY", "Devlet Teşvikleri", 4),
-                ("SWOT", "OPPORTUNITY", "Uzaktan Çalışma Araçları", 5),
-                ("SWOT", "OPPORTUNITY", "Stratejik Ortaklıklar", 3),
-                ("SWOT", "THREAT", "Agresif Rakipler", 4),
-                ("SWOT", "THREAT", "Ekonomik Dalgalanmalar", 5),
-                ("SWOT", "THREAT", "Veri Güvenliği Riskleri", 4),
-                ("SWOT", "THREAT", "Teknoloji Bağımlılığı", 2),
-                # PESTLE
-                ("PESTLE", "POLITICAL", "Veri Koruma Yasaları (KVKK/GDPR)", 4),
-                ("PESTLE", "ECONOMIC", "Döviz Kuru Oynaklığı", 5),
-                ("PESTLE", "SOCIAL", "Hibrit Çalışma Kültürü", 3),
-                ("PESTLE", "TECHNOLOGICAL", "Generative AI Devrimi", 5),
-                ("PESTLE", "LEGAL", "Fikri Mülkiyet Hakları", 4),
-                ("PESTLE", "ENVIRONMENTAL", "Yeşil Bilişim Gereksinimleri", 2),
-            ]
-            
-            analysis_objs_s = []
-            analysis_objs_o = []
-
-            for atype, cat, content, score in analysis_data:
-                item = AnalysisItem(
-                    kurum_id=technova.id,
-                    analysis_type=atype,
-                    category=cat,
-                    content=content,
-                    score=score
-                )
-                db.session.add(item)
-                if cat == "STRENGTH": analysis_objs_s.append(item)
-                if cat == "OPPORTUNITY": analysis_objs_o.append(item)
-            
-            db.session.commit()
-            print_success(f"Added {len(analysis_data)} Analysis Items.")
-            
-            # TOWS Generation
-            # Need to fetch IDs after commit
-            s_list = AnalysisItem.query.filter_by(kurum_id=technova.id, category="STRENGTH").all()
-            o_list = AnalysisItem.query.filter_by(kurum_id=technova.id, category="OPPORTUNITY").all()
-
-            if s_list and o_list:
-                tows1 = TowsMatrix(
-                    kurum_id=technova.id,
-                    strength_id=s_list[0].id,
-                    opportunity_threat_id=o_list[0].id,
-                    strategy_text=f"Strateji: {s_list[0].content} gücünü kullanarak {o_list[0].content} fırsatını yakala.",
-                    action_plan="Ar-Ge ekibini yeni pazara yönlendir."
-                )
-                tows2 = TowsMatrix(
-                    kurum_id=technova.id,
-                    strength_id=s_list[1].id if len(s_list)>1 else s_list[0].id,
-                    opportunity_threat_id=o_list[1].id if len(o_list)>1 else o_list[0].id,
-                    strategy_text=f"Büyüme: {s_list[1].content if len(s_list)>1 else s_list[0].content} ile {o_list[1].content if len(o_list)>1 else o_list[0].content} değerlendir.",
-                    action_plan="Yatırımcı sunumlarını hazırla."
-                )
-                db.session.add_all([tows1, tows2])
-                db.session.commit()
-                log_item("Generated 2 TOWS Strategies.")
-
-            # ---------------------------------------------------------
-            # PHASE 3: PROCESS MANAGEMENT (Processes, KPIs, Data)
-            # ---------------------------------------------------------
-            log_phase(3, "PROCESS MANAGEMENT")
+            log_phase(2, "PROCESS MANAGEMENT")
             
             processes_def = [
                 {
@@ -374,7 +298,7 @@ def seed_technova_full():
             # ---------------------------------------------------------
             # PHASE 4: BALANCED SCORECARD (Strategies & Wiring)
             # ---------------------------------------------------------
-            log_phase(4, "BALANCED SCORECARD")
+            log_phase(3, "BALANCED SCORECARD")
             
             strategies_data = [
                 # Finansal
@@ -451,7 +375,7 @@ def seed_technova_full():
             # ---------------------------------------------------------
             # PHASE 5: PROJECT PORTFOLIO (PPM)
             # ---------------------------------------------------------
-            log_phase(5, "PROJECT PORTFOLIO")
+            log_phase(4, "PROJECT PORTFOLIO")
             
             projects_def = [
                 "SPS V2.0 Geliştirme",
@@ -513,7 +437,7 @@ def seed_technova_full():
             print_success(f"Created 5 Projects and {total_tasks} Tasks.")
             
             # FINAL
-            log_phase(6, "SEEDING COMPLETE")
+            log_phase(5, "SEEDING COMPLETE")
             print("TechNova Solutions is FULLY OPERATIONAL.")
             print("   You may now log in as 'ceo', 'cto', 'pm' or 'hr' (Password: 123456)")
             

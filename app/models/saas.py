@@ -23,7 +23,7 @@ package_modules = db.Table(
 
 
 class SystemComponent(db.Model):
-    """System component (e.g. swot_analysis)."""
+    """Sistem bileşeni — tenant paketinde yetkilendirme için slug (code)."""
 
     __tablename__ = "system_components"
 

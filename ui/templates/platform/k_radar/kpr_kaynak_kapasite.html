@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KPR Kaynak Kapasite{% endblock %}
+{% block page_title %}KPR-Radar Kaynak Kapasite{% endblock %}
+{% block content %}
+<div id="k-radar-kpr-kaynak-kapasite-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_kaynak_kapasite') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">Kaynak Kapasite Özeti</h3>
+    <div><strong>Kaynak Yükü:</strong> <span id="kpr-kapasite-load">-</span></div>
+    <div><strong>Gecikmiş Açık Görev:</strong> <span id="kpr-kapasite-overdue">-</span></div>
+    <div><strong>Aktif Görev:</strong> <span id="kpr-kapasite-active">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

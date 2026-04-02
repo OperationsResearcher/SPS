@@ -1,0 +1,24 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KS SWOT{% endblock %}
+{% block page_title %}KS-Radar SWOT{% endblock %}
+{% block content %}
+<div id="k-radar-ks-swot-root" data-url="{{ url_for('app_bp.k_radar_api_ks_swot_summary') }}" style="max-width:1000px; margin:0 auto;">
+  <div class="mc-card">
+    <div class="mc-card-body">
+      <h3 style="margin-top:0;">SWOT Analizi (Otomatik Ozet)</h3>
+      <p style="color:#64748b;">Bu ilk sürümde süreç ve KPI performansından otomatik bir durum özeti sunar.</p>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:8px;">
+        <div><strong>Aktif Süreç:</strong> <span id="ks-swot-process-count">{{ summary.process_count }}</span></div>
+        <div><strong>Kritik KPI Satırı (&lt; %80):</strong> <span id="ks-swot-low-kpi">{{ summary.low_perf_kpi_rows }}</span></div>
+      </div>
+      <div style="margin-top:12px; color:#475569;">
+        <div>- Güçlü Yön adayı: süreç kapsaması yüksekse operasyonel sürdürülebilirlik.</div>
+        <div>- Zayıf Yön adayı: düşük performanslı KPI satırları.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

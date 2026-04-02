@@ -10,7 +10,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload, selectinload
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.process import (
     Process,
@@ -24,7 +24,7 @@ from app.models.process import (
     KpiDataAudit,
     FavoriteKpi,
 )
-from app.models.core import User, Strategy
+from app.models.core import User, Strategy, Tenant
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
     validate_process_parent_id,
@@ -33,7 +33,7 @@ from app.utils.process_utils import (
     validate_same_tenant_sub_strategies,
 )
 
-from micro.modules.surec.permissions import (
+from app_platform.modules.surec.permissions import (
     accessible_processes_filter,
     can_crud_process_entity,
     user_can_access_process,
@@ -120,6 +120,9 @@ def _latest_update_audit_by_kpi_data_ids(data_ids: list[int]) -> dict[int, KpiDa
 
 def _apply_sub_strategy_links(process: Process, links_raw, tenant_id: int) -> None:
     """Sürece en az bir alt strateji bağlar. links_raw: [{sub_strategy_id, contribution_pct?}] veya [id, ...]."""
+    tenant = db.session.get(Tenant, tenant_id)
+    kv = bool(tenant and getattr(tenant, "k_vektor_enabled", False))
+
     for link in list(process.process_sub_strategy_links):
         db.session.delete(link)
 
@@ -141,6 +144,16 @@ def _apply_sub_strategy_links(process: Process, links_raw, tenant_id: int) -> No
 
     if not items:
         raise ValueError("Süreç en az bir alt stratejiye bağlanmalıdır.")
+
+    if kv:
+        pcts = [t[1] for t in items]
+        if any(x is None for x in pcts):
+            raise ValueError("K-Vektör açıkken her seçili alt strateji için katkı yüzdesi (%) girilmelidir.")
+        total = sum(float(x) for x in pcts)
+        if total > 100.0001:
+            raise ValueError("Alt strateji katkı yüzdelerinin toplamı 100'ü aşamaz.")
+        if any(float(x) < 0 for x in pcts):
+            raise ValueError("Katkı yüzdeleri negatif olamaz.")
 
     validate_same_tenant_sub_strategies(tenant_id, [t[0] for t in items])
     for sid, pct_f in items:
@@ -204,7 +217,7 @@ def _users_pick_json(users):
 # Sayfa Route'ları
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process")
+@app_bp.route("/process")
 @login_required
 def surec():
     """Süreç Yönetimi ana sayfası — hiyerarşik ağaç; erişim rol/atamaya göre filtrelenir."""
@@ -255,8 +268,11 @@ def surec():
         user_can_edit_process_record(current_user, p) for p in all_processes
     )
 
+    t = db.session.get(Tenant, tid)
+    k_vektor_enabled = bool(t and getattr(t, "k_vektor_enabled", False))
+
     return render_template(
-        "micro/surec/index.html",
+        "platform/surec/index.html",
         processes=all_processes,
         roots=roots,
         children_map=children_map,
@@ -267,10 +283,11 @@ def surec():
         can_crud_process=can_crud,
         can_open_process_modal=can_open_process_modal,
         user_can_edit_process_record=user_can_edit_process_record,
+        k_vektor_enabled=k_vektor_enabled,
     )
 
 
-@micro_bp.route("/process/<int:process_id>/karne")
+@app_bp.route("/process/<int:process_id>/karne")
 @login_required
 def surec_karne(process_id):
     """Süreç Karnesi sayfası (PG odaklı)."""
@@ -324,7 +341,7 @@ def surec_karne(process_id):
     }
 
     return render_template(
-        "micro/surec/karne.html",
+        "platform/surec/karne.html",
         process=process,
         all_processes=all_processes,
         parent_process=parent_process,
@@ -336,7 +353,7 @@ def surec_karne(process_id):
     )
 
 
-@micro_bp.route("/process/<int:process_id>/faaliyetler")
+@app_bp.route("/process/<int:process_id>/faaliyetler")
 @login_required
 def surec_faaliyetler(process_id):
     """Geriye dönük URL: faaliyet görünümünü karne sayfasında açar."""
@@ -345,14 +362,14 @@ def surec_faaliyetler(process_id):
         abort(404)
     if not user_can_access_process(current_user, process):
         abort(403)
-    return redirect(url_for("micro_bp.surec_karne", process_id=process_id, tab="activities"))
+    return redirect(url_for("app_bp.surec_karne", process_id=process_id, tab="activities"))
 
 
 # ──────────────────────────────────────────────────
 # API — Süreç CRUD
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process/api/add", methods=["POST"])
+@app_bp.route("/process/api/add", methods=["POST"])
 @login_required
 def surec_api_add():
     if not can_crud_process_entity(current_user):
@@ -403,7 +420,7 @@ def surec_api_add():
 
         # Bildirim tetikleyicileri
         try:
-            from micro.services.notification_triggers import notify_process_assignment
+            from app_platform.services.notification_triggers import notify_process_assignment
             for u in new_leaders:
                 notify_process_assignment(p, u, "lider", actor=current_user)
             for u in new_members:
@@ -419,7 +436,7 @@ def surec_api_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/get/<int:process_id>", methods=["GET"])
+@app_bp.route("/process/api/get/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_get(process_id):
     p = (
@@ -466,7 +483,7 @@ def surec_api_get(process_id):
     })
 
 
-@micro_bp.route("/process/api/update/<int:process_id>", methods=["POST"])
+@app_bp.route("/process/api/update/<int:process_id>", methods=["POST"])
 @login_required
 def surec_api_update(process_id):
     p = _process_for_user(process_id)
@@ -497,15 +514,20 @@ def surec_api_update(process_id):
             if data.get(field):
                 setattr(p, field, datetime.strptime(data[field], "%Y-%m-%d").date())
 
+        links_from_payload = False
         if "sub_strategy_links" in data:
             _apply_sub_strategy_links(p, data.get("sub_strategy_links"), current_user.tenant_id)
+            links_from_payload = True
         elif data.get("sub_strategy_ids") is not None:
             _apply_sub_strategy_links(
                 p,
                 [{"sub_strategy_id": int(x)} for x in data["sub_strategy_ids"]],
                 current_user.tenant_id,
             )
-        if not p.process_sub_strategy_links:
+            links_from_payload = True
+        # Payload ile bağlantı gönderildiyse _apply zaten boş listeyi reddeder; yeni linkler
+        # flush öncesi `p.process_sub_strategy_links` koleksiyonunda görünmeyebilir — burada kontrol etme.
+        if not links_from_payload and not p.process_sub_strategy_links:
             raise ValueError("Süreç en az bir alt stratejiye bağlı olmalıdır.")
 
         old_leader_ids = {u.id for u in p.leaders}
@@ -525,7 +547,7 @@ def surec_api_update(process_id):
 
         # Yeni eklenen lider/üyelere bildirim gönder
         try:
-            from micro.services.notification_triggers import notify_process_assignment
+            from app_platform.services.notification_triggers import notify_process_assignment
             for u in p.leaders:
                 if u.id not in old_leader_ids:
                     notify_process_assignment(p, u, "lider", actor=current_user)
@@ -543,7 +565,7 @@ def surec_api_update(process_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/delete/<int:process_id>", methods=["POST"])
+@app_bp.route("/process/api/delete/<int:process_id>", methods=["POST"])
 @login_required
 def surec_api_delete(process_id):
     if not can_crud_process_entity(current_user):
@@ -565,7 +587,7 @@ def surec_api_delete(process_id):
 # API — KPI CRUD
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process/api/kpi/add", methods=["POST"])
+@app_bp.route("/process/api/kpi/add", methods=["POST"])
 @login_required
 def surec_api_kpi_add():
     data = request.get_json() or {}
@@ -605,7 +627,7 @@ def surec_api_kpi_add():
         # PG ekleme bildirimi
         try:
             from sqlalchemy.orm import joinedload
-            from micro.services.notification_triggers import notify_kpi_change
+            from app_platform.services.notification_triggers import notify_kpi_change
             p_with_users = Process.query.options(
                 joinedload(Process.leaders), joinedload(Process.members)
             ).get(p.id)
@@ -621,7 +643,7 @@ def surec_api_kpi_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_get(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -654,7 +676,7 @@ def surec_api_kpi_get(kpi_id):
     })
 
 
-@micro_bp.route("/process/api/kpi/update/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/process/api/kpi/update/<int:kpi_id>", methods=["POST"])
 @login_required
 def surec_api_kpi_update(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -691,7 +713,7 @@ def surec_api_kpi_update(kpi_id):
         # PG güncelleme bildirimi
         try:
             from sqlalchemy.orm import joinedload as _joinedload
-            from micro.services.notification_triggers import notify_kpi_change
+            from app_platform.services.notification_triggers import notify_kpi_change
             p_with_users = Process.query.options(
                 _joinedload(Process.leaders), _joinedload(Process.members)
             ).get(kpi.process_id)
@@ -707,7 +729,7 @@ def surec_api_kpi_update(kpi_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
 @login_required
 def surec_api_kpi_delete(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -728,7 +750,7 @@ def surec_api_kpi_delete(kpi_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi/list/<int:process_id>", methods=["GET"])
+@app_bp.route("/process/api/kpi/list/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_list(process_id):
     p = _process_for_user(process_id)
@@ -759,7 +781,7 @@ def surec_api_kpi_list(process_id):
 # API — KPI Veri Girişi
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process/api/kpi-data/add", methods=["POST"])
+@app_bp.route("/process/api/kpi-data/add", methods=["POST"])
 @login_required
 def surec_api_kpi_data_add():
     data = request.get_json() or {}
@@ -843,7 +865,7 @@ def surec_api_kpi_data_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi-data/list/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/process/api/kpi-data/list/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_data_list(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -881,7 +903,7 @@ def surec_api_kpi_data_list(kpi_id):
     })
 
 
-@micro_bp.route("/process/api/kpi-data/history/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/process/api/kpi-data/history/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_data_history(kpi_id):
     """
@@ -960,7 +982,7 @@ def surec_api_kpi_data_history(kpi_id):
     })
 
 
-@micro_bp.route("/process/api/kpi-data/update/<int:data_id>", methods=["POST", "PUT"])
+@app_bp.route("/process/api/kpi-data/update/<int:data_id>", methods=["POST", "PUT"])
 @login_required
 def surec_api_kpi_data_update(data_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -1035,7 +1057,7 @@ def surec_api_kpi_data_update(data_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
+@app_bp.route("/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
 @login_required
 def surec_api_kpi_data_delete(data_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -1084,7 +1106,7 @@ def surec_api_kpi_data_delete(data_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/kpi-data/detail", methods=["GET"])
+@app_bp.route("/process/api/kpi-data/detail", methods=["GET"])
 @login_required
 def surec_api_kpi_data_detail():
     """Kök karne «veri detay» modalı ile uyumlu: periyot bazlı kayıtlar + audit."""
@@ -1166,7 +1188,7 @@ def surec_api_kpi_data_detail():
     })
 
 
-@micro_bp.route("/process/api/kpi-data/proje-gorevleri", methods=["GET"])
+@app_bp.route("/process/api/kpi-data/proje-gorevleri", methods=["GET"])
 @login_required
 def surec_api_kpi_data_proje_gorevleri():
     """Kök API ile uyumlu; proje modülü entegrasyonu yoksa boş liste."""
@@ -1178,7 +1200,7 @@ def surec_api_kpi_data_proje_gorevleri():
 # API — Faaliyet CRUD ve Aylık Takip
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process/api/activity/add", methods=["POST"])
+@app_bp.route("/process/api/activity/add", methods=["POST"])
 @login_required
 def surec_api_activity_add():
     data = request.get_json() or {}
@@ -1307,7 +1329,7 @@ def surec_api_activity_add():
 
         # Faaliyet ekleme bildirimi
         from sqlalchemy.orm import joinedload as _joinedload
-        from micro.services.notification_triggers import notify_activity_assignment
+        from app_platform.services.notification_triggers import notify_activity_assignment
         for n_attempt in (1, 2):
             try:
                 p_with_users = Process.query.options(
@@ -1331,7 +1353,7 @@ def surec_api_activity_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/activity/get/<int:act_id>", methods=["GET"])
+@app_bp.route("/process/api/activity/get/<int:act_id>", methods=["GET"])
 @login_required
 def surec_api_activity_get(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -1362,7 +1384,7 @@ def surec_api_activity_get(act_id):
     })
 
 
-@micro_bp.route("/process/api/activity/update/<int:act_id>", methods=["POST"])
+@app_bp.route("/process/api/activity/update/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_update(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -1478,7 +1500,7 @@ def surec_api_activity_update(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/activity/delete/<int:act_id>", methods=["POST"])
+@app_bp.route("/process/api/activity/delete/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_delete(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -1499,7 +1521,7 @@ def surec_api_activity_delete(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
+@app_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_complete(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -1522,7 +1544,7 @@ def surec_api_activity_complete(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/process/api/activity/track/<int:act_id>", methods=["POST"])
+@app_bp.route("/process/api/activity/track/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_track(act_id):
     """Faaliyet aylık tamamlanma toggle (upsert)."""
@@ -1566,7 +1588,7 @@ def surec_api_activity_track(act_id):
 # API — Karne AJAX verisi
 # ──────────────────────────────────────────────────
 
-@micro_bp.route("/process/api/karne/<int:process_id>", methods=["GET"])
+@app_bp.route("/process/api/karne/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_karne(process_id):
     """Karne sayfasının yıl bazlı KPI + faaliyet aylık takip verisini döner."""
@@ -1717,7 +1739,7 @@ def surec_api_karne(process_id):
     })
 
 
-@micro_bp.route("/process/api/karne/<int:process_id>/export-xlsx", methods=["POST"])
+@app_bp.route("/process/api/karne/<int:process_id>/export-xlsx", methods=["POST"])
 @login_required
 def surec_api_karne_export_xlsx(process_id):
     """Karne tablosunu istemcinin ürettiği başlık/satırlarla gerçek .xlsx olarak döner."""
@@ -1780,8 +1802,8 @@ def surec_api_karne_export_xlsx(process_id):
 # ── Eski URL uyumluluğu: /surec → /process (307: POST gövdesi korunur) ──
 
 
-@micro_bp.route("/surec")
-@micro_bp.route("/surec/")
+@app_bp.route("/surec")
+@app_bp.route("/surec/")
 def surec_legacy_index_redirect():
     target = "/process"
     qs = request.query_string.decode() if request.query_string else ""
@@ -1790,10 +1812,11 @@ def surec_legacy_index_redirect():
     return redirect(target, code=307)
 
 
-@micro_bp.route("/surec/<path:subpath>")
+@app_bp.route("/surec/<path:subpath>")
 def surec_legacy_path_redirect(subpath):
     target = f"/process/{subpath}"
     qs = request.query_string.decode() if request.query_string else ""
     if qs:
         target = f"{target}?{qs}"
     return redirect(target, code=307)
+

@@ -1,0 +1,134 @@
+{% extends "platform/base.html" %}
+{% block title %}Performans Analitiği{% endblock %}
+{% block page_title %}Performans Analitiği{% endblock %}
+
+{% block content %}
+<div id="analiz-root"
+     data-trend-base="/analiz/api/trend/"
+     data-health-base="/analiz/api/health/"
+     data-forecast-base="/analiz/api/forecast/"
+     data-comparison-url="{{ url_for('app_bp.analiz_api_comparison') }}"
+     data-anomalies-url="{{ url_for('app_bp.analiz_api_anomalies') }}"
+     data-report-base="/analiz/api/report/"
+     style="max-width:1000px; margin:0 auto;">
+
+  <!-- Süreç seçici araç çubuğu -->
+  <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+      <label class="mc-label" style="margin:0; white-space:nowrap;">Süreç:</label>
+      <select id="analiz-process-select" class="mc-select" style="flex:1; max-width:320px;">
+        <option value="">— Süreç Seçin —</option>
+        {% for p in processes %}
+        <option value="{{ p.id }}">{{ p.code or '' }} {{ p.name }}</option>
+        {% endfor %}
+      </select>
+      <button id="btn-load-analiz" class="mc-btn mc-btn-primary">
+        <i class="fas fa-chart-bar"></i> Analiz Et
+      </button>
+      <button id="btn-anomalies" class="mc-btn mc-btn-sm" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">
+        <i class="fas fa-exclamation-triangle"></i> Anomali Tara
+      </button>
+      <a href="{{ url_for('app_bp.k_radar_hub') }}" class="mc-btn mc-btn-sm" style="background:#ecfeff; color:#155e75; border:1px solid #a5f3fc;">
+        <i class="fas fa-satellite-dish"></i> K-Radar
+      </a>
+    </div>
+  </div>
+
+  <!-- Sonuç panelleri (başta gizli) -->
+  <div id="analiz-results" style="display:none;">
+
+    <!-- Sağlık skoru kartı -->
+    <div class="mc-grid-4" style="margin-bottom:20px;" id="health-cards">
+      <div class="mc-stat-card mc-stat-indigo">
+        <div class="mc-stat-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="mc-stat-label">Sağlık Skoru</div>
+        <div class="mc-stat-value" id="health-score-val">—</div>
+        <div class="mc-stat-sub" id="health-score-label">Hesaplanıyor…</div>
+      </div>
+      <div class="mc-stat-card mc-stat-emerald">
+        <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="mc-stat-label">Trend</div>
+        <div class="mc-stat-value" id="trend-direction">—</div>
+        <div class="mc-stat-sub">Son dönem yönü</div>
+      </div>
+      <div class="mc-stat-card mc-stat-blue">
+        <div class="mc-stat-icon"><i class="fas fa-eye"></i></div>
+        <div class="mc-stat-label">Tahmin (3 Dönem)</div>
+        <div class="mc-stat-value" id="forecast-next">—</div>
+        <div class="mc-stat-sub">Sonraki dönem tahmini</div>
+      </div>
+      <div class="mc-stat-card mc-stat-amber">
+        <div class="mc-stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="mc-stat-label">Anomali</div>
+        <div class="mc-stat-value" id="anomaly-count">—</div>
+        <div class="mc-stat-sub">Tespit edilen</div>
+      </div>
+    </div>
+
+    <!-- Trend grafiği -->
+    <div class="mc-card" style="margin-bottom:20px;">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-chart-area" style="color:#6366f1; margin-right:8px;"></i>Trend Analizi
+        </span>
+        <a id="btn-export-report" href="#" class="mc-btn mc-btn-success mc-btn-sm" style="display:none;">
+          <i class="fas fa-file-excel"></i> Excel İndir
+        </a>
+      </div>
+      <div class="mc-card-body">
+        <canvas id="trend-chart" style="max-height:260px;"></canvas>
+        <div id="trend-empty" class="mc-empty" style="padding:30px; display:none;">
+          <div class="mc-empty-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="mc-empty-text">Trend verisi bulunamadı.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tahmin grafiği -->
+    <div class="mc-card" style="margin-bottom:20px;">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-magic" style="color:#8b5cf6; margin-right:8px;"></i>Tahmin Analizi (3 Dönem)
+        </span>
+      </div>
+      <div class="mc-card-body">
+        <canvas id="forecast-chart" style="max-height:220px;"></canvas>
+        <div id="forecast-empty" class="mc-empty" style="padding:30px; display:none;">
+          <div class="mc-empty-icon"><i class="fas fa-magic"></i></div>
+          <div class="mc-empty-text">Tahmin verisi bulunamadı.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Anomali sonuçları -->
+  <div id="anomaly-results" style="display:none;">
+    <div class="mc-card">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-exclamation-triangle" style="color:#f59e0b; margin-right:8px;"></i>Anomali Tespiti
+        </span>
+      </div>
+      <div class="mc-card-body" id="anomaly-list">
+        <!-- JS tarafından doldurulur -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Boş başlangıç durumu -->
+  <div id="analiz-empty" class="mc-card">
+    <div class="mc-empty" style="padding:60px 20px;">
+      <div class="mc-empty-icon"><i class="fas fa-chart-bar"></i></div>
+      <div class="mc-empty-title">Analiz için süreç seçin</div>
+      <div class="mc-empty-text">Yukarıdan bir süreç seçip "Analiz Et" butonuna tıklayın.</div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/analiz.js') }}"></script>
+{% endblock %}
+

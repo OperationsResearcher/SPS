@@ -1,6 +1,6 @@
 # Micro Proje Yönetimi — İyileştirme Planı
 
-> Kod incelemesi: `micro/modules/proje/*`, `micro/templates/micro/project/*`, `main/routes.py` (redirect), `models/project.py`  
+> Kod incelemesi: `micro/modules/proje/*`, `ui/templates/platform/project/*`, `main/routes.py` (redirect), `models/project.py`  
 > Amaç: modülün “dağınık / yarım / tutarsız” hissedilmesini gidermek; süreç modülü ve Micro tasarım diliyle hizalamak.
 
 ---
@@ -55,7 +55,7 @@
 ### Faz C — Deneyim ve kalite (2–4 hafta)
 
 8. **Ortak bildirim katmanı**  
-   - Micro `app.js` veya küçük `micro-notify.js`: toast API tek tip; Takvim/Gantt/Kanban/RAID aynı çağrıyı kullansın.
+   - Micro `app.js` veya küçük `toast_notify.js`: toast API tek tip; Takvim/Gantt/Kanban/RAID aynı çağrıyı kullansın.
 
 9. **RAID ve formlar**  
    - Bootstrap bağımlılığını kaldırıp **saf Tailwind / mc-* bileşenleri** (veya tek CSS çerçevesi) ile RAID’i sadeleştir.

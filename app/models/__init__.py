@@ -13,7 +13,6 @@ from app.models.saas import (  # noqa: E402
     SubscriptionPackage,
 )
 from app.models.audit import AuditLog  # noqa: E402
-from app.models.strategy import SwotAnalysis  # noqa: E402
 from app.models.process import (  # noqa: E402
     Process,
     ProcessKpi,
@@ -30,3 +29,20 @@ from app.models.process import (  # noqa: E402
     FavoriteKpi,
 )
 from app.models.email_config import TenantEmailConfig  # noqa: E402
+from app.models.k_radar import KRadarRecommendationAction  # noqa: E402
+from app.models.k_vektor import (  # noqa: E402
+    KVektorConfigSnapshot,
+    KVektorStrategyWeight,
+    KVektorSubStrategyWeight,
+)
+from app.models.k_radar_domain import (  # noqa: E402
+    ProcessMaturity,
+    BottleneckLog,
+    ValueChainItem,
+    EvmSnapshot,
+    RiskHeatmapItem,
+    StakeholderMap,
+    StakeholderSurvey,
+    A3Report,
+    CompetitorAnalysis,
+)

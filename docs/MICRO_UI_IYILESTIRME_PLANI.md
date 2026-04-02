@@ -2,7 +2,7 @@
 
 > Hedef: `micro/` yapısını kök uygulamanın görsel kalitesine çıkarmak.
 > Kök dizin (`static/`, `templates/`) **kesinlikle kirletilmeyecek**.
-> Tüm değişiklikler `micro/static/micro/` ve `micro/templates/micro/` altında kalır.
+> Tüm değişiklikler `ui/static/platform/` ve `ui/templates/platform/` altında kalır.
 
 ---
 
@@ -38,7 +38,7 @@ performans avantajlarını koruyor. Bootstrap eklemek çakışma yaratır.
 
 ### Yeni Dosya Yapısı (sadece micro/ altında)
 ```
-micro/static/micro/
+ui/static/platform/
   css/
     app.css          ← mevcut, genişletilecek
     components.css   ← YENİ: kart, tablo, form, badge bileşenleri
@@ -60,10 +60,10 @@ micro/static/micro/
 **Etki: Tüm sayfaları etkiler. En yüksek öncelik.**
 
 **Dosyalar:**
-- `micro/templates/micro/base.html` — sidebar navigasyon eklenir
-- `micro/static/micro/css/sidebar.css` — YENİ
-- `micro/static/micro/css/components.css` — YENİ
-- `micro/static/micro/js/app.js` — sidebar toggle mantığı eklenir
+- `ui/templates/platform/base.html` — sidebar navigasyon eklenir
+- `ui/static/platform/css/sidebar.css` — YENİ
+- `ui/static/platform/css/components.css` — YENİ
+- `ui/static/platform/js/app.js` — sidebar toggle mantığı eklenir
 
 **Yapılacaklar:**
 1. `base.html`'e sol sidebar ekle
@@ -88,8 +88,8 @@ micro/static/micro/
 
 ### Sprint 2 — Launcher & Masaüstü
 **Dosyalar:**
-- `micro/templates/micro/launcher.html`
-- `micro/templates/micro/masaustu/index.html`
+- `ui/templates/platform/launcher.html`
+- `ui/templates/platform/masaustu/index.html`
 
 **Yapılacaklar:**
 1. Launcher yeniden tasarımı:
@@ -109,10 +109,10 @@ micro/static/micro/
 
 ### Sprint 3 — Süreç Yönetimi
 **Dosyalar:**
-- `micro/templates/micro/surec/index.html`
-- `micro/templates/micro/surec/karne.html`
-- `micro/static/micro/css/surec.css`
-- `micro/static/micro/js/surec.js`
+- `ui/templates/platform/surec/index.html`
+- `ui/templates/platform/surec/karne.html`
+- `ui/static/platform/css/surec.css`
+- `ui/static/platform/js/surec.js`
 
 **Yapılacaklar:**
 1. Süreç listesi:
@@ -133,10 +133,10 @@ micro/static/micro/
 
 ### Sprint 4 — Stratejik Planlama
 **Dosyalar:**
-- `micro/templates/micro/sp/index.html`
-- `micro/templates/micro/sp/flow.html`
-- `micro/templates/micro/sp/dynamic_flow.html`
-- `micro/static/micro/js/sp.js`
+- `ui/templates/platform/sp/index.html`
+- `ui/templates/platform/sp/flow.html`
+- `ui/templates/platform/sp/dynamic_flow.html`
+- `ui/static/platform/js/sp.js`
 
 **Yapılacaklar:**
 1. SP ana sayfa:
@@ -156,11 +156,11 @@ micro/static/micro/
 
 ### Sprint 5 — Admin Modülü
 **Dosyalar:**
-- `micro/templates/micro/admin/users.html`
-- `micro/templates/micro/admin/tenants.html`
-- `micro/templates/micro/admin/packages.html`
-- `micro/static/micro/css/admin.css`
-- `micro/static/micro/js/admin.js`
+- `ui/templates/platform/admin/users.html`
+- `ui/templates/platform/admin/tenants.html`
+- `ui/templates/platform/admin/packages.html`
+- `ui/static/platform/css/admin.css`
+- `ui/static/platform/js/admin.js`
 
 **Yapılacaklar:**
 1. Kullanıcı tablosu:
@@ -179,10 +179,10 @@ micro/static/micro/
 
 ### Sprint 6 — Kurum & Bireysel Performans
 **Dosyalar:**
-- `micro/templates/micro/kurum/index.html`
-- `micro/templates/micro/bireysel/karne.html`
-- `micro/static/micro/js/kurum.js`
-- `micro/static/micro/js/bireysel.js`
+- `ui/templates/platform/kurum/index.html`
+- `ui/templates/platform/bireysel/karne.html`
+- `ui/static/platform/js/kurum.js`
+- `ui/static/platform/js/bireysel.js`
 
 **Yapılacaklar:**
 1. Kurum paneli:
@@ -201,8 +201,8 @@ micro/static/micro/
 
 ### Sprint 7 — Analiz Merkezi
 **Dosyalar:**
-- `micro/templates/micro/analiz/index.html`
-- `micro/static/micro/js/analiz.js`
+- `ui/templates/platform/analiz/index.html`
+- `ui/static/platform/js/analiz.js`
 
 **Yapılacaklar:**
 1. `<pre>` JSON gösterimi tamamen kaldırılır
@@ -219,12 +219,12 @@ micro/static/micro/
 
 ### Sprint 8 — HGS, Auth, Bildirim, Ayarlar
 **Dosyalar:**
-- `micro/templates/micro/hgs/index.html`
-- `micro/templates/micro/auth/login.html`
-- `micro/templates/micro/auth/profil.html`
-- `micro/templates/micro/auth/ayarlar.html`
-- `micro/templates/micro/bildirim/index.html`
-- `micro/templates/micro/ayarlar/index.html`
+- `ui/templates/platform/hgs/index.html`
+- `ui/templates/platform/auth/login.html`
+- `ui/templates/platform/auth/profil.html`
+- `ui/templates/platform/auth/ayarlar.html`
+- `ui/templates/platform/bildirim/index.html`
+- `ui/templates/platform/ayarlar/index.html`
 
 **Yapılacaklar:**
 1. HGS: kullanıcı kartları grid görünümü, avatar, rol rengi
@@ -239,8 +239,8 @@ micro/static/micro/
 
 ### Sprint 9 — API Docs & Hata Sayfaları
 **Dosyalar:**
-- `micro/templates/micro/api/docs.html`
-- `micro/templates/micro/errors/403.html`
+- `ui/templates/platform/api/docs.html`
+- `ui/templates/platform/errors/403.html`
 
 **Yapılacaklar:**
 1. API docs: Swagger benzeri tablo (method badge renkli, URL, açıklama)
@@ -270,8 +270,8 @@ micro/static/micro/
 ## Kurallar (Değişmez)
 
 - Kök `static/` ve `templates/` dizinlerine **hiçbir dosya eklenmez**
-- Tüm CSS: `micro/static/micro/css/` altında
-- Tüm JS: `micro/static/micro/js/` altında
+- Tüm CSS: `ui/static/platform/css/` altında
+- Tüm JS: `ui/static/platform/js/` altında
 - HTML içinde `<script>` veya `<style>` bloğu yasak
 - JS dosyalarında `{{ }}` Jinja2 ifadesi yasak, `data-*` kullanılır
 - SweetAlert2 zorunlu, `alert()`/`confirm()` yasak

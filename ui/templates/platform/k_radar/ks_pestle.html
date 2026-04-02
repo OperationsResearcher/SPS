@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KS PESTLE{% endblock %}
+{% block page_title %}KS-Radar PESTLE{% endblock %}
+{% block content %}
+<div id="k-radar-ks-pestle-root" data-url="{{ url_for('app_bp.k_radar_api_ks_pestle') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">PESTLE Özeti</h3>
+    <div><strong>Faktör:</strong> <span id="ks-pestle-factors">-</span></div>
+    <div><strong>Kapsam Skoru:</strong> <span id="ks-pestle-coverage">-</span></div>
+    <div><strong>Strateji Sayısı:</strong> <span id="ks-pestle-strategy">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

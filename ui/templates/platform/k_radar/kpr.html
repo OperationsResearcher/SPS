@@ -1,0 +1,27 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KPR{% endblock %}
+{% block page_title %}KPR-Radar{% endblock %}
+{% block content %}
+<div id="k-radar-kpr-root" data-url="{{ url_for('app_bp.k_radar_api_kpr') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card">
+    <div class="mc-card-body">
+      <h3 style="margin-top:0;">Proje Radari</h3>
+      <p style="color:#64748b;">Proje saglik + geciken gorev cezasi hibrit puani.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr_cpm') }}">CPM</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr_evm') }}">EVM</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr_risk') }}">Risk</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr_kaynak_kapasite') }}">Kaynak Kapasite</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr_gantt') }}">Gantt</a>
+      </div>
+      <div><strong>Skor:</strong> <span id="kpr-score">-</span></div>
+      <div><strong>Band:</strong> <span id="kpr-band">-</span></div>
+      <div><strong>Kritik Proje:</strong> <span id="kpr-critical">-</span></div>
+      <div><strong>Aktif Proje:</strong> <span id="kpr-project-count">-</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

@@ -12,7 +12,6 @@ from models import (
     PerformansGostergeVeri, PerformansGostergeVeriAudit, BireyselFaaliyet, SurecFaaliyet, UserActivityLog,
     SurecPerformansGostergesi,
     Deger, EtikKural, KalitePolitikasi,
-    AnalysisItem, TowsMatrix,
     Project, Task, TaskImpact, TaskComment, TaskMention,
     ProjectFile, project_related_processes, project_members, project_observers, ProjectRisk,
     MainStrategy, SubStrategy, Process, StrategyProcessMatrix, Project, SurecPerformansGostergesi,
@@ -2262,19 +2261,6 @@ def kurum_paneli():
             uyeler = []
             surecler = []
         
-        # Analiz sayıları
-        if kurum_id:
-            swot_count = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type='SWOT').count()
-            pestle_count = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type='PESTLE').count()
-            tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=kurum_id).count()
-        else:
-            swot_count = 0
-            pestle_count = 0
-            tows_strategy_count = 0
-        
-        analysis_total = swot_count + pestle_count + tows_strategy_count
-        analysis_progress = min(100, int((analysis_total / 20) * 100)) if analysis_total else 0
-        
         # ============================================================
         # TEMPLATE'E GÖNDERİLECEK VERİLER
         # ============================================================
@@ -2298,13 +2284,7 @@ def kurum_paneli():
                              etik_kurallari=etik_kurallari,
                              kalite_politikalari=kalite_politikalari,
                              surecler=surecler,
-                             uyeler=uyeler,
-                             
-                             # Analiz Verileri
-                             swot_count=swot_count,
-                             pestle_count=pestle_count,
-                             tows_strategy_count=tows_strategy_count,
-                             analysis_progress=analysis_progress)
+                             uyeler=uyeler)
                              
     except Exception as e:
         import traceback
@@ -3316,7 +3296,7 @@ def project_kanban(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        return redirect(url_for('micro_bp.micro_project_view_kanban', project_id=project_id))
+        return redirect(url_for('app_bp.project_view_kanban', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Kanban sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3330,7 +3310,7 @@ def project_calendar(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        return redirect(url_for('micro_bp.micro_project_view_calendar', project_id=project_id))
+        return redirect(url_for('app_bp.project_view_calendar', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Takvim sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3344,7 +3324,7 @@ def project_gantt(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        return redirect(url_for('micro_bp.micro_project_view_gantt', project_id=project_id))
+        return redirect(url_for('app_bp.project_view_gantt', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'Gantt sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3372,7 +3352,7 @@ def project_raid(project_id):
         if project.kurum_id != current_user.kurum_id:
             flash('Bu projeye erişim yetkiniz yok.', 'danger')
             return redirect(url_for('main.dashboard'))
-        return redirect(url_for('micro_bp.micro_project_view_raid', project_id=project_id))
+        return redirect(url_for('app_bp.project_view_raid', project_id=project_id))
     except Exception as e:
         current_app.logger.error(f'RAID sayfası hatası: {e}')
         return f'Hata: {str(e)}', 500
@@ -3516,10 +3496,6 @@ def stratejik_planlama_akisi():
         # Kurumun kalite politikalarını getir
         kalite_politikalari = KalitePolitikasi.query.filter_by(kurum_id=kurum.id).all()
         
-        swot_count = AnalysisItem.query.filter_by(kurum_id=kurum.id, analysis_type='SWOT').count()
-        pestle_count = AnalysisItem.query.filter_by(kurum_id=kurum.id, analysis_type='PESTLE').count()
-        tows_strategy_count = TowsMatrix.query.filter_by(kurum_id=kurum.id).count()
-
         # Kurumun amaç ve vizyon bilgileri (kurum modelinden)
         amac = kurum.amac
         vizyon = kurum.vizyon
@@ -3614,9 +3590,6 @@ def stratejik_planlama_akisi():
                              degerler=degerler,
                              etik_kurallari=etik_kurallari,
                              kalite_politikalari=kalite_politikalari,
-                             swot_count=swot_count,
-                             pestle_count=pestle_count,
-                             tows_strategy_count=tows_strategy_count,
                              amac=amac,
                              vizyon=vizyon,
                              ana_stratejiler=ana_stratejiler,
@@ -5257,28 +5230,28 @@ def strategy_kpi_add():
 @login_required
 def projeler():
     """Kök /kok/projeler → Micro proje listesi (/project)."""
-    return redirect(url_for('micro_bp.micro_project_list', **request.args))
+    return redirect(url_for('app_bp.project_list', **request.args))
 
 
 @main_bp.route('/projeler/yeni')
 @login_required
 def proje_yeni():
     """Yeni proje → Micro form (/project/new)."""
-    return redirect(url_for('micro_bp.micro_project_new'))
+    return redirect(url_for('app_bp.project_new'))
 
 
 @main_bp.route('/projeler/<int:project_id>/duzenle')
 @login_required
 def proje_duzenle(project_id):
     """Proje düzenleme → Micro (/project/<id>/edit)."""
-    return redirect(url_for('micro_bp.micro_project_edit', project_id=project_id))
+    return redirect(url_for('app_bp.project_edit', project_id=project_id))
 
 
 @main_bp.route('/projeler/<int:project_id>')
 @login_required
 def proje_detay(project_id):
     """Proje detay → Micro (/project/<id>)."""
-    return redirect(url_for('micro_bp.micro_project_detail', project_id=project_id))
+    return redirect(url_for('app_bp.project_detail', project_id=project_id))
 
 
 @main_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>')
@@ -5287,7 +5260,7 @@ def gorev_detay(project_id, task_id):
     """Görev detay → Micro (/project/<pid>/task/<tid>)."""
     return redirect(
         url_for(
-            'micro_bp.micro_project_task_detail',
+            'app_bp.project_task_detail',
             project_id=project_id,
             task_id=task_id,
         )
@@ -5298,7 +5271,7 @@ def gorev_detay(project_id, task_id):
 @login_required
 def gorev_yeni(project_id):
     """Yeni görev → Micro (/project/<id>/task/new)."""
-    return redirect(url_for('micro_bp.micro_project_task_new', project_id=project_id))
+    return redirect(url_for('app_bp.project_task_new', project_id=project_id))
 
 
 @main_bp.route('/dokuman-merkezi')
@@ -6048,9 +6021,9 @@ def debug_init_strategy_db():
         else:
             result_messages.append("⚠️ strategy_process_matrix association table bulunamadı")
         
-        # Mevcut tablolardaki yeni kolonları kontrol et (SQLite için ALTER TABLE gerekebilir)
+        # Mevcut tablolardaki yeni kolonları kontrol et (PostgreSQL: Alembic önerilir)
         result_messages.append("\n=== YENİ KOLONLAR KONTROLÜ ===")
-        result_messages.append("⚠️ Not: SQLite'da ALTER TABLE ile kolon ekleme manuel yapılmalıdır.")
+        result_messages.append("⚠️ Not: PostgreSQL'de şema değişiklikleri için Alembic migration kullanın.")
         result_messages.append("Aşağıdaki kolonlar eklenmeli:")
         result_messages.append("  - ana_strateji: code, name")
         result_messages.append("  - alt_strateji: code, name")
@@ -6059,8 +6032,8 @@ def debug_init_strategy_db():
         
         result_messages.append("\n✅ Migration tamamlandı!")
         result_messages.append("\n📝 Sonraki Adımlar:")
-        result_messages.append("  1. SQLite için ALTER TABLE komutlarını çalıştırın")
-        result_messages.append("  2. Veya yeni bir migration scripti oluşturun")
+        result_messages.append("  1. Eksik kolonlar için Alembic revision oluşturup flask db upgrade çalıştırın")
+        result_messages.append("  2. Veya uygun SQL migration scriptini uygulayın")
         
         return "<pre>" + "\n".join(result_messages) + "</pre>"
         
@@ -6111,7 +6084,7 @@ def debug_init_strategy_v3():
         
         # Mevcut tablolardaki yeni kolonları kontrol et
         result_messages.append("\n=== YENİ KOLONLAR KONTROLÜ ===")
-        result_messages.append("⚠️ Not: SQLite'da ALTER TABLE ile kolon ekleme manuel yapılmalıdır.")
+        result_messages.append("⚠️ Not: PostgreSQL'de şema değişiklikleri için Alembic migration kullanın.")
         result_messages.append("Aşağıdaki kolonlar eklenmeli:")
         result_messages.append("  - corporate_identity: YENİ TABLO (vizyon, misyon, kalite_politikasi, degerler)")
         result_messages.append("  - ana_strateji: code (UNIQUE), name")
@@ -6130,7 +6103,7 @@ def debug_init_strategy_v3():
         
         result_messages.append("\n✅ V3.0 Mimari Kurulumu Tamamlandı!")
         result_messages.append("\n📝 Sonraki Adımlar:")
-        result_messages.append("  1. SQLite için ALTER TABLE komutlarını çalıştırın")
+        result_messages.append("  1. Eksik kolonlar için Alembic / SQL migration uygulayın")
         result_messages.append("  2. Excel verilerini import edin")
         result_messages.append("  3. CRUD endpoint'lerini kullanarak veri girişi yapın")
         

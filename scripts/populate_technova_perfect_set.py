@@ -31,7 +31,7 @@ from werkzeug.security import generate_password_hash
 
 from models import (
     Kurum, User, AnaStrateji, AltStrateji, Surec, SurecPerformansGostergesi,
-    BireyselPerformansGostergesi, PerformansGostergeVeri, AnalysisItem, TowsMatrix,
+    BireyselPerformansGostergesi, PerformansGostergeVeri,
     Deger, EtikKural, KalitePolitikasi, StrategyMapLink, StrategyProcessMatrix,
 )
 from models.process import surec_uyeleri, surec_liderleri, surec_alt_stratejiler, process_owners
@@ -54,35 +54,6 @@ USER_DEFS = [
     {"username": "ik_uzmani", "sistem_rol": "kurum_kullanici", "first_name": "İnsan", "last_name": "Kaynakları", "title": "İK Uzmanı", "department": "İnsan Kaynakları"},
     {"username": "operasyon_lideri", "sistem_rol": "surec_lideri", "first_name": "Operasyon", "last_name": "Lideri", "title": "Operasyon Lideri", "department": "Operasyon"},
     {"username": "finans_direktoru", "sistem_rol": "kurum_yoneticisi", "first_name": "Finans", "last_name": "Direktörü", "title": "Finans Direktörü", "department": "Finans"},
-]
-
-SWOT_STRENGTHS = [
-    "Güçlü yazılım geliştirme ekibi ve Agile metodolojisi",
-    "Patentli ürün portföyü ve Ar-Ge yetkinliği",
-    "Yüksek müşteri memnuniyeti ve tekrarlayan gelir modeli",
-    "Bulut ve DevOps altyapısı deneyimi",
-    "Uluslararası sertifikasyonlar ve kalite yönetim sistemi",
-]
-SWOT_WEAKNESSES = [
-    "Pazarlama bütçesinin sınırlı olması",
-    "Bazı kritik rollerde personel açığı",
-    "Legacy sistemlere bağımlılık",
-    "Uzun satış döngüsü ve karar verme süreçleri",
-    "Coğrafi olarak sınırlı satış ağı",
-]
-SWOT_OPPORTUNITIES = [
-    "SaaS ve bulut hizmetlerinde büyüme talebi",
-    "Devlet ve KOSGEB destekleri",
-    "Uzaktan çalışma ile yetenek havuzunun genişlemesi",
-    "Dijital dönüşüm projelerinde artan bütçeler",
-    "Stratejik ortaklık ve M&A fırsatları",
-]
-SWOT_THREATS = [
-    "Küresel rakiplerin pazara girişi",
-    "Döviz kuru ve enflasyon baskısı",
-    "Siber güvenlik ve veri ihlali riskleri",
-    "Yasal düzenlemeler (KVKK, GDPR) uyum maliyeti",
-    "Yetenek savaşı ve personel maliyetleri",
 ]
 
 # 4 ana stratejik eksen (perspective: FINANSAL, MUSTERI, SUREC, OGRENME)
@@ -167,8 +138,6 @@ def _wipe_technova_strategic_data(kurum_id):
         )).delete(synchronize_session=False)
         AltStrateji.query.filter(AltStrateji.ana_strateji_id.in_(ana_ids)).delete(synchronize_session=False)
     AnaStrateji.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
-    AnalysisItem.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
-    TowsMatrix.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
     Deger.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
     EtikKural.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
     KalitePolitikasi.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
@@ -272,63 +241,6 @@ def _add_deger_etik_kalite(kurum_id):
         baslik="Kalite Politikası",
         aciklama="ISO 9001 ve müşteri gereksinimlerine uygun, sürekli iyileştirme odaklı kalite politikası uygulanır."
     ))
-    db.session.commit()
-
-
-def _add_swot_and_tows(kurum_id):
-    """SWOT: 5 Güçlü, 5 Zayıf, 5 Fırsat, 5 Tehdit. TOWS için strength/opportunity-threat ID'leri döner."""
-    categories = [
-        ("Strengths", SWOT_STRENGTHS),
-        ("Weaknesses", SWOT_WEAKNESSES),
-        ("Opportunities", SWOT_OPPORTUNITIES),
-        ("Threats", SWOT_THREATS),
-    ]
-    strength_ids = []
-    opportunity_ids = []
-    threat_ids = []
-    for cat, items in categories:
-        for content in items:
-            score = random.randint(3, 5) if cat in ("Strengths", "Opportunities") else random.randint(2, 4)
-            item = AnalysisItem(
-                kurum_id=kurum_id,
-                analysis_type="SWOT",
-                category=cat,
-                content=content,
-                score=score,
-            )
-            db.session.add(item)
-            db.session.flush()
-            if cat == "Strengths":
-                strength_ids.append(item.id)
-            elif cat == "Opportunities":
-                opportunity_ids.append(item.id)
-            elif cat == "Threats":
-                threat_ids.append(item.id)
-    db.session.commit()
-    # TOWS: Strength-Opportunity ve Strength-Threat çiftleri
-    all_s = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type="SWOT", category="Strengths").all()
-    all_o = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type="SWOT", category="Opportunities").all()
-    all_t = AnalysisItem.query.filter_by(kurum_id=kurum_id, analysis_type="SWOT", category="Threats").all()
-    for i, s in enumerate(all_s[:3]):
-        o = all_o[i % len(all_o)] if all_o else None
-        if o:
-            db.session.add(TowsMatrix(
-                kurum_id=kurum_id,
-                strength_id=s.id,
-                opportunity_threat_id=o.id,
-                strategy_text=f"{s.content} gücünü kullanarak {o.content} fırsatını değerlendir.",
-                action_plan="Stratejik proje ve bütçe planlaması yapılacak.",
-            ))
-    for i, s in enumerate(all_s[:2]):
-        t = all_t[i % len(all_t)] if all_t else None
-        if t:
-            db.session.add(TowsMatrix(
-                kurum_id=kurum_id,
-                strength_id=s.id,
-                opportunity_threat_id=t.id,
-                strategy_text=f"{s.content} ile {t.content} tehdidini azalt.",
-                action_plan="Risk eylem planı güncellenecek.",
-            ))
     db.session.commit()
 
 
@@ -551,8 +463,6 @@ def _print_summary(kurum_id):
     counts = {
         "Kurum (Tenant)": Kurum.query.filter_by(id=kurum_id).count(),
         "User": User.query.filter_by(kurum_id=kurum_id).count(),
-        "AnalysisItem (SWOT)": AnalysisItem.query.filter_by(kurum_id=kurum_id).count(),
-        "TowsMatrix": TowsMatrix.query.filter_by(kurum_id=kurum_id).count(),
         "Deger": Deger.query.filter_by(kurum_id=kurum_id).count(),
         "EtikKural": EtikKural.query.filter_by(kurum_id=kurum_id).count(),
         "KalitePolitikasi": KalitePolitikasi.query.filter_by(kurum_id=kurum_id).count(),
@@ -591,7 +501,6 @@ def main():
             if Kurum.query.filter(Kurum.kisa_ad.ilike(TECHNOVA_KISA_AD)).first():
                 _wipe_technova_strategic_data(kurum.id)
             _add_deger_etik_kalite(kurum.id)
-            _add_swot_and_tows(kurum.id)
             ana_list, alt_by_ana = _add_strategies_and_links(kurum.id)
             procs, process_kpis = _add_processes_and_kpis(kurum.id, users)
             _link_processes_strategy_and_users(kurum.id, procs, alt_by_ana, users)

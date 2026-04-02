@@ -13,7 +13,7 @@ from flask import render_template, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy import case, or_, and_, inspect as sa_inspect
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.utils.process_utils import data_date_to_period_keys
 from app.models.process import (
@@ -29,8 +29,8 @@ from app.models.process import (
 from app.models.core import Notification, Strategy
 from models import Project, Task, project_members, project_leaders
 
-from micro.modules.proje.permissions import is_privileged, user_can_edit_tasks
-from micro.modules.surec.permissions import user_can_access_process
+from app_platform.modules.proje.permissions import is_privileged, user_can_edit_tasks
+from app_platform.modules.surec.permissions import user_can_access_process
 
 
 def _table_exists(table_name: str) -> bool:
@@ -63,7 +63,7 @@ def _individual_pg_has_monthly_entry(pg_id: int, user_id: int, year: int, month:
     return False
 
 
-@micro_bp.route("/masaustu")
+@app_bp.route("/masaustu")
 @login_required
 def masaustu():
     """Masaüstüm ana sayfası."""
@@ -214,7 +214,7 @@ def masaustu():
     bu_ay_ad = ay_isimleri[cm] if 1 <= cm <= 12 else str(cm)
 
     return render_template(
-        "micro/masaustu/index.html",
+        "platform/masaustu/index.html",
         bireysel_pgs=bireysel_pgs,
         bireysel_faaliyetler=bireysel_faaliyetler,
         surec_pgs=surec_pgs,
@@ -302,7 +302,7 @@ def _projects_for_task_quick_create(user) -> list[dict]:
 
 def _task_form_meta_calendar(user) -> dict:
     """Proje görevi formu (task_form.html) ile uyumlu PG listesi + kurum kullanıcıları."""
-    from micro.modules.proje.helpers import kpis_for_tenant, tenant_core_users, kurum_id
+    from app_platform.modules.proje.helpers import kpis_for_tenant, tenant_core_users, kurum_id
 
     kid = kurum_id()
     kpis = kpis_for_tenant()
@@ -510,7 +510,7 @@ def _collect_calendar_events(start_d: date, end_d: date, *, org_scope: bool) -> 
     return events
 
 
-@micro_bp.route("/api/calendar/events", methods=["GET"])
+@app_bp.route("/api/calendar/events", methods=["GET"])
 @login_required
 def masaustu_calendar_events():
     """Masaüstü ortak takvim etkinlikleri (süreç faaliyet + proje görev)."""
@@ -528,7 +528,7 @@ def masaustu_calendar_events():
     return jsonify({"success": True, "events": events, "timezone": "Europe/Istanbul"})
 
 
-@micro_bp.route("/api/calendar/events/org", methods=["GET"])
+@app_bp.route("/api/calendar/events/org", methods=["GET"])
 @login_required
 def kurum_calendar_events():
     """Kurum geneli ortak takvim etkinlikleri."""
@@ -546,7 +546,7 @@ def kurum_calendar_events():
     return jsonify({"success": True, "events": events, "timezone": "Europe/Istanbul"})
 
 
-@micro_bp.route("/api/calendar/quick-create-meta", methods=["GET"])
+@app_bp.route("/api/calendar/quick-create-meta", methods=["GET"])
 @login_required
 def api_calendar_quick_create_meta():
     """Takvimden hızlı oluşturma: süreç / proje / bireysel için seçenek listeleri ve bayraklar."""
@@ -565,7 +565,7 @@ def api_calendar_quick_create_meta():
     )
 
 
-@micro_bp.route("/api/calendar/process/<int:process_id>/activity-form-meta", methods=["GET"])
+@app_bp.route("/api/calendar/process/<int:process_id>/activity-form-meta", methods=["GET"])
 @login_required
 def api_calendar_activity_form_meta(process_id: int):
     """Süreç faaliyeti modalı: PG listesi, atanabilir kullanıcılar, çoklu atama izni (karne ile aynı veri)."""
@@ -616,8 +616,8 @@ def api_calendar_activity_form_meta(process_id: int):
     )
 
 
-@micro_bp.route("/takvim", methods=["GET"])
+@app_bp.route("/takvim", methods=["GET"])
 @login_required
 def kurum_takvim():
     """Kurum geneli takvim sayfası."""
-    return render_template("micro/calendar/index.html")
+    return render_template("platform/calendar/index.html")

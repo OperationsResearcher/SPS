@@ -1,0 +1,13 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KPR Gantt{% endblock %}
+{% block page_title %}KPR-Radar Gantt{% endblock %}
+{% block content %}
+<div id="k-radar-kpr-gantt-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_gantt') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">Gantt Özeti</h3>
+    <div><strong>Zaman Çizelgeli Görev:</strong> <span id="kpr-gantt-tasks">-</span></div>
+    <div><strong>Zamanında Tamamlama:</strong> <span id="kpr-gantt-ontime">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

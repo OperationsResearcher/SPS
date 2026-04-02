@@ -898,62 +898,6 @@
 </div>
 
 
-<!-- Analiz Hızlı Erişim -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card fade-in-up">
-            <div class="card-body p-4">
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
-                    <div>
-                        <h5 class="mb-1">
-                            <i class="fas fa-chart-line text-primary me-2"></i>
-                            Analiz Durumu
-                        </h5>
-                        <div class="text-muted small">
-                            {% if (swot_count + pestle_count + tows_strategy_count) > 0 %}
-                            Toplam {{ swot_count + pestle_count + tows_strategy_count }} kayıt
-                            {% else %}
-                            Başlanmadı
-                            {% endif %}
-                        </div>
-                        <div class="mt-2">
-                            <span class="badge bg-success-subtle text-success border border-success me-2">
-                                S: {% if swot_count > 0 %}{{ swot_count }}{% else %}Başlanmadı{% endif %}
-                            </span>
-                            <span class="badge bg-info-subtle text-info border border-info me-2">
-                                P: {% if pestle_count > 0 %}{{ pestle_count }}{% else %}Başlanmadı{% endif %}
-                            </span>
-                            <span class="badge bg-warning-subtle text-warning border border-warning">
-                                T: {% if tows_strategy_count > 0 %}{{ tows_strategy_count }}{% else %}Başlanmadı{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 px-lg-4">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <small class="text-muted">Analiz Tamamlanma</small>
-                            <small class="text-muted">{{ analysis_progress }}%</small>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar bg-primary" role="progressbar"
-                                style="width: {{ analysis_progress }}%;"
-                                aria-valuenow="{{ analysis_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <div>
-                        {% if kurum %}
-                        <a class="btn btn-primary" href="{{ url_for('analysis.analysis_hub', kurum_id=kurum.id) }}">
-                            <i class="fas fa-rocket me-1"></i>Analiz Merkezi'ne Git
-                        </a>
-                        {% else %}
-                        <button class="btn btn-secondary" disabled>Analiz Merkezi'ne Git</button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- BSC Strateji Haritası -->
 <div class="row mb-4">
     <div class="col-12">

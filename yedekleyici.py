@@ -12,6 +12,7 @@ import argparse
 import datetime
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -41,7 +42,8 @@ def resolve_db_uri() -> str:
 
 
 def is_postgres_uri(uri: str) -> bool:
-    return uri.startswith("postgresql://") or uri.startswith("postgresql+psycopg2://")
+    u = (uri or "").strip().lower()
+    return u.startswith("postgresql://") or u.startswith("postgresql+")
 
 
 def make_backup_dirs(base_dir: str) -> str:
@@ -51,16 +53,35 @@ def make_backup_dirs(base_dir: str) -> str:
 
 
 def _pg_bin(tool: str) -> str:
-    """pg_dump/psql yolunu dondur. PG_BIN env ile klasor belirtilebilir."""
+    """pg_dump/psql yolunu dondur. PG_BIN env, PATH, Windows varsayilan kurulum."""
+    exe = tool + (".exe" if os.name == "nt" else "")
     pg_bin = os.environ.get("PG_BIN", "").strip().rstrip("/\\")
     if pg_bin and os.path.isdir(pg_bin):
-        full = os.path.join(pg_bin, tool + (".exe" if os.name == "nt" else ""))
+        full = os.path.join(pg_bin, exe)
         if os.path.isfile(full):
             return full
+    which = shutil.which(tool) or shutil.which(exe)
+    if which:
+        return which
+    if os.name == "nt":
+        for base in (os.environ.get("ProgramFiles"), os.environ.get("ProgramFiles(x86)")):
+            if not base:
+                continue
+            pg_root = os.path.join(base, "PostgreSQL")
+            if not os.path.isdir(pg_root):
+                continue
+            try:
+                versions = sorted(os.listdir(pg_root), reverse=True)
+            except OSError:
+                continue
+            for ver in versions:
+                cand = os.path.join(pg_root, ver, "bin", exe)
+                if os.path.isfile(cand):
+                    return cand
     return tool
 
 
-def run_pg_dump(db_uri: str, output_sql_path: str) -> None:
+def run_pg_dump(db_uri: str, output_sql_path: str, extra_args: list | None = None) -> None:
     parsed = urlparse(db_uri)
     if not parsed.hostname or not parsed.path:
         raise RuntimeError("PostgreSQL URI parse edilemedi.")
@@ -83,9 +104,10 @@ def run_pg_dump(db_uri: str, output_sql_path: str) -> None:
         db_name,
         "-F",
         "p",  # plain SQL
-        "-f",
-        output_sql_path,
     ]
+    if extra_args:
+        cmd.extend(extra_args)
+    cmd.extend(["-f", output_sql_path])
     subprocess.run(cmd, check=True, env=env)
 
 
@@ -125,8 +147,9 @@ def _run_psql_query(db_uri: str, query: str) -> tuple[bool, str]:
     env = os.environ.copy()
     if parsed.password:
         env["PGPASSWORD"] = parsed.password
+    psql_cmd = _pg_bin("psql")
     cmd = [
-        "psql", "-h", parsed.hostname or "localhost",
+        psql_cmd, "-h", parsed.hostname or "localhost",
         "-p", str(parsed.port or 5432),
         "-U", parsed.username or "postgres",
         "-d", db_name, "-t", "-A", "-c", query,
@@ -239,7 +262,7 @@ def add_project_files_to_zip(zipf: zipfile.ZipFile, base_dir: str, zip_filename:
     return file_count
 
 
-def create_backup() -> str:
+def create_backup(skip_postgres_dump: bool = False) -> str:
     base_dir = os.getcwd()
     backup_dir = make_backup_dirs(base_dir)
 
@@ -248,10 +271,12 @@ def create_backup() -> str:
     zip_path = os.path.join(backup_dir, zip_filename)
 
     db_uri = resolve_db_uri()
-    using_postgres = is_postgres_uri(db_uri)
+    using_postgres = is_postgres_uri(db_uri) and not skip_postgres_dump
 
     print(f"Yedekleme baslatiliyor... Hedef: {zip_path}")
-    print(f"Veritabani turu: {'PostgreSQL' if using_postgres else 'SQLite/Other'}")
+    if skip_postgres_dump and is_postgres_uri(db_uri):
+        print("Uyari: --skip-postgres-dump: pg_dump calistirilmayacak (yalnizca dosya yedegi).")
+    print(f"Veritabani turu: {'PostgreSQL (dump dahil)' if using_postgres else 'SQLite/Other veya DB dumpsuz'}")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         db_dump_rel = None
@@ -259,6 +284,7 @@ def create_backup() -> str:
             "created_at": timestamp,
             "db_uri_scheme": db_uri.split("://", 1)[0] if "://" in db_uri else "unknown",
             "db_backup_file": None,
+            "skip_postgres_dump": bool(skip_postgres_dump),
         }
 
         if using_postgres:
@@ -269,18 +295,15 @@ def create_backup() -> str:
                 metadata["db_backup_file"] = db_dump_rel
                 print("PostgreSQL dump alindi (pg_dump).")
             except FileNotFoundError:
-                raise RuntimeError("pg_dump bulunamadi. PostgreSQL bin klasoru PATH'e eklenmeli.")
+                raise RuntimeError(
+                    "pg_dump bulunamadi. PostgreSQL client kurulu olmali; "
+                    "PATH'e bin ekleyin veya PG_BIN ortam degiskeni ile bin klasorunu gosterin "
+                    "(ornek: PG_BIN=C:\\Program Files\\PostgreSQL\\16\\bin). "
+                    "Sadece kod yedegi icin: python yedekleyici.py backup --skip-postgres-dump"
+                )
 
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             file_count = add_project_files_to_zip(zipf, base_dir, zip_filename)
-
-            # SQLite dosyalari varsa yine de ekleyelim (fallback/legacy)
-            instance_dir = os.path.join(base_dir, "instance")
-            if os.path.isdir(instance_dir):
-                for db_file in os.listdir(instance_dir):
-                    if db_file.endswith(".db") or db_file.endswith(".sqlite"):
-                        full_path = os.path.join(instance_dir, db_file)
-                        zipf.write(full_path, os.path.join("instance", db_file))
 
             if using_postgres and db_dump_rel:
                 zipf.write(db_dump_abs, db_dump_rel)
@@ -352,7 +375,9 @@ def restore_backup(zip_path: str, dry_run: bool = False, skip_post_verify: bool 
         try:
             run_psql_restore(db_uri, sql_dump)
         except FileNotFoundError:
-            raise RuntimeError("psql bulunamadi. PostgreSQL bin klasoru PATH'e eklenmeli.")
+            raise RuntimeError(
+                "psql bulunamadi. PostgreSQL client kurulu olmali; PATH veya PG_BIN kullanin."
+            )
 
     # Sonra dogrulama
     if not skip_post_verify:
@@ -373,19 +398,33 @@ def verify_command(zip_path: str) -> None:
         raise FileNotFoundError(f"Yedek dosyasi bulunamadi: {zip_path}")
 
     print(f"Dogrulaniyor: {zip_path}")
-    errs = verify_backup_zip(zip_path, expect_pg_dump=True)
+    expect_dump = True
+    try:
+        with zipfile.ZipFile(zip_path, "r") as z:
+            if "backup_meta.json" in z.namelist():
+                with z.open("backup_meta.json") as f:
+                    meta0 = json.loads(f.read().decode("utf-8"))
+                if meta0.get("skip_postgres_dump"):
+                    expect_dump = False
+    except Exception:
+        pass
+
+    errs = verify_backup_zip(zip_path, expect_pg_dump=expect_dump)
     if errs:
         for e in errs:
             print(f"  HATA: {e}")
         raise RuntimeError("Yedek dogrulamasi basarisiz.")
 
-    # Metadata goster
     with zipfile.ZipFile(zip_path, "r") as z:
         with z.open("backup_meta.json") as f:
             meta = json.loads(f.read().decode("utf-8"))
-        info = z.getinfo("db_backup/postgres_dump.sql")
-    print("  backup_meta.json:", json.dumps(meta, ensure_ascii=False, indent=2))
-    print(f"  postgres_dump.sql: {info.file_size:,} byte")
+        print("  backup_meta.json:", json.dumps(meta, ensure_ascii=False, indent=2))
+        dump_name = "db_backup/postgres_dump.sql"
+        if dump_name in z.namelist():
+            info = z.getinfo(dump_name)
+            print(f"  postgres_dump.sql: {info.file_size:,} byte")
+        else:
+            print("  postgres_dump.sql: (yok, dump atlanmis yedek)")
     print("Dogrulama: OK. Yedek guvenilir.")
 
 
@@ -395,7 +434,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command")
 
-    sub.add_parser("backup", help="Tam yedek al (kod + db dump), sonra dogrula")
+    backup_p = sub.add_parser("backup", help="Tam yedek al (kod + db dump), sonra dogrula")
+    backup_p.add_argument(
+        "--skip-postgres-dump",
+        action="store_true",
+        help="pg_dump atla (istemci kurulu degilse veya yalnizca kod/instance yedegi).",
+    )
 
     restore_p = sub.add_parser("restore", help="Yedekten PostgreSQL'e geri yukle")
     restore_p.add_argument("--zip", required=True, help="Yedek zip dosya yolu")
@@ -414,7 +458,7 @@ if __name__ == "__main__":
 
     try:
         if args.command in (None, "backup"):
-            create_backup()
+            create_backup(skip_postgres_dump=getattr(args, "skip_postgres_dump", False))
         elif args.command == "restore":
             restore_backup(
                 args.zip,

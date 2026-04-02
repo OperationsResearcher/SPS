@@ -49,10 +49,17 @@ MODULES = [
     },
     {
         "id": "analiz",
-        "name": "Analiz Merkezi",
+        "name": "Performans Analitiği",
         "url": "/analiz",
         "icon": "📊",
-        "description": "Raporlar, grafikler ve performans analizleri",
+        "description": "Süreç bazlı trend, sağlık skoru ve performans raporları",
+    },
+    {
+        "id": "k_radar",
+        "name": "K-Radar",
+        "url": "/k-radar",
+        "icon": "🛰️",
+        "description": "KS, KP, KPR ve Cross radarlarıyla kurum çapı karar desteği",
     },
     {
         "id": "admin",
@@ -109,6 +116,7 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "bireysel": "bireysel",
     "proje": "proje",
     "analiz": "analiz",
+    "k_radar": "k_radar",
     "masaustu": "masaustu",
     "ayarlar": "ayarlar",
     "bildirim": "bildirim",
@@ -125,6 +133,7 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "project_yonetimi": "proje",
     "analiz_merkezi": "analiz",
     "analysis_merkezi": "analiz",
+    "k_radar_hub": "k_radar",
 }
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)

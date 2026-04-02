@@ -1,0 +1,127 @@
+﻿{% extends "platform/base.html" %}
+{% block title %}Paket Yönetimi{% endblock %}
+{% block page_title %}SaaS Paket ve Modül Yönetimi{% endblock %}
+
+{% block content %}
+<div id="admin-packages-root"
+     data-sync-url="{{ url_for('app_bp.admin_components_sync') }}"
+     data-pkg-add-url="/admin/packages/add"
+     data-pkg-edit-base="/admin/packages/edit/"
+     data-pkg-toggle-base="/admin/packages/toggle/"
+     data-mod-add-url="/admin/modules/add"
+     data-mod-toggle-base="/admin/modules/toggle/"
+     style="max-width:1100px; margin:0 auto;">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">SaaS Paket ve Modül Yönetimi</h2>
+      <p class="mc-page-subtitle">Abonelik paketleri, sistem modülleri ve bileşen senkronizasyonu</p>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="btn-sync-components" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-sync-alt"></i> Bileşen Senkronize Et
+      </button>
+    </div>
+  </div>
+
+  <div class="mc-grid-2" style="align-items:start;">
+
+    <!-- Paketler -->
+    <div class="mc-card">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-box" style="color:#6366f1; margin-right:8px;"></i>Abonelik Paketleri</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="mc-badge mc-badge-indigo">{{ packages|length }}</span>
+          <button id="btn-pkg-add" class="mc-btn mc-btn-primary mc-btn-sm">
+            <i class="fas fa-plus"></i> Ekle
+          </button>
+        </div>
+      </div>
+      <div>
+        {% for pkg in packages %}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+          <div>
+            <div style="font-size:13.5px; font-weight:500; color:#1e293b;">{{ pkg.name }}</div>
+            <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ pkg.code }}</div>
+            {% if pkg.description %}
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ pkg.description }}</div>
+            {% endif %}
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="mc-badge {% if pkg.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
+              {{ 'Aktif' if pkg.is_active else 'Pasif' }}
+            </span>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-edit"
+                    data-pkg-id="{{ pkg.id }}"
+                    data-name="{{ pkg.name | e }}"
+                    data-description="{{ pkg.description or '' | e }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="mc-btn mc-btn-sm {% if pkg.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-pkg-toggle"
+                    data-pkg-id="{{ pkg.id }}"
+                    data-name="{{ pkg.name | e }}"
+                    data-active="{{ 'true' if pkg.is_active else 'false' }}">
+              {{ 'Pasife Al' if pkg.is_active else 'Aktifleştir' }}
+            </button>
+          </div>
+        </div>
+        {% else %}
+        <div class="mc-empty" style="padding:40px 20px;">
+          <div class="mc-empty-icon"><i class="fas fa-box-open"></i></div>
+          <div class="mc-empty-text">Paket tanımlanmamış.</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Modüller -->
+    <div class="mc-card">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-puzzle-piece" style="color:#8b5cf6; margin-right:8px;"></i>Sistem Modülleri</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="mc-badge mc-badge-purple">{{ modules|length }}</span>
+          <button id="btn-mod-add" class="mc-btn mc-btn-primary mc-btn-sm">
+            <i class="fas fa-plus"></i> Ekle
+          </button>
+        </div>
+      </div>
+      <div>
+        {% for mod in modules %}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+          <div>
+            <div style="font-size:13.5px; font-weight:500; color:#1e293b;">{{ mod.name }}</div>
+            <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ mod.code }}</div>
+            {% if mod.description %}
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ mod.description }}</div>
+            {% endif %}
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="mc-badge {% if mod.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
+              {{ 'Aktif' if mod.is_active else 'Pasif' }}
+            </span>
+            <button class="mc-btn mc-btn-sm {% if mod.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-mod-toggle"
+                    data-mod-id="{{ mod.id }}"
+                    data-name="{{ mod.name | e }}"
+                    data-active="{{ 'true' if mod.is_active else 'false' }}">
+              {{ 'Pasife Al' if mod.is_active else 'Aktifleştir' }}
+            </button>
+          </div>
+        </div>
+        {% else %}
+        <div class="mc-empty" style="padding:40px 20px;">
+          <div class="mc-empty-icon"><i class="fas fa-puzzle-piece"></i></div>
+          <div class="mc-empty-text">Modül tanımlanmamış.</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/admin.js') }}"></script>
+{% endblock %}
+

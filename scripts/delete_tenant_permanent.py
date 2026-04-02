@@ -70,9 +70,6 @@ def count_report(
     r["strategies"] = conn.execute(
         "SELECT COUNT(*) FROM strategies WHERE tenant_id = ?", (tenant_id,)
     ).fetchone()[0]
-    r["swot_analyses"] = conn.execute(
-        "SELECT COUNT(*) FROM swot_analyses WHERE tenant_id = ?", (tenant_id,)
-    ).fetchone()[0]
     r["tenant_email_configs"] = conn.execute(
         "SELECT COUNT(*) FROM tenant_email_configs WHERE tenant_id = ?", (tenant_id,)
     ).fetchone()[0]
@@ -157,7 +154,6 @@ def execute_delete(conn: sqlite3.Connection, tenant_id: int, uids: list[int]) ->
     )
     conn.execute("DELETE FROM strategies WHERE tenant_id = ?", (tenant_id,))
 
-    conn.execute("DELETE FROM swot_analyses WHERE tenant_id = ?", (tenant_id,))
     conn.execute("DELETE FROM tenant_email_configs WHERE tenant_id = ?", (tenant_id,))
 
     if uids:

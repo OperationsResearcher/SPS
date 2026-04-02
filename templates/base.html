@@ -146,8 +146,6 @@
                             class="fas fa-building me-2"></i>Kurum (Müşteri) Yönetimi</a>
                     {% endif %}
                     <span class="nav-link text-muted small text-uppercase mt-2">Strateji Yönetimi</span>
-                    <a class="nav-link ps-4" href="{{ url_for('strategy_bp.swot') }}"><i
-                            class="fas fa-th-list me-2"></i>SWOT Analizi</a>
                     <a class="nav-link ps-4" href="{{ url_for('process_bp.index') }}"><i
                             class="fas fa-project-diagram me-2"></i>Süreç Yönetimi</a>
                     <a class="nav-link ps-4 {% if request.endpoint == 'dashboard_bp.performans_kartim' %}active fw-bold{% endif %}"

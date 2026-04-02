@@ -19,6 +19,9 @@ from app.models.saas import (
     SubscriptionPackage,
 )
 
+# Excel'den gelen bu bileşenler artık kullanılmıyor (SWOT özelliği kaldırıldı).
+SKIP_COMPONENT_SLUGS = frozenset({"swot_analizi", "swot_analysis"})
+
 # Turkish to English mapping for common terms
 TURKISH_TO_ENGLISH = {
     "analizi": "analysis",
@@ -38,7 +41,7 @@ TURKISH_TO_ENGLISH = {
 
 
 def turkish_to_slug(name: str) -> str:
-    """Convert Turkish name to English-style slug (e.g. 'SWOT Analizi' -> 'swot_analysis')."""
+    """Türkçe bileşen/modül adını URL kodu (slug) formatına çevirir."""
     if not name or not isinstance(name, str):
         return ""
     tr_map = {
@@ -79,7 +82,7 @@ def main():
                 continue
             name = str(name).strip()
             code = turkish_to_slug(name)
-            if not code:
+            if not code or code in SKIP_COMPONENT_SLUGS:
                 continue
             if SystemComponent.query.filter_by(code=code).first():
                 continue
@@ -120,6 +123,8 @@ def main():
                     continue
                 if str(val).strip().lower() == "evet":
                     slug = component_name_to_slug.get(col) or turkish_to_slug(col)
+                    if slug in SKIP_COMPONENT_SLUGS:
+                        continue
                     if slug and not ModuleComponentSlug.query.filter_by(module_id=module.id, component_slug=slug).first():
                         db.session.add(ModuleComponentSlug(module_id=module.id, component_slug=slug))
 
@@ -167,13 +172,19 @@ def main():
 
         # Step 3b: Ensure dinamik_stratejik_planlama component slug exists
         slug_name = "dinamik_stratejik_planlama"
-        mod_with_swot = None
+        target_mod = None
         for m in SystemModule.query.all():
             slugs = [mcs.component_slug for mcs in m.component_slugs]
-            if "swot_analizi" in slugs or "swot_analysis" in slugs:
-                mod_with_swot = m
+            if slug_name in slugs:
+                target_mod = m
                 break
-        target_mod = mod_with_swot or SystemModule.query.first()
+        if not target_mod:
+            for code in ("stratejik_planlama", "stratejik_yonetim", "strategic_planning"):
+                target_mod = SystemModule.query.filter_by(code=code).first()
+                if target_mod:
+                    break
+        if not target_mod:
+            target_mod = SystemModule.query.order_by(SystemModule.id).first()
         if target_mod and not ModuleComponentSlug.query.filter_by(module_id=target_mod.id, component_slug=slug_name).first():
             db.session.add(ModuleComponentSlug(module_id=target_mod.id, component_slug=slug_name))
             db.session.commit()

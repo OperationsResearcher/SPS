@@ -1,0 +1,385 @@
+    .action-btn {
+
+        position: relative;
+
+        overflow: hidden;
+
+    }
+
+    .action-btn:hover {
+
+        transform: translateY(-3px);
+
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+
+    }
+
+    .action-btn:active {
+
+        transform: translateY(-1px);
+
+    }
+
+
+
+    /* Yeni Süreç Form Animasyonu */
+
+    #yeni-surec-form-container {
+
+        max-height: 0;
+
+        overflow: hidden;
+
+        transition: max-height 0.5s ease-out;
+
+    }
+
+
+
+    #yeni-surec-form-container.show {
+
+        max-height: 2500px;
+
+        transition: max-height 0.8s ease-in;
+
+    }
+
+
+
+    .new-process-btn {
+
+        transition: all 0.3s ease;
+
+    }
+
+
+
+    .new-process-btn:hover {
+
+        transform: translateY(-2px);
+
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+
+    }
+
+
+
+    /* Ekle/Çıkar Butonları Stilleri */
+
+    .action-transfer-btn {
+
+        min-width: 80px;
+
+        height: 36px;
+
+        font-size: 0.875rem;
+
+        font-weight: 500;
+
+        border-radius: 8px;
+
+        transition: all 0.3s ease;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 4px;
+
+    }
+
+
+
+    .action-transfer-btn:hover {
+
+        transform: translateY(-1px);
+
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    }
+
+    /* Süreç kartları: üst süreç kartı, alt süreçler girintili blok içinde */
+    .surec-root-card { border-left: 4px solid #0d6efd; }
+    .surec-alt-list { background: rgba(13, 110, 253, 0.06); border-radius: 8px; border-left: 3px solid rgba(13, 110, 253, 0.4); }
+    .surec-alt-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .surec-alt-item:last-child { border-bottom: none; }
+    .surec-alt-item:hover { background: rgba(13, 110, 253, 0.08); }
+
+
+
+    .action-transfer-btn.btn-success {
+
+        background: linear-gradient(135deg, #28a745, #20c997);
+
+        border: none;
+
+    }
+
+
+
+    .action-transfer-btn.btn-danger {
+
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
+
+        border: none;
+
+    }
+
+
+
+    .action-transfer-btn.btn-primary {
+
+        background: linear-gradient(135deg, #007bff, #0056b3);
+
+        border: none;
+
+    }
+
+
+
+    .action-transfer-btn.btn-info {
+
+        background: linear-gradient(135deg, #17a2b8, #138496);
+
+        border: none;
+
+    }
+
+
+
+    .action-transfer-btn.btn-secondary {
+
+        background: linear-gradient(135deg, #6c757d, #495057);
+
+        border: none;
+
+    }
+
+
+
+    /* Alt Strateji Görünümü */
+
+    .strategy-item {
+
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+
+        border-left: 3px solid #007bff;
+
+        margin: 4px 0;
+
+        padding: 8px 12px;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+
+        transition: all 0.3s ease;
+
+    }
+
+
+
+    .strategy-item:hover {
+
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+
+        transform: translateX(2px);
+
+    }
+
+
+
+    .strategy-item.selected {
+
+        background: linear-gradient(135deg, #007bff, #0056b3);
+
+        color: white;
+
+    }
+
+
+
+    .strategy-main {
+
+        font-weight: bold;
+
+        color: #2c3e50;
+
+        font-size: 0.95rem;
+
+        margin-bottom: 4px;
+
+        display: block;
+
+    }
+
+
+
+    .strategy-sub {
+
+        font-weight: normal;
+
+        color: #34495e;
+
+        font-size: 0.9rem;
+
+        font-style: normal;
+
+        display: block;
+
+        margin-top: 2px;
+
+        padding-left: 8px;
+
+    }
+
+
+
+    .strategy-item.selected .strategy-main,
+
+    .strategy-item.selected .strategy-sub {
+
+        color: white;
+
+    }
+
+
+
+    /* Strateji Grup Stilleri */
+
+    .strategy-group {
+
+        margin-bottom: 8px;
+
+        border: 1px solid #dee2e6;
+
+        border-radius: 4px;
+
+        overflow: hidden;
+
+    }
+
+
+
+    .strategy-group-header {
+
+        background: #f8f9fa;
+
+        color: #495057;
+
+        padding: 6px 12px;
+
+        font-weight: bold;
+
+        font-size: 0.9rem;
+
+        border-bottom: 1px solid #dee2e6;
+
+    }
+
+
+
+    .strategy-group .strategy-item {
+
+        margin: 0;
+
+        background: white;
+
+        border-left: 3px solid #007bff;
+
+        border-radius: 0;
+
+    }
+
+
+
+    .strategy-group .strategy-item:hover {
+
+        background: #e9ecef;
+
+        transform: none;
+
+    }
+
+
+
+    .strategy-group .strategy-item.selected {
+
+        background: #007bff;
+
+        color: white;
+
+    }
+
+
+
+    /* Süreç Detay Modal Strateji Grupları */
+
+    .strategy-group-content {
+
+        max-height: 200px;
+
+        overflow-y: auto;
+
+    }
+
+
+
+    .strategy-group-content .strategy-item {
+
+        transition: all 0.2s ease;
+
+    }
+
+
+
+    .strategy-group-content .strategy-item:hover {
+
+        background: #e9ecef !important;
+
+        transform: translateX(2px);
+
+    }
+
+    /* Hayalet overlay önleme: modallar backdrop'un üstünde görünsün (main z-index:1 içinde kalmayıp body'ye taşınacak) */
+    #surecDetayModal,
+    #editSurecModal,
+    #newProcessModal,
+    #editProcessModal {
+        z-index: 1060 !important;
+    }
+    #surecDetayModal .modal-dialog,
+    #editSurecModal .modal-dialog,
+    #newProcessModal .modal-dialog,
+    #editProcessModal .modal-dialog {
+        z-index: 1061 !important;
+    }
+    /* Ana sayfa: Bağlı alt süreçler listesi – okunaklı, girintili bloklar */
+    .surec-alt-list {
+        border-left: 4px solid rgba(13, 110, 253, 0.5);
+        background: rgba(13, 110, 253, 0.06);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem 0.5rem 1rem;
+    }
+    .surec-alt-item {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .surec-alt-item:last-child { margin-bottom: 0; }
+    .surec-alt-item .btn-group .btn { font-size: 0.8rem; }
+    /* Modal: Bağlı alt süreçler – tıklanabilir satırlar */
+    #edit_alt_surecler_list .list-group-item {
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    #edit_alt_surecler_list .list-group-item:hover {
+        background: rgba(13, 110, 253, 0.08);
+        border-left-color: #0d6efd;
+    }

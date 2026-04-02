@@ -57,7 +57,7 @@ Sprint 1–21 tamamlanmış; micro platform (yeni UI katmanı) aktif olarak geli
 |--------|-----------|-----|
 | Şablon | Jinja2 (Flask built-in) | Server-side rendering |
 | CSS Framework | Tailwind CSS (CDN) | Kök yapıda; micro'da mc-* custom sınıflar |
-| UI Bileşenleri | mc-* component sistemi | micro/static/micro/css/components.css |
+| UI Bileşenleri | mc-* component sistemi | ui/static/platform/css/components.css |
 | İkonlar | Font Awesome | CDN |
 | Bildirimler | SweetAlert2 | alert()/confirm() YASAK |
 | Grafikler | Chart.js (muhtemelen) | analiz modülünde |
@@ -835,7 +835,7 @@ def load_user(user_id):
 @login_required
 def admin_tenants():
     if not _is_manager():
-        return render_template("micro/errors/403.html"), 403
+        return render_template("platform/errors/403.html"), 403
     ...
 
 # Bileşen bazlı koruma
@@ -1076,7 +1076,7 @@ flask db history       # Migration geçmişi
   1. `micro/modules/<modül_adı>/routes.py` oluştur
   2. `micro/__init__.py`'ye import ekle
   3. `micro/core/module_registry.py`'deki `MODULES` listesine ekle
-  4. `micro/templates/micro/<modül_adı>/` şablon klasörü oluştur
+  4. `ui/templates/platform/<modül_adı>/` şablon klasörü oluştur
 
 ---
 
@@ -1100,8 +1100,8 @@ YASAK:
   .js dosyalarında {{ jinja2_ifadesi }}
 
 DOĞRU:
-  Tüm JS → micro/static/micro/js/
-  Tüm CSS → micro/static/micro/css/
+  Tüm JS → ui/static/platform/js/
+  Tüm CSS → ui/static/platform/css/
   Veri aktarımı → data-* attribute'ları
   Örnek: data-add-url="{{ url_for('micro_bp.admin_tenants_add') }}"
 ```
@@ -1148,8 +1148,8 @@ except Exception as e:
 - [ ] `micro/modules/<ad>/routes.py` oluştur (tüm rotalar `@login_required`)
 - [ ] `micro/__init__.py`'ye import ekle
 - [ ] `module_registry.py` MODULES listesine ekle
-- [ ] `micro/templates/micro/<ad>/` klasörü oluştur
-- [ ] `micro/templates/micro/<ad>/index.html` → `{% extends "micro/base.html" %}`
+- [ ] `ui/templates/platform/<ad>/` klasörü oluştur
+- [ ] `ui/templates/platform/<ad>/index.html` → `{% extends "platform/base.html" %}`
 - [ ] Gerekirse `_ROLE_RESTRICTED` dict'e ekle
 
 ### 14.7 PG Terminolojisi
@@ -1168,7 +1168,7 @@ Kök yapı (/...):
 
 Micro yapı (/micro/...):
   - Yeni modüler platform
-  - micro/templates/ ve micro/static/
+  - ui/templates/platform/ ve ui/static/platform/
   - Tüm yeni geliştirmeler buraya
 ```
 

@@ -10,7 +10,7 @@ from sqlalchemy import func, or_
 from sqlalchemy.exc import ProgrammingError
 
 from models import Project, RaidItem, Task, db
-from micro.modules.proje.project_list_query import ProjectListFilters, filtered_project_ids
+from app_platform.modules.proje.project_list_query import ProjectListFilters, filtered_project_ids
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
 _RAID_CLOSED = ("Closed", "Kapalı", "Done", "Resolved", "Kapatıldı")

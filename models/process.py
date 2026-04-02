@@ -2,9 +2,10 @@
 """
 Süreç Yönetimi Modelleri
 ------------------------
-Süreç, Performans Göstergeleri (PG), Faaliyetler ve SWOT/PESTLE analiz modellerini içerir.
+Süreç, performans göstergeleri (PG), faaliyetler ve ilişkisel yardımcı tabloları içerir.
 """
 from extensions import db
+from sqlalchemy.orm import synonym
 from datetime import datetime
 
 # Association Tables (Many-to-Many İlişkiler için)
@@ -39,7 +40,8 @@ class Surec(db.Model):
     __tablename__ = 'surec'
     
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
     parent_id = db.Column(db.Integer, db.ForeignKey('surec.id', ondelete='SET NULL'), nullable=True, index=True)
 
     # Tanımlama
@@ -73,7 +75,13 @@ class Surec(db.Model):
     deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     
     # İlişkiler
-    kurum = db.relationship('Kurum', foreign_keys=[kurum_id], backref=db.backref('surecler', lazy=True))
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='Surec.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='surecler',
+    )
     parent = db.relationship('Surec', remote_side=[id], foreign_keys=[parent_id], backref=db.backref('sub_processes', lazy='dynamic'))
     # Alt süreçler: parent silindiğinde DB ON DELETE SET NULL ile parent_id null olur (yetim kalmaz).
 

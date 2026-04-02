@@ -6,7 +6,7 @@ Sadece tenant_admin ve executive_manager rollerine açıktır.
 from flask import jsonify, render_template, request, current_app
 from flask_login import login_required, current_user
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.email_config import TenantEmailConfig
 
@@ -20,21 +20,21 @@ def _check_access():
     return role_name in _ALLOWED_ROLES
 
 
-@micro_bp.route("/ayarlar/eposta")
+@app_bp.route("/ayarlar/eposta")
 @login_required
 def ayarlar_eposta():
     """Kurum e-posta ayarları sayfası."""
     if not _check_access():
-        return render_template("micro/errors/403.html"), 403
+        return render_template("platform/errors/403.html"), 403
 
     cfg = TenantEmailConfig.query.filter_by(
         tenant_id=current_user.tenant_id
     ).first()
 
-    return render_template("micro/ayarlar/eposta.html", cfg=cfg)
+    return render_template("platform/ayarlar/eposta.html", cfg=cfg)
 
 
-@micro_bp.route("/ayarlar/eposta/api/save", methods=["POST"])
+@app_bp.route("/ayarlar/eposta/api/save", methods=["POST"])
 @login_required
 def ayarlar_eposta_save():
     """Kurum e-posta ayarlarını kaydet."""
@@ -79,7 +79,7 @@ def ayarlar_eposta_save():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/ayarlar/eposta/api/test", methods=["POST"])
+@app_bp.route("/ayarlar/eposta/api/test", methods=["POST"])
 @login_required
 def ayarlar_eposta_test():
     """SMTP bağlantısını test et."""
@@ -88,7 +88,7 @@ def ayarlar_eposta_test():
 
     data = request.get_json() or {}
     try:
-        from micro.services.email_service import test_smtp_connection
+        from app_platform.services.email_service import test_smtp_connection
         ok, msg = test_smtp_connection(
             host=data.get("smtp_host", ""),
             port=data.get("smtp_port", 587),
@@ -103,7 +103,7 @@ def ayarlar_eposta_test():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/ayarlar/eposta/api/send-test", methods=["POST"])
+@app_bp.route("/ayarlar/eposta/api/send-test", methods=["POST"])
 @login_required
 def ayarlar_eposta_send_test():
     """Kayıtlı ayarlarla test maili gönder."""
@@ -119,7 +119,7 @@ def ayarlar_eposta_send_test():
                 }
             )
 
-        from micro.services.email_service import send_notification_email
+        from app_platform.services.email_service import send_notification_email
         html = """\
 <h2>Test E-postası</h2>
 <p>Kokpitim e-posta ayarlarınız başarıyla yapılandırılmıştır.</p>

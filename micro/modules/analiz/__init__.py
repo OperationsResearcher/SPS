@@ -1,1 +1,1 @@
-# Analiz Merkezi modülü
+# Süreç / performans analitik modülü (/analiz)

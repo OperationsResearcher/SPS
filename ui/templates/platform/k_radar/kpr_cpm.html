@@ -1,0 +1,35 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KPR CPM{% endblock %}
+{% block page_title %}KPR-Radar CPM{% endblock %}
+{% block content %}
+<div id="k-radar-kpr-cpm-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_cpm') }}" style="max-width:1000px; margin:0 auto;">
+  <div class="mc-card">
+    <div class="mc-card-body">
+      <h3 style="margin-top:0;">CPM Analizi</h3>
+      <form id="kpr-cpm-form" method="get" action="{{ url_for('app_bp.k_radar_kpr_cpm') }}" style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+        <select id="kpr-cpm-project" name="project_id" class="mc-select" style="min-width:280px;">
+          <option value="">Proje seçin</option>
+          {% for p in projects %}
+          <option value="{{ p.id }}" {% if selected_project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+        <button class="mc-btn mc-btn-sm">Analiz Et</button>
+      </form>
+      <div id="kpr-cpm-stats" style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px;">
+        <span><strong>Görev:</strong> <span id="kpr-cpm-task-count">{{ analysis.task_count if analysis else 0 }}</span></span>
+        <span><strong>Bağımlılık:</strong> <span id="kpr-cpm-dep-count">{{ analysis.dependency_count if analysis else 0 }}</span></span>
+        <span><strong>Kritik Başlangıç:</strong> <span id="kpr-cpm-critical-count">{{ analysis.critical_starts|length if analysis else 0 }}</span></span>
+      </div>
+      <div id="kpr-cpm-critical-list">
+        {% for t in analysis.critical_starts %}
+          <div>- [#{{ t.id }}] {{ t.title }}</div>
+        {% endfor %}
+      </div>
+      <div id="kpr-cpm-empty" style="color:#64748b; {% if analysis %}display:none;{% endif %}">Önce bir proje seçin.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

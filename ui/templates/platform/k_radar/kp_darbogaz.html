@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KP Darboğaz{% endblock %}
+{% block page_title %}KP-Radar Darboğaz{% endblock %}
+{% block content %}
+<div id="k-radar-kp-darbogaz-root" data-url="{{ url_for('app_bp.k_radar_api_kp_darbogaz') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">Darboğaz Özeti</h3>
+    <div><strong>Kritik KPI:</strong> <span id="kp-darbogaz-critical">-</span></div>
+    <div><strong>Şiddet Endeksi:</strong> <span id="kp-darbogaz-severity">-</span></div>
+    <div><strong>30g Trend:</strong> <span id="kp-darbogaz-trend">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

@@ -12,21 +12,21 @@ from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.core import User
 from extensions import csrf
 
 
-# Giriş: kök `/login` → `public_login` (app factory). Eski `micro_bp.micro_login` kaldırıldı (URL çakışması).
+# Giriş: kök `/login` → `public_login` (app factory). Eski micro blueprint giriş view'ı kaldırıldı (URL çakışması).
 
 
-@micro_bp.route("/profil", methods=["GET", "POST"])
+@app_bp.route("/profil", methods=["GET", "POST"])
 @login_required
 def profil():
     """Profil sayfası — GET: form, POST: JSON API güncelleme."""
     if request.method == "GET":
-        return render_template("micro/auth/profil.html")
+        return render_template("platform/auth/profil.html")
 
     # POST — JSON body
     data = request.get_json() or {}
@@ -66,7 +66,7 @@ def profil():
         return jsonify({"success": False, "message": "Profil güncellenirken hata oluştu."}), 500
 
 
-@micro_bp.route("/profil/foto-yukle", methods=["POST"])
+@app_bp.route("/profil/foto-yukle", methods=["POST"])
 @csrf.exempt
 @login_required
 def profil_foto_yukle():
@@ -107,14 +107,14 @@ def profil_foto_yukle():
         return jsonify({"success": False, "message": f"Fotoğraf yüklenirken hata oluştu: {str(e)}"}), 500
 
 
-@micro_bp.route("/ayarlar")
+@app_bp.route("/ayarlar")
 @login_required
 def ayarlar():
     """Ayarlar hub sayfası."""
-    return render_template("micro/ayarlar/index.html")
+    return render_template("platform/ayarlar/index.html")
 
 
-@micro_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
+@app_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
     """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""
@@ -143,7 +143,7 @@ def ayarlar_hesap():
     })
 
     return render_template(
-        "micro/auth/ayarlar.html",
+        "platform/auth/ayarlar.html",
         notif_prefs=notif_prefs,
         locale_prefs=locale_prefs,
         theme_prefs=theme_prefs,

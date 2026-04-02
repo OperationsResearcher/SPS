@@ -1,0 +1,117 @@
+From fae44cad4950c97a2a3e93db34a294a0224b5970 Mon Sep 17 00:00:00 2001
+From: OperationsResearcher <mehmeterol.kara@ogu.edu.tr>
+Date: Mon, 30 Mar 2026 21:36:03 +0300
+Subject: [PATCH] hotfix(vm): Cloudflare 524 - guvenlik basliklari, ProxyFix,
+ rate limit memory, DB pool, gunicorn timeout
+
+Made-with: Cursor
+---
+ Dockerfile            |  5 ++++-
+ app/__init__.py       | 10 ++++++++++
+ app/utils/security.py | 12 ++++++++----
+ config.py             | 15 ++++++++++++++-
+ 4 files changed, 36 insertions(+), 6 deletions(-)
+
+diff --git a/Dockerfile b/Dockerfile
+index f0c660f..0676d00 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -22,5 +22,8 @@ RUN mkdir -p /app/data /app/instance
+ 
+ # Gunicorn ile 5000 portunda başlat
+ # run:app = run.py modülündeki app nesnesi
++ENV FLASK_ENV=production
++ENV TRUST_PROXY=1
++
+ EXPOSE 5000
+-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "run:app"]
++CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "--timeout", "90", "--graceful-timeout", "25", "run:app"]
+diff --git a/app/__init__.py b/app/__init__.py
+index 818e40d..bb53e6a 100644
+--- a/app/__init__.py
++++ b/app/__init__.py
+@@ -42,6 +42,16 @@ def create_app(config_class=None):
+     legacy = raw_legacy.rstrip("/") or "/kok"
+     app.config["LEGACY_URL_PREFIX"] = legacy
+ 
++    # Cloudflare / ters vekil — X-Forwarded-Proto (HTTPS) ve Host.
++    _env = (os.environ.get("FLASK_ENV") or "").lower()
++    _trust = (os.environ.get("TRUST_PROXY") or "").lower()
++    if _env == "production" or _trust in ("1", "true", "yes"):
++        from werkzeug.middleware.proxy_fix import ProxyFix
++
++        app.wsgi_app = ProxyFix(
++            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1
++        )
++
+     csrf.init_app(app)
+     db.init_app(app)
+     migrate.init_app(app, db)
+diff --git a/app/utils/security.py b/app/utils/security.py
+index ca05c06..58b35d0 100644
+--- a/app/utils/security.py
++++ b/app/utils/security.py
+@@ -34,10 +34,14 @@ def set_security_headers(response):
+     response.headers['X-XSS-Protection'] = '1; mode=block'
+     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+     
+-    # HSTS (only in production with HTTPS)
+-    if not request.url.startswith('http://localhost'):
+-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+-    
++    # HSTS yalnızca gerçek HTTPS isteklerde. request.url kullanılmaz: Werkzeug boş/şüpheli
++    # Host başlığında SecurityError üretebilir; after_request içinde yanıt kesilir (Cloudflare 524).
++    forwarded = (request.environ.get("HTTP_X_FORWARDED_PROTO") or "").split(",")[0].strip().lower()
++    if forwarded == "https" or request.is_secure:
++        response.headers["Strict-Transport-Security"] = (
++            "max-age=31536000; includeSubDomains"
++        )
++
+     return response
+ 
+ 
+diff --git a/config.py b/config.py
+index 3d65be3..278fe72 100644
+--- a/config.py
++++ b/config.py
+@@ -33,6 +33,15 @@ def _resolve_sqlalchemy_uri() -> str:
+     return "sqlite:///" + abs_path.replace("\\", "/")
+ 
+ 
++def _sqlalchemy_engine_options() -> dict:
++    """PostgreSQL için connect_timeout; sqlite ile uyumlu (yalnızca pool seçenekleri). VM / Cloudflare 524."""
++    raw = (os.environ.get("SQLALCHEMY_DATABASE_URI") or "").lower()
++    opts: dict = {"pool_pre_ping": True, "pool_recycle": 280}
++    if "postgresql" in raw or raw.startswith("postgres"):
++        opts["connect_args"] = {"connect_timeout": 15}
++    return opts
++
++
+ class Config:
+     """Base configuration class."""
+ 
+@@ -56,9 +65,12 @@ class Config:
+     CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes
+     CACHE_REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+     CACHE_KEY_PREFIX = "kokpitim_"
++
++    SQLALCHEMY_ENGINE_OPTIONS = _sqlalchemy_engine_options()
+     
+     # Rate Limiting (yüksek trafik/çoklu modal istekleri için geniş limitler)
+-    RATELIMIT_STORAGE_URL = os.environ.get("REDIS_URL", "memory://")
++    # REDIS_URL otomatik kullanılmaz: konteynerde Redis yoksa limiter kilitlenir (CF 524).
++    RATELIMIT_STORAGE_URL = os.environ.get("RATELIMIT_STORAGE_URL", "memory://")
+     RATELIMIT_ENABLED = True
+     RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
+     HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
+@@ -91,6 +103,7 @@ class TestingConfig(Config):
+     """Test configuration."""
+     TESTING = True
+     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI", "sqlite:///:memory:")
++    SQLALCHEMY_ENGINE_OPTIONS = {}
+     WTF_CSRF_ENABLED = False
+ 
+ 
+-- 
+2.50.0.windows.2
+

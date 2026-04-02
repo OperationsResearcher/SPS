@@ -5,10 +5,15 @@ from datetime import datetime, timezone
 from flask import render_template, jsonify, request, current_app, abort
 from flask_login import login_required, current_user
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant, User
-from micro.modules.kurum.kurum_overview import build_kurum_overview
+from app.services.k_vektor_config_service import (
+    add_k_vektor_snapshot,
+    k_vektor_weights_get_dict,
+    save_k_vektor_weights,
+)
+from app_platform.modules.kurum.kurum_overview import build_kurum_overview
 
 _KURUM_ROLES = ("tenant_admin", "executive_manager")
 
@@ -17,7 +22,7 @@ def _check_kurum_role():
     return current_user.role and current_user.role.name in _KURUM_ROLES
 
 
-@micro_bp.route("/kurum/ayarlar", methods=["GET", "POST"])
+@app_bp.route("/kurum/ayarlar", methods=["GET", "POST"])
 @login_required
 def kurum_ayarlar():
     """Kurum bilgileri ayarları + logo yükleme."""
@@ -40,7 +45,7 @@ def kurum_ayarlar():
                 logo_url = f"/static/uploads/logos/{base}.{ext}"
                 break
 
-        return render_template("micro/kurum/ayarlar.html", tenant=tenant, logo_url=logo_url)
+        return render_template("platform/kurum/ayarlar.html", tenant=tenant, logo_url=logo_url)
 
     # POST
     try:
@@ -74,6 +79,23 @@ def kurum_ayarlar():
         website = (data.get("website") or "").strip()
         if website:
             tenant.website_url = website
+
+        old_kv = bool(getattr(tenant, "k_vektor_enabled", False))
+        if "k_vektor_enabled" in data:
+            v = data.get("k_vektor_enabled")
+            if isinstance(v, bool):
+                tenant.k_vektor_enabled = v
+            elif isinstance(v, str):
+                tenant.k_vektor_enabled = v.strip().lower() in ("1", "true", "yes", "on")
+            elif isinstance(v, (int, float)):
+                tenant.k_vektor_enabled = bool(v)
+        if old_kv != bool(getattr(tenant, "k_vektor_enabled", False)):
+            add_k_vektor_snapshot(
+                tenant.id,
+                current_user.id,
+                "k_vektor_toggle",
+                {"k_vektor_enabled": tenant.k_vektor_enabled},
+            )
 
         # Logo yükleme (multipart/form-data)
         logo_file = request.files.get("logo")
@@ -114,7 +136,7 @@ def kurum_ayarlar():
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@micro_bp.route("/kurum")
+@app_bp.route("/kurum")
 @login_required
 def kurum():
     """Kurum Paneli ana sayfası — tüm giriş yapmış tenant kullanıcıları; düzenleme API’leri rol ile sınırlı."""
@@ -140,7 +162,7 @@ def kurum():
     can_edit_kurum = _check_kurum_role()
 
     return render_template(
-        "micro/kurum/index.html",
+        "platform/kurum/index.html",
         tenant=tenant,
         user_count=user_count,
         process_count=process_count,
@@ -151,7 +173,7 @@ def kurum():
     )
 
 
-@micro_bp.route("/kurum/api/overview")
+@app_bp.route("/kurum/api/overview")
 @login_required
 def kurum_api_overview():
     """Panel özet metrikleri (yenileme / yarı-gerçek zamanlı)."""
@@ -178,7 +200,7 @@ def kurum_api_overview():
 
 # ── API: Stratejik Kimlik ─────────────────────────────────────────────────────
 
-@micro_bp.route("/kurum/api/update-strategy", methods=["POST"])
+@app_bp.route("/kurum/api/update-strategy", methods=["POST"])
 @login_required
 def kurum_api_update_strategy():
     """Stratejik kimlik alanlarını güncelle (purpose, vision, core_values, ...)."""
@@ -201,7 +223,7 @@ def kurum_api_update_strategy():
 
 # ── API: Ana Strateji CRUD ────────────────────────────────────────────────────
 
-@micro_bp.route("/kurum/api/add-strategy", methods=["POST"])
+@app_bp.route("/kurum/api/add-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_strategy():
     if not _check_kurum_role():
@@ -228,7 +250,7 @@ def kurum_api_add_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/kurum/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/kurum/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_update_main_strategy(strategy_id):
     if not _check_kurum_role():
@@ -250,7 +272,7 @@ def kurum_api_update_main_strategy(strategy_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/kurum/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/kurum/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_main_strategy(strategy_id):
     if not _check_kurum_role():
@@ -271,7 +293,7 @@ def kurum_api_delete_main_strategy(strategy_id):
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-@micro_bp.route("/kurum/api/add-sub-strategy", methods=["POST"])
+@app_bp.route("/kurum/api/add-sub-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_sub_strategy():
     if not _check_kurum_role():
@@ -303,7 +325,7 @@ def kurum_api_add_sub_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/kurum/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/kurum/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_update_sub_strategy(sub_id):
     if not _check_kurum_role():
@@ -326,7 +348,7 @@ def kurum_api_update_sub_strategy(sub_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/kurum/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/kurum/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_sub_strategy(sub_id):
     if not _check_kurum_role():
@@ -344,3 +366,25 @@ def kurum_api_delete_sub_strategy(sub_id):
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_delete_sub_strategy] {e}")
         return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+
+
+# ── K-Vektör ağırlıkları ─────────────────────────────────────────────────────
+
+@app_bp.route("/kurum/api/k-vektor/weights", methods=["GET", "POST"])
+@login_required
+def kurum_api_k_vektor_weights():
+    """Ana / alt strateji ham ağırlıkları (geriye dönük; asıl düzenleme /sp sayfasında)."""
+    if not _check_kurum_role():
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+
+    tid = current_user.tenant_id
+    if request.method == "GET":
+        return jsonify(k_vektor_weights_get_dict(tid))
+
+    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {})
+    if ok:
+        return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
+    status = 404 if "bulunamadı" in (msg or "") else 400
+    if msg == "Kayıt sırasında hata oluştu.":
+        status = 500
+    return jsonify({"success": False, "message": msg or "Kayıt başarısız."}), status

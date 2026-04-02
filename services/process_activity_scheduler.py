@@ -13,7 +13,7 @@ from app.models import db
 from app.models.core import User
 from app.models.process import ProcessActivity, ProcessActivityReminder
 from app.services.process_activity_service import auto_complete_due_activities
-from micro.services.notification_triggers import (
+from app_platform.services.notification_triggers import (
     notify_activity_auto_completed,
     notify_activity_reminder,
 )

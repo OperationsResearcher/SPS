@@ -1,0 +1,323 @@
+{% extends "platform/base.html" %}
+{% block title %}Yedekleme — Kokpitim{% endblock %}
+{% block page_title %}Yedekleme ve geri yükleme{% endblock %}
+
+{% block content %}
+<div style="max-width:720px; margin:0 auto;">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Yedekleme</h2>
+      <p class="mc-page-subtitle">Veritabanı ve tam sistem yedekleri. Yalnızca <strong>Admin</strong> rolü.</p>
+    </div>
+    <a href="{{ url_for('app_bp.ayarlar') }}" class="mc-btn mc-btn-secondary" style="align-self:center;">
+      <i class="fas fa-arrow-left"></i> Ayarlara dön
+    </a>
+  </div>
+
+  {% if not pg_ok %}
+  <div class="mc-alert mc-alert-danger" style="margin-bottom:16px;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div>
+      <strong>PostgreSQL gerekli.</strong> Web yedekleme bu ortamda kullanılamıyor: {{ pg_err or 'URI tanımsız' }}
+    </div>
+  </div>
+  {% else %}
+  <div class="mc-alert mc-alert-info" style="margin-bottom:16px;">
+    <i class="fas fa-info-circle"></i>
+    <div>
+      <strong>Veri yedeği</strong> yalnızca tablo <em>içeriklerini</em> (<code>pg_dump --data-only</code>) alır; mevcut şema üzerine yüklerken çakışma olabilir.
+      <strong>Tam sistem</strong> yedeği zip içinde kaynak kodları + <code>db_backup/postgres_dump.sql</code> (şema + veri) içerir.
+      Geri yükleme hedef veritabanındaki veriyi <strong>üzerine yazar</strong>; önce test ortamında deneyin.
+      Sunucuda <code>pg_dump</code> ve <code>psql</code> PATH’te veya <code>PG_BIN</code> ile erişilebilir olmalıdır.
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">Migration ve Dil Birliği Durumu</div>
+    {% if migration_assert %}
+    <p style="margin:0 0 6px; font-size:13px;">
+      Alembic sürümü: <code>{{ migration_assert.alembic_version }}</code>
+    </p>
+    <p style="margin:0 0 6px; font-size:13px;">
+      Şema temizliği:
+      {% if migration_assert.is_clean %}
+        <strong style="color:#16a34a;">Temiz</strong>
+      {% else %}
+        <strong style="color:#dc2626;">Eksik var</strong>
+      {% endif %}
+    </p>
+    {% if migration_assert.legacy_tables_present %}
+    <p style="margin:0 0 6px; font-size:13px; color:#b45309;">Legacy tablolar hâlâ var: {{ migration_assert.legacy_tables_present }}</p>
+    {% endif %}
+    {% if migration_assert.canonical_tables_missing %}
+    <p style="margin:0 0 6px; font-size:13px; color:#b45309;">Eksik kanonik tablolar: {{ migration_assert.canonical_tables_missing }}</p>
+    {% endif %}
+    {% endif %}
+
+    {% if language_unity %}
+    <p style="margin:10px 0 6px; font-size:13px;">
+      Dil birliği skoru: <strong>{{ language_unity.score }}%</strong>
+      (taranan dosya: {{ language_unity.scanned_files }})
+    </p>
+    {% if language_unity.is_clean %}
+      <p style="margin:0; font-size:13px; color:#16a34a;">Aktif kodda legacy fiziksel şema adı tespit edilmedi.</p>
+    {% else %}
+      <p style="margin:0 0 6px; font-size:13px; color:#dc2626;">Legacy fiziksel şema adı tespit edildi (ilk 50 gösteriliyor).</p>
+      <div style="max-height:180px; overflow:auto; border:1px solid #e2e8f0; border-radius:8px; padding:8px;">
+        {% for issue in language_unity.issues %}
+          <div style="font-size:12px; margin-bottom:4px;">
+            <code>{{ issue.file }}:{{ issue.line }}</code> — {{ issue.text }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">Mevcut sistem özeti</div>
+    <div style="overflow:auto;">
+      <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
+            <th style="padding:6px 4px;">Tablo</th>
+            <th style="padding:6px 4px;">Kayıt sayısı</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set labels = {
+            'tenants':'Kurum',
+            'users':'Kullanıcı',
+            'roles':'Rol',
+            'process':'Süreç',
+            'process_kpi':'Süreç KPI',
+            'individual_performance_indicator':'Bireysel PG',
+            'individual_activity':'Bireysel Faaliyet',
+            'kpi_data':'KPI Veri',
+            'individual_kpi_data':'Bireysel KPI Veri',
+            'project':'Proje',
+            'task':'Görev'
+          } %}
+          {% for t, info in live_summary.items() %}
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:6px 4px;">{{ labels.get(t, t) }} <span style="color:#94a3b8;">(<code>{{ t }}</code>)</span></td>
+            <td style="padding:6px 4px;">
+              {% if info.count is none %}
+                <span style="color:#94a3b8;">tablo yok</span>
+              {% else %}
+                {{ info.count }}
+                {% if info.source and info.source != t %}
+                  <span style="color:#94a3b8;">(kaynak: {{ info.source }})</span>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if preview %}
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">{{ preview.label or 'Yedek Önizleme' }}</div>
+    <p style="margin:0 0 8px; font-size:13px;">Dosya boyutu: <strong>{{ preview.size_mb }} MB</strong></p>
+    {% if preview.meta %}
+    <p style="margin:0 0 8px; font-size:13px;">Meta: <code>{{ preview.meta }}</code></p>
+    {% endif %}
+    {% if preview.error %}
+    <div class="mc-alert mc-alert-danger" style="margin-bottom:8px;">{{ preview.error }}</div>
+    {% endif %}
+    {% if preview.table_hits %}
+    <div style="overflow:auto;">
+      <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
+            <th style="padding:6px 4px;">Tablo</th>
+            <th style="padding:6px 4px;">Mevcut</th>
+            <th style="padding:6px 4px;">Yedekte iz</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t, hit in preview.table_hits.items() %}
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:6px 4px;"><code>{{ t }}</code></td>
+            <td style="padding:6px 4px;">{{ live_summary.get(t).count if live_summary.get(t) and live_summary.get(t).count is not none else '-' }}</td>
+            <td style="padding:6px 4px;">{{ hit }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- 0: Otomatik yedek -->
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">0 — Otomatik yedekleme takvimi</div>
+    <p style="margin:0 0 12px; color:var(--mc-text-muted, #64748b); font-size:14px;">
+      Sunucuda belirlediğiniz saatte otomatik yedek alır. Dosyalar <code>Yedekler/otomatik</code> altında tutulur.
+    </p>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_takvim_kaydet') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <input type="checkbox" name="enabled" {% if backup_schedule.enabled %}checked{% endif %}>
+        <span>Otomatik yedeklemeyi etkinleştir</span>
+      </label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+        <div>
+          <label class="mc-label">Yedek türü</label>
+          <select name="backup_type" class="mc-input" style="width:100%;">
+            <option value="data" {% if backup_schedule.backup_type == 'data' %}selected{% endif %}>Veri yedeği (.sql)</option>
+            <option value="full" {% if backup_schedule.backup_type == 'full' %}selected{% endif %}>Tam sistem (.zip)</option>
+          </select>
+        </div>
+        <div>
+          <label class="mc-label">Sıklık</label>
+          <select name="frequency" class="mc-input" style="width:100%;">
+            <option value="daily" {% if backup_schedule.frequency == 'daily' %}selected{% endif %}>Her gün</option>
+            <option value="weekly" {% if backup_schedule.frequency == 'weekly' %}selected{% endif %}>Haftalık</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div>
+          <label class="mc-label">Saat</label>
+          <input type="time" name="time" class="mc-input" value="{{ backup_schedule.time }}" style="width:100%;">
+        </div>
+        <div>
+          <label class="mc-label">Gün (haftalık)</label>
+          <select name="day_of_week" class="mc-input" style="width:100%;">
+            {% for d, label in [('mon','Pazartesi'),('tue','Salı'),('wed','Çarşamba'),('thu','Perşembe'),('fri','Cuma'),('sat','Cumartesi'),('sun','Pazar')] %}
+            <option value="{{ d }}" {% if backup_schedule.day_of_week == d %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="mc-label">Sakla (adet)</label>
+          <input type="number" min="1" max="120" name="keep_last" class="mc-input" value="{{ backup_schedule.keep_last }}" style="width:100%;">
+        </div>
+      </div>
+      <button type="submit" class="mc-btn mc-btn-primary">
+        <i class="fas fa-calendar-check"></i> Takvimi kaydet
+      </button>
+    </form>
+    {% if recent_auto_backups %}
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">Son otomatik yedekler</div>
+    <div style="overflow:auto;">
+      <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
+            <th style="padding:6px 4px;">Tür</th>
+            <th style="padding:6px 4px;">Dosya</th>
+            <th style="padding:6px 4px;">Boyut</th>
+            <th style="padding:6px 4px;">Tarih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in recent_auto_backups %}
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:6px 4px;">{{ row.kind }}</td>
+            <td style="padding:6px 4px;">{{ row.name }}</td>
+            <td style="padding:6px 4px;">{{ row.size_mb }} MB</td>
+            <td style="padding:6px 4px;">{{ row.modified_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 1: Veri -->
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">1 — Veri yedeği</div>
+    <p style="margin:0 0 12px; color:var(--mc-text-muted, #64748b); font-size:14px;">
+      Kurumlar, kullanıcılar, süreçler, PG/PGV, proje, faaliyet vb. tüm satırlar (tek veritabanı, tek şema varsayımı).
+    </p>
+    {% if pg_ok %}
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_indir_veri') }}" style="margin-bottom:20px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="mc-btn mc-btn-primary">
+        <i class="fas fa-download"></i> Veri yedeğini indir (.sql)
+      </button>
+    </form>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
+    <p style="font-size:13px; margin-bottom:8px;"><strong>Geri yükleme</strong> — Onay: <code style="user-select:all;">{{ confirm_veri }}</code></p>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_preview_data') }}" enctype="multipart/form-data" style="margin-bottom:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input type="file" name="backup_file" accept=".sql" required class="mc-input" style="flex:1;">
+        <button type="submit" class="mc-btn mc-btn-secondary"><i class="fas fa-search"></i> Önizle</button>
+      </div>
+    </form>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_restore_data') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">.sql yedek dosyası</label>
+        <input type="file" name="backup_file" accept=".sql" required class="mc-input" style="width:100%;">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Onay metni (aynısını yazın)</label>
+        <input type="text" name="confirmation" class="mc-input" style="width:100%;" placeholder="{{ confirm_veri }}" autocomplete="off" required>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Hesap şifreniz</label>
+        <input type="password" name="current_password" class="mc-input" style="width:100%;" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="mc-btn mc-btn-danger">
+        <i class="fas fa-upload"></i> Veriyi geri yükle
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- 2: Tam sistem -->
+  <div class="mc-card">
+    <div class="ayarlar-hub-section-label">2 — Tam sistem yedeği</div>
+    <p style="margin:0 0 12px; color:var(--mc-text-muted, #64748b); font-size:14px;">
+      Depo dosyaları (hariç tutulanlar dışında) + PostgreSQL dump. Geri yükleme şu an <strong>sadece zip içindeki SQL</strong> ile veritabanını besler; kod dosyalarını elle eşlemeniz gerekir.
+    </p>
+    {% if pg_ok %}
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_indir_tam_sistem') }}" style="margin-bottom:20px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="mc-btn mc-btn-primary">
+        <i class="fas fa-file-archive"></i> Tam sistem zip indir
+      </button>
+    </form>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
+    <p style="font-size:13px; margin-bottom:8px;"><strong>Geri yükleme</strong> — Onay: <code style="user-select:all;">{{ confirm_tam }}</code></p>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_preview_full') }}" enctype="multipart/form-data" style="margin-bottom:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input type="file" name="backup_file" accept=".zip,application/zip" required class="mc-input" style="flex:1;">
+        <button type="submit" class="mc-btn mc-btn-secondary"><i class="fas fa-search"></i> Önizle</button>
+      </div>
+    </form>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_restore_full') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Tam sistem .zip</label>
+        <input type="file" name="backup_file" accept=".zip,application/zip" required class="mc-input" style="width:100%;">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Onay metni (aynısını yazın)</label>
+        <input type="text" name="confirmation" class="mc-input" style="width:100%;" placeholder="{{ confirm_tam }}" autocomplete="off" required>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Hesap şifreniz</label>
+        <input type="password" name="current_password" class="mc-input" style="width:100%;" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="mc-btn mc-btn-danger">
+        <i class="fas fa-upload"></i> Veritabanını zip’ten geri yükle
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

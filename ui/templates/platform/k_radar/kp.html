@@ -1,0 +1,31 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KP{% endblock %}
+{% block page_title %}KP-Radar{% endblock %}
+{% block content %}
+<div id="k-radar-kp-root" data-url="{{ url_for('app_bp.k_radar_api_kp') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card">
+    <div class="mc-card-body">
+      <h3 style="margin-top:0;">Surec Radari</h3>
+      <p style="color:#64748b;">KPI performans agirlikli skor + esik kurali.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_olgunluk') }}">Olgunluk</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_darbogaz') }}">Darboğaz</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_deger_zinciri') }}">Değer Zinciri</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_pareto') }}">Pareto</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_sla') }}">SLA</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_benchmark') }}">Benchmark</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_oee') }}">OEE</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_vsm') }}">VSM</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_kapasite') }}">Kapasite</a>
+      </div>
+      <div><strong>Skor:</strong> <span id="kp-score">-</span></div>
+      <div><strong>Band:</strong> <span id="kp-band">-</span></div>
+      <div><strong>Kritik KPI:</strong> <span id="kp-critical">-</span></div>
+      <div><strong>Hesaplanan KPI:</strong> <span id="kp-kpi-count">-</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

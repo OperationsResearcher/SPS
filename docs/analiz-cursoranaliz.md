@@ -23,9 +23,9 @@
 - `models/`: Legacy model katmanı (`LegacyUser`, `Surec`, vb.)
 - `migrations/`: Alembic/Flask-Migrate migrasyonları
 - `templates/`: Kök Jinja2 şablonları
-- `micro/templates/`: Micro arayüz şablonları
+- `ui/templates/platform/`: Micro arayüz şablonları
 - `static/`: Kök JS/CSS/asset dosyaları
-- `micro/static/`: Micro JS/CSS dosyaları
+- `ui/static/platform/`: Micro JS/CSS dosyaları
 - `services/`: Legacy servisler
 - `app/services/`: Yeni servis katmanı
 - `tests/`: Test klasörü (ek olarak kökte birçok `test_*.py` var)
@@ -173,7 +173,7 @@ Ek:
 - Alan adı tutarsızlığı (`profile_picture` vs `profile_photo`) legacy kalıntılarda devam ediyor.
 - Endpoint davranışları farklı (micro JSON-first, kök form-first); bakım maliyeti yüksek.
 
-#### `templates/` vs `micro/templates/` duplicate
+#### `templates/` vs `ui/templates/platform/` duplicate
 - Aynı isimli şablonlar tespit edildi: `base.html`, `index.html`, `users.html`, `tenants.html`, `packages.html`, `karne.html`, `login.html`, `403.html`, `dynamic_flow.html`.
 - Bu durum hem isimsel çakışma hem de tasarım davranış farkı riski doğuruyor.
 
@@ -230,11 +230,11 @@ Ek:
 
 ### 4.3 Template Analizi
 - `templates/base.html`: Bootstrap ağırlıklı klasik layout.
-- `micro/templates/micro/base.html`: Tailwind + Alpine + micro sidebar/topbar.
+- `ui/templates/platform/base.html`: Tailwind + Alpine + micro sidebar/topbar.
 - İki base arasında stil/komponent paradigması farklı; ortaklaştırma yok.
 - Extend ilişkisi:
   - Kök template'lerin büyük çoğunluğu `base.html` extend ediyor.
-  - Micro template'lerin neredeyse tamamı `micro/base.html` extend ediyor.
+  - Micro template'lerin neredeyse tamamı `platform/base.html` extend ediyor.
 - `profile_picture` / `profile_photo` adlandırma tutarsızlığı legacy dosyalarda devam ediyor.
 
 ---

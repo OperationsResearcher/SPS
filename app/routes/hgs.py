@@ -1,7 +1,7 @@
 """HGS (Hızlı Giriş) Blueprint — devre dışı.
 
-Hızlı giriş yalnızca micro kökte `/MfG_hgs` üzerinden sunulur.
-Legacy `/kok/hgs` bilinçli olarak 404 döner (yer imi / tarama ile erişimi kesmek için).
+Hızlı giriş yalnızca `/MfG_hgs` üzerinden sunulur.
+Bu blueprint altında gelen yollar bilinçli olarak 404 döner.
 """
 
 from flask import Blueprint, abort

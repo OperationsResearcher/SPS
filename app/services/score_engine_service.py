@@ -111,6 +111,72 @@ def get_pg_scores_from_kpi_data(
     return out
 
 
+def compute_process_scores_internal(
+    tenant_id: int,
+    year: int,
+    as_of: date,
+    persist_pg_scores: bool,
+) -> tuple[Dict[int, float], Dict[int, Optional[float]]]:
+    """PG → süreç skorları (0–100). K-Vektör ve klasik vizyon motoru ortak kullanır."""
+    pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of)
+
+    processes = Process.query.filter_by(
+        tenant_id=tenant_id,
+        is_active=True
+    ).all()
+    children_by_parent = {}
+    for p in processes:
+        pid = p.parent_id
+        if pid not in children_by_parent:
+            children_by_parent[pid] = []
+        children_by_parent[pid].append(p.id)
+
+    process_scores: Dict[int, float] = {}
+
+    def calc_process_score(process_id: int) -> float:
+        if process_id in process_scores:
+            return process_scores[process_id]
+        proc = next((p for p in processes if p.id == process_id), None)
+        if not proc:
+            return 0.0
+        child_ids = children_by_parent.get(process_id, [])
+        if child_ids:
+            n = len(child_ids)
+            total = 0.0
+            w_sum = 0.0
+            for cid in child_ids:
+                c = next((p for p in processes if p.id == cid), None)
+                w = _default_weight(c.weight if c else None, n)
+                total += calc_process_score(cid) * w
+                w_sum += w
+            process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
+            return process_scores[process_id]
+        kpis = ProcessKpi.query.filter_by(process_id=process_id, is_active=True).all()
+        if not kpis:
+            process_scores[process_id] = 0.0
+            return 0.0
+        n = len(kpis)
+        total = 0.0
+        w_sum = 0.0
+        for kpi in kpis:
+            w = _default_weight(kpi.weight, n)
+            sc = pg_scores.get(kpi.id)
+            if sc is None:
+                sc = 0.0
+            total += sc * w
+            w_sum += w
+            if persist_pg_scores:
+                kpi.calculated_score = sc
+        process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
+        return process_scores[process_id]
+
+    for p in processes:
+        if p.id not in process_scores:
+            calc_process_score(p.id)
+
+    return process_scores, pg_scores
+
+
 def compute_vision_score(
     tenant_id: int,
     year: Optional[int] = None,
@@ -120,67 +186,26 @@ def compute_vision_score(
     """
     Hiyerarşik vizyon puanı hesaplar.
     PG -> Süreç -> Alt Strateji -> Ana Strateji -> Vizyon (0-100)
+    K-Vektör açıksa: app.services.k_vektor_engine.compute_k_vektor_bundle
     """
     if year is None:
         year = date.today().year
     as_of = as_of_date or date.today()
 
     try:
-        pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of)
+        from app.models.core import Tenant
 
-        processes = Process.query.filter_by(
-            tenant_id=tenant_id,
-            is_active=True
-        ).all()
-        children_by_parent = {}
-        for p in processes:
-            pid = p.parent_id
-            if pid not in children_by_parent:
-                children_by_parent[pid] = []
-            children_by_parent[pid].append(p.id)
+        tenant = Tenant.query.get(tenant_id)
+        if tenant and getattr(tenant, "k_vektor_enabled", False):
+            from app.services.k_vektor_engine import compute_k_vektor_bundle
 
-        process_scores = {}
+            return compute_k_vektor_bundle(
+                tenant_id, year, as_of, persist_pg_scores=persist_pg_scores
+            )
 
-        def calc_process_score(process_id: int) -> float:
-            if process_id in process_scores:
-                return process_scores[process_id]
-            proc = next((p for p in processes if p.id == process_id), None)
-            if not proc:
-                return 0.0
-            child_ids = children_by_parent.get(process_id, [])
-            if child_ids:
-                n = len(child_ids)
-                total = 0.0
-                w_sum = 0.0
-                for cid in child_ids:
-                    c = next((p for p in processes if p.id == cid), None)
-                    w = _default_weight(c.weight if c else None, n)
-                    total += calc_process_score(cid) * w
-                    w_sum += w
-                process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
-                return process_scores[process_id]
-            kpis = ProcessKpi.query.filter_by(process_id=process_id, is_active=True).all()
-            if not kpis:
-                process_scores[process_id] = 0.0
-                return 0.0
-            n = len(kpis)
-            total = 0.0
-            w_sum = 0.0
-            for kpi in kpis:
-                w = _default_weight(kpi.weight, n)
-                sc = pg_scores.get(kpi.id)
-                if sc is None:
-                    sc = 0.0
-                total += sc * w
-                w_sum += w
-                if persist_pg_scores:
-                    kpi.calculated_score = sc
-            process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
-            return process_scores[process_id]
-
-        for p in processes:
-            if p.id not in process_scores:
-                calc_process_score(p.id)
+        process_scores, pg_scores = compute_process_scores_internal(
+            tenant_id, year, as_of, persist_pg_scores
+        )
 
         sub_strategies = (
             SubStrategy.query

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import synonym
 from extensions import db
 from app.models.core import SubStrategy
 
@@ -98,6 +99,23 @@ class Process(db.Model):
     def __repr__(self):
         return f'<Process {self.code} - {self.name}>'
 
+    # Legacy aliases
+    ad = synonym("name")
+    kurum_id = synonym("tenant_id")
+    aciklama = synonym("description")
+    durum = synonym("status")
+    ilerleme = synonym("progress")
+    baslangic_tarihi = synonym("start_date")
+    bitis_tarihi = synonym("end_date")
+
+    @property
+    def silindi(self):
+        return not bool(self.is_active)
+
+    @silindi.setter
+    def silindi(self, value):
+        self.is_active = not bool(value)
+
 
 # SubStrategy.processes (reverse) — process.py'de tanımlandığı için burada ekliyoruz
 SubStrategy.processes = association_proxy('process_sub_strategy_links', 'process')
@@ -157,6 +175,26 @@ class ProcessKpi(db.Model):
     def __repr__(self):
         return f'<ProcessKpi {self.name}>'
 
+    # Legacy aliases
+    surec_id = synonym("process_id")
+    ad = synonym("name")
+    aciklama = synonym("description")
+    kodu = synonym("code")
+    hedef_deger = synonym("target_value")
+    olcum_birimi = synonym("unit")
+    periyot = synonym("period")
+    veri_alinacak_yer = synonym("data_source")
+    hedef_belirleme_yontemi = synonym("target_setting_method")
+    veri_toplama_yontemi = synonym("data_collection_method")
+    agirlik = synonym("weight")
+    onemli = synonym("is_important")
+    baslangic_tarihi = synonym("start_date")
+    bitis_tarihi = synonym("end_date")
+
+    @property
+    def surec(self):
+        return self.process
+
 
 class ProcessActivity(db.Model):
     """
@@ -212,6 +250,24 @@ class ProcessActivity(db.Model):
     
     def __repr__(self):
         return f'<ProcessActivity {self.name}>'
+
+    # Legacy aliases
+    surec_id = synonym("process_id")
+    surec_pg_id = synonym("process_kpi_id")
+    ad = synonym("name")
+    aciklama = synonym("description")
+    durum = synonym("status")
+    ilerleme = synonym("progress")
+    baslangic_tarihi = synonym("start_date")
+    bitis_tarihi = synonym("end_date")
+
+    @property
+    def surec(self):
+        return self.process
+
+    @property
+    def surec_pg(self):
+        return self.process_kpi
 
     @property
     def first_assignee_id(self):
@@ -338,6 +394,33 @@ class KpiData(db.Model):
         db.Index('idx_kpi_data_lookup', 'process_kpi_id', 'year', 'data_date'),
     )
 
+    # Legacy aliases
+    surec_pg_id = synonym("process_kpi_id")
+    pg_id = synonym("process_kpi_id")
+    yil = synonym("year")
+    veri_tarihi = synonym("data_date")
+    periyot_tipi = synonym("period_type")
+    periyot = synonym("period_no")
+    ay = synonym("period_month")
+    hedef_deger = synonym("target_value")
+    gerceklesen_deger = synonym("actual_value")
+    durum = synonym("status")
+    durum_yuzdesi = synonym("status_percentage")
+    aciklama = synonym("description")
+    deleted_by_user_id = synonym("deleted_by_id")
+
+    @property
+    def is_deleted(self):
+        return not bool(self.is_active)
+
+    @is_deleted.setter
+    def is_deleted(self, value):
+        self.is_active = not bool(value)
+
+    @property
+    def surec_pg(self):
+        return self.process_kpi
+
 
 class KpiDataAudit(db.Model):
     """KPI Data Audit Log"""
@@ -356,6 +439,9 @@ class KpiDataAudit(db.Model):
     
     kpi_data = db.relationship('KpiData', backref=db.backref('audits', lazy=True, passive_deletes=True))
     user = db.relationship('User', backref=db.backref('kpi_audits', lazy=True))
+
+    # Legacy aliases
+    pg_veri_id = synonym("kpi_data_id")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -411,6 +497,23 @@ class IndividualPerformanceIndicator(db.Model):
     def __repr__(self):
         return f'<IndividualPerformanceIndicator {self.name}>'
 
+    # Legacy aliases
+    ad = synonym("name")
+    aciklama = synonym("description")
+    kodu = synonym("code")
+    hedef_deger = synonym("target_value")
+    gerceklesen_deger = synonym("actual_value")
+    olcum_birimi = synonym("unit")
+    periyot = synonym("period")
+    agirlik = synonym("weight")
+    onemli = synonym("is_important")
+    baslangic_tarihi = synonym("start_date")
+    bitis_tarihi = synonym("end_date")
+    durum = synonym("status")
+    kaynak = synonym("source")
+    surec_id = synonym("source_process_id")
+    surec_pg_id = synonym("source_process_kpi_id")
+
 
 class IndividualActivity(db.Model):
     """
@@ -446,6 +549,16 @@ class IndividualActivity(db.Model):
     
     def __repr__(self):
         return f'<IndividualActivity {self.name}>'
+
+    # Legacy aliases
+    ad = synonym("name")
+    aciklama = synonym("description")
+    baslangic_tarihi = synonym("start_date")
+    bitis_tarihi = synonym("end_date")
+    durum = synonym("status")
+    ilerleme = synonym("progress")
+    kaynak_tur = synonym("source")
+    kaynak_ref_id = synonym("source_process_activity_id")
 
 
 class IndividualKpiData(db.Model):
@@ -486,6 +599,19 @@ class IndividualKpiData(db.Model):
     def __repr__(self):
         return f'<IndividualKpiData pg={self.individual_pg_id} {self.year} {self.data_date}>'
 
+    # Legacy aliases
+    bireysel_pg_id = synonym("individual_pg_id")
+    yil = synonym("year")
+    veri_tarihi = synonym("data_date")
+    periyot_tipi = synonym("period_type")
+    periyot = synonym("period_no")
+    ay = synonym("period_month")
+    hedef_deger = synonym("target_value")
+    gerceklesen_deger = synonym("actual_value")
+    durum = synonym("status")
+    durum_yuzdesi = synonym("status_percentage")
+    aciklama = synonym("description")
+
 
 class IndividualKpiDataAudit(db.Model):
     """Bireysel PG Veri Değişiklik Geçmişi (Audit Log)"""
@@ -504,6 +630,9 @@ class IndividualKpiDataAudit(db.Model):
     
     individual_kpi_data = db.relationship('IndividualKpiData', backref=db.backref('audits', lazy=True, passive_deletes=True))
     user = db.relationship('User', backref=db.backref('individual_kpi_audits', lazy=True))
+
+    # Legacy aliases
+    pg_veri_id = synonym("individual_kpi_data_id")
 
 
 class IndividualActivityTrack(db.Model):
@@ -533,6 +662,11 @@ class IndividualActivityTrack(db.Model):
     def __repr__(self):
         return f'<IndividualActivityTrack activity={self.individual_activity_id} {self.year}/{self.month}>'
 
+    # Legacy aliases
+    faaliyet_id = synonym("individual_activity_id")
+    tamamlandi = synonym("completed")
+    notlar = synonym("note")
+
 
 class FavoriteKpi(db.Model):
     """Favori Performans Göstergesi"""
@@ -552,4 +686,7 @@ class FavoriteKpi(db.Model):
     __table_args__ = (
         db.UniqueConstraint('user_id', 'process_kpi_id', name='uq_favorite_kpi'),
     )
+
+    # Legacy aliases
+    surec_pg_id = synonym("process_kpi_id")
 

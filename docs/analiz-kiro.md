@@ -22,8 +22,8 @@
 |--------|----------|
 | `micro/` | Yeni nesil modüler platform — aktif geliştirme burası |
 | `micro/modules/` | Her özellik kendi alt klasöründe (admin, surec, sp, hgs, bireysel, analiz, api, kurum, masaustu, proje, shared) |
-| `micro/templates/micro/` | Micro'ya ait 25 Jinja2 template |
-| `micro/static/micro/` | Micro CSS (5 dosya, ~39KB) + JS (13 dosya, ~135KB) |
+| `ui/templates/platform/` | Micro'ya ait 25 Jinja2 template |
+| `ui/static/platform/` | Micro CSS (5 dosya, ~39KB) + JS (13 dosya, ~135KB) |
 | `micro/core/` | Module registry, yetki matrisi |
 | `models/` | SQLAlchemy ORM modelleri (7 dosya, 40+ model) |
 | `migrations/` | Flask-Migrate / Alembic — 21 aktif versiyon |
@@ -173,9 +173,9 @@ PyJWT==2.8.0, flask-swagger-ui
 - `/micro/profil` (micro_bp) ile `/auth/profile` (auth_bp) — iki ayrı profil endpoint'i
 - `login_manager.login_view = 'auth.login'` → Korunan micro route'lara erişimde kök login'e yönlendiriyor, micro login'e değil
 
-**Kök templates/ vs micro/templates/ duplicate'ler:**
-- `templates/hgs.html` (kök, eski) vs `micro/templates/micro/hgs/index.html` (micro, aktif)
-- `templates/auth/profil.html` (kök) vs `micro/templates/micro/auth/profil.html` (micro)
+**Kök templates/ vs ui/templates/platform/ duplicate'ler:**
+- `templates/hgs.html` (kök, eski) vs `ui/templates/platform/hgs/index.html` (micro, aktif)
+- `templates/auth/profil.html` (kök) vs `ui/templates/platform/auth/profil.html` (micro)
 - 130 kök template'in büyük çoğunluğu artık kullanılmıyor — legacy yük
 
 ---
@@ -301,8 +301,8 @@ PyJWT==2.8.0, flask-swagger-ui
 - Öneri: Production'da Tailwind CDN kaldırılıp sadece özel CSS kullanılmalı veya Tailwind CLI ile build edilmeli
 
 **Responsive olmayan bileşenler:**
-- `micro/templates/micro/hgs/index.html` — inline style'lar, `max-width:800px` sabit
-- `micro/templates/micro/proje/index.html` — tek route, template içeriği bilinmiyor
+- `ui/templates/platform/hgs/index.html` — inline style'lar, `max-width:800px` sabit
+- `ui/templates/platform/proje/index.html` — tek route, template içeriği bilinmiyor
 - Kök `templates/` — büyük çoğunluğu responsive değil (legacy)
 
 ### 4.2 JavaScript
@@ -337,7 +337,7 @@ PyJWT==2.8.0, flask-swagger-ui
 
 **base.html farkları:**
 
-| Özellik | Kök base.html | micro/base.html |
+| Özellik | Kök base.html | platform/base.html |
 |---------|---------------|-----------------|
 | CSS Framework | Bootstrap (vendor) | Tailwind CDN + özel CSS |
 | JS | jQuery, Bootstrap JS | Alpine.js, SweetAlert2, Chart.js |
@@ -347,13 +347,13 @@ PyJWT==2.8.0, flask-swagger-ui
 | Responsive | Kısmen | ✅ |
 
 **Template extend durumu:**
-- Micro template'lerin tamamı `micro/base.html`'i extend ediyor ✅
+- Micro template'lerin tamamı `platform/base.html`'i extend ediyor ✅
 - Kök template'ler kök `base.html`'i extend ediyor
 - `templates/hgs.html` kök base'i extend ediyor — `/micro/hgs` bu dosyayı kullanmıyor, micro template kullanıyor ✅
 
 **Tutarsız değişken adları:**
 - `profile_picture` vs `profile_photo` sorunu TASK-025'te giderildi ✅
-- `micro/templates/micro/base.html` hâlâ `current_user.profile_picture` kullanıyor — `profile_photo` ile tutarsızlık riski
+- `ui/templates/platform/base.html` hâlâ `current_user.profile_picture` kullanıyor — `profile_photo` ile tutarsızlık riski
 
 ---
 
@@ -449,7 +449,7 @@ PyJWT==2.8.0, flask-swagger-ui
 
 **Tekrarlayan sorunlar:**
 1. **PowerShell encoding hatası** — TASK-031: `\u` escape dizileri literal yazıldı, dosyalar boşaldı. Python script ile düzeltildi.
-2. **Blueprint static path çakışması** — TASK-017 → TASK-018: `filename='micro/js/admin.js'` vs `filename='js/admin.js'` gidip geldi. TASK-019'da kök neden (`static_url_path` parametresi) bulundu.
+2. **Blueprint static path çakışması** — TASK-017 → TASK-018: `filename='platform/js/admin.js'` vs `filename='js/admin.js'` gidip geldi. TASK-019'da kök neden (`static_url_path` parametresi) bulundu.
 3. **SQLAlchemy multi-instance** — TASK-007 → TASK-008 → TASK-009: Üç ayrı db instance sorunu birden fazla task'ta ele alındı.
 4. **Profil fotoğrafı** — TASK-025 → TASK-026 → TASK-027 → TASK-028 → TASK-029 → TASK-030 → TASK-031: 7 task — en uzun sorun zinciri.
 

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(pg_isready -h localhost -U kokpitim_user -d kokpitim_db)",
+      "Bash(pg_restore --list c:/kokpitim/backups/vm_pull/20260402_033734_vm_kokpitim_pg.dump)",
+      "Bash(pg_restore.exe --list \"c:/kokpitim/backups/vm_pull/20260402_033734_vm_kokpitim_pg.dump\")",
+      "Bash(sqlite3 \"c:/kokpitim/backups/vm_pull/20260402_033734_vm_kokpitim_sqlite.db\" \"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;\")"
+    ]
+  }
+}

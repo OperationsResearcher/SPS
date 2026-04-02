@@ -128,8 +128,8 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 
 | Dosya | Durum |
 |-------|-------|
-| `micro/static/micro/css/` | ✅ CSS token sistemi tutarlı |
-| `micro/static/micro/js/` | ✅ SweetAlert2, data-* pattern doğru |
+| `ui/static/platform/css/` | ✅ CSS token sistemi tutarlı |
+| `ui/static/platform/js/` | ✅ SweetAlert2, data-* pattern doğru |
 | `static/` (kök) | ⚠️ Legacy karmaşası |
 | Responsive | ✅ Micro yapısı responsive |
 | Tailwind | ⚠️ CDN kullanılıyor, build yok |

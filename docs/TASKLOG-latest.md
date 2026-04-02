@@ -81,11 +81,11 @@ Toplam satır/dosya metrikleri hem ham depo hem aktif alan (yedek/legacy hariç)
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `micro/templates/micro/auth/profil.html` → PowerShell unicode escape hatası nedeniyle boşalmıştı; Python script ile UTF-8 olarak yeniden yazıldı
-- `micro/static/micro/js/profil.js` → Aynı sorun; Python script ile UTF-8 olarak yeniden yazıldı
+- `ui/templates/platform/auth/profil.html` → PowerShell unicode escape hatası nedeniyle boşalmıştı; Python script ile UTF-8 olarak yeniden yazıldı
+- `ui/static/platform/js/profil.js` → Aynı sorun; Python script ile UTF-8 olarak yeniden yazıldı
 
 ### Yapılan İşlem
-PowerShell'in `\u` escape dizilerini literal string olarak yazması nedeniyle her iki dosya da boşalmıştı. Python script (`_write_profil.py`, `_write_profil_js.py`) ile UTF-8 encoding açıkça belirtilerek dosyalar yeniden oluşturuldu. Doğrulama: `extends micro/base.html`, `data-upload-url`, `UPLOAD_URL`, `swalError` varlığı kontrol edildi.
+PowerShell'in `\u` escape dizilerini literal string olarak yazması nedeniyle her iki dosya da boşalmıştı. Python script (`_write_profil.py`, `_write_profil_js.py`) ile UTF-8 encoding açıkça belirtilerek dosyalar yeniden oluşturuldu. Doğrulama: `extends platform/base.html`, `data-upload-url`, `UPLOAD_URL`, `swalError` varlığı kontrol edildi.
 
 ### Notlar
 Yok.
@@ -99,11 +99,11 @@ Yok.
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `micro/templates/micro/auth/profil.html` → Silindi ve yeniden yazıldı; `micro/base.html` extend, `data-update-url`/`data-upload-url`, fotoğraf yükleme butonu + progress, profil formu, inline script yok
-- `micro/static/micro/js/profil.js` → Silindi ve yeniden yazıldı; eski `profile.html` inline JS mantığı taşındı: dosya tipi/boyut kontrolü, `validateEmail`, `validatePhone`, Bootstrap Toast → SweetAlert2, fetch URL'leri `data-*`'dan okunuyor, `phone`→`phone_number`, `title`→`job_title`
+- `ui/templates/platform/auth/profil.html` → Silindi ve yeniden yazıldı; `platform/base.html` extend, `data-update-url`/`data-upload-url`, fotoğraf yükleme butonu + progress, profil formu, inline script yok
+- `ui/static/platform/js/profil.js` → Silindi ve yeniden yazıldı; eski `profile.html` inline JS mantığı taşındı: dosya tipi/boyut kontrolü, `validateEmail`, `validatePhone`, Bootstrap Toast → SweetAlert2, fetch URL'leri `data-*`'dan okunuyor, `phone`→`phone_number`, `title`→`job_title`
 
 ### Yapılan İşlem
-Eski `templates/profile.html`'deki inline JS (dosya tipi kontrolü, 5MB limit, e-posta/telefon validasyonu, fotoğraf güncelleme DOM mantığı) `profil.js`'e taşındı. Bootstrap Toast bildirimleri SweetAlert2 ile değiştirildi. HTML `micro/base.html`'i extend ediyor, tüm fetch URL'leri `data-*` attribute'larından okunuyor, inline `<script>` bloğu yok.
+Eski `templates/profile.html`'deki inline JS (dosya tipi kontrolü, 5MB limit, e-posta/telefon validasyonu, fotoğraf güncelleme DOM mantığı) `profil.js`'e taşındı. Bootstrap Toast bildirimleri SweetAlert2 ile değiştirildi. HTML `platform/base.html`'i extend ediyor, tüm fetch URL'leri `data-*` attribute'larından okunuyor, inline `<script>` bloğu yok.
 
 ### Notlar
 `static/js/profile.js` mevcut değildi — tüm JS `templates/profile.html` içinde inlineydi.
@@ -117,7 +117,7 @@ Eski `templates/profile.html`'deki inline JS (dosya tipi kontrolü, 5MB limit, e
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `micro/static/micro/js/profil.js` → Client-side mime type kontrolü, 5MB boyut kontrolü, `validateEmail`, `validatePhone` fonksiyonları, content-type response kontrolü, FormData'ya `csrf_token` field eklendi
+- `ui/static/platform/js/profil.js` → Client-side mime type kontrolü, 5MB boyut kontrolü, `validateEmail`, `validatePhone` fonksiyonları, content-type response kontrolü, FormData'ya `csrf_token` field eklendi
 - `micro/modules/shared/auth/routes.py` → `profil_foto_yukle`'ye mime type kontrolü (`file.mimetype`) ve 5MB boyut kontrolü (`file.seek`) eklendi
 
 ### Yapılan İşlem
@@ -152,7 +152,7 @@ Yok.
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `micro/static/micro/js/profil.js` → `this.value = ""` satırı `reader.readAsDataURL(file)` çağrısından önce taşındı
+- `ui/static/platform/js/profil.js` → `this.value = ""` satırı `reader.readAsDataURL(file)` çağrısından önce taşındı
 
 ### Yapılan İşlem
 `data-upload-url` doğru endpoint'e (`/micro/profil/foto-yukle`) işaret ediyordu. Asıl sorun: bazı tarayıcılarda `this.value = ""` `FileReader` okuma tamamlanmadan çalışınca `file` referansı kaybolabiliyordu. `file` önce değişkene alınıp input hemen sıfırlandı, ardından `readAsDataURL` çağrıldı.
@@ -169,9 +169,9 @@ Yok.
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `micro/templates/micro/auth/profil.html` → Kamera label/icon kaldırıldı, `btn-foto-yukle` butonu eklendi
-- `micro/static/micro/js/profil.js` → Canvas ile 400x400 merkez kırpma, JPEG 0.85 kalite, `btn-foto-yukle` click bağlantısı
-- `micro/templates/micro/base.html` → Topbar ve sidebar footer avatar'ı `profile_photo` varsa `<img>` gösteriyor
+- `ui/templates/platform/auth/profil.html` → Kamera label/icon kaldırıldı, `btn-foto-yukle` butonu eklendi
+- `ui/static/platform/js/profil.js` → Canvas ile 400x400 merkez kırpma, JPEG 0.85 kalite, `btn-foto-yukle` click bağlantısı
+- `ui/templates/platform/base.html` → Topbar ve sidebar footer avatar'ı `profile_photo` varsa `<img>` gösteriyor
 
 ### Yapılan İşlem
 Kamera ikonu yerine standart `mc-btn` butonu eklendi. Fotoğraf seçilince FileReader → Image → Canvas ile 400x400 kare kırpma yapılıyor, `toBlob(jpeg, 0.85)` ile sıkıştırılıp endpoint'e gönderiliyor. Topbar ve sidebar avatar'ları profil fotoğrafı varsa `<img>` tag'i, yoksa harf gösteriyor.

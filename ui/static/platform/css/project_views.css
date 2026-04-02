@@ -1,0 +1,317 @@
+/* Micro proje — takvim / Gantt / Kanban yardımcı stilleri */
+.micro-project-view-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.micro-project-view-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dark .micro-project-view-title {
+  color: #f1f5f9;
+}
+
+#calendar {
+  min-height: 480px;
+}
+
+.micro-gantt-wrap {
+  overflow-x: auto;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dark .micro-gantt-wrap {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.micro-gantt-wrap svg#gantt {
+  display: block;
+  min-width: 100%;
+}
+
+.bar.critical-task {
+  stroke: #e74c3c;
+  fill: #e74c3c;
+}
+
+.micro-kanban-col {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dark .micro-kanban-col {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.micro-kanban-col-header {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .micro-kanban-col-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.micro-kanban-col-body {
+  padding: 10px;
+  min-height: 200px;
+}
+
+.micro-kanban-item {
+  display: block;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  cursor: grab;
+}
+
+.dark .micro-kanban-item {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+/* FullCalendar — Micro uyumu */
+.fc .fc-toolbar-title {
+  font-size: 1rem !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark .fc-theme-standard td,
+.dark .fc-theme-standard th {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Proje silme — HTML dialog */
+.mc-project-delete-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+/* RAID — Bootstrap yerine Micro */
+.micro-raid-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.micro-raid-modal.micro-raid-modal--open {
+  display: flex;
+}
+
+.micro-raid-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+
+.micro-raid-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.micro-raid-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .micro-raid-modal__head {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.micro-raid-modal__body {
+  padding: 16px 18px;
+}
+
+.micro-raid-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .micro-raid-modal__foot {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.micro-raid-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.micro-raid-tabs button {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #475569;
+}
+
+.micro-raid-tabs button.is-active {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
+
+.dark .micro-raid-tabs button {
+  background: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.micro-raid-pane {
+  display: none;
+}
+
+.micro-raid-pane.is-active {
+  display: block;
+}
+
+.micro-raid-item {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.dark .micro-raid-item {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.micro-raid-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.micro-raid-muted {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ── "Nasıl kullanılır?" araç bilgisi modalı (templates/projects/_tool_info_modal ile aynı veri kaynağı) ── */
+#tool-info-overlay .tool-info-modal-panel {
+  max-width: min(960px, 96vw);
+}
+
+.tool-info-section {
+  margin-bottom: 1.25rem;
+}
+
+.tool-info-section:last-child {
+  margin-bottom: 0;
+}
+
+.tool-info-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tool-info-section-title i {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.tool-info-body-inner {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.dark .tool-info-body-inner {
+  color: #e2e8f0;
+}
+
+#toolInfoBody .list-unstyled {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#toolInfoBody .mb-0 { margin-bottom: 0 !important; }
+#toolInfoBody .mb-2 { margin-bottom: 0.5rem !important; }
+#toolInfoBody .mb-3 { margin-bottom: 0.75rem !important; }
+#toolInfoBody .mb-4 { margin-bottom: 1rem !important; }
+#toolInfoBody .me-2 { margin-right: 0.5rem !important; }
+
+#toolInfoBody .text-success { color: #16a34a !important; }
+#toolInfoBody .text-info { color: #0284c7 !important; }
+#toolInfoBody .text-warning { color: #d97706 !important; }
+#toolInfoBody .text-primary { color: #4f46e5 !important; }
+#toolInfoBody .text-danger { color: #dc2626 !important; }
+
+#toolInfoBody .alert {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+#toolInfoBody .alert-success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.dark #toolInfoBody .alert-success {
+  background: rgba(6, 95, 70, 0.25);
+  border-color: #047857;
+  color: #a7f3d0;
+}

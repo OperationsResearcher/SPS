@@ -30,8 +30,6 @@ from models import (
     FavoriKPI,
     StrategyProcessMatrix,
     StrategyMapLink,
-    AnalysisItem,
-    TowsMatrix,
     Deger,
     EtikKural,
     KalitePolitikasi,
@@ -108,8 +106,6 @@ def main():
         Surec.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
 
         # 6) Diğer kurum verileri (KalDer)
-        AnalysisItem.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
-        TowsMatrix.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
         Deger.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
         EtikKural.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)
         KalitePolitikasi.query.filter_by(kurum_id=kurum_id).delete(synchronize_session=False)

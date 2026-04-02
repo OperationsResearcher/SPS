@@ -3,7 +3,7 @@
 from flask import jsonify, request, render_template, current_app, make_response
 from flask_login import login_required, current_user
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, KpiDataAudit
 from app.utils.audit_logger import AuditLogger
@@ -22,7 +22,7 @@ def _unauth():
 
 # ── Süreç Endpoint'leri ───────────────────────────────────────────────────────
 
-@micro_bp.route("/api/v1/processes")
+@app_bp.route("/api/v1/processes")
 @login_required
 def api_processes_list():
     processes = Process.query.filter_by(
@@ -34,7 +34,7 @@ def api_processes_list():
     })
 
 
-@micro_bp.route("/api/v1/processes/<int:process_id>")
+@app_bp.route("/api/v1/processes/<int:process_id>")
 @login_required
 def api_processes_detail(process_id):
     p = _tenant_guard(process_id)
@@ -54,7 +54,7 @@ def api_processes_detail(process_id):
 
 # ── KPI Veri Endpoint'leri ────────────────────────────────────────────────────
 
-@micro_bp.route("/api/v1/kpi-data", methods=["POST"])
+@app_bp.route("/api/v1/kpi-data", methods=["POST"])
 @login_required
 def api_kpi_data_create():
     data = request.get_json() or {}
@@ -93,7 +93,7 @@ def api_kpi_data_create():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/api/v1/kpi-data/<int:entry_id>")
+@app_bp.route("/api/v1/kpi-data/<int:entry_id>")
 @login_required
 def api_kpi_data_get(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -112,7 +112,7 @@ def api_kpi_data_get(entry_id):
     })
 
 
-@micro_bp.route("/api/v1/kpi-data/<int:entry_id>", methods=["PATCH"])
+@app_bp.route("/api/v1/kpi-data/<int:entry_id>", methods=["PATCH"])
 @login_required
 def api_kpi_data_update(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -138,7 +138,7 @@ def api_kpi_data_update(entry_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/api/v1/kpi-data/<int:entry_id>", methods=["DELETE"])
+@app_bp.route("/api/v1/kpi-data/<int:entry_id>", methods=["DELETE"])
 @login_required
 def api_kpi_data_delete(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -169,7 +169,7 @@ def api_kpi_data_delete(entry_id):
 
 # ── Analitik Endpoint'leri ────────────────────────────────────────────────────
 
-@micro_bp.route("/api/v1/analytics/trend/<int:process_id>")
+@app_bp.route("/api/v1/analytics/trend/<int:process_id>")
 @login_required
 def api_analytics_trend(process_id):
     if not _tenant_guard(process_id):
@@ -182,7 +182,7 @@ def api_analytics_trend(process_id):
         return jsonify({"success": False, "message": "Veri alınamadı."}), 500
 
 
-@micro_bp.route("/api/v1/analytics/health/<int:process_id>")
+@app_bp.route("/api/v1/analytics/health/<int:process_id>")
 @login_required
 def api_analytics_health(process_id):
     if not _tenant_guard(process_id):
@@ -195,7 +195,7 @@ def api_analytics_health(process_id):
         return jsonify({"success": False, "message": "Veri alınamadı."}), 500
 
 
-@micro_bp.route("/api/v1/analytics/comparison", methods=["POST"])
+@app_bp.route("/api/v1/analytics/comparison", methods=["POST"])
 @login_required
 def api_analytics_comparison():
     data = request.get_json() or {}
@@ -214,7 +214,7 @@ def api_analytics_comparison():
         return jsonify({"success": False, "message": "Veri alınamadı."}), 500
 
 
-@micro_bp.route("/api/v1/analytics/forecast/<int:process_id>")
+@app_bp.route("/api/v1/analytics/forecast/<int:process_id>")
 @login_required
 def api_analytics_forecast(process_id):
     if not _tenant_guard(process_id):
@@ -230,7 +230,7 @@ def api_analytics_forecast(process_id):
 
 # ── Rapor Endpoint'leri ───────────────────────────────────────────────────────
 
-@micro_bp.route("/api/v1/reports/performance/<int:process_id>")
+@app_bp.route("/api/v1/reports/performance/<int:process_id>")
 @login_required
 def api_reports_performance(process_id):
     if not _tenant_guard(process_id):
@@ -243,7 +243,7 @@ def api_reports_performance(process_id):
         return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500
 
 
-@micro_bp.route("/api/v1/reports/dashboard")
+@app_bp.route("/api/v1/reports/dashboard")
 @login_required
 def api_reports_dashboard():
     try:
@@ -258,7 +258,7 @@ def api_reports_dashboard():
 
 # ── AI & Push Delegasyonu ─────────────────────────────────────────────────────
 
-@micro_bp.route("/api/v1/ai/recommend")
+@app_bp.route("/api/v1/ai/recommend")
 @login_required
 def api_ai_recommend():
     try:
@@ -269,7 +269,7 @@ def api_ai_recommend():
         return jsonify({"success": False, "message": "AI servisi kullanılamıyor."}), 503
 
 
-@micro_bp.route("/api/v1/push/subscribe", methods=["POST"])
+@app_bp.route("/api/v1/push/subscribe", methods=["POST"])
 @login_required
 def api_push_subscribe():
     try:
@@ -282,7 +282,7 @@ def api_push_subscribe():
 
 # ── API Dokümantasyonu ────────────────────────────────────────────────────────
 
-@micro_bp.route("/api/docs")
+@app_bp.route("/api/docs")
 @login_required
 def api_docs():
     """Swagger/OpenAPI dokümantasyon sayfası."""
@@ -300,4 +300,4 @@ def api_docs():
         {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": "Performans raporu"},
         {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": "Dashboard raporu"},
     ]
-    return render_template("micro/api/docs.html", endpoints=endpoints)
+    return render_template("platform/api/docs.html", endpoints=endpoints)

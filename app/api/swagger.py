@@ -6,11 +6,11 @@ Sprint 13-15: API ve Entegrasyonlar
 from flask_swagger_ui import get_swaggerui_blueprint
 
 
-def create_swagger_blueprint(legacy_prefix: str = "/kok"):
-    """Klasik REST API dokümantasyonu — yollar LEGACY_URL_PREFIX altında (örn. /kok/api/docs)."""
-    lp = (legacy_prefix or "/kok").rstrip("/") or "/kok"
-    swagger_url = f"{lp}/api/docs"
-    api_url = f"{lp}/api/v1/swagger.json"
+def create_swagger_blueprint(base_prefix: str = ""):
+    """REST API dokümantasyonu — tek yapı kök URL altında."""
+    bp = (base_prefix or "").rstrip("/")
+    swagger_url = f"{bp}/api/docs" if bp else "/api/docs"
+    api_url = f"{bp}/api/v1/swagger.json" if bp else "/api/v1/swagger.json"
     return get_swaggerui_blueprint(
         swagger_url,
         api_url,
@@ -22,9 +22,9 @@ def create_swagger_blueprint(legacy_prefix: str = "/kok"):
 
 
 # Geriye dönük uyumluluk (tercih: create_swagger_blueprint kullanın)
-SWAGGER_URL = "/kok/api/docs"
-API_URL = "/kok/api/v1/swagger.json"
-swaggerui_blueprint = create_swagger_blueprint("/kok")
+SWAGGER_URL = "/api/docs"
+API_URL = "/api/v1/swagger.json"
+swaggerui_blueprint = create_swagger_blueprint("")
 
 # OpenAPI Specification
 openapi_spec = {

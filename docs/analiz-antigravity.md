@@ -233,7 +233,7 @@ Surec, Project, Task, Tag, TimeEntry, TaskDependency, AnalysisItem, TowsMatrix, 
 
 **auth_bp vs micro_bp çakışması:** Kök `auth_bp` `/profile`, `/settings`, `/login` rotalarına sahip; `micro_bp` de `/micro/profil`, `/micro/login`, `/micro/ayarlar` rotalarına sahip. Paralel iki auth sistemi çalışıyor — bu kasıtlı geçiş stratejisi ama hem çift bakım yükü hem de kullanıcı akışı belirsizliği yaratıyor.
 
-**Template çakışması:** Kök `templates/` altında ~65 HTML dosyası var, micro `templates/micro/` altında 25 dosya. Kök template'lerin büyük çoğunluğu `base.html`'i extend ediyor, micro template'ler `micro/base.html`'i. İki ayrı tasarım dili paralel çalışıyor.
+**Template çakışması:** Kök `templates/` altında ~65 HTML dosyası var, micro `templates/micro/` altında 25 dosya. Kök template'lerin büyük çoğunluğu `base.html`'i extend ediyor, micro template'ler `platform/base.html`'i. İki ayrı tasarım dili paralel çalışıyor.
 
 ---
 
@@ -340,7 +340,7 @@ Kök dizinde 250+ dosya var; bunların büyük çoğunluğu geçici debug/fix sc
 
 **Eksiklikler:**
 - Kök `templates/` ile gelen legacy CSS dosyaları (`static/css/`) — farklı design system, tutarsızlık.
-- Responsive: `micro/base.html`'de Tailwind CDN var. Ancak kustom `components.css` media query'leri kontrol edilmedi.
+- Responsive: `platform/base.html`'de Tailwind CDN var. Ancak kustom `components.css` media query'leri kontrol edilmedi.
 - Tailwind CDN üretimde kullanılmamalı — bundle performansı kötü.
 
 ### 4.2 JavaScript
@@ -379,14 +379,14 @@ Micro JS dosyaları SweetAlert2 kullanıyor ✅. Kök template'lerde `alert()` /
 
 ### 4.3 Template Analizi
 
-**micro/base.html vs templates/base.html:**
-- `micro/base.html`: Tailwind + Alpine.js + SweetAlert2 + Chart.js CDN. Sidebar + topbar layout. Türkçe menü. `extra_js` ve `extra_css` blokları.
+**platform/base.html vs templates/base.html:**
+- `platform/base.html`: Tailwind + Alpine.js + SweetAlert2 + Chart.js CDN. Sidebar + topbar layout. Türkçe menü. `extra_js` ve `extra_css` blokları.
 - `templates/base.html`: Farklı design system. Bootstrap/özel CSS. Eski layout.
 
 **Template Tutarsız Değişken Adları:**
 - `profile.html` (kök): `user.profile_picture` kullanıyor.
 - `micro/profil.html`: `user.profile_picture` kullanıyor (TASK-025'te `profile_photo` → `profile_picture` olarak düzeltildi).
-- `micro/base.html`: `profile_photo` değişken kontrolü yapıyor. **Hâlâ tutarsızlık var** — `User.profile_picture` alan adı, template'de `profile_photo` check'i.
+- `platform/base.html`: `profile_photo` değişken kontrolü yapıyor. **Hâlâ tutarsızlık var** — `User.profile_picture` alan adı, template'de `profile_photo` check'i.
 
 ---
 
@@ -401,7 +401,7 @@ Micro JS dosyaları SweetAlert2 kullanıyor ✅. Kök template'lerde `alert()` /
 
 **Micro `micro/modules/shared/auth/`:**
 - Route: `/micro/login`, `/micro/profil`, `/micro/profil/foto-yukle`, `/micro/ayarlar`
-- Template: `micro/templates/micro/auth/login.html`, `profil.html`, `ayarlar.html`
+- Template: `ui/templates/platform/auth/login.html`, `profil.html`, `ayarlar.html`
 - TASK 025-031 kapsamında yoğun çalışma yapıldı — profil fotoğrafı yükleme sorunu çözüldü.
 - **En riskli kod:** `@csrf.exempt` olan `profil_foto_yukle` endpoint'i.
 

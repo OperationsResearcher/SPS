@@ -13,14 +13,14 @@ from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import joinedload
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models.core import User as CoreUser
 from app.models.process import Process as AppProcess
 from models import Project, Surec, Task, db
 from utils.task_status import normalize_task_status
 
-from micro.modules.proje.display import build_user_labels_map, collect_project_user_ids, user_display
-from micro.modules.proje.helpers import (
+from app_platform.modules.proje.display import build_user_labels_map, collect_project_user_ids, user_display
+from app_platform.modules.proje.helpers import (
     form_users_payload,
     kurum_id,
     load_project,
@@ -30,14 +30,14 @@ from micro.modules.proje.helpers import (
     sync_project_members_observers,
     tenant_core_users,
 )
-from micro.modules.proje.permissions import (
+from app_platform.modules.proje.permissions import (
     can_crud_project_portfolio,
     user_can_access_project,
     user_can_edit_tasks,
     user_is_project_leader,
 )
-from micro.modules.proje.strategy_detail_service import build_strategy_detail_context
-from micro.services.notification_triggers import (
+from app_platform.modules.proje.strategy_detail_service import build_strategy_detail_context
+from app_platform.services.notification_triggers import (
     notify_project_leaders_added,
     notify_project_members_added,
 )
@@ -103,16 +103,16 @@ def _sync_project_process_links_legacy(proj: Project, kid: int, selected_ids: li
             proj.related_processes.append(sc)
 
 
-@micro_bp.route("/project/new", methods=["GET", "POST"])
+@app_bp.route("/project/new", methods=["GET", "POST"])
 @login_required
-def micro_project_new():
+def project_new():
     kid = kurum_id()
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
-        return redirect(url_for("micro_bp.launcher"))
+        return redirect(url_for("app_bp.launcher"))
     if not can_crud_project_portfolio(current_user):
         flash("Yeni proje oluşturma yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     if request.method == "GET":
         surecler = _load_project_form_surecler(kid)
@@ -131,7 +131,7 @@ def micro_project_new():
             if cand and user_can_access_project(current_user, cand):
                 clone_src = cand
         return render_template(
-            "micro/project/form.html",
+            "platform/project/form.html",
             project=None,
             clone_src=clone_src,
             surecler=surecler,
@@ -144,7 +144,7 @@ def micro_project_new():
     name = (request.form.get("name") or "").strip()
     if not name:
         flash("Proje adı zorunludur.", "danger")
-        return redirect(url_for("micro_bp.micro_project_new"))
+        return redirect(url_for("app_bp.project_new"))
 
     description = (request.form.get("description") or "").strip() or None
     priority = request.form.get("priority") or "Orta"
@@ -152,7 +152,7 @@ def micro_project_new():
         leader_ids = resolve_leader_ids_from_form(kid, project=None)
     except ValueError as e:
         flash(str(e) or "Geçerli proje lideri seçilemedi.", "danger")
-        return redirect(url_for("micro_bp.micro_project_new"))
+        return redirect(url_for("app_bp.project_new"))
 
     start_date = end_date = None
     if request.form.get("start_date"):
@@ -195,7 +195,7 @@ def micro_project_new():
     except ValueError as e:
         db.session.rollback()
         flash(str(e) or "Lider kaydı oluşturulamadı.", "danger")
-        return redirect(url_for("micro_bp.micro_project_new"))
+        return redirect(url_for("app_bp.project_new"))
 
     _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
 
@@ -203,16 +203,16 @@ def micro_project_new():
     _notify_new_project_team(proj, kid, set(), set())
     db.session.commit()
     flash("Proje oluşturuldu.", "success")
-    return redirect(url_for("micro_bp.micro_project_detail", project_id=proj.id))
+    return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
-@micro_bp.route("/project/<int:project_id>")
+@app_bp.route("/project/<int:project_id>")
 @login_required
-def micro_project_detail(project_id: int):
+def project_detail(project_id: int):
     proj = load_project(project_id)
     if not user_can_access_project(current_user, proj):
         flash("Bu projeye erişim yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
     user_labels = build_user_labels_map(collect_project_user_ids(proj), kid)
@@ -238,7 +238,7 @@ def micro_project_detail(project_id: int):
     geciken = [t for t in tasks if t.due_date and t.due_date < today and _nst(t) != "Tamamlandı"]
 
     return render_template(
-        "micro/project/detail.html",
+        "platform/project/detail.html",
         project=proj,
         tasks=tasks,
         tasks_by_status=tasks_by_status,
@@ -252,13 +252,13 @@ def micro_project_detail(project_id: int):
     )
 
 
-@micro_bp.route("/project/<int:project_id>/edit", methods=["GET", "POST"])
+@app_bp.route("/project/<int:project_id>/edit", methods=["GET", "POST"])
 @login_required
-def micro_project_edit(project_id: int):
+def project_edit(project_id: int):
     proj = load_project(project_id)
     if not user_is_project_leader(current_user, proj):
         flash("Bu projeyi düzenleme yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+        return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kid = kurum_id()
     if request.method == "GET":
@@ -266,7 +266,7 @@ def micro_project_edit(project_id: int):
         kullanicilar = tenant_core_users(kid)
         sablon_projeler = Project.query.filter_by(kurum_id=kid).order_by(Project.created_at.desc()).limit(20).all()
         return render_template(
-            "micro/project/form.html",
+            "platform/project/form.html",
             project=proj,
             clone_src=None,
             surecler=surecler,
@@ -286,7 +286,7 @@ def micro_project_edit(project_id: int):
         sync_project_leaders(proj, kid, leader_ids)
     except ValueError as e:
         flash(str(e) or "Geçerli proje lideri seçilemedi.", "danger")
-        return redirect(url_for("micro_bp.micro_project_edit", project_id=project_id))
+        return redirect(url_for("app_bp.project_edit", project_id=project_id))
 
     if request.form.get("start_date"):
         try:
@@ -323,25 +323,25 @@ def micro_project_edit(project_id: int):
     _notify_new_project_team(proj, kid, old_leader_ids, old_member_ids)
     db.session.commit()
     flash("Proje güncellendi.", "success")
-    return redirect(url_for("micro_bp.micro_project_detail", project_id=proj.id))
+    return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
-@micro_bp.route("/project/<int:project_id>/strategy")
+@app_bp.route("/project/<int:project_id>/strategy")
 @login_required
-def micro_project_strategy(project_id: int):
+def project_strategy(project_id: int):
     if not can_crud_project_portfolio(current_user):
         flash("Bu sayfaya erişim yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+        return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kid = kurum_id()
     proj = Project.query.filter_by(id=project_id, kurum_id=kid).first_or_404()
     ctx = build_strategy_detail_context(proj, kid)
-    return render_template("micro/project/strategy_detail.html", **ctx)
+    return render_template("platform/project/strategy_detail.html", **ctx)
 
 
-@micro_bp.route("/project/<int:project_id>/strategy/processes", methods=["POST"])
+@app_bp.route("/project/<int:project_id>/strategy/processes", methods=["POST"])
 @login_required
-def micro_project_strategy_processes(project_id: int):
+def project_strategy_processes(project_id: int):
     if not can_crud_project_portfolio(current_user):
         abort(403)
     kid = kurum_id()
@@ -354,15 +354,15 @@ def micro_project_strategy_processes(project_id: int):
         proj.related_processes.append(p)
     db.session.commit()
     flash("Süreç bağlantıları güncellendi.", "success")
-    return redirect(url_for("micro_bp.micro_project_strategy", project_id=project_id))
+    return redirect(url_for("app_bp.project_strategy", project_id=project_id))
 
 
-@micro_bp.route("/project/<int:project_id>/delete", methods=["POST"])
+@app_bp.route("/project/<int:project_id>/delete", methods=["POST"])
 @login_required
-def micro_project_delete(project_id: int):
+def project_delete(project_id: int):
     if not can_crud_project_portfolio(current_user):
         flash("Proje silme yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+        return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kid = kurum_id()
     proj = Project.query.filter_by(id=project_id, kurum_id=kid).first_or_404()
@@ -371,4 +371,5 @@ def micro_project_delete(project_id: int):
     db.session.delete(proj)
     db.session.commit()
     flash(f'"{name}" silindi.', "success")
-    return redirect(url_for("micro_bp.micro_project_list"))
+    return redirect(url_for("app_bp.project_list"))
+

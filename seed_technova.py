@@ -16,7 +16,7 @@ from werkzeug.security import generate_password_hash
 # from models import (
 #     User, Kurum, AnaStrateji, StrategyMapLink,
 #     Surec, SurecPerformansGostergesi, BireyselPerformansGostergesi,
-#     PerformansGostergeVeri, AnalysisItem
+#     PerformansGostergeVeri
 # )
 
 # Initialize Flask App
@@ -45,7 +45,7 @@ def seed_technova():
         from models import (
             User, Kurum, AnaStrateji, StrategyMapLink,
             Surec, SurecPerformansGostergesi, BireyselPerformansGostergesi,
-            PerformansGostergeVeri, AnalysisItem
+            PerformansGostergeVeri,
         )
         
         try:
@@ -64,9 +64,7 @@ def seed_technova():
                     User.query.filter_by(kurum_id=k.id).delete()
                     # 2. Strategies
                     AnaStrateji.query.filter_by(kurum_id=k.id).delete()
-                    # 3. Analysis
-                    AnalysisItem.query.filter_by(kurum_id=k.id).delete()
-                    # 4. Processes
+                    # 3. Processes
                     Surec.query.filter_by(kurum_id=k.id).delete()
                     # 5. Delete Kurum
                     db.session.delete(k)
@@ -133,33 +131,8 @@ def seed_technova():
             db.session.commit()
             print_success("Users (CEO, CTO, HR) created/linked.")
 
-            # 3. Phase 2: Strategic Analysis (SWOT/PESTLE)
-            print_section("PHASE 2: STRATEGIC ANALYSIS")
-            
-            swot_items = [
-                ("SWOT", "STRENGTH", "Güçlü Ar-Ge Ekibi", 5),
-                ("SWOT", "WEAKNESS", "Yetersiz Pazarlama Bütçesi", 3),
-                ("SWOT", "OPPORTUNITY", "Yapay Zeka Pazarının Büyümesi", 4),
-                ("SWOT", "THREAT", "Ekonomik Dalgalanmalar", 2),
-                ("PESTLE", "TECHNOLOGICAL", "5G Teknolojileri", 4),
-                ("PESTLE", "ECONOMIC", "Kur Artışı", 3)
-            ]
-            
-            for atype, cat, content, score in swot_items:
-                item = AnalysisItem(
-                    kurum_id=technova.id,
-                    analysis_type=atype,
-                    category=cat,
-                    content=content,
-                    score=score
-                )
-                db.session.add(item)
-            
-            db.session.commit()
-            print_success(f"Added {len(swot_items)} SWOT/PESTLE items.")
-
-            # 4. Phase 3: The Scorecard (Strategies)
-            print_section("PHASE 3: THE SCORECARD (STRATEGIES)")
+            # 3. Phase 2: The Scorecard (Strategies)
+            print_section("PHASE 2: THE SCORECARD (STRATEGIES)")
             
             # Define strategies in a way we can track them
             strategies_def = [
@@ -184,7 +157,7 @@ def seed_technova():
             print_success("Strategies created. Fetching IDs for reliable wiring...")
 
             # 5. Phase 4: The Wiring (Links) - The "Anti-Error" Part
-            print_section("PHASE 4: THE WIRING (LINKS)")
+            print_section("PHASE 3: THE WIRING (LINKS)")
             
             # Fetch real objects with IDs
             f1 = AnaStrateji.query.filter_by(code='F1', kurum_id=technova.id).first()
@@ -216,7 +189,7 @@ def seed_technova():
             print_success(f"[LINK] {link_count} Strategy Links Wired successfully.")
 
             # 6. Phase 5: Process Data (Charts)
-            print_section("PHASE 5: PROCESS DATA (CHARTS)")
+            print_section("PHASE 4: PROCESS DATA (CHARTS)")
             
             # Create Process
             surec = Surec(

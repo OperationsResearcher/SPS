@@ -18,9 +18,10 @@ def create_app(config_name=None):
     app = Flask(__name__)
 
     # 1. Konfigürasyonu yükle
-    if config_name is None:
-        config_name = os.environ.get('FLASK_ENV', 'default')
-    app.config.from_object(get_config())
+    if config_name is not None:
+        app.config.from_object(config_name)
+    else:
+        app.config.from_object(get_config())
 
     # 2. Eklentileri (extensions) ilklendir
     db.init_app(app)
@@ -180,9 +181,6 @@ def create_app(config_name=None):
     from main.admin import admin_bp
     app.register_blueprint(admin_bp)
 
-    from analysis.routes import analysis_bp
-    app.register_blueprint(analysis_bp)
-
     from bsc.routes import bsc_bp
     app.register_blueprint(bsc_bp)
 
@@ -194,9 +192,10 @@ def create_app(config_name=None):
     from v3 import v3_bp
     app.register_blueprint(v3_bp)
 
-    # 4.9 Micro Platform — güncel kurulum için app.create_app (app/__init__.py) kullanın; kök URL orada.
-    from micro import micro_bp
-    app.register_blueprint(micro_bp)
+    # 4.9 Platform — güncel kurulum için app.create_app (app/__init__.py) kullanın; kök URL orada.
+    import micro  # noqa: F401
+    from platform_core import app_bp
+    app.register_blueprint(app_bp)
 
     # 4.6 Custom Filters
     @app.template_filter('role_name')
@@ -222,7 +221,6 @@ def create_app(config_name=None):
             BireyselPerformansGostergesi, BireyselFaaliyet,
             PerformansGostergeVeri, PerformansGostergeVeriAudit,
             FaaliyetTakip,
-            AnalysisItem, TowsMatrix,
             Notification, UserActivityLog, FavoriKPI,
             YetkiMatrisi, KullaniciYetki, OzelYetki,
             DashboardLayout, Deger, EtikKural, KalitePolitikasi,

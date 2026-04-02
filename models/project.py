@@ -7,7 +7,7 @@ Proje, Görev (Task), Dosya ve Proje Ekibi ile ilgili modelleri içerir.
 from extensions import db
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, synonym
 from sqlalchemy.exc import ProgrammingError
 from utils.task_status import normalize_task_status
 import json
@@ -38,7 +38,7 @@ project_leaders = db.Table(
 
 project_related_processes = db.Table('project_related_processes',
     db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
-    db.Column('surec_id', db.Integer, db.ForeignKey('surec.id'), primary_key=True)
+    db.Column('surec_id', db.Integer, db.ForeignKey('processes.id'), primary_key=True)
 )
 
 class Project(db.Model):
@@ -51,7 +51,8 @@ class Project(db.Model):
     __tablename__ = 'project'
     
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
     
     # Temel Bilgiler
     name = db.Column(db.String(200), nullable=False, index=True)
@@ -77,14 +78,20 @@ class Project(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # İlişkiler
-    kurum = db.relationship('Kurum', backref=db.backref('projeler', lazy=True))
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='Project.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='projeler',
+    )
     manager = db.relationship(CoreUser, foreign_keys=[manager_id], backref='yonettigi_projeler')
     
     # Many-to-Many
     leaders = db.relationship(CoreUser, secondary=project_leaders, backref='lider_oldugu_projeler')
     members = db.relationship(CoreUser, secondary=project_members, backref='uye_oldugu_projeler')
     observers = db.relationship(CoreUser, secondary=project_observers, backref='gozlemci_oldugu_projeler')
-    related_processes = db.relationship('Surec', secondary=project_related_processes, backref='bagli_projeler')
+    related_processes = db.relationship('Process', secondary=project_related_processes, backref='bagli_projeler')
     
     def __repr__(self):
         return f'<Project {self.name}>'

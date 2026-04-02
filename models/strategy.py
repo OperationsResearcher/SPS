@@ -6,6 +6,7 @@ Ana Strateji, Alt Strateji ve Strateji-Süreç ilişkilerini yöneten modelleri 
 """
 from extensions import db
 from datetime import datetime
+from sqlalchemy.orm import synonym
 
 class AnaStrateji(db.Model):
     """
@@ -17,8 +18,9 @@ class AnaStrateji(db.Model):
     __tablename__ = 'ana_strateji'
     
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
-    
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
+
     # Kod ve Tanım
     code = db.Column(db.String(20), nullable=True, index=True)  # Örn: ST1
     ad = db.Column(db.String(200), nullable=False)
@@ -36,11 +38,16 @@ class AnaStrateji(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # İlişkiler
-    # Alt stratejiler, AltStrateji modelinde backref ile tanımlanacak
+    # İlişkiler (Kurum satırı ile aynı sayısal id varsayımı)
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='AnaStrateji.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+    )
 
     __table_args__ = (
-        db.UniqueConstraint('kurum_id', 'code', name='uq_ana_strateji_kurum_code'),
+        db.UniqueConstraint('tenant_id', 'code', name='uq_ana_strateji_tenant_code'),
     )
     
     def __repr__(self):
@@ -93,14 +100,14 @@ class StrategyProcessMatrix(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('alt_strateji.id'), nullable=False, index=True)
-    process_id = db.Column(db.Integer, db.ForeignKey('surec.id'), nullable=False, index=True)
+    process_id = db.Column(db.Integer, db.ForeignKey('processes.id'), nullable=False, index=True)
     
     relationship_strength = db.Column(db.Integer, default=0)  # 0-9 arası ilişki gücü
     relationship_score = db.Column(db.Integer, default=0)     # A=9, B=3
     
     # İlişkiler
     sub_strategy = db.relationship('AltStrateji', backref=db.backref('matrix_relations', lazy=True))
-    process = db.relationship('Surec', backref=db.backref('strategy_matrix_relations', lazy=True))
+    process = db.relationship('Process', backref=db.backref('strategy_matrix_relations', lazy=True))
     
     # Unique Constraint: Aynı çift sadece bir kez olabilir
     __table_args__ = (db.UniqueConstraint('sub_strategy_id', 'process_id', name='uq_strategy_process_matrix'),)

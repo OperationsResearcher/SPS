@@ -7,6 +7,7 @@ Uygulamanın tüm veritabanı modellerini tek bir noktadan sunar.
 
 # DB instance'ını dışarıya aç (geriye dönük uyumluluk için)
 from extensions import db
+from sqlalchemy.orm import synonym
 
 from .user import (
     LegacyUser, Kurum, YetkiMatrisi, OzelYetki, KullaniciYetki,
@@ -18,14 +19,24 @@ Notification = LegacyNotification  # Geriye dönük uyumluluk alias'ı
 from .feedback import Feedback
 from .dashboard import UserDashboardSettings
 from .strategy import AnaStrateji, AltStrateji, StrategyProcessMatrix, StrategyMapLink
-from .analysis import AnalysisItem, TowsMatrix
-from .process import (
-    Surec, SurecPerformansGostergesi, SurecFaaliyet,
-    BireyselPerformansGostergesi, BireyselFaaliyet,
-    PerformansGostergeVeri, PerformansGostergeVeriAudit,
-    FaaliyetTakip, FavoriKPI,
-    surec_uyeleri, surec_liderleri, surec_alt_stratejiler, process_owners
+# Canonical process models (legacy isim aliaslarıyla)
+from app.models.process import (
+    Process as Surec,
+    ProcessSubStrategyLink,
+    ProcessKpi as SurecPerformansGostergesi,
+    ProcessActivity as SurecFaaliyet,
+    IndividualPerformanceIndicator as BireyselPerformansGostergesi,
+    IndividualActivity as BireyselFaaliyet,
+    KpiData as PerformansGostergeVeri,
+    KpiDataAudit as PerformansGostergeVeriAudit,
+    IndividualActivityTrack as FaaliyetTakip,
+    FavoriteKpi as FavoriKPI,
+    process_members as surec_uyeleri,
+    process_leaders as surec_liderleri,
+    process_owners_table as process_owners,
 )
+# Legacy alias
+surec_alt_stratejiler = ProcessSubStrategyLink.__table__
 from .project import (
     Project, Task, TaskImpact, TaskComment, TaskMention,
     ProjectFile, ProjectRisk, Tag, TaskSubtask, TimeEntry,
@@ -90,7 +101,8 @@ class Activity(db.Model):
 class CorporateIdentity(db.Model):
     __tablename__ = 'corporate_identity'
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'))
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
 
 # Aliases for English compatibility (Legacy Support)
 Process = Surec
@@ -122,9 +134,6 @@ __all__ = [
     'surec_uyeleri', 'surec_liderleri', 'surec_alt_stratejiler', 'process_owners',
     'Process', 'PerformanceIndicator', # Aliases
 
-    # Analysis
-    'AnalysisItem', 'TowsMatrix',
-    
     # Project
     'Project', 'Task', 'TaskImpact', 'TaskComment', 'TaskMention',
     'ProjectFile', 'ProjectRisk', 'Tag', 'TaskSubtask', 'TimeEntry',

@@ -33,11 +33,15 @@ def set_security_headers(response):
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    
-    # HSTS (only in production with HTTPS)
-    if not request.url.startswith('http://localhost'):
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    
+
+    # HSTS yalnızca gerçek HTTPS isteklerde. request.url kullanılmaz: Werkzeug boş/şüpheli
+    # Host başlığında SecurityError üretebilir; after_request içinde bu yanıtı keser (CF 524).
+    forwarded = (request.environ.get("HTTP_X_FORWARDED_PROTO") or "").split(",")[0].strip().lower()
+    if forwarded == "https" or request.is_secure:
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+
     return response
 
 

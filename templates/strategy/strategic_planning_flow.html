@@ -111,35 +111,6 @@
     </div>
 
     <div class="strategy-flow-section-title mt-4 mb-3">
-        <i class="fas fa-chart-line me-2"></i>Durum Analizi & Strateji Üretimi
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="strategy-flow-analysis-cards mb-3">
-                <a href="{{ url_for('strategy_bp.swot') }}" class="strategy-flow-analysis-card swot text-decoration-none">
-                    <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
-                    <div class="card-title">SWOT</div>
-                    <div class="card-status">{% if swot_count %}Tamamlandı{% else %}Başlanmadı{% endif %}</div>
-                </a>
-                <div class="strategy-flow-analysis-card pestle">
-                    <div class="card-icon"><i class="fas fa-globe"></i></div>
-                    <div class="card-title">PESTLE</div>
-                    <div class="card-status">Başlanmadı</div>
-                </div>
-                <div class="strategy-flow-analysis-card tows">
-                    <div class="card-icon"><i class="fas fa-th"></i></div>
-                    <div class="card-title">TOWS Matrisi</div>
-                    <div class="card-status">Başlanmadı</div>
-                </div>
-            </div>
-            <p class="small text-muted mb-2">Stratejik analiz verileri</p>
-            <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.swot') }}">
-                <i class="fas fa-plus me-1"></i>Yeni Analiz Ekle
-            </a>
-        </div>
-    </div>
-
-    <div class="strategy-flow-section-title mt-4 mb-3">
         <i class="fas fa-sitemap me-2"></i>BSC Strateji Haritası
         <i class="fas fa-info-circle text-muted ms-1" title="Neden sonuç ilişkisi kurmanıza yardımcı olur"></i>
     </div>

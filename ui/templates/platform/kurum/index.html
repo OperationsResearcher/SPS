@@ -1,0 +1,699 @@
+{% extends "platform/base.html" %}
+{% block title %}Kurum Paneli{% endblock %}
+{% block page_title %}Kurum Paneli{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/kurum.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block content %}
+<div id="kurum-root"
+     data-update-strategy-url="{{ url_for('app_bp.kurum_api_update_strategy') }}"
+     data-add-strategy-url="{{ url_for('app_bp.kurum_api_add_strategy') }}"
+     data-add-sub-url="{{ url_for('app_bp.kurum_api_add_sub_strategy') }}"
+     data-update-main-base="/kurum/api/update-main-strategy/"
+     data-delete-main-base="/kurum/api/delete-main-strategy/"
+     data-update-sub-base="/kurum/api/update-sub-strategy/"
+     data-delete-sub-base="/kurum/api/delete-sub-strategy/"
+     data-overview-url="{{ url_for('app_bp.kurum_api_overview') }}"
+     data-can-edit="{{ 'true' if can_edit_kurum else 'false' }}"
+     style="max-width:1000px; margin:0 auto;">
+
+  {% if overview.scoped %}
+  <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 px-1">
+    <i class="fas fa-info-circle mr-1"></i>
+    Süreç ve proje sayıları, <strong>size atanmış / erişiminiz olan</strong> kayıtlara göredir. Yöneticiler kurum genelini görür.
+  </p>
+  {% endif %}
+
+  <!-- Stratejik Kimlik: vizyon vurgulu; diğer alanlar akordeon -->
+  <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-building" style="color:#6366f1; margin-right:8px;"></i>Stratejik Kimlik
+      </span>
+      {% if can_edit_kurum %}
+      <button id="btn-identity-edit" type="button" class="mc-btn mc-btn-primary mc-btn-sm">
+        <i class="fas fa-edit"></i> Düzenle
+      </button>
+      {% endif %}
+    </div>
+    <div class="mc-card-body">
+      <!-- Vizyon — akordeon dışı, görsel olarak öne çıkan -->
+      <div class="relative overflow-hidden rounded-xl border-2 border-indigo-200/90 dark:border-indigo-500/35 bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-indigo-950/55 dark:via-slate-900 dark:to-violet-950/35 p-5 sm:p-6 mb-5 shadow-md dark:shadow-indigo-950/20">
+        <div class="absolute -right-2 -top-2 h-28 w-28 rounded-full bg-indigo-400/10 dark:bg-indigo-400/15 blur-2xl pointer-events-none" aria-hidden="true"></div>
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-indigo-300/35 dark:text-indigo-400/20 pointer-events-none hidden sm:block" aria-hidden="true">
+          <i class="fas fa-eye text-7xl"></i>
+        </div>
+        <div class="flex items-center gap-2 mb-3 relative z-10">
+          <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 dark:shadow-indigo-900/40">
+            <i class="fas fa-star text-sm"></i>
+          </span>
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Kurum vizyonu</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">Geleceğe yönelik ifade — tüm ekip için ortak pusula</div>
+          </div>
+        </div>
+        <p data-sk-field="vision" class="relative z-10 text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 leading-relaxed pr-0 sm:pr-16">
+          {{ tenant.vision or '—' }}
+        </p>
+      </div>
+
+      <!-- Diğer alanlar — akordeon -->
+      <div class="space-y-2" x-data="{ identityOpen: null }">
+        <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                  @click="identityOpen = identityOpen === 'purpose' ? null : 'purpose'">
+            <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fas fa-bullseye text-indigo-500 w-5 text-center"></i>Amaç
+            </span>
+            <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+               :class="{ 'rotate-180': identityOpen === 'purpose' }"></i>
+          </button>
+          <div x-show="identityOpen === 'purpose'"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-0.5"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               x-transition:leave="transition ease-in duration-150"
+               x-transition:leave-start="opacity-100"
+               x-transition:leave-end="opacity-0"
+               class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
+              <p data-sk-field="purpose" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.purpose or '—' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                  @click="identityOpen = identityOpen === 'values' ? null : 'values'">
+            <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fas fa-gem text-violet-500 w-5 text-center"></i>Temel değerler
+            </span>
+            <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+               :class="{ 'rotate-180': identityOpen === 'values' }"></i>
+          </button>
+          <div x-show="identityOpen === 'values'"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-0.5"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               x-transition:leave="transition ease-in duration-150"
+               x-transition:leave-start="opacity-100"
+               x-transition:leave-end="opacity-0"
+               class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
+              <p data-sk-field="core_values" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.core_values or '—' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                  @click="identityOpen = identityOpen === 'ethics' ? null : 'ethics'">
+            <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fas fa-balance-scale text-amber-600 dark:text-amber-400 w-5 text-center"></i>Etik kurallar
+            </span>
+            <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+               :class="{ 'rotate-180': identityOpen === 'ethics' }"></i>
+          </button>
+          <div x-show="identityOpen === 'ethics'"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-0.5"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               x-transition:leave="transition ease-in duration-150"
+               x-transition:leave-start="opacity-100"
+               x-transition:leave-end="opacity-0"
+               class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
+              <p data-sk-field="code_of_ethics" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.code_of_ethics or '—' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                  @click="identityOpen = identityOpen === 'quality' ? null : 'quality'">
+            <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fas fa-award text-emerald-600 dark:text-emerald-400 w-5 text-center"></i>Kalite politikası
+            </span>
+            <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+               :class="{ 'rotate-180': identityOpen === 'quality' }"></i>
+          </button>
+          <div x-show="identityOpen === 'quality'"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-0.5"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               x-transition:leave="transition ease-in duration-150"
+               x-transition:leave-start="opacity-100"
+               x-transition:leave-end="opacity-0"
+               class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
+              <p data-sk-field="quality_policy" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.quality_policy or '—' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Özet kartlar -->
+  <div class="mc-grid-3" style="margin-bottom:20px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
+      <div class="mc-stat-label">Aktif Kullanıcı</div>
+      <div class="mc-stat-value" data-ov="user_count">{{ user_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
+      <div class="mc-stat-label">Aktif Süreç</div>
+      <div class="mc-stat-value" data-ov="process_count">{{ process_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-purple">
+      <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
+      <div class="mc-stat-label">Ana Strateji</div>
+      <div class="mc-stat-value" data-ov="strategy_count">{{ strategy_count }}</div>
+    </div>
+  </div>
+
+  <!-- Süreç & proje — grafikler + sayılar -->
+  <div class="space-y-5 mb-5">
+    <div class="mc-card overflow-hidden">
+      <div class="mc-card-header flex flex-wrap items-center gap-2">
+        <span class="mc-card-title"><i class="fas fa-stream text-emerald-600 mr-2"></i>Süreç özeti</span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">PG, strateji, operasyon, risk ve performans</span>
+      </div>
+      <div class="mc-card-body space-y-5" x-data="{ procAccordion: 'pg' }">
+        <!-- Özet Bilgiler (önce) -->
+        <div>
+          <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 uppercase tracking-wide">Özet Bilgiler</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3 -mt-1">Erişim kapsamınızdaki süreçlere göre özet rakamlar. Grafikler için aşağıdaki panelleri açın.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Aktif süreç</span>
+              <span class="font-bold tabular-nums" data-ov="process_count">{{ overview.process.process_count }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">PG tanımlı süreç</span>
+              <span class="font-bold tabular-nums" data-ov="processes_with_pg">{{ overview.process.processes_with_pg }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Aktif PG</span>
+              <span class="font-bold tabular-nums" data-ov="active_pg_count">{{ overview.process.active_pg_count }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Stratejisiz süreç</span>
+              <span class="font-bold tabular-nums" data-ov="processes_without_strategy">{{ overview.process.processes_without_strategy }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">30g veri giren süreç</span>
+              <span class="font-bold tabular-nums" data-ov="processes_with_kpi_data_30d">{{ overview.process.processes_with_kpi_data_30d }}</span>
+            </div>
+            <div class="rounded-lg bg-amber-100/50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-amber-900/90 dark:text-amber-200/90">30g PG veri (satır)</span>
+              <span class="font-bold tabular-nums text-amber-900 dark:text-amber-100" data-ov="kpi_data_rows_30d">{{ overview.process.kpi_data_rows_30d }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Açık faaliyet</span>
+              <span class="font-bold tabular-nums" data-ov="open_process_activities">{{ overview.process.open_process_activities }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Bu ay takip</span>
+              <span class="font-bold tabular-nums" data-ov="activity_tracks_done_this_month">{{ overview.process.activity_tracks_done_this_month }}</span>
+            </div>
+            <div class="rounded-lg bg-rose-100/50 dark:bg-rose-950/25 border border-rose-200/50 dark:border-rose-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-rose-800 dark:text-rose-200">Bayat veri (PG)</span>
+              <span class="font-bold tabular-nums text-rose-700 dark:text-rose-300" data-ov="stale_pg_count">{{ overview.process.stale_pg_count }}</span>
+            </div>
+            <div class="rounded-lg bg-rose-100/50 dark:bg-rose-950/25 border border-rose-200/50 dark:border-rose-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-rose-800 dark:text-rose-200">Geciken faaliyet</span>
+              <span class="font-bold tabular-nums text-rose-700 dark:text-rose-300" data-ov="overdue_activities">{{ overview.process.overdue_activities }}</span>
+            </div>
+            <div class="rounded-lg bg-rose-100/50 dark:bg-rose-950/25 border border-rose-200/50 dark:border-rose-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-rose-800 dark:text-rose-200">Eksik tanım (PG)</span>
+              <span class="font-bold tabular-nums text-rose-700 dark:text-rose-300" data-ov="pg_incomplete_definition">{{ overview.process.pg_incomplete_definition }}</span>
+            </div>
+            <div class="rounded-lg bg-sky-100/50 dark:bg-sky-950/25 border border-sky-200/50 dark:border-sky-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-sky-800 dark:text-sky-200">Ort. PG skoru</span>
+              <span class="font-bold tabular-nums text-sky-800 dark:text-sky-100" data-ov="pg_avg_calculated_score">{% if overview.process.pg_avg_calculated_score is not none %}{{ overview.process.pg_avg_calculated_score }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="rounded-lg bg-sky-100/50 dark:bg-sky-950/25 border border-sky-200/50 dark:border-sky-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-sky-800 dark:text-sky-200">Skoru olan PG</span>
+              <span class="font-bold tabular-nums text-sky-800 dark:text-sky-100" data-ov="pg_scored_count">{{ overview.process.pg_scored_count }}</span>
+            </div>
+            <div class="rounded-lg bg-sky-100/50 dark:bg-sky-950/25 border border-sky-200/50 dark:border-sky-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-sky-800 dark:text-sky-200">Skor &lt; 50</span>
+              <span class="font-bold tabular-nums text-sky-800 dark:text-sky-100" data-ov="pg_low_score_count">{{ overview.process.pg_low_score_count }}</span>
+            </div>
+          </div>
+        </div>
+
+        {% if overview.process_tenant %}
+        <div class="rounded-xl border-2 border-dashed border-violet-300/90 dark:border-violet-600/50 bg-violet-50/40 dark:bg-violet-950/20 p-4 space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-violet-600 text-white text-sm"><i class="fas fa-building"></i></span>
+            <div>
+              <h4 class="text-sm font-bold text-violet-900 dark:text-violet-100">Kurum geneli (yönetici)</h4>
+              <p class="text-[11px] text-violet-800/80 dark:text-violet-300/90">Tüm aktif süreçler — üyelik filtresi uygulanmaz. Yalnızca <strong>tenant_admin</strong> / <strong>executive_manager</strong> / <strong>Admin</strong>.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-violet-200/60 dark:border-violet-800/50 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Aktif süreç</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="process_count">{{ overview.process_tenant.process_count }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-violet-200/60 dark:border-violet-800/50 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Aktif PG</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="active_pg_count">{{ overview.process_tenant.active_pg_count }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-rose-200/60 dark:border-rose-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Bayat veri (PG)</span>
+              <span class="font-bold text-lg tabular-nums text-rose-700 dark:text-rose-300" data-ov-t="stale_pg_count">{{ overview.process_tenant.stale_pg_count }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-rose-200/60 dark:border-rose-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Geciken faaliyet</span>
+              <span class="font-bold text-lg tabular-nums text-rose-700 dark:text-rose-300" data-ov-t="overdue_activities">{{ overview.process_tenant.overdue_activities }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-amber-200/60 dark:border-amber-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Eksik tanım (PG)</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="pg_incomplete_definition">{{ overview.process_tenant.pg_incomplete_definition }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-sky-200/60 dark:border-sky-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Ort. PG skoru</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="pg_avg_calculated_score">{% if overview.process_tenant.pg_avg_calculated_score is not none %}{{ overview.process_tenant.pg_avg_calculated_score }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-sky-200/60 dark:border-sky-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Skor &lt; 50</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="pg_low_score_count">{{ overview.process_tenant.pg_low_score_count }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-600 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">30g veri (satır)</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-t="kpi_data_rows_30d">{{ overview.process_tenant.kpi_data_rows_30d }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="border-t border-slate-200 dark:border-slate-600 pt-4">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">Grafikler</p>
+          <div class="space-y-2">
+            <!-- Akordeon: PG + Strateji -->
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="procAccordion = procAccordion === 'pg' ? null : 'pg'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-chart-pie text-emerald-600 w-5 text-center"></i>PG kapsamı &amp; strateji hizalaması
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': procAccordion === 'pg' }"></i>
+              </button>
+              <div x-show="procAccordion === 'pg'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900/20 p-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div class="rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-gradient-to-b from-emerald-50/80 to-white dark:from-emerald-950/25 dark:to-slate-900/40 p-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300 mb-1">PG kapsamı</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Süreçlerde PG tanımı dağılımı</p>
+                    <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
+                      <canvas id="kurum-chart-process-pg" aria-label="PG kapsamı pasta grafiği"></canvas>
+                    </div>
+                  </div>
+                  <div class="rounded-xl border border-violet-200/80 dark:border-violet-900/50 bg-gradient-to-b from-violet-50/80 to-white dark:from-violet-950/25 dark:to-slate-900/40 p-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wide text-violet-800 dark:text-violet-300 mb-1">Strateji hizalaması</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Alt strateji bağlantısı</p>
+                    <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
+                      <canvas id="kurum-chart-process-strategy" aria-label="Strateji hizalaması pasta grafiği"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Akordeon: Operasyon -->
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="procAccordion = procAccordion === 'ops' ? null : 'ops'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-chart-bar text-emerald-600 w-5 text-center"></i>Operasyonel hacim
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': procAccordion === 'ops' }"></i>
+              </button>
+              <div x-show="procAccordion === 'ops'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-4">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip</p>
+                <div class="kurum-chart-wrap kurum-chart-wrap--tall">
+                  <canvas id="kurum-chart-process-activity" aria-label="Süreç operasyon çubuk grafiği"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Akordeon: Risk -->
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="procAccordion = procAccordion === 'risk' ? null : 'risk'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-triangle-exclamation text-rose-600 w-5 text-center"></i>Risk &amp; uyarı
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': procAccordion === 'risk' }"></i>
+              </button>
+              <div x-show="procAccordion === 'risk'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-gradient-to-b from-rose-50/50 to-white dark:from-rose-950/15 dark:to-slate-900/30 p-4">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                  PG için son geçerli veri <strong>{{ overview.process.stale_kpi_data_days }} günden</strong> eskiyse “bayat”; geciken faaliyet; hedef/dönem eksik PG.
+                </p>
+                <div class="kurum-chart-wrap kurum-chart-wrap--tall">
+                  <canvas id="kurum-chart-process-risk" aria-label="Süreç risk çubuk grafiği"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Akordeon: Performans -->
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="procAccordion = procAccordion === 'perf' ? null : 'perf'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-gauge-high text-sky-600 w-5 text-center"></i>Performans (PG skoru)
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': procAccordion === 'perf' }"></i>
+              </button>
+              <div x-show="procAccordion === 'perf'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-gradient-to-b from-sky-50/50 to-white dark:from-sky-950/15 dark:to-slate-900/30 p-4">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                  <code class="text-[10px] bg-slate-200/50 dark:bg-slate-700/50 px-1 rounded">calculated_score</code> — düşük (&lt;50), skorlu (≥50), skorsuz.
+                </p>
+                <div class="kurum-chart-wrap relative mx-auto max-w-[260px]">
+                  <canvas id="kurum-chart-process-score" aria-label="PG skor dağılımı"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc-card overflow-hidden">
+      <div class="mc-card-header flex flex-wrap items-center gap-2">
+        <span class="mc-card-title"><i class="fas fa-folder-open text-indigo-600 mr-2"></i>Proje özeti</span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Özet bilgiler, kurum geneli (yönetici) ve akordeon grafikler</span>
+      </div>
+      <div class="mc-card-body space-y-5" x-data="{ projAccordion: 'plan' }">
+        <div>
+          <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 uppercase tracking-wide">Özet Bilgiler</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3 -mt-1">Erişiminiz olan projelere göre özet. Grafikler için aşağıdaki panelleri açın.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Aktif proje</span>
+              <span class="font-bold tabular-nums" data-ov="project_count">{{ overview.project.project_count }}</span>
+            </div>
+            <div class="rounded-lg bg-rose-100/50 dark:bg-rose-950/25 border border-rose-200/50 dark:border-rose-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-rose-800 dark:text-rose-200">Bitişi geciken</span>
+              <span class="font-bold tabular-nums text-rose-700 dark:text-rose-300" data-ov="projects_overdue_end">{{ overview.project.projects_overdue_end }}</span>
+            </div>
+            <div class="rounded-lg bg-amber-100/50 dark:bg-amber-950/25 border border-amber-200/50 dark:border-amber-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-amber-900/90 dark:text-amber-200/90">30 gün içinde bitiş</span>
+              <span class="font-bold tabular-nums text-amber-900 dark:text-amber-100" data-ov="projects_end_soon">{{ overview.project.projects_end_soon }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Açık görev</span>
+              <span class="font-bold tabular-nums" data-ov="open_tasks">{{ overview.project.open_tasks }}</span>
+            </div>
+            <div class="rounded-lg bg-rose-100/50 dark:bg-rose-950/25 border border-rose-200/50 dark:border-rose-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-rose-800 dark:text-rose-200">Geciken görev</span>
+              <span class="font-bold tabular-nums text-rose-700 dark:text-rose-300" data-ov="overdue_tasks">{{ overview.project.overdue_tasks }}</span>
+            </div>
+            <div class="rounded-lg bg-amber-100/50 dark:bg-amber-950/25 border border-amber-200/50 dark:border-amber-900/40 px-3 py-2 flex justify-between gap-2">
+              <span class="text-amber-900/90 dark:text-amber-200/90">7 gün vadesi</span>
+              <span class="font-bold tabular-nums text-amber-900 dark:text-amber-100" data-ov="tasks_due_next_7_days">{{ overview.project.tasks_due_next_7_days }}</span>
+            </div>
+            <div class="rounded-lg bg-slate-100/80 dark:bg-slate-800/60 px-3 py-2 flex justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-400">Açık RAID</span>
+              <span class="font-bold tabular-nums" data-ov="open_raid_items">{{ overview.project.open_raid_items }}</span>
+            </div>
+            <div class="rounded-lg bg-violet-100/50 dark:bg-violet-950/25 border border-violet-200/50 dark:border-violet-900/40 px-3 py-2 flex justify-between gap-2 sm:col-span-2">
+              <span class="text-violet-800 dark:text-violet-200">Sağlık &lt; 50 proje</span>
+              <span class="font-bold tabular-nums text-violet-800 dark:text-violet-100" data-ov="low_health_projects">{{ overview.project.low_health_projects }}</span>
+            </div>
+          </div>
+        </div>
+
+        {% if overview.project_tenant %}
+        <div class="rounded-xl border-2 border-dashed border-indigo-300/90 dark:border-indigo-600/50 bg-indigo-50/40 dark:bg-indigo-950/20 p-4 space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-indigo-600 text-white text-sm"><i class="fas fa-sitemap"></i></span>
+            <div>
+              <h4 class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Kurum geneli — projeler (yönetici)</h4>
+              <p class="text-[11px] text-indigo-800/80 dark:text-indigo-300/90">Tüm aktif projeler — üye/lider filtresi uygulanmaz.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-indigo-200/60 dark:border-indigo-800/50 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Aktif proje</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-pt="project_count">{{ overview.project_tenant.project_count }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-rose-200/60 dark:border-rose-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Bitiş geciken</span>
+              <span class="font-bold text-lg tabular-nums text-rose-700 dark:text-rose-300" data-ov-pt="projects_overdue_end">{{ overview.project_tenant.projects_overdue_end }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-amber-200/60 dark:border-amber-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">30 gün bitiş</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-pt="projects_end_soon">{{ overview.project_tenant.projects_end_soon }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-600 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Açık görev</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-pt="open_tasks">{{ overview.project_tenant.open_tasks }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-rose-200/60 dark:border-rose-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Geciken görev</span>
+              <span class="font-bold text-lg tabular-nums text-rose-700 dark:text-rose-300" data-ov-pt="overdue_tasks">{{ overview.project_tenant.overdue_tasks }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-amber-200/60 dark:border-amber-900/40 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">7 gün vade</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-pt="tasks_due_next_7_days">{{ overview.project_tenant.tasks_due_next_7_days }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-600 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Açık RAID</span>
+              <span class="font-bold text-lg tabular-nums" data-ov-pt="open_raid_items">{{ overview.project_tenant.open_raid_items }}</span>
+            </div>
+            <div class="rounded-lg bg-white/80 dark:bg-slate-900/50 border border-violet-200/60 dark:border-violet-800/50 px-2 py-2 flex flex-col">
+              <span class="text-slate-500">Sağlık &lt;50</span>
+              <span class="font-bold text-lg tabular-nums text-violet-700 dark:text-violet-300" data-ov-pt="low_health_projects">{{ overview.project_tenant.low_health_projects }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="border-t border-slate-200 dark:border-slate-600 pt-4">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">Grafikler</p>
+          <div class="space-y-2">
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="projAccordion = projAccordion === 'plan' ? null : 'plan'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-calendar-check text-rose-600 w-5 text-center"></i>Proje bitişi &amp; görev dağılımı
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': projAccordion === 'plan' }"></i>
+              </button>
+              <div x-show="projAccordion === 'plan'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900/20 p-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div class="rounded-xl border border-rose-200/80 dark:border-rose-900/50 bg-gradient-to-b from-rose-50/70 to-white dark:from-rose-950/20 dark:to-slate-900/40 p-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wide text-rose-800 dark:text-rose-300 mb-1">Proje bitiş durumu</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Geciken, 30 gün içinde, diğer</p>
+                    <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
+                      <canvas id="kurum-chart-project-timeline" aria-label="Proje bitiş durumu pasta grafiği"></canvas>
+                    </div>
+                  </div>
+                  <div class="rounded-xl border border-indigo-200/80 dark:border-indigo-900/50 bg-gradient-to-b from-indigo-50/70 to-white dark:from-indigo-950/25 dark:to-slate-900/40 p-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wide text-indigo-800 dark:text-indigo-300 mb-1">Açık görev dağılımı</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Vadesi geçen, 7 gün içinde, diğer</p>
+                    <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
+                      <canvas id="kurum-chart-project-tasks" aria-label="Görev dağılımı pasta grafiği"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                      @click="projAccordion = projAccordion === 'risk' ? null : 'risk'; $nextTick(() => window.__kurumRedrawCharts && window.__kurumRedrawCharts())">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <i class="fas fa-bolt text-amber-500 w-5 text-center"></i>Risk ve yük göstergeleri
+                </span>
+                <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 shrink-0"
+                   :class="{ 'rotate-180': projAccordion === 'risk' }"></i>
+              </button>
+              <div x-show="projAccordion === 'risk'"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 -translate-y-0.5"
+                   x-transition:enter-end="opacity-100 translate-y-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-4">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Geciken görev, yaklaşan vade, RAID, düşük sağlık</p>
+                <div class="kurum-chart-wrap kurum-chart-wrap--tall">
+                  <canvas id="kurum-chart-project-risk" aria-label="Proje risk çubuk grafiği"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stratejiler — akordeon (her ana strateji bir panel) -->
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-bullseye" style="color:#8b5cf6; margin-right:8px;"></i>Stratejiler
+      </span>
+      {% if can_edit_kurum %}
+      <button id="btn-strategy-add" type="button" class="mc-btn mc-btn-primary mc-btn-sm">
+        <i class="fas fa-plus"></i> Ana Strateji Ekle
+      </button>
+      {% endif %}
+    </div>
+    <div>
+      {% if strategies %}
+      <div class="divide-y divide-slate-100 dark:divide-slate-700" x-data="{ strategyOpen: null }">
+        {% for st in strategies %}
+        <div class="bg-white dark:bg-slate-900/20">
+          <div class="flex items-stretch gap-0 min-h-[52px]">
+            <button type="button"
+                    class="flex-1 flex items-center gap-3 px-4 py-3 text-left min-w-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+                    @click="strategyOpen = strategyOpen === {{ st.id }} ? null : {{ st.id }}">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
+                <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                   :class="{ 'rotate-180': strategyOpen === {{ st.id }} }"></i>
+              </span>
+              <span class="min-w-0 flex-1 flex flex-wrap items-center gap-2">
+                {% if st.code %}
+                <span class="mc-badge mc-badge-purple shrink-0" style="font-family:monospace;">{{ st.code }}</span>
+                {% endif %}
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{{ st.title }}</span>
+              </span>
+            </button>
+            {% if can_edit_kurum %}
+            <div class="flex items-center gap-1 px-2 py-2 shrink-0 border-l border-transparent" @click.stop>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-sub-add" data-strategy-id="{{ st.id }}">
+                <i class="fas fa-plus"></i> Alt Ekle
+              </button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-main-edit"
+                      data-strategy-id="{{ st.id }}"
+                      data-title="{{ st.title | e }}"
+                      data-code="{{ st.code or '' | e }}"
+                      data-description="{{ (st.description or '') | e }}">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button type="button" class="mc-btn mc-btn-danger mc-btn-sm btn-main-delete"
+                      data-strategy-id="{{ st.id }}"
+                      data-title="{{ st.title | e }}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            {% endif %}
+          </div>
+          <div x-show="strategyOpen === {{ st.id }}"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0"
+               x-transition:enter-end="opacity-100"
+               x-transition:leave="transition ease-in duration-150"
+               x-transition:leave-start="opacity-100"
+               x-transition:leave-end="opacity-0"
+               class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/30">
+            <div class="px-4 py-3 pl-14 sm:pl-16">
+              {% for ss in (st.sub_strategies or []) if ss.is_active %}
+              {% if loop.first %}
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Alt stratejiler</p>
+              <ul class="space-y-2">
+              {% endif %}
+                <li class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900/50 px-3 py-2">
+                  <span class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 min-w-0">
+                    {% if ss.code %}<span class="font-mono text-slate-400 mr-1">{{ ss.code }}</span>{% endif %}
+                    {{ ss.title }}
+                  </span>
+                  {% if can_edit_kurum %}
+                  <div class="flex gap-1 shrink-0" @click.stop>
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-sub-edit"
+                            data-sub-id="{{ ss.id }}"
+                            data-title="{{ ss.title | e }}"
+                            data-code="{{ ss.code or '' | e }}">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="mc-btn mc-btn-danger mc-btn-sm btn-sub-delete"
+                            data-sub-id="{{ ss.id }}"
+                            data-title="{{ ss.title | e }}">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                  {% endif %}
+                </li>
+              {% if loop.last %}
+              </ul>
+              {% endif %}
+              {% else %}
+              <p class="text-sm text-slate-500 dark:text-slate-400 italic">Bu strateji için henüz alt strateji yok. <span class="not-italic font-medium text-violet-600 dark:text-violet-400">«Alt»</span> ile ekleyebilirsiniz.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="mc-empty" style="padding:48px 20px;">
+        <div class="mc-empty-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="mc-empty-title">Henüz strateji eklenmemiş</div>
+        {% if can_edit_kurum %}
+        <button id="btn-strategy-add-empty" type="button" class="mc-btn mc-btn-primary" style="margin-top:12px;">
+          <i class="fas fa-plus"></i> Ana Strateji Ekle
+        </button>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/kurum.js') }}"></script>
+{% endblock %}
+

@@ -14,23 +14,23 @@ from flask_login import current_user, login_required
 from sqlalchemy import func
 from sqlalchemy.exc import ProgrammingError
 
-from micro import micro_bp
+from platform_core import app_bp
 from models import Project, Surec, Task, db
 from app.models.process import Process as AppProcess
-from micro.modules.proje.display import build_user_labels_map, collect_projects_user_ids, user_display
-from micro.modules.proje.helpers import kurum_id, tenant_core_users
-from micro.modules.proje.permissions import (
+from app_platform.modules.proje.display import build_user_labels_map, collect_projects_user_ids, user_display
+from app_platform.modules.proje.helpers import kurum_id, tenant_core_users
+from app_platform.modules.proje.permissions import (
     accessible_projects_query,
     can_crud_project_portfolio,
     is_privileged,
 )
-from micro.modules.proje.portfolio_service import build_portfolio_context
-from micro.modules.proje.project_list_query import (
+from app_platform.modules.proje.portfolio_service import build_portfolio_context
+from app_platform.modules.proje.project_list_query import (
     ProjectListFilters,
     build_filtered_projects_query,
     parse_project_list_filters,
 )
-from micro.modules.proje.project_overview_service import build_project_list_overview, overview_for_export_summary
+from app_platform.modules.proje.project_overview_service import build_project_list_overview, overview_for_export_summary
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
 
@@ -53,19 +53,19 @@ def _load_filter_surecler(kid: int):
         ]
 
 
-@micro_bp.route("/proje")
+@app_bp.route("/proje")
 @login_required
 def proje_legacy_redirect():
-    return redirect(url_for("micro_bp.micro_project_list"))
+    return redirect(url_for("app_bp.project_list"))
 
 
-@micro_bp.route("/project")
+@app_bp.route("/project")
 @login_required
-def micro_project_list():
+def project_list():
     kid = kurum_id()
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
-        return redirect(url_for("micro_bp.launcher"))
+        return redirect(url_for("app_bp.launcher"))
 
     privileged = is_privileged(current_user)
     flt = parse_project_list_filters(request, privileged)
@@ -87,10 +87,10 @@ def micro_project_list():
         args = flt.query_args()
         if pnum > 1:
             args["page"] = pnum
-        return url_for("micro_bp.micro_project_list", **args)
+        return url_for("app_bp.project_list", **args)
 
     return render_template(
-        "micro/project/list.html",
+        "platform/project/list.html",
         projects=pagination.items,
         pagination=pagination,
         user_labels=user_labels,
@@ -99,8 +99,8 @@ def micro_project_list():
         filter_args=flt.query_args(),
         list_url_prev=_page_url(pagination.prev_num) if pagination.has_prev else None,
         list_url_next=_page_url(pagination.next_num) if pagination.has_next else None,
-        export_url=url_for("micro_bp.micro_project_export_csv", **flt.query_args()),
-        ics_url=url_for("micro_bp.micro_project_deadlines_ics", **flt.query_args()),
+        export_url=url_for("app_bp.project_export_csv", **flt.query_args()),
+        ics_url=url_for("app_bp.project_deadlines_ics", **flt.query_args()),
         overview=overview,
         show_portfolio=show_portfolio,
         privileged=privileged,
@@ -110,13 +110,13 @@ def micro_project_list():
     )
 
 
-@micro_bp.route("/project/export.csv")
+@app_bp.route("/project/export.csv")
 @login_required
-def micro_project_export_csv():
+def project_export_csv():
     kid = kurum_id()
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
-        return redirect(url_for("micro_bp.launcher"))
+        return redirect(url_for("app_bp.launcher"))
 
     privileged = is_privileged(current_user)
     flt = parse_project_list_filters(request, privileged)
@@ -198,9 +198,9 @@ def micro_project_export_csv():
     )
 
 
-@micro_bp.route("/project/deadlines.ics")
+@app_bp.route("/project/deadlines.ics")
 @login_required
-def micro_project_deadlines_ics():
+def project_deadlines_ics():
     kid = kurum_id()
     if not kid:
         return Response("Forbidden", status=403)
@@ -244,22 +244,22 @@ def micro_project_deadlines_ics():
     )
 
 
-@micro_bp.route("/project/bulk-notifications", methods=["POST"])
+@app_bp.route("/project/bulk-notifications", methods=["POST"])
 @login_required
-def micro_project_bulk_notifications():
+def project_bulk_notifications():
     if not is_privileged(current_user):
         flash("Bu işlem için yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
-        return redirect(url_for("micro_bp.launcher"))
+        return redirect(url_for("app_bp.launcher"))
 
     action = (request.form.get("action") or "").strip().lower()
     if action not in ("email_on", "email_off"):
         flash("Geçersiz işlem.", "warning")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     raw_ids = request.form.getlist("project_ids")
     ids: list[int] = []
@@ -270,7 +270,7 @@ def micro_project_bulk_notifications():
     ids = list(dict.fromkeys(ids))
     if not ids:
         flash("Proje seçilmedi.", "warning")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     q = accessible_projects_query(Project.query.filter(Project.id.in_(ids)), current_user, kid)
     allowed = {p.id for p in q.all()}
@@ -297,25 +297,26 @@ def micro_project_bulk_notifications():
         f"{updated} projede e-posta bildirim kanalı {'açıldı' if email_on else 'kapatıldı'}.",
         "success",
     )
-    return redirect(url_for("micro_bp.micro_project_list"))
+    return redirect(url_for("app_bp.project_list"))
 
 
-@micro_bp.route("/project/portfolio")
+@app_bp.route("/project/portfolio")
 @login_required
-def micro_project_portfolio():
+def project_portfolio():
     if not can_crud_project_portfolio(current_user):
         flash("Bu sayfaya erişim yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
     if not kid:
         flash("Kurum bilgisi bulunamadı.", "danger")
-        return redirect(url_for("micro_bp.launcher"))
+        return redirect(url_for("app_bp.launcher"))
 
     ctx = build_portfolio_context(kid)
     return render_template(
-        "micro/project/portfolio.html",
+        "platform/project/portfolio.html",
         projects_with_scores=ctx["projects_with_scores"],
         process_totals=ctx["process_totals"],
         portfolio_source=ctx.get("portfolio_source", "legacy_matrix"),
     )
+

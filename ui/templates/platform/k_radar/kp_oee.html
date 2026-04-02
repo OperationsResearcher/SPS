@@ -1,0 +1,16 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KP OEE{% endblock %}
+{% block page_title %}KP-Radar OEE{% endblock %}
+{% block content %}
+<div id="k-radar-kp-oee-root" data-url="{{ url_for('app_bp.k_radar_api_kp_oee') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">OEE Özeti</h3>
+    <div><strong>OEE:</strong> <span id="kp-oee-oee">-</span></div>
+    <div><strong>Availability:</strong> <span id="kp-oee-a">-</span></div>
+    <div><strong>Performance:</strong> <span id="kp-oee-p">-</span></div>
+    <div><strong>Quality:</strong> <span id="kp-oee-q">-</span></div>
+    <div><strong>30g Trend:</strong> <span id="kp-oee-trend">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

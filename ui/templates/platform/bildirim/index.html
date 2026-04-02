@@ -1,0 +1,83 @@
+﻿{% extends "platform/base.html" %}
+{% block title %}Bildirim Merkezi — Kokpitim{% endblock %}
+{% block page_title %}Bildirim Merkezi{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/bildirim.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="bildirim-page-wrap">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Bildirimler</h2>
+      <p class="mc-page-subtitle" id="bildirim-count-label">{{ bildirimler|length }} bildirim</p>
+    </div>
+    {% if bildirimler %}
+    <button id="btn-mark-all-read"
+            class="mc-btn mc-btn-secondary mc-btn-sm"
+            data-url="{{ url_for('app_bp.bildirim_api_mark_all_read') }}">
+      <i class="fas fa-check-double"></i> Tümünü Okundu İşaretle
+    </button>
+    {% endif %}
+  </div>
+
+  <div class="mc-card" id="bildirim-list-card">
+    {% if bildirimler %}
+    <div id="bildirim-list">
+      {% for b in bildirimler %}
+      <div class="bildirim-row {% if not b.is_read %}bildirim-unread{% endif %}"
+           id="bildirim-item-{{ b.id }}"
+           data-id="{{ b.id }}"
+           data-read="{{ 'true' if b.is_read else 'false' }}"
+           data-mark-url="{{ url_for('app_bp.bildirim_api_mark_read', notif_id=b.id) }}"
+           {% if b.link %}data-link="{{ b.link }}"{% endif %}>
+
+        <div class="bildirim-icon-wrap">
+          <div class="bildirim-icon {% if not b.is_read %}bildirim-icon-unread{% endif %}">
+            {% if b.notification_type == 'process_assigned' %}
+              <i class="fas fa-project-diagram bildirim-bell {% if not b.is_read %}bildirim-bell-unread{% endif %}"></i>
+            {% elif b.notification_type == 'kpi_changed' %}
+              <i class="fas fa-chart-line bildirim-bell {% if not b.is_read %}bildirim-bell-unread{% endif %}"></i>
+            {% elif b.notification_type == 'activity_added' %}
+              <i class="fas fa-tasks bildirim-bell {% if not b.is_read %}bildirim-bell-unread{% endif %}"></i>
+            {% elif b.notification_type == 'task_assigned' %}
+              <i class="fas fa-clipboard-check bildirim-bell {% if not b.is_read %}bildirim-bell-unread{% endif %}"></i>
+            {% else %}
+              <i class="fas fa-bell bildirim-bell {% if not b.is_read %}bildirim-bell-unread{% endif %}"></i>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="bildirim-body">
+          <div class="bildirim-title {% if not b.is_read %}bildirim-title-unread{% endif %}">
+            {{ b.title }}
+          </div>
+          {% if b.message %}
+          <div class="bildirim-message">{{ b.message }}</div>
+          {% endif %}
+          <div class="bildirim-time">
+            <i class="fas fa-clock"></i>
+            {{ b.created_at.strftime('%d.%m.%Y %H:%M') }}
+          </div>
+        </div>
+
+        {% if not b.is_read %}
+        <div class="bildirim-dot" id="bildirim-dot-{{ b.id }}"></div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="mc-empty bildirim-empty" id="bildirim-empty-state">
+      <div class="mc-empty-icon"><i class="fas fa-bell-slash"></i></div>
+      <div class="mc-empty-title">Bildirim yok</div>
+      <div class="mc-empty-text">Yeni bildirimler burada görünecek.</div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+

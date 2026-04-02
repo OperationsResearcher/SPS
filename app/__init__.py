@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from flask import Flask, jsonify, redirect, request
+from flask import Flask, jsonify
 from sqlalchemy import text
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -35,12 +35,18 @@ def create_app(config_class=None):
 
     app.config.from_object(config_class)
 
-    # Klasik Kokpitim arayüzü öneki (varsayılan /kok). Micro kök "/".
-    raw_legacy = (app.config.get("LEGACY_URL_PREFIX") or "/kok").strip() or "/kok"
-    if not raw_legacy.startswith("/"):
-        raw_legacy = "/" + raw_legacy
-    legacy = raw_legacy.rstrip("/") or "/kok"
-    app.config["LEGACY_URL_PREFIX"] = legacy
+    # Tek yapı: legacy prefix kaldırıldı, kök URL kullanılır.
+    app.config["LEGACY_URL_PREFIX"] = "/"
+
+    # Cloudflare / ters vekil: X-Forwarded-Proto ve Host okunsun; aksi halde is_secure ve yönlendirmeler hatalı.
+    _env = (os.environ.get("FLASK_ENV") or "").lower()
+    _trust = (os.environ.get("TRUST_PROXY") or "").lower()
+    if _env == "production" or _trust in ("1", "true", "yes"):
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(
+            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1
+        )
 
     csrf.init_app(app)
     db.init_app(app)
@@ -68,8 +74,12 @@ def create_app(config_class=None):
     def add_security_headers(response):
         return set_security_headers(response)
 
+    # Register Centralized Error Handlers (Zero Defect Architecture)
+    from app.utils.error_handlers import register_error_handlers
+    register_error_handlers(app)
+
     login_manager.init_app(app)
-    # Giriş URL’si kökte /login (çubukta /kok yok); legacy /kok/login aynı view ile çalışmaya devam eder.
+    # Giriş URL'si kökte /login.
     login_manager.login_view = "public_login"
     login_manager.login_message = "Bu sayfayı görüntülemek için giriş yapmalısınız."
     login_manager.login_message_category = "info"
@@ -78,13 +88,9 @@ def create_app(config_class=None):
     def load_user(user_id):
         return User.query.get(int(user_id)) if user_id else None
 
-    @app.context_processor
-    def inject_legacy_url_prefix():
-        return {"legacy_url_prefix": app.config["LEGACY_URL_PREFIX"]}
-
     @app.route("/health")
     def global_health():
-        """Yük dengeleyici / izleme — klasik /kok önekinin dışında kökte kalır."""
+        """Yük dengeleyici / izleme endpoint'i."""
         db_ok = True
         try:
             db.session.execute(text("SELECT 1"))
@@ -98,10 +104,10 @@ def create_app(config_class=None):
         }
         return jsonify(body), 200 if db_ok else 503
 
-    # ── 1) Klasik auth (/kok/login vb.) + kök /login, /logout — micro'dan önce (micro'da /login yok)
+    # ── 1) Auth
     from app.routes.auth import auth_bp, login as auth_login_view, logout as auth_logout_view
 
-    app.register_blueprint(auth_bp, url_prefix=legacy)
+    app.register_blueprint(auth_bp, url_prefix="")
     app.add_url_rule(
         "/login",
         endpoint="public_login",
@@ -115,44 +121,12 @@ def create_app(config_class=None):
         methods=["GET"],
     )
 
-    # ── 2) Micro platform (kök "/")
-    from micro import micro_bp
+    # ── 2) Platform (kök "/")
+    from platform_core import app_bp
 
-    app.register_blueprint(micro_bp)
+    app.register_blueprint(app_bp)
 
-    # Eski /micro/... yer imleri → yeni kök yollar
-    @app.route("/micro", strict_slashes=False)
-    @app.route("/micro/", strict_slashes=False)
-    def _redirect_old_micro_root():
-        dest = "/"
-        if request.query_string:
-            dest = dest + "?" + request.query_string.decode()
-        return redirect(dest, code=302)
-
-    @app.route("/micro/<path:subpath>")
-    def _redirect_old_micro_subpath(subpath):
-        dest = "/" + subpath.lstrip("/")
-        if request.query_string:
-            dest = dest + "?" + request.query_string.decode()
-        return redirect(dest, code=302)
-
-    # /isr → klasik arayüz (LEGACY_URL_PREFIX) alias
-    @app.route("/isr", strict_slashes=False)
-    @app.route("/isr/", strict_slashes=False)
-    def _isr_to_legacy_root():
-        dest = legacy + "/"
-        if request.query_string:
-            dest = dest + "?" + request.query_string.decode()
-        return redirect(dest, code=302)
-
-    @app.route("/isr/<path:subpath>")
-    def _isr_to_legacy_path(subpath):
-        dest = legacy + "/" + subpath.lstrip("/")
-        if request.query_string:
-            dest = dest + "?" + request.query_string.decode()
-        return redirect(dest, code=302)
-
-    # ── 3) Diğer klasik (legacy) blueprint'ler — LEGACY_URL_PREFIX altında
+    # ── 3) Uygulama blueprint'leri (tek yapı)
     from app.routes.admin import admin_bp
     from app.routes.dashboard import dashboard_bp
     from app.routes.hgs import hgs_bp
@@ -165,32 +139,38 @@ def create_app(config_class=None):
     from app.api.push import push_bp
     from app.api.ai import ai_bp
 
-    app.register_blueprint(hgs_bp, url_prefix=legacy)
-    app.register_blueprint(dashboard_bp, url_prefix=legacy)
-    app.register_blueprint(admin_bp, url_prefix=legacy + "/admin")
-    app.register_blueprint(strategy_bp, url_prefix=legacy)
-    app.register_blueprint(process_bp, url_prefix=legacy)
-    app.register_blueprint(core_bp, url_prefix=legacy)
+    app.register_blueprint(hgs_bp, url_prefix="")
+    app.register_blueprint(dashboard_bp, url_prefix="")
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(strategy_bp, url_prefix="")
+    app.register_blueprint(process_bp, url_prefix="")
+    app.register_blueprint(core_bp, url_prefix="")
 
-    app.register_blueprint(app_api_v1_bp, url_prefix=legacy)
+    app.register_blueprint(app_api_v1_bp, url_prefix="")
 
-    # Kokpitim proje REST (RAID, görevler, SLA API vb.) — `api/routes.py`; kök /api/... + legacy /kok/api/...
+    # Kokpitim proje REST (RAID, görevler, SLA API vb.) — `api/routes.py`
     from api.routes import api_bp as kokpitim_project_api_bp
+    
+    # Process Modern API (Zero Defect Architecture)
+    from app.api.process.performance_routes import process_performance_bp
 
     app.register_blueprint(kokpitim_project_api_bp, name="kokpitim_project_api")
-    app.register_blueprint(
-        kokpitim_project_api_bp,
-        url_prefix=legacy + "/api",
-        name="kokpitim_project_api_legacy",
-    )
+    app.register_blueprint(process_performance_bp, name="process_performance_api")
 
-    app.register_blueprint(create_swagger_blueprint(legacy))
-    app.register_blueprint(push_bp, url_prefix=legacy)
-    app.register_blueprint(ai_bp, url_prefix=legacy)
+    app.register_blueprint(create_swagger_blueprint(""))
+    app.register_blueprint(push_bp, url_prefix="")
+    app.register_blueprint(ai_bp, url_prefix="")
 
-    # Kök legacy: /projeler, süreç, strateji projeleri vb.
+    # Admin backup scheduler (daily/weekly, persisted in instance/backup_schedule.json)
+    if not app.testing:
+        from services.backup_scheduler_service import init_backup_scheduler
+        init_backup_scheduler(app)
+        from services.k_radar_scheduler_service import init_k_radar_scheduler
+        init_k_radar_scheduler(app)
+
+    # Kök yollar: /projeler, süreç, strateji projeleri vb.
     from main.routes import main_bp as kokpitim_main_bp
 
-    app.register_blueprint(kokpitim_main_bp, url_prefix=legacy)
+    app.register_blueprint(kokpitim_main_bp, url_prefix="")
 
     return app

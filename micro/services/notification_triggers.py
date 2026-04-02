@@ -76,7 +76,7 @@ def _send_email(to_user, title, message, tenant_id, notification_type, link=None
     if not _email_pref_enabled(tenant_id, notification_type):
         return
     try:
-        from micro.services.email_service import send_notification_email
+        from app_platform.services.email_service import send_notification_email
         action_btn = _ACTION_BTN.format(link=link) if link else ""
         html = _EMAIL_TEMPLATE.format(title=title, message=message, action_btn=action_btn)
         text = f"{title}\n\n{message}\n\n{link or ''}"

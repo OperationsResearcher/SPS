@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KP Değer Zinciri{% endblock %}
+{% block page_title %}KP-Radar Değer Zinciri{% endblock %}
+{% block content %}
+<div id="k-radar-kp-deger-zinciri-root" data-url="{{ url_for('app_bp.k_radar_api_kp_deger_zinciri') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">Değer Zinciri Özeti</h3>
+    <div><strong>Eşlenen Süreç:</strong> <span id="kp-dz-mapped">-</span></div>
+    <div><strong>Muda Riski:</strong> <span id="kp-dz-muda">-</span></div>
+    <div><strong>30g Trend:</strong> <span id="kp-dz-trend">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

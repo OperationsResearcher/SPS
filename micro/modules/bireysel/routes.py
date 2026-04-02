@@ -5,8 +5,8 @@ from datetime import datetime, timezone, date
 from flask import render_template, jsonify, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 
-from micro import micro_bp
-from micro.modules.surec.permissions import user_can_enter_pgv
+from platform_core import app_bp
+from app_platform.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import (
@@ -27,27 +27,27 @@ def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/karne")
+@app_bp.route("/bireysel/karne")
 @login_required
 def bireysel_karne():
     """Bireysel karne sayfası."""
     current_year = datetime.now().year
     return render_template(
-        "micro/bireysel/karne.html",
+        "platform/bireysel/karne.html",
         current_year=current_year,
     )
 
 
-@micro_bp.route("/bireysel")
+@app_bp.route("/bireysel")
 @login_required
 def bireysel():
     """Bireysel modül giriş yönlendirmesi."""
-    return redirect(url_for("micro_bp.bireysel_karne"))
+    return redirect(url_for("app_bp.bireysel_karne"))
 
 
 # ── API: Bireysel PG CRUD ─────────────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/api/pg/ensure-from-process-kpi", methods=["POST"])
+@app_bp.route("/bireysel/api/pg/ensure-from-process-kpi", methods=["POST"])
 @login_required
 def bireysel_api_pg_ensure_from_process_kpi():
     """
@@ -121,7 +121,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
             return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/pg/add", methods=["POST"])
+@app_bp.route("/bireysel/api/pg/add", methods=["POST"])
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
@@ -156,7 +156,7 @@ def bireysel_api_pg_add():
             return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_update(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -180,7 +180,7 @@ def bireysel_api_pg_update(pg_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/pg/delete/<int:pg_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/pg/delete/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_delete(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -198,7 +198,7 @@ def bireysel_api_pg_delete(pg_id):
 
 # ── API: Bireysel Veri Girişi ─────────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/api/veri/add", methods=["POST"])
+@app_bp.route("/bireysel/api/veri/add", methods=["POST"])
 @login_required
 def bireysel_api_veri_add():
     data = request.get_json() or {}
@@ -243,7 +243,7 @@ def bireysel_api_veri_add():
 
 # ── API: Bireysel Faaliyet CRUD ───────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/api/faaliyet/add", methods=["POST"])
+@app_bp.route("/bireysel/api/faaliyet/add", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_add():
     data = request.get_json() or {}
@@ -268,7 +268,7 @@ def bireysel_api_faaliyet_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/faaliyet/update/<int:act_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/faaliyet/update/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_update(act_id):
     act = IndividualActivity.query.filter_by(
@@ -292,7 +292,7 @@ def bireysel_api_faaliyet_update(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/faaliyet/delete/<int:act_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/faaliyet/delete/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_delete(act_id):
     act = IndividualActivity.query.filter_by(
@@ -308,7 +308,7 @@ def bireysel_api_faaliyet_delete(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bireysel/api/faaliyet/track/<int:act_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/faaliyet/track/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_track(act_id):
     """Bireysel faaliyet aylık tamamlanma toggle."""
@@ -342,7 +342,7 @@ def bireysel_api_faaliyet_track(act_id):
 
 # ── API: Favori PG toggle ─────────────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/api/favori/toggle/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/bireysel/api/favori/toggle/<int:kpi_id>", methods=["POST"])
 @login_required
 def bireysel_api_favori_toggle(kpi_id):
     """Favori KPI oluştur veya soft delete."""
@@ -365,7 +365,7 @@ def bireysel_api_favori_toggle(kpi_id):
 
 # ── API: Bireysel Karne AJAX ──────────────────────────────────────────────────
 
-@micro_bp.route("/bireysel/api/karne")
+@app_bp.route("/bireysel/api/karne")
 @login_required
 def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
@@ -484,7 +484,7 @@ def bireysel_api_karne():
     })
 
 
-@micro_bp.route("/bireysel/api/pg/<int:pg_id>/series")
+@app_bp.route("/bireysel/api/pg/<int:pg_id>/series")
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
@@ -532,3 +532,4 @@ def bireysel_api_pg_series(pg_id):
         "series": series,
         "monthly": {str(k): v for k, v in monthly_last.items()},
     })
+

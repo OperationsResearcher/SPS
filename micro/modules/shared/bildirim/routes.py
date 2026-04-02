@@ -5,12 +5,12 @@ from datetime import datetime, timezone
 from flask import render_template, jsonify, request
 from flask_login import login_required, current_user
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models import db
 from app.models.core import Notification
 
 
-@micro_bp.route("/bildirim")
+@app_bp.route("/bildirim")
 @login_required
 def bildirim():
     """Bildirim Merkezi ana sayfası — okunmamışlar önce."""
@@ -21,10 +21,10 @@ def bildirim():
         .limit(50)
         .all()
     )
-    return render_template("micro/bildirim/index.html", bildirimler=bildirimler)
+    return render_template("platform/bildirim/index.html", bildirimler=bildirimler)
 
 
-@micro_bp.route("/bildirim/api/unread-count")
+@app_bp.route("/bildirim/api/unread-count")
 @login_required
 def bildirim_api_unread_count():
     """Okunmamış bildirim sayısı — topbar badge için."""
@@ -32,7 +32,7 @@ def bildirim_api_unread_count():
     return jsonify({"count": count})
 
 
-@micro_bp.route("/bildirim/api/mark-read/<int:notif_id>", methods=["POST"])
+@app_bp.route("/bildirim/api/mark-read/<int:notif_id>", methods=["POST"])
 @login_required
 def bildirim_api_mark_read(notif_id):
     """Tekil bildirimi okundu işaretle."""
@@ -48,7 +48,7 @@ def bildirim_api_mark_read(notif_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
-@micro_bp.route("/bildirim/api/mark-all-read", methods=["POST"])
+@app_bp.route("/bildirim/api/mark-all-read", methods=["POST"])
 @login_required
 def bildirim_api_mark_all_read():
     """Tüm bildirimleri okundu işaretle."""

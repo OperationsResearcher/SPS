@@ -22,5 +22,9 @@ RUN mkdir -p /app/data /app/instance
 
 # Gunicorn ile 5000 portunda başlat
 # run:app = run.py modülündeki app nesnesi
+ENV FLASK_ENV=production
+ENV TRUST_PROXY=1
+
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "run:app"]
+# --timeout: Cloudflare origin limitinden (100s) düşük; takılı worker yenilensin
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "--timeout", "90", "--graceful-timeout", "25", "run:app"]

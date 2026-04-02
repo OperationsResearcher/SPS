@@ -1,0 +1,32 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KS{% endblock %}
+{% block page_title %}KS-Radar{% endblock %}
+{% block content %}
+<div id="k-radar-ks-root" data-url="{{ url_for('app_bp.k_radar_api_ks') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card">
+    <div class="mc-card-body">
+      <h3 style="margin-top:0;">Strateji Radari</h3>
+      <p style="color:#64748b;">Aktif strateji-surec kapsam skoru.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_swot') }}">SWOT</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_pestle') }}">PESTLE</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_tows') }}">TOWS</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_gap') }}">Gap</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_okr') }}">OKR</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_hoshin') }}">Hoshin</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_ansoff') }}">Ansoff</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_bcg') }}">BCG</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_bsc') }}">BSC</a>
+        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_efqm') }}">EFQM</a>
+      </div>
+      <div><strong>Skor:</strong> <span id="ks-score">-</span></div>
+      <div><strong>Band:</strong> <span id="ks-band">-</span></div>
+      <div><strong>Strateji:</strong> <span id="ks-strategy-count">-</span></div>
+      <div><strong>Surec:</strong> <span id="ks-process-count">-</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+{% endblock %}

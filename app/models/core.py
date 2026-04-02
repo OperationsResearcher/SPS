@@ -38,6 +38,12 @@ class Tenant(db.Model):
     code_of_ethics = db.Column(db.Text, nullable=True)  # Etik Kurallar
     quality_policy = db.Column(db.Text, nullable=True)  # Kalite Politikası
 
+    # Kurum logosu (instance/uploads/tenant_logos/ altında saklanır; dosya adı örn. "5.png")
+    logo_path = db.Column(db.String(500), nullable=True)
+    logo_updated_at = db.Column(db.DateTime, nullable=True)
+
+    k_vektor_enabled = db.Column(db.Boolean, default=False, nullable=False)
+
     package = db.relationship("SubscriptionPackage", back_populates="tenants")
     users = db.relationship("User", back_populates="tenant")
 

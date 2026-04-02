@@ -53,8 +53,6 @@ from app.models.process import (
     process_members,
     process_owners_table,
 )
-from app.models.strategy import SwotAnalysis
-
 DEFAULT_OLD_DB = os.path.join(ROOT, "docs", "kokpitim_yedek.db")
 
 # Eski sistem_rol -> hedef Role.name (seed.py ile uyumlu)
@@ -64,18 +62,6 @@ SISTEM_ROL_TO_ROLE_NAME = {
     "ust_yonetim": "executive_manager",
     "kurum_kullanici": "standard_user",
     "surec_lideri": "User",
-}
-
-# SWOT kategori normalizasyonu
-SWOT_CAT_MAP = {
-    "strengths": "strength",
-    "weaknesses": "weakness",
-    "opportunities": "opportunity",
-    "threats": "threat",
-    "strength": "strength",
-    "weakness": "weakness",
-    "opportunity": "opportunity",
-    "threat": "threat",
 }
 
 
@@ -679,40 +665,7 @@ def migrate(
             print(f"[HATA] performans_gosterge_veri: {e}")
             traceback.print_exc()
 
-        # --- 9. swot_analizi ---
-        def step_swot() -> None:
-            s = stats["swot_analizi"]
-            for row in old_conn.execute("SELECT * FROM swot_analizi ORDER BY id"):
-                try:
-                    tid = kurum_map.get(int(row["kurum_id"]))
-                    if tid is None:
-                        s["error"] += 1
-                        continue
-                    raw_cat = (_str_or_none(row["kategori"]) or "").lower()
-                    cat = SWOT_CAT_MAP.get(raw_cat, raw_cat[:32] if raw_cat else "strength")
-                    baslik = _str_or_none(row["baslik"]) or ""
-                    acik = _str_or_none(row["aciklama"]) or ""
-                    content = (baslik + ("\n" + acik if acik else "")).strip() or baslik or "SWOT"
-                    ex = SwotAnalysis.query.filter_by(tenant_id=tid, category=cat, content=content).first()
-                    if ex:
-                        s["skipped"] += 1
-                        continue
-                    sa = SwotAnalysis(
-                        tenant_id=tid,
-                        category=cat,
-                        content=content,
-                        created_at=_parse_dt(row["created_at"]) or datetime.now(timezone.utc),
-                        is_active=True,
-                    )
-                    db.session.add(sa)
-                    s["migrated"] += 1
-                except Exception:
-                    s["error"] += 1
-                    traceback.print_exc()
-
-        run_table("swot_analizi", step_swot)
-
-        # --- 10. İlişki tabloları ---
+        # --- 9. İlişki tabloları ---
         def step_surec_alt_stratejiler() -> None:
             s = stats["surec_alt_stratejiler"]
             for row in old_conn.execute("SELECT * FROM surec_alt_stratejiler"):
@@ -812,7 +765,7 @@ def migrate(
                 stats[name]["error"] += 1
                 traceback.print_exc()
 
-        # --- 11. favori_kpi ---
+        # --- 10. favori_kpi ---
         def step_favori() -> None:
             s = stats["favori_kpi"]
             for row in old_conn.execute("SELECT * FROM favori_kpi ORDER BY id"):
@@ -840,7 +793,7 @@ def migrate(
 
         run_table("favori_kpi", step_favori)
 
-        # --- 12. notification -> core.notifications ---
+        # --- 11. notification -> core.notifications ---
         def step_notification() -> None:
             s = stats["notification"]
             for row in old_conn.execute("SELECT * FROM notification ORDER BY id"):
@@ -889,7 +842,7 @@ def migrate(
             stats["notification"] = _stat()
             print("Bildirimler atlandı (--skip-notifications).")
 
-        # --- 13. audit_log ---
+        # --- 12. audit_log ---
         # Hedef DB şeması eski olabilir (ör. username/description yok); ORM tüm sütunları
         # gönderdiği için sqlite hata verir. Gerçek sütunlara göre INSERT kullan.
         def step_audit() -> None:

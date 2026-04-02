@@ -10,34 +10,34 @@ from flask_login import current_user, login_required
 
 from app.models.process import ProcessKpi
 from app.models.core import User as CoreUser
-from micro import micro_bp
+from platform_core import app_bp
 from models import Task, db
-from micro.modules.proje.helpers import kurum_id, load_project, tenant_core_users, kpis_for_tenant
-from micro.modules.proje.permissions import (
+from app_platform.modules.proje.helpers import kurum_id, load_project, tenant_core_users, kpis_for_tenant
+from app_platform.modules.proje.permissions import (
     can_crud_project_portfolio,
     user_can_access_project,
     user_can_edit_tasks,
     user_can_manage_task,
 )
-from micro.services.notification_triggers import (
+from app_platform.services.notification_triggers import (
     notify_project_task_status_change,
     notify_task_assignment,
 )
 
 
-@micro_bp.route("/project/<int:project_id>/task/new", methods=["GET", "POST"])
+@app_bp.route("/project/<int:project_id>/task/new", methods=["GET", "POST"])
 @login_required
-def micro_project_task_new(project_id: int):
+def project_task_new(project_id: int):
     proj = load_project(project_id)
     if not user_can_edit_tasks(current_user, proj):
         flash("Görev ekleyemezsiniz.", "danger")
-        return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+        return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kpis = kpis_for_tenant()
 
     if request.method == "GET":
         return render_template(
-            "micro/project/task_form.html",
+            "platform/project/task_form.html",
             project=proj,
             task=None,
             kpis=kpis,
@@ -47,7 +47,7 @@ def micro_project_task_new(project_id: int):
     title = (request.form.get("title") or "").strip()
     if not title:
         flash("Görev başlığı zorunludur.", "danger")
-        return redirect(url_for("micro_bp.micro_project_task_new", project_id=project_id))
+        return redirect(url_for("app_bp.project_task_new", project_id=project_id))
 
     pk_raw = request.form.get("process_kpi_id")
     process_kpi_id = int(pk_raw) if pk_raw and pk_raw.isdigit() else None
@@ -61,7 +61,7 @@ def micro_project_task_new(project_id: int):
         assignee_user = CoreUser.query.get(assignee_id)
         if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
             flash("Geçersiz görev ataması.", "danger")
-            return redirect(url_for("micro_bp.micro_project_task_new", project_id=project_id))
+            return redirect(url_for("app_bp.project_task_new", project_id=project_id))
 
     due = None
     if request.form.get("due_date"):
@@ -97,12 +97,12 @@ def micro_project_task_new(project_id: int):
             )
     db.session.commit()
     flash("Görev eklendi.", "success")
-    return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+    return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
 
-@micro_bp.route("/project/api/task/quick-add", methods=["POST"])
+@app_bp.route("/project/api/task/quick-add", methods=["POST"])
 @login_required
-def micro_project_task_quick_add():
+def project_task_quick_add():
     """Takvim vb. için JSON ile hızlı proje görevi oluşturma."""
     data = request.get_json() or {}
     try:
@@ -191,18 +191,18 @@ def micro_project_task_quick_add():
             "success": True,
             "message": "Görev eklendi.",
             "id": task.id,
-            "url": url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task.id),
+            "url": url_for("app_bp.project_task_detail", project_id=project_id, task_id=task.id),
         }
     )
 
 
-@micro_bp.route("/project/<int:project_id>/task/<int:task_id>")
+@app_bp.route("/project/<int:project_id>/task/<int:task_id>")
 @login_required
-def micro_project_task_detail(project_id: int, task_id: int):
+def project_task_detail(project_id: int, task_id: int):
     proj = load_project(project_id)
     if not user_can_access_project(current_user, proj):
         flash("Erişim yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_list"))
+        return redirect(url_for("app_bp.project_list"))
 
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     kpi = None
@@ -210,7 +210,7 @@ def micro_project_task_detail(project_id: int, task_id: int):
         kpi = ProcessKpi.query.get(task.process_kpi_id)
 
     return render_template(
-        "micro/project/task_detail.html",
+        "platform/project/task_detail.html",
         project=proj,
         task=task,
         linked_kpi=kpi,
@@ -218,19 +218,19 @@ def micro_project_task_detail(project_id: int, task_id: int):
     )
 
 
-@micro_bp.route("/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])
+@app_bp.route("/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])
 @login_required
-def micro_project_task_edit(project_id: int, task_id: int):
+def project_task_edit(project_id: int, task_id: int):
     proj = load_project(project_id)
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     if not user_can_manage_task(current_user, proj, task):
         flash("Düzenleyemezsiniz.", "danger")
-        return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
+        return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
     kpis = kpis_for_tenant()
 
     if request.method == "GET":
         return render_template(
-            "micro/project/task_form.html",
+            "platform/project/task_form.html",
             project=proj,
             task=task,
             kpis=kpis,
@@ -249,7 +249,7 @@ def micro_project_task_edit(project_id: int, task_id: int):
         assignee_user = CoreUser.query.get(next_assignee_id)
         if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
             flash("Geçersiz görev ataması.", "danger")
-            return redirect(url_for("micro_bp.micro_project_task_edit", project_id=project_id, task_id=task_id))
+            return redirect(url_for("app_bp.project_task_edit", project_id=project_id, task_id=task_id))
     task.assignee_id = next_assignee_id
 
     pk_raw = request.form.get("process_kpi_id")
@@ -293,18 +293,19 @@ def micro_project_task_edit(project_id: int, task_id: int):
 
     db.session.commit()
     flash("Görev güncellendi.", "success")
-    return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
+    return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
 
 
-@micro_bp.route("/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
+@app_bp.route("/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
 @login_required
-def micro_project_task_delete(project_id: int, task_id: int):
+def project_task_delete(project_id: int, task_id: int):
     proj = load_project(project_id)
     if not can_crud_project_portfolio(current_user):
         flash("Görev silme yetkiniz yok.", "danger")
-        return redirect(url_for("micro_bp.micro_project_task_detail", project_id=project_id, task_id=task_id))
+        return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     task.is_archived = True
     db.session.commit()
     flash("Görev silindi.", "success")
-    return redirect(url_for("micro_bp.micro_project_detail", project_id=project_id))
+    return redirect(url_for("app_bp.project_detail", project_id=project_id))
+

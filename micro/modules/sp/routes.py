@@ -6,13 +6,20 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.extensions import csrf
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant
+from app.models.k_vektor import KVektorStrategyWeight, KVektorSubStrategyWeight
+from app.services.k_vektor_config_service import (
+    apply_single_strategy_k_vektor_weight,
+    apply_single_sub_strategy_k_vektor_weight,
+    k_vektor_weights_get_dict,
+    save_k_vektor_weights,
+)
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
-from app.models.strategy import SwotAnalysis
 from app.models.process import Process, ProcessKpi
+from app.services.score_engine_service import compute_vision_score
 
 _SP_ROLES = (
     "Admin",
@@ -41,7 +48,7 @@ def sp_manage_required(f):
     return decorated
 
 
-@micro_bp.route("/sp")
+@app_bp.route("/sp")
 @login_required
 def sp():
     """Stratejik Planlama ana sayfası."""
@@ -56,65 +63,109 @@ def sp():
         .all()
     ) if tenant_id else []
 
-    swot_counts = {}
+    k_vektor_enabled = bool(tenant and getattr(tenant, "k_vektor_enabled", False))
+
+    kv_strategy_weights: dict = {}
+    kv_sub_strategy_weights: dict = {}
     if tenant_id:
-        for cat in ("strength", "weakness", "opportunity", "threat"):
-            swot_counts[cat] = SwotAnalysis.query.filter_by(
-                tenant_id=tenant_id, category=cat, is_active=True
-            ).count()
+        kv_strategy_weights = {
+            r.strategy_id: r.weight_raw
+            for r in KVektorStrategyWeight.query.filter_by(tenant_id=tenant_id).all()
+        }
+        kv_sub_strategy_weights = {
+            r.sub_strategy_id: r.weight_raw
+            for r in KVektorSubStrategyWeight.query.filter_by(tenant_id=tenant_id).all()
+        }
+
+    kv_vision_bar = None
+    kv_strategy_scores: dict = {}
+    kv_sub_strategy_scores: dict = {}
+    kv_contrib_main: dict = {}
+    kv_quotas_main: dict = {}
+    if tenant_id and k_vektor_enabled:
+        try:
+            bundle = compute_vision_score(tenant_id, persist_pg_scores=False)
+            if bundle.get("k_vektor") and bundle.get("vision_score_1000") is not None:
+                v1000 = float(bundle["vision_score_1000"])
+                v1000 = min(1000.0, max(0.0, v1000))
+                as_of = bundle.get("as_of_date") or ""
+                kv_vision_bar = {
+                    "score_1000": round(v1000, 1),
+                    "pct": round((v1000 / 1000.0) * 100.0, 2),
+                    "as_of": as_of,
+                }
+                kv_strategy_scores = dict(bundle.get("strategy_scores") or {})
+                kv_sub_strategy_scores = dict(bundle.get("sub_strategy_scores") or {})
+                kv_contrib_main = {
+                    int(k): float(v)
+                    for k, v in (bundle.get("k_vektor_contrib_main") or {}).items()
+                }
+                kv_quotas_main = {
+                    int(k): float(v)
+                    for k, v in (bundle.get("k_vektor_quotas_main") or {}).items()
+                }
+        except Exception as e:
+            current_app.logger.warning(f"[sp] K-Vektör skor verisi alınamadı: {e}")
 
     return render_template(
-        "micro/sp/index.html",
+        "platform/sp/index.html",
         tenant=tenant,
         strategies=strategies,
-        swot_counts=swot_counts,
         sp_can_manage=_check_sp_role(),
+        k_vektor_enabled=k_vektor_enabled,
+        kv_strategy_weights=kv_strategy_weights,
+        kv_sub_strategy_weights=kv_sub_strategy_weights,
+        kv_vision_bar=kv_vision_bar,
+        kv_strategy_scores=kv_strategy_scores,
+        kv_sub_strategy_scores=kv_sub_strategy_scores,
+        kv_contrib_main=kv_contrib_main,
+        kv_quotas_main=kv_quotas_main,
     )
 
 
-@micro_bp.route("/sp/swot")
+@app_bp.route("/sp/api/k-vektor/weights", methods=["GET", "POST"])
+@csrf.exempt
 @login_required
-def sp_swot():
-    """SWOT Analizi sayfası."""
-    tenant_id = current_user.tenant_id
-    if not tenant_id:
-        return render_template("micro/sp/swot.html", items={})
+@sp_manage_required
+def sp_api_k_vektor_weights():
+    """K-Vektör ana/alt strateji ham ağırlıkları — düzenleme Stratejik Planlama (/sp) akışında."""
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
 
-    items = SwotAnalysis.query.filter_by(
-        tenant_id=tenant_id, is_active=True
-    ).order_by(SwotAnalysis.created_at).all()
+    if request.method == "GET":
+        return jsonify(k_vektor_weights_get_dict(tid))
 
-    grouped = {
-        "strength": [i for i in items if i.category == "strength"],
-        "weakness": [i for i in items if i.category == "weakness"],
-        "opportunity": [i for i in items if i.category == "opportunity"],
-        "threat": [i for i in items if i.category == "threat"],
-    }
-
-    return render_template("micro/sp/swot.html", grouped=grouped)
+    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {})
+    if ok:
+        return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
+    status = 404 if msg and "bulunamadı" in msg else 400
+    if msg == "Kayıt sırasında hata oluştu.":
+        status = 500
+    return jsonify({"success": False, "message": msg or "Kayıt başarısız."}), status
 
 
-@micro_bp.route("/sp/misyon")
+@app_bp.route("/sp/misyon")
 @login_required
 def sp_misyon():
-    return render_template("micro/sp/misyon.html")
+    return render_template("platform/sp/misyon.html")
 
 
-@micro_bp.route("/sp/vizyon")
+@app_bp.route("/sp/vizyon")
 @login_required
 def sp_vizyon():
-    return render_template("micro/sp/vizyon.html")
+    return render_template("platform/sp/vizyon.html")
 
 
-@micro_bp.route("/sp/degerler")
+@app_bp.route("/sp/degerler")
 @login_required
 def sp_degerler():
-    return render_template("micro/sp/degerler.html")
+    return render_template("platform/sp/degerler.html")
 
 
 # ── API: Stratejik kimlik (SP yöneticileri — Admin / kurum rolleri) ────────────
 
-@micro_bp.route("/sp/api/tenant-identity", methods=["POST"])
+@app_bp.route("/sp/api/tenant-identity", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -136,7 +187,7 @@ def sp_api_tenant_identity():
 
 # ── API: Strateji CRUD (mevcut dashboard_bp API'lerini yeniden kullanır) ──
 
-@micro_bp.route("/sp/api/strategy/add", methods=["POST"])
+@app_bp.route("/sp/api/strategy/add", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -180,7 +231,7 @@ def sp_add_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/strategy/update/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/sp/api/strategy/update/<int:strategy_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -190,6 +241,8 @@ def sp_update_strategy(strategy_id):
         id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
     ).first_or_404()
     data = request.get_json() or {}
+    tid = current_user.tenant_id
+    tenant = Tenant.query.get(tid) if tid else None
     try:
         if "title" in data:
             t = (data.get("title") or "").strip()
@@ -200,6 +253,13 @@ def sp_update_strategy(strategy_id):
             st.code = (data.get("code") or "").strip() or None
         if "description" in data:
             st.description = (data.get("description") or "").strip() or None
+        if tenant and tenant.k_vektor_enabled and "k_vektor_weight_raw" in data:
+            err = apply_single_strategy_k_vektor_weight(
+                tid, current_user.id, strategy_id, data.get("k_vektor_weight_raw")
+            )
+            if err:
+                db.session.rollback()
+                return jsonify({"success": False, "message": err}), 400
         db.session.commit()
         return jsonify({"success": True, "message": "Ana strateji güncellendi."})
     except Exception as e:
@@ -208,7 +268,7 @@ def sp_update_strategy(strategy_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -227,57 +287,9 @@ def sp_delete_strategy(strategy_id):
         return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/swot/add", methods=["POST"])
-@csrf.exempt
-@login_required
-@sp_manage_required
-def sp_add_swot():
-    """SWOT maddesi ekle."""
-    data = request.get_json() or {}
-    category = (data.get("category") or "").strip()
-    content = (data.get("content") or "").strip()
-
-    if category not in ("strength", "weakness", "opportunity", "threat") or not content:
-        return jsonify({"success": False, "message": "Geçersiz veri."}), 400
-
-    item = SwotAnalysis(
-        tenant_id=current_user.tenant_id,
-        category=category,
-        content=content,
-        is_active=True,
-    )
-    try:
-        db.session.add(item)
-        db.session.commit()
-        return jsonify({"success": True, "id": item.id})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"[sp_add_swot] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
-
-
-@micro_bp.route("/sp/api/swot/delete/<int:item_id>", methods=["POST"])
-@csrf.exempt
-@login_required
-@sp_manage_required
-def sp_delete_swot(item_id):
-    """SWOT maddesi sil (soft delete)."""
-    item = SwotAnalysis.query.filter_by(
-        id=item_id, tenant_id=current_user.tenant_id, is_active=True
-    ).first_or_404()
-    try:
-        item.is_active = False
-        db.session.commit()
-        return jsonify({"success": True})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"[sp_delete_swot] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
-
-
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-@micro_bp.route("/sp/api/sub-strategy/add", methods=["POST"])
+@app_bp.route("/sp/api/sub-strategy/add", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -327,7 +339,7 @@ def sp_add_sub_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
+@app_bp.route("/sp/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -340,10 +352,19 @@ def sp_update_sub_strategy(sub_id):
     ).first_or_404()
 
     data = request.get_json() or {}
+    tid = current_user.tenant_id
+    tenant = Tenant.query.get(tid) if tid else None
     try:
         sub.title = (data.get("title") or sub.title).strip()
         sub.code = (data.get("code") or "").strip() or sub.code
         sub.description = data.get("description", sub.description)
+        if tenant and tenant.k_vektor_enabled and "k_vektor_weight_raw" in data:
+            err = apply_single_sub_strategy_k_vektor_weight(
+                tid, current_user.id, sub_id, data.get("k_vektor_weight_raw")
+            )
+            if err:
+                db.session.rollback()
+                return jsonify({"success": False, "message": err}), 400
         db.session.commit()
         return jsonify({"success": True, "message": "Alt strateji güncellendi."})
     except Exception as e:
@@ -352,7 +373,7 @@ def sp_update_sub_strategy(sub_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@micro_bp.route("/sp/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
+@app_bp.route("/sp/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -374,13 +395,12 @@ def sp_delete_sub_strategy(sub_id):
 
 # ── Akış Sayfaları ────────────────────────────────────────────────────────────
 
-@micro_bp.route("/sp/flow")
+@app_bp.route("/sp/flow")
 @login_required
 def sp_flow():
     """Stratejik planlama akış özet sayfası."""
     tid = current_user.tenant_id
     strategy_count = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
-    swot_count = SwotAnalysis.query.filter_by(tenant_id=tid, is_active=True).count()
     process_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
     sub_strategy_count = (
         SubStrategy.query
@@ -390,25 +410,24 @@ def sp_flow():
     )
     tenant = current_user.tenant
     return render_template(
-        "micro/sp/flow.html",
+        "platform/sp/flow.html",
         tenant=tenant,
         strategy_count=strategy_count,
         sub_strategy_count=sub_strategy_count,
-        swot_count=swot_count,
         process_count=process_count,
     )
 
 
-@micro_bp.route("/sp/flow/dynamic")
+@app_bp.route("/sp/flow/dynamic")
 @login_required
 def sp_flow_dynamic():
     """İnteraktif node-edge görselleştirme sayfası."""
-    return render_template("micro/sp/dynamic_flow.html")
+    return render_template("platform/sp/dynamic_flow.html")
 
 
 # ── API: Graf verisi ──────────────────────────────────────────────────────────
 
-@micro_bp.route("/sp/api/graph")
+@app_bp.route("/sp/api/graph")
 @login_required
 def sp_api_graph():
     """Vizyon/strateji/alt-strateji/süreç/KPI node ve edge'lerini JSON döndür."""

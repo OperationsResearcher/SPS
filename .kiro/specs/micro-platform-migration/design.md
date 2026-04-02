@@ -305,7 +305,7 @@ micro_bp route fonksiyonu
     │                    │  .filter_by(is_active=True)
     │                    │  .filter_by(tenant_id=tenant_id)
     │                    ▼
-    │               render_template("micro/modül/sayfa.html", **ctx)
+    │               render_template("platform/modül/sayfa.html", **ctx)
     │
     └─[API rota]───► @login_required
                          │

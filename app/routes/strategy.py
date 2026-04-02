@@ -1,77 +1,14 @@
-"""Strategy Blueprint - SWOT Analysis, Strategic Planning Flow."""
+"""Strategy Blueprint — Stratejik planlama akışı ve graf API."""
 
 from flask import Blueprint, jsonify, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from app.models import db
-from app.models.strategy import SwotAnalysis
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
 from app.utils.decorators import require_component
 from app.services.score_engine_service import compute_vision_score
 
 strategy_bp = Blueprint("strategy_bp", __name__, url_prefix="/strategy")
-
-
-@strategy_bp.route("/swot", methods=["GET", "POST"])
-@login_required
-@require_component("swot_analizi")
-def swot():
-    """SWOT Analysis - GET lists items, POST adds/deletes via AJAX or form."""
-    tenant_id = current_user.tenant_id
-    if not tenant_id:
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"success": False, "error": "Kurum bulunamadı."}), 400
-        return render_template("strategy/swot.html", strengths=[], weaknesses=[], opportunities=[], threats=[])
-
-    if request.method == "POST":
-        action = request.form.get("action") or (request.get_json() or {}).get("action")
-        if action == "add":
-            category = (request.form.get("category") or (request.get_json() or {}).get("category") or "").strip()
-            content = (request.form.get("content") or (request.get_json() or {}).get("content") or "").strip()
-            if category and content and category in ("strength", "weakness", "opportunity", "threat"):
-                item = SwotAnalysis(tenant_id=tenant_id, category=category, content=content, is_active=True)
-                db.session.add(item)
-                db.session.commit()
-                if _is_ajax():
-                    return jsonify({"success": True, "id": item.id, "category": category, "content": content})
-                from flask import flash, redirect, url_for
-
-                flash("SWOT maddesi eklendi.", "success")
-                return redirect(url_for("strategy_bp.swot"))
-            if _is_ajax():
-                return jsonify({"success": False, "error": "Geçersiz veri."}), 400
-        elif action == "delete":
-            item_id = request.form.get("id") or (request.get_json() or {}).get("id")
-            item = SwotAnalysis.query.filter_by(id=item_id, tenant_id=tenant_id, is_active=True).first()
-            if item:
-                item.is_active = False
-                db.session.commit()
-                if _is_ajax():
-                    return jsonify({"success": True})
-                from flask import flash, redirect, url_for
-
-                flash("SWOT maddesi silindi.", "success")
-                return redirect(url_for("strategy_bp.swot"))
-            if _is_ajax():
-                return jsonify({"success": False, "error": "Kayıt bulunamadı."}), 404
-
-    items = SwotAnalysis.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(SwotAnalysis.created_at).all()
-    strengths = [i for i in items if i.category == "strength"]
-    weaknesses = [i for i in items if i.category == "weakness"]
-    opportunities = [i for i in items if i.category == "opportunity"]
-    threats = [i for i in items if i.category == "threat"]
-    return render_template(
-        "strategy/swot.html",
-        strengths=strengths,
-        weaknesses=weaknesses,
-        opportunities=opportunities,
-        threats=threats,
-    )
-
-
-def _is_ajax():
-    return request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.is_json
 
 
 def _resolve_tenant_id_for_flow():
@@ -87,20 +24,18 @@ def _resolve_tenant_id_for_flow():
 @login_required
 @require_component("dinamik_stratejik_planlama")
 def strategic_planning_flow():
-    """Stratejik planlama akışı - statik akış sayfası (Değerler, Amaç, Vizyon, SWOT, BSC, Stratejiler, Süreçler)."""
+    """Stratejik planlama akışı — Değerler, Amaç, Vizyon, BSC, Stratejiler, Süreçler."""
     tenant_id = _resolve_tenant_id_for_flow()
     if not tenant_id:
         return render_template("strategy/strategic_planning_flow.html", tenant=None, error="Kurum bulunamadı.")
     tenant = Tenant.query.get(tenant_id)
     if not tenant:
         return render_template("strategy/strategic_planning_flow.html", tenant=None, error="Kurum bulunamadı.")
-    swot_count = SwotAnalysis.query.filter_by(tenant_id=tenant_id, is_active=True).count()
     strategies_count = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).count()
     processes_count = Process.query.filter_by(tenant_id=tenant_id, is_active=True).count()
     return render_template(
         "strategy/strategic_planning_flow.html",
         tenant=tenant,
-        swot_count=swot_count,
         strategies_count=strategies_count,
         processes_count=processes_count,
     )
@@ -110,7 +45,7 @@ def strategic_planning_flow():
 @login_required
 @require_component("dinamik_stratejik_planlama")
 def strategic_planning_dynamic():
-    """Dinamik stratejik planlama akışı - graf görünümü."""
+    """Dinamik stratejik planlama akışı — graf görünümü."""
     tenant_id = _resolve_tenant_id_for_flow()
     if not tenant_id:
         return render_template("strategy/dynamic_flow.html", tenant=None, error="Kurum bulunamadı.")

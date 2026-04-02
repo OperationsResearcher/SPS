@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar KP Pareto{% endblock %}
+{% block page_title %}KP-Radar Pareto{% endblock %}
+{% block content %}
+<div id="k-radar-kp-pareto-root" data-url="{{ url_for('app_bp.k_radar_api_kp_pareto') }}" style="max-width:900px; margin:0 auto;">
+  <div class="mc-card"><div class="mc-card-body">
+    <h3 style="margin-top:0;">Pareto Özeti</h3>
+    <div><strong>Top Impact Dilimi:</strong> <span id="kp-pareto-impact">-</span></div>
+    <div><strong>KPI Sayısı:</strong> <span id="kp-pareto-kpi">-</span></div>
+    <div><strong>30g Trend:</strong> <span id="kp-pareto-trend">-</span></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}

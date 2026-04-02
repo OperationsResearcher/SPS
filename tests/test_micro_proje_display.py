@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Micro proje — display yardımcıları (DB gerektirmez)."""
 
-from micro.modules.proje.display import user_display
+from app_platform.modules.proje.display import user_display
 
 
 def test_user_display_missing_id():

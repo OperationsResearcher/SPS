@@ -7,6 +7,7 @@ Kullanıcı, rol, yetki matrisi, organizasyonel yapı, bildirimler ve loglar.
 from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
+from sqlalchemy.orm import synonym
 
 class LegacyUser(UserMixin, db.Model):
     """
@@ -35,9 +36,16 @@ class LegacyUser(UserMixin, db.Model):
     
     surec_rol = db.Column(db.String(50), default=None)  # surec_lideri, surec_uyesi, None
     
-    # İlişkiler
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False, index=True)
-    kurum = db.relationship('Kurum', backref=db.backref('users', lazy=True), foreign_keys=[kurum_id])
+    # İlişkiler (tenant = platform ekseni; kurum_id synonym ile geriye dönük)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='LegacyUser.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='users',
+    )
     
     # Görsel ve Tercihler
     profile_photo = db.Column(db.String(500))  # Profil fotoğrafı URL'si
@@ -105,14 +113,23 @@ class Kurum(db.Model):
     show_guide_system = db.Column(db.Boolean, default=True, nullable=False)  # Kurum için rehber sistemi aktif mi?
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
+    # tenants.id ile bire bir (migration: tenant_id = id)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, unique=True)
+    tenant = db.relationship('Tenant', foreign_keys=[tenant_id], uselist=False)
+
     # Soft Delete
     silindi = db.Column(db.Boolean, default=False, nullable=False, index=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     
     # İlişkiler
-    # users = db.relationship('User', backref='kurum', lazy=True)  # User modelinde backref var
+    users = db.relationship(
+        'LegacyUser',
+        primaryjoin='Kurum.id == LegacyUser.tenant_id',
+        foreign_keys=[LegacyUser.tenant_id],
+        overlaps='kurum',
+    )
     deleter = db.relationship('LegacyUser', foreign_keys=[deleted_by], backref='deleted_kurumlar')
     
     def __repr__(self):
@@ -179,28 +196,49 @@ class Deger(db.Model):
     """Kurum Değerleri"""
     __tablename__ = 'deger'
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
     baslik = db.Column(db.String(200), nullable=False)
     aciklama = db.Column(db.Text)
-    kurum = db.relationship('Kurum', backref=db.backref('degerler', lazy=True))
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='Deger.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='degerler',
+    )
 
 class EtikKural(db.Model):
     """Kurum Etik Kuralları"""
     __tablename__ = 'etik_kural'
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
     baslik = db.Column(db.String(200), nullable=False)
     aciklama = db.Column(db.Text)
-    kurum = db.relationship('Kurum', backref=db.backref('etik_kurallari', lazy=True))
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='EtikKural.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='etik_kurallari',
+    )
 
 class KalitePolitikasi(db.Model):
     """Kurum Kalite Politikası"""
     __tablename__ = 'kalite_politikasi'
     id = db.Column(db.Integer, primary_key=True)
-    kurum_id = db.Column(db.Integer, db.ForeignKey('kurum.id'), nullable=False)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
+    kurum_id = synonym('tenant_id')
     baslik = db.Column(db.String(200), nullable=False)
     aciklama = db.Column(db.Text)
-    kurum = db.relationship('Kurum', backref=db.backref('kalite_politikalari', lazy=True))
+    kurum = db.relationship(
+        'Kurum',
+        primaryjoin='KalitePolitikasi.tenant_id == Kurum.id',
+        foreign_keys=[tenant_id],
+        viewonly=True,
+        overlaps='kalite_politikalari',
+    )
 
 class LegacyNotification(db.Model):
     """Sistem Bildirimleri"""

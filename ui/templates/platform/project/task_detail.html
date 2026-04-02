@@ -1,0 +1,40 @@
+﻿{% extends "platform/base.html" %}
+{% block title %}{{ task.title }} — Kokpitim{% endblock %}
+{% block page_title %}Görev{% endblock %}
+
+{% block content %}
+<div style="max-width:640px; margin:0 auto;">
+    <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-3"><i class="fas fa-arrow-left"></i> {{ project.name }}</a>
+
+    <div class="mc-card" style="padding:20px;">
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:8px;">{{ task.title }}</h2>
+        <div style="font-size:12px; color:#64748b; margin-bottom:12px;">
+            <span class="mc-badge mc-badge-gray">{{ task.status }}</span>
+            <span class="mc-badge mc-badge-indigo">{{ task.priority }}</span>
+            {% if task.due_date %}<span class="ms-2"><i class="fas fa-calendar"></i> {{ task.due_date.strftime('%d.%m.%Y') }}</span>{% endif %}
+        </div>
+        {% if task.description %}
+        <p style="font-size:14px; white-space:pre-wrap;">{{ task.description }}</p>
+        {% endif %}
+
+        {% if linked_kpi %}
+        <div style="margin-top:16px; padding:12px; background:rgba(99,102,241,.08); border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#6366f1; text-transform:uppercase;">Bağlı PG</div>
+            <div style="font-size:14px; margin-top:4px;">
+                <strong>{{ linked_kpi.code or 'PG' }}</strong> — {{ linked_kpi.name }}
+                <span style="font-size:12px; color:#64748b;">({{ linked_kpi.process.name }})</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if can_edit %}
+        <div style="margin-top:20px;">
+            <a href="{{ url_for('app_bp.project_task_edit', project_id=project.id, task_id=task.id) }}" class="mc-btn mc-btn-primary mc-btn-sm">
+                <i class="fas fa-pen"></i> Düzenle
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

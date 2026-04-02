@@ -20,7 +20,7 @@ from sqlalchemy import or_
 from app import create_app
 from app.models.core import Tenant, User
 from app.models.process import Process, ProcessKpi, process_leaders
-from micro.modules.surec.permissions import accessible_processes_filter, is_privileged
+from app_platform.modules.surec.permissions import accessible_processes_filter, is_privileged
 
 
 def main():

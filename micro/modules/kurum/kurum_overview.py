@@ -17,8 +17,8 @@ from app.models.process import (
     ProcessKpi,
     ProcessSubStrategyLink,
 )
-from micro.modules.proje.permissions import accessible_projects_query
-from micro.modules.surec.permissions import accessible_processes_filter, is_privileged
+from app_platform.modules.proje.permissions import accessible_projects_query
+from app_platform.modules.surec.permissions import accessible_processes_filter, is_privileged
 from models import Project, RaidItem, Task
 
 # PG veri girişi uyarısı: bu günden eski son veri = "bayat" (kurum standardı)

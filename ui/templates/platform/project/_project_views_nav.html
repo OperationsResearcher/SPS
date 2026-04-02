@@ -1,0 +1,25 @@
+﻿{# Proje planlama görünümleri — Micro URL'leri; active_view: 'detail'|'kanban'|'calendar'|'gantt'|'raid' #}
+{% set av = active_view or '' %}
+<div class="flex flex-wrap items-center gap-2">
+    <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'detail' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-th-large"></i> Özet
+    </a>
+    <a href="{{ url_for('app_bp.project_view_kanban', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'kanban' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-columns"></i> Kanban
+    </a>
+    <a href="{{ url_for('app_bp.project_view_calendar', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'calendar' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-calendar-alt"></i> Takvim
+    </a>
+    <a href="{{ url_for('app_bp.project_view_gantt', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'gantt' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-bars"></i> Gantt
+    </a>
+    <a href="{{ url_for('app_bp.project_view_raid', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'raid' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-shield-alt"></i> RAID
+    </a>
+</div>
+

@@ -12,7 +12,7 @@ from sqlalchemy import and_, exists, func, or_
 from sqlalchemy.orm import Query
 
 from models import Project, Task, db, project_leaders, project_members, project_observers, project_related_processes
-from micro.modules.proje.permissions import accessible_projects_query, is_privileged
+from app_platform.modules.proje.permissions import accessible_projects_query, is_privileged
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
 

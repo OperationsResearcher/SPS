@@ -111,9 +111,9 @@
         "tip": "Her stratejiye kod vererek takip ve raporlamayı kolaylaştırın."
       },
       {
-        "title": "SWOT Analizi",
-        "description": "Kurumunuzun güçlü ve zayıf yönlerini, fırsat ve tehditlerini analiz edin.",
-        "tip": "SWOT matrisi otomatik olarak stratejilerinizle ilişkilendirilir."
+        "title": "Stratejik akış ve BSC",
+        "description": "Stratejik planlama akışından vizyon–strateji–süreç bağlantılarını ve BSC haritanızı yönetin.",
+        "tip": "Dinamik stratejik planlama görünümü ile önceliklerinizi tek grafikte görebilirsiniz."
       }
     ]
   },

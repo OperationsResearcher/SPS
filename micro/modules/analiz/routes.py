@@ -1,28 +1,28 @@
-"""Analiz Merkezi modülü."""
+"""Süreç ve performans analitikleri (trend, sağlık skoru, raporlar)."""
 
 from flask import render_template, jsonify, request, current_app, make_response
 from flask_login import login_required, current_user
 
-from micro import micro_bp
+from platform_core import app_bp
 from app.models.process import Process
 
 
-@micro_bp.route("/analiz")
+@app_bp.route("/analiz")
 @login_required
 def analiz():
-    """Analiz Merkezi ana sayfası."""
+    """Analitik özet — tenant süreçleri üzerinden."""
     processes = (
         Process.query
         .filter_by(tenant_id=current_user.tenant_id, is_active=True)
         .order_by(Process.code)
         .all()
     )
-    return render_template("micro/analiz/index.html", processes=processes)
+    return render_template("platform/analiz/index.html", processes=processes)
 
 
 # ── Trend Analizi ─────────────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/trend/<int:process_id>")
+@app_bp.route("/analiz/api/trend/<int:process_id>")
 @login_required
 def analiz_api_trend(process_id):
     Process.query.filter_by(
@@ -44,7 +44,7 @@ def analiz_api_trend(process_id):
 
 # ── Sağlık Skoru ──────────────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/health/<int:process_id>")
+@app_bp.route("/analiz/api/health/<int:process_id>")
 @login_required
 def analiz_api_health(process_id):
     Process.query.filter_by(
@@ -61,7 +61,7 @@ def analiz_api_health(process_id):
 
 # ── Tahmin Analizi ────────────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/forecast/<int:process_id>")
+@app_bp.route("/analiz/api/forecast/<int:process_id>")
 @login_required
 def analiz_api_forecast(process_id):
     Process.query.filter_by(
@@ -80,7 +80,7 @@ def analiz_api_forecast(process_id):
 
 # ── Karşılaştırma Analizi ─────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/comparison", methods=["POST"])
+@app_bp.route("/analiz/api/comparison", methods=["POST"])
 @login_required
 def analiz_api_comparison():
     data = request.get_json() or {}
@@ -104,7 +104,7 @@ def analiz_api_comparison():
 
 # ── Performans Raporu ─────────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/report/<int:process_id>")
+@app_bp.route("/analiz/api/report/<int:process_id>")
 @login_required
 def analiz_api_report(process_id):
     Process.query.filter_by(
@@ -131,7 +131,7 @@ def analiz_api_report(process_id):
 
 # ── Anomali Tespiti ───────────────────────────────────────────────────────────
 
-@micro_bp.route("/analiz/api/anomalies")
+@app_bp.route("/analiz/api/anomalies")
 @login_required
 def analiz_api_anomalies():
     try:

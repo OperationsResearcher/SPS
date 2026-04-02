@@ -1,0 +1,878 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ process.name }} — Süreç Karnesi{% endblock %}
+{% block page_title %}Süreç Karnesi{% endblock %}
+
+{% macro primary_leader_label(proc) -%}
+  {%- if proc.leaders and proc.leaders|length > 0 -%}
+    {%- set u = proc.leaders[0] -%}
+    {%- set nm = ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim -%}
+    {{ nm if nm else u.email }}
+  {%- else -%}—{%- endif -%}
+{%- endmacro %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}?v={{ config.get('VERSION', '1') }}">
+{% endblock %}
+
+{% block content %}
+{% set kpi_api_placeholder_id = 900000001 %}
+{% set kpi_data_row_placeholder_id = 800000001 %}
+<div id="karne-root"
+     class="karne-page-root"
+     data-page-mode="karne"
+     data-process-id="{{ process.id }}"
+     data-current-user-id="{{ current_user.id }}"
+     data-initial-tab="{{ initial_tab }}"
+     data-process-name="{{ process.name | e }}"
+     data-document-no="{{ process.document_no or '' | e }}"
+     data-revision-no="{{ process.revision_no or '' | e }}"
+     data-current-year="{{ current_year }}"
+     data-karne-api-url="{{ url_for('app_bp.surec_api_karne', process_id=process.id) }}"
+     data-karne-export-xlsx-url="{{ url_for('app_bp.surec_api_karne_export_xlsx', process_id=process.id) }}"
+     data-kpi-data-add-url="{{ url_for('app_bp.surec_api_kpi_data_add') }}"
+     data-kpi-data-history-url-template="{{ url_for('app_bp.surec_api_kpi_data_history', kpi_id=kpi_api_placeholder_id) }}"
+     data-kpi-data-update-url-template="{{ url_for('app_bp.surec_api_kpi_data_update', data_id=kpi_data_row_placeholder_id) }}"
+     data-kpi-data-delete-url-template="{{ url_for('app_bp.surec_api_kpi_data_delete', data_id=kpi_data_row_placeholder_id) }}"
+     data-kpi-data-row-placeholder="{{ kpi_data_row_placeholder_id }}"
+     data-kpi-delete-url-base="{{ url_for('app_bp.surec_api_kpi_delete', kpi_id=kpi_api_placeholder_id)|replace(kpi_api_placeholder_id|string, '') }}"
+     data-kpi-get-url-template="{{ url_for('app_bp.surec_api_kpi_get', kpi_id=kpi_api_placeholder_id) }}"
+     data-kpi-update-url-template="{{ url_for('app_bp.surec_api_kpi_update', kpi_id=kpi_api_placeholder_id) }}"
+     data-kpi-id-placeholder="{{ kpi_api_placeholder_id }}"
+     data-kpi-add-url="{{ url_for('app_bp.surec_api_kpi_add') }}"
+     data-process-list-url="{{ url_for('app_bp.surec') }}"
+     data-faaliyet-url="{{ url_for('app_bp.surec_faaliyetler', process_id=process.id) }}"
+     data-can-crud-pg="{{ 'true' if page_flags.can_crud_pg else 'false' }}"
+     data-can-enter-pgv="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
+     data-can-crud-activity="{{ 'true' if page_flags.can_crud_pg else 'false' }}"
+     data-can-track-activity="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
+     data-favorite-toggle-url="{{ url_for('process_bp.favorite_kpi_toggle') }}"
+     data-bireysel-ensure-pg-url="{{ url_for('app_bp.bireysel_api_pg_ensure_from_process_kpi') }}"
+     data-bireysel-veri-add-url="{{ url_for('app_bp.bireysel_api_veri_add') }}"
+     data-kpi-data-detail-url="{{ url_for('app_bp.surec_api_kpi_data_detail') }}"
+     data-kpi-data-proje-url="{{ url_for('app_bp.surec_api_kpi_data_proje_gorevleri') }}">
+
+  {# ── Üst bar: kök karnesi referansı (gradient, sol süreç seçici, sağ meta + aksiyonlar) ── #}
+  <header class="karne-banner no-print" role="banner">
+    <div class="karne-banner-inner">
+      <div class="karne-banner-top karne-banner-top--compact">
+        <div class="karne-banner-top-left">
+          <a href="{{ url_for('app_bp.surec') }}" class="karne-banner-back-compact">
+            <span class="karne-banner-mini-logo" aria-hidden="true"><i class="fas fa-th-large"></i></span>
+            <span class="karne-banner-back-text"><span class="karne-banner-back-arrow">←</span> Süreç paneline dön</span>
+          </a>
+          {% if parent_process %}
+          <a href="{{ url_for('app_bp.surec_karne', process_id=parent_process.id) }}" class="karne-banner-parent-compact">
+            <i class="fas fa-level-up-alt" aria-hidden="true"></i> Üst süreç
+          </a>
+          {% endif %}
+        </div>
+        <div class="karne-banner-brand-center">
+          <span class="karne-banner-brand-text">SÜREÇ KARNESİ</span>
+        </div>
+        <div class="karne-banner-meta-col">
+          {% if process.document_no %}
+          <div class="karne-banner-meta-line">Döküman No: <strong>{{ process.document_no }}</strong></div>
+          {% endif %}
+          {% if process.revision_no %}
+          <div class="karne-banner-meta-line">Rev. No: <strong>{{ process.revision_no }}</strong></div>
+          {% endif %}
+          {% if process.revision_date %}
+          <div class="karne-banner-meta-line">Rev. tarihi: <strong>{{ process.revision_date.strftime('%d.%m.%Y') }}</strong></div>
+          {% endif %}
+          <div class="karne-banner-meta-line karne-banner-year-line">
+            <label for="year-select">Yıl:</label>
+            <select id="year-select" class="karne-banner-year-select" aria-label="Rapor yılı">
+              {% for y in range(current_year + 1, current_year - 5, -1) %}
+              <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="karne-banner-toolbar">
+        <div class="karne-banner-process-block">
+          <label for="process-select" class="karne-banner-field-label">Süreç seçin</label>
+          <select id="process-select" class="karne-banner-process-select" aria-label="Görüntülenecek süreç">
+            {% for ap in all_processes %}
+            <option value="{{ ap.id }}" {% if ap.id == process.id %}selected{% endif %}>
+              {% if ap.code %}{{ ap.code }} — {% endif %}{{ ap.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="karne-banner-process-block">
+          <label class="karne-banner-field-label">Görünüm</label>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a href="{{ url_for('app_bp.surec_karne', process_id=process.id, tab='kpi') }}"
+               class="mc-btn mc-btn-sm {{ 'mc-btn-primary' if initial_tab == 'kpi' else 'mc-btn-secondary' }}">
+              <i class="fas fa-chart-line"></i> Süreç Karnesi
+            </a>
+            <a href="{{ url_for('app_bp.surec_karne', process_id=process.id, tab='activities') }}"
+               class="mc-btn mc-btn-sm {{ 'mc-btn-success' if initial_tab == 'activities' else 'mc-btn-secondary' }}">
+              <i class="fas fa-list-check"></i> Süreç Faaliyetleri
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {# ── Genel bilgiler: sağlık skoru, KPI dağılımı, faaliyet/KPI ilerlemesi ── #}
+  <div class="mc-card karne-overview-card">
+    <div class="karne-section-head karne-section-head--info">
+      <span class="karne-section-title">
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
+        {{ process.name }} — Genel bilgiler
+      </span>
+      <span class="karne-mini-summary" id="karne-pg-summary">—</span>
+    </div>
+    <div class="karne-overview-grid">
+      <div class="karne-widget karne-widget-health">
+        <div class="karne-widget-label">Genel sağlık skoru</div>
+        <div class="karne-health-score" id="karne-health-value">—</div>
+        <div class="karne-health-badge" id="karne-health-badge">—</div>
+        <p class="karne-widget-hint">Seçili yıl PG gerçekleşme / hedef ortalamasına göre</p>
+      </div>
+      <div class="karne-widget karne-widget-donut">
+        <div class="karne-widget-label">KPI başarı dağılımı</div>
+        <div class="karne-donut-wrap">
+          <canvas id="kpi-donut-chart" aria-label="KPI başarı dağılımı"></canvas>
+        </div>
+        <ul class="karne-donut-legend" id="kpi-donut-legend"></ul>
+      </div>
+      <div class="karne-widget karne-widget-progress">
+        <div class="karne-widget-label">Faaliyetlerin ilerlemesi</div>
+        <div class="karne-bar-row">
+          <span class="karne-bar-label">Genel faaliyet skoru</span>
+          <div class="karne-bar-track"><div class="karne-bar-fill karne-bar-fill--act" id="karne-bar-activities" style="width:0%;"></div></div>
+          <span class="karne-bar-pct" id="karne-pct-activities">0%</span>
+        </div>
+        <div class="karne-bar-row">
+          <span class="karne-bar-label">KPI veri doluluk</span>
+          <div class="karne-bar-track"><div class="karne-bar-fill karne-bar-fill--kpi" id="karne-bar-kpi-fill" style="width:0%;"></div></div>
+          <span class="karne-bar-pct" id="karne-pct-kpi-fill">0%</span>
+        </div>
+        <p class="karne-widget-hint" id="karne-activity-counts">—</p>
+      </div>
+    </div>
+  </div>
+
+  {% if child_processes %}
+  <div class="mc-card karne-exec-card">
+    <div class="karne-section-head karne-section-head--exec">
+      <span class="karne-section-title">
+        <i class="fas fa-user-tie" aria-hidden="true"></i>
+        Yönetici özeti (alt süreçler)
+      </span>
+    </div>
+    <div class="mc-table-wrap karne-exec-table-wrap">
+      <table class="mc-table karne-exec-table">
+        <thead>
+          <tr>
+            <th>Alt süreç</th>
+            <th>Süreç lideri (özet)</th>
+            <th style="min-width:140px;">İlerleme</th>
+            <th>Durum</th>
+            <th class="no-print" style="width:120px;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in child_processes %}
+          <tr>
+            <td>
+              <span class="karne-exec-code">{{ c.code or '·' }}</span>
+              <span class="karne-exec-name">{{ c.name }}</span>
+            </td>
+            <td>{{ primary_leader_label(c) }}</td>
+            <td>
+              <div class="karne-exec-progress">
+                <div class="mc-progress karne-exec-bar">
+                  <div class="mc-progress-fill {% if c.progress >= 80 %}success{% elif c.progress >= 50 %}{% else %}warning{% endif %}"
+                       style="width: {{ c.progress }}%;"></div>
+                </div>
+                <span>{{ c.progress }}%</span>
+              </div>
+            </td>
+            <td><span class="mc-badge mc-badge-info">{{ c.status or '—' }}</span></td>
+            <td class="no-print">
+              <a href="{{ url_for('app_bp.surec_karne', process_id=c.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+                Karnesi
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mc-card karne-trend-card" id="trend-chart-card">
+    <div class="mc-card-header karne-trend-accordion-toggle" id="trend-accordion-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="trend-accordion-panel">
+      <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>KPI / performans trend analizi</span>
+      <i class="fas fa-chevron-down karne-trend-accordion-chevron" aria-hidden="true"></i>
+    </div>
+    <div class="mc-card-body karne-trend-accordion-panel is-collapsed" id="trend-accordion-panel" aria-hidden="true">
+      <div class="karne-trend-filter-row">
+        <label class="karne-pg-filter-label" for="trend-kpi-select">Gösterge</label>
+        <select id="trend-kpi-select" class="mc-select" style="width:auto; max-width:220px; font-size:12px;">
+          <option value="">— PG seçin —</option>
+        </select>
+      </div>
+      <canvas id="trend-chart" style="max-height:240px;"></canvas>
+      <div id="trend-empty" class="mc-empty" style="padding:30px 20px; display:none;">
+        <div class="mc-empty-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="mc-empty-text">Grafik için bir PG seçin</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="karne-loading" class="mc-empty" style="display:none;">
+    <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
+    <div class="mc-empty-text" style="margin-top:8px;">Veriler yükleniyor…</div>
+  </div>
+
+  <div class="mc-card karne-kpi-section" id="kpi-section">
+    <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
+      <div class="karne-pg-card-head-text karne-kanban-head-main">
+        <span class="mc-card-title karne-kpi-section-title">
+          <i class="fas fa-tachometer-alt karne-kpi-section-title-icon" aria-hidden="true"></i>Süreç Karnesi — Performans Göstergeleri
+        </span>
+      </div>
+      <div class="karne-kanban-header-tools no-print">
+        {# PG kartı: modal ile aynı gösterim mantığı (yıl, gösterim, önceki/sonraki + rozet) #}
+        <div class="karne-pg-toolbar-unified">
+          <div class="karne-pg-toolbar-start">
+            <div class="karne-pg-filter-group">
+              <label class="karne-pg-filter-label" for="pg-karne-yil-select">Yıl</label>
+              <select id="pg-karne-yil-select" class="mc-select karne-pg-select-yil" aria-label="Performans göstergeleri rapor yılı">
+                {% for y in range(current_year + 1, current_year - 5, -1) %}
+                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="karne-pg-filter-group">
+              <label class="karne-pg-filter-label" for="pg-periyot-select">Gösterim</label>
+              <select id="pg-periyot-select" class="mc-select karne-pg-periyot-select" aria-label="Görünüm periyodu">
+                <option value="yillik">Yıllık (yıl sonu)</option>
+                <option value="alti_ay">6 aylık</option>
+                <option value="ceyrek" selected>Çeyreklik</option>
+                <option value="aylik">Aylık</option>
+                <option value="haftalik">Haftalık</option>
+                <option value="gunluk">Günlük</option>
+              </select>
+            </div>
+          </div>
+          <div class="karne-pg-toolbar-center">
+            <div class="karne-pg-nav-inline">
+              <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="pg-karne-nav-prev" aria-label="Önceki dönem">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i> Önceki
+              </button>
+              <span class="karne-pg-nav-badge" id="pg-karne-nav-badge">
+                <span class="karne-pg-nav-badge-primary" id="pg-karne-nav-label">—</span>
+                <span class="karne-pg-nav-badge-sub" id="pg-karne-nav-sub"></span>
+              </span>
+              <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="pg-karne-nav-next" aria-label="Sonraki dönem">
+                Sonraki <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        {# Modal senkronu için gizli (günlük ay); kartta Önceki/Sonraki ile güncellenir #}
+        <div class="karne-pg-gunluk-wrap is-hidden" id="pg-gunluk-ay-wrap" aria-hidden="true">
+          <select id="pg-gunluk-ay-select" class="mc-select" aria-hidden="true" tabindex="-1" title="Günlük ay (senkron)">
+            {% for m in range(1, 13) %}
+            <option value="{{ m }}">{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="karne-kanban-actions-row">
+          <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="btn-karne-wizard">
+            <i class="fas fa-pen-to-square" aria-hidden="true"></i> Veri giriş sihirbazı
+          </button>
+          {% if page_flags.can_crud_pg %}
+          <button type="button" id="btn-kpi-add" class="mc-btn mc-btn-sm karne-btn-pg-ekle-header">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i> PG ekle
+          </button>
+          {% endif %}
+          <button type="button" class="mc-btn mc-btn-sm karne-btn-excel-soft" id="btn-karne-excel">
+            <i class="fas fa-file-download" aria-hidden="true"></i> Excel'e aktar
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-btn-print-muted" id="btn-karne-print">
+            <i class="fas fa-print" aria-hidden="true"></i> Yazdır
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-btn-tablo-gorunumu" id="btn-karne-tablo-gorunumu" title="PG tablo modalını aç">
+            <i class="fas fa-table" aria-hidden="true"></i> Tablo Görünümü
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="kanban-gauge-root" class="kb-kanban-root">
+      <div class="kb-kanban-grid" id="kb-kanban-grid">
+        <section class="kb-col kb-col--hedefte" aria-labelledby="kb-col-title-hedefte">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--hedefte" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="kb-col-title-hedefte">Hedefte</h3>
+            <span class="kb-col-count" id="kb-count-hedefte">0</span>
+          </div>
+          <div class="kb-col-body" id="kb-col-hedefte"></div>
+        </section>
+        <section class="kb-col kb-col--risk" aria-labelledby="kb-col-title-risk">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--risk" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="kb-col-title-risk">Risk altında</h3>
+            <span class="kb-col-count" id="kb-count-risk">0</span>
+          </div>
+          <div class="kb-col-body" id="kb-col-risk"></div>
+        </section>
+        <section class="kb-col kb-col--disi" aria-labelledby="kb-col-title-disi">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--disi" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="kb-col-title-disi">Hedef dışı</h3>
+            <span class="kb-col-count" id="kb-count-disi">0</span>
+          </div>
+          <div class="kb-col-body" id="kb-col-disi"></div>
+        </section>
+      </div>
+      <div id="kb-kanban-empty" class="kb-kanban-empty is-hidden" role="status">Henüz performans göstergesi eklenmemiş.</div>
+    </div>
+  </div>
+
+  <div class="mc-grid-4" style="margin:20px 0;" id="faaliyet-stats">
+    <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
+      <div class="mc-stat-label">Faaliyetler</div>
+      <div class="mc-stat-value" id="stat-activities">—</div>
+      <div class="mc-stat-sub">Toplam</div>
+    </div>
+    <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
+      <div class="mc-stat-label">Tamamlanan</div>
+      <div class="mc-stat-value" id="stat-done-pct">—</div>
+      <div class="mc-stat-sub">Özet görünüm</div>
+    </div>
+  </div>
+
+  <div class="mc-card karne-kpi-section" id="activity-section">
+    <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
+      <div class="karne-pg-card-head-text karne-kanban-head-main">
+        <span class="mc-card-title">
+          <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>Süreç Faaliyetleri
+        </span>
+      </div>
+      <div class="karne-kanban-header-tools no-print">
+        <div class="karne-pg-toolbar-unified">
+          <div class="karne-pg-toolbar-start">
+            <div class="karne-pg-filter-group">
+              <label class="karne-pg-filter-label" for="activity-view-mode">Gösterim</label>
+              <select id="activity-view-mode" class="mc-select karne-pg-periyot-select" aria-label="Faaliyet görünümü">
+                <option value="kanban" selected>Kanban</option>
+                <option value="table">Aylık takip tablosu</option>
+              </select>
+            </div>
+          </div>
+          <div class="karne-pg-toolbar-center">
+            <div class="karne-pg-nav-inline">
+              <span class="karne-pg-nav-badge">
+                <span class="karne-pg-nav-badge-primary">Faaliyet paneli</span>
+                <span class="karne-pg-nav-badge-sub">Özet kartlar + detay görünüm</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="karne-kanban-actions-row">
+          <button type="button" id="btn-activity-add" class="mc-btn mc-btn-sm mc-btn-success" style="display:none;">
+            <i class="fas fa-plus"></i> Faaliyet Ekle
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm karne-btn-excel-soft" id="btn-activity-excel">
+            <i class="fas fa-file-download" aria-hidden="true"></i> Excel'e aktar
+          </button>
+          <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-btn-print-muted" id="btn-activity-print">
+            <i class="fas fa-print" aria-hidden="true"></i> Yazdır
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="activity-kanban-root" class="kb-kanban-root">
+      <div class="kb-kanban-grid">
+        <section class="kb-col kb-col--hedefte" aria-labelledby="act-col-title-plan">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--hedefte" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-plan">Planlananlar</h3>
+            <span class="kb-col-count" id="act-count-plan">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-plan"></div>
+        </section>
+        <section class="kb-col kb-col--risk" aria-labelledby="act-col-title-progress">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--risk" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-progress">Devam Edenler</h3>
+            <span class="kb-col-count" id="act-count-progress">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-progress"></div>
+        </section>
+        <section class="kb-col kb-col--disi" aria-labelledby="act-col-title-done">
+          <div class="kb-col-head">
+            <span class="kb-col-dot kb-col-dot--disi" aria-hidden="true"></span>
+            <h3 class="kb-col-title" id="act-col-title-done">Tamamlanan / İptal</h3>
+            <span class="kb-col-count" id="act-count-done">0</span>
+          </div>
+          <div class="kb-col-body" id="act-col-done"></div>
+        </section>
+      </div>
+      <div id="activity-kanban-empty" class="kb-kanban-empty is-hidden" role="status">Henüz faaliyet eklenmemiş.</div>
+    </div>
+    <div class="mc-table-wrap" id="activity-table-wrap" style="border:none; border-radius:0; box-shadow:none; display:none;">
+      <table class="mc-table karne-table">
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th style="min-width:180px;">Faaliyet</th>
+            <th style="text-align:center;">Durum</th>
+            {% for m in range(1, 13) %}
+            <th class="month-col" style="text-align:center;">{{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}</th>
+            {% endfor %}
+            <th style="text-align:center;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="activity-tbody">
+          <tr>
+            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">Veriler yükleniyor…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if page_flags.can_crud_pg %}
+  <!-- Modal: PG ekle / düzenle — Micro standart mc-modal-header (lavanta ikon rozeti) -->
+  <div id="modal-kpi-add" class="mc-modal-overlay" aria-hidden="true">
+    <div class="mc-modal mc-modal-lg karne-modal-kpi-add" role="dialog" aria-labelledby="modal-kpi-add-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title" id="modal-kpi-add-title">
+          <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+          <span id="modal-kpi-add-title-text">Yeni Performans Göstergesi</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-kpi-add-modal-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body">
+        <form id="form-kpi-add" class="karne-kpi-add-form" novalidate>
+          {# Alan seti ve metinler: templates/process/karne.html #addPGForm ile aynı #}
+          <div class="tm-field">
+            <label class="mc-form-label mc-form-label--strong" for="kpi-add-name">Gösterge Adı<span class="req">*</span></label>
+            <input id="kpi-add-name" name="name" class="mc-form-input" type="text" required
+                   placeholder="Performans göstergesi adı" autocomplete="off">
+          </div>
+
+          <div class="karne-kpi-add-grid-4">
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-code">Kodu</label>
+              <input id="kpi-add-code" name="code" class="mc-form-input" type="text"
+                     placeholder="PG-01" autocomplete="off">
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-target">Hedef Değer</label>
+              <input id="kpi-add-target" name="target_value" class="mc-form-input" type="text"
+                     placeholder="Hedef değer" autocomplete="off">
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-unit">Ölçüm Birimi</label>
+              <input id="kpi-add-unit" name="unit" class="mc-form-input" type="text"
+                     list="kpi-add-unit-options"
+                     placeholder="%, Gün, TL…"
+                     autocomplete="off"
+                     aria-describedby="kpi-add-unit-hint">
+              <span id="kpi-add-unit-hint" class="karne-field-hint">Listeden seçin veya kendi biriminizi yazın.</span>
+              <datalist id="kpi-add-unit-options">
+                <option value="Adet"></option>
+                <option value="%"></option>
+                <option value="TL"></option>
+                <option value="Saat"></option>
+                <option value="Gün"></option>
+                <option value="Kişi"></option>
+                <option value="Puan"></option>
+                <option value="kg"></option>
+                <option value="km"></option>
+                <option value="kWh"></option>
+              </datalist>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-weight">Skor Ağırlığı (%)</label>
+              <input id="kpi-add-weight" name="weight" class="mc-form-input" type="number"
+                     min="0" max="100" step="0.1" placeholder="0-100">
+            </div>
+          </div>
+
+          <div class="tm-grid karne-kpi-add-grid-tight">
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-period">Ölçüm Periyodu</label>
+              <select id="kpi-add-period" name="period" class="mc-form-input">
+                <option value="Aylık">Aylık</option>
+                <option value="Çeyreklik" selected>Çeyreklik</option>
+                <option value="6 ay">6 ay</option>
+                <option value="Yıllık">Yıllık</option>
+              </select>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-direction">Hedef Yönü</label>
+              <select id="kpi-add-direction" name="direction" class="mc-form-input">
+                <option value="Increasing">Arttıkça İyi ↑</option>
+                <option value="Decreasing">Azaldıkça İyi ↓</option>
+              </select>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-collection">Hesaplama Yöntemi</label>
+              <select id="kpi-add-collection" name="data_collection_method" class="mc-form-input">
+                <option value="Ortalama" selected>Ortalama</option>
+                <option value="Toplama">Toplama</option>
+                <option value="Son Değer">Son Değer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tm-grid-2">
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-gosterge-turu">Gösterge Türü</label>
+              <select id="kpi-add-gosterge-turu" name="gosterge_turu" class="mc-form-input">
+                <option value="">Seçiniz</option>
+                <option value="İyileştirme">İyileştirme</option>
+                <option value="Koruma">Koruma</option>
+                <option value="Bilgi Amaçlı">Bilgi Amaçlı</option>
+              </select>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-target-method">Hedef Belirleme Yöntemi</label>
+              <select id="kpi-add-target-method" name="target_method" class="mc-form-input">
+                <option value="">Seçiniz</option>
+                <option value="RG">Rakibe Göre (RG)</option>
+                <option value="HKY">Hedef Katsayısı Yöntemi (HKY)</option>
+                <option value="HK">Hedef Konulamaz (HK)</option>
+                <option value="SH">Sabit Hedef (SH)</option>
+                <option value="DH">Dalgalı Hedef (DH)</option>
+                <option value="SGH">Sektöre Göre Hedef (SGH)</option>
+              </select>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-substrategy">Alt Strateji (Opsiyonel)</label>
+              <select id="kpi-add-substrategy" name="sub_strategy_id" class="mc-form-input">
+                <option value="">-- Alt Strateji Seçiniz --</option>
+                {% for o in substrategy_options %}
+                <option value="{{ o.id }}">{{ o.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="tm-field">
+              <label class="mc-form-label" for="kpi-add-prev-year">Önceki Yıl Ortalaması</label>
+              <input id="kpi-add-prev-year" name="onceki_yil_ortalamasi" class="mc-form-input" type="number"
+                     step="0.01" placeholder="Opsiyonel baz değer">
+            </div>
+          </div>
+
+          <div class="tm-field">
+            <label class="mc-form-label" for="kpi-add-description">Açıklama</label>
+            <textarea id="kpi-add-description" name="description" class="mc-form-input karne-kpi-add-textarea"
+                      rows="2" placeholder=""></textarea>
+          </div>
+
+          <div class="karne-basari-puani-panel karne-basari-puani-panel--root">
+            <div class="karne-basari-puani-panel-header karne-basari-puani-panel-header--root">
+              <label class="karne-basari-puani-check karne-basari-puani-check--root">
+                <input type="checkbox" id="kpi-add-basari-enable" name="basari_puani_enable">
+                <span class="karne-basari-puani-check-label">
+                  <i class="fas fa-trophy" aria-hidden="true"></i>
+                  Başarı Puanı Yapılandırması (Opsiyonel)
+                </span>
+              </label>
+            </div>
+            <div id="kpi-add-basari-body" class="karne-basari-puani-panel-body karne-basari-puani-panel-body--root" hidden>
+              <p class="karne-field-hint karne-basari-puani-hint karne-basari-puani-hint--root">
+                Her puan seviyesi için aralık tanımlayın (min-max formatı, örn: 0-40, 40-80, 80-).
+              </p>
+              {% for i in range(1, 6) %}
+              <div class="karne-basari-puani-row karne-basari-puani-row--root">
+                <span class="karne-basari-puani-row-label"><strong>{{ i }} Puan</strong></span>
+                <input type="text" class="mc-form-input karne-basari-puani-input karne-basari-puani-input--root"
+                       id="kpi-add-bp-aralik-{{ i }}"
+                       placeholder="örn: {% if i == 1 %}0-40{% elif i == 2 %}40-60{% elif i == 3 %}60-80{% elif i == 4 %}80-100{% else %}100-{% endif %}"
+                       autocomplete="off">
+                <input type="text" class="mc-form-input karne-basari-puani-input karne-basari-puani-input--root"
+                       id="kpi-add-bp-aciklama-{{ i }}"
+                       value="{% if i == 1 %}Beklentinin Çok Altında{% elif i == 2 %}İyileştirmeye Açık{% elif i == 3 %}Hedefe Ulaşmış{% elif i == 4 %}Hedefin Üzerinde{% else %}Mükemmel{% endif %}"
+                       title="Açıklama kayda yazılır."
+                       autocomplete="off">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-kpi-add-modal-cancel">İptal</button>
+        <button type="button" class="mc-btn mc-btn-success" id="btn-kpi-add-modal-save">
+          <i class="fas fa-plus-circle" id="btn-kpi-add-modal-save-icon" aria-hidden="true"></i>
+          <span id="btn-kpi-add-modal-save-text">Kaydet</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# PG Veri Girişi Sihirbazı (VGS) — tek ekran; süreç/PG sabit; tarihten dönem türetilir #}
+  <div id="modal-kpi-data-entry" class="mc-modal-overlay vgs-modal-overlay" aria-hidden="true">
+    <div class="mc-modal vgs-modal mc-modal--wide-karne" role="dialog" aria-modal="true" aria-labelledby="modal-kpi-data-entry-title-text">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+          <span id="modal-kpi-data-entry-title-text">Veri Girişi Sihirbazı</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-kpi-data-entry-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body vgs-modal-body">
+        <form id="form-kpi-data-entry" novalidate class="vgs-single-form">
+          <div class="vgs-readonly-grid">
+            <div class="tm-field tm-full">
+              <label class="mc-form-label">Süreç</label>
+              <div class="vgs-readonly-box" id="vgs-process-label">—</div>
+            </div>
+            <div class="tm-field tm-full">
+              <label class="mc-form-label" for="vgs-kpi-select">Performans göstergesi <span class="req">*</span></label>
+              <select id="vgs-kpi-select" class="mc-form-input" required aria-required="true"></select>
+            </div>
+          </div>
+
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="vgs-data-date">Veri tarihi <span class="req">*</span></label>
+            <input id="vgs-data-date" name="entry_date" class="mc-form-input" type="date" required
+                   aria-required="true"
+                   aria-describedby="vgs-data-date-hint">
+            <p id="vgs-data-date-hint" class="karne-field-hint">
+              Verinin <strong>hangi güne / olaya ilişkin</strong> olduğunu seçin (ör. anketin yapıldığı gün).
+              <strong>Kaydet</strong> ile sisteme işlendiği tarih ve saat <strong>otomatik</strong> kaydedilir; yıl ve dönem bu veri tarihine göre PG ölçüm tipine uygun hesaplanır.
+            </p>
+          </div>
+          <p class="karne-field-hint vgs-hint"><i class="fas fa-info-circle"></i> Veri, <strong>kendi adınıza</strong> süreç karnesine ve bireysel karnenize yazılır.</p>
+
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="kpi-data-entry-value">Gerçekleşen değer <span class="req">*</span></label>
+            <input id="kpi-data-entry-value" name="actual_value" class="mc-form-input" type="text" required
+                   placeholder="Örn: 42" autocomplete="off">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="vgs-description">Açıklama (opsiyonel)</label>
+            <textarea id="vgs-description" class="mc-textarea" rows="3" placeholder="İsteğe bağlı not"></textarea>
+          </div>
+
+          <div class="vgs-history-accordion vgs-history-accordion--bottom" id="vgs-history-accordion">
+            <button type="button" class="vgs-history-toggle" id="vgs-history-toggle" aria-expanded="false" aria-controls="vgs-history-panel">
+              <span class="vgs-history-toggle-label"><i class="fas fa-history" aria-hidden="true"></i> Kayıt geçmişi</span>
+              <i class="fas fa-chevron-down vgs-history-chevron" aria-hidden="true"></i>
+            </button>
+            <div id="vgs-history-panel" class="vgs-history-panel is-collapsed" role="region" aria-labelledby="vgs-history-toggle">
+              <div id="vgs-history-loading" class="vgs-history-loading is-hidden">Yükleniyor…</div>
+              <div id="vgs-history-error" class="vgs-history-error is-hidden karne-field-hint"></div>
+              <div id="vgs-history-empty" class="vgs-history-empty is-hidden karne-field-hint">Bu PG için henüz kayıt yok.</div>
+              <div id="vgs-history-table-wrap" class="vgs-history-table-wrap"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="mc-modal-footer vgs-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-kpi-data-entry-cancel">İptal</button>
+        <button type="submit" form="form-kpi-data-entry" class="mc-btn mc-btn-success" id="btn-vgs-confirm">
+          <i class="fas fa-save" aria-hidden="true"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# VGS üzerinde: geçmiş satırı düzenle — MicroUI mc-modal (Swal yok; z-index VGS üstünde) #}
+  <div id="modal-vgs-history-edit" class="mc-modal-overlay vgs-nested-modal-overlay" aria-hidden="true">
+    <div class="mc-modal vgs-nested-modal" role="dialog" aria-modal="true" aria-labelledby="modal-vgs-history-edit-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-edit" aria-hidden="true"></i>
+          <span id="modal-vgs-history-edit-title">Kayıt düzenle</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-vgs-history-edit-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body">
+        <p class="karne-field-hint">Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir.</p>
+        <p id="vgs-history-edit-meta" class="vgs-history-edit-meta"></p>
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="vgs-history-edit-actual">Gerçekleşen değer <span class="req">*</span></label>
+          <input type="text" id="vgs-history-edit-actual" class="mc-form-input" autocomplete="off" />
+        </div>
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="vgs-history-edit-desc">Açıklama (opsiyonel)</label>
+          <textarea id="vgs-history-edit-desc" class="mc-textarea" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-vgs-history-edit-cancel">İptal</button>
+        <button type="button" class="mc-btn mc-btn-primary" id="btn-vgs-history-edit-save">
+          <i class="fas fa-save" aria-hidden="true"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# VGS üzerinde: soft sil onayı — MicroUI #}
+  <div id="modal-vgs-history-delete" class="mc-modal-overlay vgs-nested-modal-overlay" aria-hidden="true">
+    <div class="mc-modal vgs-nested-modal" role="dialog" aria-modal="true" aria-labelledby="modal-vgs-history-delete-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+          <span id="modal-vgs-history-delete-title">Kaydı pasifleştir</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-vgs-history-delete-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body">
+        <p class="karne-field-hint">Kayıt <strong>kalıcı olarak silinmez</strong>. Pasif yapılır; skor ve raporlarda kullanılmaz.</p>
+        <p class="karne-field-hint">Silme işlemi <strong>sizin adınıza</strong> kayda geçer (kim / ne zaman).</p>
+        <p id="vgs-history-delete-meta" class="vgs-history-edit-meta"></p>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-vgs-history-delete-cancel">İptal</button>
+        <button type="button" class="mc-btn mc-btn-primary vgs-history-delete-confirm" id="btn-vgs-history-delete-confirm">
+          Evet, pasifleştir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# Kök karne «Performans Göstergeleri» kartı — PG kartına tıklanınca (Micro modal + renkler) #}
+  <div id="modal-micro-pg-tablo" class="mc-modal-overlay micro-pg-tablo-overlay" aria-hidden="true">
+    <div class="mc-modal micro-pg-tablo-modal mc-modal--micro-pg-tablo" role="dialog" aria-modal="true" aria-labelledby="micro-pg-tablo-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-table" aria-hidden="true"></i>
+          <span id="micro-pg-tablo-title">Süreç Karnesi — Performans Göstergeleri</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-micro-pg-tablo-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body micro-pg-tablo-body">
+        <div class="micro-pg-tablo-toolbar micro-pg-tablo-toolbar--unified">
+          <div class="micro-pg-toolbar-navline">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-prev">
+              <i class="fas fa-chevron-left" aria-hidden="true"></i> Önceki
+            </button>
+            <div class="micro-pg-filter-group">
+              <label class="micro-pg-filter-label" for="micro-pg-yil-select">Yıl</label>
+              <select id="micro-pg-yil-select" class="mc-form-input mc-form-input--sm micro-pg-select-yil"></select>
+            </div>
+            <div class="micro-pg-filter-group">
+              <label class="micro-pg-filter-label" for="micro-pg-periyot-select">Gösterim</label>
+              <select id="micro-pg-periyot-select" class="mc-form-input mc-form-input--sm micro-pg-select-gosterim">
+                <option value="yillik">Yıllık</option>
+                <option value="alti_ay">6 aylık</option>
+                <option value="ceyrek" selected>Çeyreklik</option>
+                <option value="aylik">Aylık</option>
+                <option value="haftalik">Haftalık</option>
+                <option value="gunluk">Günlük</option>
+              </select>
+            </div>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-pg-nav-next">
+              Sonraki <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+          {% if page_flags.can_crud_pg %}
+          <button type="button" class="mc-btn mc-btn-success mc-btn-sm micro-pg-toolbar-add" id="btn-micro-pg-tablo-add-pg">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i> PG Ekle
+          </button>
+          {% endif %}
+          {% if page_flags.can_enter_pgv %}
+          <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-pg-toolbar-add micro-pg-toolbar-add--pgv" id="btn-micro-pg-tablo-add-pgv">
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i> PGV Ekle
+          </button>
+          {% endif %}
+          <span class="micro-pg-periyot-badge micro-pg-periyot-badge--hidden" id="micro-pg-periyot-nav-badge" aria-hidden="true">
+            <span class="micro-pg-periyot-badge-primary" id="micro-pg-periyot-nav-label">—</span>
+            <span class="micro-pg-periyot-badge-sub" id="micro-pg-periyot-nav-sub"></span>
+          </span>
+        </div>
+        <div class="micro-pg-col-panel">
+          <strong>Sütun gösterimi:</strong>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-code-chk" checked /> Kodu</label>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-strategy-chk" checked /> Strateji</label>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-weight-chk" checked /> Ağırlık</label>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-unit-chk" checked /> Birim</label>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-period-chk" checked /> Periyot</label>
+          <label class="micro-pg-col-chk"><input type="checkbox" id="micro-col-target-chk" checked /> Yıllık hedef</label>
+        </div>
+        <div class="micro-pg-table-scroll">
+          <table class="micro-pg-excel-table" id="micro-performansTable">
+            <thead class="micro-pg-thead" id="micro-performansTableHead"></thead>
+            <tbody id="micro-performansTbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-micro-pg-tablo-footer-close">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-micro-veri-detay" class="mc-modal-overlay micro-pg-nested-overlay" aria-hidden="true">
+    <div class="mc-modal micro-pg-nested-modal" role="dialog" aria-modal="true" aria-labelledby="modal-micro-veri-detay-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-list-alt" aria-hidden="true"></i>
+          <span id="modal-micro-veri-detay-title">Periyot veri detayı</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-micro-veri-detay-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body" id="micro-veri-detay-content"></div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-micro-veri-detay-footer-close">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-micro-veri-duzenle" class="mc-modal-overlay micro-pg-nested-overlay" aria-hidden="true">
+    <div class="mc-modal micro-pg-nested-modal" role="dialog" aria-modal="true" aria-labelledby="modal-micro-veri-duzenle-title">
+      <div class="mc-modal-header">
+        <div class="mc-modal-title">
+          <i class="fas fa-edit" aria-hidden="true"></i>
+          <span id="modal-micro-veri-duzenle-title">Veri düzenle</span>
+        </div>
+        <button type="button" class="mc-modal-close" id="btn-micro-veri-duzenle-close" aria-label="Kapat">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="mc-modal-body">
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="micro-veri-duzenle-actual">Gerçekleşen <span class="req">*</span></label>
+          <input type="text" id="micro-veri-duzenle-actual" class="mc-form-input" autocomplete="off" />
+        </div>
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="micro-veri-duzenle-desc">Açıklama</label>
+          <textarea id="micro-veri-duzenle-desc" class="mc-textarea" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" id="btn-micro-veri-duzenle-cancel">İptal</button>
+        <button type="button" class="mc-btn mc-btn-primary" id="btn-micro-veri-duzenle-save">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/surec_vgs.js') }}?v={{ config.get('VERSION', '1') }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/pg_tablo_modal.js') }}?v={{ config.get('VERSION', '1') }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/surec.js') }}?v={{ config.get('VERSION', '1') }}"></script>
+{% endblock %}
+

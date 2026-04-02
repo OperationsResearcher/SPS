@@ -233,7 +233,7 @@ Klasik **`main.routes`** altında `/surec-karnesi`, `/api/kullanici/sureclerim`,
 | ORM (legacy) | `models/process.py` |
 | Periyot / validasyon | `app/utils/process_utils.py` |
 | Analitik | `app/services/analytics_service.py` |
-| Arayüz | `micro/templates/micro/surec/index.html`, `karne.html`, `faaliyetler.html` |
+| Arayüz | `ui/templates/platform/surec/index.html`, `karne.html`, `faaliyetler.html` |
 | Menü | `micro/core/module_registry.py` |
 
 ---

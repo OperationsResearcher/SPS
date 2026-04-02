@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="72" viewBox="0 0 240 72" role="img" aria-label="Kokpitim">
+  <defs>
+    <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="236" height="68" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="10" y="10" width="52" height="52" rx="12" fill="url(#kg)"/>
+  <path d="M28 22v28M42 22L28 36l14 14" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="74" y="44" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700" fill="#1e293b">Kokpitim</text>
+</svg>

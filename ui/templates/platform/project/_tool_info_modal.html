@@ -1,0 +1,15 @@
+{# "Nasıl kullanılır?" araç bilgisi (mc-modal). JS: tool_info_modal.js #}
+<div id="tool-info-overlay" class="mc-modal-overlay" aria-hidden="true">
+    <div class="mc-modal mc-modal-lg tool-info-modal-panel" role="dialog" aria-modal="true" aria-labelledby="toolInfoTitle">
+        <div class="mc-modal-header">
+            <div class="mc-modal-title" id="toolInfoTitle">
+                <i class="fas fa-info-circle"></i><span>Bilgi</span>
+            </div>
+            <button type="button" class="mc-modal-close" onclick="closeToolInfoModal()" aria-label="Kapat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mc-modal-body" id="toolInfoBody"></div>
+        <div class="mc-modal-footer">
+            <button type="button" class="mc-btn mc-btn-secondary" onclick="closeToolInfoModal()">Kapat</button>
+        </div>
+    </div>
+</div>

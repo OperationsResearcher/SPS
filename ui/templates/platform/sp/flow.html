@@ -1,0 +1,63 @@
+{% extends "platform/base.html" %}
+{% block title %}Stratejik Planlama Akışı{% endblock %}
+{% block page_title %}Stratejik Planlama Akışı{% endblock %}
+
+{% block content %}
+<div style="max-width:900px; margin:0 auto;">
+
+  <!-- Sayfa başlığı -->
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Stratejik Akış</h2>
+      <p class="mc-page-subtitle">Strateji–Süreç–PG bağlantı haritası</p>
+    </div>
+    <a href="{{ url_for('app_bp.sp_flow_dynamic') }}" class="mc-btn mc-btn-primary">
+      <i class="fas fa-project-diagram"></i> İnteraktif Grafik
+    </a>
+  </div>
+
+  <!-- Özet istatistik kartları -->
+  <div class="mc-grid-4" style="margin-bottom:24px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
+      <div class="mc-stat-label">Ana Strateji</div>
+      <div class="mc-stat-value">{{ strategy_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-purple">
+      <div class="mc-stat-icon"><i class="fas fa-sitemap"></i></div>
+      <div class="mc-stat-label">Alt Strateji</div>
+      <div class="mc-stat-value">{{ sub_strategy_count }}</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
+      <div class="mc-stat-label">Süreç</div>
+      <div class="mc-stat-value">{{ process_count }}</div>
+    </div>
+  </div>
+
+  <!-- Vizyon kutusu -->
+  {% if tenant.vision %}
+  <div class="mc-alert mc-alert-info" style="margin-bottom:24px;">
+    <div>
+      <strong style="font-size:11px; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:4px;">Vizyon</strong>
+      <span style="font-size:13.5px;">{{ tenant.vision }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- İnteraktif grafik yönlendirme kartı -->
+  <div class="mc-card">
+    <div class="mc-card-body" style="text-align:center; padding:40px 20px;">
+      <div style="font-size:48px; color:#e2e8f0; margin-bottom:16px;"><i class="fas fa-project-diagram"></i></div>
+      <p style="font-size:14px; color:#64748b; margin-bottom:20px;">
+        Strateji–Süreç–PG bağlantılarını interaktif grafik olarak görüntüleyin.
+      </p>
+      <a href="{{ url_for('app_bp.sp_flow_dynamic') }}" class="mc-btn mc-btn-primary mc-btn-lg">
+        <i class="fas fa-project-diagram"></i> İnteraktif Grafiği Aç
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
