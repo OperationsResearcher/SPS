@@ -1,0 +1,26 @@
+# Büyük / gereksiz dosyalar — Docker build context dışı
+Yedekler/
+backups/
+eski_proje/
+.git/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.vscode/
+.idea/
+.kiro/
+.gemini/
+node_modules/
+instance/
+*.db
+*.sqlite
+*.dump
+*.sql.gz
+docs/*.pdf
+docs/*.docx
+docs/*.xlsx
+docs/*.zip
+tmp_*
+skills/
