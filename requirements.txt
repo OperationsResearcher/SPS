@@ -30,3 +30,4 @@ celery
 numpy
 scikit-learn
 psycopg2-binary>=2.9.0
+APScheduler>=3.10.0
