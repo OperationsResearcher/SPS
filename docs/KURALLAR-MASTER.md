@@ -1,7 +1,7 @@
 # KOKPİTİM — MASTER KURALLAR
 > Tek gerçek kaynak. Tüm IDE'ler buraya referans verir.
 > Kural değişince SADECE bu dosya güncellenir.
-> Son güncelleme: 2026-04-02
+> Son güncelleme: 2026-04-03
 
 ---
 
@@ -153,27 +153,9 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 
 ## 8. DEPLOY PROTOKOLÜ
 
-### Yerelden GCP'ye
-```bash
-# 1. YERELDE
-git add -A
-git commit -m "TASK-[X]: açıklama"
-git push origin main
-# github_sync.py — sadece kullanıcı isterse
+**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md`
 
-# 2. VM'DE (SSH)
-cd /home/kokpitim.com/public_html && \
-sudo git pull origin main && \
-sudo docker build -t sps_web_final:latest . && \
-sudo docker stop sps-web && sudo docker rm sps-web && \
-sudo docker run -d --name sps-web -p 80:5000 \
-  -v /home/kokpitim.com/public_html/instance:/app/instance \
-  sps_web_final:latest
-
-# 3. KONTROL
-sudo docker logs sps-web 2>&1 | \
-  grep "No module\|OperationalError\|Listening" | head -5
-```
+Özet: yerelde `git push origin main` → VM’de `sudo bash scripts/vm_safe_deploy.sh` (PostgreSQL yedek, pull, Docker, Alembic, satır sayısı doğrulaması).
 
 ### GCP Bilgileri
 | | |
@@ -181,4 +163,4 @@ sudo docker logs sps-web 2>&1 | \
 | VM | `sps-server-v2` / zone: `europe-west3-c` |
 | IP | `34.89.231.89` |
 | Container | `sps-web` |
-| DB | `/app/instance/kokpitim.db` |
+| Canlı DB | PostgreSQL (`kokpitim_db`); SQLite tipik olarak yalnızca yerel geliştirme |

@@ -5,6 +5,13 @@
 
 ---
 
+## TASK-056 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Yerelden VM’e yayın prosedürünün tek belgede toplanması
+**Dosya:** `docs/YERELDEN_VM_YAYIN.md` — push → `vm_safe_deploy.sh` → doğrulama; yaşanan sorunlar (sekans, PowerShell/SQL, pg_dump, SQLite vs PostgreSQL, eski deploy betiği uyarısı). `PROJE-MASTER.md` bölüm 15 ve `KURALLAR-MASTER.md` bölüm 8 güncellendi.
+
+---
+
 ## TASK-055 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Canlı dağıtım + `kpi_data` sekans düzeltmesi + Docker uyumlu `fix_postgres_sequences`
