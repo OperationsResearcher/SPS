@@ -1,6 +1,7 @@
 # Yerelden VM’e yayın (Kokpitim / kokpitim.com)
 
 Bu dosya, **yerelde yapılan kod değişikliklerinin** üretim VM’ine güvenli şekilde alınması için **tek referans yordamdır**.  
+**Ters yön (VM → yerel):** `docs/VM_DEN_YERELE.md`  
 VM adı, zone ve proje özeti: `docs/PROJE-MASTER.md` → bölüm 12.
 
 ---
@@ -142,6 +143,21 @@ Geliştirmede `instance/kokpitim.db` (SQLite) kullanılıyor olabilir; **kokpiti
 
 - Şu an `vm_safe_deploy.sh` **`main` sabit** çeker. Hotfix dalı yayınlanacaksa: VM’de geçici olarak ilgili dalı checkout + pull + aynı Docker adımları veya betiğe `BRANCH` desteği eklenmesi gerekir (arada prosedür sapması).
 - **Öneri:** Acil düzeltmeyi `main`e merge edip standart akışı kullanın.
+
+---
+
+## G — Bakım modu (yayın / migration öncesi kilitlenmeyi azaltma)
+
+| Ne | Açıklama |
+|----|----------|
+| **Panel** | **Yönetim Paneli** — yalnız rolü **`Admin`** olan kullanıcıda «Bakım modu» kartı görünür; `system_settings.maintenance_mode` güncellenir. |
+| **Davranış** | Bakım **açıkken**: `/health`, `/login`, `/logout`, platform statikleri (`/m/...`), bakım API’si çalışır; **Admin** oturumu tüm siteye erişir; diğer tüm istekler **503** bakım sayfası. |
+| **`MAINTENANCE_MODE`** | Ortamda `true` ise bakım **zorunlu** (panelden kapatılamaz). Kısa süreli tam kilitleme için deploy/migration öncesi kullanılabilir. |
+| **`MAINTENANCE_OVERRIDE_OFF`** | `true` ise bakım **kapalı** sayılır (DB ne derse desin). Sunucuda felaket / kilitlenme sonrası açmak için. |
+| **`MAINTENANCE_BYPASS_SECRET`** | Opsiyonel, uzun rastgele gizli anahtar. Yetkili, **tek sefer** tarayıcıda `?bakim_erisim=GİZLİ` ile (herhangi bir yol) sınırlı süreli çerez alır; bakım ekranını **Admin olmadan** aşmak için (operasyon dokümanında tutulur, herkese açık yazılmaz). |
+| **SSH / psql** | `UPDATE system_settings SET value = 'false' WHERE key = 'maintenance_mode';` ile panel erişilemese bile bayrak kapatılabilir. |
+
+> Matematiksel “sıfır risk” yoktur; bu katman **kilit kaldırmak** ve **yazmayı sınırlamak** için ek güvenlik ağıdır.
 
 ---
 

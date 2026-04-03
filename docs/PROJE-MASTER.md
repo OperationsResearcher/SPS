@@ -285,7 +285,8 @@ gcloud compute scp C:\kokpitim\instance\kokpitim.db sps-server-v2:/tmp/kokpitim_
 
 ## 15. DEPLOY KONTROL LİSTESİ
 
-> **Güncel tam yordam (yerel → GitHub → VM):** `docs/YERELDEN_VM_YAYIN.md`
+> **Güncel tam yordam (yerel → GitHub → VM):** `docs/YERELDEN_VM_YAYIN.md`  
+> **VM → yerel senkron / dump:** `docs/VM_DEN_YERELE.md`
 
 ### Her Deploy Öncesi
 1. **DB yedeği al** — deploy öncesi mutlaka

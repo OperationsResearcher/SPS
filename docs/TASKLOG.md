@@ -5,6 +5,28 @@
 
 ---
 
+## TASK-058 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** VM’den yerele yönergesi (`docs/VM_DEN_YERELE.md`)
+**İçerik:** Git ile senkron (tercih), VM’den scp ile dosya/dump, PostgreSQL `pg_dump` indirme ve yerel restore özeti, `instance/` kopyası, KVKK/.env uyarıları; `YERELDEN_VM_YAYIN.md` ve `PROJE-MASTER.md` çapraz referans.
+
+---
+
+## TASK-057 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Bakım modu — yayın/migration riskini azaltma; Admin kurtarma yolları
+**Modül:** `system_settings`, middleware, yönetim paneli
+
+### Yapılan İşlem
+- `system_settings` tablosu + `maintenance_mode` bayrağı (Alembic `w1x2y3z4b004`).
+- `MAINTENANCE_MODE` / `MAINTENANCE_OVERRIDE_OFF` / `MAINTENANCE_BYPASS_SECRET` ortam değişkenleri.
+- Öncelikli `before_request`: Admin tam erişim; `/login` vb. whitelist; opsiyonel `bakim_erisim` + imzalı çerez; `docs/YERELDEN_VM_YAYIN.md` bölüm G.
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/models/system_setting.py`, `migrations/versions/w1x2y3z4b004_*.py`, `app/services/maintenance_service.py`, `app/utils/maintenance_middleware.py`, `app/__init__.py`, `config.py`, `micro/modules/admin/routes.py`, `ui/templates/platform/maintenance.html`, `ui/templates/platform/admin/yonetim_paneli.html`, `ui/static/platform/js/yonetim_paneli.js`, `docs/YERELDEN_VM_YAYIN.md`
+
+---
+
 ## TASK-056 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Yerelden VM’e yayın prosedürünün tek belgede toplanması
