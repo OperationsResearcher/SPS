@@ -139,7 +139,16 @@ def get_login_stats(tenant_id=None):
 
     def _tenant_filter(query):
         if tenant_id is not None:
-            return query.filter(AuditLog.tenant_id == tenant_id)
+            # Bazı eski/taşınmış audit satırlarında tenant_id boş gelebilir.
+            # Bu durumda user_id üzerinden kullanıcının tenant'ını eşleştirerek
+            # tenant bazlı istatistikleri tutarlı hale getir.
+            tenant_user_ids_sq = db.session.query(User.id).filter(User.tenant_id == tenant_id)
+            return query.filter(
+                or_(
+                    AuditLog.tenant_id == tenant_id,
+                    and_(AuditLog.tenant_id.is_(None), AuditLog.user_id.in_(tenant_user_ids_sq)),
+                )
+            )
         return query
 
     def _unique_login_count(since_dt=None):

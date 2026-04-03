@@ -5,6 +5,19 @@
 
 ---
 
+## TASK-049 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Yönetim panelinde tenant bazlı aktif kullanıcı istatistiğinin boş gelmesi
+**Modül:** admin / login istatistikleri
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `get_login_stats` tenant filtresi
+
+### Yapılan İşlem
+`audit_logs` kayıtlarında `tenant_id` boş olan login/logout satırları için tenant filtrelemesi yalnız `audit_logs.tenant_id` ile yapıldığında tenant bazlı istatistikler 0 görünebiliyordu. Filtreye fallback eklendi: `tenant_id` boşsa `user_id -> users.tenant_id` eşleştirmesi ile aynı tenant kullanıcıları sayılır.
+
+---
+
 ## TASK-048 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** PG tablo modalında aralık hedef gösterimi + "Yıllık Gerçekleşme" sütunu
