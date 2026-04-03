@@ -7,7 +7,7 @@ import tempfile
 
 from flask import render_template, jsonify, request, current_app, send_file, flash, redirect, url_for, abort
 from flask_login import login_required, current_user
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_, or_, text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from platform_core import app_bp
@@ -159,7 +159,22 @@ def get_login_stats(tenant_id=None):
         q = _tenant_filter(q)
         if since_dt is not None:
             q = q.filter(AuditLog.created_at >= since_dt)
-        return int(q.scalar() or 0)
+        audit_count = int(q.scalar() or 0)
+        # Canlıda kullanılan bazı legacy login akışları audit_logs yerine
+        # user_activity_log (tip='login') tablosuna yazıyor.
+        # Audit sonucu 0 ise ve tüm kurum görünümündeysek fallback ile tamamla.
+        if tenant_id is None and audit_count == 0:
+            try:
+                sql = "select count(distinct user_id) from user_activity_log where lower(tip) = 'login'"
+                params = {}
+                if since_dt is not None:
+                    sql += " and created_at >= :since_dt"
+                    params["since_dt"] = since_dt
+                alt_count = int(db.session.execute(text(sql), params).scalar() or 0)
+                return max(audit_count, alt_count)
+            except Exception:
+                return audit_count
+        return audit_count
 
     def _active_user_count():
         q = db.session.query(func.count(User.id)).filter(User.is_active.is_(True))

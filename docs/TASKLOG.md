@@ -5,6 +5,19 @@
 
 ---
 
+## TASK-051 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Yönetim paneli login istatistiklerinde legacy login akışı için fallback
+**Modül:** admin / login istatistikleri
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `get_login_stats._unique_login_count`
+
+### Yapılan İşlem
+Canlıda bazı giriş akışlarının login olaylarını `audit_logs` yerine `user_activity_log` tablosuna (`tip='login'`) yazması nedeniyle son 24s/7g sayaçları artmıyordu. Audit sonucu 0 olduğunda ve tüm kurum görünümünde `user_activity_log` üzerinden fallback sayım eklendi.
+
+---
+
 ## TASK-050 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Yönetim panelinde “Şu an aktif” metrik tanımının aktif kullanıcı hesap sayısı olarak düzeltilmesi
