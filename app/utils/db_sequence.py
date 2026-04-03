@@ -46,6 +46,15 @@ def sync_pg_sequence_if_needed(table_name: str, pk_column: str = "id") -> bool:
     return True
 
 
+def sync_kpi_data_related_sequences() -> None:
+    """kpi_data ve kpi_data_audits id sekanslarını tablodaki MAX(id) ile hizalar.
+
+    Import / dump sonrası sekans geride kaldığında INSERT duplicate key hatasını giderir.
+    """
+    sync_pg_sequence_if_needed("kpi_data", "id")
+    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+
+
 def sync_many_sequences(pairs: list[tuple[str, str]] | None = None) -> dict[str, bool]:
     """Verilen tablo/kolon çiftleri için sequence hizalaması uygula."""
     items = pairs or []

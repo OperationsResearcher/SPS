@@ -26,7 +26,7 @@ from app.models.process import (
 )
 from app.models.core import User, Strategy, Tenant
 from app.utils.audit_logger import AuditLogger
-from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
+from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
     validate_process_parent_id,
     last_day_of_period,
@@ -856,8 +856,10 @@ def surec_api_kpi_data_add():
                 break
             except Exception as e:
                 db.session.rollback()
-                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
-                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                if attempt == 1 and (
+                    is_pk_duplicate(e, "kpi_data") or _is_kpi_data_audit_pk_duplicate(e)
+                ):
+                    sync_kpi_data_related_sequences()
                     db.session.commit()
                     continue
                 raise
@@ -1059,8 +1061,10 @@ def surec_api_kpi_data_update(data_id):
                 break
             except Exception as e:
                 db.session.rollback()
-                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
-                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                if attempt == 1 and (
+                    is_pk_duplicate(e, "kpi_data") or _is_kpi_data_audit_pk_duplicate(e)
+                ):
+                    sync_kpi_data_related_sequences()
                     db.session.commit()
                     continue
                 raise
@@ -1122,8 +1126,10 @@ def surec_api_kpi_data_delete(data_id):
                 break
             except Exception as e:
                 db.session.rollback()
-                if attempt == 1 and _is_kpi_data_audit_pk_duplicate(e):
-                    sync_pg_sequence_if_needed("kpi_data_audits", "id")
+                if attempt == 1 and (
+                    is_pk_duplicate(e, "kpi_data") or _is_kpi_data_audit_pk_duplicate(e)
+                ):
+                    sync_kpi_data_related_sequences()
                     db.session.commit()
                     continue
                 raise

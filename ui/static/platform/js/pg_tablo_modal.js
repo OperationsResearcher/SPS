@@ -272,6 +272,7 @@
         { id: "micro-col-period-chk", selector: ".col-period" },
         { id: "micro-col-target-chk", selector: ".col-target-main" },
         { id: "micro-col-prev-year-chk", selector: ".col-prev-year" },
+        { id: "micro-col-weighted-basari-chk", selector: ".col-weighted-basari" },
       ];
       mapping.forEach(({ id, selector }) => {
         const chk = document.getElementById(id);
@@ -310,7 +311,7 @@
           '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th><th rowspan="2" class="col-prev-year">Önceki Yıl</th>';
         row1 += `<th colspan="${periods.length}" class="text-center">${escHtml(monthName)}</th>`;
         row1 +=
-          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr><tr>';
+          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target col-weighted-basari">Ağırlıklı Başarı Puanı</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr><tr>';
         periods.forEach((p) => {
           row1 += `<th class="col-quarter text-center kpi-day-col">${escHtml(p.label)}</th>`;
         });
@@ -325,13 +326,13 @@
           thRow2 += '<th class="col-quarter">Hedef</th><th class="col-quarter">Gerç.</th><th class="col-quarter">Durum</th>';
         });
         thRow1 +=
-          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr>';
+          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target col-weighted-basari">Ağırlıklı Başarı Puanı</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr>';
         thead.innerHTML = thRow1 + thRow2;
       }
 
       if (!kpis || kpis.length === 0) {
         const periodCols = isGunluk ? periods.length : periods.length * 3;
-        const colspan = 9 + periodCols + 3;
+        const colspan = 9 + periodCols + 4;
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="micro-pg-empty-cell">Henüz performans göstergesi yok.</td></tr>`;
         applyColumnVisibility();
         return;
@@ -418,6 +419,7 @@
           .map((v) => parseFloat(v))
           .filter((v) => !Number.isNaN(v));
         let skorHtml = "—";
+        let basariNumericForWeighted = null;
         const skorTarget = yillikHedef !== null ? yillikHedef : parseFloat(k.target_value);
         if (allVals.length > 0 && !Number.isNaN(skorTarget) && skorTarget > 0) {
           const compareVal =
@@ -429,13 +431,26 @@
           if (basariAraliklari) {
             const puan = hesaplaBasariPuani(pct, basariAraliklari);
             if (puan !== null) {
+              basariNumericForWeighted = puan;
               const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
               skorHtml = `<span class="${cls} fw-bold">${puan}/5</span>`;
             } else {
+              basariNumericForWeighted = pct;
               skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
             }
           } else {
+            basariNumericForWeighted = pct;
             skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
+          }
+        }
+
+        let agirlikliBasariHtml = "—";
+        if (basariNumericForWeighted != null && k.weight != null && k.weight !== "") {
+          const wNum = parseFloat(k.weight);
+          if (!Number.isNaN(wNum)) {
+            const wNorm = wNum > 1 ? wNum / 100 : wNum;
+            const prod = basariNumericForWeighted * wNorm;
+            agirlikliBasariHtml = Number.isInteger(prod) ? String(prod) : prod.toFixed(2);
           }
         }
         const yillikGerceklesenRaw = k.year_rollup;
@@ -455,7 +470,7 @@
           : `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="Favori"><i class="${favIconClass}" aria-hidden="true"></i></button>`;
 
         const hl = highlightKpiId && Number(k.id) === Number(highlightKpiId) ? " micro-pg-row--highlight" : "";
-        return `<tr class="micro-pg-data-row${hl}" data-kpi-id="${k.id}">${fixedCols}${periodCells}<td class="col-target text-center">${escHtml(yillikGerceklesenHtml)}</td><td class="col-target text-center">${skorHtml}</td><td class="col-actions no-print">${actions}</td></tr>`;
+        return `<tr class="micro-pg-data-row${hl}" data-kpi-id="${k.id}">${fixedCols}${periodCells}<td class="col-target text-center">${escHtml(yillikGerceklesenHtml)}</td><td class="col-target col-weighted-basari text-center">${escHtml(agirlikliBasariHtml)}</td><td class="col-target text-center">${skorHtml}</td><td class="col-actions no-print">${actions}</td></tr>`;
       });
 
       tbody.innerHTML = rows.join("");
@@ -842,6 +857,7 @@
       "micro-col-period-chk",
       "micro-col-target-chk",
       "micro-col-prev-year-chk",
+      "micro-col-weighted-basari-chk",
     ].forEach((id) => {
       document.getElementById(id)?.addEventListener("change", applyColumnVisibility);
     });

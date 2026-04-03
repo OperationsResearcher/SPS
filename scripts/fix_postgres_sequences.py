@@ -1,5 +1,8 @@
 """PostgreSQL sequence hizalama aracı.
 
+Import / dump sonrası kpi_data birincil anahtar çakışması gibi hatalarda sekanslar geride kalabilir.
+Bu betik MAX(id) ile hizalar.
+
 Kullanım:
     python scripts/fix_postgres_sequences.py
 """

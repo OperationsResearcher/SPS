@@ -13,6 +13,7 @@ from app.services.report_service import ReportService
 from app.utils.validation import validate_request
 from app.schemas.kpi_schemas import KpiDataSchema, ProcessKpiSchema
 from app.utils.audit_logger import AuditLogger
+from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
 from datetime import datetime
 
 # Create API blueprint
@@ -123,19 +124,28 @@ def create_kpi_data(validated_data):
         "target_value": str(validated_data["target_value"]),
         "description": validated_data.get("notes"),
     }
-    kpi_data = KpiData(**create_data)
-    kpi_data.user_id = current_user.id
+    kpi_data = None
+    for attempt in (1, 2):
+        try:
+            kpi_data = KpiData(**create_data)
+            kpi_data.user_id = current_user.id
+            db.session.add(kpi_data)
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == 1 and is_pk_duplicate(e, "kpi_data"):
+                sync_kpi_data_related_sequences()
+                db.session.commit()
+                continue
+            raise
 
-    db.session.add(kpi_data)
-    db.session.commit()
-    
-    # Audit log
-    AuditLogger.log_create('KpiData', kpi_data.id, validated_data)
-    
+    AuditLogger.log_create("KpiData", kpi_data.id, validated_data)
+
     return jsonify({
-        'success': True,
-        'id': kpi_data.id,
-        'data': kpi_data.to_dict()
+        "success": True,
+        "id": kpi_data.id,
+        "data": kpi_data.to_dict(),
     }), 201
 
 

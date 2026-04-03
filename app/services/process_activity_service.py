@@ -6,6 +6,7 @@ from datetime import datetime
 
 from app.models import db
 from app.models.process import KpiData, KpiDataAudit, ProcessActivity
+from app.utils.db_sequence import sync_kpi_data_related_sequences
 
 
 def _get_activity_period_fields(kpi, data_date):
@@ -79,6 +80,9 @@ def auto_complete_due_activities(now: datetime | None = None) -> int:
         )
         .all()
     )
+    if due_activities:
+        sync_kpi_data_related_sequences()
+        db.session.commit()
     changed = 0
     for act in due_activities:
         act.status = 'Gerçekleşti'

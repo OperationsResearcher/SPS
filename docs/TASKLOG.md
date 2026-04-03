@@ -5,6 +5,42 @@
 
 ---
 
+## TASK-054 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** PostgreSQL `kpi_data` / `kpi_data_audits` PK duplicate (sekans geride) — otomatik düzeltme
+**Modül:** `db_sequence`, süreç API’leri, faaliyet otomatik PGV
+
+### Yapılan İşlem
+- `sync_kpi_data_related_sequences()`: her iki tablonun `id` sekansını `MAX(id)+1` ile hizalar.
+- PGV ekleme uçlarında (micro `/process/api/kpi-data/add`, legacy `add_kpi_data`, `/api/v1/kpi-data`) duplicate tespitinde sekans senkronu + tek retry.
+- `auto_complete_due_activities`: vadesi gelen faaliyetlerde otomatik KpiData üretiminden önce aynı sekans hizalaması (batch öncesi).
+- Eski `app/api/v1` `create_kpi_data` için `kpi_data` duplicate retry.
+
+### Değiştirilen Dosyalar
+- `app/utils/db_sequence.py`
+- `micro/modules/surec/routes.py`
+- `app/routes/process.py`
+- `micro/modules/api/routes.py`
+- `app/api/routes.py`
+- `app/services/process_activity_service.py`
+- `scripts/fix_postgres_sequences.py` (docstring)
+
+---
+
+## TASK-053 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Süreç karnesi PG tablo modalına «Ağırlıklı Başarı Puanı» sütunu
+**Modül:** surec / `pg_tablo_modal.js`, `karne.html`
+
+### Yapılan İşlem
+`Ağırlık (%)` değeri 0–100 ise 100’e bölünerek normalize edilir; başarı 1–5 aralık puanı veya yüzde gösterimi ile çarpılır (`karne_hesaplamalar.hesapla_agirlikli_basari_puani` ile uyumlu). Sütun «Yıllık Gerçekleşme» ile «Başarı Puanı» arasına eklendi; sütun görünürlük panelinde kapatılabilir.
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/pg_tablo_modal.js`
+- `ui/templates/platform/surec/karne.html`
+
+---
+
 ## TASK-052 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Yönetim paneli istatistik endpointinde transaction-aborted hatasının giderilmesi

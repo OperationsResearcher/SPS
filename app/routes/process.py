@@ -27,6 +27,7 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.services.cache_service import CacheService
+from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
 
@@ -871,28 +872,42 @@ def add_kpi_data():
             data_date_val = last_day
         if data_date_val is None:
             data_date_val = date.today()
-        entry = KpiData(
-            process_kpi_id=kpi.id,
-            year=year_val,
-            data_date=data_date_val,
-            period_type=pt,
-            period_no=pn,
-            period_month=period_month,
-            target_value=data.get('target_value'),
-            actual_value=data.get('actual_value') or data.get('gerceklesen_deger', ''),
-            description=data.get('description') or data.get('aciklama'),
-            user_id=current_user.id,
-        )
-        db.session.add(entry)
-        db.session.flush()
-        db.session.add(KpiDataAudit(
-            kpi_data_id=entry.id,
-            action_type='CREATE',
-            new_value=entry.actual_value,
-            action_detail='Veri Giriş Sihirbazı ile eklendi',
-            user_id=current_user.id,
-        ))
-        db.session.commit()
+        entry = None
+        for attempt in (1, 2):
+            try:
+                entry = KpiData(
+                    process_kpi_id=kpi.id,
+                    year=year_val,
+                    data_date=data_date_val,
+                    period_type=pt,
+                    period_no=pn,
+                    period_month=period_month,
+                    target_value=data.get('target_value'),
+                    actual_value=data.get('actual_value') or data.get('gerceklesen_deger', ''),
+                    description=data.get('description') or data.get('aciklama'),
+                    user_id=current_user.id,
+                )
+                db.session.add(entry)
+                db.session.flush()
+                db.session.add(KpiDataAudit(
+                    kpi_data_id=entry.id,
+                    action_type='CREATE',
+                    new_value=entry.actual_value,
+                    action_detail='Veri Giriş Sihirbazı ile eklendi',
+                    user_id=current_user.id,
+                ))
+                db.session.commit()
+                break
+            except Exception as e:
+                db.session.rollback()
+                if attempt == 1 and (
+                    is_pk_duplicate(e, 'kpi_data')
+                    or is_pk_duplicate(e, 'kpi_data_audits')
+                ):
+                    sync_kpi_data_related_sequences()
+                    db.session.commit()
+                    continue
+                raise
         try:
             from app.services.score_engine_service import recalc_on_pg_data_change
             recalc_on_pg_data_change(current_user.tenant_id, int(data.get('year', datetime.now().year)))

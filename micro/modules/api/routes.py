@@ -7,6 +7,7 @@ from platform_core import app_bp
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, KpiDataAudit
 from app.utils.audit_logger import AuditLogger
+from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
 
 
 def _tenant_guard(process_id):
@@ -68,24 +69,38 @@ def api_kpi_data_create():
         return jsonify({"success": False, "message": "PG bulunamadı."}), 404
     try:
         from datetime import date
-        entry = KpiData(
-            process_kpi_id=kpi.id,
-            year=int(data.get("year", date.today().year)),
-            data_date=date.today(),
-            period_type=data.get("period_type", "aylik"),
-            period_no=int(data.get("period_no", 1)),
-            actual_value=str(data.get("actual_value", "")),
-            target_value=data.get("target_value"),
-            description=data.get("description"),
-            user_id=current_user.id,
-        )
-        db.session.add(entry)
-        db.session.flush()
-        db.session.add(KpiDataAudit(
-            kpi_data_id=entry.id, action_type="CREATE",
-            new_value=entry.actual_value, user_id=current_user.id,
-        ))
-        db.session.commit()
+        entry = None
+        for attempt in (1, 2):
+            try:
+                entry = KpiData(
+                    process_kpi_id=kpi.id,
+                    year=int(data.get("year", date.today().year)),
+                    data_date=date.today(),
+                    period_type=data.get("period_type", "aylik"),
+                    period_no=int(data.get("period_no", 1)),
+                    actual_value=str(data.get("actual_value", "")),
+                    target_value=data.get("target_value"),
+                    description=data.get("description"),
+                    user_id=current_user.id,
+                )
+                db.session.add(entry)
+                db.session.flush()
+                db.session.add(KpiDataAudit(
+                    kpi_data_id=entry.id, action_type="CREATE",
+                    new_value=entry.actual_value, user_id=current_user.id,
+                ))
+                db.session.commit()
+                break
+            except Exception as e:
+                db.session.rollback()
+                if attempt == 1 and (
+                    is_pk_duplicate(e, "kpi_data")
+                    or is_pk_duplicate(e, "kpi_data_audits")
+                ):
+                    sync_kpi_data_related_sequences()
+                    db.session.commit()
+                    continue
+                raise
         return jsonify({"success": True, "id": entry.id}), 201
     except Exception as e:
         db.session.rollback()
