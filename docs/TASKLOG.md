@@ -5,6 +5,13 @@
 
 ---
 
+## TASK-055 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Canlı dağıtım + `kpi_data` sekans düzeltmesi + Docker uyumlu `fix_postgres_sequences`
+**Yapılan:** `vm_safe_deploy.sh` (pg yedek, pull `08584a2`, image, Alembic, satır sayısı kontrolü); VM `psql` ile `fix_kpi_data_sequences.sql`; konteynerde betik `PYTHONPATH` yaması ve doğrulama; `ef08e30` push (`scripts/sql/...` + betik düzeltmesi).
+
+---
+
 ## TASK-054 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** PostgreSQL `kpi_data` / `kpi_data_audits` PK duplicate (sekans geride) — otomatik düzeltme
