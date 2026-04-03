@@ -5,7 +5,20 @@ Bu betik MAX(id) ile hizalar.
 
 Kullanım:
     python scripts/fix_postgres_sequences.py
+
+Docker (WORKDIR /app):
+    python3 scripts/fix_postgres_sequences.py
 """
+
+from __future__ import annotations
+
+import os
+import sys
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(_ROOT)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
 
 from app import create_app
 from app.models import db
