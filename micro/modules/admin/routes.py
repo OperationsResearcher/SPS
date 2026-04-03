@@ -173,6 +173,9 @@ def get_login_stats(tenant_id=None):
                 alt_count = int(db.session.execute(text(sql), params).scalar() or 0)
                 return max(audit_count, alt_count)
             except Exception:
+                # Fallback sorgusu hata verirse transaction'ı temizle;
+                # aksi halde sonraki ORM sorguları InFailedSqlTransaction'a düşer.
+                db.session.rollback()
                 return audit_count
         return audit_count
 

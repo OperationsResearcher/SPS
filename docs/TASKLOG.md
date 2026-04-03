@@ -5,6 +5,19 @@
 
 ---
 
+## TASK-052 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Yönetim paneli istatistik endpointinde transaction-aborted hatasının giderilmesi
+**Modül:** admin / login istatistikleri
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `_unique_login_count` fallback exception handling
+
+### Yapılan İşlem
+`user_activity_log` fallback sorgusunda hata olduğunda SQLAlchemy transaction abort durumunda kalıyor ve sonraki sorgular `InFailedSqlTransaction` ile düşüyordu. Fallback `except` bloğuna `db.session.rollback()` eklenerek transaction temizliği sağlandı.
+
+---
+
 ## TASK-051 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Yönetim paneli login istatistiklerinde legacy login akışı için fallback
