@@ -64,6 +64,18 @@
       </div>
       <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
     </a>
+
+    <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-hub-item">
+      <div class="ayarlar-hub-icon ayarlar-hub-icon-cyan">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="ayarlar-hub-body">
+        <div class="ayarlar-hub-title">Yönetim Paneli</div>
+        <div class="ayarlar-hub-desc">Login istatistikleri ve aktivite kayıtları</div>
+      </div>
+      <i class="fas fa-chevron-right ayarlar-hub-arrow"></i>
+    </a>
+
     {% endif %}
 
     {% if current_user.role.name in ['tenant_admin', 'executive_manager'] %}

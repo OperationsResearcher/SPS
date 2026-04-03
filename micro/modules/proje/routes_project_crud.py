@@ -7,7 +7,7 @@ import json
 from datetime import date, datetime
 from types import SimpleNamespace
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for, current_app
 from flask_login import current_user, login_required
 from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
@@ -41,6 +41,7 @@ from app_platform.services.notification_triggers import (
     notify_project_leaders_added,
     notify_project_members_added,
 )
+from app.utils.audit_logger import AuditLogger
 
 
 def _notify_new_project_team(proj: Project, kid: int, old_leader_ids: set, old_member_ids: set) -> None:
@@ -202,6 +203,10 @@ def project_new():
     sync_project_members_observers(proj, kid)
     _notify_new_project_team(proj, kid, set(), set())
     db.session.commit()
+    try:
+        AuditLogger.log_create("Proje Yönetimi", proj.id, {"name": proj.name, "kurum_id": proj.kurum_id})
+    except Exception as e:
+        current_app.logger.error(f"Audit log hatası: {e}")
     flash("Proje oluşturuldu.", "success")
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
@@ -322,6 +327,15 @@ def project_edit(project_id: int):
     sync_project_members_observers(proj, kid)
     _notify_new_project_team(proj, kid, old_leader_ids, old_member_ids)
     db.session.commit()
+    try:
+        AuditLogger.log_update(
+            "Proje Yönetimi",
+            proj.id,
+            {},
+            {"name": proj.name, "priority": proj.priority, "start_date": str(proj.start_date), "end_date": str(proj.end_date)},
+        )
+    except Exception as e:
+        current_app.logger.error(f"Audit log hatası: {e}")
     flash("Proje güncellendi.", "success")
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 

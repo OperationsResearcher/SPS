@@ -173,4 +173,13 @@ def create_app(config_class=None):
 
     app.register_blueprint(kokpitim_main_bp, url_prefix="")
 
+    from app.extensions import init_socketio
+
+    init_socketio(app)
+    # "import app.socketio_events" kullanma: fonksiyon içinde `app` adı paket modülü ile gölgelenir;
+    # return app yanlışlıkla WSGI yerine modül döner (AttributeError: module has no attribute run).
+    import importlib
+
+    importlib.import_module("app.socketio_events")
+
     return app

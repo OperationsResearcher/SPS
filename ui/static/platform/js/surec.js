@@ -1488,23 +1488,59 @@
     return escHtml(String(targetValRaw ?? "—"));
   }
 
-  /** Eski PG tablosu ile aynı başarı yüzdesi (kolon ayrımı için); veri yok → null */
-  function computeKpiKanbanScorePct(k) {
-    const entries = k.entries || {};
+  /** Seçili kanban dönemi ile aynı hücreden gerçekleşen (sayı); yok → null */
+  function getKanbanActualNumeric(k, view, periodKey) {
+    const ent = k.entries || {};
     const hesap = k.data_collection_method || "Ortalama";
-    const olcumPer = k.period || "";
-    const yillikHedef = computeYillikHedefMicro(k.target_value, olcumPer, hesap);
-    const allVals = Object.values(entries)
-      .map((v) => parseNum(v))
-      .filter((v) => v != null);
-    const skorTarget = yillikHedef != null ? yillikHedef : parseNum(k.target_value);
-    if (allVals.length === 0 || skorTarget == null || Number.isNaN(skorTarget) || skorTarget <= 0) {
+    if (view === "alti_ay") {
+      const v = ent[periodKey];
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        return parseNum(v);
+      }
+      const half = periodKey === "halfyear_2" ? 2 : 1;
+      const agg = aggregateMonthlyForHalf(ent, half, hesap);
+      return agg.hasVal ? agg.val : null;
+    }
+    const v = ent[periodKey];
+    if (v !== undefined && v !== null && String(v).trim() !== "") {
+      return parseNum(v);
+    }
+    return null;
+  }
+
+  /**
+   * Kart üzerindeki Hedef / Gerçekleşen ile aynı dönem: başarı yüzdesi.
+   * Eski davranış yıllık toplam hedef + tüm entry’ler yüzünden yanlış %100 üretebiliyordu.
+   */
+  function computeKpiKanbanScorePct(k, view, ctx) {
+    if (!k || !ctx) return null;
+    const compareVal = getKanbanActualNumeric(k, view, ctx.periodKey);
+    if (compareVal == null || Number.isNaN(compareVal)) {
       return null;
     }
-    const compareVal =
-      hesap === "Toplama" || hesap === "Toplam"
-        ? allVals.reduce((a, b) => a + b, 0)
-        : allVals[allVals.length - 1];
+    const hesap = k.data_collection_method || "Ortalama";
+    const olcumPer = k.period || "";
+    const gp = view === "alti_ay" ? "alti_ay" : ctx.gosterimPeriyot;
+    const rawTarget = k && k.target_value != null ? String(k.target_value).trim() : "";
+    const rangeMatch = rawTarget.match(/^(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)$/);
+    let skorTarget = null;
+    if (rangeMatch) {
+      const leftRaw = rangeMatch[1].replace(",", ".");
+      const rightRaw = rangeMatch[2].replace(",", ".");
+      const leftScaled = computeCellTargetMicro(leftRaw, olcumPer, hesap, gp);
+      const rightScaled = computeCellTargetMicro(rightRaw, olcumPer, hesap, gp);
+      if (leftScaled != null && rightScaled != null) {
+        skorTarget =
+          k.direction === "Decreasing"
+            ? Math.max(leftScaled, rightScaled)
+            : Math.min(leftScaled, rightScaled);
+      }
+    } else {
+      skorTarget = computeCellTargetMicro(k.target_value, olcumPer, hesap, gp);
+    }
+    if (skorTarget == null || Number.isNaN(skorTarget) || skorTarget <= 0) {
+      return null;
+    }
     let pct = Math.round((compareVal / skorTarget) * 100);
     if (k.direction === "Decreasing") {
       pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
@@ -1955,9 +1991,24 @@
   }
 
   function getMetaHedefKanban(k, view, gosterimPeriyot) {
+    const rawTarget = k && k.target_value != null ? String(k.target_value).trim() : "";
     const hesap = k.data_collection_method || "Ortalama";
     const olcumPer = k.period || "";
     const gp = view === "alti_ay" ? "alti_ay" : gosterimPeriyot;
+    // Aralık hedef girilmişse (örn: 20-24), mevcut periyot çarpan mantığını
+    // iki uç için de uygulayıp aralıklı göster.
+    const m = rawTarget.match(/^(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)$/);
+    if (m) {
+      const leftRaw = m[1].replace(",", ".");
+      const rightRaw = m[2].replace(",", ".");
+      const leftScaled = computeCellTargetMicro(leftRaw, olcumPer, hesap, gp);
+      const rightScaled = computeCellTargetMicro(rightRaw, olcumPer, hesap, gp);
+      if (leftScaled != null && rightScaled != null) {
+        const fmt = (v) =>
+          Number.isInteger(v) ? String(v) : String(Math.round(v * 1000) / 1000);
+        return `${fmt(leftScaled)}-${fmt(rightScaled)}`;
+      }
+    }
     const ct = computeCellTargetMicro(k.target_value, olcumPer, hesap, gp);
     return formatTargetDisplay(ct, k.target_value || "—");
   }
@@ -1994,7 +2045,7 @@
     };
 
     kpis.forEach((k) => {
-      const pctRaw = computeKpiKanbanScorePct(k);
+      const pctRaw = computeKpiKanbanScorePct(k, view, ctx);
       const bucket = kanbanBucketFromPct(pctRaw);
       counts[bucket.col] += 1;
 

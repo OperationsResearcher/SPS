@@ -70,14 +70,14 @@ db = SQLAlchemy()
 ### Serbest Tarama Komutları
 ```bash
 # Teknik borç tespiti
-find micro/ app/ -name "*.py" | xargs wc -l | sort -rn | head -15
+find micro/ app/ ui/ -name "*.py" | xargs wc -l | sort -rn | head -15
 
 # N+1 sorgu riski
 grep -rn "relationship(" app/models/ | grep -v "lazy=" | head -20
 
-# Jinja2-in-JS kalıntısı
-grep -rn "{{ " micro/static/micro/js/
+# Jinja2-in-JS kalıntısı (aktif klasör)
+grep -rn "{{ " ui/static/platform/js/
 
 # Console.log kalıntısı
-grep -rn "console\.log" micro/static/micro/js/
+grep -rn "console\.log" ui/static/platform/js/
 ```

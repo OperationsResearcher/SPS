@@ -18,15 +18,16 @@ micro/services/
 app/models/
 extensions.py
 config.py
-__init__.py
+app/__init__.py
 ```
 
 ### Yasak alanlar
 ```
-micro/templates/          ← tasarım ajanının alanı
-micro/static/micro/css/   ← tasarım ajanının alanı
+ui/templates/             ← tasarım ajanının alanı
+ui/static/                ← tasarım ajanının alanı
 models/ (legacy)          ← DB ajanının alanı
 migrations/               ← DB ajanının alanı
+__init__.py (kök)         ← legacy factory, dokunma
 ```
 
 ---

@@ -13,9 +13,9 @@ Route yazmaz, model değiştirmezsin.
 
 ### Çalışma alanın
 ```
-micro/templates/micro/
-micro/static/micro/css/
-micro/static/micro/js/
+ui/templates/platform/
+ui/static/platform/js/
+ui/static/platform/css/
 ```
 
 ### Yasak alanlar
@@ -25,6 +25,8 @@ app/models/                  ← DB ajanının alanı
 migrations/                  ← DB ajanının alanı
 templates/ (kök legacy)      ← dokunma
 static/ (kök legacy)         ← dokunma
+micro/templates/ (eski)      ← dokunma
+micro/static/ (eski)         ← dokunma
 ```
 
 ---
@@ -36,15 +38,15 @@ static/ (kök legacy)         ← dokunma
 head -60 docs/TASKLOG.md
 
 # 2. Template ve CSS durumu
-find micro/templates -name "*.html" | wc -l
-find micro/static/micro/css -name "*.css" | xargs wc -l
-find micro/static/micro/js -name "*.js" | xargs wc -l
+find ui/templates/platform -name "*.html" | wc -l
+find ui/static/platform/css -name "*.css" | xargs wc -l
+find ui/static/platform/js -name "*.js" | xargs wc -l
 
 # 3. Kalıntı taraması
-grep -rn "alert\|confirm(" micro/static/micro/js/
-grep -rn "console\.log" micro/static/micro/js/ | grep -v ".min."
-grep -rn "<style>" micro/templates/micro/
-grep -rn "{{ " micro/static/micro/js/
+grep -rn "alert\|confirm(" ui/static/platform/js/
+grep -rn "console\.log" ui/static/platform/js/ | grep -v ".min."
+grep -rn "<style>" ui/templates/platform/
+grep -rn "{{ " ui/static/platform/js/
 ```
 
 Rapor formatı:

@@ -42,3 +42,112 @@
   background-color: #7f1d1d;
   color: #fca5a5;
 }
+
+/* Yönetim paneli - login istatistikleri */
+.yp-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.yp-filter-card .mc-card-body.yp-filter-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+}
+
+.yp-filter-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #334155;
+}
+
+.yp-filter-select {
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.yp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.yp-stat-card .mc-card-body {
+  padding: 16px;
+}
+
+.yp-stat-title {
+  font-size: var(--text-sm);
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.yp-stat-value {
+  font-size: var(--text-3xl);
+  line-height: 1.1;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.yp-activity-card .mc-card-body {
+  padding: 16px;
+}
+
+.yp-activity-header {
+  margin-bottom: 10px;
+}
+
+.yp-activity-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.yp-activity-table td:first-child {
+  font-size: 18px;
+}
+
+.yp-activity-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.yp-skeleton-line {
+  height: 12px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e5e7eb 20%, #f3f4f6 50%, #e5e7eb 80%);
+  background-size: 200% 100%;
+  animation: yp-skeleton 1.2s ease-in-out infinite;
+}
+
+.yp-skeleton-sm {
+  width: 40px;
+}
+
+@keyframes yp-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 960px) {
+  .yp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .yp-grid {
+    grid-template-columns: 1fr;
+  }
+  .yp-filter-select {
+    min-width: 100%;
+  }
+}

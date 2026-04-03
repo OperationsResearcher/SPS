@@ -33,6 +33,35 @@ def _parse_float(val) -> Optional[float]:
         return None
 
 
+def _resolve_target_for_calculation(raw_target, direction: str = "Increasing") -> Optional[float]:
+    """
+    Hedef değer aralık olarak girildiyse (örn: "20-24"), hesaplama için
+    yön bazlı tek değere indirger:
+      - Increasing  -> min
+      - Decreasing  -> max
+    Tek değer girildiyse mevcut davranış korunur.
+    """
+    if raw_target is None:
+        return None
+    if isinstance(raw_target, (int, float)):
+        return float(raw_target)
+
+    text = str(raw_target).strip()
+    if not text:
+        return None
+
+    if "-" in text:
+        parts = [p.strip() for p in text.split("-", 1)]
+        left = _parse_float(parts[0])
+        right = _parse_float(parts[1])
+        if left is not None and right is not None:
+            lo = min(left, right)
+            hi = max(left, right)
+            return hi if (direction or "Increasing").strip().lower() == "decreasing" else lo
+
+    return _parse_float(text)
+
+
 def compute_pg_score(
     hedef_val: Optional[float],
     gerceklesen_val: Optional[float],
@@ -94,7 +123,7 @@ def get_pg_scores_from_kpi_data(
         if not entries:
             out[pg.id] = None
             continue
-        target = _parse_float(pg.target_value)
+        target = _resolve_target_for_calculation(pg.target_value, pg.direction or "Increasing")
         actual_values = [_parse_float(e.actual_value) for e in entries]
         actual_values = [v for v in actual_values if v is not None]
         if not actual_values:

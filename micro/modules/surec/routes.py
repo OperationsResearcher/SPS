@@ -25,6 +25,7 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.models.core import User, Strategy, Tenant
+from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
     validate_process_parent_id,
@@ -42,7 +43,6 @@ from app_platform.modules.surec.permissions import (
     user_can_edit_process_record,
     user_can_enter_pgv,
 )
-
 
 def _user_display_name(user: User | None) -> str:
     if not user:
@@ -429,6 +429,10 @@ def surec_api_add():
             current_app.logger.warning(f"[surec_api_add] notification: {notif_err}")
 
         db.session.commit()
+        try:
+            AuditLogger.log_create("Süreç Yönetimi", p.id, {"name": p.name, "code": p.code})
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Süreç başarıyla oluşturuldu.", "id": p.id})
     except Exception as e:
         db.session.rollback()
@@ -558,6 +562,10 @@ def surec_api_update(process_id):
             current_app.logger.warning(f"[surec_api_update] notification: {notif_err}")
 
         db.session.commit()
+        try:
+            AuditLogger.log_update("Süreç Yönetimi", p.id, {}, {"name": p.name, "code": p.code, "status": p.status})
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Süreç güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -636,6 +644,10 @@ def surec_api_kpi_add():
         except Exception as notif_err:
             current_app.logger.warning(f"[surec_api_kpi_add] notification: {notif_err}")
 
+        try:
+            AuditLogger.log_create("PG Yönetimi", kpi.id, {"name": kpi.name, "code": kpi.code, "process_id": p.id})
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Performans göstergesi eklendi.", "id": kpi.id})
     except Exception as e:
         db.session.rollback()
@@ -722,6 +734,10 @@ def surec_api_kpi_update(kpi_id):
         except Exception as notif_err:
             current_app.logger.warning(f"[surec_api_kpi_update] notification: {notif_err}")
 
+        try:
+            AuditLogger.log_update("PG Yönetimi", kpi.id, {}, {"name": kpi.name, "code": kpi.code, "weight": kpi.weight})
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Performans göstergesi güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -858,6 +874,14 @@ def surec_api_kpi_data_add():
         except Exception as svc_err:
             current_app.logger.warning(f"[surec_api_kpi_data_add] deviation_service: {svc_err}")
 
+        try:
+            AuditLogger.log_create(
+                "PG Veri Girişi",
+                entry.id,
+                {"kpi_id": kpi.id, "year": entry.year, "period_type": entry.period_type, "period_no": entry.period_no},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Veri kaydedildi."})
     except Exception as e:
         db.session.rollback()
@@ -1050,6 +1074,15 @@ def surec_api_kpi_data_update(data_id):
             check_pg_performance_deviation(data_id)
         except Exception as svc_err:
             current_app.logger.warning(f"[surec_api_kpi_data_update] deviation: {svc_err}")
+        try:
+            AuditLogger.log_update(
+                "PG Veri Girişi",
+                entry.id,
+                {},
+                {"actual_value": entry.actual_value, "target_value": entry.target_value, "description": entry.description},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Veri güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -1346,6 +1379,14 @@ def surec_api_activity_add():
                 current_app.logger.warning(f"[surec_api_activity_add] notification: {notif_err}")
                 break
 
+        try:
+            AuditLogger.log_create(
+                "Süreç Faaliyeti",
+                act.id,
+                {"name": act.name, "process_id": act.process_id, "status": act.status},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Faaliyet eklendi.", "id": act.id})
     except Exception as e:
         db.session.rollback()
@@ -1493,6 +1534,15 @@ def surec_api_activity_update(act_id):
                         channel_email=bool(act.notify_email),
                     ))
         db.session.commit()
+        try:
+            AuditLogger.log_update(
+                "Süreç Faaliyeti",
+                act.id,
+                {},
+                {"name": act.name, "process_id": act.process_id, "status": act.status, "progress": act.progress},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Faaliyet güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -1629,6 +1679,20 @@ def surec_api_karne(process_id):
                 result[key] = last[0]
         return result
 
+    def _rollup_year_actual(method: str | None, raw_rows: list) -> float | None:
+        """Yıl içindeki ham PGV satırlarından tek özet değer (PGV yoksa None)."""
+        m = (method or "").lower()
+        raw_nums = [_parse_float(e.actual_value) for e in raw_rows]
+        raw_nums = [x for x in raw_nums if x is not None]
+        if m in ("toplama", "toplam"):
+            return float(sum(raw_nums)) if raw_nums else None
+        if m == "ortalama":
+            return round(sum(raw_nums) / len(raw_nums), 6) if raw_nums else None
+        if raw_rows:
+            last_e = max(raw_rows, key=lambda e: e.data_date or date(1900, 1, 1))
+            return _parse_float(last_e.actual_value)
+        return None
+
     kpi_list = []
     for k in kpis:
         entries = (
@@ -1643,11 +1707,22 @@ def surec_api_karne(process_id):
                 entries_with_keys.append((key, e.actual_value, e.data_date))
         entries_by_period = _aggregate(entries_with_keys, k.data_collection_method)
 
+        prev_y = int(year) - 1
+        prev_rows = (
+            KpiData.query.filter_by(process_kpi_id=k.id, year=prev_y, is_active=True)
+            .order_by(KpiData.data_date)
+            .all()
+        )
+        year_rollup = _rollup_year_actual(k.data_collection_method, entries)
+        prev_rollup = _rollup_year_actual(k.data_collection_method, prev_rows)
+        prev_from_pgv = prev_rollup is not None
+
         strategy_title = ""
         if k.sub_strategy and k.sub_strategy.strategy:
             strategy_title = k.sub_strategy.strategy.title
 
         sub_st = k.sub_strategy
+        oy = getattr(k, "onceki_yil_ortalamasi", None)
         kpi_list.append({
             "id": k.id,
             "name": k.name,
@@ -1665,6 +1740,10 @@ def surec_api_karne(process_id):
             "basari_puani_araliklari": k.basari_puani_araliklari,
             "is_favorite": k.id in favorite_kpi_ids,
             "entries": entries_by_period,
+            "year_rollup": round(float(year_rollup), 6) if year_rollup is not None else None,
+            "onceki_yil_ortalamasi": round(float(oy), 6) if oy is not None else None,
+            "prev_year_from_pgv": prev_from_pgv,
+            "prev_year_rollup": round(float(prev_rollup), 6) if prev_rollup is not None else None,
         })
 
     act_list = []

@@ -326,7 +326,8 @@ def calculateHedefDeger(
     pg_hedef_deger: Optional[str],
     pg_periyot: Optional[str],
     gosterim_periyot: str,
-    hesaplama_yontemi: Optional[str]
+    hesaplama_yontemi: Optional[str],
+    direction: Optional[str] = "Increasing",
 ) -> Optional[float]:
     """
     PG hedef değerini gösterim periyoduna göre hesapla
@@ -343,8 +344,22 @@ def calculateHedefDeger(
     if not pg_hedef_deger:
         return None
     
+    hedef = None
     try:
-        hedef = float(pg_hedef_deger)
+        text = str(pg_hedef_deger).strip()
+        if "-" in text:
+            # Aralık girilmiş hedef: hesaplama yönüne göre tek değere düşür.
+            left_raw, right_raw = [p.strip() for p in text.split("-", 1)]
+            left = float(left_raw.replace(",", "."))
+            right = float(right_raw.replace(",", "."))
+            low = min(left, right)
+            high = max(left, right)
+            if (direction or "Increasing").strip().lower() == "decreasing":
+                hedef = high
+            else:
+                hedef = low
+        else:
+            hedef = float(text.replace(",", "."))
     except (ValueError, TypeError):
         return pg_hedef_deger  # Sayıya çevrilemezse olduğu gibi döndür
     
@@ -633,6 +648,7 @@ def generatePeriyotVerileri(
     pg_hedef_deger: Optional[str] = None,
     pg_periyot: Optional[str] = None,
     hesaplama_yontemi: Optional[str] = None,
+    direction: Optional[str] = "Increasing",
     ay: Optional[int] = None
 ) -> List[Dict[str, Any]]:
     """
@@ -653,7 +669,13 @@ def generatePeriyotVerileri(
     veriler = []
     
     # Her periyot için hedef değeri hesapla
-    hedef_deger = calculateHedefDeger(pg_hedef_deger, pg_periyot, periyot, hesaplama_yontemi) if pg_hedef_deger else None
+    hedef_deger = calculateHedefDeger(
+        pg_hedef_deger,
+        pg_periyot,
+        periyot,
+        hesaplama_yontemi,
+        direction=direction,
+    ) if pg_hedef_deger else None
     
     # Süreç PG'sine bağlı bireysel PG'leri bul
     bireysel_pgler = BireyselPerformansGostergesi.query.filter_by(

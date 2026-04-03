@@ -40,16 +40,16 @@ ls *.py | grep -v "app\|config\|extensions\|github_sync\|requirements" | wc -l
 ls *.py | grep -E "test_|debug_|fix_|seed_|migrate_|verify_|transfer_|_write_"
 
 # 3. En uzun dosyalar (parçalanma adayı)
-find micro/ app/ -name "*.py" | xargs wc -l 2>/dev/null | sort -rn | head -10
+find micro/ app/ ui/ -name "*.py" | xargs wc -l 2>/dev/null | sort -rn | head -10
 
-# 4. JS kalıntıları
-grep -rn "alert\|confirm(" micro/static/micro/js/ | grep -v "Swal\|sweetalert\|//\|\.min\."
-grep -rn "console\.log" micro/static/micro/js/ | grep -v "//\|\.min\."
-grep -rn "{{ " micro/static/micro/js/
+# 4. JS kalıntıları (aktif klasör)
+grep -rn "alert\|confirm(" ui/static/platform/js/ | grep -v "Swal\|sweetalert\|//\|\.min\."
+grep -rn "console\.log" ui/static/platform/js/ | grep -v "//\|\.min\."
+grep -rn "{{ " ui/static/platform/js/
 
 # 5. Dead code
 grep -rn "FakeLimiter" extensions.py
-find . -name "app/extensions.py" -exec echo "Dead file: {}" \;
+ls app/extensions.py 2>/dev/null && echo "Dead file mevcut"
 
 # 6. Hardcoded credential riski
 grep -rn "password\s*=\s*['\"]" . --include="*.py" | grep -v ".git\|test\|#"

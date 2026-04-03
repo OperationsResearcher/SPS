@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from flask import flash, jsonify, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for, current_app
 from flask_login import current_user, login_required
 
 from app.models.process import ProcessKpi
@@ -23,6 +23,7 @@ from app_platform.services.notification_triggers import (
     notify_project_task_status_change,
     notify_task_assignment,
 )
+from app.utils.audit_logger import AuditLogger
 
 
 @app_bp.route("/project/<int:project_id>/task/new", methods=["GET", "POST"])
@@ -96,6 +97,14 @@ def project_task_new(project_id: int):
                 project=proj,
             )
     db.session.commit()
+    try:
+        AuditLogger.log_create(
+            "Proje Faaliyeti",
+            task.id,
+            {"project_id": task.project_id, "title": task.title, "status": task.status},
+        )
+    except Exception as e:
+        current_app.logger.error(f"Audit log hatası: {e}")
     flash("Görev eklendi.", "success")
     return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
@@ -186,6 +195,14 @@ def project_task_quick_add():
                 project=proj,
             )
     db.session.commit()
+    try:
+        AuditLogger.log_create(
+            "Proje Faaliyeti",
+            task.id,
+            {"project_id": task.project_id, "title": task.title, "status": task.status},
+        )
+    except Exception as e:
+        current_app.logger.error(f"Audit log hatası: {e}")
     return jsonify(
         {
             "success": True,
@@ -292,6 +309,15 @@ def project_task_edit(project_id: int, task_id: int):
             notify_project_task_status_change(proj, task, old_status, new_status, actor)
 
     db.session.commit()
+    try:
+        AuditLogger.log_update(
+            "Proje Faaliyeti",
+            task.id,
+            {},
+            {"project_id": task.project_id, "title": task.title, "status": task.status, "assignee_id": task.assignee_id},
+        )
+    except Exception as e:
+        current_app.logger.error(f"Audit log hatası: {e}")
     flash("Görev güncellendi.", "success")
     return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
 

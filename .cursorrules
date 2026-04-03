@@ -1,14 +1,48 @@
-# Kokpitim — Cursor Kuralları
-# Tek gerçek kaynak: docs/KURALLAR-MASTER.md
-# Bu dosyayı değiştirme — MASTER'ı güncelle
+## ZORUNLU — Her görev sonunda istisnasız uygula
+
+Her görev tamamlandığında, kullanıcı söylemese de:
+1. docs/TASKLOG.md dosyasını aç
+2. En üstteki TASK-[X] numarasını oku
+3. TASK-[X+1] ile yeni kaydı en üste ekle
+4. "TASK-[X+1] TASKLOG'a eklendi" de
+
+Bu adım atlanamaz. Kod değişikliği olmasa bile
+(analiz, yönlendirme gibi durumlarda) atlanır —
+sadece dosya değişikliği olan görevlerde zorunludur.
+Kullanıcıdan görev geldiğinde MUTLAKA önce yönlendirme yap.
+Kodu yazmadan önce şunu söyle ve onay bekle.
+Kullanıcı "hızlı yap" dese bile bu adım atlanamaz.
+
+---
 
 @docs/KURALLAR-MASTER.md
 
 ---
 
-## Cursor'a Özel Ek Notlar
+## 🔀 ROUTER — Görevi okuyup doğru ajana yönlendir
 
-- Kod önerilerinde önce mevcut dosyayı oku, sonra yaz
-- Çoklu dosya değişikliğinde önce planı göster
-- Terminal komutları önermeden önce çalışma dizinini kontrol et
-- Her compose/chat oturumunda TASKLOG'un son 3 kaydını oku
+Kullanıcıdan görev geldiğinde önce şu kararı ver:
+
+| Görevde bu varsa | Ajan |
+|------------------|------|
+| route, endpoint, API, servis, login, yetki, güvenlik | BACKEND |
+| model, tablo, migration, veritabanı, kolon, ilişki | DB |
+| sayfa, HTML, CSS, JS, modal, buton, kart, görünüm | TASARIM |
+| temizle, sil, refactor, dead code, eski dosya | TEMİZLİK |
+| birden fazla kategori | sırayla: DB → BACKEND → TASARIM |
+
+### Karar verince kullanıcıya söyle, onay bekle:
+🔀 Yönlendirme: [AJAN]
+Sebep: [tek cümle]
+Devam edeyim mi?
+
+### Onay gelince ajan dosyasını oku ve uygula:
+@docs/agents/BACKEND-AGENT.md
+@docs/agents/DB-AGENT.md
+@docs/agents/TASARIM-AGENT.md
+@docs/agents/TEMIZLIK-AGENT.md
+
+### Emin olamazsan 3 soru sor:
+1. Veritabanında değişiklik var mı?    → Evet: DB önce
+2. Route veya servis yazılacak mı?     → Evet: Backend devam
+3. Kullanıcıya görünen bir şey var mı? → Evet: Tasarım son

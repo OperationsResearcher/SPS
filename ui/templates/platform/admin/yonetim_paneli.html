@@ -1,0 +1,111 @@
+{% extends "platform/base.html" %}
+{% block title %}Yönetim Paneli{% endblock %}
+{% block page_title %}Yönetim Paneli{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/admin.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block content %}
+<div id="panel-root"
+     class="mc-page-content yp-root"
+     data-api-url="{{ url_for('app_bp.yonetim_paneli_istatistik') }}"
+     data-aktivite-url="{{ url_for('app_bp.yonetim_paneli_aktiviteler') }}"
+     data-tenant-id="{{ current_user.tenant_id or '' }}">
+
+  <div class="mc-page-header">
+    <div>
+      <h2 class="mc-page-title">Login İstatistikleri</h2>
+      <p class="mc-page-subtitle">Audit log tabanlı yönetim özeti</p>
+    </div>
+  </div>
+
+  <div class="mc-card yp-filter-card">
+    <div class="mc-card-body yp-filter-body">
+      <label for="tenant-select" class="yp-filter-label">Kurum Seçimi</label>
+      <select id="tenant-select" class="mc-form-select yp-filter-select">
+        {% if current_user.role and current_user.role.name == 'Admin' %}
+        <option value="">Tüm Kurumlar</option>
+        {% endif %}
+        {% for t in tenant_list %}
+        <option value="{{ t.id }}" {% if default_tenant_id and default_tenant_id == t.id %}selected{% endif %}>
+          {{ t.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="yp-grid">
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Şu an aktif</div>
+        <div class="yp-stat-value" data-key="active_now">...</div>
+      </div>
+    </div>
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Son 24 saat</div>
+        <div class="yp-stat-value" data-key="last_24h">...</div>
+      </div>
+    </div>
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Son 7 gün</div>
+        <div class="yp-stat-value" data-key="last_7d">...</div>
+      </div>
+    </div>
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Son 30 gün</div>
+        <div class="yp-stat-value" data-key="last_30d">...</div>
+      </div>
+    </div>
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Son 1 yıl</div>
+        <div class="yp-stat-value" data-key="last_365d">...</div>
+      </div>
+    </div>
+    <div class="mc-card yp-stat-card">
+      <div class="mc-card-body">
+        <div class="yp-stat-title">Tüm zamanlar</div>
+        <div class="yp-stat-value" data-key="all_time">...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-card yp-activity-card">
+    <div class="mc-card-body">
+      <div class="yp-activity-header">
+        <h3 class="yp-activity-title">Son Aktiviteler</h3>
+      </div>
+      <div class="mc-table-wrapper">
+        <table class="mc-table yp-activity-table">
+          <thead>
+            <tr>
+              <th>İkon</th>
+              <th>Kaynak</th>
+              <th>Kullanıcı</th>
+              <th>İşlem</th>
+              <th>Zaman</th>
+            </tr>
+          </thead>
+          <tbody id="activity-tbody">
+            <tr>
+              <td colspan="5">Yükleniyor...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yp-activity-footer">
+        <button type="button" id="activity-more-btn" class="mc-btn mc-btn-secondary">Daha fazla göster</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/yonetim_paneli.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

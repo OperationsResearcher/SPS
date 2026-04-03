@@ -7,12 +7,16 @@ import tempfile
 
 from flask import render_template, jsonify, request, current_app, send_file, flash, redirect, url_for, abort
 from flask_login import login_required, current_user
+from sqlalchemy import func, and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from platform_core import app_bp
 from app.models import db
 from app.models.core import User, Role, Tenant
+from app.models.audit import AuditLog
+from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
+from micro.modules.admin.constants import AKTIVITE_ETIKETLER, RESOURCE_IKONLAR
 
 _ADMIN_ROLES   = ("Admin",)
 _MANAGER_ROLES = ("Admin", "tenant_admin", "executive_manager")
@@ -83,6 +87,200 @@ def _admin_backup_guard():
     if not _is_admin():
         return render_template("platform/errors/403.html"), 403
     return None
+
+
+def _is_admin_or_tenant_admin():
+    role_name = current_user.role.name if current_user.role else ""
+    return role_name in ("Admin", "tenant_admin")
+
+
+def get_tenant_list():
+    """
+    Aktif tenant listesi.
+    - Admin: tüm aktif tenantlar
+    - tenant_admin: sadece kendi tenantı
+    """
+    if not _is_admin_or_tenant_admin():
+        return []
+    if _is_admin():
+        rows = Tenant.query.filter_by(is_active=True).order_by(Tenant.name).all()
+        return [{"id": t.id, "name": t.name} for t in rows]
+    if current_user.tenant_id:
+        t = Tenant.query.filter_by(id=current_user.tenant_id, is_active=True).first()
+        return [{"id": t.id, "name": t.name}] if t else []
+    return []
+
+
+def get_login_stats(tenant_id=None):
+    """
+    Döner:
+    - active_now: int
+    - last_24h: int
+    - last_7d: int
+    - last_30d: int
+    - last_365d: int
+    - all_time: int
+    """
+    now_utc = datetime.datetime.utcnow()
+    login_actions = ("OTURUM AÇMA", "LOGIN")
+    logout_actions = ("OTURUM KAPATMA", "LOGOUT")
+
+    # Veri migrasyonunda Türkçe karakter bozulmuş aksiyonları da yakala (örn. OTURUM A�MA).
+    login_predicate = or_(
+        AuditLog.action.in_(login_actions),
+        func.upper(AuditLog.action).like("OTURUM A%MA%"),
+        func.upper(AuditLog.action).like("%LOGIN%"),
+    )
+    logout_predicate = or_(
+        AuditLog.action.in_(logout_actions),
+        func.upper(AuditLog.action).like("OTURUM KAPATMA%"),
+        func.upper(AuditLog.action).like("%LOGOUT%"),
+    )
+
+    def _tenant_filter(query):
+        if tenant_id is not None:
+            return query.filter(AuditLog.tenant_id == tenant_id)
+        return query
+
+    def _unique_login_count(since_dt=None):
+        q = db.session.query(func.count(func.distinct(AuditLog.user_id))).filter(
+            login_predicate,
+            AuditLog.user_id.isnot(None),
+        )
+        q = _tenant_filter(q)
+        if since_dt is not None:
+            q = q.filter(AuditLog.created_at >= since_dt)
+        return int(q.scalar() or 0)
+
+    active_cutoff = now_utc - datetime.timedelta(minutes=30)
+    login_q = db.session.query(
+        AuditLog.user_id.label("user_id"),
+        func.max(AuditLog.created_at).label("last_login"),
+    ).filter(
+        login_predicate,
+        AuditLog.user_id.isnot(None),
+    )
+    login_q = _tenant_filter(login_q).group_by(AuditLog.user_id)
+    login_sq = login_q.subquery()
+
+    logout_q = db.session.query(
+        AuditLog.user_id.label("user_id"),
+        AuditLog.created_at.label("logout_at"),
+    ).filter(
+        logout_predicate,
+        AuditLog.user_id.isnot(None),
+    )
+    if tenant_id is not None:
+        logout_q = logout_q.filter(AuditLog.tenant_id == tenant_id)
+    logout_sq = logout_q.subquery()
+
+    active_now = db.session.query(func.count()).select_from(login_sq).outerjoin(
+        logout_sq,
+        and_(
+            logout_sq.c.user_id == login_sq.c.user_id,
+            logout_sq.c.logout_at > login_sq.c.last_login,
+        ),
+    ).filter(
+        login_sq.c.last_login >= active_cutoff,
+        logout_sq.c.user_id.is_(None),
+    ).scalar() or 0
+
+    return {
+        "active_now": int(active_now),
+        "last_24h": _unique_login_count(now_utc - datetime.timedelta(hours=24)),
+        "last_7d": _unique_login_count(now_utc - datetime.timedelta(days=7)),
+        "last_30d": _unique_login_count(now_utc - datetime.timedelta(days=30)),
+        "last_365d": _unique_login_count(now_utc - datetime.timedelta(days=365)),
+        "all_time": _unique_login_count(),
+    }
+
+
+@app_bp.route("/micro/admin/yonetim-paneli")
+@login_required
+def yonetim_paneli():
+    if not _is_admin_or_tenant_admin():
+        return render_template("platform/errors/403.html"), 403
+    try:
+        tenant_list = get_tenant_list()
+        default_tenant_id = current_user.tenant_id if not _is_admin() else None
+        return render_template(
+            "platform/admin/yonetim_paneli.html",
+            tenant_list=tenant_list,
+            default_tenant_id=default_tenant_id,
+        )
+    except Exception as e:
+        current_app.logger.error(f"[yonetim_paneli] {e}")
+        return render_template("platform/errors/500.html"), 500
+
+
+@app_bp.route("/micro/admin/yonetim-paneli/istatistik")
+@login_required
+def yonetim_paneli_istatistik():
+    if not _is_admin_or_tenant_admin():
+        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+    try:
+        req_tenant_id = request.args.get("tenant_id", type=int)
+        tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
+        data = get_login_stats(tenant_id=tenant_id)
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[yonetim_paneli_istatistik] {e}")
+        return jsonify({"success": False, "message": "İstatistik alınamadı."}), 500
+
+
+@app_bp.route("/micro/admin/yonetim-paneli/aktiviteler")
+@login_required
+def yonetim_paneli_aktiviteler():
+    if not _is_admin_or_tenant_admin():
+        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+    try:
+        req_tenant_id = request.args.get("tenant_id", type=int)
+        limit = request.args.get("limit", type=int) or 50
+        limit = max(1, min(limit, 200))
+
+        tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
+
+        q = (
+            db.session.query(
+                AuditLog.id,
+                AuditLog.action,
+                AuditLog.resource_type,
+                AuditLog.resource_id,
+                AuditLog.created_at,
+                AuditLog.ip_address,
+                User.first_name,
+                User.last_name,
+                User.email,
+            )
+            .outerjoin(User, AuditLog.user_id == User.id)
+            .filter(AuditLog.resource_type != "GÜVENLİK")
+            .order_by(AuditLog.created_at.desc())
+        )
+        if tenant_id is not None:
+            q = q.filter(AuditLog.tenant_id == tenant_id)
+
+        rows = q.limit(limit).all()
+        data = []
+        for r in rows:
+            full_name = f"{(r.first_name or '').strip()} {(r.last_name or '').strip()}".strip()
+            data.append(
+                {
+                    "id": r.id,
+                    "action": r.action,
+                    "action_label": AKTIVITE_ETIKETLER.get(r.action, r.action),
+                    "resource_type": r.resource_type,
+                    "resource_icon": RESOURCE_IKONLAR.get(r.resource_type, "📌"),
+                    "resource_id": r.resource_id,
+                    "created_at": r.created_at.isoformat() if r.created_at else None,
+                    "ip_address": r.ip_address,
+                    "user_name": full_name or (r.email or "Bilinmiyor"),
+                    "user_email": r.email,
+                }
+            )
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[yonetim_paneli_aktiviteler] {e}")
+        return jsonify({"success": False, "message": "Aktivite kayıtları alınamadı."}), 500
 
 
 @app_bp.route("/ayarlar/yedekleme")
@@ -441,6 +639,14 @@ def admin_users_add():
         )
         db.session.add(u)
         db.session.commit()
+        try:
+            AuditLogger.log_create(
+                "Kullanıcı Yönetimi",
+                u.id,
+                {"email": u.email, "tenant_id": u.tenant_id, "role_id": u.role_id},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
     except Exception as e:
         db.session.rollback()
@@ -459,6 +665,14 @@ def admin_users_add():
                 )
                 db.session.add(u)
                 db.session.commit()
+                try:
+                    AuditLogger.log_create(
+                        "Kullanıcı Yönetimi",
+                        u.id,
+                        {"email": u.email, "tenant_id": u.tenant_id, "role_id": u.role_id},
+                    )
+                except Exception as e:
+                    current_app.logger.error(f"Audit log hatası: {e}")
                 return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
             except Exception as e2:
                 db.session.rollback()
@@ -499,6 +713,21 @@ def admin_users_edit(user_id):
         if data.get("password"):
             u.password_hash = generate_password_hash(data["password"])
         db.session.commit()
+        try:
+            AuditLogger.log_update(
+                "Kullanıcı Yönetimi",
+                u.id,
+                {},
+                {
+                    "first_name": u.first_name,
+                    "last_name": u.last_name,
+                    "job_title": u.job_title,
+                    "department": u.department,
+                    "role_id": u.role_id,
+                },
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Kullanıcı güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -685,6 +914,14 @@ def admin_tenants_add():
             t.license_end_date = date.fromisoformat(data["license_end_date"])
         db.session.add(t)
         db.session.commit()
+        try:
+            AuditLogger.log_create(
+                "Kurum Yönetimi",
+                t.id,
+                {"name": t.name, "short_name": t.short_name},
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
     except Exception as e:
         db.session.rollback()
@@ -710,6 +947,14 @@ def admin_tenants_add():
                     t.license_end_date = date.fromisoformat(data["license_end_date"])
                 db.session.add(t)
                 db.session.commit()
+                try:
+                    AuditLogger.log_create(
+                        "Kurum Yönetimi",
+                        t.id,
+                        {"name": t.name, "short_name": t.short_name},
+                    )
+                except Exception as e:
+                    current_app.logger.error(f"Audit log hatası: {e}")
                 return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
             except Exception as e2:
                 db.session.rollback()
@@ -747,6 +992,20 @@ def admin_tenants_edit(tenant_id):
         if data.get("package_id"):
             t.package_id = int(data["package_id"])
         db.session.commit()
+        try:
+            AuditLogger.log_update(
+                "Kurum Yönetimi",
+                t.id,
+                {},
+                {
+                    "name": t.name,
+                    "short_name": t.short_name,
+                    "sector": t.sector,
+                    "activity_area": t.activity_area,
+                },
+            )
+        except Exception as e:
+            current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Kurum güncellendi."})
     except Exception as e:
         db.session.rollback()

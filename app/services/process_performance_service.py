@@ -68,6 +68,7 @@ class ProcessPerformanceService:
                     pg_hedef_deger=pg.hedef_deger,
                     pg_periyot=pg.periyot,
                     hesaplama_yontemi=hesaplama_yontemi,
+                    direction=getattr(pg, 'direction', 'Increasing'),
                     ay=ay
                 )
                 

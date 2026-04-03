@@ -944,6 +944,10 @@ body {
     display: flex; align-items: center; justify-content: center;
     font-size: var(--text-xl); flex-shrink: 0;
 }
+.ayarlar-hub-icon-cyan {
+    background: #ecfeff;
+    color: #0891b2;
+}
 .ayarlar-hub-body { flex: 1; min-width: 0; }
 .ayarlar-hub-title { font-size: var(--text-base); font-weight: 600; color: #1e293b; }
 .ayarlar-hub-desc  { font-size: var(--text-sm); color: #64748b; margin-top: 2px; }

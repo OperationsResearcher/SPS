@@ -2591,6 +2591,23 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   color: #4f46e5 !important;
 }
 
+.micro-pg-prev-year-val {
+  white-space: nowrap;
+}
+
+.micro-pg-prev-year-star {
+  display: inline-block;
+  font-size: 0.65rem;
+  margin-left: 0.28rem;
+  color: #ca8a04;
+  vertical-align: super;
+  cursor: help;
+}
+
+.dark .micro-pg-prev-year-star {
+  color: #facc15;
+}
+
 .micro-pg-cell--filled {
   background: #ecfdf5;
   font-weight: 600;

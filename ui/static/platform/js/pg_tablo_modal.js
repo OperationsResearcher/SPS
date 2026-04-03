@@ -75,6 +75,27 @@
     return Math.round((yillikHedef / bolum) * 1000) / 1000;
   }
 
+  function formatKpiYearlyTargetDisplay(k) {
+    const rawTarget = k && k.target_value != null ? String(k.target_value).trim() : "";
+    const hesaplamaYontemi = k.data_collection_method || "Ortalama";
+    const olcumPeriyodu = k.period || "";
+    const m = rawTarget.match(/^(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)$/);
+    if (m) {
+      const leftRaw = m[1].replace(",", ".");
+      const rightRaw = m[2].replace(",", ".");
+      const left = computeYillikHedef(leftRaw, olcumPeriyodu, hesaplamaYontemi);
+      const right = computeYillikHedef(rightRaw, olcumPeriyodu, hesaplamaYontemi);
+      if (left != null && right != null) {
+        const fmt = (v) => (Number.isInteger(v) ? String(v) : Number(v).toFixed(2));
+        return `${fmt(left)}-${fmt(right)}`;
+      }
+      return rawTarget || "-";
+    }
+    const yillikHedef = computeYillikHedef(k.target_value, olcumPeriyodu, hesaplamaYontemi);
+    if (yillikHedef == null) return rawTarget || "-";
+    return Number.isInteger(yillikHedef) ? String(yillikHedef) : yillikHedef.toFixed(2);
+  }
+
   const AYLAR_TR_FULL = [
     "Ocak",
     "Şubat",
@@ -250,6 +271,7 @@
         { id: "micro-col-unit-chk", selector: ".col-unit" },
         { id: "micro-col-period-chk", selector: ".col-period" },
         { id: "micro-col-target-chk", selector: ".col-target-main" },
+        { id: "micro-col-prev-year-chk", selector: ".col-prev-year" },
       ];
       mapping.forEach(({ id, selector }) => {
         const chk = document.getElementById(id);
@@ -285,10 +307,10 @@
 
       if (isGunluk) {
         let row1 =
-          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th>';
+          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th><th rowspan="2" class="col-prev-year">Önceki Yıl</th>';
         row1 += `<th colspan="${periods.length}" class="text-center">${escHtml(monthName)}</th>`;
         row1 +=
-          '<th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr><tr>';
+          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr><tr>';
         periods.forEach((p) => {
           row1 += `<th class="col-quarter text-center kpi-day-col">${escHtml(p.label)}</th>`;
         });
@@ -296,20 +318,20 @@
         thead.innerHTML = row1;
       } else {
         let thRow1 =
-          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th>';
+          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th><th rowspan="2" class="col-prev-year">Önceki Yıl</th>';
         let thRow2 = "<tr>";
         periods.forEach((p) => {
           thRow1 += `<th colspan="3" class="text-center">${escHtml(p.label)}</th>`;
           thRow2 += '<th class="col-quarter">Hedef</th><th class="col-quarter">Gerç.</th><th class="col-quarter">Durum</th>';
         });
         thRow1 +=
-          '<th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr>';
+          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr>';
         thead.innerHTML = thRow1 + thRow2;
       }
 
       if (!kpis || kpis.length === 0) {
         const periodCols = isGunluk ? periods.length : periods.length * 3;
-        const colspan = 8 + periodCols + 2;
+        const colspan = 9 + periodCols + 3;
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="micro-pg-empty-cell">Henüz performans göstergesi yok.</td></tr>`;
         applyColumnVisibility();
         return;
@@ -333,17 +355,27 @@
         const targetValRaw = k.target_value || "-";
         const hesaplamaYontemi = k.data_collection_method || "Ortalama";
         const olcumPeriyodu = k.period || "";
+        const yillikHedefDisplay = formatKpiYearlyTargetDisplay(k);
         const yillikHedef = computeYillikHedef(k.target_value, olcumPeriyodu, hesaplamaYontemi);
-        const yillikHedefDisplay =
-          yillikHedef !== null
-            ? Number.isInteger(yillikHedef)
-              ? yillikHedef
-              : yillikHedef.toFixed(2)
-            : targetValRaw;
         const isFav = k.is_favorite || favSet.has(k.id);
         const favIconClass = isFav ? "fas fa-star" : "far fa-star";
 
-        let fixedCols = `<td class="col-code">${escHtml(k.code || "")}</td><td class="col-strategy small">${escHtml(strategyTitle)}${(k.strategy_title || "").length > 20 ? "…" : ""}</td><td class="col-strategy small">${escHtml(subStrategyTitle)}${(k.sub_strategy_title || "").length > 20 ? "…" : ""}</td><td class="fw-medium">${kpiName}</td><td class="col-weight text-center">${escHtml(k.weight != null ? String(k.weight) : "-")}</td><td class="col-unit text-center">${escHtml(k.unit || "-")}</td><td class="col-period text-center"><span class="micro-pg-badge-period">${escHtml(olcumPeriyodu || "-")}</span></td><td class="col-target-main text-center fw-bold micro-pg-target-main">${escHtml(String(yillikHedefDisplay))}</td>`;
+        const fromPgv = k.prev_year_from_pgv === true;
+        const manualOy = k.onceki_yil_ortalamasi;
+        const rollup = k.prev_year_rollup;
+        let prevYearTd = '<td class="col-prev-year text-center">—</td>';
+        if (fromPgv && rollup != null && !Number.isNaN(Number(rollup))) {
+          const n = Number(rollup);
+          const disp = Number.isInteger(n) ? String(n) : n.toFixed(2);
+          const tip = "Bu veri önceki yıldan hesaplanmıştır.";
+          prevYearTd = `<td class="col-prev-year text-center"><span class="micro-pg-prev-year-val">${escHtml(disp)}</span><i class="fas fa-star micro-pg-prev-year-star" title="${escHtml(tip)}" aria-label="${escHtml(tip)}"></i></td>`;
+        } else if (manualOy != null && manualOy !== "" && !Number.isNaN(Number(manualOy))) {
+          const n = Number(manualOy);
+          const disp = Number.isInteger(n) ? String(n) : n.toFixed(2);
+          prevYearTd = `<td class="col-prev-year text-center">${escHtml(disp)}</td>`;
+        }
+
+        let fixedCols = `<td class="col-code">${escHtml(k.code || "")}</td><td class="col-strategy small">${escHtml(strategyTitle)}${(k.strategy_title || "").length > 20 ? "…" : ""}</td><td class="col-strategy small">${escHtml(subStrategyTitle)}${(k.sub_strategy_title || "").length > 20 ? "…" : ""}</td><td class="fw-medium">${kpiName}</td><td class="col-weight text-center">${escHtml(k.weight != null ? String(k.weight) : "-")}</td><td class="col-unit text-center">${escHtml(k.unit || "-")}</td><td class="col-period text-center"><span class="micro-pg-badge-period">${escHtml(olcumPeriyodu || "-")}</span></td><td class="col-target-main text-center fw-bold micro-pg-target-main">${escHtml(String(yillikHedefDisplay))}</td>${prevYearTd}`;
 
         const entries = k.entries || {};
         let periodCells = "";
@@ -406,6 +438,12 @@
             skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
           }
         }
+        const yillikGerceklesenRaw = k.year_rollup;
+        let yillikGerceklesenHtml = "—";
+        if (yillikGerceklesenRaw != null && !Number.isNaN(Number(yillikGerceklesenRaw))) {
+          const n = Number(yillikGerceklesenRaw);
+          yillikGerceklesenHtml = Number.isInteger(n) ? String(n) : n.toFixed(2);
+        }
 
         const delName = (k.name || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         const actions = canCrudPg
@@ -417,7 +455,7 @@
           : `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="Favori"><i class="${favIconClass}" aria-hidden="true"></i></button>`;
 
         const hl = highlightKpiId && Number(k.id) === Number(highlightKpiId) ? " micro-pg-row--highlight" : "";
-        return `<tr class="micro-pg-data-row${hl}" data-kpi-id="${k.id}">${fixedCols}${periodCells}<td class="col-target text-center">${skorHtml}</td><td class="col-actions no-print">${actions}</td></tr>`;
+        return `<tr class="micro-pg-data-row${hl}" data-kpi-id="${k.id}">${fixedCols}${periodCells}<td class="col-target text-center">${escHtml(yillikGerceklesenHtml)}</td><td class="col-target text-center">${skorHtml}</td><td class="col-actions no-print">${actions}</td></tr>`;
       });
 
       tbody.innerHTML = rows.join("");
@@ -796,7 +834,15 @@
       loadKarneData();
     });
 
-    ["micro-col-code-chk", "micro-col-strategy-chk", "micro-col-weight-chk", "micro-col-unit-chk", "micro-col-period-chk", "micro-col-target-chk"].forEach((id) => {
+    [
+      "micro-col-code-chk",
+      "micro-col-strategy-chk",
+      "micro-col-weight-chk",
+      "micro-col-unit-chk",
+      "micro-col-period-chk",
+      "micro-col-target-chk",
+      "micro-col-prev-year-chk",
+    ].forEach((id) => {
       document.getElementById(id)?.addEventListener("change", applyColumnVisibility);
     });
 

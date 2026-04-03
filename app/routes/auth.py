@@ -3,15 +3,29 @@
 import os
 import uuid
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 from app.models import db
 from app.models.core import User
+from app.utils.audit_logger import AuditLogger
 
 auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
+
+
+def _write_auth_audit(action, user=None):
+    """Login/Logout audit kaydı (hata olsa da akışı bozmaz)."""
+    try:
+        AuditLogger.log(
+            action=action,
+            resource_type="GÜVENLİK",
+            resource_id=(user.id if user else None),
+            description=f"Auth event: {action}",
+        )
+    except Exception as e:
+        current_app.logger.error(f"[auth_audit:{action}] {e}")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -30,10 +44,12 @@ def login():
 
         user = User.query.filter_by(email=email, is_active=True).first()
         if not user or not check_password_hash(user.password_hash, password):
+            _write_auth_audit("LOGIN_FAILED", None)
             flash("Geçersiz e-posta veya şifre.", "danger")
             return render_template("auth/login.html")
 
         login_user(user)
+        _write_auth_audit("OTURUM AÇMA", user)
         flash("Giriş başarılı.", "success")
         next_url = request.args.get("next") or url_for("app_bp.launcher")
         return redirect(next_url)
@@ -45,6 +61,9 @@ def login():
 @login_required
 def logout():
     """Log out user and redirect to login."""
+    user = current_user if current_user.is_authenticated else None
+    if user:
+        _write_auth_audit("OTURUM KAPATMA", user)
     logout_user()
     return redirect(url_for("public_login"))
 

@@ -5,6 +5,218 @@
 
 ---
 
+## TASK-048 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** PG tablo modalında aralık hedef gösterimi + "Yıllık Gerçekleşme" sütunu
+**Modül:** surec / karne API + modal tablo UI
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `surec_api_karne` yanıtına `year_rollup` eklendi
+- `ui/static/platform/js/pg_tablo_modal.js` → yıllık hedefte aralık formatı + yeni sütun render
+
+### Yapılan İşlem
+Tablo görünümünde `Yıllık Hedef` alanı, hedef aralık girilmişse (örn. `20-24`) iki ucu da yıllık ölçeğe çevirip `min-max` formatında gösterilecek şekilde güncellendi. Ayrıca `Başarı Puanı`ndan hemen önce `Yıllık Gerçekleşme` sütunu eklendi; değer, ilgili yılın ham PGV kayıtlarından veri toplama yöntemine göre (Toplama/Ortalama/Son Değer) hesaplanıp gösteriliyor.
+
+---
+
+## TASK-047 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Performans göstergesi modalı ölçüm birimine "Hafta" eklenmesi
+**Modül:** surec / karne UI
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/karne.html` → `kpi-add-unit-options` datalist
+
+### Yapılan İşlem
+PG ekle/düzenle modalında kullanılan ölçüm birimi öneri listesine `Hafta` seçeneği eklendi.
+
+---
+
+## TASK-046 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** PG tablo modalı — «Önceki Yıl» hesaplama çarpan hatasının düzeltilmesi
+**Modül:** surec / karne API
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → önceki yıl rollup hesabı ham PGV satırlarından yapılacak şekilde düzeltildi
+
+### Yapılan İşlem
+Önceki yıl değeri hesaplanırken period-key bazlı ara toplamlardan gidildiği için aynı PGV birden çok periyot anahtarına yazıldığında (yıllık/çeyrek/aylık) değer katlanıyordu (örn. 30 → 180). Hesap artık doğrudan **önceki yılın ham aktif PGV satırları** üzerinden yapılıyor; böylece yıllık satır 30 ise önceki yıl sütununda 30 görünür.
+
+---
+
+## TASK-045 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Süreç Karnesi — PG tablo modalında «Önceki Yıl» sütunu (PGV özeti veya elle ortalama)
+**Modül:** surec / karne API + modal tablo
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `surec_api_karne`: önceki takvim yılı PGV’sinden özet (`prev_year_rollup`, `prev_year_from_pgv`), `onceki_yil_ortalamasi`
+- `ui/static/platform/js/pg_tablo_modal.js` → sütun, yıldız + `title` ile bilgi (hesaplanan veri)
+- `ui/templates/platform/surec/karne.html` → sütun görünürlük seçeneği
+- `ui/static/platform/css/surec.css` → yıldız stili
+
+### Yapılan İşlem
+Tablo modalında **Önceki Yıl** sütunu: önceki yılda aktif PGV varsa veri toplama yöntemine göre özetlenir ve küçük yıldız ile «Bu veri önceki yıldan hesaplanmıştır.» ipucu gösterilir; yoksa PG kaydındaki **Önceki Yıl Ortalaması** alanı gösterilir (yıldız yok).
+
+---
+
+## TASK-044 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Süreç Karnesi PG kanban gauge — başarı yüzdesinin seçili döneme göre hesaplanması
+**Modül:** surec / karne UI
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/surec.js` → `computeKpiKanbanScorePct` + `getKanbanActualNumeric`; `renderKanbanGauge` bağlam iletti
+
+### Yapılan İşlem
+Gauge skoru artık yıllık toplam hedef ve tüm `entries` değerlerinden değil; karttaki **Hedef** / **Gerçekleşen** ile aynı görünüm (`view`), gösterim periyodu ve `periodKey` üzerinden hesaplanıyor. Aralık hedefte skor, backend ile uyumlu olarak `Increasing` → ölçeklenmiş küçük uç, `Decreasing` → büyük uç. Gerçekleşen yoksa skor `null`, gauge **—** (sahte %100 yok).
+
+---
+
+## TASK-043 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** PG kartı hedef aralık gösteriminde periyot ölçekleme mantığının korunması
+**Modül:** surec / karne UI
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/surec.js` → `getMetaHedefKanban` aralık hedefte iki ucu periyoda göre ölçekleyip gösterir
+
+### Yapılan İşlem
+PG kartındaki `Hedef` alanında aralık değerler (`20-24`) için gösterim, önceki otomatik periyot mantığına geri alındı: yıllıkta `20-24`, 6 aylıkta `10-12`, çeyrekte `5-6` gibi iki uç da aynı hesapla ölçeklenerek gösterilir.
+
+---
+
+## TASK-042 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Süreç Karnesi PG kartında aralıklı hedef değerin ham gösterimi
+**Modül:** surec / karne UI
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/surec.js` → `getMetaHedefKanban` içinde aralık hedef (`min-max`) için ham metin gösterimi
+
+### Yapılan İşlem
+Süreç Karnesi — Performans Göstergeleri kartındaki `Hedef` alanında, hedef değer aralık formatında girildiyse (örn. `20-24`) hesaplanmış tekil değer yerine kullanıcı girişindeki ham aralık metni gösterilecek şekilde düzenlendi. Hesaplama davranışı değişmedi.
+
+---
+
+## TASK-041 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** PG hedef değeri aralık girişi (örn. "45-49") — hesaplamada yön bazlı tek değer, gösterimde ham metin
+**Modül:** score engine / performans hesaplama
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `_resolve_target_for_calculation`; PG skorunda hedef çözümlemesi
+- `services/performance_service.py` → `calculateHedefDeger` aralık + `direction`; `generatePeriyotVerileri` `direction` parametresi
+- `app/services/process_performance_service.py` → `generatePeriyotVerileri` çağrısına `direction` iletimi
+
+### Yapılan İşlem
+`Hedef Değer` alanına tek aralık formatı (`min-max`) girildiğinde `Increasing` için küçük uç, `Decreasing` için büyük uç hesaplamalara alındı; veritabanı / ekranda girilen metin değişmedi.
+
+---
+
+## TASK-040 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** /ayarlar sayfasına Admin'e özel Yönetim Paneli linki eklendi
+**Modül:** ayarlar / index
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/ayarlar/index.html`
+
+### Yapılan İşlem
+Ayarlar hub sayfasında yalnızca `Admin` rolünün gördüğü bölüm içine Yönetim Paneli bağlantısı eklendi. Link kartındaki inline stil kaldırılarak sınıf tabanlı stil kullanıldı.
+
+---
+
+## TASK-039 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** Son iki değişikliğin geri alınması (KPI tipi + kullanıcı arama iyileştirmeleri)
+**Modül:** surec / admin / ayarlar
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → KPI tipi doğrulama için eklenen sabit/fonksiyon ve ilgili kullanım geri alındı
+- `ui/templates/platform/surec/karne.html` → `Sonuç` KPI tipi seçeneği kaldırıldı
+- `ui/templates/platform/ayarlar/index.html` → Ayarlar hub’daki Yönetim Paneli linki kaldırıldı
+- `ui/templates/platform/admin/users.html` → `data-search` alanı eski haline döndürüldü, sonuç-yok kutusu kaldırıldı
+- `ui/static/platform/js/admin.js` → kullanıcı arama kutusu önceki basit filtreleme davranışına döndürüldü
+
+### Yapılan İşlem
+Kullanıcı talebine göre son iki adımda eklenen geliştirmeler geri alındı ve ilgili dosyalar bir önceki çalışma davranışına döndürüldü.
+
+---
+
+## TASK-038 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** SQLAlchemy sürüm doğrulama ve venv ile uygulama başlatma testi
+**Modül:** altyapı / bağımlılık yönetimi
+
+### Değiştirilen Dosyalar
+- `requirements.txt` → `sqlalchemy>=2.0.36` satırı eklendi
+- `docs/TASKLOG.md` → TASK-038 kaydı eklendi
+
+### Yapılan İşlem
+`requirements.txt` içindeki SQLAlchemy sürümü kontrol edildi, ardından `.venv\Scripts\pip.exe install "sqlalchemy>=2.0.36"` komutu çalıştırıldı (venv’de `2.0.48` zaten kurulu). Sonrasında `.venv\Scripts\python.exe app.py` ile uygulama başlatma testi yapıldı ve servis başarıyla ayağa kalktı.
+
+---
+
+## TASK-037 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** Yönetim Paneli — aktivite logu, eksik loglama ve UI
+**Modül:** admin / yonetim_paneli
+
+### Değiştirilen Dosyalar
+- `app/routes/auth.py` → raw SQL audit kaldırıldı, AuditLogger.log() geçildi
+- `micro/modules/admin/routes.py` → /aktiviteler endpoint + AuditLogger import
+- `micro/modules/admin/constants.py` → AKTIVITE_ETIKETLER + RESOURCE_IKONLAR
+- `micro/modules/surec/routes.py` → 19 noktaya audit log eklendi
+- `micro/modules/proje/routes_project_crud.py` → proje create/update logları
+- `micro/modules/proje/routes_tasks.py` → proje faaliyeti create/update logları
+- `ui/templates/platform/admin/yonetim_paneli.html` → aktivite tablosu
+- `ui/static/platform/js/yonetim_paneli.js` → fetch + skeleton + zaman formatı
+- `ui/static/platform/css/admin.css` → tablo ve skeleton stilleri
+
+### Yapılan İşlem
+`audit_logs` tablosu üzerine 19 route/view noktasına `AuditLogger` tabanlı kayıtlar eklendi; `GET /micro/admin/yonetim-paneli/aktiviteler` endpoint’i ile kullanıcı, işlem etiketi ve kaynak ikonu içeren listeleme sağlandı. Yönetim paneli UI tarafında aktivite tablosu, tenant filtresiyle eşzamanlı yenileme, skeleton yükleme ve “X dk/saat/gün önce” zaman gösterimi tamamlandı.
+
+---
+
+## TASK-036 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** Yönetim paneli login istatistiklerinde 0 görünme hatası (audit yazımı + aksiyon filtre uyumu)
+**Modül:** `app/routes/auth.py`, `micro/modules/admin/routes.py`
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/routes/auth.py` → login/logout akışına `audit_logs` kaydı eklendi; şema uyumsuzluk riskine karşı raw SQL ile ortak kolonlara yazım
+- `micro/modules/admin/routes.py` → `get_login_stats` aksiyon filtreleri (`OTURUM AÇMA/KAPATMA`, `LOGIN/LOGOUT`) bozuk karakterli legacy kayıtları da kapsayacak şekilde genişletildi
+
+### Yapılan İşlem
+Yönetim panelinde son 24 saat/7 gün/aktif değerlerinin sürekli 0 gelmesinin nedeni, yeni oturumların `audit_logs` tablosuna düzenli yazılmaması ve bazı eski kayıtlarda aksiyon metninin karakter bozulmasıydı. Auth tarafına oturum açma/kapatma kayıtları güvenli şekilde eklendi; panel istatistik filtresi hem yeni hem legacy aksiyon adlarını kapsayacak şekilde güncellendi.
+
+### Notlar
+`active_now` hâlâ son 30 dakika heuristiği ile hesaplanır; gerçek session tablosu yoktur.
+
+---
+
+## TASK-035 | 2026-04-02 | ✅ Tamamlandı
+
+**Görev:** Yönetim Paneli — login istatistikleri (audit_logs tabanlı)
+**Modül:** admin / yonetim_paneli
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `get_login_stats`, `get_tenant_list` ve 2 yeni route eklendi
+- `ui/templates/platform/admin/yonetim_paneli.html` → yönetim paneli sayfası oluşturuldu
+- `ui/static/platform/js/yonetim_paneli.js` → tenant filtresi + fetch + kart güncelleme eklendi
+- `ui/static/platform/css/admin.css` → panel kart/grid stilleri eklendi
+
+### Yapılan İşlem
+`audit_logs` tablosundaki `OTURUM AÇMA` kayıtlarından 6 farklı zaman aralığı için istatistik üreten yönetim paneli geliştirildi. `tenant_id` filtreli JSON endpoint ile kurum bazlı görüntüleme sağlandı, tenant_admin için kurum kapsamı otomatik daraltıldı.
+
+### Notlar
+"Aktif oturum" hesaplaması son 30 dakika heuristiği ile yapılır; gerçek session tablosu yoktur.
+
+---
+
 ## TASK-137 | 2026-03-23 | ✅ Tamamlandı
 
 **Görev:** Süreç Faaliyetleri V2 — süreç karne faaliyetlerine `datetime` planı, çoklu atama, çoklu hatırlatma (in-app + opsiyonel e-posta), ertele/iptal aksiyonları, scheduler ile otomatik gerçekleşme ve bağlı PG için `KpiData(actual_value=1)` otomatik üretimi
