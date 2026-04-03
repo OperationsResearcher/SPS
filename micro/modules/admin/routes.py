@@ -161,6 +161,12 @@ def get_login_stats(tenant_id=None):
             q = q.filter(AuditLog.created_at >= since_dt)
         return int(q.scalar() or 0)
 
+    def _active_user_count():
+        q = db.session.query(func.count(User.id)).filter(User.is_active.is_(True))
+        if tenant_id is not None:
+            q = q.filter(User.tenant_id == tenant_id)
+        return int(q.scalar() or 0)
+
     active_cutoff = now_utc - datetime.timedelta(minutes=30)
     login_q = db.session.query(
         AuditLog.user_id.label("user_id"),
@@ -183,7 +189,7 @@ def get_login_stats(tenant_id=None):
         logout_q = logout_q.filter(AuditLog.tenant_id == tenant_id)
     logout_sq = logout_q.subquery()
 
-    active_now = db.session.query(func.count()).select_from(login_sq).outerjoin(
+    online_now = db.session.query(func.count()).select_from(login_sq).outerjoin(
         logout_sq,
         and_(
             logout_sq.c.user_id == login_sq.c.user_id,
@@ -195,7 +201,10 @@ def get_login_stats(tenant_id=None):
     ).scalar() or 0
 
     return {
-        "active_now": int(active_now),
+        # Panelde "Şu an aktif" ifadesini kurumdaki aktif kullanıcı hesabı olarak göster.
+        # Online oturum sayısını ayrıca döndürüp gözlemleme/diagnostic amaçlı koruyoruz.
+        "active_now": _active_user_count(),
+        "online_now": int(online_now),
         "last_24h": _unique_login_count(now_utc - datetime.timedelta(hours=24)),
         "last_7d": _unique_login_count(now_utc - datetime.timedelta(days=7)),
         "last_30d": _unique_login_count(now_utc - datetime.timedelta(days=30)),

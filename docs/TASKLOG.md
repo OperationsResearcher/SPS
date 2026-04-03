@@ -5,6 +5,19 @@
 
 ---
 
+## TASK-050 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Yönetim panelinde “Şu an aktif” metrik tanımının aktif kullanıcı hesap sayısı olarak düzeltilmesi
+**Modül:** admin / login istatistikleri
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `get_login_stats`
+
+### Yapılan İşlem
+Paneldeki “Şu an aktif” alanı audit login/logout akışına bağlı çevrimiçi kullanıcı hesabı nedeniyle 0 görünebiliyordu. Metrik tenant filtreli **aktif kullanıcı hesabı** (`users.is_active=true`) olacak şekilde güncellendi. Eski çevrimiçi oturum hesabı `online_now` olarak JSON çıktısında korunmuştur.
+
+---
+
 ## TASK-049 | 2026-04-03 | ✅ Tamamlandı
 
 **Görev:** Yönetim panelinde tenant bazlı aktif kullanıcı istatistiğinin boş gelmesi
