@@ -711,6 +711,11 @@
             confirmButtonText: "Evet",
             cancelButtonText: "İptal",
             confirmButtonColor: "#b45309",
+            customClass: { container: "swal-above-nested-modal" },
+            didOpen: () => {
+              const c = Swal.getContainer();
+              if (c) c.style.setProperty("z-index", "2147482000", "important");
+            },
           }).then(async (r) => {
             if (!r.isConfirmed) return;
             const url = expandDataUrl(kpiDataDeleteTemplate, id);
@@ -862,7 +867,13 @@
       document.getElementById(id)?.addEventListener("change", applyColumnVisibility);
     });
 
-    return { open: openModal, close: closeModal, reload: loadKarneData };
+    function publicOpenVeriDetay(kpiId, periodKey) {
+      syncFiltersFromMainPage();
+      loadVeriDetayContent(parseInt(kpiId, 10), periodKey);
+      openVeriDetayModal();
+    }
+
+    return { open: openModal, close: closeModal, reload: loadKarneData, openVeriDetay: publicOpenVeriDetay };
   }
 
   global.initMicroPgTabloModal = initMicroPgTabloModal;

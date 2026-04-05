@@ -29,6 +29,7 @@ from app.models.process import (  # noqa: E402
     FavoriteKpi,
 )
 from app.models.email_config import TenantEmailConfig  # noqa: E402
+from app.models.system_setting import SystemSetting  # noqa: E402
 from app.models.k_radar import KRadarRecommendationAction  # noqa: E402
 from app.models.k_vektor import (  # noqa: E402
     KVektorConfigSnapshot,
@@ -45,4 +46,12 @@ from app.models.k_radar_domain import (  # noqa: E402
     StakeholderSurvey,
     A3Report,
     CompetitorAnalysis,
+)
+from app.models.plan_year import (  # noqa: E402
+    PlanYear,
+    KpiYearConfig,
+    StrategyYearConfig,
+    SubStrategyYearConfig,
+    ProcessYearConfig,
+    IndividualKpiYearConfig,
 )

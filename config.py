@@ -78,7 +78,20 @@ class Config:
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
 
     # Cache Busting
-    VERSION = "1.0.1"
+    VERSION = "1.0.2"
+
+    # Bakım modu — bakım: docs/YERELDEN_VM_YAYIN.md veya kod icinde maintenance_service
+    MAINTENANCE_OVERRIDE_OFF = os.environ.get("MAINTENANCE_OVERRIDE_OFF", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    MAINTENANCE_ENV_FORCE = os.environ.get("MAINTENANCE_MODE", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    MAINTENANCE_BYPASS_SECRET = (os.environ.get("MAINTENANCE_BYPASS_SECRET") or "").strip() or None
 
     # Tek yapı: legacy URL öneki kaldırıldı.
     LEGACY_URL_PREFIX = "/"

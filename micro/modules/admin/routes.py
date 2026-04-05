@@ -23,6 +23,7 @@ _MANAGER_ROLES = ("Admin", "tenant_admin", "executive_manager")
 
 from services import admin_backup_service as _backup  # noqa: E402
 from services import backup_scheduler_service as _backup_scheduler  # noqa: E402
+from services import tenant_backup_service as _tenant_backup  # noqa: E402
 
 # Hangi rol, hangi rolleri atayabilir
 ASSIGNABLE_ROLES = {
@@ -77,6 +78,7 @@ def _admin_backup_upload_limit():
     if request.endpoint in (
         "app_bp.ayarlar_yedekleme_restore_data",
         "app_bp.ayarlar_yedekleme_restore_full",
+        "app_bp.ayarlar_yedekleme_kurum_yukle",
     ):
         request.max_content_length = current_app.config.get(
             "ADMIN_BACKUP_MAX_UPLOAD", 512 * 1024 * 1024
@@ -113,35 +115,24 @@ def get_tenant_list():
 
 def get_login_stats(tenant_id=None):
     """
-    Döner:
-    - active_now: int
-    - last_24h: int
-    - last_7d: int
-    - last_30d: int
-    - last_365d: int
-    - all_time: int
+    Login istatistikleri.
+    Döner: online_now, active_now, last_24h, last_7d, last_30d, all_time
     """
     now_utc = datetime.datetime.utcnow()
-    login_actions = ("OTURUM AÇMA", "LOGIN")
-    logout_actions = ("OTURUM KAPATMA", "LOGOUT")
 
-    # Veri migrasyonunda Türkçe karakter bozulmuş aksiyonları da yakala (örn. OTURUM A�MA).
     login_predicate = or_(
-        AuditLog.action.in_(login_actions),
+        AuditLog.action.in_(("OTURUM AÇMA", "LOGIN")),
         func.upper(AuditLog.action).like("OTURUM A%MA%"),
         func.upper(AuditLog.action).like("%LOGIN%"),
     )
     logout_predicate = or_(
-        AuditLog.action.in_(logout_actions),
+        AuditLog.action.in_(("OTURUM KAPATMA", "LOGOUT")),
         func.upper(AuditLog.action).like("OTURUM KAPATMA%"),
         func.upper(AuditLog.action).like("%LOGOUT%"),
     )
 
     def _tenant_filter(query):
         if tenant_id is not None:
-            # Bazı eski/taşınmış audit satırlarında tenant_id boş gelebilir.
-            # Bu durumda user_id üzerinden kullanıcının tenant'ını eşleştirerek
-            # tenant bazlı istatistikleri tutarlı hale getir.
             tenant_user_ids_sq = db.session.query(User.id).filter(User.tenant_id == tenant_id)
             return query.filter(
                 or_(
@@ -153,31 +144,12 @@ def get_login_stats(tenant_id=None):
 
     def _unique_login_count(since_dt=None):
         q = db.session.query(func.count(func.distinct(AuditLog.user_id))).filter(
-            login_predicate,
-            AuditLog.user_id.isnot(None),
+            login_predicate, AuditLog.user_id.isnot(None),
         )
         q = _tenant_filter(q)
         if since_dt is not None:
             q = q.filter(AuditLog.created_at >= since_dt)
-        audit_count = int(q.scalar() or 0)
-        # Canlıda kullanılan bazı legacy login akışları audit_logs yerine
-        # user_activity_log (tip='login') tablosuna yazıyor.
-        # Audit sonucu 0 ise ve tüm kurum görünümündeysek fallback ile tamamla.
-        if tenant_id is None and audit_count == 0:
-            try:
-                sql = "select count(distinct user_id) from user_activity_log where lower(tip) = 'login'"
-                params = {}
-                if since_dt is not None:
-                    sql += " and created_at >= :since_dt"
-                    params["since_dt"] = since_dt
-                alt_count = int(db.session.execute(text(sql), params).scalar() or 0)
-                return max(audit_count, alt_count)
-            except Exception:
-                # Fallback sorgusu hata verirse transaction'ı temizle;
-                # aksi halde sonraki ORM sorguları InFailedSqlTransaction'a düşer.
-                db.session.rollback()
-                return audit_count
-        return audit_count
+        return int(q.scalar() or 0)
 
     def _active_user_count():
         q = db.session.query(func.count(User.id)).filter(User.is_active.is_(True))
@@ -186,25 +158,19 @@ def get_login_stats(tenant_id=None):
         return int(q.scalar() or 0)
 
     active_cutoff = now_utc - datetime.timedelta(minutes=30)
+
     login_q = db.session.query(
         AuditLog.user_id.label("user_id"),
         func.max(AuditLog.created_at).label("last_login"),
-    ).filter(
-        login_predicate,
-        AuditLog.user_id.isnot(None),
-    )
+    ).filter(login_predicate, AuditLog.user_id.isnot(None))
     login_q = _tenant_filter(login_q).group_by(AuditLog.user_id)
     login_sq = login_q.subquery()
 
     logout_q = db.session.query(
         AuditLog.user_id.label("user_id"),
-        AuditLog.created_at.label("logout_at"),
-    ).filter(
-        logout_predicate,
-        AuditLog.user_id.isnot(None),
-    )
-    if tenant_id is not None:
-        logout_q = logout_q.filter(AuditLog.tenant_id == tenant_id)
+        func.max(AuditLog.created_at).label("logout_at"),
+    ).filter(logout_predicate, AuditLog.user_id.isnot(None))
+    logout_q = _tenant_filter(logout_q).group_by(AuditLog.user_id)
     logout_sq = logout_q.subquery()
 
     online_now = db.session.query(func.count()).select_from(login_sq).outerjoin(
@@ -219,16 +185,152 @@ def get_login_stats(tenant_id=None):
     ).scalar() or 0
 
     return {
-        # Panelde "Şu an aktif" ifadesini kurumdaki aktif kullanıcı hesabı olarak göster.
-        # Online oturum sayısını ayrıca döndürüp gözlemleme/diagnostic amaçlı koruyoruz.
-        "active_now": _active_user_count(),
         "online_now": int(online_now),
+        "active_now": _active_user_count(),
         "last_24h": _unique_login_count(now_utc - datetime.timedelta(hours=24)),
         "last_7d": _unique_login_count(now_utc - datetime.timedelta(days=7)),
         "last_30d": _unique_login_count(now_utc - datetime.timedelta(days=30)),
-        "last_365d": _unique_login_count(now_utc - datetime.timedelta(days=365)),
         "all_time": _unique_login_count(),
     }
+
+
+def get_user_activity_stats(tenant_id=None):
+    """
+    Kullanıcı bazlı giriş ve aktivite istatistikleri.
+    Her kullanıcı için: hesap durumu, çevrimiçi mi, son giriş, 30 günlük giriş/işlem sayısı.
+    """
+    now_utc = datetime.datetime.utcnow()
+    active_cutoff = now_utc - datetime.timedelta(minutes=30)
+    since_30d = now_utc - datetime.timedelta(days=30)
+
+    login_predicate = or_(
+        AuditLog.action.in_(("OTURUM AÇMA", "LOGIN")),
+        func.upper(AuditLog.action).like("OTURUM A%MA%"),
+        func.upper(AuditLog.action).like("%LOGIN%"),
+    )
+    logout_predicate = or_(
+        AuditLog.action.in_(("OTURUM KAPATMA", "LOGOUT")),
+        func.upper(AuditLog.action).like("OTURUM KAPATMA%"),
+        func.upper(AuditLog.action).like("%LOGOUT%"),
+    )
+
+    user_q = User.query
+    if tenant_id is not None:
+        user_q = user_q.filter(User.tenant_id == tenant_id)
+    users = user_q.order_by(User.last_name, User.first_name).all()
+    if not users:
+        return []
+
+    user_ids = [u.id for u in users]
+
+    last_login_rows = (
+        db.session.query(AuditLog.user_id, func.max(AuditLog.created_at).label("last_login"))
+        .filter(login_predicate, AuditLog.user_id.in_(user_ids))
+        .group_by(AuditLog.user_id)
+        .all()
+    )
+    last_login_map = {r.user_id: r.last_login for r in last_login_rows}
+
+    last_logout_rows = (
+        db.session.query(AuditLog.user_id, func.max(AuditLog.created_at).label("last_logout"))
+        .filter(logout_predicate, AuditLog.user_id.in_(user_ids))
+        .group_by(AuditLog.user_id)
+        .all()
+    )
+    last_logout_map = {r.user_id: r.last_logout for r in last_logout_rows}
+
+    login_30d_rows = (
+        db.session.query(AuditLog.user_id, func.count().label("cnt"))
+        .filter(login_predicate, AuditLog.user_id.in_(user_ids), AuditLog.created_at >= since_30d)
+        .group_by(AuditLog.user_id)
+        .all()
+    )
+    login_30d_map = {r.user_id: r.cnt for r in login_30d_rows}
+
+    actions_30d_rows = (
+        db.session.query(AuditLog.user_id, func.count().label("cnt"))
+        .filter(
+            AuditLog.user_id.in_(user_ids),
+            AuditLog.created_at >= since_30d,
+            AuditLog.resource_type != "GÜVENLİK",
+        )
+        .group_by(AuditLog.user_id)
+        .all()
+    )
+    actions_30d_map = {r.user_id: r.cnt for r in actions_30d_rows}
+
+    result = []
+    for u in users:
+        last_login = last_login_map.get(u.id)
+        last_logout = last_logout_map.get(u.id)
+        is_online = bool(
+            last_login
+            and last_login >= active_cutoff
+            and (last_logout is None or last_logout < last_login)
+        )
+        name = f"{(u.first_name or '').strip()} {(u.last_name or '').strip()}".strip()
+        result.append({
+            "id": u.id,
+            "name": name or u.email,
+            "email": u.email,
+            "role": u.role.name if u.role else None,
+            "is_active": u.is_active,
+            "is_online": is_online,
+            "last_login_at": last_login.isoformat() + "Z" if last_login else None,
+            "login_count_30d": login_30d_map.get(u.id, 0),
+            "actions_30d": actions_30d_map.get(u.id, 0),
+        })
+
+    # Sıralama: çevrimiçi → aktif → son giriş tarihi desc
+    result.sort(key=lambda x: x["last_login_at"] or "", reverse=True)
+    result.sort(key=lambda x: not x["is_active"])
+    result.sort(key=lambda x: not x["is_online"])
+    return result
+
+
+@app_bp.route("/micro/admin/bakim-modu", methods=["GET", "POST"])
+@login_required
+def admin_bakim_modu():
+    """Bakım modu (yalnız platform Admin). Ortam değişkeni kilitliyse yalnız okuma."""
+    if not _is_admin():
+        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+    from flask_wtf.csrf import validate_csrf
+    from wtforms import ValidationError
+    from app.services.maintenance_service import maintenance_status_for_admin, set_maintenance_db
+
+    if request.method == "GET":
+        return jsonify({"success": True, "data": maintenance_status_for_admin(current_app)})
+
+    try:
+        validate_csrf(request.headers.get("X-CSRFToken"))
+    except ValidationError:
+        return jsonify({"success": False, "message": "CSRF doğrulaması başarısız."}), 400
+
+    st = maintenance_status_for_admin(current_app)
+    if not st.get("can_toggle_db"):
+        return jsonify({
+            "success": False,
+            "message": "Bakım modu ortam değişkeni (MAINTENANCE_MODE / MAINTENANCE_OVERRIDE_OFF) ile kilitli; "
+            "panelden değiştirilemez. Sunucu dokümantasyonuna bakın.",
+        }), 400
+    data = request.get_json() or {}
+    enabled = bool(data.get("enabled"))
+    try:
+        set_maintenance_db(enabled)
+        try:
+            AuditLogger.log_create(
+                "Sistem ayarı",
+                0,
+                {"maintenance_mode": enabled},
+                description="Bakım modu (system_settings)",
+            )
+        except Exception as log_err:
+            current_app.logger.warning(f"[admin_bakim_modu] audit: {log_err}")
+        return jsonify({"success": True, "data": maintenance_status_for_admin(current_app)})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_bakim_modu] {e}")
+        return jsonify({"success": False, "message": "Kaydedilemedi."}), 500
 
 
 @app_bp.route("/micro/admin/yonetim-paneli")
@@ -262,6 +364,21 @@ def yonetim_paneli_istatistik():
     except Exception as e:
         current_app.logger.error(f"[yonetim_paneli_istatistik] {e}")
         return jsonify({"success": False, "message": "İstatistik alınamadı."}), 500
+
+
+@app_bp.route("/micro/admin/yonetim-paneli/kullanici-detay")
+@login_required
+def yonetim_paneli_kullanici_detay():
+    if not _is_admin_or_tenant_admin():
+        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+    try:
+        req_tenant_id = request.args.get("tenant_id", type=int)
+        tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
+        data = get_user_activity_stats(tenant_id=tenant_id)
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[yonetim_paneli_kullanici_detay] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Kullanıcı istatistikleri alınamadı."}), 500
 
 
 @app_bp.route("/micro/admin/yonetim-paneli/aktiviteler")
@@ -307,7 +424,7 @@ def yonetim_paneli_aktiviteler():
                     "resource_type": r.resource_type,
                     "resource_icon": RESOURCE_IKONLAR.get(r.resource_type, "📌"),
                     "resource_id": r.resource_id,
-                    "created_at": r.created_at.isoformat() if r.created_at else None,
+                    "created_at": r.created_at.isoformat() + "Z" if r.created_at else None,
                     "ip_address": r.ip_address,
                     "user_name": full_name or (r.email or "Bilinmiyor"),
                     "user_email": r.email,
@@ -345,6 +462,7 @@ def ayarlar_yedekleme():
         migration_assert=_backup.get_post_migration_assert() if pg_ok else None,
         language_unity=_backup.get_language_unity_status(),
         preview=None,
+        tenant_list=get_tenant_list(),
     )
 
 
@@ -611,6 +729,84 @@ def ayarlar_yedekleme_restore_full():
             os.unlink(path)
         except OSError:
             pass
+    return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+
+# ── Kurum Yedeği (JSON.GZ) ───────────────────────────────────────────────────
+
+@app_bp.route("/ayarlar/yedekleme/kurum/indir")
+@login_required
+def ayarlar_yedekleme_kurum_indir():
+    """Seçilen kuruma ait tüm veriyi JSON.GZ olarak indirir."""
+    g = _admin_backup_guard()
+    if g is not None:
+        return g
+    try:
+        tenant_id = int(request.args.get("tenant_id", 0))
+    except (ValueError, TypeError):
+        return jsonify({"success": False, "message": "Geçersiz tenant_id"}), 400
+    if not tenant_id:
+        return jsonify({"success": False, "message": "tenant_id gerekli"}), 400
+    try:
+        gz_bytes = _tenant_backup.export_tenant_json(tenant_id)
+    except ValueError as e:
+        flash(str(e), "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+    except Exception as e:
+        current_app.logger.exception("[kurum_indir] tenant=%s %s", tenant_id, e)
+        flash(f"Yedek alınamadı: {e}", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+    import io
+    now_str = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    filename = f"kurum_{tenant_id}_{now_str}.json.gz"
+    return send_file(
+        io.BytesIO(gz_bytes),
+        mimetype="application/gzip",
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+@app_bp.route("/ayarlar/yedekleme/kurum/yukle", methods=["POST"])
+@login_required
+def ayarlar_yedekleme_kurum_yukle():
+    """Kurum JSON.GZ yedeğini geri yükler."""
+    g = _admin_backup_guard()
+    if g is not None:
+        return g
+    if not _check_restore_password(request.form.get("current_password")):
+        flash("Mevcut şifre doğrulanamadı.", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+    f = request.files.get("backup_file")
+    if not f or not f.filename:
+        flash("Yedek dosyasını seçin.", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+    if not f.filename.lower().endswith(".json.gz"):
+        flash("Kurum yedeği için yalnızca .json.gz dosyası yükleyin.", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+    import gzip, json as _json
+    try:
+        raw = f.read()
+        data = _json.loads(gzip.decompress(raw).decode("utf-8"))
+    except Exception as e:
+        flash(f"Dosya okunamadı: {e}", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+    try:
+        result = _tenant_backup.restore_tenant_data(data)
+    except Exception as e:
+        current_app.logger.exception("[kurum_yukle] %s", e)
+        flash(f"Geri yükleme hatası: {e}", "danger")
+        return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
+
+    errors = result.get("errors", [])
+    if errors:
+        flash(f"Geri yükleme tamamlandı ({result['total_restored']} kayıt). Uyarı: {'; '.join(errors[:3])}", "warning")
+    else:
+        flash(f"Kurum başarıyla geri yüklendi. Toplam {result['total_restored']} kayıt.", "success")
     return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
 
 

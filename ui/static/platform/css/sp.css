@@ -619,10 +619,8 @@
 
 .mc-sp-sub-chip-title {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 220px;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .mc-sp-sub-chip-actions {
@@ -656,6 +654,63 @@
   }
 
   .mc-sp-sub-chip-title {
-    max-width: 140px;
+    max-width: 100%;
+  }
+}
+
+/* ── Plan Year Bar ─────────────────────────────────────────────────────────── */
+.mc-plan-year-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.mc-plan-year-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mc-plan-year-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mc-plan-year-bar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+}
+
+.mc-plan-year-selector-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.mc-plan-year-select {
+  min-width: 120px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+.mc-plan-year-status-badge {
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .mc-plan-year-bar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

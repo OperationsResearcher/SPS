@@ -98,9 +98,14 @@ def _default_weight(weight: Optional[float], sibling_count: int) -> float:
 def get_pg_scores_from_kpi_data(
     tenant_id: int,
     year: Optional[int] = None,
-    as_of_date: Optional[date] = None
+    as_of_date: Optional[date] = None,
+    plan_year=None,  # PlanYear instance; None → ProcessKpi fallback
 ) -> Dict[int, Optional[float]]:
-    """Her ProcessKpi için KpiData'dan hesaplanan skoru döner."""
+    """
+    Her ProcessKpi için KpiData'dan hesaplanan skoru döner.
+    plan_year verilirse yıllık hedef/yöntem/metod konfigürasyonu kullanılır;
+    yoksa ProcessKpi'ın orijinal değerlerine fallback yapılır.
+    """
     if year is None:
         year = date.today().year
     as_of = as_of_date or date.today()
@@ -112,6 +117,16 @@ def get_pg_scores_from_kpi_data(
         .filter(ProcessKpi.is_active == True)
         .all()
     )
+
+    # Yıllık config bulk çek (N+1 önlemi)
+    kpi_cfg_map: Dict[int, Dict] = {}
+    if plan_year is not None:
+        try:
+            from app.services.plan_year_service import get_kpi_configs_bulk
+            kpi_cfg_map = get_kpi_configs_bulk(pgs, plan_year)
+        except Exception as e:
+            current_app.logger.warning(f"[score_engine] plan_year config çekilemedi: {e}")
+
     out = {}
     for pg in pgs:
         entries = (
@@ -123,19 +138,31 @@ def get_pg_scores_from_kpi_data(
         if not entries:
             out[pg.id] = None
             continue
-        target = _resolve_target_for_calculation(pg.target_value, pg.direction or "Increasing")
+
+        # Yıllık config varsa kullan, yoksa ProcessKpi değerleri
+        cfg = kpi_cfg_map.get(pg.id)
+        if cfg:
+            target_raw = cfg["target_value"]
+            direction = cfg["direction"] or "Increasing"
+            method = cfg["data_collection_method"] or "Ortalama"
+        else:
+            target_raw = pg.target_value
+            direction = pg.direction or "Increasing"
+            method = pg.data_collection_method or "Ortalama"
+
+        target = _resolve_target_for_calculation(target_raw, direction)
         actual_values = [_parse_float(e.actual_value) for e in entries]
         actual_values = [v for v in actual_values if v is not None]
         if not actual_values:
             out[pg.id] = None
             continue
-        if pg.data_collection_method in ('Toplama', 'Toplam'):
+        if method in ('Toplama', 'Toplam'):
             actual = sum(actual_values)
-        elif pg.data_collection_method == 'Son Değer':
+        elif method == 'Son Değer':
             actual = actual_values[0]
         else:
             actual = sum(actual_values) / len(actual_values)
-        score = compute_pg_score(target, actual, pg.direction or 'Increasing')
+        score = compute_pg_score(target, actual, direction)
         out[pg.id] = score
     return out
 
@@ -145,9 +172,10 @@ def compute_process_scores_internal(
     year: int,
     as_of: date,
     persist_pg_scores: bool,
+    plan_year=None,  # PlanYear instance; None → ProcessKpi fallback
 ) -> tuple[Dict[int, float], Dict[int, Optional[float]]]:
     """PG → süreç skorları (0–100). K-Vektör ve klasik vizyon motoru ortak kullanır."""
-    pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of)
+    pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of, plan_year=plan_year)
 
     processes = Process.query.filter_by(
         tenant_id=tenant_id,
@@ -210,16 +238,26 @@ def compute_vision_score(
     tenant_id: int,
     year: Optional[int] = None,
     as_of_date: Optional[date] = None,
-    persist_pg_scores: bool = True
+    persist_pg_scores: bool = True,
+    plan_year=None,  # PlanYear instance; None → otomatik çözümlenir
 ) -> Dict[str, Any]:
     """
     Hiyerarşik vizyon puanı hesaplar.
     PG -> Süreç -> Alt Strateji -> Ana Strateji -> Vizyon (0-100)
     K-Vektör açıksa: app.services.k_vektor_engine.compute_k_vektor_bundle
+    plan_year: PlanYear instance; verilmezse tenant+year için otomatik çözümlenir.
     """
     if year is None:
         year = date.today().year
     as_of = as_of_date or date.today()
+
+    # plan_year otomatik çözümle
+    if plan_year is None:
+        try:
+            from app.services.plan_year_service import get_plan_year as _get_py
+            plan_year = _get_py(tenant_id, year)
+        except Exception:
+            plan_year = None
 
     try:
         from app.models.core import Tenant
@@ -233,7 +271,7 @@ def compute_vision_score(
             )
 
         process_scores, pg_scores = compute_process_scores_internal(
-            tenant_id, year, as_of, persist_pg_scores
+            tenant_id, year, as_of, persist_pg_scores, plan_year=plan_year
         )
 
         sub_strategies = (

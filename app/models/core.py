@@ -43,6 +43,8 @@ class Tenant(db.Model):
     logo_updated_at = db.Column(db.DateTime, nullable=True)
 
     k_vektor_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    k_radar_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    plan_year_enabled = db.Column(db.Boolean, default=False, nullable=False)
 
     package = db.relationship("SubscriptionPackage", back_populates="tenants")
     users = db.relationship("User", back_populates="tenant")

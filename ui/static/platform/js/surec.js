@@ -142,6 +142,7 @@
 
   const PAGE_MODE = viewRoot.dataset.pageMode || "karne";
   const INITIAL_TAB = (viewRoot.dataset.initialTab || "").toLowerCase();
+  const K_VEKTOR_KARNE_ENABLED = viewRoot.dataset.kVektorEnabled === "true";
 
   const KARNE_API = viewRoot.dataset.karneApiUrl;
   const KARNE_EXPORT_XLSX_URL = viewRoot.dataset.karneExportXlsxUrl || "";
@@ -883,6 +884,138 @@
     }
   }
 
+  /**
+   * PG tablo modalındaki «Başarı Puanı» sütunu ile aynı özet (yıllık hedef + tüm girişler).
+   * HTML döner; kart şablonunda güvenli sayısal içerik kullanılır.
+   */
+  function formatKanbanBasariPuaniLikeTable(k) {
+    const entries = k.entries || {};
+    const allVals = Object.values(entries)
+      .map((v) => parseFloat(v))
+      .filter((v) => !Number.isNaN(v));
+    const hesaplamaYontemi = k.data_collection_method || "Ortalama";
+    const olcumPeriyodu = k.period || "";
+    const yillikHedef = computeYillikHedefMicro(k.target_value, olcumPeriyodu, hesaplamaYontemi);
+    const basariAraliklari = parseBasariAraliklarObjectMicro(k);
+    const skorTarget = yillikHedef !== null ? yillikHedef : parseFloat(k.target_value);
+    if (allVals.length === 0 || Number.isNaN(skorTarget) || skorTarget <= 0) {
+      return "—";
+    }
+    const compareVal =
+      hesaplamaYontemi === "Toplama" || hesaplamaYontemi === "Toplam"
+        ? allVals.reduce((a, b) => a + b, 0)
+        : allVals[allVals.length - 1];
+    let pct = Math.round((compareVal / skorTarget) * 100);
+    if (k.direction === "Decreasing") {
+      pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
+    }
+    if (basariAraliklari) {
+      const puan = hesaplaBasariPuaniMicro(pct, basariAraliklari);
+      if (puan !== null) {
+        const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
+        return `<span class="${cls} fw-bold">${puan}/5</span>`;
+      }
+      return `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
+    }
+    return `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
+  }
+
+  /** K-Vektör analizi: PG ağırlıkları — kesir (topl.1) veya yüzde puanı (topl.100) */
+  function sumKvPgWeights(kpis) {
+    const list = Array.isArray(kpis) ? kpis : [];
+    const nums = [];
+    let missing = 0;
+    list.forEach((k) => {
+      const w = k.weight;
+      if (w == null || String(w).trim() === "") {
+        missing += 1;
+        return;
+      }
+      const n = parseFloat(String(w).replace(",", "."));
+      if (Number.isNaN(n)) {
+        missing += 1;
+        return;
+      }
+      nums.push(n);
+    });
+    if (nums.length === 0) {
+      return { displayTotal: 0, targetIs100: false, mode: "none", missing, count: list.length, filled: 0 };
+    }
+    const maxW = Math.max(...nums);
+    let displayTotal;
+    let targetIs100;
+    let mode;
+    if (maxW <= 1) {
+      const s = nums.reduce((a, b) => a + b, 0);
+      displayTotal = Math.round(s * 1000) / 10;
+      targetIs100 = Math.abs(s - 1) < 0.001;
+      mode = "fraction";
+    } else {
+      const s = nums.reduce((a, b) => a + b, 0);
+      displayTotal = Math.round(s * 10) / 10;
+      targetIs100 = Math.abs(s - 100) < 0.51;
+      mode = "percent";
+    }
+    return { displayTotal, targetIs100, mode, missing, count: list.length, filled: nums.length };
+  }
+
+  function parseBasariIntervalsForKv(araliklar) {
+    const out = [];
+    if (!araliklar || typeof araliklar !== "object") return out;
+    for (let puan = 1; puan <= 5; puan++) {
+      const raw = araliklar[puan] || araliklar[String(puan)];
+      const aralik = coerceBasariAralikStrMicro(raw);
+      if (!aralik) continue;
+      const parts = aralik.split("-");
+      const minStr = parts[0];
+      const maxStr = parts.length > 1 ? parts.slice(1).join("-") : "";
+      const lo = parseFloat(minStr);
+      const hiRaw = maxStr !== undefined && String(maxStr).trim() !== "" ? parseFloat(maxStr) : Infinity;
+      const hi = Number.isNaN(hiRaw) ? Infinity : hiRaw;
+      if (Number.isNaN(lo)) continue;
+      out.push({ puan, lo, hi });
+    }
+    return out;
+  }
+
+  function compressIntRanges(sortedUnique) {
+    if (!sortedUnique.length) return "";
+    const parts = [];
+    let i = 0;
+    while (i < sortedUnique.length) {
+      let j = i;
+      while (j + 1 < sortedUnique.length && sortedUnique[j + 1] === sortedUnique[j] + 1) j += 1;
+      parts.push(i === j ? String(sortedUnique[i]) : `${sortedUnique[i]}–${sortedUnique[j]}`);
+      i = j + 1;
+    }
+    return parts.join(", ");
+  }
+
+  /** Tam sayı 0–100 PGV yüzdeleri için aralık birleşimi: boşluk ve farklı puan çakışması */
+  function analyzeBasariCoveragePct(intervals) {
+    const gaps = [];
+    const ambig = [];
+    for (let p = 0; p <= 100; p++) {
+      const hits = intervals.filter((iv) => p >= iv.lo && p <= iv.hi);
+      if (hits.length === 0) gaps.push(p);
+      else if (hits.length > 1) {
+        const puans = new Set(hits.map((h) => h.puan));
+        if (puans.size > 1) ambig.push(p);
+      }
+    }
+    return { gaps, ambig };
+  }
+
+  function kpiHasBasariConfigured(k) {
+    const o = parseBasariAraliklarObjectMicro(k);
+    if (!o || typeof o !== "object") return false;
+    for (let p = 1; p <= 5; p++) {
+      const ar = coerceBasariAralikStrMicro(o[p] || o[String(p)]);
+      if (ar) return true;
+    }
+    return false;
+  }
+
   /** Seçenek A: yıllık hedef sayısını 12’ye böl → aylık hedef (PG hedefi yıllık kabul) */
   function annualToMonthlyTarget(k) {
     const t = parseNum(k.target_value);
@@ -1145,6 +1278,158 @@
       onAfterMutation: () => loadKarne(),
       canCrudPg,
       getCanEnterPgv: () => canEnterPgv,
+    });
+  }
+
+  if (PAGE_MODE === "karne" && K_VEKTOR_KARNE_ENABLED) {
+    const kvOverlay = document.getElementById("modal-kv-analiz-overlay");
+    const kvBody = document.getElementById("kv-analiz-body");
+    function closeKvAnaliz() {
+      if (!kvOverlay) return;
+      kvOverlay.classList.remove("open");
+      kvOverlay.setAttribute("aria-hidden", "true");
+    }
+    function renderKvAnalizIntoBody(kpis) {
+      if (!kvBody) return;
+      const wsum = sumKvPgWeights(kpis);
+      let activeBas = 0;
+      let inactiveBas = 0;
+      (kpis || []).forEach((k) => {
+        if (kpiHasBasariConfigured(k)) activeBas += 1;
+        else inactiveBas += 1;
+      });
+      const basariInactiveItems = (kpis || [])
+        .filter((k) => !kpiHasBasariConfigured(k))
+        .map((k) => {
+          const code = escHtml(k.code || "—");
+          const name = escHtml((k.name || "—").slice(0, 160));
+          return `<li class="kv-analiz-li kv-analiz-li-inactive"><strong>${code}</strong> <span class="kv-analiz-pg-sep">—</span> <span class="kv-analiz-pg-name">${name}</span></li>`;
+        });
+      const section2InactiveAccordion =
+        inactiveBas > 0
+          ? `<details class="kv-analiz-accordion">
+          <summary class="kv-analiz-accordion-summary">Aktif değil PG’ler (<strong>${inactiveBas}</strong>) — listeyi aç / kapat</summary>
+          <div class="kv-analiz-accordion-body">
+            <ul class="kv-analiz-ul kv-analiz-ul-inactive" aria-label="Başarı puanı yapılandırması aktif olmayan performans göstergeleri">${basariInactiveItems.join("")}</ul>
+          </div>
+        </details>`
+          : '<p class="karne-field-hint kv-analiz-no-inactive">Başarı puanı aralığı tanımlanmamış PG yok; tüm PG’ler en az bir aralıkla yapılandırılmış.</p>';
+      const rowsW = (kpis || [])
+        .map((k) => {
+          const w = k.weight != null && String(k.weight).trim() !== "" ? escHtml(String(k.weight)) : "—";
+          return `<tr><td>${escHtml(k.code || "—")}</td><td>${escHtml(k.name || "—")}</td><td class="text-center">${w}</td></tr>`;
+        })
+        .join("");
+      const weightNot100 = wsum.mode !== "none" && !wsum.targetIs100;
+      const weightOk = wsum.mode !== "none" && wsum.targetIs100;
+      const basariBadLines = [];
+      const basariOkLines = [];
+      (kpis || []).forEach((k) => {
+        if (!kpiHasBasariConfigured(k)) return;
+        const code = escHtml(k.code || "—");
+        const name = escHtml((k.name || "—").slice(0, 160));
+        const pgHead = `<div class="kv-analiz-pg-line"><strong>${code}</strong> <span class="kv-analiz-pg-sep">—</span> <span class="kv-analiz-pg-name">${name}</span></div>`;
+        const o = parseBasariAraliklarObjectMicro(k);
+        const ivs = parseBasariIntervalsForKv(o || {});
+        if (ivs.length === 0) {
+          basariBadLines.push(
+            `<li class="kv-analiz-li kv-analiz-li--bad">${pgHead}<div class="kv-analiz-pg-detail">Tanımlı aralık okunamadı veya boş.</div></li>`,
+          );
+          return;
+        }
+        const { gaps, ambig } = analyzeBasariCoveragePct(ivs);
+        if (gaps.length === 0 && ambig.length === 0) {
+          basariOkLines.push(
+            `<li class="kv-analiz-li kv-analiz-li--ok">${pgHead}<div class="kv-analiz-pg-detail kv-analiz-pg-detail--muted">0–100 tam sayı yüzdeleri tek başarı puanına eşleniyor.</div></li>`,
+          );
+        } else {
+          const gTxt = gaps.length ? compressIntRanges([...new Set(gaps)].sort((a, b) => a - b)) : "";
+          const aTxt = ambig.length ? compressIntRanges([...new Set(ambig)].sort((a, b) => a - b)) : "";
+          let msg = "";
+          if (gaps.length) msg += `Karşılıksız tam sayı yüzdeler: ${gTxt}. `;
+          if (ambig.length) msg += `Birden fazla başarı puanına düşen yüzdeler: ${aTxt}.`;
+          basariBadLines.push(
+            `<li class="kv-analiz-li kv-analiz-li--bad">${pgHead}<div class="kv-analiz-pg-detail">${escHtml(msg.trim())}</div></li>`,
+          );
+        }
+      });
+      let section3Html = "";
+      if (activeBas === 0) {
+        section3Html =
+          '<p class="karne-field-hint kv-analiz-empty-active">Aktif yapılandırılmış (en az bir aralık tanımlı) PG yok; aralık analizi uygulanmadı.</p>';
+      } else if (basariBadLines.length === 0) {
+        section3Html = `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">Aktif yapılandırılmış <strong>${activeBas}</strong> PG’nin tamamında 0–100 tam sayı yüzdeleri doğru kapsanıyor.</div>
+          <h5 class="kv-analiz-h5 kv-analiz-h5--ok">PG listesi</h5>
+          <ul class="kv-analiz-ul kv-analiz-ul--ok">${basariOkLines.join("")}</ul>`;
+      } else {
+        section3Html = `<p class="kv-analiz-summary kv-analiz-summary--bad"><strong>${basariBadLines.length}</strong> aktif PG’de aralık hatası var${
+          basariOkLines.length ? ` · <strong>${basariOkLines.length}</strong> PG sorunsuz` : ""
+        }.</p>
+          <h5 class="kv-analiz-h5 kv-analiz-h5--bad">Hatalı PG’ler</h5>
+          <ul class="kv-analiz-ul kv-analiz-ul--bad" aria-label="Aralık hatası olan performans göstergeleri">${basariBadLines.join("")}</ul>`;
+        if (basariOkLines.length) {
+          section3Html += `<h5 class="kv-analiz-h5 kv-analiz-h5--ok">Sorunsuz PG’ler</h5>
+          <ul class="kv-analiz-ul kv-analiz-ul--ok" aria-label="Aralık analizinde sorun çıkmayan PG’ler">${basariOkLines.join("")}</ul>`;
+        }
+      }
+      kvBody.innerHTML = `
+        <section class="kv-analiz-section">
+          <h4 class="kv-analiz-h4">1. PG ağırlık (%) toplamı</h4>
+          <p class="kv-analiz-line"><strong>Toplam:</strong> %${wsum.displayTotal} <span class="kv-analiz-meta">(${wsum.count} PG · ağırlık girilen: ${wsum.filled} · boş: ${wsum.missing})</span></p>
+          ${
+            wsum.mode === "none"
+              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">Hiçbir PG için ağırlık girilmemiş.</div>`
+              : weightNot100
+                ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">K-Vektör tutarlılığı için bu süreçteki PG ağırlıklarının toplamı %100 olmalıdır.</div>`
+                : weightOk
+                  ? `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">Ağırlık toplamı %100.</div>`
+                  : ""
+          }
+          ${
+            wsum.missing > 0 && wsum.mode !== "none"
+              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">${wsum.missing} PG için ağırlık alanı boş; toplam yalnızca girilen değerlere göre hesaplandı.</div>`
+              : ""
+          }
+          <p class="kv-analiz-tools"><button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="btn-kv-toggle-weights">PG ağırlıklarını göster</button></p>
+          <div id="kv-analiz-weights-wrap" class="kv-analiz-weights-wrap is-hidden">
+            <table class="mc-table kv-analiz-table"><thead><tr><th>Kod</th><th>Ad</th><th>Ağırlık (%)</th></tr></thead><tbody>${rowsW}</tbody></table>
+          </div>
+        </section>
+        <section class="kv-analiz-section">
+          <h4 class="kv-analiz-h4">2. Başarı puanı yapılandırması (opsiyonel)</h4>
+          <p class="kv-analiz-line">Aktif (en az bir aralık tanımlı): <strong>${activeBas}</strong> · Aktif değil: <strong>${inactiveBas}</strong></p>
+          ${section2InactiveAccordion}
+        </section>
+        <section class="kv-analiz-section">
+          <h4 class="kv-analiz-h4">3. Aktif PG’lerde aralık analizi (0–100 tam sayı %)</h4>
+          <p class="karne-field-hint">Hesaplanan gerçekleşme yüzdesinin her tam sayı değeri (0–100) tam olarak bir başarı puanına ait olmalı; boşluk veya farklı puanlara çakışan değer hata sayılır.</p>
+          ${section3Html}
+        </section>`;
+      document.getElementById("btn-kv-toggle-weights")?.addEventListener("click", () => {
+        const wrap = document.getElementById("kv-analiz-weights-wrap");
+        if (!wrap) return;
+        wrap.classList.toggle("is-hidden");
+      });
+    }
+    async function openKvAnaliz() {
+      if (!kvOverlay || !kvBody) return;
+      kvBody.innerHTML = '<p class="karne-field-hint">Yükleniyor…</p>';
+      kvOverlay.classList.add("open");
+      kvOverlay.setAttribute("aria-hidden", "false");
+      try {
+        const year = getDataYearForKarneLoad();
+        const url = `${KARNE_API}?year=${year}`;
+        const data = await getJson(url);
+        renderKvAnalizIntoBody(data.kpis || []);
+      } catch (e) {
+        kvBody.innerHTML = `<p class="mc-text-danger">${escHtml(e.message || String(e))}</p>`;
+      }
+    }
+    document.getElementById("btn-kv-analiz")?.addEventListener("click", openKvAnaliz);
+    document.getElementById("btn-kv-analiz-close")?.addEventListener("click", closeKvAnaliz);
+    document.getElementById("btn-kv-analiz-footer-close")?.addEventListener("click", closeKvAnaliz);
+    kvOverlay?.addEventListener("click", (e) => {
+      if (e.target === kvOverlay) closeKvAnaliz();
     });
   }
 
@@ -2069,8 +2354,16 @@
         ? `<div class="kb-substr-row"><span class="kb-sub-code">${escHtml(subCode)}</span><span>${subTitle}</span></div>`
         : `<div class="kb-substr-row"><span>${subTitle}</span></div>`;
 
-      const hedefMeta = getMetaHedefKanban(k, view, ctx.gosterimPeriyot);
-      const gercekMeta = getMetaGercekKanban(k, view, ctx.periodKey);
+      const unitTrim = (k.unit && String(k.unit).trim()) || "";
+      const withKanbanUnit = (base) => {
+        if (!unitTrim) return base;
+        const b = String(base).trim();
+        if (b === "—" || b === "") return base;
+        return `${base} ${escHtml(unitTrim)}`;
+      };
+      const hedefMeta = withKanbanUnit(getMetaHedefKanban(k, view, ctx.gosterimPeriyot));
+      const gercekMeta = withKanbanUnit(getMetaGercekKanban(k, view, ctx.periodKey));
+      const basariPuaniHtml = formatKanbanBasariPuaniLikeTable(k);
       const hasSpectrum = bucket.scoreHue != null;
       const gaugeWrapStyle = hasSpectrum ? ` style="--gauge-h:${bucket.scoreHue}deg"` : "";
       const valCls = hasSpectrum ? "kb-gauge-val kb-gauge-val--spectrum" : "kb-gauge-val kb-gauge-val--neutral";
@@ -2102,13 +2395,13 @@
             <span class="kb-meta-label">Hedef</span>
             <span class="kb-meta-val">${hedefMeta}</span>
           </div>
-          <div class="kb-card-meta-item">
+          <div class="kb-card-meta-item kb-gerceklesen-item" data-kpi-id="${k.id}" data-period-key="${safeKey}" style="cursor:pointer;" title="Periyot veri detayını görmek için tıklayın">
             <span class="kb-meta-label">Gerçekleşen</span>
             <span class="kb-meta-val">${gercekMeta}</span>
           </div>
           <div class="kb-card-meta-item">
-            <span class="kb-meta-label">Birim</span>
-            <span class="kb-meta-val">${escHtml(k.unit || "—")}</span>
+            <span class="kb-meta-label">Başarı Puanı</span>
+            <span class="kb-meta-val">${basariPuaniHtml}</span>
           </div>
           <div class="kb-card-meta-item">
             <span class="kb-meta-label">Periyot</span>
@@ -2343,6 +2636,16 @@
         periodKey: btnKpiVgs.dataset.periodKey || undefined,
         label: btnKpiVgs.dataset.label || "Dönem",
       });
+      return;
+    }
+
+    const kbGerceklesen = e.target.closest(".kb-gerceklesen-item");
+    if (kbGerceklesen && PAGE_MODE === "karne" && microPgTablo && typeof microPgTablo.openVeriDetay === "function") {
+      e.preventDefault();
+      e.stopPropagation();
+      const kid = kbGerceklesen.dataset.kpiId;
+      const pk = kbGerceklesen.dataset.periodKey;
+      if (kid && pk) microPgTablo.openVeriDetay(parseInt(kid, 10), pk);
       return;
     }
 
@@ -2640,6 +2943,41 @@
   document.getElementById("btn-kpi-add-modal-cancel")?.addEventListener("click", closeAddKpiModal);
   document.getElementById("btn-kpi-add-modal-save")?.addEventListener("click", () => submitAddKpiModal());
   document.getElementById("kpi-add-basari-enable")?.addEventListener("change", toggleKpiAddBasariPanel);
+  document.querySelector(".karne-basari-aralik-info-btn")?.addEventListener("click", () => {
+    Swal.fire({
+      title: "Aralık nasıl girilir?",
+      icon: "info",
+      customClass: { container: "swal-above-nested-modal" },
+      didOpen: () => {
+        const c = Swal.getContainer();
+        if (c) c.style.setProperty("z-index", "2147482000", "important");
+      },
+      html: `
+        <div style="text-align:left; font-size:13px; line-height:1.6;">
+          <p>Her puan seviyesi için gerçekleşme <strong>yüzdesi</strong> (gerçekleşen ÷ hedef × 100) aralığını <strong>min-max</strong> formatında girin.</p>
+          <table style="width:100%; border-collapse:collapse; margin:12px 0;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">Puan</th>
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">Aralık</th>
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left;">Anlam</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">1</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">0-40</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 0 ile 40 arasında</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">2</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">40.01-60</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 40.01 ile 60 arasında</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">3</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">60.01-80</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 60.01 ile 80 arasında</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">4</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">80.01-100</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 80.01 ile 100 arasında</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">5</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">100.01-</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 100.01 ve üzeri (üst sınır yok)</td></tr>
+            </tbody>
+          </table>
+          <p style="margin:0;"><strong>⚠ Sınır değeri:</strong> Eşleşme <code>&lt;=</code> ile yapılır; 40 yazıldığında 1. aralığa düşer. Çakışmayı önlemek için üst sınırı <code>40.01</code> gibi bir sonraki aralığın başlangıcına kaydırın.</p>
+          <p style="margin-top:8px; margin-bottom:0;"><strong>Açık uç:</strong> Son puan için max kısmını boş bırakın (örn: <code>100.01-</code>) — üst sınır sonsuz kabul edilir.</p>
+        </div>`,
+      confirmButtonText: "Anladım",
+      width: 560,
+    });
+  });
   formKpiAdd?.addEventListener("submit", (e) => {
     e.preventDefault();
     submitAddKpiModal();

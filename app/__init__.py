@@ -52,6 +52,10 @@ def create_app(config_class=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from app.utils.maintenance_middleware import register_maintenance_middleware
+
+    register_maintenance_middleware(app)
+
     # Initialize cache
     cache.init_app(app)
 

@@ -34,7 +34,94 @@
      data-initial-ethics="{{ (ethics_text or '')|e }}"
      data-url-surec="{{ url_for('app_bp.surec') }}"
      data-url-bireysel="{{ url_for('app_bp.bireysel') }}"
-     data-kv-enabled="{{ 'true' if k_vektor_enabled else 'false' }}">
+     data-kv-enabled="{{ 'true' if k_vektor_enabled else 'false' }}"
+     data-plan-years-url="{{ url_for('app_bp.sp_api_plan_years_list') }}"
+     data-plan-years-create-url="{{ url_for('app_bp.sp_api_plan_years_create') }}"
+     data-plan-years-set-active-url="{{ url_for('app_bp.sp_api_plan_years_set_active') }}"
+     data-active-plan-year="{{ active_plan_year_val }}"
+     data-can-manage="{{ 'true' if sp_can_manage else 'false' }}">
+
+  {# ── Plan Year Kontrol Çubuğu ────────────────────────────────────────────── #}
+  {% if plan_year_feature %}
+  <div class="mc-plan-year-bar" id="plan-year-bar">
+    <div class="mc-plan-year-bar-left">
+      <span class="mc-plan-year-bar-label"><i class="fas fa-calendar-alt"></i> Plan Dönemi</span>
+      <div class="mc-plan-year-selector-wrap">
+        <select id="sp-plan-year-select" class="mc-select mc-plan-year-select" aria-label="Plan yılı seç">
+          {% if plan_years %}
+            {% for py in plan_years %}
+            <option value="{{ py.year }}"
+              {% if py.year == active_plan_year_val %}selected{% endif %}>
+              {{ py.year }}{% if py.status == 'closed' %} (Kapalı){% elif py.status == 'draft' %} (Taslak){% endif %}
+            </option>
+            {% endfor %}
+          {% else %}
+            <option value="{{ current_cal_year }}" selected>{{ current_cal_year }}</option>
+          {% endif %}
+        </select>
+      </div>
+      {% if active_plan_year %}
+        <span class="mc-badge {% if active_plan_year.status == 'active' %}mc-badge-success{% elif active_plan_year.status == 'closed' %}mc-badge-secondary{% else %}mc-badge-warning{% endif %} mc-plan-year-status-badge" id="plan-year-status-badge">
+          {% if active_plan_year.status == 'active' %}Aktif{% elif active_plan_year.status == 'closed' %}Kapalı{% elif active_plan_year.status == 'draft' %}Taslak{% else %}{{ active_plan_year.status }}{% endif %}
+        </span>
+      {% else %}
+        <span class="mc-badge mc-badge-warning mc-plan-year-status-badge" id="plan-year-status-badge">Plan yok</span>
+      {% endif %}
+    </div>
+    {% if sp_can_manage %}
+    <div class="mc-plan-year-bar-right">
+      <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="btn-plan-year-new">
+        <i class="fas fa-plus"></i> Yeni Yıl Planı
+      </button>
+      {% if active_plan_year and active_plan_year.status == 'active' %}
+      <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm" id="btn-plan-year-close"
+              data-plan-year-id="{{ active_plan_year.id }}"
+              data-close-url="{{ url_for('app_bp.sp_api_plan_year_close', year_id=active_plan_year.id) }}"
+              data-year="{{ active_plan_year.year }}">
+        <i class="fas fa-lock"></i> Yılı Kapat
+      </button>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  {# ── Yeni Yıl Planı Modalı ───────────────────────────────────────────────── #}
+  <div class="mc-modal-overlay" id="modal-plan-year-new" style="display:none;">
+    <div class="mc-modal-lg">
+      <div class="mc-modal-header">
+        <h3><i class="fas fa-calendar-plus"></i> Yeni Stratejik Plan Yılı</h3>
+        <button class="mc-modal-close" data-modal-close="modal-plan-year-new">✕</button>
+      </div>
+      <div class="mc-modal-body">
+        <div class="mc-form-group">
+          <label class="mc-form-label" for="pyn-year">Plan Yılı <span class="mc-required">*</span></label>
+          <input type="number" id="pyn-year" class="mc-form-input" min="2000" max="2100"
+                 value="{{ current_cal_year + 1 }}" placeholder="ör. 2026">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label" for="pyn-name">Plan Adı (opsiyonel)</label>
+          <input type="text" id="pyn-name" class="mc-form-input" placeholder="ör. 2026 Stratejik Planı">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label" for="pyn-from-year">Kaynak Yıl (klonla)</label>
+          <select id="pyn-from-year" class="mc-form-input">
+            <option value="">— Boş başlat (mevcut PG'lerden otomatik doldur) —</option>
+            {% for py in plan_years %}
+            <option value="{{ py.year }}">{{ py.year }} planından kopyala</option>
+            {% endfor %}
+          </select>
+          <span class="mc-form-hint">Seçilirse kaynak yılın hedefleri, metodları ve ağırlıkları kopyalanır.</span>
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button type="button" class="mc-btn mc-btn-secondary" data-modal-close="modal-plan-year-new">İptal</button>
+        <button type="button" class="mc-btn mc-btn-primary" id="btn-plan-year-new-save">
+          <i class="fas fa-check"></i> Oluştur
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endif %}{# /plan_year_feature #}
   <script type="application/json" id="sp-card-help-json">{{ {
     'misyon': {
       'title': 'Misyon (Amaç) kartı',
@@ -502,5 +589,8 @@
 
 {% block extra_js %}
 <script src="{{ url_for('app_bp.static', filename='platform/js/sp.js') }}"></script>
+{% if plan_year_feature %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/sp_plan_year.js') }}?v={{ config['VERSION'] }}"></script>
+{% endif %}
 {% endblock %}
 

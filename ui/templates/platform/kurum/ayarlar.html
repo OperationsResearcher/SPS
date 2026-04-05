@@ -2,6 +2,10 @@
 {% block title %}Kurum Ayarları — Kokpitim{% endblock %}
 {% block page_title %}Kurum Ayarları{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/kurum.css') }}?v={{ config.get('VERSION', '1') }}">
+{% endblock %}
+
 {% block extra_js %}
 <script src="{{ url_for('app_bp.static', filename='platform/js/kurum_ayarlar.js') }}"></script>
 {% endblock %}
@@ -81,15 +85,91 @@
       </span>
     </div>
     <div class="mc-card-body">
-      <p class="mc-empty-text" style="margin-bottom:12px;">
+      <p class="mc-empty-text kv-settings-intro">
         Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır.
         <strong>Ana ve alt strateji ham ağırlıkları</strong> <a href="{{ url_for('app_bp.sp') }}">Stratejik Planlama</a> (/sp) sayfasından girilir ve düzenlenir.
         <strong>Süreç–alt strateji katkı %</strong> değerleri <a href="{{ url_for('app_bp.surec') }}">Süreç Yönetimi</a> (/process) üzerinden süreç kaydı açılarak girilir.
       </p>
-      <label class="mc-form-group" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-        <input type="checkbox" id="k_vektor_enabled" {% if tenant.k_vektor_enabled %}checked{% endif %}>
-        <span>K-Vektör kullanımını etkinleştir</span>
-      </label>
+      <div class="kv-enable-panel">
+        <label class="kv-enable-toggle" for="k_vektor_enabled">
+          <input type="checkbox" id="k_vektor_enabled" class="kv-enable-toggle-input" {% if tenant.k_vektor_enabled %}checked{% endif %} />
+          <span class="kv-enable-toggle-ui" aria-hidden="true">
+            <span class="kv-enable-toggle-track"></span>
+            <span class="kv-enable-toggle-thumb"></span>
+          </span>
+          <span class="kv-enable-toggle-copy">
+            <span class="kv-enable-toggle-title">K-Vektör kullanımını etkinleştir</span>
+            <span class="kv-enable-toggle-sub">Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer.</span>
+            <span class="kv-enable-badges" aria-live="polite">
+              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
+              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-satellite-dish"></i>K-Radar
+      </span>
+    </div>
+    <div class="mc-card-body">
+      <p class="mc-empty-text kv-settings-intro">
+        Açıldığında sol menüde ve <strong>Modüller</strong> ana sayfasında K-Radar kartı görünür; KS / KP / KPR ve Cross radar ekranlarına erişilir.
+        Kapalıyken bu modül gizlenir ve doğrudan URL ile erişim engellenir.
+      </p>
+      <div class="kv-enable-panel">
+        <label class="kv-enable-toggle" for="k_radar_enabled">
+          <input type="checkbox" id="k_radar_enabled" class="kv-enable-toggle-input" {% if tenant.k_radar_enabled %}checked{% endif %} />
+          <span class="kv-enable-toggle-ui" aria-hidden="true">
+            <span class="kv-enable-toggle-track"></span>
+            <span class="kv-enable-toggle-thumb"></span>
+          </span>
+          <span class="kv-enable-toggle-copy">
+            <span class="kv-enable-toggle-title">K-Radar kullanımını etkinleştir</span>
+            <span class="kv-enable-toggle-sub">Kurum çapı performans ve karar destek radarları kullanılabilir hale gelir.</span>
+            <span class="kv-enable-badges" aria-live="polite">
+              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
+              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
+            </span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-calendar-alt"></i>Yıllık Plan Dönemleri
+      </span>
+    </div>
+    <div class="mc-card-body">
+      <p class="mc-empty-text kv-settings-intro">
+        Açıldığında Stratejik Planlama sayfasında yıl seçici çubuğu görünür.
+        Her plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı tanımlanabilir.
+        Kapalı olduğunda tüm KPI hesapları mevcut <strong>ProcessKpi</strong> değerlerine göre yapılır.
+      </p>
+      <div class="kv-enable-panel">
+        <label class="kv-enable-toggle" for="plan_year_enabled">
+          <input type="checkbox" id="plan_year_enabled" class="kv-enable-toggle-input" {% if tenant.plan_year_enabled %}checked{% endif %} />
+          <span class="kv-enable-toggle-ui" aria-hidden="true">
+            <span class="kv-enable-toggle-track"></span>
+            <span class="kv-enable-toggle-thumb"></span>
+          </span>
+          <span class="kv-enable-toggle-copy">
+            <span class="kv-enable-toggle-title">Yıllık dönem planlamasını etkinleştir</span>
+            <span class="kv-enable-toggle-sub">SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur.</span>
+            <span class="kv-enable-badges" aria-live="polite">
+              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
+              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
+            </span>
+          </span>
+        </label>
+      </div>
     </div>
   </div>
 

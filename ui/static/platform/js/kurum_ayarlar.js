@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var btnSave = document.getElementById('btn-save');
     var btnLogoUpload = document.getElementById('btn-logo-upload');
     var elKvToggle = document.getElementById('k_vektor_enabled');
+    var elKRadarToggle = document.getElementById('k_radar_enabled');
+    var elPlanYearToggle = document.getElementById('plan_year_enabled');
 
     function _val(el) {
         return el ? (el.value || '').trim() : '';
@@ -38,6 +40,12 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         if (elKvToggle) {
             o.k_vektor_enabled = !!elKvToggle.checked;
+        }
+        if (elKRadarToggle) {
+            o.k_radar_enabled = !!elKRadarToggle.checked;
+        }
+        if (elPlanYearToggle) {
+            o.plan_year_enabled = !!elPlanYearToggle.checked;
         }
         return o;
     }

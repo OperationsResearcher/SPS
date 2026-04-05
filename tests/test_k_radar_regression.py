@@ -26,8 +26,8 @@ def _login(client, user_id: int):
 
 
 def _seed_k_radar_dataset():
-    tenant_a = Tenant(name="Tenant A", short_name="ta", is_active=True)
-    tenant_b = Tenant(name="Tenant B", short_name="tb", is_active=True)
+    tenant_a = Tenant(name="Tenant A", short_name="ta", is_active=True, k_radar_enabled=True)
+    tenant_b = Tenant(name="Tenant B", short_name="tb", is_active=True, k_radar_enabled=True)
     db.session.add_all([tenant_a, tenant_b])
     db.session.flush()
 

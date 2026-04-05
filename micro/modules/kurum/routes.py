@@ -97,6 +97,24 @@ def kurum_ayarlar():
                 {"k_vektor_enabled": tenant.k_vektor_enabled},
             )
 
+        if "k_radar_enabled" in data:
+            kr = data.get("k_radar_enabled")
+            if isinstance(kr, bool):
+                tenant.k_radar_enabled = kr
+            elif isinstance(kr, str):
+                tenant.k_radar_enabled = kr.strip().lower() in ("1", "true", "yes", "on")
+            elif isinstance(kr, (int, float)):
+                tenant.k_radar_enabled = bool(kr)
+
+        if "plan_year_enabled" in data:
+            pye = data.get("plan_year_enabled")
+            if isinstance(pye, bool):
+                tenant.plan_year_enabled = pye
+            elif isinstance(pye, str):
+                tenant.plan_year_enabled = pye.strip().lower() in ("1", "true", "yes", "on")
+            elif isinstance(pye, (int, float)):
+                tenant.plan_year_enabled = bool(pye)
+
         # Logo yükleme (multipart/form-data)
         logo_file = request.files.get("logo")
         if logo_file and logo_file.filename:

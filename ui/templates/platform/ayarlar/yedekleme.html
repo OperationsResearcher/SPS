@@ -276,6 +276,53 @@
     {% endif %}
   </div>
 
+  <!-- 3: Kurum yedeği -->
+  {% if tenant_list %}
+  <div class="mc-card" style="margin-bottom:16px;">
+    <div class="ayarlar-hub-section-label">3 — Kurum yedeği (JSON)</div>
+    <p style="margin:0 0 12px; color:var(--mc-text-muted, #64748b); font-size:14px;">
+      Seçilen kuruma ait tüm veri (kullanıcılar, süreçler, PG/PGV, projeler, stratejiler, ayarlar vb.) tek bir
+      <code>.json.gz</code> dosyasına aktarılır. Aynı dosyayı kullanarak kurumu yedek noktasına döndürebilirsiniz.
+    </p>
+
+    <div style="margin-bottom:20px;">
+      <label class="mc-label">Kurum seçin</label>
+      <select id="tenant-backup-select" class="mc-input" style="max-width:360px; width:100%;">
+        <option value="">— Kurum seçin —</option>
+        {% for t in tenant_list %}
+        <option value="{{ t.id }}">{{ t.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <a id="tenant-backup-download-btn"
+       href="#"
+       class="mc-btn mc-btn-primary"
+       style="pointer-events:none; opacity:0.5;"
+       download>
+      <i class="fas fa-download"></i> Kurum yedeğini indir (.json.gz)
+    </a>
+
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+
+    <p style="font-size:13px; margin-bottom:8px;"><strong>Geri yükleme</strong> — Yüklenen yedek, o kurumun mevcut verisini <strong>siler ve yeniden yükler</strong>. Önce test ortamında deneyin.</p>
+    <form method="post" action="{{ url_for('app_bp.ayarlar_yedekleme_kurum_yukle') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Kurum yedek dosyası (.json.gz)</label>
+        <input type="file" name="backup_file" accept=".gz,application/gzip" required class="mc-input" style="width:100%;">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mc-label">Hesap şifreniz</label>
+        <input type="password" name="current_password" class="mc-input" style="width:100%;" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="mc-btn mc-btn-danger">
+        <i class="fas fa-upload"></i> Kurumu geri yükle
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
   <!-- 2: Tam sistem -->
   <div class="mc-card">
     <div class="ayarlar-hub-section-label">2 — Tam sistem yedeği</div>
@@ -320,4 +367,27 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var sel = document.getElementById("tenant-backup-select");
+  var btn = document.getElementById("tenant-backup-download-btn");
+  if (!sel || !btn) return;
+  var baseUrl = "{{ url_for('app_bp.ayarlar_yedekleme_kurum_indir') }}";
+  sel.addEventListener("change", function () {
+    var tid = sel.value;
+    if (tid) {
+      btn.href = baseUrl + "?tenant_id=" + encodeURIComponent(tid);
+      btn.style.pointerEvents = "";
+      btn.style.opacity = "";
+    } else {
+      btn.href = "#";
+      btn.style.pointerEvents = "none";
+      btn.style.opacity = "0.5";
+    }
+  });
+})();
+</script>
 {% endblock %}

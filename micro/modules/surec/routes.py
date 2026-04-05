@@ -25,6 +25,8 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.models.core import User, Strategy, Tenant
+from app.services.plan_year_service import get_plan_year, get_kpi_configs_bulk
+from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
@@ -271,6 +273,15 @@ def surec():
     t = db.session.get(Tenant, tid)
     k_vektor_enabled = bool(t and getattr(t, "k_vektor_enabled", False))
 
+    try:
+        today = date.today()
+        process_scores, _ = compute_process_scores_internal(
+            tid, today.year, today, persist_pg_scores=False
+        )
+    except Exception as _e:
+        current_app.logger.error(f"[surec] process_scores hesaplanamadı: {_e}", exc_info=True)
+        process_scores = {}
+
     return render_template(
         "platform/surec/index.html",
         processes=all_processes,
@@ -284,6 +295,7 @@ def surec():
         can_open_process_modal=can_open_process_modal,
         user_can_edit_process_record=user_can_edit_process_record,
         k_vektor_enabled=k_vektor_enabled,
+        process_scores=process_scores,
     )
 
 
@@ -340,6 +352,9 @@ def surec_karne(process_id):
         "can_enter_pgv": user_can_enter_pgv(current_user, process),
     }
 
+    tenant_row = Tenant.query.get(tid) if tid else None
+    k_vektor_enabled = bool(tenant_row and getattr(tenant_row, "k_vektor_enabled", False))
+
     return render_template(
         "platform/surec/karne.html",
         process=process,
@@ -350,6 +365,7 @@ def surec_karne(process_id):
         current_year=current_year,
         page_flags=flags,
         initial_tab=initial_tab,
+        k_vektor_enabled=k_vektor_enabled,
     )
 
 
@@ -773,6 +789,13 @@ def surec_api_kpi_list(process_id):
     if not p or not user_can_access_process(current_user, p):
         abort(403)
     kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
+
+    # Opsiyonel yıl parametresi: yıllık config varsa override değerler döner
+    year_param = request.args.get("year", type=int)
+    _py_enabled = year_param and current_user.tenant_id and getattr(current_user.tenant, "plan_year_enabled", False)
+    _py_obj = get_plan_year(current_user.tenant_id, year_param) if _py_enabled else None
+    _cfg_map = get_kpi_configs_bulk(kpis, _py_obj) if kpis else {}
+
     return jsonify({
         "success": True,
         "kpis": [
@@ -780,11 +803,11 @@ def surec_api_kpi_list(process_id):
                 "id": k.id,
                 "name": k.name,
                 "code": k.code,
-                "target_value": k.target_value,
-                "unit": k.unit,
-                "period": k.period,
-                "direction": k.direction,
-                "weight": k.weight,
+                "target_value": _cfg_map.get(k.id, {}).get("target_value", k.target_value),
+                "unit": _cfg_map.get(k.id, {}).get("unit", k.unit),
+                "period": _cfg_map.get(k.id, {}).get("period", k.period),
+                "direction": _cfg_map.get(k.id, {}).get("direction", k.direction),
+                "weight": _cfg_map.get(k.id, {}).get("weight", k.weight),
                 "sub_strategy_id": k.sub_strategy_id,
                 "sub_strategy_title": k.sub_strategy.title if k.sub_strategy else None,
             }
@@ -1662,6 +1685,12 @@ def surec_api_karne(process_id):
         for f in FavoriteKpi.query.filter_by(user_id=current_user.id).all()
     }
 
+    # Yıllık KPI config: bulk çek (N+1 önlemi) — sadece plan_year_enabled ise
+    _plan_year_obj = None
+    if current_user.tenant_id and getattr(current_user.tenant, "plan_year_enabled", False):
+        _plan_year_obj = get_plan_year(current_user.tenant_id, year)
+    _kpi_cfg_map = get_kpi_configs_bulk(kpis, _plan_year_obj) if kpis else {}
+
     def _parse_float(v):
         try:
             return float(v) if v not in (None, "") else None
@@ -1728,26 +1757,43 @@ def surec_api_karne(process_id):
             strategy_title = k.sub_strategy.strategy.title
 
         sub_st = k.sub_strategy
-        oy = getattr(k, "onceki_yil_ortalamasi", None)
+
+        # Yıllık config varsa kullan, yoksa ProcessKpi fallback
+        _ycfg = _kpi_cfg_map.get(k.id, {})
+        _target_value = _ycfg.get("target_value", k.target_value)
+        _unit = _ycfg.get("unit", k.unit)
+        _period = _ycfg.get("period", k.period)
+        _direction = _ycfg.get("direction", k.direction or "Increasing")
+        _method = _ycfg.get("data_collection_method", k.data_collection_method or "Ortalama")
+        _bpa = _ycfg.get("basari_puani_araliklari", k.basari_puani_araliklari)
+        _target_method = _ycfg.get("target_method", k.target_method)
+        _weight = _ycfg.get("weight", k.weight)
+        _oy_raw = _ycfg.get("onceki_yil_ortalamasi", getattr(k, "onceki_yil_ortalamasi", None))
+        _is_included = _ycfg.get("is_included", True)
+        _config_source = _ycfg.get("_config_source", "process_kpi")
+
         kpi_list.append({
             "id": k.id,
             "name": k.name,
             "code": k.code,
-            "target_value": k.target_value,
-            "unit": k.unit,
-            "period": k.period,
-            "data_collection_method": k.data_collection_method or "Ortalama",
-            "direction": k.direction or "Increasing",
-            "weight": k.weight,
+            "target_value": _target_value,
+            "unit": _unit,
+            "period": _period,
+            "data_collection_method": _method,
+            "direction": _direction,
+            "weight": _weight,
+            "target_method": _target_method,
             "sub_strategy_id": k.sub_strategy_id,
             "strategy_title": strategy_title or "-",
             "sub_strategy_title": sub_st.title if sub_st else "-",
             "sub_strategy_code": (sub_st.code or "").strip() if sub_st else "",
-            "basari_puani_araliklari": k.basari_puani_araliklari,
+            "basari_puani_araliklari": _bpa,
             "is_favorite": k.id in favorite_kpi_ids,
+            "is_included": _is_included,
+            "config_source": _config_source,
             "entries": entries_by_period,
             "year_rollup": round(float(year_rollup), 6) if year_rollup is not None else None,
-            "onceki_yil_ortalamasi": round(float(oy), 6) if oy is not None else None,
+            "onceki_yil_ortalamasi": round(float(_oy_raw), 6) if _oy_raw is not None else None,
             "prev_year_from_pgv": prev_from_pgv,
             "prev_year_rollup": round(float(prev_rollup), 6) if prev_rollup is not None else None,
         })

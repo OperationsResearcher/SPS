@@ -45,7 +45,8 @@ def test_tenant(db_session):
     tenant = Tenant(
         name='Test Tenant',
         short_name='test',
-        is_active=True
+        is_active=True,
+        k_radar_enabled=True,
     )
     db_session.add(tenant)
     db_session.commit()

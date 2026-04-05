@@ -100,11 +100,14 @@
                 <span class="sidebar-item-text">Proje Yönetimi</span>
             </a>
 
+            {% set _kr_menu = (current_user.tenant and current_user.tenant.k_radar_enabled) or (not current_user.tenant and role_name == 'Admin') %}
+            {% if _kr_menu %}
             <a href="{{ url_for('app_bp.k_radar_hub') }}"
                 class="sidebar-item {% if 'k_radar' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-satellite-dish"></i></span>
                 <span class="sidebar-item-text">K-Radar</span>
             </a>
+            {% endif %}
 
             <a href="{{ url_for('app_bp.bireysel_karne') }}"
                 class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">

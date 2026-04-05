@@ -2,7 +2,7 @@
 
 from functools import wraps
 
-from flask import render_template, jsonify, request, current_app
+from flask import render_template, jsonify, request, current_app, session
 from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
@@ -19,7 +19,16 @@ from app.services.k_vektor_config_service import (
 )
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import Process, ProcessKpi
+from app.models.plan_year import PlanYear, KpiYearConfig
 from app.services.score_engine_service import compute_vision_score
+from app.services.plan_year_service import (
+    list_plan_years,
+    get_plan_year,
+    get_or_create_plan_year,
+    close_plan_year,
+    clone_plan_year,
+    upsert_kpi_year_config,
+)
 
 _SP_ROLES = (
     "Admin",
@@ -107,6 +116,22 @@ def sp():
         except Exception as e:
             current_app.logger.warning(f"[sp] K-Vektör skor verisi alınamadı: {e}")
 
+    # Plan Year: sadece tenant plan_year_enabled ise aktif
+    import datetime as _dt
+    current_cal_year = _dt.date.today().year
+    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
+    if plan_year_feature and tenant_id:
+        plan_years_list = list_plan_years(tenant_id)
+        active_plan_year_val = session.get("sp_active_year", current_cal_year)
+        available_years = [py.year for py in plan_years_list]
+        if available_years and active_plan_year_val not in available_years:
+            active_plan_year_val = available_years[0]
+        active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
+    else:
+        plan_years_list = []
+        active_plan_year_val = current_cal_year
+        active_plan_year_obj = None
+
     return render_template(
         "platform/sp/index.html",
         tenant=tenant,
@@ -120,6 +145,11 @@ def sp():
         kv_sub_strategy_scores=kv_sub_strategy_scores,
         kv_contrib_main=kv_contrib_main,
         kv_quotas_main=kv_quotas_main,
+        plan_years=plan_years_list,
+        active_plan_year=active_plan_year_obj,
+        active_plan_year_val=active_plan_year_val,
+        current_cal_year=current_cal_year,
+        plan_year_feature=plan_year_feature,
     )
 
 
@@ -492,3 +522,238 @@ def sp_api_graph():
         "edges": edges,
         "vision_score": vision_score,
     })
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PLAN YEAR API — Yıllık Stratejik Plan Dönem Yönetimi
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _plan_year_to_dict(py: PlanYear) -> dict:
+    return {
+        "id": py.id,
+        "year": py.year,
+        "name": py.name or f"{py.year} Stratejik Planı",
+        "status": py.status,
+        "template_source_id": py.template_source_id,
+        "created_at": py.created_at.isoformat() if py.created_at else None,
+        "closed_at": py.closed_at.isoformat() if py.closed_at else None,
+    }
+
+
+@app_bp.route("/sp/api/plan-years", methods=["GET"])
+@login_required
+def sp_api_plan_years_list():
+    """Tenant'ın tüm plan yıllarını döner."""
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
+    plan_years_list = list_plan_years(tid)
+    import datetime as _dt
+    active_year = session.get("sp_active_year", _dt.date.today().year)
+    return jsonify({
+        "success": True,
+        "plan_years": [_plan_year_to_dict(py) for py in plan_years_list],
+        "active_year": active_year,
+    })
+
+
+@app_bp.route("/sp/api/plan-years", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_plan_years_create():
+    """
+    Yeni plan yılı oluşturur.
+    Body: {year, name (opsiyonel), from_year (opsiyonel — klonlamak için kaynak yıl)}
+    """
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
+
+    data = request.get_json() or {}
+    new_year = data.get("year")
+    if not new_year:
+        return jsonify({"success": False, "message": "Yıl zorunludur."}), 400
+    try:
+        new_year = int(new_year)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz yıl değeri."}), 400
+
+    if new_year < 2000 or new_year > 2100:
+        return jsonify({"success": False, "message": "Yıl 2000-2100 aralığında olmalıdır."}), 400
+
+    # Zaten var mı?
+    existing = get_plan_year(tid, new_year)
+    if existing:
+        return jsonify({
+            "success": False,
+            "message": f"{new_year} yılı için plan zaten mevcut.",
+            "plan_year": _plan_year_to_dict(existing),
+        }), 409
+
+    from_year = data.get("from_year")
+    name = (data.get("name") or "").strip() or None
+
+    try:
+        if from_year:
+            try:
+                from_year = int(from_year)
+            except (TypeError, ValueError):
+                return jsonify({"success": False, "message": "Geçersiz kaynak yıl."}), 400
+            source_py = get_plan_year(tid, from_year)
+            if not source_py:
+                return jsonify({"success": False, "message": f"{from_year} yılı planı bulunamadı."}), 404
+            new_py = clone_plan_year(source_py, new_year, name=name)
+        else:
+            new_py = get_or_create_plan_year(tid, new_year)
+            if name:
+                new_py.name = name
+                db.session.commit()
+
+        session["sp_active_year"] = new_py.year
+        return jsonify({
+            "success": True,
+            "message": f"{new_year} yılı planı oluşturuldu.",
+            "plan_year": _plan_year_to_dict(new_py),
+        })
+    except ValueError as ve:
+        return jsonify({"success": False, "message": str(ve)}), 409
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_plan_years_create] {e}")
+        return jsonify({"success": False, "message": "Plan yılı oluşturulurken hata oluştu."}), 500
+
+
+@app_bp.route("/sp/api/plan-years/set-active", methods=["POST"])
+@csrf.exempt
+@login_required
+def sp_api_plan_years_set_active():
+    """Aktif plan yılını session'a yazar."""
+    data = request.get_json() or {}
+    year = data.get("year")
+    try:
+        year = int(year)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz yıl."}), 400
+
+    tid = current_user.tenant_id
+    if tid:
+        py = get_plan_year(tid, year)
+        if not py:
+            # Plan yoksa oluştur (yeni tenant için kolay başlangıç)
+            py = get_or_create_plan_year(tid, year)
+    session["sp_active_year"] = year
+    return jsonify({"success": True, "active_year": year})
+
+
+@app_bp.route("/sp/api/plan-years/<int:year_id>/close", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_plan_year_close(year_id):
+    """Plan yılını kapatır (status=closed)."""
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    if py.status == "closed":
+        return jsonify({"success": False, "message": "Bu yıl zaten kapalı."}), 400
+    try:
+        close_plan_year(py, actor_id=current_user.id)
+        return jsonify({
+            "success": True,
+            "message": f"{py.year} yılı kapatıldı.",
+            "plan_year": _plan_year_to_dict(py),
+        })
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_plan_year_close] {e}")
+        return jsonify({"success": False, "message": "Yıl kapatılırken hata oluştu."}), 500
+
+
+@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs", methods=["GET"])
+@login_required
+def sp_api_plan_year_kpi_configs(year_id):
+    """Bir plan yılına ait tüm KPI konfigürasyonlarını döner."""
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    cfgs = KpiYearConfig.query.filter_by(plan_year_id=py.id).all()
+    return jsonify({
+        "success": True,
+        "year": py.year,
+        "kpi_configs": [
+            {
+                "id": c.id,
+                "process_kpi_id": c.process_kpi_id,
+                "target_value": c.target_value,
+                "unit": c.unit,
+                "period": c.period,
+                "direction": c.direction,
+                "target_method": c.target_method,
+                "calculation_method": c.calculation_method,
+                "basari_puani_araliklari": c.basari_puani_araliklari,
+                "onceki_yil_ortalamasi": c.onceki_yil_ortalamasi,
+                "weight": c.weight,
+                "is_included": c.is_included,
+            }
+            for c in cfgs
+        ],
+    })
+
+
+@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs/<int:kpi_id>", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
+    """Tek KPI için yıllık config güncelle/oluştur."""
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    if py.status == "closed":
+        return jsonify({"success": False, "message": "Kapalı plan yılı düzenlenemez."}), 400
+
+    data = request.get_json() or {}
+    try:
+        cfg = upsert_kpi_year_config(py, kpi_id, data)
+        return jsonify({"success": True, "id": cfg.id, "message": "KPI yıllık hedef güncellendi."})
+    except ValueError as ve:
+        return jsonify({"success": False, "message": str(ve)}), 404
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_plan_year_kpi_config_upsert] {e}")
+        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+
+
+@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_plan_year_kpi_configs_bulk(year_id):
+    """
+    Birden fazla KPI için yıllık config toplu güncelle.
+    Body: {"configs": [{"kpi_id": 1, "target_value": "30", ...}, ...]}
+    """
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    if py.status == "closed":
+        return jsonify({"success": False, "message": "Kapalı plan yılı düzenlenemez."}), 400
+
+    data = request.get_json() or {}
+    configs = data.get("configs", [])
+    if not configs:
+        return jsonify({"success": False, "message": "Konfigürasyon listesi boş."}), 400
+
+    updated = 0
+    errors = []
+    for item in configs:
+        kpi_id = item.get("kpi_id")
+        if not kpi_id:
+            continue
+        try:
+            upsert_kpi_year_config(py, int(kpi_id), item)
+            updated += 1
+        except Exception as e:
+            errors.append({"kpi_id": kpi_id, "error": str(e)})
+
+    if errors:
+        db.session.rollback()
+        return jsonify({"success": False, "message": "Bazı kayıtlarda hata oluştu.", "errors": errors}), 400
+
+    return jsonify({"success": True, "message": f"{updated} KPI hedefi güncellendi.", "updated": updated})

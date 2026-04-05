@@ -7,7 +7,7 @@ Kullanıcı aktivitelerini loglama
 from flask import request
 from flask_login import current_user
 from app.models.audit import AuditLog
-from app.extensions import db
+from extensions import db  # ROOT extensions.py — tek init_app edilmiş db instance
 from functools import wraps
 import json
 

@@ -138,6 +138,15 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
 
+
+def _tenant_k_radar_on(user) -> bool:
+    """Tenant yoksa (platform Admin) tam liste; varsa yalnızca k_radar_enabled ile."""
+    t = getattr(user, "tenant", None)
+    if t is None:
+        return True
+    return bool(getattr(t, "k_radar_enabled", False))
+
+
 # Rol bazlı kısıtlamalar
 _ROLE_RESTRICTED = {
     "admin":    {"tenant_admin", "executive_manager", "Admin"},
@@ -188,9 +197,9 @@ def get_accessible_modules(user):
 
     role_name = user.role.name if user.role else None
 
-    # Admin her şeyi görür
+    # Admin her şeyi görür (K-Radar kurum bayrağına bağlı)
     if role_name == "Admin":
-        return MODULES
+        return [m for m in MODULES if m["id"] != "k_radar" or _tenant_k_radar_on(user)]
 
     # Paket → modül kodları (doğru ilişki adı: `modules`, alan: `code`)
     allowed_module_ids = None
@@ -204,6 +213,9 @@ def get_accessible_modules(user):
     result = []
     for mod in MODULES:
         mid = mod["id"]
+
+        if mid == "k_radar" and not _tenant_k_radar_on(user):
+            continue
 
         # Paket kısıtlaması
         if allowed_module_ids is not None:

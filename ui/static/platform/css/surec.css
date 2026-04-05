@@ -1102,6 +1102,38 @@
   font-size: 0.875rem !important;
 }
 
+.karne-basari-puani-col-header {
+  margin-bottom: 4px !important;
+}
+
+.karne-basari-puani-col-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dark .karne-basari-puani-col-label {
+  color: #94a3b8;
+}
+
+.karne-basari-aralik-info-btn {
+  padding: 0 3px !important;
+  min-height: 0 !important;
+  line-height: 1 !important;
+  color: #6366f1 !important;
+  border: none !important;
+  background: none !important;
+}
+
+.karne-basari-aralik-info-btn i {
+  font-size: 12px;
+}
+
 .karne-basari-puani-check--root {
   font-size: 0.95rem;
 }
@@ -2044,6 +2076,11 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   z-index: 10080 !important;
 }
 
+/* Periyot veri detayı / PG tablo üstünde Swal — SW2 varsayılanı ve diğer katmanların altında kalmaması için yüksek değer */
+.swal-above-nested-modal.swal2-container {
+  z-index: 2147482000 !important;
+}
+
 .vgs-nested-modal-overlay .mc-modal.vgs-nested-modal {
   max-width: 480px;
 }
@@ -2360,6 +2397,203 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   z-index: 10065;
 }
 
+/* Üst bant Görünüm grubu: K-Vektör Analizi (Süreç Faaliyetleri’nin sağı) */
+.karne-banner-kv-analiz-btn {
+  white-space: nowrap;
+}
+
+/* K-Vektör Analizi modalı */
+.kv-analiz-overlay {
+  z-index: 10200 !important;
+}
+.kv-analiz-modal {
+  max-width: min(720px, calc(100vw - 24px));
+  width: 100%;
+}
+.kv-analiz-body {
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+}
+.kv-analiz-section {
+  margin-bottom: 1.25rem;
+}
+.kv-analiz-section:last-child {
+  margin-bottom: 0;
+}
+.kv-analiz-h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+}
+.kv-analiz-h5 {
+  margin: 0.85rem 0 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.kv-analiz-h5--bad {
+  color: #9a3412;
+}
+.kv-analiz-h5--ok {
+  color: #047857;
+}
+.kv-analiz-summary {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.9rem;
+}
+.kv-analiz-summary--bad {
+  color: #1e293b;
+}
+.kv-analiz-pg-line {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+.kv-analiz-pg-sep {
+  color: #94a3b8;
+  font-weight: 400;
+}
+.kv-analiz-pg-name {
+  font-weight: 500;
+  color: #334155;
+}
+.kv-analiz-pg-detail {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #92400e;
+  padding-left: 0.15rem;
+}
+.kv-analiz-pg-detail--muted {
+  color: #64748b;
+}
+.kv-analiz-ul--bad .kv-analiz-li--bad {
+  list-style: disc;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #fed7aa;
+  margin-bottom: 0.65rem;
+}
+.kv-analiz-ul--bad .kv-analiz-li--bad:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.kv-analiz-ul--ok {
+  margin-top: 0.35rem;
+}
+.kv-analiz-empty-active {
+  margin-top: 0.35rem;
+}
+
+/* K-Vektör analizi — 2. bölüm: aktif olmayan PG akordeonu */
+.kv-analiz-accordion {
+  margin-top: 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+.kv-analiz-accordion-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.kv-analiz-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+.kv-analiz-accordion-summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid #64748b;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.kv-analiz-accordion[open] .kv-analiz-accordion-summary::before {
+  transform: rotate(90deg);
+}
+.kv-analiz-accordion-summary:hover {
+  background: #f1f5f9;
+}
+.kv-analiz-accordion-body {
+  padding: 0 12px 12px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+}
+.kv-analiz-ul-inactive {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  max-height: min(220px, 40vh);
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+.kv-analiz-li-inactive {
+  margin-bottom: 0.35rem;
+  color: #475569;
+}
+.kv-analiz-no-inactive {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+.kv-analiz-line {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+.kv-analiz-meta {
+  font-weight: 400;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.kv-analiz-tools {
+  margin: 0.5rem 0 0;
+}
+.kv-analiz-weights-wrap {
+  margin-top: 0.75rem;
+}
+.kv-analiz-table {
+  font-size: 0.85rem;
+}
+.kv-analiz-alert {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+.kv-analiz-alert--warn {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+}
+.kv-analiz-alert--ok {
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+}
+.kv-analiz-ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.875rem;
+}
+.kv-analiz-li {
+  margin-bottom: 0.35rem;
+}
+.kv-analiz-li--ok {
+  color: #065f46;
+}
+.kv-analiz-li--bad {
+  color: #b45309;
+}
+
 .mc-modal--micro-pg-tablo {
   max-width: min(1420px, calc(100vw - 20px));
   width: min(1420px, calc(100% - 24px));
@@ -2372,7 +2606,6 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: 10px 14px;
   width: 100%;
   margin-bottom: 12px;

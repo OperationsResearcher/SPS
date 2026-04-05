@@ -46,16 +46,17 @@
                 {% endif %}
 
                 <div style="flex:1; min-width:0;">
-                    <span style="font-size:14px; font-weight:600; color:#1e293b; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" class="dark:text-white">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" style="font-size:14px; font-weight:600; color:#1e293b; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none;" class="dark:text-white">
                         {{ p.name }}
-                    </span>
+                    </a>
                     <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
                         <span style="font-size:11.5px; color:#94a3b8;">{{ p.kpis|length }} PG</span>
+                        {% set _ps = (process_scores.get(p.id) or 0)|round|int %}
                         <div class="mc-progress" style="width:80px;">
-                            <div class="mc-progress-fill {% if p.progress >= 80 %}success{% elif p.progress >= 50 %}{% else %}warning{% endif %}"
-                                 style="width:{{ p.progress }}%;"></div>
+                            <div class="mc-progress-fill {% if _ps >= 80 %}success{% elif _ps >= 50 %}{% else %}warning{% endif %}"
+                                 style="width:{{ _ps }}%;"></div>
                         </div>
-                        <span style="font-size:11.5px; color:#64748b;">{{ p.progress }}%</span>
+                        <span style="font-size:11.5px; color:#64748b;">{{ _ps }}%</span>
                         {% if p.status %}
                         <span class="mc-badge {% if p.status == 'active' %}mc-badge-success{% elif p.status == 'inactive' %}mc-badge-gray{% else %}mc-badge-info{% endif %}" style="font-size:11px;">
                             {{ p.status }}

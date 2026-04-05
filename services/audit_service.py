@@ -223,46 +223,8 @@ def _get_request_ip():
 
 def register_auth_audit_signals(app):
     """
-    Login / Logout audit kayıtlarını bağlar.
+    Login/Logout audit sinyalleri.
+    NOT: app/routes/auth.py içindeki _write_auth_audit() zaten audit_logs'a yazıyor.
+    Bu signal handler boş bırakılmıştır — çift kayıt önlemek için.
     """
-    @user_logged_in.connect_via(app)
-    def log_login(sender, user, **extra):
-        try:
-            ip_addr = _get_request_ip()
-            AuditLog.query.session.execute(
-                AuditLog.__table__.insert(),
-                {
-                    'user_id': user.id,
-                    'user_name': _get_user_display_name(user),
-                    'action': 'OTURUM AÇMA',
-                    'module': 'GÜVENLİK',
-                    'record_id': user.id,
-                    'record_name': _get_user_display_name(user),
-                    'changes': {'ip': ip_addr},
-                    'timestamp': datetime.now()
-                }
-            )
-            AuditLog.query.session.commit()
-        except Exception as exc:
-            logger.error(f'Audit login error: {exc}')
-
-    @user_logged_out.connect_via(app)
-    def log_logout(sender, user, **extra):
-        try:
-            ip_addr = _get_request_ip()
-            AuditLog.query.session.execute(
-                AuditLog.__table__.insert(),
-                {
-                    'user_id': user.id,
-                    'user_name': _get_user_display_name(user),
-                    'action': 'OTURUM KAPATMA',
-                    'module': 'GÜVENLİK',
-                    'record_id': user.id,
-                    'record_name': _get_user_display_name(user),
-                    'changes': {'ip': ip_addr},
-                    'timestamp': datetime.now()
-                }
-            )
-            AuditLog.query.session.commit()
-        except Exception as exc:
-            logger.error(f'Audit logout error: {exc}')
+    pass

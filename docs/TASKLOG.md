@@ -3,6 +3,173 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-066 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** /ayarlar/yedekleme sayfasına kurum bazlı JSON yedekleme ve geri yükleme eklendi
+**Modül:** admin / backup
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `services/tenant_backup_service.py` → yeni servis — ~55 tabloyu kapsayan TABLE_PLAN, export/preview/restore/sequence reset
+- `micro/modules/admin/routes.py` → import + 2 yeni route (kurum_indir GET, kurum_yukle POST) + ayarlar_yedekleme'ye tenant_list eklendi
+- `ui/templates/platform/ayarlar/yedekleme.html` → "3 — Kurum yedeği" kartı + JS (select → download link)
+
+### Yapılan İşlem
+Kurum bazlı yedekleme: admin kullanıcı kurum seçer, `export_tenant_json()` o kuruma ait ~55 tabloyu FK sırasıyla sorgular ve JSON+gzip olarak döner. Geri yükleme: .json.gz yükle + şifre doğrula → ters sırayla DELETE → doğru sırayla INSERT ON CONFLICT DO NOTHING → sequence reset.
+
+### Notlar
+Restore sırasında begin_nested kullanılır; hata dizisi max 20 ile sınırlı; sequence güncelleme ayrı commit'te.
+
+## TASK-065 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** audit_logs eksik kolon migration + AuditLogger db instance düzeltmesi
+**Modül:** admin / audit
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `migrations/versions/a0b1c2d3e4f5_audit_logs_missing_columns.py` → yeni migration
+- `app/utils/audit_logger.py` → `from app.extensions import db` → `from extensions import db` (doğru instance)
+
+### Yapılan İşlem
+`audit_logs` tablosunda `username`, `description`, `request_method`, `request_path` kolonları yoktu. `AuditLogger.log()` her çağrıldığında PostgreSQL `UndefinedColumn` hatası veriyordu; `except` bloğu sadece `print()` yaptığı için sessizce yutuluyordu. Sonuç: yönetim panelindeki tüm login istatistikleri yeni kayıt göremiyordu. Eksik kolonlar `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` ile eklendi, migration `a0b1c2d3e4f5` olarak kaydedildi (alembic_version güncellendi). Ayrıca `audit_logger.py` başlatılmamış `app.extensions.db` yerine kök `extensions.db` kullanacak şekilde düzeltildi.
+
+### Notlar
+VM deploy sırasında `flask db upgrade` bu migration'ı idempotent şekilde uygulayacak.
+
+## TASK-064 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** Yönetim Paneli Login İstatistikleri hata düzeltme + kullanıcı bazlı aktivite tablosu
+**Modül:** admin
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `services/audit_service.py` → `register_auth_audit_signals` eski `audit_log` yerine `app.models.audit.AuditLog` kullanacak şekilde düzeltildi
+- `micro/modules/admin/routes.py` → `get_login_stats` sadeleştirildi; `get_user_activity_stats()` + `/kullanici-detay` endpoint eklendi
+- `ui/templates/platform/admin/yonetim_paneli.html` → stat kartları düzeltildi, kullanıcı durumu tablosu eklendi
+- `ui/static/platform/js/yonetim_paneli.js` → kullanıcı tablosu yükleme/render fonksiyonları eklendi
+- `ui/static/platform/css/admin.css` → `.yp-stat-sub` style eklendi
+
+### Yapılan İşlem
+Kök sorun: `audit_service.py` login/logout olaylarını `audit_log` (legacy) tablosuna yanlış sütun adlarıyla yazıyordu, sessizce hata veriyordu; istatistik endpoint'i `audit_logs` (yeni) tablosunu okuduğu için sayılar hep 0 geliyordu. `register_auth_audit_signals` yeni modelle düzeltildi. Kullanıcı bazlı tablo (çevrimiçi, son giriş, 30G giriş/işlem) eklendi.
+
+### Notlar
+Geçmiş login kayıtları görünmez; sayılar fix sonrası sıfırdan birikecek.
+
+## TASK-063 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** /process sayfasında süreç kartında aktif yılın gerçek başarı oranını göster
+**Modül:** surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `compute_process_scores_internal` import edildi; `surec()` route'unda sayfa yüklenirken yıllık skor hesaplandı, `process_scores` dict template'e geçildi
+- `ui/templates/platform/surec/index.html` → `p.progress` yerine `process_scores.get(p.id)` kullanıldı
+
+### Yapılan İşlem
+`surec()` route'u, sayfayı render ederken `compute_process_scores_internal(tid, year, today, persist_pg_scores=False)` çağırarak her süreç için anlık başarı skorunu hesaplar ve `process_scores` dict olarak template'e iletir. Template'de `{% set _ps = (process_scores.get(p.id) or 0)|round|int %}` ile değer alınır; progress bar ve `%` gösterimi buna göre güncellenir.
+
+### Notlar
+`persist_pg_scores=False` → salt okunur hesaplama, DB'ye yazılmaz. Hata durumunda `process_scores={}` fallback ile sayfa bozulmaz (tüm süreçler %0 görünür).
+
+---
+
+## TASK-062 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** SP Yıllık Dönem özelliğini kurum tercihine bağlı toggle yaptı
+**Modül:** `kurum`, `sp`, `surec`
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/core.py` → `Tenant` modeline `plan_year_enabled` (Boolean, default False) eklendi
+- `migrations/versions/z3a4b5c6d007_tenant_plan_year_enabled.py` → YENİ: Alembic migration (uygulandı ✅)
+- `micro/modules/sp/routes.py` → `sp()` route: `plan_year_feature` bayrağı; kapalıysa yıl listesi çekilmiyor
+- `ui/templates/platform/sp/index.html` → Plan year bar + modal + JS `{% if plan_year_feature %}` koşuluna alındı
+- `micro/modules/surec/routes.py` → `surec_api_karne` ve `surec_api_kpi_list`: `plan_year_enabled` kapalıysa `get_plan_year` atlanıyor
+- `ui/templates/platform/kurum/ayarlar.html` → K-Vektör'ün hemen altına "Yıllık Plan Dönemleri" toggle kartı eklendi
+- `micro/modules/kurum/routes.py` → `plan_year_enabled` toggle kaydediliyor
+- `ui/static/platform/js/kurum_ayarlar.js` → `plan_year_enabled` toggle verisi payload'a eklendi
+
+### Yapılan İşlem
+`Tenant` modeline `plan_year_enabled` boolean kolonu eklendi; kapalıyken SP plan year bar/modal HİÇ render edilmiyor, JS yüklenmiyor ve skor motoru KPI yıl config tablolarına bakmıyor (ProcessKpi fallback otomatik devrede). Kurum Ayarları sayfasına K-Vektör toggle kartıyla aynı biçimde yeni kart eklendi.
+
+### Notlar
+Mevcut tüm tenantlar için `plan_year_enabled = False` (migration server_default=false). Özelliği kullanmak isteyen kurum Kurum Ayarları → Yıllık Plan Dönemleri → toggle açar.
+
+---
+
+## TASK-061 | 2026-04-05 | ✅ Tamamlandı
+
+**Görev:** SP Yıllık Dönem Sistemi — PlanYear mimarisi (Faz 1-6 altyapısı)
+**Modül:** `sp`, `surec`, `plan_year`
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/plan_year.py` → YENİ: PlanYear, KpiYearConfig, StrategyYearConfig, SubStrategyYearConfig, ProcessYearConfig, IndividualKpiYearConfig modelleri
+- `app/models/__init__.py` → 6 yeni model export edildi
+- `migrations/versions/y2z3a4b5c006_plan_year_tables.py` → YENİ: 6 tablo migration (uygulandı ✅)
+- `app/services/plan_year_service.py` → YENİ: fallback zinciri, get_kpi_configs_bulk, clone_plan_year, close_plan_year, upsert_kpi_year_config
+- `app/services/score_engine_service.py` → plan_year parametresi eklendi; get_pg_scores ve compute_process_scores yıllık config kullanıyor
+- `micro/modules/sp/routes.py` → 7 yeni plan year API endpoint; session active year; plan_years template'e aktarıldı
+- `micro/modules/surec/routes.py` → surec_api_karne ve surec_api_kpi_list year-aware config (get_kpi_configs_bulk)
+- `ui/templates/platform/sp/index.html` → Plan Year Bar UI (yıl seçici, yeni yıl modalı, yılı kapat butonu)
+- `ui/static/platform/js/sp_plan_year.js` → YENİ: yıl seçici, yeni yıl oluşturma, yılı kapatma JS
+- `ui/static/platform/css/sp.css` → Plan year bar CSS
+
+### Yapılan İşlem
+SP modülüne tüm fazları kapsayan yıllık dönem altyapısı eklendi. Her tenant için yılda bir `plan_years` kaydı tutulur; tüm KPI/strateji/süreç/bireysel PG konfigürasyonları bu yıla özgü overlay tablolarında saklanır. Yıllık config yoksa mevcut `ProcessKpi` değerleri fallback olarak kullanılır (sıfır kırılma garantisi). Karne sayfası artık seçili yılın hedeflerini kullanarak hesaplama yapar; yıl içinde hedef değişince geçmiş dönemler de otomatik olarak yeni hedefe göre hesaplanır (dinamik, store edilmez). `/sp` sayfasına plan dönemi seçici çubuğu eklendi; yeni yıl klonlama ve yılı kapatma akışları tamamlandı.
+
+### Notlar
+- Ertelenen: E1 — canlı DB'deki mevcut verilerin yıllık config'e migrasyon analizi (ayrı task)
+- Ertelenen: D3 — yıllar arası karşılaştırma ekranı (altyapı hazır, UI/route henüz yok)
+- `kpi_period_targets` tablosu eklenmedi; mevcut `computeCellTargetMicro` JS fonksiyonu (ölçüm_periyodu çarpan mantığı) yeterli bulundu
+
+---
+
+## TASK-060 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** Süreç karnesi PG kanban + K-Vektör analizi + PG tablo Swal katmanı + kurum K-Vektör anahtarı görünürlüğü
+**Modül:** `surec.js`, `pg_tablo_modal.js`, `surec.css`, `karne.html`, `micro/modules/surec/routes.py`, `kurum/ayarlar.html`, `kurum.css`
+
+### Yapılan İşlem
+- **PG kanban kartları:** Hedef ve Gerçekleşen yanına birim soneki (değer `—` değilse); eski «Birim» satırı kaldırıldı, yerine tablo modalıyla aynı mantıkta **Başarı Puanı** (`formatKanbanBasariPuaniLikeTable`).
+- **Periyot veri detayı — PGV silme onayı:** SweetAlert2’nin nested modal arkasında kalması giderildi: `swal-above-nested-modal` z-index yükseltildi, `pg_tablo_modal.js` silme `Swal.fire` için `didOpen` ile z-index; karne başarı aralığı bilgi `Swal`’ına aynı `didOpen`.
+- **K-Vektör Analizi:** `surec_karne` şablona `k_vektor_enabled` aktarımı; üst bant **Görünüm** grubunda «Süreç Faaliyetleri»nin sağında buton (yalnız K-Vektör açık kurumda); modal: PG ağırlık toplamı %100 uyarısı, ağırlık tablosu toggle, başarı yapılandırması aktif/pasif sayıları, pasif PG’ler için **akordeon** liste, aktif PG’lerde 0–100 tam sayı aralık analizi ve **hatalı / sorunsuz** PG ayrımı.
+- **Kurum ayarları:** K-Vektör «kullanımını etkinleştir» için görünür **toggle kartı** (büyük kaydırma, Kapalı/Açık rozetleri, hover/açık durum stilleri, karanlık tema); `kurum.css` sayfaya `extra_css` ile bağlandı.
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/surec.js` — kanban meta + `formatKanbanBasariPuaniLikeTable` ve yardımcılar; K-Vektör modal render/akordeon/bölüm 3 listeleri; bilgi Swal `didOpen`
+- `ui/static/platform/js/pg_tablo_modal.js` — silme onayı Swal `didOpen`
+- `ui/static/platform/css/surec.css` — Swal z-index; K-Vektör analizi + akordeon stilleri; banner KV butonu
+- `ui/templates/platform/surec/karne.html` — `data-k-vektor-enabled`, bantta KV butonu, KV modal iskeleti
+- `micro/modules/surec/routes.py` — `surec_karne` içinde `k_vektor_enabled`
+- `ui/templates/platform/kurum/ayarlar.html` — K-Vektör toggle markup, `kurum.css` linki
+- `ui/static/platform/css/kurum.css` — `.kv-enable-*` toggle paneli
+
+### Notlar
+KV analizi verisi açılışta seçili yıl için `/process/api/karne/...` ile yenilenir.
+
+---
+
+## TASK-059 | 2026-04-03 | ✅ Tamamlandı
+
+**Görev:** 6 ayrı UI düzeltmesi — SP badge, süreç tıklama, karne banner, kanban detay, VGS ikon, modal toolbar
+**Modül:** sp, surec (index, karne), surec.js, pg_tablo_modal.js
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/css/sp.css` → alt strateji chip başlığı çok satırlı (white-space:normal, word-break)
+- `ui/templates/platform/surec/index.html` → süreç adı `<a>` tag ile karne linkine bağlandı
+- `ui/templates/platform/surec/karne.html` → Rev. No kaldırıldı; VGS buton ikonu fa-wand-magic-sparkles, yazı "Veri Giriş Sihirbazı"; modal toolbar karne kartı gibi (start/center/end) yeniden düzenlendi
+- `ui/static/platform/js/surec.js` → kanban Gerçekleşen hücresine data-kpi-id/data-period-key + click → openVeriDetay
+- `ui/static/platform/js/pg_tablo_modal.js` → public `openVeriDetay(kpiId, periodKey)` API'ye eklendi
+- `ui/static/platform/css/surec.css` → modal toolbar justify-content:center kaldırıldı
+
+### Yapılan İşlem
+SP alt strateji badge'leri uzun başlıklarda 2+ satır olabilecek şekilde açıldı. Süreç listesinde her süreç adı karne sayfasına link oldu. Karne banner'dan Rev. No satırı kaldırıldı. Kanban PG kartlarında Gerçekleşen hücresine tıklayınca pg_tablo_modal'dan `openVeriDetay` çağrılarak Periyot veri detayı modalı doğrudan açılıyor. Karne PG kartındaki VGS butonu ikon+yazı güncellendi. PG tablo modalı toolbar'ı [Yıl+Gösterim | Önceki+Badge+Sonraki | Butonlar] düzenine getirildi.
+
+### Notlar
+Yok.
+
 ---
 
 ## TASK-058 | 2026-04-03 | ✅ Tamamlandı
