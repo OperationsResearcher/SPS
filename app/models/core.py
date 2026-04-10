@@ -43,8 +43,8 @@ class Tenant(db.Model):
     logo_updated_at = db.Column(db.DateTime, nullable=True)
 
     k_vektor_enabled = db.Column(db.Boolean, default=False, nullable=False)
-    k_radar_enabled = db.Column(db.Boolean, default=False, nullable=False)
     plan_year_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    plan_year_start = db.Column(db.Integer, nullable=True)  # Geçmiş yıl başlangıcı (ör. 2021)
 
     package = db.relationship("SubscriptionPackage", back_populates="tenants")
     users = db.relationship("User", back_populates="tenant")
@@ -164,8 +164,13 @@ class Strategy(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"), nullable=True, index=True)
+    source_strategy_id = db.Column(db.Integer, db.ForeignKey("strategies.id", ondelete="SET NULL"), nullable=True)
+
     # Relationships
     tenant = db.relationship("Tenant", backref=db.backref("strategies", lazy=True, cascade="all, delete-orphan", order_by="Strategy.code"))
+    source_strategy = db.relationship("Strategy", remote_side="Strategy.id", foreign_keys="Strategy.source_strategy_id")
 
     def __repr__(self):
         return f"<Strategy {self.code or ''} - {self.title}>"
@@ -191,8 +196,13 @@ class SubStrategy(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"), nullable=True, index=True)
+    source_sub_strategy_id = db.Column(db.Integer, db.ForeignKey("sub_strategies.id", ondelete="SET NULL"), nullable=True)
+
     # Relationships
     strategy = db.relationship("Strategy", backref=db.backref("sub_strategies", lazy=True, cascade="all, delete-orphan", order_by="SubStrategy.code"))
+    source_sub_strategy = db.relationship("SubStrategy", remote_side="SubStrategy.id", foreign_keys="SubStrategy.source_sub_strategy_id")
 
     def __repr__(self):
         return f"<SubStrategy {self.code or ''} - {self.title}>"

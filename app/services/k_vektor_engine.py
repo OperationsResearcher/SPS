@@ -61,20 +61,29 @@ def compute_k_vektor_bundle(
     year: int,
     as_of: date,
     persist_pg_scores: bool = True,
+    plan_year=None,  # PlanYear instance; None → tenant bazlı fallback
 ) -> Dict[str, Any]:
     """
     K-Vektör vizyon skoru (0–1000) ve ara skorlar.
     `vision_score` alanı geriye dönük uyum için 0–100: min(100, vision_1000 / 10).
+    plan_year verilirse hesaplama yalnızca o dönemin kayıtlarını kapsar.
     """
     process_scores, pg_scores = compute_process_scores_internal(
-        tenant_id, year, as_of, persist_pg_scores
+        tenant_id, year, as_of, persist_pg_scores, plan_year=plan_year
     )
 
-    processes = (
-        Process.query.filter_by(tenant_id=tenant_id, is_active=True)
-        .options(joinedload(Process.process_sub_strategy_links))
-        .all()
-    )
+    if plan_year is not None:
+        processes = (
+            Process.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            .options(joinedload(Process.process_sub_strategy_links))
+            .all()
+        )
+    else:
+        processes = (
+            Process.query.filter_by(tenant_id=tenant_id, is_active=True)
+            .options(joinedload(Process.process_sub_strategy_links))
+            .all()
+        )
 
     num: Dict[int, float] = defaultdict(float)
     den: Dict[int, float] = defaultdict(float)
@@ -85,12 +94,20 @@ def compute_k_vektor_bundle(
             num[sid] += sc * frac
             den[sid] += frac
 
-    sub_strategies = (
-        SubStrategy.query.join(Strategy)
-        .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True))
-        .filter(SubStrategy.is_active.is_(True))
-        .all()
-    )
+    if plan_year is not None:
+        sub_strategies = (
+            SubStrategy.query.join(Strategy)
+            .filter(Strategy.plan_year_id == plan_year.id, Strategy.is_active.is_(True))
+            .filter(SubStrategy.is_active.is_(True))
+            .all()
+        )
+    else:
+        sub_strategies = (
+            SubStrategy.query.join(Strategy)
+            .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True))
+            .filter(SubStrategy.is_active.is_(True))
+            .all()
+        )
 
     sub_strategy_scores: Dict[int, float] = {}
     for ss in sub_strategies:
@@ -111,11 +128,18 @@ def compute_k_vektor_bundle(
     )
     raw_sub: Dict[int, Optional[float]] = {r.sub_strategy_id: r.weight_raw for r in sub_w_rows}
 
-    strategies = (
-        Strategy.query.filter_by(tenant_id=tenant_id, is_active=True)
-        .order_by(Strategy.code)
-        .all()
-    )
+    if plan_year is not None:
+        strategies = (
+            Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            .order_by(Strategy.code)
+            .all()
+        )
+    else:
+        strategies = (
+            Strategy.query.filter_by(tenant_id=tenant_id, is_active=True)
+            .order_by(Strategy.code)
+            .all()
+        )
     main_ids = [s.id for s in strategies]
     quotas_main = _allocate_quotas(main_ids, raw_main, 1000.0)
 

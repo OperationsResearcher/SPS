@@ -102,21 +102,20 @@
   }
 
   // ── Yeni Yıl Modalı Aç ────────────────────────────────────────────────────
+  function openPynModal()  { if (modalNew) modalNew.classList.add("open"); }
+  function closePynModal() { if (modalNew) modalNew.classList.remove("open"); }
+
   if (btnNew && modalNew) {
-    btnNew.addEventListener("click", function () {
-      modalNew.style.display = "flex";
-    });
+    btnNew.addEventListener("click", openPynModal);
   }
 
   // Modal kapat (overlay ve ✕ butonu)
   document.querySelectorAll("[data-modal-close='modal-plan-year-new']").forEach(function (el) {
-    el.addEventListener("click", function () {
-      if (modalNew) modalNew.style.display = "none";
-    });
+    el.addEventListener("click", closePynModal);
   });
   if (modalNew) {
     modalNew.addEventListener("click", function (e) {
-      if (e.target === modalNew) modalNew.style.display = "none";
+      if (e.target === modalNew) closePynModal();
     });
   }
 
@@ -145,7 +144,7 @@
         const data = await postJson(CREATE_URL, payload);
         if (data.success) {
           toastOk(data.message || `${newYear} yılı planı oluşturuldu.`);
-          if (modalNew) modalNew.style.display = "none";
+          closePynModal();
           setTimeout(() => window.location.reload(), 1200);
         } else {
           toastErr(data.message || "Plan yılı oluşturulamadı.");

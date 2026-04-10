@@ -12,6 +12,7 @@ from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from app.models import db
+from sqlalchemy import or_, func as _sqla_func
 from app.models.process import (
     Process,
     ProcessSubStrategyLink,
@@ -25,7 +26,9 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.models.core import User, Strategy, Tenant
-from app.services.plan_year_service import get_plan_year, get_kpi_configs_bulk
+from app.services.plan_year_service import (
+    get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years
+)
 from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences, sync_pg_sequence_if_needed
@@ -180,13 +183,12 @@ def _process_for_user(process_id: int) -> Process | None:
     )
 
 
-def _parent_options_with_depth(tenant_id: int):
+def _parent_options_with_depth(tenant_id: int, plan_year_id: int | None = None):
     """Üst süreç seçici — tenant’taki tüm aktif süreçler (hiyerarşi ile)."""
-    all_p = (
-        Process.query.filter_by(tenant_id=tenant_id, is_active=True)
-        .order_by(Process.code)
-        .all()
-    )
+    q = Process.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if plan_year_id is not None:
+        q = q.filter(Process.plan_year_id == plan_year_id)
+    all_p = q.order_by(Process.code).all()
     all_ids = {p.id for p in all_p}
     roots_all = [p for p in all_p if p.parent_id is None or p.parent_id not in all_ids]
     ch_map = {}
@@ -224,6 +226,7 @@ def _users_pick_json(users):
 def surec():
     """Süreç Yönetimi ana sayfası — hiyerarşik ağaç; erişim rol/atamaya göre filtrelenir."""
     tid = current_user.tenant_id
+    active_py = get_active_plan_year_for_user(current_user)
     q = (
         Process.query.options(
             joinedload(Process.leaders),
@@ -234,7 +237,26 @@ def surec():
         )
         .order_by(Process.code)
     )
-    all_processes = accessible_processes_filter(q, current_user, tid).all()
+    _proc_fallback_py_id = None
+    if active_py:
+        q_year = q.filter(Process.plan_year_id == active_py.id)
+        all_processes = accessible_processes_filter(q_year, current_user, tid).all()
+        # Veri yoksa: en çok sürece sahip plan yılına geri dön
+        if not all_processes:
+            best = (
+                db.session.query(Process.plan_year_id, _sqla_func.count(Process.id))
+                .filter(Process.tenant_id == tid, Process.is_active == True,
+                        Process.plan_year_id != None)
+                .group_by(Process.plan_year_id)
+                .order_by(_sqla_func.count(Process.id).desc())
+                .first()
+            )
+            if best:
+                _proc_fallback_py_id = best[0]
+                q_fb = q.filter(Process.plan_year_id == best[0])
+                all_processes = accessible_processes_filter(q_fb, current_user, tid).all()
+    else:
+        all_processes = accessible_processes_filter(q, current_user, tid).all()
 
     all_ids = {p.id for p in all_processes}
     roots = [p for p in all_processes if p.parent_id is None or p.parent_id not in all_ids]
@@ -246,7 +268,13 @@ def surec():
 
     users = User.query.filter_by(tenant_id=tid, is_active=True).all()
 
-    strategies = Strategy.query.filter_by(tenant_id=tid, is_active=True).order_by(Strategy.code).all()
+    _effective_py_id = _proc_fallback_py_id or (active_py.id if active_py else None)
+    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    if _effective_py_id:
+        strat_q = strat_q.filter(
+            or_(Strategy.plan_year_id == _effective_py_id, Strategy.plan_year_id == None)
+        )
+    strategies = strat_q.order_by(Strategy.code).all()
     strategies_json = [
         {
             "id": s.id,
@@ -261,7 +289,7 @@ def surec():
         for s in strategies
     ]
 
-    parent_options_with_depth = _parent_options_with_depth(tid)
+    parent_options_with_depth = _parent_options_with_depth(tid, plan_year_id=_effective_py_id)
     users_pick_json = _users_pick_json(users)
 
     can_crud = can_crud_process_entity(current_user)
@@ -275,8 +303,9 @@ def surec():
 
     try:
         today = date.today()
+        _surec_py = get_active_plan_year_for_user(current_user)
         process_scores, _ = compute_process_scores_internal(
-            tid, today.year, today, persist_pg_scores=False
+            tid, today.year, today, persist_pg_scores=False, plan_year=_surec_py
         )
     except Exception as _e:
         current_app.logger.error(f"[surec] process_scores hesaplanamadı: {_e}", exc_info=True)
@@ -354,6 +383,12 @@ def surec_karne(process_id):
 
     tenant_row = Tenant.query.get(tid) if tid else None
     k_vektor_enabled = bool(tenant_row and getattr(tenant_row, "k_vektor_enabled", False))
+    plan_year_enabled = bool(tenant_row and getattr(tenant_row, "plan_year_enabled", False))
+
+    # Plan year aktifse tüm dönemleri karne year selector'a ver
+    plan_years_for_karne = []
+    if plan_year_enabled and tid:
+        plan_years_for_karne = list_plan_years(tid)
 
     return render_template(
         "platform/surec/karne.html",
@@ -366,6 +401,8 @@ def surec_karne(process_id):
         page_flags=flags,
         initial_tab=initial_tab,
         k_vektor_enabled=k_vektor_enabled,
+        plan_year_enabled=plan_year_enabled,
+        plan_years_for_karne=plan_years_for_karne,
     )
 
 
@@ -833,6 +870,24 @@ def surec_api_kpi_data_add():
     proc = _process_for_user(kpi.process_id)
     if not proc or not user_can_enter_pgv(current_user, proc):
         return jsonify({"success": False, "message": "PG verisi girme yetkiniz yok."}), 403
+
+    # Plan year kontrolü: girilen verinin yılı aktif dönem yılıyla eşleşmeli
+    active_py = get_active_plan_year_for_user(current_user)
+    if active_py:
+        requested_year = int(data.get("year", datetime.now().year))
+        requested_date = data.get("data_date", "")
+        date_year = int(requested_date[:4]) if requested_date and len(requested_date) >= 4 else requested_year
+        if requested_year != active_py.year or date_year != active_py.year:
+            return jsonify({
+                "success": False,
+                "message": (
+                    f"Aktif dönem {active_py.year} seçili. "
+                    f"Bu döneme ait olmayan bir tarihe ({requested_date or requested_year}) veri girilemez. "
+                    f"Farklı bir döneme veri girmek için önce o dönemi seçin."
+                ),
+                "plan_year_mismatch": True,
+                "active_year": active_py.year,
+            }), 409
     try:
         year_val = int(data.get("year", datetime.now().year))
         pt = (data.get("period_type") or "yillik").lower().strip()
@@ -1272,6 +1327,24 @@ def surec_api_activity_add():
         abort(404)
     if not _user_can_add_activity(current_user, p):
         return jsonify({"success": False, "message": "Faaliyet ekleme yetkiniz yok."}), 403
+
+    # Plan year kontrolü: plan_year_enabled ise süreç aktif döneme ait olmalı
+    active_py = get_active_plan_year_for_user(current_user)
+    if active_py and p.plan_year_id and p.plan_year_id != active_py.id:
+        from app.models.plan_year import PlanYear
+        proc_py = PlanYear.query.get(p.plan_year_id)
+        proc_year_label = proc_py.year if proc_py else "?"
+        return jsonify({
+            "success": False,
+            "message": (
+                f"Bu süreç {proc_year_label} dönemine ait. "
+                f"Aktif dönem {active_py.year} olarak seçili. "
+                f"Faaliyet eklemek için önce {proc_year_label} dönemini seçin."
+            ),
+            "plan_year_mismatch": True,
+            "active_year": active_py.year,
+            "process_year": proc_year_label,
+        }), 409
     try:
         def _parse_dt(v):
             if not v:
@@ -1354,6 +1427,7 @@ def surec_api_activity_add():
                 start_date=start_at.date(),
                 end_date=end_at.date(),
                 notify_email=bool(data.get("notify_email", False)),
+                plan_year_id=active_py.id if active_py else p.plan_year_id,
             )
             db.session.add(act)
             try:
@@ -1600,6 +1674,58 @@ def surec_api_activity_delete(act_id):
         return jsonify({"success": False, "message": str(e)}), 400
 
 
+@app_bp.route("/process/api/activity/cancel/<int:act_id>", methods=["POST"])
+@login_required
+def surec_api_activity_cancel(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id,
+        Process.is_active.is_(True),
+    ).first_or_404()
+    proc = _process_for_user(act.process_id)
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
+        return jsonify({"success": False, "message": "Faaliyet iptal yetkiniz yok."}), 403
+    try:
+        act.status = "İptal"
+        act.cancelled_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Faaliyet iptal edildi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[surec_api_activity_cancel] {e}")
+        return jsonify({"success": False, "message": str(e)}), 400
+
+
+@app_bp.route("/process/api/activity/postpone/<int:act_id>", methods=["POST"])
+@login_required
+def surec_api_activity_postpone(act_id):
+    act = ProcessActivity.query.join(Process).filter(
+        ProcessActivity.id == act_id,
+        Process.tenant_id == current_user.tenant_id,
+        Process.is_active.is_(True),
+    ).first_or_404()
+    proc = _process_for_user(act.process_id)
+    if not proc or not _user_can_manage_activity(current_user, proc, act):
+        return jsonify({"success": False, "message": "Faaliyet erteleme yetkiniz yok."}), 403
+    data = request.get_json() or {}
+    start_at_str = data.get("start_at", "")
+    end_at_str = data.get("end_at", "")
+    if not start_at_str or not end_at_str:
+        return jsonify({"success": False, "message": "Başlangıç ve bitiş tarihi zorunludur."}), 400
+    try:
+        from dateutil.parser import parse as parse_dt
+        act.start_at = parse_dt(start_at_str)
+        act.end_at = parse_dt(end_at_str)
+        act.status = "Ertelendi"
+        act.postponed_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Faaliyet ertelendi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[surec_api_activity_postpone] {e}")
+        return jsonify({"success": False, "message": str(e)}), 400
+
+
 @app_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_complete(act_id):
@@ -1661,6 +1787,104 @@ def surec_api_activity_track(act_id):
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_track] {e}")
         return jsonify({"success": False, "message": str(e)}), 400
+
+
+# ──────────────────────────────────────────────────
+# API — Yıl değişimi: aynı kod → hedef yılın process_id'si
+# ──────────────────────────────────────────────────
+
+@app_bp.route("/process/api/resolve-for-year", methods=["GET"])
+@login_required
+def surec_api_resolve_for_year():
+    """
+    Karne yıl navigasyonu: mevcut process.code + hedef yıl → hedef yılın process_id.
+    Query params: process_id=<int>, year=<int>
+    Döner: {success, process_id, process_name, url}
+    """
+    src_id = request.args.get("process_id", type=int)
+    year   = request.args.get("year", type=int)
+    if not src_id or not year:
+        return jsonify({"success": False, "message": "process_id ve year zorunlu."}), 400
+
+    src = Process.query.filter_by(
+        id=src_id, tenant_id=current_user.tenant_id, is_active=True
+    ).first()
+    if not src:
+        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+
+    # Hedef plan year
+    target_py = get_plan_year(current_user.tenant_id, year)
+    if not target_py:
+        return jsonify({"success": False, "message": f"{year} yılı SPDönemi bulunamadı."}), 404
+
+    # Aynı code'lu süreci o yılda bul
+    target = None
+    if src.code:
+        target = Process.query.filter_by(
+            tenant_id=current_user.tenant_id,
+            code=src.code,
+            plan_year_id=target_py.id,
+            is_active=True,
+        ).first()
+
+    # code yoksa ya da bulunamazsa — source_id zinciriyle traverse et
+    if not target:
+        # source_id chain: mevcut süreçten kaynak yıla git, hedef yılı bul
+        target = _resolve_process_by_source_chain(src, target_py.id)
+
+    if not target:
+        return jsonify({
+            "success": False,
+            "message": f"Bu süreç {year} döneminde bulunamadı.",
+            "year": year,
+        }), 404
+
+    from flask import url_for as _url_for
+    return jsonify({
+        "success": True,
+        "process_id": target.id,
+        "process_name": target.name,
+        "url": _url_for("app_bp.surec_karne", process_id=target.id),
+    })
+
+
+def _resolve_process_by_source_chain(proc: Process, target_plan_year_id: int):
+    """
+    Verilen sürecin kaynak zincirini takip ederek target_plan_year_id'ye ait
+    klonunu bulur. Hem geriye (source_process_id ile ata bul) hem ileriye
+    (bu atanın o yılda çocuğunu bul) gidebilir.
+    """
+    tid = proc.tenant_id
+
+    # Önce kökü bul: source_process_id=NULL olan ataya ulaş
+    root = proc
+    visited = {proc.id}
+    while root.source_process_id:
+        if root.source_process_id in visited:
+            break
+        visited.add(root.source_process_id)
+        parent = Process.query.get(root.source_process_id)
+        if not parent:
+            break
+        root = parent
+
+    # Kökten hedef yılın klonunu bul (BFS üzerinden source zinciriyle)
+    from collections import deque
+    queue = deque([root])
+    seen = {root.id}
+    while queue:
+        node = queue.popleft()
+        if node.plan_year_id == target_plan_year_id:
+            return node
+        # Bu node'un klon çocuklarını bul
+        children = Process.query.filter_by(
+            source_process_id=node.id, tenant_id=tid, is_active=True
+        ).all()
+        for ch in children:
+            if ch.id not in seen:
+                seen.add(ch.id)
+                queue.append(ch)
+    return None
 
 
 # ──────────────────────────────────────────────────

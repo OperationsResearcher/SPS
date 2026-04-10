@@ -55,3 +55,6 @@ from app.models.plan_year import (  # noqa: E402
     ProcessYearConfig,
     IndividualKpiYearConfig,
 )
+from app.models.tenant_year import TenantYearIdentity  # noqa: E402
+from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis  # noqa: E402
+from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity  # noqa: E402

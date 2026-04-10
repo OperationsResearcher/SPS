@@ -1,6 +1,6 @@
 """K-Radar route'lari (hub + alt radarlar)."""
 
-from flask import current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import current_app, jsonify, render_template, request
 import csv
 import io
 from datetime import datetime, timezone
@@ -57,31 +57,6 @@ def _safe_json(callable_fn):
     except Exception as e:
         current_app.logger.exception("[k_radar] %s", e)
         return jsonify({"success": False, "message": "Islem sirasinda hata olustu."}), 500
-
-
-def _k_radar_tenant_allows_access() -> bool:
-    """Tenant yoksa (platform Admin) serbest; tenant varsa k_radar_enabled gerekir."""
-    if not getattr(current_user, "is_authenticated", False):
-        return True
-    tenant = getattr(current_user, "tenant", None)
-    if tenant is None:
-        return True
-    return bool(getattr(tenant, "k_radar_enabled", False))
-
-
-@app_bp.before_request
-def _k_radar_tenant_feature_gate():
-    ep = request.endpoint or ""
-    if "k_radar" not in ep:
-        return None
-    if not current_user.is_authenticated:
-        return None
-    if _k_radar_tenant_allows_access():
-        return None
-    if "/k-radar/api/" in request.path:
-        return jsonify({"success": False, "message": "K-Radar bu kurum için kapalı."}), 403
-    flash("K-Radar bu kurum için etkin değil.", "warning")
-    return redirect(url_for("app_bp.masaustu"))
 
 
 def _ks_swot_summary(tenant_id: int) -> dict:

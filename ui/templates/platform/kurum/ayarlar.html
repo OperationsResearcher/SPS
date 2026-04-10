@@ -113,37 +113,6 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-satellite-dish"></i>K-Radar
-      </span>
-    </div>
-    <div class="mc-card-body">
-      <p class="mc-empty-text kv-settings-intro">
-        Açıldığında sol menüde ve <strong>Modüller</strong> ana sayfasında K-Radar kartı görünür; KS / KP / KPR ve Cross radar ekranlarına erişilir.
-        Kapalıyken bu modül gizlenir ve doğrudan URL ile erişim engellenir.
-      </p>
-      <div class="kv-enable-panel">
-        <label class="kv-enable-toggle" for="k_radar_enabled">
-          <input type="checkbox" id="k_radar_enabled" class="kv-enable-toggle-input" {% if tenant.k_radar_enabled %}checked{% endif %} />
-          <span class="kv-enable-toggle-ui" aria-hidden="true">
-            <span class="kv-enable-toggle-track"></span>
-            <span class="kv-enable-toggle-thumb"></span>
-          </span>
-          <span class="kv-enable-toggle-copy">
-            <span class="kv-enable-toggle-title">K-Radar kullanımını etkinleştir</span>
-            <span class="kv-enable-toggle-sub">Kurum çapı performans ve karar destek radarları kullanılabilir hale gelir.</span>
-            <span class="kv-enable-badges" aria-live="polite">
-              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
-              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
-            </span>
-          </span>
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <div class="mc-card">
-    <div class="mc-card-header">
-      <span class="mc-card-title">
         <i class="fas fa-calendar-alt"></i>Yıllık Plan Dönemleri
       </span>
     </div>
@@ -169,6 +138,26 @@
             </span>
           </span>
         </label>
+      </div>
+
+      <div id="plan-year-start-panel" style="margin-top:16px;" {% if not tenant.plan_year_enabled %}hidden{% endif %}>
+        <label class="mc-label" for="plan_year_start" style="font-weight:600; margin-bottom:6px; display:block;">
+          <i class="fas fa-history" style="margin-right:6px; color:var(--mc-primary,#3b82f6);"></i>Geçmiş yılları dahil et
+        </label>
+        <p style="margin:0 0 10px; font-size:13px; color:var(--mc-text-muted,#64748b);">
+          Seçilen yıldan bugüne kadar tüm yıllar otomatik oluşturulur. Mevcut SP verisi her yıla kopyalanır; sonradan yıl bazında değiştirilebilir.
+        </p>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <select id="plan_year_start" name="plan_year_start" class="mc-input" style="width:auto; min-width:140px;">
+            <option value="">— Seçin —</option>
+            {% for yr in [2021, 2022, 2023, 2024, 2025, 2026] %}
+            <option value="{{ yr }}" {% if tenant.plan_year_start == yr %}selected{% endif %}>{{ yr }} yılından itibaren</option>
+            {% endfor %}
+          </select>
+          {% if tenant.plan_year_start %}
+          <span style="font-size:13px; color:#16a34a;"><i class="fas fa-check-circle"></i> {{ tenant.plan_year_start }}–bugün arası yıllar aktif</span>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>

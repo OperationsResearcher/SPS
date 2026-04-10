@@ -9,6 +9,7 @@ from sqlalchemy.orm import selectinload
 from platform_core import app_bp
 from app.extensions import csrf
 from app.models import db
+from sqlalchemy import or_
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.k_vektor import KVektorStrategyWeight, KVektorSubStrategyWeight
 from app.services.k_vektor_config_service import (
@@ -19,7 +20,11 @@ from app.services.k_vektor_config_service import (
 )
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import Process, ProcessKpi
-from app.models.plan_year import PlanYear, KpiYearConfig
+from app.models.plan_year import (
+    PlanYear, KpiYearConfig,
+    StrategyYearConfig, SubStrategyYearConfig, ProcessYearConfig,
+)
+from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity
 from app.services.score_engine_service import compute_vision_score
 from app.services.plan_year_service import (
     list_plan_years,
@@ -27,8 +32,11 @@ from app.services.plan_year_service import (
     get_or_create_plan_year,
     close_plan_year,
     clone_plan_year,
+    clone_full_plan_year,
     upsert_kpi_year_config,
+    get_active_plan_year_for_user,
 )
+from app.models.tenant_year import TenantYearIdentity
 
 _SP_ROLES = (
     "Admin",
@@ -64,13 +72,44 @@ def sp():
     tenant_id = current_user.tenant_id
     tenant = current_user.tenant
 
-    strategies = (
+    active_py = get_active_plan_year_for_user(current_user)
+    strat_q = (
         Strategy.query
         .options(selectinload(Strategy.sub_strategies))
         .filter_by(tenant_id=tenant_id, is_active=True)
         .order_by(Strategy.code)
-        .all()
-    ) if tenant_id else []
+    )
+    _fallback_plan_year_id = None  # Otomatik geri dönülen plan_year_id (varsa)
+    if active_py:
+        strat_q_year = strat_q.filter(
+            or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None)
+        )
+        strategies = strat_q_year.all() if tenant_id else []
+        # Veri yoksa: veri olan plan year'a geri dön
+        if not strategies and tenant_id:
+            from sqlalchemy import func as _func
+            best = (
+                db.session.query(Strategy.plan_year_id, _func.count(Strategy.id).label("cnt"))
+                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True,
+                        Strategy.plan_year_id != None)
+                .group_by(Strategy.plan_year_id)
+                .order_by(_func.count(Strategy.id).desc())
+                .first()
+            )
+            if best:
+                _fallback_plan_year_id = best[0]
+                strategies = strat_q.filter(Strategy.plan_year_id == best[0]).all()
+    else:
+        strategies = strat_q.all() if tenant_id else []
+    # Uyarı: etiketlenmemiş (plan_year_id=NULL) kayıt varsa kullanıcıya göster
+    has_untagged_strategies = active_py and any(s.plan_year_id is None for s in strategies)
+
+    # Misyon/vizyon: plan_year aktifse TenantYearIdentity'den, yoksa Tenant'tan
+    year_identity = None
+    if active_py:
+        year_identity = TenantYearIdentity.query.filter_by(
+            plan_year_id=active_py.id, tenant_id=tenant_id
+        ).first()
 
     k_vektor_enabled = bool(tenant and getattr(tenant, "k_vektor_enabled", False))
 
@@ -93,7 +132,10 @@ def sp():
     kv_quotas_main: dict = {}
     if tenant_id and k_vektor_enabled:
         try:
-            bundle = compute_vision_score(tenant_id, persist_pg_scores=False)
+            bundle = compute_vision_score(
+                tenant_id, persist_pg_scores=False,
+                plan_year=active_py,
+            )
             if bundle.get("k_vektor") and bundle.get("vision_score_1000") is not None:
                 v1000 = float(bundle["vision_score_1000"])
                 v1000 = min(1000.0, max(0.0, v1000))
@@ -126,7 +168,18 @@ def sp():
         available_years = [py.year for py in plan_years_list]
         if available_years and active_plan_year_val not in available_years:
             active_plan_year_val = available_years[0]
-        active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
+        # Fallback: seçili yılda veri yoksa, veri olan yılı göster
+        if _fallback_plan_year_id:
+            fallback_py = PlanYear.query.filter_by(
+                id=_fallback_plan_year_id, tenant_id=tenant_id
+            ).first()
+            if fallback_py:
+                active_plan_year_val = fallback_py.year
+                active_plan_year_obj = fallback_py
+            else:
+                active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
+        else:
+            active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
     else:
         plan_years_list = []
         active_plan_year_val = current_cal_year
@@ -135,6 +188,7 @@ def sp():
     return render_template(
         "platform/sp/index.html",
         tenant=tenant,
+        year_identity=year_identity,
         strategies=strategies,
         sp_can_manage=_check_sp_role(),
         k_vektor_enabled=k_vektor_enabled,
@@ -150,6 +204,8 @@ def sp():
         active_plan_year_val=active_plan_year_val,
         current_cal_year=current_cal_year,
         plan_year_feature=plan_year_feature,
+        has_untagged_strategies=has_untagged_strategies,
+        data_fallback=bool(_fallback_plan_year_id),
     )
 
 
@@ -163,10 +219,11 @@ def sp_api_k_vektor_weights():
     if not tid:
         return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
 
+    active_py = get_active_plan_year_for_user(current_user)
     if request.method == "GET":
-        return jsonify(k_vektor_weights_get_dict(tid))
+        return jsonify(k_vektor_weights_get_dict(tid, plan_year=active_py))
 
-    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {})
+    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {}, plan_year=active_py)
     if ok:
         return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
     status = 404 if msg and "bulunamadı" in msg else 400
@@ -200,13 +257,33 @@ def sp_degerler():
 @login_required
 @sp_manage_required
 def sp_api_tenant_identity():
-    """Tenant amaç/vizyon/değerler/etik alanları (Kurum API ile aynı alanlar)."""
-    tenant = Tenant.query.filter_by(id=current_user.tenant_id).first_or_404()
+    """
+    Tenant amaç/vizyon/değerler/etik alanları.
+    Plan year aktifse TenantYearIdentity'e kaydeder (Tenant'a da yazar — fallback için).
+    """
+    tid = current_user.tenant_id
+    tenant = Tenant.query.filter_by(id=tid).first_or_404()
     data = request.get_json() or {}
+    fields = ("purpose", "vision", "core_values", "code_of_ethics", "quality_policy")
     try:
-        for field in ("purpose", "vision", "core_values", "code_of_ethics", "quality_policy"):
+        # Tenant'a her zaman yaz (geriye dönük uyumluluk)
+        for field in fields:
             if field in data:
                 setattr(tenant, field, data[field])
+
+        # Plan year aktifse TenantYearIdentity'e de yaz
+        active_py = get_active_plan_year_for_user(current_user)
+        if active_py:
+            yi = TenantYearIdentity.query.filter_by(
+                plan_year_id=active_py.id, tenant_id=tid
+            ).first()
+            if not yi:
+                yi = TenantYearIdentity(plan_year_id=active_py.id, tenant_id=tid)
+                db.session.add(yi)
+            for field in fields:
+                if field in data:
+                    setattr(yi, field, data[field])
+
         db.session.commit()
         return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
     except Exception as e:
@@ -232,12 +309,15 @@ def sp_add_strategy():
     if not tenant_id:
         return jsonify({"success": False, "message": "Kurum (tenant) bilgisi eksik."}), 400
 
+    active_py = get_active_plan_year_for_user(current_user)
+
     def _make_strategy():
         return Strategy(
             tenant_id=tenant_id,
             title=title,
             code=(data.get("code") or "").strip() or None,
             description=(data.get("description") or "").strip() or None,
+            plan_year_id=active_py.id if active_py else None,
         )
 
     try:
@@ -340,12 +420,15 @@ def sp_add_sub_strategy():
         id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
     ).first_or_404()
 
+    active_py = get_active_plan_year_for_user(current_user)
+
     def _make_sub():
         return SubStrategy(
             strategy_id=parent.id,
             title=title,
             code=(data.get("code") or "").strip() or None,
             description=(data.get("description") or "").strip() or None,
+            plan_year_id=active_py.id if active_py else None,
         )
 
     try:
@@ -430,12 +513,22 @@ def sp_delete_sub_strategy(sub_id):
 def sp_flow():
     """Stratejik planlama akış özet sayfası."""
     tid = current_user.tenant_id
-    strategy_count = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
-    process_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
+    active_py = get_active_plan_year_for_user(current_user)
+    strat_base = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    proc_base = Process.query.filter_by(tenant_id=tid, is_active=True)
+    if active_py:
+        strat_base = strat_base.filter(
+            or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None))
+        proc_base = proc_base.filter(
+            or_(Process.plan_year_id == active_py.id, Process.plan_year_id == None))
+    strategy_count = strat_base.count()
+    process_count = proc_base.count()
     sub_strategy_count = (
         SubStrategy.query
         .join(Strategy)
-        .filter(Strategy.tenant_id == tid, SubStrategy.is_active == True)
+        .filter(Strategy.tenant_id == tid, SubStrategy.is_active == True,
+                *([or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None)]
+                  if active_py else []))
         .count()
     )
     tenant = current_user.tenant
@@ -469,13 +562,21 @@ def sp_api_graph():
 
     tenant = Tenant.query.get_or_404(tid)
 
-    strategies = (
+    active_py = get_active_plan_year_for_user(current_user)
+    strat_q = (
         Strategy.query
         .options(selectinload(Strategy.sub_strategies))
         .filter_by(tenant_id=tid, is_active=True)
-        .all()
     )
-    processes = Process.query.filter_by(tenant_id=tid, is_active=True).all()
+    if active_py:
+        strat_q = strat_q.filter(
+            or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None))
+    strategies = strat_q.all()
+    proc_q = Process.query.filter_by(tenant_id=tid, is_active=True)
+    if active_py:
+        proc_q = proc_q.filter(
+            or_(Process.plan_year_id == active_py.id, Process.plan_year_id == None))
+    processes = proc_q.all()
 
     nodes = []
     edges = []
@@ -511,7 +612,8 @@ def sp_api_graph():
 
     try:
         from app.services.score_engine_service import compute_vision_score
-        vision_score = compute_vision_score(tid)
+        _graph_py = get_active_plan_year_for_user(current_user)
+        vision_score = compute_vision_score(tid, plan_year=_graph_py)
     except Exception as e:
         current_app.logger.warning(f"[sp_api_graph] score_engine: {e}")
         vision_score = None
@@ -594,6 +696,8 @@ def sp_api_plan_years_create():
     from_year = data.get("from_year")
     name = (data.get("name") or "").strip() or None
 
+    plan_year_feature = bool(getattr(Tenant.query.get(tid), "plan_year_enabled", False))
+
     try:
         if from_year:
             try:
@@ -603,7 +707,11 @@ def sp_api_plan_years_create():
             source_py = get_plan_year(tid, from_year)
             if not source_py:
                 return jsonify({"success": False, "message": f"{from_year} yılı planı bulunamadı."}), 404
-            new_py = clone_plan_year(source_py, new_year, name=name)
+            # Full clone sistemi aktifse tam klon, yoksa eski overlay klon
+            if plan_year_feature:
+                new_py = clone_full_plan_year(source_py, new_year, name=name)
+            else:
+                new_py = clone_plan_year(source_py, new_year, name=name)
         else:
             new_py = get_or_create_plan_year(tid, new_year)
             if name:
@@ -757,3 +865,518 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
         return jsonify({"success": False, "message": "Bazı kayıtlarda hata oluştu.", "errors": errors}), 400
 
     return jsonify({"success": True, "message": f"{updated} KPI hedefi güncellendi.", "updated": updated})
+
+
+# ── SP Projeler ───────────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/donemler")
+@login_required
+def sp_donemler():
+    """SP Dönem yönetimi sayfası."""
+    import datetime as _dt
+    tenant = current_user.tenant
+    tenant_id = current_user.tenant_id
+    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
+    current_cal_year = _dt.date.today().year
+
+    if plan_year_feature and tenant_id:
+        plan_years_list = list_plan_years(tenant_id)
+        active_plan_year_val = session.get("sp_active_year", current_cal_year)
+        available_years = [py.year for py in plan_years_list]
+        if available_years and active_plan_year_val not in available_years:
+            active_plan_year_val = available_years[0]
+        active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
+    else:
+        plan_years_list = []
+        active_plan_year_val = current_cal_year
+        active_plan_year_obj = None
+
+    return render_template(
+        "platform/sp/donemler.html",
+        plan_year_feature=plan_year_feature,
+        plan_years=plan_years_list,
+        active_plan_year=active_plan_year_obj,
+        active_plan_year_val=active_plan_year_val,
+        current_cal_year=current_cal_year,
+        sp_can_manage=_check_sp_role(),
+    )
+
+
+@app_bp.route("/sp/api/donem-karsilastir", methods=["GET"])
+@login_required
+def sp_api_donem_karsilastir():
+    """İki stratejik plan dönemini karşılaştırır ve farkları döner."""
+    tid = current_user.tenant_id
+    y1 = request.args.get("y1", type=int)
+    y2 = request.args.get("y2", type=int)
+
+    if not y1 or not y2:
+        return jsonify({"success": False, "message": "İki dönem yılı gerekli (y1, y2)."}), 400
+    if y1 == y2:
+        return jsonify({"success": False, "message": "Aynı dönemi karşılaştıramazsınız."}), 400
+
+    py1 = get_plan_year(tid, y1)
+    py2 = get_plan_year(tid, y2)
+
+    if not py1:
+        return jsonify({"success": False, "message": f"{y1} dönemi bulunamadı."}), 404
+    if not py2:
+        return jsonify({"success": False, "message": f"{y2} dönemi bulunamadı."}), 404
+
+    def _status_label(s):
+        return {"active": "Aktif", "closed": "Kapalı", "draft": "Taslak", "archived": "Arşiv"}.get(s, s or "—")
+
+    def _fmt_date(dt):
+        return dt.strftime("%d.%m.%Y") if dt else "—"
+
+    # ── Meta karşılaştırması ───────────────────────────────────────────────────
+    meta_diffs = []
+    meta_fields = [
+        ("Ad",           py1.name or f"{py1.year} Stratejik Planı", py2.name or f"{py2.year} Stratejik Planı"),
+        ("Durum",        _status_label(py1.status),                  _status_label(py2.status)),
+        ("Oluşturulma",  _fmt_date(py1.created_at),                  _fmt_date(py2.created_at)),
+        ("Kapanış",      _fmt_date(py1.closed_at),                   _fmt_date(py2.closed_at)),
+    ]
+    for field, v1, v2 in meta_fields:
+        meta_diffs.append({"field": field, "y1": v1, "y2": v2, "changed": v1 != v2})
+
+    # ── Yardımcı: source_id eşleştirmesi ─────────────────────────────────────
+    def _match_pairs(items1, items2, src_attr):
+        """
+        Full Clone mimarisinde iki yılın kayıtlarını source_*_id ile eşleştirir.
+        Döner: [(item1_or_None, item2_or_None), ...]
+        """
+        by_id1 = {x.id: x for x in items1}
+        by_id2 = {x.id: x for x in items2}
+        matched1, matched2 = set(), set()
+        pairs = []
+
+        # Y2 → Y1 yönü (Y2 klonlandıysa Y1'den)
+        for x2 in items2:
+            src = getattr(x2, src_attr, None)
+            if src and src in by_id1:
+                pairs.append((by_id1[src], x2))
+                matched1.add(by_id1[src].id)
+                matched2.add(x2.id)
+
+        # Y1 → Y2 yönü (Y1 klonlandıysa Y2'den — ters sıra)
+        for x1 in items1:
+            if x1.id in matched1:
+                continue
+            src = getattr(x1, src_attr, None)
+            if src and src in by_id2 and by_id2[src].id not in matched2:
+                pairs.append((x1, by_id2[src]))
+                matched1.add(x1.id)
+                matched2.add(by_id2[src].id)
+
+        # Ortak kaynak varsa (ikisi de aynı atadan)
+        src_to_x1 = {}
+        for x1 in items1:
+            if x1.id in matched1:
+                continue
+            src = getattr(x1, src_attr, None)
+            if src:
+                src_to_x1[src] = x1
+        for x2 in items2:
+            if x2.id in matched2:
+                continue
+            src = getattr(x2, src_attr, None)
+            if src and src in src_to_x1:
+                x1 = src_to_x1[src]
+                pairs.append((x1, x2))
+                matched1.add(x1.id)
+                matched2.add(x2.id)
+
+        # Sadece Y1'de olanlar
+        for x1 in items1:
+            if x1.id not in matched1:
+                pairs.append((x1, None))
+
+        # Sadece Y2'de olanlar
+        for x2 in items2:
+            if x2.id not in matched2:
+                pairs.append((None, x2))
+
+        return pairs
+
+    # ── Strateji karşılaştırması (strategies tablosu, plan_year_id ile) ──────
+    from app.models.core import Strategy as _Strategy, SubStrategy as _SubStrategy
+    from app.models.process import Process as _Process, ProcessKpi as _ProcessKpi
+
+    strats1 = _Strategy.query.filter_by(tenant_id=tid, plan_year_id=py1.id, is_active=True).all()
+    strats2 = _Strategy.query.filter_by(tenant_id=tid, plan_year_id=py2.id, is_active=True).all()
+
+    strategy_diffs = []
+    for s1, s2 in _match_pairs(strats1, strats2, "source_strategy_id"):
+        only_in_y1 = s2 is None
+        only_in_y2 = s1 is None
+        title = (s1 or s2).title
+        changed_fields = []
+        if s1 and s2:
+            if (s1.title or "") != (s2.title or ""):
+                changed_fields.append(("Başlık", s1.title or "—", s2.title or "—"))
+            if (s1.code or "") != (s2.code or ""):
+                changed_fields.append(("Kod", s1.code or "—", s2.code or "—"))
+            if (s1.description or "").strip() != (s2.description or "").strip():
+                changed_fields.append(("Açıklama", "değişti", "değişti"))
+        changed = only_in_y1 or only_in_y2 or bool(changed_fields)
+        strategy_diffs.append({
+            "title": title,
+            "only_in_y1": only_in_y1,
+            "only_in_y2": only_in_y2,
+            "changed_fields": changed_fields,
+            "y1": {"code": s1.code if s1 else None, "title": s1.title if s1 else None},
+            "y2": {"code": s2.code if s2 else None, "title": s2.title if s2 else None},
+            "changed": changed,
+        })
+
+    # ── Alt strateji karşılaştırması ──────────────────────────────────────────
+    # Y1/Y2 stratejilerinden alt stratejilere ulaş
+    s1_ids = [s.id for s in strats1]
+    s2_ids = [s.id for s in strats2]
+
+    ss1 = (_SubStrategy.query
+           .filter(_SubStrategy.strategy_id.in_(s1_ids), _SubStrategy.is_active == True)
+           .all()) if s1_ids else []
+    ss2 = (_SubStrategy.query
+           .filter(_SubStrategy.strategy_id.in_(s2_ids), _SubStrategy.is_active == True)
+           .all()) if s2_ids else []
+
+    ss_diffs = []
+    for s1, s2 in _match_pairs(ss1, ss2, "source_sub_strategy_id"):
+        only_in_y1 = s2 is None
+        only_in_y2 = s1 is None
+        title = (s1 or s2).title
+        changed_fields = []
+        if s1 and s2:
+            if (s1.title or "") != (s2.title or ""):
+                changed_fields.append(("Başlık", s1.title or "—", s2.title or "—"))
+            if (s1.code or "") != (s2.code or ""):
+                changed_fields.append(("Kod", s1.code or "—", s2.code or "—"))
+            if (s1.description or "").strip() != (s2.description or "").strip():
+                changed_fields.append(("Açıklama", "değişti", "değişti"))
+        changed = only_in_y1 or only_in_y2 or bool(changed_fields)
+        ss_diffs.append({
+            "title": title,
+            "only_in_y1": only_in_y1,
+            "only_in_y2": only_in_y2,
+            "changed_fields": changed_fields,
+            "y1": {"code": s1.code if s1 else None, "title": s1.title if s1 else None},
+            "y2": {"code": s2.code if s2 else None, "title": s2.title if s2 else None},
+            "changed": changed,
+        })
+
+    # ── Süreç + KPI karşılaştırması (süreç bazında gruplu) ───────────────────
+    procs1 = _Process.query.filter_by(tenant_id=tid, plan_year_id=py1.id, is_active=True).all()
+    procs2 = _Process.query.filter_by(tenant_id=tid, plan_year_id=py2.id, is_active=True).all()
+
+    kpis1_all = _ProcessKpi.query.filter_by(plan_year_id=py1.id, is_active=True).all()
+    kpis2_all = _ProcessKpi.query.filter_by(plan_year_id=py2.id, is_active=True).all()
+
+    kpis1_by_proc = {}
+    for k in kpis1_all:
+        kpis1_by_proc.setdefault(k.process_id, []).append(k)
+    kpis2_by_proc = {}
+    for k in kpis2_all:
+        kpis2_by_proc.setdefault(k.process_id, []).append(k)
+
+    def _kpi_diff(k1, k2):
+        only_in_y1 = k2 is None
+        only_in_y2 = k1 is None
+        title = (k1 or k2).name
+        changed_fields = []
+        if k1 and k2:
+            if (k1.target_value or "") != (k2.target_value or ""):
+                changed_fields.append(("Hedef", k1.target_value or "—", k2.target_value or "—"))
+            if (k1.unit or "") != (k2.unit or ""):
+                changed_fields.append(("Birim", k1.unit or "—", k2.unit or "—"))
+            if (k1.direction or "") != (k2.direction or ""):
+                changed_fields.append(("Yön", k1.direction or "—", k2.direction or "—"))
+            if (k1.period or "") != (k2.period or ""):
+                changed_fields.append(("Periyot", k1.period or "—", k2.period or "—"))
+            if abs(round(k1.weight or 0, 3) - round(k2.weight or 0, 3)) > 0.001:
+                changed_fields.append(("Ağırlık", str(k1.weight), str(k2.weight)))
+            if (k1.name or "") != (k2.name or ""):
+                changed_fields.append(("Ad", k1.name or "—", k2.name or "—"))
+        return {
+            "title": title,
+            "only_in_y1": only_in_y1,
+            "only_in_y2": only_in_y2,
+            "changed_fields": changed_fields,
+            "changed": only_in_y1 or only_in_y2 or bool(changed_fields),
+        }
+
+    process_diffs = []
+    for p1, p2 in _match_pairs(procs1, procs2, "source_process_id"):
+        only_in_y1 = p2 is None
+        only_in_y2 = p1 is None
+        title = (p1 or p2).name
+        changed_fields = []
+        if p1 and p2:
+            if (p1.name or "") != (p2.name or ""):
+                changed_fields.append(("Ad", p1.name or "—", p2.name or "—"))
+            if (p1.code or "") != (p2.code or ""):
+                changed_fields.append(("Kod", p1.code or "—", p2.code or "—"))
+            if abs(round(p1.weight or 0, 3) - round(p2.weight or 0, 3)) > 0.001:
+                changed_fields.append(("Ağırlık", str(p1.weight), str(p2.weight)))
+            if (p1.status or "") != (p2.status or ""):
+                changed_fields.append(("Durum", p1.status or "—", p2.status or "—"))
+
+        # Bu sürece ait KPI çiftlerini eşleştir
+        p1_kpis = kpis1_by_proc.get(p1.id, []) if p1 else []
+        p2_kpis = kpis2_by_proc.get(p2.id, []) if p2 else []
+        kpi_diffs = [_kpi_diff(k1, k2) for k1, k2 in _match_pairs(p1_kpis, p2_kpis, "source_kpi_id")]
+
+        proc_changed = only_in_y1 or only_in_y2 or bool(changed_fields) or any(k["changed"] for k in kpi_diffs)
+        process_diffs.append({
+            "title": title,
+            "only_in_y1": only_in_y1,
+            "only_in_y2": only_in_y2,
+            "changed_fields": changed_fields,
+            "kpis": kpi_diffs,
+            "changed": proc_changed,
+        })
+
+    # ── Kimlik alanları karşılaştırması (Misyon, Vizyon, Değerler…) ────────────
+    from app.models.tenant_year import TenantYearIdentity
+    ident1 = TenantYearIdentity.query.filter_by(plan_year_id=py1.id).first()
+    ident2 = TenantYearIdentity.query.filter_by(plan_year_id=py2.id).first()
+
+    _IDENTITY_FIELDS = [
+        ("Misyon / Amaç",    "purpose"),
+        ("Vizyon",           "vision"),
+        ("Değerler",         "core_values"),
+        ("Etik Kurallar",    "code_of_ethics"),
+        ("Kalite Politikası","quality_policy"),
+    ]
+    identity_diffs = []
+    for label, attr in _IDENTITY_FIELDS:
+        v1 = getattr(ident1, attr, None) if ident1 else None
+        v2 = getattr(ident2, attr, None) if ident2 else None
+        v1 = v1.strip() if v1 else None
+        v2 = v2.strip() if v2 else None
+        changed = (bool(v1) != bool(v2)) or (v1 or "") != (v2 or "")
+        identity_diffs.append({
+            "field": label,
+            "y1_filled": bool(v1),
+            "y2_filled": bool(v2),
+            "y1_preview": v1[:150] if v1 else None,
+            "y2_preview": v2[:150] if v2 else None,
+            "changed": changed,
+        })
+
+    def _count_changed(lst):
+        return sum(1 for x in lst if x["changed"])
+
+    return jsonify({
+        "success": True,
+        "y1": _plan_year_to_dict(py1),
+        "y2": _plan_year_to_dict(py2),
+        "summary": {
+            "identity_changed": _count_changed(identity_diffs),
+            "meta_changed": sum(1 for m in meta_diffs if m["changed"]),
+            "strategies_changed": _count_changed(strategy_diffs),
+            "sub_strategies_changed": _count_changed(ss_diffs),
+            "processes_changed": sum(1 for p in process_diffs if p["changed"]),
+            "kpis_changed": sum(1 for p in process_diffs for k in p["kpis"] if k["changed"]),
+        },
+        "diff": {
+            "identity": identity_diffs,
+            "meta": meta_diffs,
+            "strategies": strategy_diffs,
+            "sub_strategies": ss_diffs,
+            "processes": process_diffs,
+        },
+    })
+
+
+@app_bp.route("/sp/projeler")
+@login_required
+def sp_projeler():
+    """SPDönem bazlı proje listesi sayfası."""
+    tenant = current_user.tenant
+    active_py = get_active_plan_year_for_user(current_user)
+    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
+    return render_template(
+        "platform/sp/projeler.html",
+        tenant=tenant,
+        active_plan_year=active_py,
+        plan_year_feature=plan_year_feature,
+        sp_can_manage=_check_sp_role(),
+    )
+
+
+@app_bp.route("/sp/api/proje", methods=["GET"])
+@login_required
+def sp_api_proje_list():
+    """Aktif dönemin projelerini listeler."""
+    py, err = _require_plan_year()
+    if err:
+        return err
+    items = PlanProject.query.filter_by(
+        tenant_id=current_user.tenant_id,
+        plan_year_id=py.id,
+        is_active=True,
+    ).order_by(PlanProject.id).all()
+    return jsonify({"success": True, "items": [_plan_project_to_dict(p) for p in items]})
+
+
+@app_bp.route("/sp/api/proje", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_proje_save():
+    """Proje ekle veya güncelle."""
+    py, err = _require_plan_year()
+    if err:
+        return err
+    data = request.get_json() or {}
+    item_id = data.get("id")
+    try:
+        if item_id:
+            obj = PlanProject.query.filter_by(
+                id=item_id, tenant_id=current_user.tenant_id
+            ).first_or_404()
+        else:
+            obj = PlanProject(tenant_id=current_user.tenant_id, plan_year_id=py.id)
+            db.session.add(obj)
+        name = (data.get("name") or "").strip()
+        if not name:
+            return jsonify({"success": False, "message": "Proje adı zorunludur."}), 400
+        obj.name        = name
+        obj.description = data.get("description", obj.description)
+        obj.status      = data.get("status", obj.status) or "Planlandı"
+        obj.progress    = _try_int(data.get("progress")) if data.get("progress") is not None else obj.progress
+        if data.get("start_date"):
+            from datetime import datetime as _dt
+            obj.start_date = _dt.strptime(data["start_date"], "%Y-%m-%d").date()
+        if data.get("end_date"):
+            from datetime import datetime as _dt
+            obj.end_date = _dt.strptime(data["end_date"], "%Y-%m-%d").date()
+        db.session.commit()
+        return jsonify({"success": True, "message": "Proje kaydedildi.", "id": obj.id})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_proje_save] {e}")
+        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+
+
+@app_bp.route("/sp/api/proje/<int:item_id>", methods=["DELETE"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_proje_delete(item_id):
+    obj = PlanProject.query.filter_by(
+        id=item_id, tenant_id=current_user.tenant_id
+    ).first_or_404()
+    try:
+        obj.is_active = False
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_proje_delete] {e}")
+        return jsonify({"success": False, "message": "Silme hatası."}), 500
+
+
+# ── Proje Görevleri ────────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/api/proje/<int:project_id>/gorev", methods=["GET"])
+@login_required
+def sp_api_proje_gorev_list(project_id):
+    proj = PlanProject.query.filter_by(
+        id=project_id, tenant_id=current_user.tenant_id, is_active=True
+    ).first_or_404()
+    items = PlanProjectTask.query.filter_by(
+        project_id=proj.id, is_active=True
+    ).order_by(PlanProjectTask.id).all()
+    return jsonify({"success": True, "items": [_plan_task_to_dict(t) for t in items]})
+
+
+@app_bp.route("/sp/api/proje/<int:project_id>/gorev", methods=["POST"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_proje_gorev_save(project_id):
+    proj = PlanProject.query.filter_by(
+        id=project_id, tenant_id=current_user.tenant_id, is_active=True
+    ).first_or_404()
+    data = request.get_json() or {}
+    item_id = data.get("id")
+    try:
+        if item_id:
+            obj = PlanProjectTask.query.filter_by(
+                id=item_id, project_id=proj.id
+            ).first_or_404()
+        else:
+            obj = PlanProjectTask(
+                project_id=proj.id,
+                plan_year_id=proj.plan_year_id,
+            )
+            db.session.add(obj)
+        name = (data.get("name") or "").strip()
+        if not name:
+            return jsonify({"success": False, "message": "Görev adı zorunludur."}), 400
+        obj.name        = name
+        obj.description = data.get("description", obj.description)
+        obj.status      = data.get("status", obj.status) or "Planlandı"
+        obj.assignee_id = data.get("assignee_id") or obj.assignee_id
+        if data.get("start_date"):
+            from datetime import datetime as _dt
+            obj.start_date = _dt.strptime(data["start_date"], "%Y-%m-%d").date()
+        if data.get("end_date"):
+            from datetime import datetime as _dt
+            obj.end_date = _dt.strptime(data["end_date"], "%Y-%m-%d").date()
+        db.session.commit()
+        return jsonify({"success": True, "message": "Görev kaydedildi.", "id": obj.id})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_proje_gorev_save] {e}")
+        return jsonify({"success": False, "message": "Kayıt hatası."}), 500
+
+
+@app_bp.route("/sp/api/proje/gorev/<int:task_id>", methods=["DELETE"])
+@csrf.exempt
+@login_required
+@sp_manage_required
+def sp_api_proje_gorev_delete(task_id):
+    obj = PlanProjectTask.query.filter_by(id=task_id).first_or_404()
+    proj = PlanProject.query.filter_by(
+        id=obj.project_id, tenant_id=current_user.tenant_id
+    ).first_or_404()
+    try:
+        obj.is_active = False
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_proje_gorev_delete] {e}")
+        return jsonify({"success": False, "message": "Silme hatası."}), 500
+
+
+# ── Yardımcılar ────────────────────────────────────────────────────────────────
+
+def _plan_project_to_dict(p):
+    return {
+        "id": p.id,
+        "name": p.name,
+        "description": p.description,
+        "status": p.status,
+        "progress": p.progress,
+        "start_date": str(p.start_date) if p.start_date else None,
+        "end_date": str(p.end_date) if p.end_date else None,
+        "plan_year_id": p.plan_year_id,
+    }
+
+
+def _plan_task_to_dict(t):
+    return {
+        "id": t.id,
+        "name": t.name,
+        "description": t.description,
+        "status": t.status,
+        "assignee_id": t.assignee_id,
+        "start_date": str(t.start_date) if t.start_date else None,
+        "end_date": str(t.end_date) if t.end_date else None,
+    }
+

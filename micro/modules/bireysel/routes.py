@@ -19,6 +19,7 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.utils.process_utils import last_day_of_period, data_date_to_period_keys
+from app.services.plan_year_service import get_active_plan_year_for_user
 
 
 def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
@@ -90,6 +91,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
     if existing:
         return jsonify({"success": True, "id": existing.id, "created": False})
 
+    active_py = get_active_plan_year_for_user(current_user)
     for attempt in (1, 2):
         try:
             pg = IndividualPerformanceIndicator(
@@ -106,6 +108,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 source="Süreç",
                 source_process_id=kpi.process_id,
                 source_process_kpi_id=kpi.id,
+                plan_year_id=active_py.id if active_py else None,
                 is_active=True,
             )
             db.session.add(pg)
@@ -125,6 +128,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
+    active_py = get_active_plan_year_for_user(current_user)
     for attempt in (1, 2):
         try:
             pg = IndividualPerformanceIndicator(
@@ -138,6 +142,7 @@ def bireysel_api_pg_add():
                 weight=float(data.get("weight") or 0),
                 direction=data.get("direction", "Increasing"),
                 basari_puani_araliklari=data.get("basari_puani_araliklari"),
+                plan_year_id=active_py.id if active_py else None,
             )
             if data.get("start_date"):
                 pg.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
@@ -371,13 +376,17 @@ def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
     year = request.args.get("year", datetime.now().year, type=int)
     uid  = current_user.id
+    active_py = get_active_plan_year_for_user(current_user)
 
-    pgs = IndividualPerformanceIndicator.query.filter_by(
-        user_id=uid, is_active=True
-    ).all()
-    activities = IndividualActivity.query.filter_by(
-        user_id=uid, is_active=True
-    ).all()
+    pg_q = IndividualPerformanceIndicator.query.filter_by(user_id=uid, is_active=True)
+    if active_py:
+        pg_q_year = pg_q.filter(IndividualPerformanceIndicator.plan_year_id == active_py.id)
+        pgs = pg_q_year.all()
+        if not pgs:
+            pgs = pg_q.all()  # fallback: yıl filtresi olmadan göster
+    else:
+        pgs = pg_q.all()
+    activities = IndividualActivity.query.filter_by(user_id=uid, is_active=True).all()
 
     def _parse_float(v):
         try:

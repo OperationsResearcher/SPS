@@ -12,6 +12,7 @@ from datetime import date, timedelta, datetime, time
 from flask import render_template, jsonify, request
 from flask_login import login_required, current_user
 from sqlalchemy import case, or_, and_, inspect as sa_inspect
+from flask import session as flask_session
 
 from platform_core import app_bp
 from app.models import db
@@ -183,6 +184,30 @@ def masaustu():
         .all()
     )
 
+    # SP Dönem (Plan Year) bilgileri
+    _SP_MANAGE_ROLES = ("Admin", "admin", "tenant_admin", "executive_manager", "kurum_yoneticisi", "ust_yonetim")
+    sp_can_manage = bool(current_user.role and current_user.role.name in _SP_MANAGE_ROLES)
+    plan_year_feature = False
+    plan_years_list = []
+    active_plan_year_obj = None
+    active_plan_year_val = date.today().year
+
+    tenant = current_user.tenant
+    if tenant and getattr(tenant, "plan_year_enabled", False) and tenant_id:
+        plan_year_feature = True
+        try:
+            from app.models.plan_year import PlanYear
+            from app.services.plan_year_service import list_plan_years, get_plan_year
+            plan_years_list = list_plan_years(tenant_id)
+            active_plan_year_val = flask_session.get("sp_active_year", date.today().year)
+            available_years = [py.year for py in plan_years_list]
+            if available_years and active_plan_year_val not in available_years:
+                active_plan_year_val = available_years[0]
+            active_plan_year_obj = get_plan_year(tenant_id, active_plan_year_val)
+        except Exception as _e:
+            import logging
+            logging.getLogger(__name__).warning(f"[masaustu] plan_year load error: {_e}")
+
     # Kurum stratejileri (tenant_admin / executive_manager için)
     stratejiler = []
     if tenant_id and current_user.role and current_user.role.name in (
@@ -230,6 +255,12 @@ def masaustu():
         faaliyet_bugun=faaliyet_bugun,
         bu_ay_ad=bu_ay_ad,
         bugun_iso=today.isoformat(),
+        plan_year_feature=plan_year_feature,
+        plan_years=plan_years_list,
+        active_plan_year=active_plan_year_obj,
+        active_plan_year_val=active_plan_year_val,
+        sp_can_manage=sp_can_manage,
+        current_cal_year=date.today().year,
     )
 
 

@@ -16,7 +16,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List
 
-from flask import current_app
+from flask import current_app, session
 
 from app.models import db
 from app.models.plan_year import (
@@ -487,6 +487,61 @@ def _backfill_missing_kpi_configs(plan_year: PlanYear, tenant_id: int, prev_actu
             ))
 
 
+# ── Geçmiş Yıl Başlatma ────────────────────────────────────────────────────────
+
+def initialize_plan_years(tenant_id: int, start_year: int) -> List[PlanYear]:
+    """
+    start_year'dan bugüne kadar olan tüm yıllar için plan_year kayıtları oluşturur.
+    - Zaten var olan yıllar atlanır.
+    - Geçmiş yıllar status=closed, aktif yıl (en büyük) status=active olarak oluşturulur.
+    - Her yeni yıl, mevcut KPI/strateji/süreç fallback değerleriyle seed edilir.
+    - Zaten aktif bir plan_year varsa onun status'u değiştirilmez.
+    Döner: oluşturulan veya mevcut PlanYear listesi (start_year→bugün).
+    """
+    from datetime import date
+    current_year = date.today().year
+    if start_year > current_year:
+        raise ValueError(f"Başlangıç yılı ({start_year}) mevcut yıldan ({current_year}) büyük olamaz.")
+
+    years = list(range(start_year, current_year + 1))
+    result: List[PlanYear] = []
+
+    for yr in years:
+        existing = get_plan_year(tenant_id, yr)
+        if existing:
+            result.append(existing)
+            continue
+
+        # Yeni plan_year oluştur
+        if yr == current_year:
+            status = "active"
+        else:
+            status = "closed"
+
+        py = PlanYear(
+            tenant_id=tenant_id,
+            year=yr,
+            name=f"{yr} Stratejik Planı",
+            status=status,
+        )
+        db.session.add(py)
+        db.session.flush()
+
+        _seed_kpi_year_configs(py, tenant_id)
+        _seed_strategy_year_configs(py, tenant_id)
+        _seed_process_year_configs(py, tenant_id)
+        _seed_individual_kpi_year_configs(py, tenant_id)
+
+        result.append(py)
+
+    db.session.commit()
+    current_app.logger.info(
+        f"[plan_year_service] initialize_plan_years tenant={tenant_id} "
+        f"start={start_year} created={sum(1 for py in result if not db.session.is_modified(py) is False)}"
+    )
+    return result
+
+
 # ── KpiYearConfig Güncelleme ────────────────────────────────────────────────────
 
 def upsert_kpi_year_config(
@@ -522,3 +577,306 @@ def upsert_kpi_year_config(
 
     db.session.commit()
     return cfg
+
+
+# ── Tam Klon (Full Clone) ─────────────────────────────────────────────────────
+
+def clone_full_plan_year(source: PlanYear, new_year: int, name: Optional[str] = None) -> PlanYear:
+    """
+    Kaynak SP döneminin TÜM yapısını yeni yıla klonlar (Full Clone sistemi).
+
+    Klonlanan yapılar (sırasıyla):
+      1. Strategy          → source_strategy_id zinciri
+      2. SubStrategy       → source_sub_strategy_id zinciri
+      3. Process           → source_process_id zinciri (parent hiyerarşisi korunur)
+      4. ProcessSubStrategyLink → yeni process/sub_strategy ID'leriyle yeniden kurulur
+      5. ProcessKpi        → source_kpi_id zinciri; onceki_yil_ortalamasi hesaplanır
+      6. ProcessActivity   → şablon olarak aktarılır (tarih/status sıfırlanır)
+      7. IndividualPerformanceIndicator → source_individual_kpi_id zinciri
+      8. TenantYearIdentity → misyon/vizyon/değerler kopyalanır
+      9. SwotAnalysis + TowsAnalysis → boş kayıtlar oluşturulur
+
+    Dönüş: yeni PlanYear nesnesi (status="draft")
+    """
+    from app.models.process import (
+        ProcessActivity, ProcessActivityAssignee, ProcessSubStrategyLink, KpiData,
+    )
+    from app.models.tenant_year import TenantYearIdentity
+    from app.models.swot import SwotAnalysis, TowsAnalysis
+
+    tenant_id = source.tenant_id
+
+    existing = get_plan_year(tenant_id, new_year)
+    if existing:
+        raise ValueError(f"{new_year} yılı için tenant {tenant_id}'de zaten plan mevcut (id={existing.id})")
+
+    new_py = PlanYear(
+        tenant_id=tenant_id,
+        year=new_year,
+        name=name or f"{new_year} Stratejik Planı",
+        status="draft",
+        template_source_id=source.id,
+    )
+    db.session.add(new_py)
+    db.session.flush()  # new_py.id için
+
+    # ── 1. Strategy klonlama ──────────────────────────────────────────────────
+    strategy_id_map: Dict[int, int] = {}   # old_id → new_id
+    src_strategies = Strategy.query.filter_by(
+        tenant_id=tenant_id, plan_year_id=source.id, is_active=True
+    ).all()
+    for s in src_strategies:
+        new_s = Strategy(
+            tenant_id=tenant_id,
+            plan_year_id=new_py.id,
+            source_strategy_id=s.id,
+            code=s.code,
+            title=s.title,
+            description=s.description,
+            is_active=True,
+        )
+        db.session.add(new_s)
+        db.session.flush()
+        strategy_id_map[s.id] = new_s.id
+
+    # ── 2. SubStrategy klonlama ───────────────────────────────────────────────
+    sub_strategy_id_map: Dict[int, int] = {}
+    if strategy_id_map:
+        src_sub_strategies = SubStrategy.query.filter(
+            SubStrategy.strategy_id.in_(strategy_id_map.keys()),
+            SubStrategy.plan_year_id == source.id,
+            SubStrategy.is_active.is_(True),
+        ).all()
+        for ss in src_sub_strategies:
+            new_ss = SubStrategy(
+                strategy_id=strategy_id_map[ss.strategy_id],
+                plan_year_id=new_py.id,
+                source_sub_strategy_id=ss.id,
+                code=ss.code,
+                title=ss.title,
+                description=ss.description,
+                is_active=True,
+            )
+            db.session.add(new_ss)
+            db.session.flush()
+            sub_strategy_id_map[ss.id] = new_ss.id
+
+    # ── 3. Process klonlama (hiyerarşi: parent önce) ──────────────────────────
+    process_id_map: Dict[int, int] = {}
+    src_processes = (
+        Process.query
+        .filter_by(tenant_id=tenant_id, plan_year_id=source.id, is_active=True)
+        .order_by(Process.parent_id.asc().nullsfirst(), Process.id.asc())
+        .all()
+    )
+    for p in src_processes:
+        new_parent_id = process_id_map.get(p.parent_id) if p.parent_id else None
+        new_p = Process(
+            tenant_id=tenant_id,
+            plan_year_id=new_py.id,
+            source_process_id=p.id,
+            parent_id=new_parent_id,
+            code=p.code,
+            name=p.name,
+            english_name=p.english_name,
+            weight=p.weight,
+            document_no=p.document_no,
+            revision_no=p.revision_no,
+            revision_date=p.revision_date,
+            first_publish_date=p.first_publish_date,
+            status=p.status,
+            start_boundary=p.start_boundary,
+            end_boundary=p.end_boundary,
+            description=p.description,
+            is_active=True,
+        )
+        db.session.add(new_p)
+        db.session.flush()
+        process_id_map[p.id] = new_p.id
+
+    # ── 4. ProcessSubStrategyLink yeniden kurulumu ────────────────────────────
+    for old_proc_id, new_proc_id in process_id_map.items():
+        old_links = ProcessSubStrategyLink.query.filter_by(process_id=old_proc_id).all()
+        for link in old_links:
+            new_ss_id = sub_strategy_id_map.get(link.sub_strategy_id)
+            if new_ss_id:
+                db.session.add(ProcessSubStrategyLink(
+                    process_id=new_proc_id,
+                    sub_strategy_id=new_ss_id,
+                    contribution_pct=link.contribution_pct,
+                ))
+
+    # ── 5. ProcessKpi klonlama ────────────────────────────────────────────────
+    kpi_id_map: Dict[int, int] = {}
+    prev_actuals = _compute_prev_year_actuals(source)  # KpiData ortalamaları
+
+    src_kpis = (
+        ProcessKpi.query
+        .filter(
+            ProcessKpi.process_id.in_(process_id_map.keys()),
+            ProcessKpi.plan_year_id == source.id,
+            ProcessKpi.is_active.is_(True),
+        )
+        .all()
+    )
+    for k in src_kpis:
+        new_sub_strategy_id = sub_strategy_id_map.get(k.sub_strategy_id) if k.sub_strategy_id else None
+        avg = prev_actuals.get(k.id)
+        new_k = ProcessKpi(
+            process_id=process_id_map[k.process_id],
+            plan_year_id=new_py.id,
+            source_kpi_id=k.id,
+            name=k.name,
+            description=k.description,
+            code=k.code,
+            target_value=k.target_value,
+            unit=k.unit,
+            period=k.period,
+            data_source=k.data_source,
+            target_setting_method=k.target_setting_method,
+            data_collection_method=k.data_collection_method,
+            calculation_method=k.calculation_method,
+            gosterge_turu=k.gosterge_turu,
+            target_method=k.target_method,
+            basari_puani_araliklari=k.basari_puani_araliklari,
+            onceki_yil_ortalamasi=avg if avg is not None else k.onceki_yil_ortalamasi,
+            weight=k.weight,
+            is_important=k.is_important,
+            direction=k.direction,
+            sub_strategy_id=new_sub_strategy_id,
+            is_active=True,
+        )
+        db.session.add(new_k)
+        db.session.flush()
+        kpi_id_map[k.id] = new_k.id
+
+    # ── 6. ProcessActivity klonlama (şablon: tarih/status sıfırla) ────────────
+    src_activities = (
+        ProcessActivity.query
+        .filter(
+            ProcessActivity.process_id.in_(process_id_map.keys()),
+            ProcessActivity.plan_year_id == source.id,
+            ProcessActivity.is_active.is_(True),
+        )
+        .all()
+    )
+    for a in src_activities:
+        new_kpi_id = kpi_id_map.get(a.process_kpi_id) if a.process_kpi_id else None
+        new_a = ProcessActivity(
+            process_id=process_id_map[a.process_id],
+            plan_year_id=new_py.id,
+            source_activity_id=a.id,
+            process_kpi_id=new_kpi_id,
+            name=a.name,
+            description=a.description,
+            # Şablon aktarım: tarih ve durum sıfırlanır
+            status="Planlandı",
+            progress=0,
+            start_at=None,
+            end_at=None,
+            start_date=None,
+            end_date=None,
+            notify_email=a.notify_email,
+            auto_complete_enabled=a.auto_complete_enabled,
+            is_active=True,
+        )
+        db.session.add(new_a)
+        db.session.flush()
+
+        # Atananları kopyala
+        for assignee_link in (ProcessActivityAssignee.query.filter_by(activity_id=a.id).all()):
+            db.session.add(ProcessActivityAssignee(
+                activity_id=new_a.id,
+                user_id=assignee_link.user_id,
+                order_no=getattr(assignee_link, "order_no", getattr(assignee_link, "sort_order", getattr(assignee_link, "order", 1))),
+                assigned_at=assignee_link.assigned_at,
+            ))
+
+    # ── 7. IndividualPerformanceIndicator klonlama ────────────────────────────
+    from app.models.core import Tenant as TenantModel
+    user_ids = [u.id for u in TenantModel.query.get(tenant_id).users]
+    if user_ids:
+        src_ind_kpis = (
+            IndividualPerformanceIndicator.query
+            .filter(
+                IndividualPerformanceIndicator.user_id.in_(user_ids),
+                IndividualPerformanceIndicator.plan_year_id == source.id,
+                IndividualPerformanceIndicator.is_active.is_(True),
+            )
+            .all()
+        )
+        for ik in src_ind_kpis:
+            new_proc_id = process_id_map.get(ik.source_process_id) if ik.source_process_id else None
+            new_kpi_id = kpi_id_map.get(ik.source_process_kpi_id) if ik.source_process_kpi_id else None
+            new_ik = IndividualPerformanceIndicator(
+                user_id=ik.user_id,
+                plan_year_id=new_py.id,
+                source_individual_kpi_id=ik.id,
+                name=ik.name,
+                description=ik.description,
+                code=ik.code,
+                target_value=ik.target_value,
+                unit=ik.unit,
+                period=ik.period,
+                weight=ik.weight,
+                is_important=ik.is_important,
+                direction=ik.direction,
+                basari_puani_araliklari=ik.basari_puani_araliklari,
+                source=ik.source,
+                source_process_id=new_proc_id,
+                source_process_kpi_id=new_kpi_id,
+                is_active=True,
+            )
+            db.session.add(new_ik)
+
+    # ── 8. TenantYearIdentity klonlama ────────────────────────────────────────
+    src_identity = TenantYearIdentity.query.filter_by(plan_year_id=source.id).first()
+    if src_identity:
+        db.session.add(TenantYearIdentity(
+            plan_year_id=new_py.id,
+            tenant_id=tenant_id,
+            purpose=src_identity.purpose,
+            vision=src_identity.vision,
+            core_values=src_identity.core_values,
+            code_of_ethics=src_identity.code_of_ethics,
+            quality_policy=src_identity.quality_policy,
+        ))
+
+    # ── 9. SwotAnalysis + TowsAnalysis (boş) ─────────────────────────────────
+    db.session.add(SwotAnalysis(plan_year_id=new_py.id, tenant_id=tenant_id))
+    db.session.add(TowsAnalysis(plan_year_id=new_py.id, tenant_id=tenant_id))
+
+    db.session.commit()
+    current_app.logger.info(
+        f"[plan_year_service] clone_full_plan_year: {source.year} → {new_year} "
+        f"(strategies={len(strategy_id_map)}, processes={len(process_id_map)}, "
+        f"kpis={len(kpi_id_map)}, activities={len(src_activities)})"
+    )
+    return new_py
+
+
+# ── Aktif Dönem Yardımcısı ─────────────────────────────────────────────────────
+
+def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
+    """
+    Kullanıcının aktif SPDönemini döner.
+
+    - Tenant'ta plan_year_enabled=False ise None döner (overlay sistemi devreye girmez).
+    - Session'da sp_active_year varsa o yılın PlanYear'ını döner.
+    - Yoksa tenant'ın aktif (status='active') PlanYear'ını döner.
+    - Hiç PlanYear yoksa None döner.
+    """
+    from app.models.core import Tenant
+    tenant = Tenant.query.get(user.tenant_id)
+    if tenant is None:
+        return None
+    if not getattr(tenant, "plan_year_enabled", False):
+        return None
+
+    year = session.get("sp_active_year")
+    if year:
+        py = get_plan_year(user.tenant_id, int(year))
+        if py:
+            return py
+
+    return get_active_plan_year(user.tenant_id)

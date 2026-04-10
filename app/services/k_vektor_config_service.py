@@ -32,7 +32,7 @@ def add_k_vektor_snapshot(
     db.session.add(row)
 
 
-def k_vektor_weights_get_dict(tenant_id: int) -> Dict[str, Any]:
+def k_vektor_weights_get_dict(tenant_id: int, plan_year=None) -> Dict[str, Any]:
     tenant = Tenant.query.get(tenant_id)
     if not tenant:
         return {"success": False, "message": "Kurum bulunamadı."}
@@ -40,11 +40,20 @@ def k_vektor_weights_get_dict(tenant_id: int) -> Dict[str, Any]:
     tid = tenant_id
     sw_map = {r.strategy_id: r.weight_raw for r in KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}
     ssw_map = {r.sub_strategy_id: r.weight_raw for r in KVektorSubStrategyWeight.query.filter_by(tenant_id=tid).all()}
-    strategies = (
-        Strategy.query.filter_by(tenant_id=tid, is_active=True)
-        .order_by(Strategy.code)
-        .all()
-    )
+
+    if plan_year is not None:
+        strategies = (
+            Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            .order_by(Strategy.code)
+            .all()
+        )
+    else:
+        strategies = (
+            Strategy.query.filter_by(tenant_id=tid, is_active=True)
+            .order_by(Strategy.code)
+            .all()
+        )
+
     out: List[Dict[str, Any]] = []
     for st in strategies:
         subs = []
@@ -166,9 +175,11 @@ def save_k_vektor_weights(
     tenant_id: int,
     user_id: Optional[int],
     data: Dict[str, Any],
+    plan_year=None,
 ) -> Tuple[bool, str]:
     """
     Ana/alt ham ağırlıkları kaydeder. K-Vektör kapalıysa reddeder.
+    plan_year verilirse yalnızca o dönemin stratejilerine izin verir.
     Dönüş: (True, "") veya (False, hata_metni).
     """
     tenant = Tenant.query.get(tenant_id)
@@ -177,9 +188,14 @@ def save_k_vektor_weights(
     if not tenant.k_vektor_enabled:
         return False, "Önce K-Vektörü kurum ayarlarından açın."
 
-    allowed_strat = {s.id for s in Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()}
+    if plan_year is not None:
+        base_strats = Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+    else:
+        base_strats = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+
+    allowed_strat = {s.id for s in base_strats}
     allowed_sub: set[int] = set()
-    for st in Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all():
+    for st in base_strats:
         for ss in st.sub_strategies or []:
             if getattr(ss, "is_active", True):
                 allowed_sub.add(ss.id)

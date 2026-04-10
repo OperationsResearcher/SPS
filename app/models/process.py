@@ -76,16 +76,20 @@ class Process(db.Model):
     end_date = db.Column(db.Date, nullable=True)
     description = db.Column(db.Text, nullable=True)
     
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    source_process_id = db.Column(db.Integer, db.ForeignKey('processes.id', ondelete='SET NULL'), nullable=True)
+
     # Auditing / Soft Delete
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     deleted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     # Relationships
     tenant = db.relationship('Tenant', backref=db.backref('processes', lazy=True, cascade="all, delete-orphan"))
-    parent = db.relationship('Process', remote_side=[id], backref=db.backref('sub_processes', lazy='dynamic'))
+    parent = db.relationship('Process', remote_side=[id], foreign_keys='[Process.parent_id]', backref=db.backref('sub_processes', lazy='dynamic'))
     
     # Many-to-Many
     leaders = db.relationship('User', secondary=process_leaders, backref='led_processes')
@@ -159,15 +163,19 @@ class ProcessKpi(db.Model):
     
     calculated_score = db.Column(db.Float, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
-    
+
     # Linking
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('sub_strategies.id', ondelete='SET NULL'), nullable=True, index=True)
-    
+
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    source_kpi_id = db.Column(db.Integer, db.ForeignKey('process_kpis.id', ondelete='SET NULL'), nullable=True)
+
     start_date = db.Column(db.Date, nullable=True)
     end_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     # Relationships
     process = db.relationship('Process', backref=db.backref('kpis', lazy=True, cascade='all, delete-orphan'))
     sub_strategy = db.relationship('SubStrategy', backref=db.backref('process_kpis', lazy=True))
@@ -228,11 +236,15 @@ class ProcessActivity(db.Model):
     cancelled_at = db.Column(db.DateTime, nullable=True)
     postponed_at = db.Column(db.DateTime, nullable=True)
 
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    source_activity_id = db.Column(db.Integer, db.ForeignKey('process_activities.id', ondelete='SET NULL'), nullable=True)
+
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
-    
+
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     # Relationships
     process = db.relationship('Process', backref=db.backref('activities', lazy=True, cascade='all, delete-orphan'))
     process_kpi = db.relationship('ProcessKpi', backref=db.backref('activities', lazy=True))
@@ -484,12 +496,16 @@ class IndividualPerformanceIndicator(db.Model):
     
     direction = db.Column(db.String(20), default='Increasing')
     basari_puani_araliklari = db.Column(db.Text, nullable=True)
-    
+
+    # Plan Year FK (Full Clone sistemi)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    source_individual_kpi_id = db.Column(db.Integer, db.ForeignKey('individual_performance_indicators.id', ondelete='SET NULL'), nullable=True)
+
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
-    
+
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     user = db.relationship('User', backref=db.backref('individual_performance_indicators', lazy=True))
     source_process = db.relationship('Process', foreign_keys=[source_process_id])
     source_process_kpi = db.relationship('ProcessKpi', foreign_keys=[source_process_kpi_id])

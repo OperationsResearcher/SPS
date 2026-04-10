@@ -3,6 +3,532 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-087 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Prod kesimi — `kokpitim_merge_target` → canlı `kokpitim_db` (ALTER DATABASE RENAME)
+**Modül:** DB merge, deployment
+**Durum:** ✅ Tamamlandı
+
+### Yapılan işlem (VM sps-server-v2)
+- `sps-web` durduruldu; `kokpitim_db` → **`kokpitim_db_pre_promote_20260410_195528`**; **`kokpitim_merge_target`** → **`kokpitim_db`**; `sps-web` başlatıldı.
+- Doğrulama: canlı `kokpitim_db` üzerinde KMF (`tenant_id=16`) — kullanıcı 8, süreç 11, PG 135, PGV 318 (TASK-084 ile aynı).
+
+### Geri alma (gerekirse)
+- Bağlantıları kestikten sonra: `kokpitim_db` → `kokpitim_merge_target`; `kokpitim_db_pre_promote_20260410_195528` → `kokpitim_db` (betik çıktısındaki sıra).
+- Disk/snapshot: TASK-083.
+
+---
+
+## TASK-086 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** VM `kokpitim_merge_target` doğrulama sonrası — betik sertleştirme + prod kesim aracı
+**Modül:** DB merge, operasyon
+**Durum:** ✅ Tamamlandı
+
+### Yapılanlar
+- `scripts/ops/vm_merge_kokpitim_target.sh`: `pg_restore` artık **host’taki `postgres` süper kullanıcı** ile; TOC (`-L`) aynı. Böylece `ENABLE TRIGGER` yetki uyarıları gider; **postgres:16** Docker restore adımı kaldırıldı.
+- `scripts/ops/vm_promote_merge_target_to_prod.sh`: Bakım penceresinde `ALTER DATABASE RENAME` ile **merge hedefini canlı `kokpitim_db` adına taşıma**; yalnız `CONFIRM_PROD_DATABASE_PROMOTE=yes` ile çalışır; eski prod `kokpitim_db_pre_promote_<timestamp>` olur. **TASK-083 yedeği önkoşul.**
+
+### Önceki durum (TASK-085/084)
+- VM’de `kokpitim_merge_target` üzerinde şema + data-only restore tamam; KMF dört sayı TASK-084 ile eşleşti.
+
+### Not
+~~Canlı trafik `kokpitim_db` üzerinde; kesim için kullanıcı onayı + bakım + betik çalıştırma gerekir.~~ → **TASK-087 ile kesim uygulandı.**
+
+---
+
+## TASK-085 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** VM prod veri-only dump + yerel şema ile birleştirme runbook (devam adımı)
+**Modül:** DB merge, yedekleme, dokümantasyon
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / eklenen dosyalar
+- VM üretimi: `/var/lib/postgresql/kokpitim_vm_data_only_20260410.dump` (`pg_dump -Fc --data-only`, döngüsel FK uyarıları beklenebilir)
+- Yerel kopya: `backups/merge_prep/kokpitim_vm_data_only_20260410.dump`
+- Runbook: `docs/runbooks/db_merge_vm_data_local_schema.md` — boş DB + `flask db upgrade` → `pg_restore --data-only --disable-triggers` → sequence → **TASK-084 KMF sayım kontrolü**
+
+### Yapılan İşlem
+Birleştirme hattının bir sonraki somut adımı için prod veritabanının yalnızca veri yükünü içeren dump alındı ve repoya indirildi. Şema tarafı yerel migration head ile oluşturulacak hedef DB’ye bu dosyanın restore edilmesi; sonrasında audit sequence ops SQL ve KMF dört sayının tekrar ölçülmesi runbook’ta sabitlendi.
+
+### Notlar
+Yerel Windows ortamında `pg_restore` bulunmadığı için dry-run restore bu makinede çalıştırılmadı; merge doğrulaması PostgreSQL client’ı olan bir hostta (VM veya CI) yapılmalıdır.
+
+---
+
+## TASK-084 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Kayseri Model Fabrika (KMF) kurumu — birleşme öncesi kontrol yedeği + referans sayımları
+**Modül:** yedekleme, DB-merge kontrolü
+**Durum:** ✅ Tamamlandı
+
+### KMF referans sayıları (VM prod — birleşme sonrası aynı olmalı)
+
+| Alan | Değer |
+|------|--------|
+| **tenant_id** | 16 |
+| **Kurum adı** | Kayseri Model Fabrika |
+| **Kullanıcı sayısı** | 8 |
+| **Süreç sayısı** | 11 |
+| **PG sayısı** (process_kpis, kurum süreçleri üzerinden) | 135 |
+| **PGV sayısı** (kpi_data, `deleted_at IS NULL`) | 318 |
+
+### Yedek nerede?
+
+- Yerel: `backups/kmf_pre_merge_reference/kmf_tenant_backup_20260410_182150.tar.gz` (+ `README.txt`)
+- VM: `/var/lib/postgresql/kmf_tenant_backup_20260410_182150.tar.gz` (üretim sunucusunda aynı içerik)
+
+### Araçlar
+
+- `scripts/ops/kmf_export_on_vm.sh` — VM'de `postgres` kullanıcısı ile çalıştırılır; KMF tenant CSV dilimini ve `counts.txt` üretir.
+- `scripts/ops/kmf_tenant_backup_and_counts.sql` — yalnızca sayım sorgusu (psql `-f`).
+
+### Birleşme sonrası kontrol (tekrar çalıştır)
+
+1. Hedef DB'de (birleşmiş şema + VM verisi yüklendikten sonra) aynı script veya SQL ile tenant eşlemesinin hâlâ `id=16` ve aynı isim olduğunu doğrulayın (id değiştiyse sorguda yeni id kullanın).
+2. Yukarıdaki dört sayıyı karşılaştırın; sapma varsa import/mapping veya `deleted_at` tanımını inceleyin.
+
+### Notlar
+
+- PGV tanımı: `kpi_data` satırları, ilgili süreç `tenant_id=16`, **`deleted_at IS NULL`**. CSV yedeği bu tanımla aynı 318 satırı içerir.
+
+---
+
+## TASK-083 | 2026-04-10 | 📋 Referans
+
+**Görev:** VM sorununda bu ana geri dönüş (snapshot / dump) — adım adım
+**Modül:** deployment, yedekleme, kurtarma
+**Durum:** 📋 Referans (operasyon notu)
+
+### “%100 döner miyiz?”
+- **Tam VM diski:** Kayıtlı **disk snapshot** anındaki duruma dönersiniz (OS, Docker, container, o sırada diskte ne varsa). Bu, pratikte “o ana” en yakın ve en kapsamlı geri dönüştür.
+- **Matematiksel %100** ifadesi kullanılmaz: snapshot alındıktan sonra diskte oluşan milisaniyelik fark, nadir GCP tarafı olaylar veya snapshot’tan **sonra** yazılmış veri snapshot’ta yoktur.
+- **Sadece PostgreSQL:** `pg_dump` anına dönersiniz; snapshot anından birkaç dakika önce/sonra olabilir (dump ile snapshot farklı saniyede alındıysa).
+
+### Kayıtlı snapshot adları (GCP)
+- `sps-server-v2-prehotfix-20260410-125515` — hotfix öncesi disk.
+- `sps-server-v2-premigrate-20260410-173138` — migration denemesinden hemen önceki disk (**genelde en güncel güvenli çizgi**).
+
+Yerel envanter: `backups/vm_safety_20260410/gcp_snapshots_sps-server-v2.txt`
+
+### Yol A — Önerilen: Snapshot’tan kurtarma VM (aynı prod IP’sini taşıyarak)
+Amaç: Mevcut bozuk VM’e dokunmadan önce **paralel** sağlam bir kopya ayağa kaldırmak; trafiği güvenle kaydırmak.
+
+1. **GCP Console** → Compute Engine → **Snapshots** → `sps-server-v2-premigrate-20260410-173138` seç.
+2. **Create instance** (veya eşdeğeri: snapshot’tan VM oluştur) → yeni isim verin, örn. `sps-server-v2-rollback`.
+3. **Ağ:** Eski VM ile aynı VPC/subnet; **External IP** için: ya geçici IP ile test edin ya da aşağıdaki adım 5’te statik IP taşıyın.
+4. **Firewall tags:** Eski VM’deki etiketlerle aynı olsun (`http-server`, `https-server`, `flask-port` vb. — yerel `gcp_firewall_rules.txt` veya Console’dan mevcut VM’e bakın).
+5. **Statik / sabit dış IP kullanılıyorsa:** Console → VPC network → **IP addresses** → adresi eski VM’den **yeni** kurtarma VM’e bağlayın (önce eski VM’de bağlantıyı kaldırın veya eski VM’yi durdurun).
+6. **Smoke test:** `https://kokpitim.com` veya doğrudan IP üzerinden health/login.
+7. Her şey iyiyse eski `sps-server-v2` **Stop** veya silin (silmeden önce ek snapshot alınabilir).
+
+### Yol B — Aynı VM adıyla boot diski snapshot’tan yenileme (ileri seviye)
+Amaç: Instance adı ve yapı aynı kalsın; boot disk snapshot’tan gelsin.
+
+1. **Yedek alın:** Mevcut bozuk durumdan da bir snapshot alın (geri dönüş için “şimdiki hal” kaydı).
+2. VM’yi **Stop** edin: `gcloud compute instances stop sps-server-v2 --zone=europe-west3-c`
+3. Snapshot’tan **yeni disk** oluşturun (boyut/tür eski boot disk ile uyumlu, örn. 50 GB):
+   - `gcloud compute disks create DISK_ADI --source-snapshot=sps-server-v2-premigrate-20260410-173138 --zone=europe-west3-c`
+4. GCP Console’da ilgili VM → düzenleme akışında **boot disk** olarak yeni diski bağlayıp eski boot diski ayırın (arayüz sürümüne göre menü adı değişebilir; bulamazsanız Yol A kullanın).
+5. VM **Start**; servis ve container’ların ayağa kalktığını doğrulayın.
+
+### Yol C — Sadece veritabanı geri yükleme (PostgreSQL)
+Amaç: VM ve Docker sağlam, sadece `kokpitim_db` bozuldu.
+
+1. VM’de PostgreSQL’i durdurun veya uygulamayı durdurun (yazma kesilsin).
+2. Yereldeki veya VM’deki dump’tan restore:
+   - Örnek dosya: `backups/vm_safety_20260410/kokpitim_db_pre_migrate_now.dump` (migration öncesi).
+   - `pg_restore` ile hedef DB’ye (genelde `--clean --if-exists` dikkatli kullanılır; prod’da önce boş DB veya rename stratejisi tercih edilir).
+3. `alembic_version` ve uygulama sürümünün dump’taki haliyle uyumlu olduğunu kontrol edin.
+4. Uygulamayı başlatın; smoke test.
+
+### Kurtarma sonrası kontrol listesi
+- [ ] Dış erişim (443/80) ve login
+- [ ] `docker ps` / `sps-web` çalışıyor mu
+- [ ] `select version_num from alembic_version;` beklenen revision mı
+- [ ] Kritik modüller (SP, süreç, admin) kısa tıklama turu
+
+### Notlar
+- **En tutarlı “tek an”:** `premigrate` disk snapshot (tüm disk).
+- **DB tek başına:** dump dosyası; VM dosyaları değişmediyse Yol C yeterli olabilir.
+
+---
+
+## TASK-082 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** VM canlı yedeklerinin yerel kopyası (DB dump, container kodu, PG config, GCP dökümleri)
+**Modül:** deployment, yedekleme
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `backups/vm_safety_20260410/` → `kokpitim_db_pre_migrate_now.dump`, `kokpitim_db_pre_hotfix_20260410_125515.dump`, `kokpitim_stage_seed.dump`, `sps-web-inspect.json`, `sps-web-app-20260410.tar.gz`, `pg14-main-config.tgz`, `gcp_snapshots_sps-server-v2.txt`, `gcp_firewall_rules.txt`, `INVENTORY.txt`
+
+### Yapılan İşlem
+GCP VM üzerindeki kritik PostgreSQL dump dosyaları, `sps-web` container inspect çıktısı, container içi `/app` kaynak arşivi, PostgreSQL 14 ana yapılandırma arşivi ve snapshot/firewall metin dökümleri `gcloud compute scp` ve yerel `gcloud` list komutlarıyla `backups/vm_safety_20260410/` altına indirildi. Tam disk snapshot'lar GCP'te kalır; envanter dosyasında özetlendi.
+
+### Notlar
+Docker imajı tam boyutta (~885 MB) bu çekimde indirilmedi; disk snapshot + `/app` arşivi + dump ile kurtarma yolu tanımlandı.
+
+---
+
+## TASK-081 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Prod-yerel birlestirme hazirligi icin audit sequence ops SQL ve migration runbook olusturuldu
+**Modül:** deployment, db-ops, migrations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/prod_stabilize_audit_sequence.sql` -> `audit_logs.id` sequence'ini idempotent sekilde `MAX(id)+1` noktasina hizalayan operasyon SQL'i eklendi
+- `docs/runbooks/prod_migration_merge_runbook_b9_to_d4.md` -> Prod revision `b9c0d1e2f3a8`'den `d4e5f6g7h8i9`'a guvenli gecis adimlari, checkpointler ve rollback plani eklendi
+
+### Yapılan İşlem
+Canlida uygulanan manuel stabilizasyonu kalici ve izlenebilir hale getirmek icin schema-disi bir ops SQL dosyasi hazirlandi. SQL, tablo/sequence varligini kontrol eder, sequence'i bagli oldugu isimden bulur ve sonraki ID'yi guvenli sekilde ayarlar. Ayrica prod ve yerel migration farki (`b9c0...` -> `d4e5...`) icin staging provasi zorunlu, iki asamali (Ops -> Migration) canli gecis ve rollback adimlarini iceren runbook olusturuldu.
+
+### Notlar
+Ops SQL tekrar calistirilabilir (idempotent) tasarlandi; migration zincirine dogrudan zorlayici bir schema degisikligi eklemez.
+
+---
+
+## TASK-080 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** K-Vektör puanları plan yılı filtresi sonrası sıfır çıkıyordu — source_kpi_id zinciri taraması eklendi
+**Modül:** score_engine
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `get_pg_scores_from_kpi_data()` içine source_kpi_id zincir yürüyüşü eklendi
+
+### Yapılan İşlem
+TASK-079 ile `plan_year_id` filtresi eklendikten sonra KMF tenant'ında tüm K-Vektör puanları 0 çıkıyordu. Kök neden: KMF'de aktif plan yılı 2026 (plan_year_id=1) klonlarının 102 ProcessKpi kaydının hiçbirinde KpiData yok; veriler ilk dönem olan 2021 (plan_year_id=2) KPI ID'leri üzerinde tutuluyor. `get_pg_scores_from_kpi_data()` içinde, clone KPI için veri bulunamadığında artık `source_kpi_id` zinciri geriye doğru taranıyor (max 8 adım). Atadan bulunan veri, aktif dönemin hedef/yön/metod konfigürasyonu ile birlikte kullanılıyor.
+
+### Notlar
+`source_kpi_id` chain walk yalnızca `plan_year is not None` durumunda tetiklenir — `plan_year=None` (tenant bazlı) fallback davranışı değişmedi.
+
+---
+
+## TASK-078 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** SP Dönemler sayfasına iki dönem arasındaki farkları gösteren Dönem Karşılaştır paneli eklendi
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → `StrategyYearConfig, SubStrategyYearConfig, ProcessYearConfig` import eklendi; yeni `GET /sp/api/donem-karsilastir?y1=&y2=` route eklendi
+- `ui/templates/platform/sp/donemler.html` → "Tüm Dönemler" kartının altına karşılaştırma paneli + JS eklendi
+
+### Yapılan İşlem
+`/sp/donemler` sayfasında en az 2 dönem varsa "Dönem Karşılaştır" paneli görünür. Kullanıcı iki dropdown'dan yıl seçer, "Karşılaştır" butonuna tıklar; backend `KpiYearConfig`, `StrategyYearConfig`, `SubStrategyYearConfig`, `ProcessYearConfig` tablolarını her iki dönem için sorgulayarak meta bilgi, strateji, alt strateji, süreç ve KPI hedefi farklarını JSON olarak döner. Frontend `<details>` panellerinde sarı vurgulu satırlarla değişen alanları gösterir; fark sayısını badge olarak özetler.
+
+### Notlar
+Karşılaştırma yalnızca `*_year_config` tablolarındaki override kayıtlarını kapsar; config kaydı olmayan varlıklar (fallback kullananlar) karşılaştırmaya dahil edilmez.
+
+---
+
+## TASK-079 | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** K-Vektör hesaplamaları aktif SP dönemini baz alacak şekilde güncellendi
+**Modül:** k_vektor, score_engine, sp, surec, kurum
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/k_vektor_engine.py` → `compute_k_vektor_bundle(plan_year=None)` parametresi eklendi; Process, Strategy, SubStrategy sorguları `plan_year_id` ile filtreleniyor
+- `app/services/score_engine_service.py` → `get_pg_scores_from_kpi_data`, `compute_process_scores_internal`, `compute_vision_score` içinde plan_year filtreleri; K-Vektör çağrısına `plan_year` geçiriliyor; klasik yolda Strategy/SubStrategy `plan_year_id` ile filtreleniyor
+- `app/services/k_vektor_config_service.py` → `k_vektor_weights_get_dict(plan_year=None)` ve `save_k_vektor_weights(plan_year=None)` — strateji listesi aktif dönem ID'sine göre filtreleniyor
+- `micro/modules/sp/routes.py` → `compute_vision_score`, `k_vektor_weights_get_dict`, `save_k_vektor_weights`, `sp_api_graph` çağrılarına `active_plan_year` / `get_active_plan_year_for_user()` geçiriliyor
+- `micro/modules/surec/routes.py` → `compute_process_scores_internal` çağrısına aktif plan_year geçiriliyor
+- `micro/modules/kurum/routes.py` → `k_vektor_weights_get_dict` ve `save_k_vektor_weights` çağrılarına aktif plan_year geçiriliyor
+
+### Yapılan İşlem
+Full Clone mimarisinde her dönemin kendi Strategy/SubStrategy/Process/ProcessKpi kayıtları `plan_year_id` ile ayrılıyor. Önceki sürüm `tenant_id` ile sorgulayıp tüm dönemleri karıştırıyordu. Artık `plan_year` verildiğinde tüm motorlar yalnızca o döneme ait kayıtları kullanıyor; `plan_year=None` durumunda eski davranış (tenant bazlı) korunuyor — geriye dönük uyumluluk bozulmadı.
+
+### Notlar
+`api/routes.py` (legacy) ve `app/routes/strategy.py` güncellenmedi — bunlar plan year öncesi sistemden kalma; plan_year=None fallback ile çalışmaya devam eder.
+
+---
+
+## TASK-078d | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Dönem karşılaştırmasında KPI'lar artık süreç bazlı gruplu gösteriliyor
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → Süreç + KPI karşılaştırması birleştirildi; `_kpi_diff()` yardımcısı eklendi; KPI'lar artık `process_diffs[].kpis[]` içinde iç içe döner, bağımsız `kpi_diffs` listesi kaldırıldı
+- `ui/templates/platform/sp/donemler.html` → `processSectionHtml()` fonksiyonu eklendi; süreç başlığı → altında KPI satırları şeklinde hiyerarşik tablo render ediyor
+
+### Yapılan İşlem
+Backend: Her süreç çiftinin kendi KPI'ları `kpis1_by_proc`/`kpis2_by_proc` dict'leri üzerinden `_match_pairs` ile eşleştirilip `kpis` listesi olarak sürece gömüldü. Frontend: `processSectionHtml()` her süreç için başlık satırı (gri arka plan), sürecin kendi alan farkları (girintili), ardından altındaki KPI satırları (daha derin girinti) olarak render ediyor; sarı vurgu yalnızca değişen satırlarda.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-078c | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Dönem karşılaştırma mantığı kökten yeniden yazıldı — `*_year_config` tablolarından asıl tablolara geçildi
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → Strateji/alt strateji/süreç/KPI karşılaştırması `*_year_config` tablolarından `strategies`, `sub_strategies`, `processes`, `process_kpis` tablolarına taşındı; `source_*_id` ile eşleştirme yapan `_match_pairs()` yardımcısı eklendi
+- `ui/templates/platform/sp/donemler.html` → Row render fonksiyonları `changed_fields` listesine göre yeniden yazıldı; satır bazlı alan farkları gösteriliyor
+
+### Yapılan İşlem
+Önceki sürüm `StrategyYearConfig`, `ProcessYearConfig` vb. override tablolarını sorguluyordu — bu tablolar boş olunca hiç fark çıkmıyordu. Doğru mimari Full Clone sistemidir: her yıl için stratejiler/süreçler/KPI'lar kopyalanarak `plan_year_id` ile o yıla bağlanır. `_match_pairs()` fonksiyonu Y1↔Y2 yönünde `source_*_id` referanslarını takip ederek eşleşen çiftleri bulur, eşleşemeyenleri "sadece bu yılda" olarak işaretler.
+
+### Notlar
+`*_year_config` import'ları routes.py'de kaldı; kimlik karşılaştırması (`TenantYearIdentity`) doğruydu, değiştirilmedi.
+
+---
+
+## TASK-078b | 2026-04-10 | ✅ Tamamlandı
+
+**Görev:** Dönem karşılaştırmasına SP ana sayfasındaki kimlik alanları (Misyon, Vizyon, Değerler, Etik Kurallar, Kalite Politikası) eklendi
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → `sp_api_donem_karsilastir` route'una `TenantYearIdentity` sorgusu ve `identity_diffs` bloğu eklendi
+- `ui/templates/platform/sp/donemler.html` → `identitySection` render + `identityRowFn` eklendi; her alan için 150 karakter önizleme gösterildi
+
+### Yapılan İşlem
+Her plan yılının `TenantYearIdentity` kaydından purpose, vision, core_values, code_of_ethics, quality_policy alanları çekilip karşılaştırıldı. Metin farklıysa veya dolu/boş durumu değiştiyse "değişmiş" sayılır. Önizleme olarak ilk 150 karakter gösterilir, uzun metinler `…` ile kesilir.
+
+### Notlar
+Yok.
+
+## TASK-077 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** `/sp/analizler` bölümü tamamen kaldırıldı
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Silinen Dosyalar
+- `micro/modules/sp/routes.py` → Stratejik Analizler bölümü kaldırıldı: `sp_analizler()` route, 16 API endpoint (SWOT/TOWS/PESTEL/Porter/Rakip/Paydaş/Risk), tüm yardımcı fonksiyonlar ve modül import'ları silindi
+- `ui/templates/platform/base.html` → Sidebar'dan "Stratejik Analizler" linki ve `active` koşulundaki `analizler` kontrolü kaldırıldı
+- `ui/templates/platform/sp/analizler.html` → Silindi
+- `ui/static/platform/css/analizler.css` → Silindi
+- `ui/static/platform/js/analizler.js` → Silindi
+
+### Yapılan İşlem
+Anlamsız bulunan `/sp/analizler` sayfası ve tüm bağımlılıkları (route, API, template, CSS, JS, sidebar) eksiksiz kaldırıldı.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-076 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** SP sayfasındaki K-Vektör açıklama notu kaldırıldı
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/sp/index.html` → K-Vektör ham ağırlık açıklama notunu içeren `mc-alert mc-sp-flow-note` div'i silindi
+
+### Yapılan İşlem
+SP ana sayfasında `k_vektor_enabled and sp_can_manage` koşuluyla gösterilen "K-Vektör: Ana ve alt strateji ham ağırlıkları..." açıklama kutusu anlamsız bulunarak tamamen kaldırıldı.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-075 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** SP Dönem Yönetimi masaüstüne taşındı — tüm CRUD (seçim, oluşturma, kapatma) ana sayfa widget'ı oldu
+**Modül:** masaustu / sp / plan_year
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Oluşturulan Dosyalar
+- `micro/modules/masaustu/routes.py` → plan_year verilerini yükle (plan_years, active_plan_year, sp_can_manage, plan_year_feature); render_template'e aktar
+- `ui/templates/platform/masaustu/index.html` → "SP Dönem Yönetimi" widget eklendi; yeni dönem modalı eklendi; masaustu_plan_year.js linki eklendi; sp.css linki eklendi
+- `ui/static/platform/js/masaustu_plan_year.js` → YENİ; dönem seçimi, yeni dönem oluşturma, dönem kapatma JS
+
+### Yapılan İşlem
+Dönem seçme/oluşturma/kapatma işlemleri SP sayfasına ek olarak masaüstüne de eklendi. Tüm kullanıcılar aktif dönemi görebilir ve değiştirebilir; Yeni Dönem / Kapat butonları yalnızca tenant_admin ve üst rollerde render edilir. Mevcut `/sp/api/plan-years` endpoint'leri yeniden kullanıldı, yeni route eklenmedi. SP sayfasındaki mevcut bar korundu.
+
+### Notlar
+Widget yalnızca `tenant.plan_year_enabled = True` olan tenantlarda görünür. Diğer tenantlarda masaüstü değişmez.
+
+## TASK-074 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** PlanYear kayıtları var ama SP ana verisi boş yılların backfill'i + K-Radar görünürlük rollback + SP fallback metin düzeltmeleri  
+**Modül:** sp / plan_year / k_radar / ui  
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Oluşturulan Dosyalar
+- `scripts/fix_empty_plan_years_by_clone.py` → YENİ; `plan_year` boş yılları önceki dolu yıldan full clone ile backfill eden script
+- `app/services/plan_year_service.py` → `clone_full_plan_year()` içinde `ProcessActivityAssignee` kopyalama alanı `order_no` ile uyumlu hale getirildi
+- `micro/modules/sp/routes.py` → fallback mesajında seçili yıl (`sp_selected_plan_year`) ve gösterilen veri yılı (`sp_displayed_plan_year`) ayrıştırıldı
+- `ui/templates/platform/sp/index.html` → bilgi banner metni seçili yıl / gösterilen yıl doğru gösterilecek şekilde güncellendi
+- `micro/core/module_registry.py` → K-Radar tenant flag'e bağlı launcher filtresi geri alındı
+- `micro/modules/k_radar/routes.py` → tenant bazlı K-Radar gate (`before_request`) geri alındı
+- `ui/templates/platform/base.html` → K-Radar sidebar linki koşulsuz görünecek şekilde geri alındı
+- `scripts/compare_tenant_backup_vs_db.py` → `.json.gz` yanında `.json` yedek dosyası da okuyacak şekilde genişletildi
+- `scripts/print_tenant_table_counts.py` → YENİ; tenant bazlı tablo sayım aracı
+
+### Yapılan İşlem
+KMF örneğinde (tenant 16) `plan_years` içinde 2022-2026 mevcut olmasına rağmen `strategies/processes` kayıtları yalnızca 2021'e bağlıydı.  
+Yeni backfill scripti önce dry-run ile analiz edildi, sonra uygulanarak 2022-2026 yıllarına ana SP verisi taşındı (6 strateji, 11 süreç ve ilişkili alt veriler).  
+Ardından tüm tenantlar için script çalıştırıldı; kaynak yılı hiç olmayan tenantlar güvenli biçimde atlandı.  
+Ek olarak K-Radar'ı devre dışı bırakan son feature-gate değişiklikleri geri alındı.
+
+### Notlar
+- KMF doğrulaması: 2021-2026 için `strategies=6`, `processes=11`; 2020 boş kaldı (kaynak yıl yok).
+- Script, kaynağı olmayan boş yılları kopyalamaz; yanlış veri üretmemek için "atlandı" raporlar.
+- Kalıcı politika önerisi: yeni yıl oluşturma akışında `from_year` ile full clone zorunlu/varsayılan olmalı.
+
+---
+
+## TASK-073 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** Süreç/KPI/bireysel PG sayfalarında plan_year fallback eklendi
+**Modül:** surec / bireysel
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `surec()`: aktif yılda veri yoksa en çok sürece sahip yıla fallback; strateji filtresi de güncellendi
+- `micro/modules/bireysel/routes.py` → `bireysel_api_karne()`: aktif yılda PG yoksa tüm PG'leri göster
+
+### Yapılan İşlem
+KMF gibi tüm verileri 2021 plan_year_id'de olan tenantlarda aktif yıl 2026 olduğu için süreçler, stratejiler ve PG'ler görünmüyordu. SP sayfasında uygulanan fallback mantığı surec ve bireysel modüllerine de taşındı.
+
+### Notlar
+Kalıcı çözüm: "Yeni Yıl Planı" oluşturulurken kaynak yıl seçilerek full clone yapılmalı. Fallback geçici uyumluluk katmanıdır.
+
+---
+
+## TASK-072 | 2026-04-08 | ✅ Tamamlandı
+
+**Görev:** SP modal şeffaflık ve plan_year filtre hataları düzeltildi
+**Modül:** sp / components
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/css/components.css` → `.mc-modal-lg/md/sm/xl` için `background:#fff` + boyut kuralları eklendi; `.mc-modal-overlay.active` desteği eklendi
+- `ui/static/platform/js/sp_plan_year.js` → modal açma/kapama `style.display` yerine `classList.add/remove("open")` ile yapıldı
+- `ui/templates/platform/sp/index.html` → modaldan `style="display:none"` inline stil kaldırıldı; etiketlenmemiş kayıt uyarısı eklendi
+- `micro/modules/sp/routes.py` → strateji/süreç sorgularına `or_(plan_year_id==active_py.id, plan_year_id==None)` filtresi eklendi; `has_untagged_strategies` flag'i eklendi
+
+### Yapılan İşlem
+Modal içeriği (`.mc-modal-lg`) CSS `background:white` tanımlamasına sahip değildi, bu nedenle şeffaf görünüyordu. `sp_plan_year.js` inline `style.display` yerine CSS sınıfıyla açılacak şekilde güncellendi. Strateji/süreç filtresine `plan_year_id IS NULL` kayıtları dahil edildi; etiketlenmemiş veri varsa uyarı banner gösterilecek.
+
+### Notlar
+`plan_year_id=NULL` kayıtlar tüm dönemlerde görünmeye devam eder. Tam izolasyon için `scripts/migrate_genesis_plan_year.py` çalıştırılmalı.
+
+---
+
+## TASK-071 | 2026-04-09 | ✅ Tamamlandı (FAZA 4b + FAZA 5)
+
+**Görev:** SP Full Clone sistemi kullanıcıya açıldı — dönem oluşturma, yıl geçişi, karne navigasyonu, SP Projeler
+**Modül:** sp / surec / plan_year
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Oluşturulan Dosyalar
+- `micro/modules/sp/routes.py` → `sp_api_plan_years_create`: `clone_full_plan_year` entegre edildi; `sp()`: TenantYearIdentity'den misyon/vizyon yüklenir; `sp_api_tenant_identity`: plan_year aktifse TenantYearIdentity'e kaydeder; PlanProject + PlanProjectTask CRUD route'ları eklendi (`/sp/api/proje/`); `/sp/projeler` sayfa route'u eklendi
+- `micro/modules/surec/routes.py` → `surec_karne`: plan_years listesi template'e aktarıldı; `surec_api_resolve_for_year` API eklendi (code + source_id chain traversal ile yıl bazlı process çözümleme)
+- `ui/templates/platform/surec/karne.html` → `plan_year_enabled`, `resolve-year-url`, `current-year` data attr; yıl selector plan_years listesi ile güncellendi
+- `ui/static/platform/js/surec.js` → yıl değişiminde plan_year aktifse resolve API çağrılıp ilgili dönemin klonuna navigate edilir
+- `ui/templates/platform/sp/index.html` → TenantYearIdentity öncelikli misyon/vizyon okuma
+- `ui/templates/platform/sp/projeler.html` → YENİ: SP Projeler sayfası
+- `ui/static/platform/js/sp_projeler.js` → YENİ: proje kartları, görev yönetimi
+- `ui/static/platform/css/sp.css` → proje kartı stilleri eklendi
+- `ui/templates/platform/base.html` → sidebar'a SP Projeler linki eklendi
+
+### Yapılan İşlem
+"Yeni Dönem Oluştur" → from_year seçilince plan_year_enabled tenant için `clone_full_plan_year()` çağrılır (tüm strateji/süreç/KPI/faaliyet/analiz kopyalanır). Karne sayfasında yıl değiştirilince `/process/api/resolve-for-year` API, mevcut sürecin hedef yıldaki klonunu `code` eşleşmesi + `source_id` zinciriyle bulur ve o sayfaya yönlendirir. Misyon/vizyon plan_year aktifse `TenantYearIdentity`'den okunur ve kaydedilir. SP Projeler sayfası kart görünümü + görev yönetimi ile tamamlandı.
+
+### Notlar
+Tüm fazlar tamamlandı (FAZA 1-5). Overlay tabloları (kpi_year_configs vb.) hâlâ silinmedi — bir sonraki cleanup task'ında kaldırılabilir.
+
+## TASK-070 | 2026-04-09 | ✅ Tamamlandı
+
+**Görev:** Tüm stratejik analizler — SWOT, TOWS, PESTEL, Porter's 5 Güç, Rakip Analizi, Paydaş Haritası, Risk Haritası
+**Modül:** sp / analiz
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Oluşturulan Dosyalar
+- `app/models/swot.py` → `PestelAnalysis`, `PorterFiveForcesAnalysis` modelleri eklendi
+- `app/models/k_radar_domain.py` → `CompetitorAnalysis`, `StakeholderMap`, `RiskHeatmapItem` modellerine `plan_year_id` FK eklendi
+- `app/models/__init__.py` → yeni model import'ları eklendi
+- `migrations/versions/d4e5f6g7h8i9_strategic_analyses_tables.py` → YENİ — migration çalıştırıldı, PostgreSQL'e uygulandı
+- `micro/modules/sp/routes.py` → 7 analiz için 16 API endpoint eklendi + `sp_analizler()` sayfa route'u
+- `ui/templates/platform/sp/analizler.html` → YENİ — tüm analizler için sekmeli UI
+- `ui/static/platform/css/analizler.css` → YENİ — analiz sayfası stilleri
+- `ui/static/platform/js/analizler.js` → YENİ — tüm analizler için veri yükleme, düzenleme, canvas görselleştirme
+- `ui/templates/platform/base.html` → sidebar'a "Stratejik Analizler" linki eklendi
+
+### Yapılan İşlem
+7 stratejik analiz tipi plan_year bazlı olarak uygulandı. SWOT/TOWS/PESTEL/Porter her biri plan_year+tenant başına tek kayıt (get-or-create). Rakip/Paydaş/Risk ise çoklu satır tabanlı. Porter'da her kuvvet için hem öğe listesi hem şiddet skoru (1-5) tutulur. Paydaş Haritası ve Risk Haritası canvas ile görselleştirildi. `/sp/analizler` sayfasında sekmeli erişim, sidebar'a link eklendi.
+
+### Notlar
+Plan year feature disabled tenantlarda `/sp/analizler` sayfası uyarı gösterir. `_require_plan_year()` yardımcısı tüm API'lerde aktif dönem yoksa 400 döner.
+
+## TASK-069 | 2026-04-08 | ✅ Tamamlandı (FAZA 3)
+
+**Görev:** SP Tam Klon — FAZA 3: tüm route sorgularına aktif `plan_year_id` filtresi eklendi
+**Modül:** surec / sp / bireysel / plan_year_service
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/plan_year_service.py` → `get_active_plan_year_for_user(user)` yardımcı fonksiyonu eklendi; `session` import'u eklendi
+- `micro/modules/surec/routes.py` → `surec()` ve `_parent_options_with_depth()` plan_year_id filtresi; import güncellendi
+- `micro/modules/sp/routes.py` → `sp()`, `sp_flow()`, `sp_api_graph()`, `sp_add_strategy()`, `sp_add_sub_strategy()` plan_year_id filtresi; import güncellendi
+- `micro/modules/bireysel/routes.py` → `bireysel_api_karne()`, `bireysel_api_pg_add()`, `bireysel_api_pg_ensure_from_process_kpi()` plan_year_id filtresi; import güncellendi
+
+### Yapılan İşlem
+`get_active_plan_year_for_user(user)` fonksiyonu: tenant'ta `plan_year_enabled=False` ise `None` döner; session'daki `sp_active_year` veya tenant aktif yılı bulunur. Tüm süreç/strateji/bireysel PG sorgularına bu fonksiyondan gelen aktif dönem filtresi eklendi. Plan year aktif olmadığında mevcut davranış (tüm kayıtlar) korunur. Yeni strateji/sub-strateji/bireysel PG oluşturmada `plan_year_id` otomatik atanır.
+
+### Notlar
+`IndividualActivity` tablosunda henüz `plan_year_id` kolonu yok — migration'da yoktu, FAZA 4'te değerlendirilecek. Karne API overlay mantığı clonlanmış KPI'larda graceful fallback yapıyor (boş `_ycfg` → KPI değerleri direkt kullanılır).
+
+## TASK-068 | 2026-04-08 | ✅ Tamamlandı (FAZA 1-2)
+
+**Görev:** SP Tam Klon (Full Clone) mimarisi — DB altyapısı ve servis katmanı
+**Modül:** plan_year / core / process / sp
+**Durum:** ✅ Tamamlandı (FAZA 1-2 tamamlandı; FAZA 3-5 sonraki task)
+
+### Değiştirilen Dosyalar
+- `app/models/core.py` → Strategy + SubStrategy'e plan_year_id, source_strategy_id/source_sub_strategy_id eklendi
+- `app/models/process.py` → Process, ProcessKpi, ProcessActivity, IndividualPerformanceIndicator'a plan_year_id + source_* eklendi
+- `app/models/tenant_year.py` → YENİ: TenantYearIdentity (misyon/vizyon/değerler yıllık versiyonlama)
+- `app/models/swot.py` → YENİ: SwotAnalysis, TowsAnalysis (plan_year bazlı)
+- `app/models/project.py` → YENİ: Project, ProjectTask, ProjectActivity (plan_year bazlı)
+- `app/models/__init__.py` → yeni model importları eklendi
+- `app/services/plan_year_service.py` → clone_full_plan_year() eklendi (tam klon servisi)
+- `migrations/versions/c2d3e4f5g6h7_full_clone_plan_year_fks.py` → YENİ migration
+- `scripts/migrate_genesis_plan_year.py` → YENİ tek seferlik genesis atama scripti
+
+### Yapılan İşlem
+"Config Overlay" modelinden "Full Clone" modeline geçiş için altyapı hazırlandı. Her varlığa (strateji, süreç, KPI, faaliyet vb.) plan_year_id FK ve source_id zinciri eklendi. clone_full_plan_year() servisi tüm yapıyı hiyerarşik sırayla kopyalar. Migration çalıştırılınca kolonlar oluşur; genesis scripti mevcut verileri en eski plan_year'a atar.
+
+### Notlar
+Migration + genesis script çalıştırıldı, tüm hatalar düzeltildi (Process.parent FK belirsizliği, Project sınıf çakışması → PlanProject olarak yeniden adlandırıldı). 18 tenant için 473 KPI, 2454 faaliyet, 64 strateji genesis PlanYear'a bağlandı.
+FAZA 3 (sorgu güncellemeleri), FAZA 4 (SWOT/TOWS/Proje route'ları), FAZA 5 (UI) sonraki task'larda.
+
+## TASK-067 | 2026-04-06 | ✅ Tamamlandı
+
+**Görev:** SP geçmiş yıl başlatma — kurum yöneticisi başlangıç yılı seçince plan_year'lar otomatik oluşturulur
+**Modül:** sp / kurum
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/core.py` → `Tenant.plan_year_start` (Integer nullable) kolonu eklendi
+- `migrations/versions/b1c2d3e4f5a6_tenant_plan_year_start.py` → yeni migration (uygulandı)
+- `app/services/plan_year_service.py` → `initialize_plan_years(tenant_id, start_year)` eklendi
+- `micro/modules/kurum/routes.py` → POST'ta `plan_year_start` işleme + `initialize_plan_years` çağrısı
+- `ui/templates/platform/kurum/ayarlar.html` → toggle altına "Geçmiş yılları dahil et" dropdown
+- `ui/static/platform/js/kurum_ayarlar.js` → plan_year_start collect + toggle show/hide
+
+### Yapılan İşlem
+Kurum yöneticisi `/kurum/ayarlar`'da "Yıllık dönem planlamasını etkinleştir" toggle'ı açtıktan sonra başlangıç yılını (2021–2026) seçer. Kaydet'e basınca `initialize_plan_years()` seçilen yıldan bugüne kadar tüm `plan_year` kayıtlarını oluşturur, mevcut KPI/strateji/süreç fallback değerleriyle seed eder. Geçmiş yıllar `status=closed`, aktif yıl `status=active` olarak oluşturulur.
+
+### Notlar
+E1 ertelenen iş tamamlandı (kullanıcı canlı geçişi yaptı 2026-04-06).
+
 ## TASK-066 | 2026-04-05 | ✅ Tamamlandı
 
 **Görev:** /ayarlar/yedekleme sayfasına kurum bazlı JSON yedekleme ve geri yükleme eklendi

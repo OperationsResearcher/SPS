@@ -110,13 +110,18 @@ def get_pg_scores_from_kpi_data(
         year = date.today().year
     as_of = as_of_date or date.today()
 
-    pgs = (
-        ProcessKpi.query
-        .join(Process)
-        .filter(Process.tenant_id == tenant_id, Process.is_active == True)
-        .filter(ProcessKpi.is_active == True)
-        .all()
-    )
+    if plan_year is not None:
+        pgs = ProcessKpi.query.filter_by(
+            plan_year_id=plan_year.id, is_active=True
+        ).all()
+    else:
+        pgs = (
+            ProcessKpi.query
+            .join(Process)
+            .filter(Process.tenant_id == tenant_id, Process.is_active == True)
+            .filter(ProcessKpi.is_active == True)
+            .all()
+        )
 
     # Yıllık config bulk çek (N+1 önlemi)
     kpi_cfg_map: Dict[int, Dict] = {}
@@ -135,6 +140,22 @@ def get_pg_scores_from_kpi_data(
             .order_by(KpiData.data_date.desc())
             .limit(100)
         ).all()
+        if not entries and plan_year is not None:
+            # Clone KPI'da veri yoksa source_kpi_id zincirini tara (max 8 adım)
+            ancestor_id = getattr(pg, 'source_kpi_id', None)
+            visited = {pg.id}
+            while ancestor_id and ancestor_id not in visited and len(visited) < 9:
+                visited.add(ancestor_id)
+                entries = (
+                    KpiData.query.filter_by(process_kpi_id=ancestor_id, year=year, is_active=True)
+                    .filter(KpiData.data_date <= as_of)
+                    .order_by(KpiData.data_date.desc())
+                    .limit(100)
+                ).all()
+                if entries:
+                    break
+                ancestor = ProcessKpi.query.get(ancestor_id)
+                ancestor_id = getattr(ancestor, 'source_kpi_id', None) if ancestor else None
         if not entries:
             out[pg.id] = None
             continue
@@ -177,10 +198,10 @@ def compute_process_scores_internal(
     """PG → süreç skorları (0–100). K-Vektör ve klasik vizyon motoru ortak kullanır."""
     pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of, plan_year=plan_year)
 
-    processes = Process.query.filter_by(
-        tenant_id=tenant_id,
-        is_active=True
-    ).all()
+    if plan_year is not None:
+        processes = Process.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+    else:
+        processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     children_by_parent = {}
     for p in processes:
         pid = p.parent_id
@@ -267,20 +288,29 @@ def compute_vision_score(
             from app.services.k_vektor_engine import compute_k_vektor_bundle
 
             return compute_k_vektor_bundle(
-                tenant_id, year, as_of, persist_pg_scores=persist_pg_scores
+                tenant_id, year, as_of,
+                persist_pg_scores=persist_pg_scores,
+                plan_year=plan_year,
             )
 
         process_scores, pg_scores = compute_process_scores_internal(
             tenant_id, year, as_of, persist_pg_scores, plan_year=plan_year
         )
 
-        sub_strategies = (
-            SubStrategy.query
-            .join(Strategy)
-            .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True)
-            .filter(SubStrategy.is_active == True)
-            .all()
-        )
+        if plan_year is not None:
+            sub_strategies = (
+                SubStrategy.query.join(Strategy)
+                .filter(Strategy.plan_year_id == plan_year.id, Strategy.is_active == True)
+                .filter(SubStrategy.is_active == True)
+                .all()
+            )
+        else:
+            sub_strategies = (
+                SubStrategy.query.join(Strategy)
+                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True)
+                .filter(SubStrategy.is_active == True)
+                .all()
+            )
         sub_strategy_scores = {}
         for ss in sub_strategies:
             linked_processes = list(ss.processes) if hasattr(ss, 'processes') else []
@@ -292,10 +322,10 @@ def compute_vision_score(
             n_linked = len(linked_processes)
             sub_strategy_scores[ss.id] = round(total / n_linked, 2) if n_linked > 0 else 0.0
 
-        strategies = Strategy.query.filter_by(
-            tenant_id=tenant_id,
-            is_active=True
-        ).all()
+        if plan_year is not None:
+            strategies = Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+        else:
+            strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
         strategy_scores = {}
         for st in strategies:
             alts = [a for a in st.sub_strategies if a.is_active]

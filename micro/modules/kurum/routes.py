@@ -97,15 +97,6 @@ def kurum_ayarlar():
                 {"k_vektor_enabled": tenant.k_vektor_enabled},
             )
 
-        if "k_radar_enabled" in data:
-            kr = data.get("k_radar_enabled")
-            if isinstance(kr, bool):
-                tenant.k_radar_enabled = kr
-            elif isinstance(kr, str):
-                tenant.k_radar_enabled = kr.strip().lower() in ("1", "true", "yes", "on")
-            elif isinstance(kr, (int, float)):
-                tenant.k_radar_enabled = bool(kr)
-
         if "plan_year_enabled" in data:
             pye = data.get("plan_year_enabled")
             if isinstance(pye, bool):
@@ -114,6 +105,17 @@ def kurum_ayarlar():
                 tenant.plan_year_enabled = pye.strip().lower() in ("1", "true", "yes", "on")
             elif isinstance(pye, (int, float)):
                 tenant.plan_year_enabled = bool(pye)
+
+        if "plan_year_start" in data:
+            raw_pys = data.get("plan_year_start")
+            try:
+                pys = int(raw_pys) if raw_pys not in (None, "", "null") else None
+            except (ValueError, TypeError):
+                pys = None
+            if pys is not None and pys != tenant.plan_year_start:
+                from app.services.plan_year_service import initialize_plan_years
+                initialize_plan_years(tenant.id, pys)
+            tenant.plan_year_start = pys
 
         # Logo yükleme (multipart/form-data)
         logo_file = request.files.get("logo")
@@ -396,10 +398,12 @@ def kurum_api_k_vektor_weights():
         return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
 
     tid = current_user.tenant_id
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
     if request.method == "GET":
-        return jsonify(k_vektor_weights_get_dict(tid))
+        return jsonify(k_vektor_weights_get_dict(tid, plan_year=active_py))
 
-    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {})
+    ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {}, plan_year=active_py)
     if ok:
         return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
     status = 404 if "bulunamadı" in (msg or "") else 400

@@ -50,7 +50,13 @@
      data-bireysel-veri-add-url="{{ url_for('app_bp.bireysel_api_veri_add') }}"
      data-kpi-data-detail-url="{{ url_for('app_bp.surec_api_kpi_data_detail') }}"
      data-kpi-data-proje-url="{{ url_for('app_bp.surec_api_kpi_data_proje_gorevleri') }}"
-     data-k-vektor-enabled="{{ 'true' if k_vektor_enabled else 'false' }}">
+     data-k-vektor-enabled="{{ 'true' if k_vektor_enabled else 'false' }}"
+     data-plan-year-enabled="{{ 'true' if plan_year_enabled else 'false' }}"
+     data-resolve-year-url="{{ url_for('app_bp.surec_api_resolve_for_year') }}"
+     data-current-year="{{ current_year }}"
+     data-activity-delete-url-base="{{ url_for('app_bp.surec_api_activity_delete', act_id=kpi_api_placeholder_id)|replace(kpi_api_placeholder_id|string, '') }}"
+     data-activity-cancel-url-base="{{ url_for('app_bp.surec_api_activity_cancel', act_id=kpi_api_placeholder_id)|replace(kpi_api_placeholder_id|string, '') }}"
+     data-activity-postpone-url-base="{{ url_for('app_bp.surec_api_activity_postpone', act_id=kpi_api_placeholder_id)|replace(kpi_api_placeholder_id|string, '') }}">
 
   {# ── Üst bar: kök karnesi referansı (gradient, sol süreç seçici, sağ meta + aksiyonlar) ── #}
   <header class="karne-banner no-print" role="banner">
@@ -80,9 +86,18 @@
           <div class="karne-banner-meta-line karne-banner-year-line">
             <label for="year-select">Yıl:</label>
             <select id="year-select" class="karne-banner-year-select" aria-label="Rapor yılı">
-              {% for y in range(current_year + 1, current_year - 5, -1) %}
-              <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
-              {% endfor %}
+              {% if plan_year_enabled and plan_years_for_karne %}
+                {% for py in plan_years_for_karne %}
+                <option value="{{ py.year }}"
+                  {% if py.year == current_year %}selected{% endif %}>
+                  {{ py.year }}{% if py.status == 'closed' %} ✓{% elif py.status == 'draft' %} ●{% endif %}
+                </option>
+                {% endfor %}
+              {% else %}
+                {% for y in range(current_year + 1, current_year - 5, -1) %}
+                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+              {% endif %}
             </select>
           </div>
         </div>
@@ -239,7 +254,7 @@
     <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
       <div class="karne-pg-card-head-text karne-kanban-head-main">
         <span class="mc-card-title karne-kpi-section-title">
-          <i class="fas fa-tachometer-alt karne-kpi-section-title-icon" aria-hidden="true"></i>Süreç Karnesi — Performans Göstergeleri
+          <i class="fas fa-tachometer-alt karne-kpi-section-title-icon" aria-hidden="true"></i>{% if process.document_no %}{{ process.document_no }} - {% endif %}{{ process.name }} Süreç Karnesi
         </span>
       </div>
       <div class="karne-kanban-header-tools no-print">
@@ -360,7 +375,7 @@
     <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
       <div class="karne-pg-card-head-text karne-kanban-head-main">
         <span class="mc-card-title">
-          <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>Süreç Faaliyetleri
+          <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>{% if process.document_no %}{{ process.document_no }} - {% endif %}{{ process.name }} Süreç Faaliyetleri
         </span>
       </div>
       <div class="karne-kanban-header-tools no-print">
@@ -764,7 +779,7 @@
       <div class="mc-modal-header">
         <div class="mc-modal-title">
           <i class="fas fa-table" aria-hidden="true"></i>
-          <span id="micro-pg-tablo-title">Süreç Karnesi — Performans Göstergeleri</span>
+          <span id="micro-pg-tablo-title">{% if process.document_no %}{{ process.document_no }} - {% endif %}{{ process.name }} Süreç Karnesi</span>
         </div>
         <button type="button" class="mc-modal-close" id="btn-micro-pg-tablo-close" aria-label="Kapat">
           <i class="fas fa-times" aria-hidden="true"></i>

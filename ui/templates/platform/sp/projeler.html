@@ -1,0 +1,140 @@
+{% extends "platform/base.html" %}
+{% block title %}SP Projeler — Kokpitim{% endblock %}
+{% block page_title %}SP Projeler{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block content %}
+<div id="sp-projeler"
+     data-can-manage="{{ 'true' if sp_can_manage else 'false' }}"
+     data-proje-url="{{ url_for('app_bp.sp_api_proje_list') }}"
+     data-proje-save-url="{{ url_for('app_bp.sp_api_proje_save') }}"
+     data-proje-delete-base="{{ url_for('app_bp.sp_api_proje_delete', item_id=0)[:-1] }}"
+>
+
+{% if not plan_year_feature or not active_plan_year %}
+<div class="mc-alert mc-alert-warning">
+  SP Projeleri için aktif bir SPDönemi gereklidir.
+  <a href="{{ url_for('app_bp.sp') }}">Stratejik Planlama</a> sayfasından dönem oluşturun.
+</div>
+{% else %}
+
+<div class="mc-page-header mc-mb-4" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+  <span class="mc-badge mc-badge-primary">{{ active_plan_year.year }} Dönemi</span>
+  {% if active_plan_year.name %}<span class="mc-text-muted">{{ active_plan_year.name }}</span>{% endif %}
+  {% if sp_can_manage %}
+  <button class="mc-btn mc-btn-primary mc-btn-sm mc-ml-auto" id="btn-proje-add">
+    <i class="fas fa-plus"></i> Yeni Proje
+  </button>
+  {% endif %}
+</div>
+
+<!-- Proje kartları -->
+<div id="proje-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;"></div>
+<div id="proje-empty" class="mc-text-muted mc-text-center mc-py-8" style="display:none;">
+  Bu dönem için henüz proje yok.
+</div>
+
+{% endif %}
+</div>
+
+<!-- Proje Ekle/Düzenle Modalı -->
+<div class="mc-modal-overlay" id="modal-proje-edit">
+  <div class="mc-modal-lg">
+    <div class="mc-modal-header">
+      <h3 id="modal-proje-title">Proje Ekle</h3>
+      <button class="mc-modal-close" data-modal="modal-proje-edit">✕</button>
+    </div>
+    <div class="mc-modal-body">
+      <input type="hidden" id="proje-edit-id">
+      <div class="mc-form-group">
+        <label class="mc-label">Proje Adı *</label>
+        <input type="text" id="proje-edit-name" class="mc-input" placeholder="Proje adı">
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label">Açıklama</label>
+        <textarea id="proje-edit-desc" class="mc-input" rows="3" placeholder="Kısa açıklama..."></textarea>
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label">Durum</label>
+        <select id="proje-edit-status" class="mc-input">
+          <option value="Planlandı">Planlandı</option>
+          <option value="Devam Ediyor">Devam Ediyor</option>
+          <option value="Tamamlandı">Tamamlandı</option>
+          <option value="İptal">İptal</option>
+          <option value="Beklemede">Beklemede</option>
+        </select>
+      </div>
+      <div class="mc-row mc-gap-2">
+        <div class="mc-form-group mc-flex-1">
+          <label class="mc-label">Başlangıç Tarihi</label>
+          <input type="date" id="proje-edit-start" class="mc-input">
+        </div>
+        <div class="mc-form-group mc-flex-1">
+          <label class="mc-label">Bitiş Tarihi</label>
+          <input type="date" id="proje-edit-end" class="mc-input">
+        </div>
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label">İlerleme (%)</label>
+        <input type="number" min="0" max="100" id="proje-edit-progress" class="mc-input" placeholder="0-100">
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button class="mc-btn mc-btn-secondary" data-modal="modal-proje-edit">İptal</button>
+      <button class="mc-btn mc-btn-primary" id="btn-proje-save">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Görev Modalı -->
+<div class="mc-modal-overlay" id="modal-gorev-edit">
+  <div class="mc-modal-md">
+    <div class="mc-modal-header">
+      <h3 id="modal-gorev-title">Görev Ekle</h3>
+      <button class="mc-modal-close" data-modal="modal-gorev-edit">✕</button>
+    </div>
+    <div class="mc-modal-body">
+      <input type="hidden" id="gorev-edit-project-id">
+      <input type="hidden" id="gorev-edit-id">
+      <div class="mc-form-group">
+        <label class="mc-label">Görev Adı *</label>
+        <input type="text" id="gorev-edit-name" class="mc-input">
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label">Açıklama</label>
+        <textarea id="gorev-edit-desc" class="mc-input" rows="2"></textarea>
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label">Durum</label>
+        <select id="gorev-edit-status" class="mc-input">
+          <option value="Planlandı">Planlandı</option>
+          <option value="Devam Ediyor">Devam Ediyor</option>
+          <option value="Tamamlandı">Tamamlandı</option>
+        </select>
+      </div>
+      <div class="mc-row mc-gap-2">
+        <div class="mc-form-group mc-flex-1">
+          <label class="mc-label">Başlangıç</label>
+          <input type="date" id="gorev-edit-start" class="mc-input">
+        </div>
+        <div class="mc-form-group mc-flex-1">
+          <label class="mc-label">Bitiş</label>
+          <input type="date" id="gorev-edit-end" class="mc-input">
+        </div>
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button class="mc-btn mc-btn-secondary" data-modal="modal-gorev-edit">İptal</button>
+      <button class="mc-btn mc-btn-primary" id="btn-gorev-save">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/sp_projeler.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

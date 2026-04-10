@@ -965,9 +965,19 @@ body {
   justify-content: center;
   padding: 20px;
 }
-.mc-modal-overlay.open { display: flex; }
+.mc-modal-overlay.open,
+.mc-modal-overlay.active { display: flex; }
 
-.mc-modal {
+/* SweetAlert2 — her zaman en üstte; VGS gibi inline z-index:2147483000 olan modalların üstünde */
+.swal2-container {
+  z-index: 2147483647 !important;
+}
+
+.mc-modal,
+.mc-modal-sm,
+.mc-modal-md,
+.mc-modal-lg,
+.mc-modal-xl {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.18);
@@ -978,6 +988,10 @@ body {
   flex-direction: column;
   animation: mc-modal-in 0.2s ease;
 }
+.mc-modal-sm  { max-width: 440px; }
+.mc-modal-md  { max-width: 600px; }
+.mc-modal-lg  { max-width: 760px; }
+.mc-modal-xl  { max-width: 960px; }
 @keyframes mc-modal-in {
   from { opacity: 0; transform: translateY(-16px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }

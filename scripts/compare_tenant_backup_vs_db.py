@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Kurum yedeği (.json.gz) ile yerel DB ve isteğe bağlı VM (canlı) DB satır sayılarını karşılaştırır.
+Kurum yedeği (.json.gz veya .json) ile yerel DB ve isteğe bağlı VM (canlı) DB satır sayılarını karşılaştırır.
 
 VM bağlantısı (gizli tutun, repoya yazmayın):
   set KOKPITIM_VM_DATABASE_URI=postgresql://...
   py scripts/compare_tenant_backup_vs_db.py backups/kurum_16_....json.gz
 
-veya:
-  py scripts/compare_tenant_backup_vs_db.py backups/kurum_16_....json.gz --vm-database-uri "postgresql://..."
+veya düz JSON:
+  py scripts/compare_tenant_backup_vs_db.py backups/kurum_16_....json --vm-database-uri "postgresql://..."
 """
 from __future__ import annotations
 
@@ -66,7 +66,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Tenant yedek (.json.gz) vs yerel DB vs VM DB satir sayisi",
     )
-    ap.add_argument("backup_gz", type=Path, help=".json.gz yol")
+    ap.add_argument("backup_path", type=Path, help=".json.gz veya .json yedek dosyasi")
     ap.add_argument("--tenant-id", type=int, default=None, help="DB sorgusu icin tenant id (yoksa yedek meta)")
     ap.add_argument(
         "--vm-database-uri",
@@ -82,8 +82,12 @@ def main() -> int:
     if not vm_uri:
         vm_uri = None
 
-    with gzip.open(args.backup_gz, "rt", encoding="utf-8") as f:
-        payload = json.load(f)
+    bp = args.backup_path
+    if bp.suffix.lower() == ".gz":
+        with gzip.open(bp, "rt", encoding="utf-8") as f:
+            payload = json.load(f)
+    else:
+        payload = json.loads(bp.read_text(encoding="utf-8"))
     meta = payload.get("meta") or {}
     tid = args.tenant_id or int(meta.get("tenant_id") or 0)
     if not tid:

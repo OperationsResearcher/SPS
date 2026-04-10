@@ -109,11 +109,15 @@
 
   // ── Yardımcı: Hata dialog ─────────────────────────────────────────────────
   function showError(msg) {
+    const openModals = Array.from(document.querySelectorAll(".mc-modal-overlay.open, .mc-modal-overlay.active"));
+    openModals.forEach(m => m.style.zIndex = "1");
     Swal.fire({
       icon: "error",
       title: "Hata",
       text: msg,
       confirmButtonColor: "#dc2626",
+    }).then(() => {
+      openModals.forEach(m => m.style.zIndex = "");
     });
   }
 
@@ -2909,17 +2913,50 @@
   }
 
   // ── Yıl / süreç değişimi ──────────────────────────────────────────────────
-  yearSelect.addEventListener("change", () => {
+  const PLAN_YEAR_ENABLED = viewRoot.dataset.planYearEnabled === "true";
+  const RESOLVE_YEAR_URL  = viewRoot.dataset.resolveYearUrl || "";
+
+  yearSelect.addEventListener("change", async () => {
+    const newYear = parseInt(yearSelect.value, 10) || new Date().getFullYear();
+
+    // Plan year sistemi aktifse: aynı sürecin hedef yıldaki klonuna git
+    if (PLAN_YEAR_ENABLED && RESOLVE_YEAR_URL) {
+      const pid = viewRoot.dataset.processId;
+      try {
+        const res = await fetch(
+          `${RESOLVE_YEAR_URL}?process_id=${pid}&year=${newYear}`,
+          { headers: { "X-Requested-With": "XMLHttpRequest" } }
+        );
+        const data = await res.json();
+        if (data.success && data.url) {
+          window.location.href = data.url;
+          return;
+        } else {
+          // Bu yılda klon yok — API verisi yükle (sadece KpiData)
+          if (window.Swal) {
+            Swal.fire({ toast: true, position: "top-end", icon: "info",
+              title: data.message || `${newYear} döneminde eşleşen süreç bulunamadı.`,
+              showConfirmButton: false, timer: 3000 });
+          }
+          // Yıl değişimini geri al
+          yearSelect.value = viewRoot.dataset.currentYear || new Date().getFullYear();
+          return;
+        }
+      } catch (e) {
+        // Bağlantı hatası — fallback: sadece API verisi değiştir
+      }
+    }
+
+    // Plan year disabled ya da resolve başarısız: sadece veriyi yenile
     karneNavPeriodKey = null;
     karneNavDataYear = null;
     if (getPgKarneView() === "gunluk") {
-      const y = parseInt(yearSelect.value, 10) || new Date().getFullYear();
       const cy = new Date().getFullYear();
       const cm = new Date().getMonth() + 1;
       const cd = new Date().getDate();
-      karneGunlukViewYear = y;
-      karneGunlukViewMonth = y === cy ? cm : 1;
-      karneGunlukViewDay = y === cy && karneGunlukViewMonth === cm ? cd : 1;
+      karneGunlukViewYear = newYear;
+      karneGunlukViewMonth = newYear === cy ? cm : 1;
+      karneGunlukViewDay = newYear === cy && karneGunlukViewMonth === cm ? cd : 1;
     }
     syncPgKarneYilFromBanner();
     syncPgGunlukAyHiddenSelect();
@@ -3224,7 +3261,10 @@
   }
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    const openModals = Array.from(document.querySelectorAll(".mc-modal-overlay.open, .mc-modal-overlay.active"));
+    openModals.forEach(m => m.style.zIndex = "1");
+    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" })
+      .then(() => { openModals.forEach(m => m.style.zIndex = ""); });
   }
 
   function readUsersPickJson() {

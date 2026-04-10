@@ -88,6 +88,7 @@ class RiskHeatmapItem(db.Model):
     __tablename__ = "risk_heatmap_items"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     title = db.Column(db.String(255), nullable=False)
     probability = db.Column(db.Integer, nullable=False)
     impact = db.Column(db.Integer, nullable=False)
@@ -109,6 +110,7 @@ class StakeholderMap(db.Model):
     __tablename__ = "stakeholder_maps"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     name = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(100), nullable=True)
     influence = db.Column(db.Integer, nullable=True)
@@ -166,6 +168,7 @@ class CompetitorAnalysis(db.Model):
     __tablename__ = "competitor_analyses"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     competitor_name = db.Column(db.String(200), nullable=False)
     dimension = db.Column(db.String(100), nullable=True)
     our_score = db.Column(db.Float, nullable=True)
