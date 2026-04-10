@@ -239,9 +239,12 @@ def surec():
     )
     _proc_fallback_py_id = None
     if active_py:
-        q_year = q.filter(Process.plan_year_id == active_py.id)
+        # Aktif dönem + etiketsiz (NULL) süreçler — VM/legacy veride plan_year_id bos olabilir (SP ile ayni mantik).
+        q_year = q.filter(
+            or_(Process.plan_year_id == active_py.id, Process.plan_year_id.is_(None))
+        )
         all_processes = accessible_processes_filter(q_year, current_user, tid).all()
-        # Veri yoksa: en çok sürece sahip plan yılına geri dön
+        # Hâlâ yoksa: en çok sürece sahip plan yılına geri dön (ornegin veri baska yila etiketli)
         if not all_processes:
             best = (
                 db.session.query(Process.plan_year_id, _sqla_func.count(Process.id))
@@ -289,7 +292,13 @@ def surec():
         for s in strategies
     ]
 
-    parent_options_with_depth = _parent_options_with_depth(tid, plan_year_id=_effective_py_id)
+    _popts_py = _effective_py_id
+    if active_py and _proc_fallback_py_id is None and any(
+        p.plan_year_id is None for p in all_processes
+    ):
+        # Ust süreç seçicide NULL etiketli süreçler de görünsün
+        _popts_py = None
+    parent_options_with_depth = _parent_options_with_depth(tid, plan_year_id=_popts_py)
     users_pick_json = _users_pick_json(users)
 
     can_crud = can_crud_process_entity(current_user)
