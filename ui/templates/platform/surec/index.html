@@ -24,15 +24,31 @@
             <h2 class="mc-page-title">Süreç Listesi</h2>
             <p class="mc-page-subtitle">{{ processes|length }} süreç görüntüleniyor</p>
         </div>
-        {% if can_crud_process %}
-        <button type="button" id="btn-surec-add" class="mc-btn mc-btn-primary">
-            <i class="fas fa-plus"></i> Yeni Süreç
-        </button>
-        {% endif %}
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+                <button type="button" id="btn-view-tree"
+                    class="mc-btn mc-btn-sm"
+                    style="border-radius:0; border:none; padding:6px 14px;"
+                    title="Ağaç görünümü">
+                    <i class="fas fa-sitemap"></i> Ağaç
+                </button>
+                <button type="button" id="btn-view-kanban"
+                    class="mc-btn mc-btn-sm"
+                    style="border-radius:0; border:none; border-left:1px solid #e2e8f0; padding:6px 14px;"
+                    title="Kanban görünümü">
+                    <i class="fas fa-columns"></i> Kanban
+                </button>
+            </div>
+            {% if can_crud_process %}
+            <button type="button" id="btn-surec-add" class="mc-btn mc-btn-primary">
+                <i class="fas fa-plus"></i> Yeni Süreç
+            </button>
+            {% endif %}
+        </div>
     </div>
 
     {% if roots %}
-    <div style="display:flex; flex-direction:column; gap:10px;">
+    <div id="surec-tree-view" style="display:flex; flex-direction:column; gap:10px;">
         {% macro render_process(p, depth) %}
         <div class="mc-card surec-tree-item" style="{% if depth > 0 %}margin-left:{{ depth * 24 }}px;{% endif %}">
             <div style="display:flex; align-items:center; gap:12px; padding:14px 18px;">
@@ -57,6 +73,13 @@
                                  style="width:{{ _ps }}%;"></div>
                         </div>
                         <span style="font-size:11.5px; color:#64748b;">{{ _ps }}%</span>
+                        {% if k_vektor_enabled %}
+                        {% set _kv = process_scores.get(p.id) %}
+                        <span style="font-size:11px; color:#6366f1; font-weight:600; display:flex; align-items:center; gap:4px;">
+                            <i class="fas fa-vector-square" style="font-size:10px;"></i>
+                            K-Vektör: {{ '%.1f'|format(_kv if _kv is not none else 0) }}
+                        </span>
+                        {% endif %}
                         {% if p.status %}
                         <span class="mc-badge {% if p.status == 'active' %}mc-badge-success{% elif p.status == 'inactive' %}mc-badge-gray{% else %}mc-badge-info{% endif %}" style="font-size:11px;">
                             {{ p.status }}
@@ -105,6 +128,211 @@
         {% for root in roots %}
             {{ render_process(root, 0) }}
         {% endfor %}
+    </div>
+
+    {# ── Kanban görünümü ── #}
+    <div id="surec-kanban-view" style="display:none;">
+      <div class="kb-kanban-root" style="padding:0;">
+        <div class="kb-kanban-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
+
+          {# Hedefte #}
+          <section class="kb-col kb-col--hedefte">
+            <div class="kb-col-head">
+              <span class="kb-col-dot kb-col-dot--hedefte"></span>
+              <h3 class="kb-col-title">Hedefte</h3>
+              <span class="kb-col-count" id="kb-proc-count-hedefte">
+                {{ processes | selectattr('id', 'in', process_scores.keys() | list) | list | length }}
+              </span>
+            </div>
+            <div class="kb-col-body">
+              {% for p in processes %}
+                {% set _s = process_scores.get(p.id) %}
+                {% if _s is not none and _s >= 80 %}
+                {% set _si = _s|round|int %}
+                <div class="kb-card">
+                  <div class="kb-card-top">
+                    <div class="kb-card-name-block">
+                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                    </div>
+                    <div class="kb-card-actions">
+                      <span class="kb-card-weight" style="color:#1d9e75;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                    </div>
+                  </div>
+                  <div class="kb-card-divider"></div>
+                  <div class="kb-card-meta">
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">PG</span>
+                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                    </div>
+                    {% if k_vektor_enabled %}
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">K-Vektör</span>
+                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-chart-bar"></i> Karne
+                    </a>
+                    {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </section>
+
+          {# Risk altında #}
+          <section class="kb-col kb-col--risk">
+            <div class="kb-col-head">
+              <span class="kb-col-dot kb-col-dot--risk"></span>
+              <h3 class="kb-col-title">Risk altında</h3>
+            </div>
+            <div class="kb-col-body">
+              {% for p in processes %}
+                {% set _s = process_scores.get(p.id) %}
+                {% if _s is not none and _s >= 50 and _s < 80 %}
+                {% set _si = _s|round|int %}
+                <div class="kb-card">
+                  <div class="kb-card-top">
+                    <div class="kb-card-name-block">
+                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                    </div>
+                    <div class="kb-card-actions">
+                      <span class="kb-card-weight" style="color:#ef9f27;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                    </div>
+                  </div>
+                  <div class="kb-card-divider"></div>
+                  <div class="kb-card-meta">
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">PG</span>
+                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                    </div>
+                    {% if k_vektor_enabled %}
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">K-Vektör</span>
+                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-chart-bar"></i> Karne
+                    </a>
+                    {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </section>
+
+          {# Hedef dışı #}
+          <section class="kb-col kb-col--disi">
+            <div class="kb-col-head">
+              <span class="kb-col-dot kb-col-dot--disi"></span>
+              <h3 class="kb-col-title">Hedef dışı</h3>
+            </div>
+            <div class="kb-col-body">
+              {% for p in processes %}
+                {% set _s = process_scores.get(p.id) %}
+                {% if _s is not none and _s < 50 %}
+                {% set _si = _s|round|int %}
+                <div class="kb-card">
+                  <div class="kb-card-top">
+                    <div class="kb-card-name-block">
+                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                    </div>
+                    <div class="kb-card-actions">
+                      <span class="kb-card-weight" style="color:#e24b4a;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                    </div>
+                  </div>
+                  <div class="kb-card-divider"></div>
+                  <div class="kb-card-meta">
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">PG</span>
+                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                    </div>
+                    {% if k_vektor_enabled %}
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">K-Vektör</span>
+                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-chart-bar"></i> Karne
+                    </a>
+                    {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </section>
+
+          {# Veri yok #}
+          <section class="kb-col" style="background:#f8fafc;">
+            <div class="kb-col-head">
+              <span class="kb-col-dot" style="background:#cbd5e1;"></span>
+              <h3 class="kb-col-title">Veri yok</h3>
+            </div>
+            <div class="kb-col-body">
+              {% for p in processes %}
+                {% set _s = process_scores.get(p.id) %}
+                {% if _s is none %}
+                <div class="kb-card">
+                  <div class="kb-card-top">
+                    <div class="kb-card-name-block">
+                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                    </div>
+                    <div class="kb-card-actions">
+                      <span class="kb-card-weight" style="color:#94a3b8;font-size:12px;">—</span>
+                    </div>
+                  </div>
+                  <div class="kb-card-divider"></div>
+                  <div class="kb-card-meta">
+                    <div class="kb-card-meta-item">
+                      <span style="font-size:10px;color:#94a3b8;">PG</span>
+                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-chart-bar"></i> Karne
+                    </a>
+                    {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </section>
+
+        </div>
+      </div>
     </div>
 
     {% else %}
@@ -280,5 +508,33 @@
 
 {% block extra_js %}
 <script src="{{ url_for('app_bp.static', filename='platform/js/surec.js') }}"></script>
+<script>
+(function () {
+  var PREF_KEY = "surec_view_pref";
+  var treeEl    = document.getElementById("surec-tree-view");
+  var kanbanEl  = document.getElementById("surec-kanban-view");
+  var btnTree   = document.getElementById("btn-view-tree");
+  var btnKanban = document.getElementById("btn-view-kanban");
+  if (!treeEl || !kanbanEl || !btnTree || !btnKanban) return;
+
+  function setView(v) {
+    var isKanban = (v === "kanban");
+    treeEl.style.display  = isKanban ? "none" : "flex";
+    kanbanEl.style.display = isKanban ? "block" : "none";
+    btnKanban.classList.toggle("mc-btn-primary",   isKanban);
+    btnKanban.classList.toggle("mc-btn-secondary", !isKanban);
+    btnTree.classList.toggle("mc-btn-primary",   !isKanban);
+    btnTree.classList.toggle("mc-btn-secondary",  isKanban);
+    try { localStorage.setItem(PREF_KEY, v); } catch(e) {}
+  }
+
+  var saved = "tree";
+  try { saved = localStorage.getItem(PREF_KEY) || "tree"; } catch(e) {}
+  setView(saved);
+
+  btnTree.addEventListener("click",   function () { setView("tree"); });
+  btnKanban.addEventListener("click", function () { setView("kanban"); });
+})();
+</script>
 {% endblock %}
 

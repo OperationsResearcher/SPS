@@ -78,7 +78,7 @@ class Config:
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
 
     # Cache Busting
-    VERSION = "1.0.2"
+    VERSION = "1.0.7"
 
     # Bakım modu — bakım: docs/YERELDEN_VM_YAYIN.md veya kod icinde maintenance_service
     MAINTENANCE_OVERRIDE_OFF = os.environ.get("MAINTENANCE_OVERRIDE_OFF", "").lower() in (

@@ -58,12 +58,6 @@
     Dönem yönetimi için <a href="{{ url_for('app_bp.launcher') }}">ana sayfaya</a> gidin.
   </div>
   {% endif %}
-  {% if has_untagged_strategies %}
-  <div class="mc-alert mc-alert-warning" style="margin-bottom:0.75rem">
-    <i class="fas fa-exclamation-triangle"></i>
-    Bazı stratejiler henüz bu dönem için klonlanmamış — tüm dönemlerde ortaklaşa görünüyor.
-  </div>
-  {% endif %}
   {% endif %}
   <script type="application/json" id="sp-card-help-json">{{ {
     'misyon': {

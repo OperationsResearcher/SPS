@@ -3,191 +3,151 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
-## TASK-087 | 2026-04-10 | ✅ Tamamlandı
+## TASK-087 | 2026-04-12 | ✅ Tamamlandı
 
-**Görev:** Prod kesimi — `kokpitim_merge_target` → canlı `kokpitim_db` (ALTER DATABASE RENAME)
-**Modül:** DB merge, deployment
-**Durum:** ✅ Tamamlandı
-
-### Yapılan işlem (VM sps-server-v2)
-- `sps-web` durduruldu; `kokpitim_db` → **`kokpitim_db_pre_promote_20260410_195528`**; **`kokpitim_merge_target`** → **`kokpitim_db`**; `sps-web` başlatıldı.
-- Doğrulama: canlı `kokpitim_db` üzerinde KMF (`tenant_id=16`) — kullanıcı 8, süreç 11, PG 135, PGV 318 (TASK-084 ile aynı).
-
-### Geri alma (gerekirse)
-- Bağlantıları kestikten sonra: `kokpitim_db` → `kokpitim_merge_target`; `kokpitim_db_pre_promote_20260410_195528` → `kokpitim_db` (betik çıktısındaki sıra).
-- Disk/snapshot: TASK-083.
-
----
-
-## TASK-086 | 2026-04-11 | ✅ Tamamlandı
-
-**Görev:** VM `kokpitim_merge_target` doğrulama sonrası — betik sertleştirme + prod kesim aracı
-**Modül:** DB merge, operasyon
-**Durum:** ✅ Tamamlandı
-
-### Yapılanlar
-- `scripts/ops/vm_merge_kokpitim_target.sh`: `pg_restore` artık **host’taki `postgres` süper kullanıcı** ile; TOC (`-L`) aynı. Böylece `ENABLE TRIGGER` yetki uyarıları gider; **postgres:16** Docker restore adımı kaldırıldı.
-- `scripts/ops/vm_promote_merge_target_to_prod.sh`: Bakım penceresinde `ALTER DATABASE RENAME` ile **merge hedefini canlı `kokpitim_db` adına taşıma**; yalnız `CONFIRM_PROD_DATABASE_PROMOTE=yes` ile çalışır; eski prod `kokpitim_db_pre_promote_<timestamp>` olur. **TASK-083 yedeği önkoşul.**
-
-### Önceki durum (TASK-085/084)
-- VM’de `kokpitim_merge_target` üzerinde şema + data-only restore tamam; KMF dört sayı TASK-084 ile eşleşti.
-
-### Not
-~~Canlı trafik `kokpitim_db` üzerinde; kesim için kullanıcı onayı + bakım + betik çalıştırma gerekir.~~ → **TASK-087 ile kesim uygulandı.**
-
----
-
-## TASK-085 | 2026-04-10 | ✅ Tamamlandı
-
-**Görev:** VM prod veri-only dump + yerel şema ile birleştirme runbook (devam adımı)
-**Modül:** DB merge, yedekleme, dokümantasyon
-**Durum:** ✅ Tamamlandı
-
-### Değiştirilen / eklenen dosyalar
-- VM üretimi: `/var/lib/postgresql/kokpitim_vm_data_only_20260410.dump` (`pg_dump -Fc --data-only`, döngüsel FK uyarıları beklenebilir)
-- Yerel kopya: `backups/merge_prep/kokpitim_vm_data_only_20260410.dump`
-- Runbook: `docs/runbooks/db_merge_vm_data_local_schema.md` — boş DB + `flask db upgrade` → `pg_restore --data-only --disable-triggers` → sequence → **TASK-084 KMF sayım kontrolü**
-
-### Yapılan İşlem
-Birleştirme hattının bir sonraki somut adımı için prod veritabanının yalnızca veri yükünü içeren dump alındı ve repoya indirildi. Şema tarafı yerel migration head ile oluşturulacak hedef DB’ye bu dosyanın restore edilmesi; sonrasında audit sequence ops SQL ve KMF dört sayının tekrar ölçülmesi runbook’ta sabitlendi.
-
-### Notlar
-Yerel Windows ortamında `pg_restore` bulunmadığı için dry-run restore bu makinede çalıştırılmadı; merge doğrulaması PostgreSQL client’ı olan bir hostta (VM veya CI) yapılmalıdır.
-
----
-
-## TASK-084 | 2026-04-10 | ✅ Tamamlandı
-
-**Görev:** Kayseri Model Fabrika (KMF) kurumu — birleşme öncesi kontrol yedeği + referans sayımları
-**Modül:** yedekleme, DB-merge kontrolü
-**Durum:** ✅ Tamamlandı
-
-### KMF referans sayıları (VM prod — birleşme sonrası aynı olmalı)
-
-| Alan | Değer |
-|------|--------|
-| **tenant_id** | 16 |
-| **Kurum adı** | Kayseri Model Fabrika |
-| **Kullanıcı sayısı** | 8 |
-| **Süreç sayısı** | 11 |
-| **PG sayısı** (process_kpis, kurum süreçleri üzerinden) | 135 |
-| **PGV sayısı** (kpi_data, `deleted_at IS NULL`) | 318 |
-
-### Yedek nerede?
-
-- Yerel: `backups/kmf_pre_merge_reference/kmf_tenant_backup_20260410_182150.tar.gz` (+ `README.txt`)
-- VM: `/var/lib/postgresql/kmf_tenant_backup_20260410_182150.tar.gz` (üretim sunucusunda aynı içerik)
-
-### Araçlar
-
-- `scripts/ops/kmf_export_on_vm.sh` — VM'de `postgres` kullanıcısı ile çalıştırılır; KMF tenant CSV dilimini ve `counts.txt` üretir.
-- `scripts/ops/kmf_tenant_backup_and_counts.sql` — yalnızca sayım sorgusu (psql `-f`).
-
-### Birleşme sonrası kontrol (tekrar çalıştır)
-
-1. Hedef DB'de (birleşmiş şema + VM verisi yüklendikten sonra) aynı script veya SQL ile tenant eşlemesinin hâlâ `id=16` ve aynı isim olduğunu doğrulayın (id değiştiyse sorguda yeni id kullanın).
-2. Yukarıdaki dört sayıyı karşılaştırın; sapma varsa import/mapping veya `deleted_at` tanımını inceleyin.
-
-### Notlar
-
-- PGV tanımı: `kpi_data` satırları, ilgili süreç `tenant_id=16`, **`deleted_at IS NULL`**. CSV yedeği bu tanımla aynı 318 satırı içerir.
-
----
-
-## TASK-083 | 2026-04-10 | 📋 Referans
-
-**Görev:** VM sorununda bu ana geri dönüş (snapshot / dump) — adım adım
-**Modül:** deployment, yedekleme, kurtarma
-**Durum:** 📋 Referans (operasyon notu)
-
-### “%100 döner miyiz?”
-- **Tam VM diski:** Kayıtlı **disk snapshot** anındaki duruma dönersiniz (OS, Docker, container, o sırada diskte ne varsa). Bu, pratikte “o ana” en yakın ve en kapsamlı geri dönüştür.
-- **Matematiksel %100** ifadesi kullanılmaz: snapshot alındıktan sonra diskte oluşan milisaniyelik fark, nadir GCP tarafı olaylar veya snapshot’tan **sonra** yazılmış veri snapshot’ta yoktur.
-- **Sadece PostgreSQL:** `pg_dump` anına dönersiniz; snapshot anından birkaç dakika önce/sonra olabilir (dump ile snapshot farklı saniyede alındıysa).
-
-### Kayıtlı snapshot adları (GCP)
-- `sps-server-v2-prehotfix-20260410-125515` — hotfix öncesi disk.
-- `sps-server-v2-premigrate-20260410-173138` — migration denemesinden hemen önceki disk (**genelde en güncel güvenli çizgi**).
-
-Yerel envanter: `backups/vm_safety_20260410/gcp_snapshots_sps-server-v2.txt`
-
-### Yol A — Önerilen: Snapshot’tan kurtarma VM (aynı prod IP’sini taşıyarak)
-Amaç: Mevcut bozuk VM’e dokunmadan önce **paralel** sağlam bir kopya ayağa kaldırmak; trafiği güvenle kaydırmak.
-
-1. **GCP Console** → Compute Engine → **Snapshots** → `sps-server-v2-premigrate-20260410-173138` seç.
-2. **Create instance** (veya eşdeğeri: snapshot’tan VM oluştur) → yeni isim verin, örn. `sps-server-v2-rollback`.
-3. **Ağ:** Eski VM ile aynı VPC/subnet; **External IP** için: ya geçici IP ile test edin ya da aşağıdaki adım 5’te statik IP taşıyın.
-4. **Firewall tags:** Eski VM’deki etiketlerle aynı olsun (`http-server`, `https-server`, `flask-port` vb. — yerel `gcp_firewall_rules.txt` veya Console’dan mevcut VM’e bakın).
-5. **Statik / sabit dış IP kullanılıyorsa:** Console → VPC network → **IP addresses** → adresi eski VM’den **yeni** kurtarma VM’e bağlayın (önce eski VM’de bağlantıyı kaldırın veya eski VM’yi durdurun).
-6. **Smoke test:** `https://kokpitim.com` veya doğrudan IP üzerinden health/login.
-7. Her şey iyiyse eski `sps-server-v2` **Stop** veya silin (silmeden önce ek snapshot alınabilir).
-
-### Yol B — Aynı VM adıyla boot diski snapshot’tan yenileme (ileri seviye)
-Amaç: Instance adı ve yapı aynı kalsın; boot disk snapshot’tan gelsin.
-
-1. **Yedek alın:** Mevcut bozuk durumdan da bir snapshot alın (geri dönüş için “şimdiki hal” kaydı).
-2. VM’yi **Stop** edin: `gcloud compute instances stop sps-server-v2 --zone=europe-west3-c`
-3. Snapshot’tan **yeni disk** oluşturun (boyut/tür eski boot disk ile uyumlu, örn. 50 GB):
-   - `gcloud compute disks create DISK_ADI --source-snapshot=sps-server-v2-premigrate-20260410-173138 --zone=europe-west3-c`
-4. GCP Console’da ilgili VM → düzenleme akışında **boot disk** olarak yeni diski bağlayıp eski boot diski ayırın (arayüz sürümüne göre menü adı değişebilir; bulamazsanız Yol A kullanın).
-5. VM **Start**; servis ve container’ların ayağa kalktığını doğrulayın.
-
-### Yol C — Sadece veritabanı geri yükleme (PostgreSQL)
-Amaç: VM ve Docker sağlam, sadece `kokpitim_db` bozuldu.
-
-1. VM’de PostgreSQL’i durdurun veya uygulamayı durdurun (yazma kesilsin).
-2. Yereldeki veya VM’deki dump’tan restore:
-   - Örnek dosya: `backups/vm_safety_20260410/kokpitim_db_pre_migrate_now.dump` (migration öncesi).
-   - `pg_restore` ile hedef DB’ye (genelde `--clean --if-exists` dikkatli kullanılır; prod’da önce boş DB veya rename stratejisi tercih edilir).
-3. `alembic_version` ve uygulama sürümünün dump’taki haliyle uyumlu olduğunu kontrol edin.
-4. Uygulamayı başlatın; smoke test.
-
-### Kurtarma sonrası kontrol listesi
-- [ ] Dış erişim (443/80) ve login
-- [ ] `docker ps` / `sps-web` çalışıyor mu
-- [ ] `select version_num from alembic_version;` beklenen revision mı
-- [ ] Kritik modüller (SP, süreç, admin) kısa tıklama turu
-
-### Notlar
-- **En tutarlı “tek an”:** `premigrate` disk snapshot (tüm disk).
-- **DB tek başına:** dump dosyası; VM dosyaları değişmediyse Yol C yeterli olabilir.
-
----
-
-## TASK-082 | 2026-04-10 | ✅ Tamamlandı
-
-**Görev:** VM canlı yedeklerinin yerel kopyası (DB dump, container kodu, PG config, GCP dökümleri)
-**Modül:** deployment, yedekleme
+**Görev:** K-Rapor'a 8 yeni analiz sekmesi eklendi
+**Modül:** k_rapor
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `backups/vm_safety_20260410/` → `kokpitim_db_pre_migrate_now.dump`, `kokpitim_db_pre_hotfix_20260410_125515.dump`, `kokpitim_stage_seed.dump`, `sps-web-inspect.json`, `sps-web-app-20260410.tar.gz`, `pg14-main-config.tgz`, `gcp_snapshots_sps-server-v2.txt`, `gcp_firewall_rules.txt`, `INVENTORY.txt`
+- `micro/modules/k_rapor/routes.py` → 8 yeni API endpoint eklendi
+- `ui/templates/platform/k_rapor/index.html` → 8 yeni tab butonu + panel HTML, 8 yeni data-api-* attribute
+- `ui/static/platform/js/k_rapor.js` → 8 yeni load fonksiyonu + loadTab switch'e eklendi
+- `ui/static/platform/css/k_rapor.css` → Aktivite takvimi heatmap stilleri eklendi
 
 ### Yapılan İşlem
-GCP VM üzerindeki kritik PostgreSQL dump dosyaları, `sps-web` container inspect çıktısı, container içi `/app` kaynak arşivi, PostgreSQL 14 ana yapılandırma arşivi ve snapshot/firewall metin dökümleri `gcloud compute scp` ve yerel `gcloud` list komutlarıyla `backups/vm_safety_20260410/` altına indirildi. Tam disk snapshot'lar GCP'te kalır; envanter dosyasında özetlendi.
+1. **PG Dağılım** — Histogram + en düşük PG listesi (kpi_data 5960 kayıt)
+2. **Faaliyet Matris** — Süreç bazlı yatay stacked bar chart (process_activities 2455 kayıt)
+3. **Aktivite Takvimi** — GitHub tarzı günlük veri giriş heatmap + 30 gün trend
+4. **Kurum Kıyas** — Kurumları ort. PG başarısına göre bar chart + tablo (18 kurum)
+5. **Strateji Kapsama** — Boş/kısmi/tam strateji donut chart + stratejisiz süreçler
+6. **Sorumlu Analizi** — Kişi başına faaliyet yükü stacked bar + gecikme tablosu
+7. **SWOT Trend** — Yıllar içinde SWOT madde + TOWS strateji sayısı line/bar chart
+8. **Bildirim Analizi** — Tür dağılımı donut + 30 gün trend bar chart
 
 ### Notlar
-Docker imajı tam boyutta (~885 MB) bu çekimde indirilmedi; disk snapshot + `/app` arşivi + dump ile kurtarma yolu tanımlandı.
+routes.py 1999 satıra ulaştı — ileride modüllere bölünmeli.
 
 ---
 
-## TASK-081 | 2026-04-10 | ✅ Tamamlandı
+## TASK-086 | 2026-04-12 | ✅ Tamamlandı
 
-**Görev:** Prod-yerel birlestirme hazirligi icin audit sequence ops SQL ve migration runbook olusturuldu
-**Modül:** deployment, db-ops, migrations
+**Görev:** K-Rapor API hataları log'dan tespit edilerek düzeltildi
+**Modül:** k_rapor
 **Durum:** ✅ Tamamlandı
 
 ### Değiştirilen Dosyalar
-- `scripts/ops/prod_stabilize_audit_sequence.sql` -> `audit_logs.id` sequence'ini idempotent sekilde `MAX(id)+1` noktasina hizalayan operasyon SQL'i eklendi
-- `docs/runbooks/prod_migration_merge_runbook_b9_to_d4.md` -> Prod revision `b9c0d1e2f3a8`'den `d4e5f6g7h8i9`'a guvenli gecis adimlari, checkpointler ve rollback plani eklendi
+- `micro/modules/k_rapor/routes.py` → 5 hata düzeltmesi
 
 ### Yapılan İşlem
-Canlida uygulanan manuel stabilizasyonu kalici ve izlenebilir hale getirmek icin schema-disi bir ops SQL dosyasi hazirlandi. SQL, tablo/sequence varligini kontrol eder, sequence'i bagli oldugu isimden bulur ve sonraki ID'yi guvenli sekilde ayarlar. Ayrica prod ve yerel migration farki (`b9c0...` -> `d4e5...`) icin staging provasi zorunlu, iki asamali (Ops -> Migration) canli gecis ve rollback adimlarini iceren runbook olusturuldu.
+Log'dan tespit edilen hatalar:
+1. **`bireysel`** — `latest_by_pg` ve `all_by_pg` dict'leri `data_rows` öncesinde tanımlanmamıştı; sıra düzeltildi.
+2. **`surec-pg`** — `KpiData.period_type` filtresi DB'de kolon yoksa exception veriyordu; try/except ile güvenli sorguya alındı, `period_no` için `getattr` kullanıldı.
+3. **`trend`** — `AnalyticsService.get_performance_trend()` imzası `(process_id, kpi_id, start_date, end_date)` şeklinde; route `kpi_id` ve datetime nesneleri geçmiyordu, düzeltildi.
+4. **`faaliyet`** — `plan_projects` tablosu DB'de yok; exception sonrası `db.session.rollback()` eklendi (session bozulmasını önler).
+5. **`evm`** — `EvmSnapshot` import'u iç try/except'e alındı; tablo yoksa boş liste döner.
 
 ### Notlar
-Ops SQL tekrar calistirilabilir (idempotent) tasarlandi; migration zincirine dogrudan zorlayici bir schema degisikligi eklemez.
+`k_radar_domain` modülü mevcut — Risk/Uyarı tab'ları çalışıyor, veri yoksa "Kayıt yok" gösterir.
 
 ---
+
+## TASK-085 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** `/micro/` prefix'li route'lar kök URL yapısına taşındı
+**Modül:** admin
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → 5 route'da `/micro/admin/...` → `/admin/...` düzeltildi
+- `app/utils/maintenance_middleware.py` → bakım modu bypass path'i `/micro/admin/bakim-modu` → `/admin/bakim-modu`
+
+### Yapılan İşlem
+`platform_core` blueprint'i `url_prefix=""` ile kök'te kayıtlı olduğundan `/micro/` prefix'i artık geçersiz. `admin_bakim_modu`, `yonetim_paneli`, `yonetim_paneli_istatistik`, `yonetim_paneli_kullanici_detay`, `yonetim_paneli_aktiviteler` route'larının path'leri düzeltildi. `maintenance_middleware`'deki bypass path kontrolü de güncellendi. Template'ler `url_for()` kullandığı için etkilenmedi.
+
+### Notlar
+Proje genelinde başka `/micro/` URL referansı kalmadı (Yedekler/ hariç).
+
+---
+
+## TASK-084 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** K-Rapor modülü — hata düzeltmeleri + yeni özellikler
+**Modül:** k_rapor
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 6 hata düzeltmesi + Excel export endpoint eklendi
+- `ui/static/platform/js/k_rapor.js` → 5 hata düzeltmesi + trend modal + Excel export fonksiyonu
+- `ui/templates/platform/k_rapor/index.html` → inline style kaldırıldı, mc-form-select→mc-select, export butonu, trend modal, EVM 8 sütun
+- `ui/static/platform/css/k_rapor.css` → mc-page-content-wide, kr-ht-proc-link, kr-header-right sınıfları eklendi
+
+### Yapılan İşlem
+**Hata düzeltmeleri:** (1) `strategy_scores` dict'i artık ID yerine kod+başlık içeriyor (`strategy_scores_detail`). (2) `PlanProject`/`PlanYear` import'ları try/except ile korundu — model yoksa faaliyet verisi yine de döner. (3) `k_radar_domain` import'ları güvenli hale getirildi — K-Radar modülü yoksa boş liste döner. (4) `compute_k_vektor_bundle` import hatası yakalanıyor. (5) EVM'e proje adı eklendi. (6) JS'de `loaded` flag bug'ı düzeltildi — period/denetim değişikliğinde `delete loaded[tab]` kullanılıyor. (7) `loadKurumsal`'daki çift loading temizleme kaldırıldı. (8) `mc-form-select` → `mc-select` düzeltildi.
+**Yeni özellikler:** Isı haritasında süreç adına tıklayınca trend modal açılıyor (Chart.js line chart). Excel export butonu — aktif tab verisini `.xlsx` olarak indiriyor (kurumsal/veri-durumu/bireysel/faaliyet). EVM tablosuna "Durum" sütunu eklendi.
+
+### Notlar
+Trend modal, `surec-pg` API'sinden `kpi_ids` alanını bekliyor — bu alan henüz backend'de dönmüyor; modal "PG verisi yok" mesajı gösterir. İleride `k_rapor_api_surec_pg`'ye `kpi_ids` eklenerek tamamlanabilir.
+
+---
+
+## TASK-083 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** HGS sayfası layout kayması giderildi — inline style ve inline JS temizlendi
+**Modül:** hgs
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/hgs/index.html` → Tüm inline style'lar CSS sınıflarına taşındı; `onmouseover/onmouseout` inline JS kaldırıldı; `mc-page-content`, `hgs-user-row`, `mc-btn-outline` sınıfları kullanıldı
+- `ui/static/platform/css/components.css` → `.mc-page-content`, `.mc-btn-outline`, `.hgs-user-row`, `.hgs-user-active`, `.hgs-user-name`, `.hgs-user-email` sınıfları eklendi
+
+### Yapılan İşlem
+HGS sayfasındaki `style="max-width:900px; margin:0 auto; padding:10px 0;"` wrapper inline style `.mc-page-content` sınıfına taşındı. Kullanıcı satırlarındaki `onmouseover/onmouseout` inline JS kaldırılıp CSS `:hover` ile değiştirildi. `mc-card-header` üzerindeki gereksiz padding override'ları kaldırıldı. `mc-btn-outline` sınıfı `components.css`'e eklendi (daha önce tanımsızdı). Aktif kullanıcı vurgusu için `.hgs-user-active` sınıfı eklendi.
+
+### Notlar
+Proje `micro/` → `ui/` yapısına taşınmış; tüm template ve CSS dosyaları artık `ui/templates/platform/` ve `ui/static/platform/` altında.
+
+---
+
+## TASK-082 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** K-Rapor — Uyarı, K-Vektör, EVM, Stratejik Analiz, Paydaş, Rekabet sekmesi eklendi; Bireysel tab zenginleştirildi
+**Modül:** k_rapor
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 6 yeni API endpoint (uyari, k-vektor, evm, stratejik-analiz, paydas, rekabet); bireysel endpoint güncellendi (veri_girilmis, toplam_giris, son_giris); kurumsal endpoint pg_saglik eklendi
+- `ui/templates/platform/k_rapor/index.html` → 6 yeni sekme (Uyarı, K-Vektör, EVM, Stratejik Analiz, Paydaş, Rekabet & A3); bireysel tablo 8 sütuna genişletildi; faaliyet tabına proje portföy eklendi
+- `ui/static/platform/js/k_rapor.js` → apiUrl() camelCase düzeltmesi; 6 yeni loadXxx() fonksiyonu; loadBireysel güncellendi
+- `config.py` → VERSION 1.0.6 → 1.0.7
+
+### Yapılan İşlem
+`apiUrl()` fonksiyonunda tüm segment'ler büyük harfle başlatılarak camelCase dönüşüm hatası giderildi (root cause: tüm tablar "Yüklenemedi" gösteriyordu). Bireysel tab'a veri girişi istatistikleri (kaç PG'ye veri girilmiş, toplam giriş satırı, son giriş tarihi) eklendi. K-Vektör `compute_k_vektor_bundle()` üzerinden hesaplanır (boş ağırlık tablosuna karşı eşit dağılım fallback). Stratejik Analiz plan yılı bulamazsa en güncel yıla fallback yapar.
+
+### Notlar
+Score: 1.75 (başlangıç 2, -0.25 yeni sekmelerde boş veri). Tüm yeni sekmeler compute engine veya mevcut modeller üzerinden anlamlı veri üretir.
+
+## TASK-081 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** K-Rapor modülü oluşturuldu — kurumsal raporlama merkezi
+**Modül:** k_rapor (yeni)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/__init__.py` → yeni modül
+- `micro/modules/k_rapor/routes.py` → 10 route (ana sayfa + 9 API endpoint)
+- `ui/templates/platform/k_rapor/index.html` → 8 tab'lı raporlama arayüzü
+- `ui/static/platform/css/k_rapor.css` → modüle özgü stiller
+- `ui/static/platform/js/k_rapor.js` → lazy-load tab sistemi + Chart.js
+- `platform_core/__init__.py` → k_rapor_routes import eklendi
+- `micro/core/module_registry.py` → K-Rapor modül kaydı ve rol kısıtlaması
+- `ui/templates/platform/base.html` → sidebar K-Rapor linki eklendi
+
+### Yapılan İşlem
+`/k-rapor` altında 8 sekmeli raporlama merkezi oluşturuldu: Kurumsal Performans, Süreç & PG Isı Haritası, Stratejik Uyum Ağacı, Faaliyet, Bireysel Performans, Veri Giriş Durumu, Risk ve Denetim. Tüm sekmeler lazy-load ile API'dan veri çeker. Launcher sayfasında modül kartı, sidebar'da link eklendi. Yalnızca tenant_admin / executive_manager / Admin rollerine görünür.
+
+### Notlar
+Aşama 1 (iskelet + Kurumsal + Veri Durumu) ve Aşama 2-3 kapsamındaki tüm sekmeler tek seferde uygulandı. Export (Aşama 4) ertelendi.
 
 ## TASK-080 | 2026-04-10 | ✅ Tamamlandı
 
@@ -297,6 +257,146 @@ Her plan yılının `TenantYearIdentity` kaydından purpose, vision, core_values
 
 ### Notlar
 Yok.
+
+## TASK-090 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** SP sayfasındaki "klonlanmamış strateji" uyarısı kaldırıldı
+**Modül:** sp
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/sp/index.html` → `has_untagged_strategies` uyarı bloğu silindi
+
+### Yapılan İşlem
+TASK-088/089 ile `plan_year_id=NULL` legacy verisi skor motoru dahil tüm zincirde düzgün işlendiğinden, "klonlanmamış strateji" uyarısı artık yanıltıcıydı. Kaldırıldı.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-096 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** Süreç listesine Kanban görünümü eklendi
+**Modül:** surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/index.html` → header'a Ağaç/Kanban toggle eklendi; 4 sütunlu kanban grid (Hedefte/Risk altında/Hedef dışı/Veri yok) eklendi; toggle tercihi localStorage'a kaydedilir
+
+### Yapılan İşlem
+Süreç listesinde mevcut ağaç görünümüne ek olarak kanban görünümü eklendi. Karne sayfasındaki `kb-*` CSS sınıfları yeniden kullanıldı. Süreçler puana göre 4 sütuna dağıtılır: ≥80% Hedefte, 50-79% Risk altında, <50% Hedef dışı, skor yok Veri yok. K-Vektör etkinse kart üzerinde gösterilir.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-095 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** Süreç modalında alt strateji listesine sütun başlıkları eklendi
+**Modül:** surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/surec.js` → `populateSubStrategyPicker`: K-Vektör aktifken her strateji grubu altına "Alt Strateji" / "Katkı %" sütun başlığı eklendi
+
+### Yapılan İşlem
+Yeni Süreç ve Düzenle modallarındaki alt strateji bölümünde her ana strateji grubunun altında ince çizgiyle ayrılmış başlık satırı eklendi. Yalnızca K-Vektör etkin tenant'larda gösterilir.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-094 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** Süreç Karnesi sayfası aktif SP döneminin yılıyla açılıyor
+**Modül:** surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `surec_karne`: `current_year = active_py.year if active_py else datetime.now().year` — aktif plan yılı varsa o dönemin yılı kullanılıyor
+
+### Yapılan İşlem
+Karne sayfası her zaman `datetime.now().year` ile açılıyordu. Aktif SP dönemi 2025 iken bile 2026 verisi yükleniyordu. Şimdi `get_active_plan_year_for_user` ile dönem yılı alınıp `data-current-year` attribute'una yazılıyor.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-093 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** Süreç listesinde K-Vektör skoru gösterimi + yıl fix
+**Modül:** surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `compute_process_scores_internal` çağrısında `today.year` yerine `_surec_py.year` kullanılıyor
+- `ui/templates/platform/surec/index.html` → her süreç kartına `k_vektor_enabled` aktifse K-Vektör skoru (`fas fa-vector-square` ikonlu, mor renk) eklendi
+
+### Yapılan İşlem
+Süreç listesi sayfasında K-Vektör etkin tenant'lar için her sürecin altında `K-Vektör: XX.X` etiketi gösterildi. Aynı zamanda skor hesaplamada yıl hatası da giderildi (aktif plan yılının yılı kullanılıyor).
+
+### Notlar
+Yok.
+
+---
+
+## TASK-092 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** K-Vektör alt strateji/strateji skorları 0 — NULL plan_year_id fix genişletildi
+**Modül:** k_vektor_engine, score_engine_service
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/k_vektor_engine.py` → sub_strategy sorgusu ve strategy sorgusu: `plan_year_id IS NULL AND tenant_id=X` OR koşulu eklendi
+- `app/services/score_engine_service.py` → sub_strategy ve strategy sorguları (K-Vektör dışı yol): aynı OR koşulu eklendi
+
+### Yapılan İşlem
+TASK-089'da yalnızca Process ve ProcessKpi sorgularına NULL plan_year_id fix uygulanmıştı. SubStrategy (Strategy join üzerinden) ve Strategy sorgularında aynı sorun mevcuttu: `plan_year_id=plan_year.id` filtresi KMF'nin NULL plan_year_id stratejilerini dışlıyordu → sub_strategy/strategy skoru hesaplanamıyordu → K-Vektör 0.
+
+### Notlar
+Yok.
+
+---
+
+## TASK-091 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** K-Vektör skoru plan yılından bağımsız yıl kullanıyordu — yıl fix
+**Modül:** score_engine_service, sp routes
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `compute_vision_score`: `year` parametresi None geldiğinde `plan_year.year` kullanılıyor, fallback olarak `date.today().year`
+- `micro/modules/sp/routes.py` → `compute_vision_score` çağrısına `year=active_py.year` eklendi
+
+### Yapılan İşlem
+`compute_vision_score` her zaman `date.today().year` (2026) kullanıyordu. Seçili plan yılı 2025 bile olsa KpiData sorgusu `year=2026` yapılıyordu — veri bulunamıyordu, K-Vektör 0 çıkıyordu. Fix: `plan_year` verilmişse `plan_year.year` kullan.
+
+### Notlar
+TASK-089'daki `plan_year_id=NULL` fix'i doğru ancak yeterli değildi; bu fix asıl yıl hatasını kapatıyor.
+
+---
+
+## TASK-089 | 2026-04-11 | ✅ Tamamlandı
+
+**Görev:** K-Vektör puanı NULL plan_year_id olan legacy süreçler için 0 çıkıyordu — skor motoru fix
+**Modül:** score_engine_service, k_vektor_engine
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `get_pg_scores_from_kpi_data`: ProcessKpi sorgusu `plan_year_id IS NULL AND tenant_id=X` OR koşulu eklendi; `compute_process_scores_internal`: Process sorgusu aynı OR koşuluyla güncellendi; `sqlalchemy.or_/and_` import eklendi
+- `app/services/k_vektor_engine.py` → `compute_k_vektor_bundle`: Process sorgusu aynı OR koşuluyla güncellendi; `sqlalchemy.or_/and_` import eklendi
+
+### Yapılan İşlem
+KMF (ve benzeri VM/legacy) tenant'larında süreçlerin `plan_year_id=NULL` olması, skor motoru plan_year bazlı sorgu yaparken hiç süreç/KPI bulamamasına yol açıyordu. TASK-088'de surec listesine uygulanan "aktif plan_year_id OR NULL" mantığı, K-Vektör hesaplama zincirinin (ProcessKpi → Process → K-Vektör) üç kritik sorgusuna da uygulandı.
+
+### Notlar
+Surec modülündeki fix (TASK-088) skor motorunu kapsamamıştı; bu fix tamamlıyor.
+
+---
 
 ## TASK-077 | 2026-04-09 | ✅ Tamamlandı
 

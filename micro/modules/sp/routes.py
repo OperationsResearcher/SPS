@@ -133,7 +133,9 @@ def sp():
     if tenant_id and k_vektor_enabled:
         try:
             bundle = compute_vision_score(
-                tenant_id, persist_pg_scores=False,
+                tenant_id,
+                year=active_py.year if active_py else None,
+                persist_pg_scores=False,
                 plan_year=active_py,
             )
             if bundle.get("k_vektor") and bundle.get("vision_score_1000") is not None:
@@ -1188,22 +1190,6 @@ def sp_api_donem_karsilastir():
             "processes": process_diffs,
         },
     })
-
-
-@app_bp.route("/sp/projeler")
-@login_required
-def sp_projeler():
-    """SPDönem bazlı proje listesi sayfası."""
-    tenant = current_user.tenant
-    active_py = get_active_plan_year_for_user(current_user)
-    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
-    return render_template(
-        "platform/sp/projeler.html",
-        tenant=tenant,
-        active_plan_year=active_py,
-        plan_year_feature=plan_year_feature,
-        sp_can_manage=_check_sp_role(),
-    )
 
 
 @app_bp.route("/sp/api/proje", methods=["GET"])

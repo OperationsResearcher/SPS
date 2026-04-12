@@ -189,6 +189,17 @@ TABLE_PLAN = [
 # Yardımcılar
 # ---------------------------------------------------------------------------
 
+def _coerce_row_bind_params(row: dict) -> dict:
+    """PostgreSQL/psycopg2 dict/list bağlayıcı uyumu (JSON/JSONB sütunlar)."""
+    out = {}
+    for k, v in row.items():
+        if isinstance(v, (dict, list)):
+            out[k] = json.dumps(v, ensure_ascii=False)
+        else:
+            out[k] = v
+    return out
+
+
 def _serialize(v):
     """Değeri JSON-serializable hale getirir."""
     if v is None:
@@ -355,13 +366,14 @@ def restore_tenant_data(data: dict) -> dict:
                     f'INSERT INTO {table_name} ({col_str}) VALUES ({val_str})'  # noqa: S608
                     f' ON CONFLICT DO NOTHING'
                 )
+                bind = _coerce_row_bind_params(dict(row))
                 try:
-                    db.session.execute(text(sql), row)
+                    with db.session.begin_nested():
+                        db.session.execute(text(sql), bind)
                     count += 1
                 except Exception as exc:
                     logger.warning("[restore] %s satır eklenemedi: %s", table_name, exc)
                     errors.append(f"Ekleme ({table_name}): {exc}")
-                    db.session.rollback()
 
             if count:
                 restored[table_name] = count

@@ -13,6 +13,7 @@ from datetime import date
 from typing import Optional, Dict, Any
 
 from flask import current_app
+from sqlalchemy import or_, and_
 
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData
@@ -111,9 +112,19 @@ def get_pg_scores_from_kpi_data(
     as_of = as_of_date or date.today()
 
     if plan_year is not None:
-        pgs = ProcessKpi.query.filter_by(
-            plan_year_id=plan_year.id, is_active=True
-        ).all()
+        pgs = (
+            ProcessKpi.query
+            .join(Process)
+            .filter(
+                ProcessKpi.is_active == True,
+                Process.is_active == True,
+                or_(
+                    ProcessKpi.plan_year_id == plan_year.id,
+                    and_(ProcessKpi.plan_year_id.is_(None), Process.tenant_id == tenant_id),
+                ),
+            )
+            .all()
+        )
     else:
         pgs = (
             ProcessKpi.query
@@ -199,7 +210,13 @@ def compute_process_scores_internal(
     pg_scores = get_pg_scores_from_kpi_data(tenant_id, year, as_of, plan_year=plan_year)
 
     if plan_year is not None:
-        processes = Process.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+        processes = Process.query.filter(
+            Process.is_active == True,
+            or_(
+                Process.plan_year_id == plan_year.id,
+                and_(Process.plan_year_id.is_(None), Process.tenant_id == tenant_id),
+            ),
+        ).all()
     else:
         processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     children_by_parent = {}
@@ -269,7 +286,7 @@ def compute_vision_score(
     plan_year: PlanYear instance; verilmezse tenant+year için otomatik çözümlenir.
     """
     if year is None:
-        year = date.today().year
+        year = plan_year.year if plan_year is not None else date.today().year
     as_of = as_of_date or date.today()
 
     # plan_year otomatik çözümle
@@ -300,8 +317,14 @@ def compute_vision_score(
         if plan_year is not None:
             sub_strategies = (
                 SubStrategy.query.join(Strategy)
-                .filter(Strategy.plan_year_id == plan_year.id, Strategy.is_active == True)
-                .filter(SubStrategy.is_active == True)
+                .filter(
+                    Strategy.is_active == True,
+                    SubStrategy.is_active == True,
+                    or_(
+                        Strategy.plan_year_id == plan_year.id,
+                        and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),
+                    ),
+                )
                 .all()
             )
         else:
@@ -323,7 +346,13 @@ def compute_vision_score(
             sub_strategy_scores[ss.id] = round(total / n_linked, 2) if n_linked > 0 else 0.0
 
         if plan_year is not None:
-            strategies = Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+            strategies = Strategy.query.filter(
+                Strategy.is_active == True,
+                or_(
+                    Strategy.plan_year_id == plan_year.id,
+                    and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),
+                ),
+            ).all()
         else:
             strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
         strategy_scores = {}

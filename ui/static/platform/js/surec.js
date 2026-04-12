@@ -110,6 +110,7 @@
   // ── Yardımcı: Hata dialog ─────────────────────────────────────────────────
   function showError(msg) {
     const openModals = Array.from(document.querySelectorAll(".mc-modal-overlay.open, .mc-modal-overlay.active"));
+    const savedZ = openModals.map(m => m.style.zIndex);
     openModals.forEach(m => m.style.zIndex = "1");
     Swal.fire({
       icon: "error",
@@ -117,7 +118,7 @@
       text: msg,
       confirmButtonColor: "#dc2626",
     }).then(() => {
-      openModals.forEach(m => m.style.zIndex = "");
+      openModals.forEach((m, i) => { m.style.zIndex = savedZ[i]; });
     });
   }
 
@@ -917,7 +918,7 @@
       const puan = hesaplaBasariPuaniMicro(pct, basariAraliklari);
       if (puan !== null) {
         const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
-        return `<span class="${cls} fw-bold">${puan}/5</span>`;
+        return `<span class="${cls} fw-bold">${puan}</span>`;
       }
       return `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
     }
@@ -1834,7 +1835,7 @@
     if (k.direction === "Decreasing") {
       pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
     }
-    return Math.max(0, Math.min(100, pct));
+    return Math.max(0, pct);
   }
 
   /** Kolon eşiği aynı; yay rengi skora göre kırmızı(0°) → sarı → yeşil(120°) HSL geçişi */
@@ -1842,15 +1843,16 @@
     if (pctRaw === null || pctRaw === undefined || Number.isNaN(pctRaw)) {
       return { col: "risk", pctFill: 0, valText: "—", scoreHue: null };
     }
-    const p = Math.max(0, Math.min(100, Math.round(pctRaw)));
-    const scoreHue = p * 1.2;
+    const p = Math.round(pctRaw);
+    const pFill = Math.min(100, Math.max(0, p));
+    const scoreHue = Math.min(120, pFill * 1.2);
     if (p >= 80) {
-      return { col: "hedefte", pctFill: p, valText: `%${p}`, scoreHue };
+      return { col: "hedefte", pctFill: pFill, valText: `%${p}`, scoreHue };
     }
     if (p >= 50) {
-      return { col: "risk", pctFill: p, valText: `%${p}`, scoreHue };
+      return { col: "risk", pctFill: pFill, valText: `%${p}`, scoreHue };
     }
-    return { col: "disi", pctFill: p, valText: `%${p}`, scoreHue };
+    return { col: "disi", pctFill: pFill, valText: `%${p}`, scoreHue };
   }
 
   /** @param {number} pctFill @param {boolean} useSpectrum */
@@ -3373,7 +3375,14 @@
       if (!subs.length) return;
       const h = document.createElement("div");
       h.style.marginBottom = "10px";
-      h.innerHTML = `<div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">${(st.code || "") + " " + (st.title || "")}</div>`;
+      let headerHtml = `<div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">${(st.code || "") + " " + (st.title || "")}</div>`;
+      if (K_VEKTOR_ENABLED) {
+        headerHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:0 2px 4px;border-bottom:1px solid #e2e8f0;margin-bottom:4px;">` +
+          `<span style="font-size:11px;font-weight:600;color:#94a3b8;">Alt Strateji</span>` +
+          `<span style="font-size:11px;font-weight:600;color:#94a3b8;width:96px;text-align:center;flex-shrink:0;">Katkı %</span>` +
+          `</div>`;
+      }
+      h.innerHTML = headerHtml;
       const wrap = document.createElement("div");
       wrap.style.display = "flex";
       wrap.style.flexDirection = "column";

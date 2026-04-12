@@ -2071,9 +2071,9 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   padding: 0 4px;
 }
 
-/* VGS üstünde açılan alt modallar (düzenle / sil onayı) — MicroUI, daha yüksek katman */
+/* VGS üstünde açılan alt modallar (düzenle / sil onayı) — ana VGS modal (10090) üstünde olmalı */
 .vgs-nested-modal-overlay {
-  z-index: 10080 !important;
+  z-index: 10110 !important;
 }
 
 /* Periyot veri detayı / PG tablo üstünde Swal — SW2 varsayılanı ve diğer katmanların altında kalmaması için yüksek değer */

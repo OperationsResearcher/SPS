@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from flask import current_app
 
+from sqlalchemy import or_, and_
 from sqlalchemy.orm import joinedload
 
 from app.models import db
@@ -74,7 +75,13 @@ def compute_k_vektor_bundle(
 
     if plan_year is not None:
         processes = (
-            Process.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            Process.query.filter(
+                Process.is_active == True,
+                or_(
+                    Process.plan_year_id == plan_year.id,
+                    and_(Process.plan_year_id.is_(None), Process.tenant_id == tenant_id),
+                ),
+            )
             .options(joinedload(Process.process_sub_strategy_links))
             .all()
         )
@@ -97,8 +104,14 @@ def compute_k_vektor_bundle(
     if plan_year is not None:
         sub_strategies = (
             SubStrategy.query.join(Strategy)
-            .filter(Strategy.plan_year_id == plan_year.id, Strategy.is_active.is_(True))
-            .filter(SubStrategy.is_active.is_(True))
+            .filter(
+                Strategy.is_active.is_(True),
+                SubStrategy.is_active.is_(True),
+                or_(
+                    Strategy.plan_year_id == plan_year.id,
+                    and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),
+                ),
+            )
             .all()
         )
     else:
@@ -130,7 +143,13 @@ def compute_k_vektor_bundle(
 
     if plan_year is not None:
         strategies = (
-            Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            Strategy.query.filter(
+                Strategy.is_active == True,
+                or_(
+                    Strategy.plan_year_id == plan_year.id,
+                    and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),
+                ),
+            )
             .order_by(Strategy.code)
             .all()
         )

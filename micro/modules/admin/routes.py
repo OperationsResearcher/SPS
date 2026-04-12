@@ -288,7 +288,7 @@ def get_user_activity_stats(tenant_id=None):
     return result
 
 
-@app_bp.route("/micro/admin/bakim-modu", methods=["GET", "POST"])
+@app_bp.route("/admin/bakim-modu", methods=["GET", "POST"])
 @login_required
 def admin_bakim_modu():
     """Bakım modu (yalnız platform Admin). Ortam değişkeni kilitliyse yalnız okuma."""
@@ -333,7 +333,7 @@ def admin_bakim_modu():
         return jsonify({"success": False, "message": "Kaydedilemedi."}), 500
 
 
-@app_bp.route("/micro/admin/yonetim-paneli")
+@app_bp.route("/admin/yonetim-paneli")
 @login_required
 def yonetim_paneli():
     if not _is_admin_or_tenant_admin():
@@ -351,7 +351,7 @@ def yonetim_paneli():
         return render_template("platform/errors/500.html"), 500
 
 
-@app_bp.route("/micro/admin/yonetim-paneli/istatistik")
+@app_bp.route("/admin/yonetim-paneli/istatistik")
 @login_required
 def yonetim_paneli_istatistik():
     if not _is_admin_or_tenant_admin():
@@ -366,7 +366,7 @@ def yonetim_paneli_istatistik():
         return jsonify({"success": False, "message": "İstatistik alınamadı."}), 500
 
 
-@app_bp.route("/micro/admin/yonetim-paneli/kullanici-detay")
+@app_bp.route("/admin/yonetim-paneli/kullanici-detay")
 @login_required
 def yonetim_paneli_kullanici_detay():
     if not _is_admin_or_tenant_admin():
@@ -381,7 +381,7 @@ def yonetim_paneli_kullanici_detay():
         return jsonify({"success": False, "message": "Kullanıcı istatistikleri alınamadı."}), 500
 
 
-@app_bp.route("/micro/admin/yonetim-paneli/aktiviteler")
+@app_bp.route("/admin/yonetim-paneli/aktiviteler")
 @login_required
 def yonetim_paneli_aktiviteler():
     if not _is_admin_or_tenant_admin():

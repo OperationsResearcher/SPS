@@ -62,6 +62,13 @@ MODULES = [
         "description": "KS, KP, KPR ve Cross radarlarıyla kurum çapı karar desteği",
     },
     {
+        "id": "k_rapor",
+        "name": "K-Rapor",
+        "url": "/k-rapor",
+        "icon": "📈",
+        "description": "Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim raporları",
+    },
+    {
         "id": "admin",
         "name": "Yönetim Paneli",
         "url": "/admin/users",
@@ -145,6 +152,8 @@ _ROLE_RESTRICTED = {
     "hgs":      {"Admin"},
     # Home sayfasındaki "API Dokümantasyonu" kartı yalnızca Admin'de görünsün.
     "api":      {"Admin"},
+    # K-Rapor yalnızca yönetici rolleri için
+    "k_rapor":  {"tenant_admin", "executive_manager", "Admin"},
 }
 
 

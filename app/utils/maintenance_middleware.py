@@ -25,7 +25,7 @@ def _path_ok(path: str) -> bool:
         return True
     if path == "/favicon.ico":
         return True
-    if path.startswith("/micro/admin/bakim-modu"):
+    if path.startswith("/admin/bakim-modu"):
         return True
     return False
 

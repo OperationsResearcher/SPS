@@ -376,6 +376,7 @@
       if (!modalHistoryEdit) return;
       modalHistoryEdit.classList.remove("open");
       modalHistoryEdit.setAttribute("aria-hidden", "true");
+      modalHistoryEdit.style.removeProperty("z-index");
     }
 
     function closeHistoryDeleteModal() {
@@ -383,6 +384,7 @@
       if (!modalHistoryDelete) return;
       modalHistoryDelete.classList.remove("open");
       modalHistoryDelete.setAttribute("aria-hidden", "true");
+      modalHistoryDelete.style.removeProperty("z-index");
     }
 
     function closeVgsHistoryNestedModals() {
@@ -406,6 +408,10 @@
       const dc = document.getElementById("vgs-history-edit-desc");
       if (av) av.value = row.actual_value != null ? String(row.actual_value) : "";
       if (dc) dc.value = row.description != null ? String(row.description) : "";
+      if (modalHistoryEdit.parentElement !== document.body) {
+        document.body.appendChild(modalHistoryEdit);
+      }
+      modalHistoryEdit.style.setProperty("z-index", "2147483001", "important");
       modalHistoryEdit.classList.add("open");
       modalHistoryEdit.setAttribute("aria-hidden", "false");
       setTimeout(() => av?.focus(), 50);
@@ -424,6 +430,10 @@
         const entryTs = row.recorded_at ? formatTrDateTime(row.recorded_at) : "—";
         meta.textContent = `Veri tarihi: ${formatTrDate(row.data_date)} · Veri girişi: ${entryTs} · Değer: ${row.actual_value ?? "—"} · Giren: ${row.entered_by_name || "—"}`;
       } else if (meta) meta.textContent = "";
+      if (modalHistoryDelete.parentElement !== document.body) {
+        document.body.appendChild(modalHistoryDelete);
+      }
+      modalHistoryDelete.style.setProperty("z-index", "2147483001", "important");
       modalHistoryDelete.classList.add("open");
       modalHistoryDelete.setAttribute("aria-hidden", "false");
     }

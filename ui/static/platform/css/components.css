@@ -1149,6 +1149,59 @@ select.mc-form-input {
   max-width: 780px !important;
 }
 
+/* ── Sayfa İçerik Sarmalayıcı ── */
+.mc-page-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+/* ── Outline Buton ── */
+.mc-btn-outline {
+  background: transparent;
+  color: #6366f1;
+  border: 1.5px solid #6366f1;
+}
+.mc-btn-outline:hover {
+  background: #6366f1;
+  color: white;
+  text-decoration: none;
+}
+
+/* ── HGS Kullanıcı Satırı ── */
+.hgs-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.hgs-user-row:hover {
+  background: #f8fafc;
+}
+.hgs-user-row:last-child {
+  border-bottom: none;
+}
+.hgs-user-row.hgs-user-active {
+  background: #eef2ff;
+  border-left: 3px solid #6366f1;
+  padding-left: 17px;
+}
+.hgs-user-name {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: #1e293b;
+}
+.hgs-user-email {
+  font-size: var(--text-sm);
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ── Tenant Modal Form Grid ── */
 .tm-section-label {
   font-size: var(--text-xs);

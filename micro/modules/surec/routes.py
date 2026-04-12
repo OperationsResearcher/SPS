@@ -313,8 +313,9 @@ def surec():
     try:
         today = date.today()
         _surec_py = get_active_plan_year_for_user(current_user)
+        _score_year = _surec_py.year if _surec_py else today.year
         process_scores, _ = compute_process_scores_internal(
-            tid, today.year, today, persist_pg_scores=False, plan_year=_surec_py
+            tid, _score_year, today, persist_pg_scores=False, plan_year=_surec_py
         )
     except Exception as _e:
         current_app.logger.error(f"[surec] process_scores hesaplanamadı: {_e}", exc_info=True)
@@ -381,7 +382,8 @@ def surec_karne(process_id):
         label = f"{code} — {tit}".strip(" —") if tit else code
         substrategy_options.append({"id": ss.id, "label": label})
 
-    current_year = datetime.now().year
+    active_py = get_active_plan_year_for_user(current_user)
+    current_year = active_py.year if active_py else datetime.now().year
     initial_tab = (request.args.get("tab") or "kpi").strip().lower()
     if initial_tab not in {"kpi", "activities"}:
         initial_tab = "kpi"
