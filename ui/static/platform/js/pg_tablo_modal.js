@@ -429,11 +429,13 @@
           let pct = Math.round((compareVal / skorTarget) * 100);
           if (k.direction === "Decreasing") pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
           if (basariAraliklari) {
-            const puan = hesaplaBasariPuani(pct, basariAraliklari);
+            // Backend'den hesaplanmış başarı puanı varsa kullan (ham değer bazlı)
+            const backendPuan = k.basari_puani != null ? k.basari_puani : null;
+            const puan = backendPuan !== null ? backendPuan : hesaplaBasariPuani(pct, basariAraliklari);
             if (puan !== null) {
               basariNumericForWeighted = puan;
               const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
-              skorHtml = `<span class="${cls} fw-bold">${puan}/5</span>`;
+              skorHtml = `<span class="${cls} fw-bold">${puan}</span>`;
             } else {
               basariNumericForWeighted = pct;
               skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;

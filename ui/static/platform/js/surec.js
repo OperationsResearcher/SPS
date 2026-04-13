@@ -894,6 +894,13 @@
    * HTML döner; kart şablonunda güvenli sayısal içerik kullanılır.
    */
   function formatKanbanBasariPuaniLikeTable(k) {
+    // Backend'den hesaplanmış başarı puanı varsa direkt kullan
+    if (k.basari_puani != null) {
+      const puan = k.basari_puani;
+      const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
+      return `<span class="${cls} fw-bold">${puan}</span>`;
+    }
+    // Fallback: frontend hesaplama (yüzde bazlı aralıklar için)
     const entries = k.entries || {};
     const allVals = Object.values(entries)
       .map((v) => parseFloat(v))

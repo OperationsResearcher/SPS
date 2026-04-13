@@ -38,6 +38,10 @@ from app.utils.process_utils import (
     data_date_to_period_keys,
     validate_same_tenant_sub_strategies,
 )
+from utils.karne_hesaplamalar import (
+    hesapla_basari_puani as _hesapla_basari_puani,
+    parse_basari_puani_araliklari as _parse_bpa,
+)
 
 from app_platform.modules.surec.permissions import (
     accessible_processes_filter,
@@ -2007,6 +2011,15 @@ def surec_api_karne(process_id):
         _is_included = _ycfg.get("is_included", True)
         _config_source = _ycfg.get("_config_source", "process_kpi")
 
+        # ── Başarı puanı: ham gerçekleşen değer ile aralık karşılaştırması ──────
+        _basari_puani = None
+        if year_rollup is not None and _bpa:
+            try:
+                _bpa_dict = _parse_bpa(_bpa) if isinstance(_bpa, str) else _bpa
+                _basari_puani = _hesapla_basari_puani(year_rollup, _bpa_dict, _direction or "Increasing")
+            except Exception:
+                pass
+
         kpi_list.append({
             "id": k.id,
             "name": k.name,
@@ -2023,6 +2036,7 @@ def surec_api_karne(process_id):
             "sub_strategy_title": sub_st.title if sub_st else "-",
             "sub_strategy_code": (sub_st.code or "").strip() if sub_st else "",
             "basari_puani_araliklari": _bpa,
+            "basari_puani": _basari_puani,
             "is_favorite": k.id in favorite_kpi_ids,
             "is_included": _is_included,
             "config_source": _config_source,
