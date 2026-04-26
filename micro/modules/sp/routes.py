@@ -999,6 +999,25 @@ def sp_api_donem_karsilastir():
             if x2.id not in matched2:
                 pairs.append((None, x2))
 
+        # Legacy/overlay kayıtlar: iki yılda da aynı fiziksel satır (aynı id) kullanılmış olabilir.
+        # Böyle durumlarda aynı id'leri eşleştirip yalancı "sadece Y1/Y2" farkını önle.
+        if pairs:
+            only_1 = [a for a, b in pairs if a is not None and b is None]
+            only_2 = [b for a, b in pairs if a is None and b is not None]
+            by_id_only_2 = {x.id: x for x in only_2}
+            repacked = []
+            used_2 = set()
+            for a, b in pairs:
+                if a is not None and b is None and a.id in by_id_only_2:
+                    b2 = by_id_only_2[a.id]
+                    repacked.append((a, b2))
+                    used_2.add(b2.id)
+                elif a is None and b is not None and b.id in used_2:
+                    continue
+                else:
+                    repacked.append((a, b))
+            pairs = repacked
+
         return pairs
 
     # ── Strateji karşılaştırması (strategies tablosu, plan_year_id ile) ──────
@@ -1069,11 +1088,51 @@ def sp_api_donem_karsilastir():
         })
 
     # ── Süreç + KPI karşılaştırması (süreç bazında gruplu) ───────────────────
-    procs1 = _Process.query.filter_by(tenant_id=tid, plan_year_id=py1.id, is_active=True).all()
-    procs2 = _Process.query.filter_by(tenant_id=tid, plan_year_id=py2.id, is_active=True).all()
+    # Legacy uyumluluk: plan_year_id NULL süreçler iki yıl için de ortak taban kabul edilir.
+    procs1 = _Process.query.filter(
+        _Process.tenant_id == tid,
+        _Process.is_active == True,
+        or_(_Process.plan_year_id == py1.id, _Process.plan_year_id == None),
+    ).all()
+    procs2 = _Process.query.filter(
+        _Process.tenant_id == tid,
+        _Process.is_active == True,
+        or_(_Process.plan_year_id == py2.id, _Process.plan_year_id == None),
+    ).all()
 
-    kpis1_all = _ProcessKpi.query.filter_by(plan_year_id=py1.id, is_active=True).all()
-    kpis2_all = _ProcessKpi.query.filter_by(plan_year_id=py2.id, is_active=True).all()
+    # KPI karşılaştırmasında process_kpi.plan_year_id dolu olmayan legacy kayıtlar da dikkate alınmalı.
+    p1_ids = [p.id for p in procs1]
+    p2_ids = [p.id for p in procs2]
+    kpis1_all = (
+        _ProcessKpi.query
+        .filter(_ProcessKpi.process_id.in_(p1_ids), _ProcessKpi.is_active == True)
+        .all()
+    ) if p1_ids else []
+    kpis2_all = (
+        _ProcessKpi.query
+        .filter(_ProcessKpi.process_id.in_(p2_ids), _ProcessKpi.is_active == True)
+        .all()
+    ) if p2_ids else []
+
+    # Yıllık KPI config'leri (is_included/weight/target vb.) karşılaştırmaya dahil et.
+    all_kpi_ids = list({k.id for k in (kpis1_all + kpis2_all)})
+    cfg1_map = {}
+    cfg2_map = {}
+    if all_kpi_ids:
+        cfg1_map = {
+            c.process_kpi_id: c
+            for c in KpiYearConfig.query.filter(
+                KpiYearConfig.plan_year_id == py1.id,
+                KpiYearConfig.process_kpi_id.in_(all_kpi_ids),
+            ).all()
+        }
+        cfg2_map = {
+            c.process_kpi_id: c
+            for c in KpiYearConfig.query.filter(
+                KpiYearConfig.plan_year_id == py2.id,
+                KpiYearConfig.process_kpi_id.in_(all_kpi_ids),
+            ).all()
+        }
 
     kpis1_by_proc = {}
     for k in kpis1_all:
@@ -1088,16 +1147,39 @@ def sp_api_donem_karsilastir():
         title = (k1 or k2).name
         changed_fields = []
         if k1 and k2:
-            if (k1.target_value or "") != (k2.target_value or ""):
-                changed_fields.append(("Hedef", k1.target_value or "—", k2.target_value or "—"))
-            if (k1.unit or "") != (k2.unit or ""):
-                changed_fields.append(("Birim", k1.unit or "—", k2.unit or "—"))
-            if (k1.direction or "") != (k2.direction or ""):
-                changed_fields.append(("Yön", k1.direction or "—", k2.direction or "—"))
-            if (k1.period or "") != (k2.period or ""):
-                changed_fields.append(("Periyot", k1.period or "—", k2.period or "—"))
-            if abs(round(k1.weight or 0, 3) - round(k2.weight or 0, 3)) > 0.001:
-                changed_fields.append(("Ağırlık", str(k1.weight), str(k2.weight)))
+            cfg1 = cfg1_map.get(k1.id)
+            cfg2 = cfg2_map.get(k2.id)
+
+            t1 = cfg1.target_value if (cfg1 and cfg1.target_value is not None) else k1.target_value
+            t2 = cfg2.target_value if (cfg2 and cfg2.target_value is not None) else k2.target_value
+            if (t1 or "") != (t2 or ""):
+                changed_fields.append(("Hedef", t1 or "—", t2 or "—"))
+
+            u1 = cfg1.unit if (cfg1 and cfg1.unit is not None) else k1.unit
+            u2 = cfg2.unit if (cfg2 and cfg2.unit is not None) else k2.unit
+            if (u1 or "") != (u2 or ""):
+                changed_fields.append(("Birim", u1 or "—", u2 or "—"))
+
+            d1 = cfg1.direction if (cfg1 and cfg1.direction is not None) else k1.direction
+            d2 = cfg2.direction if (cfg2 and cfg2.direction is not None) else k2.direction
+            if (d1 or "") != (d2 or ""):
+                changed_fields.append(("Yön", d1 or "—", d2 or "—"))
+
+            p1 = cfg1.period if (cfg1 and cfg1.period is not None) else k1.period
+            p2 = cfg2.period if (cfg2 and cfg2.period is not None) else k2.period
+            if (p1 or "") != (p2 or ""):
+                changed_fields.append(("Periyot", p1 or "—", p2 or "—"))
+
+            w1 = cfg1.weight if (cfg1 and cfg1.weight is not None) else (k1.weight or 0)
+            w2 = cfg2.weight if (cfg2 and cfg2.weight is not None) else (k2.weight or 0)
+            if abs(round(w1 or 0, 3) - round(w2 or 0, 3)) > 0.001:
+                changed_fields.append(("Ağırlık", str(w1), str(w2)))
+
+            inc1 = cfg1.is_included if cfg1 is not None else True
+            inc2 = cfg2.is_included if cfg2 is not None else True
+            if bool(inc1) != bool(inc2):
+                changed_fields.append(("Plana Dahil", "Evet" if inc1 else "Hayır", "Evet" if inc2 else "Hayır"))
+
             if (k1.name or "") != (k2.name or ""):
                 changed_fields.append(("Ad", k1.name or "—", k2.name or "—"))
         return {
@@ -1366,3 +1448,659 @@ def _plan_task_to_dict(t):
         "end_date": str(t.end_date) if t.end_date else None,
     }
 
+
+
+# ── Stratejik Analiz API'leri (SWOT / TOWS / PESTLE) ─────────────────────────
+
+@app_bp.route("/sp/api/swot", methods=["GET"])
+@login_required
+def sp_api_swot_get():
+    """Aktif plan year için SWOT verisini döner."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import SwotAnalysis
+        import json as _json
+        active_py = get_active_plan_year_for_user(current_user)
+        swot = None
+        if active_py:
+            swot = SwotAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        if not swot:
+            return jsonify({"success": True, "data": {
+                "strengths": [], "weaknesses": [], "opportunities": [], "threats": [],
+                "plan_year_id": active_py.id if active_py else None,
+                "year": active_py.year if active_py else None,
+            }})
+        def _parse(f):
+            try: return _json.loads(f or "[]")
+            except: return []
+        return jsonify({"success": True, "data": {
+            "id": swot.id,
+            "plan_year_id": swot.plan_year_id,
+            "year": active_py.year if active_py else None,
+            "strengths":     _parse(swot.strengths),
+            "weaknesses":    _parse(swot.weaknesses),
+            "opportunities": _parse(swot.opportunities),
+            "threats":       _parse(swot.threats),
+            "guncelleme":    str(swot.updated_at)[:10] if swot.updated_at else None,
+        }})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_swot_get] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "SWOT verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/swot", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_swot_save():
+    """SWOT verisini kaydet (upsert)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import SwotAnalysis
+        import json as _json
+        payload = request.get_json(silent=True) or {}
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        swot = SwotAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        if not swot:
+            swot = SwotAnalysis(tenant_id=tid, plan_year_id=active_py.id)
+            db.session.add(swot)
+
+        swot.strengths     = _json.dumps(payload.get("strengths", []),     ensure_ascii=False)
+        swot.weaknesses    = _json.dumps(payload.get("weaknesses", []),    ensure_ascii=False)
+        swot.opportunities = _json.dumps(payload.get("opportunities", []), ensure_ascii=False)
+        swot.threats       = _json.dumps(payload.get("threats", []),       ensure_ascii=False)
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": swot.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_swot_save] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "SWOT kaydedilemedi."}), 500
+
+
+@app_bp.route("/sp/api/tows", methods=["GET"])
+@login_required
+def sp_api_tows_get():
+    """Aktif plan year için TOWS verisini döner."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import TowsAnalysis
+        import json as _json
+        active_py = get_active_plan_year_for_user(current_user)
+        tows = None
+        if active_py:
+            tows = TowsAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        if not tows:
+            return jsonify({"success": True, "data": {
+                "so": [], "st": [], "wo": [], "wt": [],
+                "plan_year_id": active_py.id if active_py else None,
+            }})
+        def _parse(f):
+            try: return _json.loads(f or "[]")
+            except: return []
+        return jsonify({"success": True, "data": {
+            "id": tows.id,
+            "plan_year_id": tows.plan_year_id,
+            "so": _parse(tows.so_strategies),
+            "st": _parse(tows.st_strategies),
+            "wo": _parse(tows.wo_strategies),
+            "wt": _parse(tows.wt_strategies),
+        }})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_tows_get] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "TOWS verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/tows", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_tows_save():
+    """TOWS verisini kaydet (upsert)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import TowsAnalysis
+        import json as _json
+        payload = request.get_json(silent=True) or {}
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        tows = TowsAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        if not tows:
+            tows = TowsAnalysis(tenant_id=tid, plan_year_id=active_py.id)
+            db.session.add(tows)
+
+        tows.so_strategies = _json.dumps(payload.get("so", []), ensure_ascii=False)
+        tows.st_strategies = _json.dumps(payload.get("st", []), ensure_ascii=False)
+        tows.wo_strategies = _json.dumps(payload.get("wo", []), ensure_ascii=False)
+        tows.wt_strategies = _json.dumps(payload.get("wt", []), ensure_ascii=False)
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": tows.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_tows_save] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "TOWS kaydedilemedi."}), 500
+
+
+@app_bp.route("/sp/api/pestle", methods=["GET"])
+@login_required
+def sp_api_pestle_get():
+    """Aktif plan year için PESTLE verisini döner."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import PestelAnalysis
+        import json as _json
+        active_py = get_active_plan_year_for_user(current_user)
+        pestle = None
+        if active_py:
+            pestle = PestelAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        empty = {"political": [], "economic": [], "social": [], "technological": [], "environmental": [], "legal": []}
+        if not pestle:
+            return jsonify({"success": True, "data": {**empty, "plan_year_id": active_py.id if active_py else None}})
+        def _parse(f):
+            try: return _json.loads(f or "[]")
+            except: return []
+        return jsonify({"success": True, "data": {
+            "id": pestle.id,
+            "plan_year_id": pestle.plan_year_id,
+            "political":     _parse(pestle.political),
+            "economic":      _parse(pestle.economic),
+            "social":        _parse(pestle.social),
+            "technological": _parse(pestle.technological),
+            "environmental": _parse(pestle.environmental),
+            "legal":         _parse(pestle.legal),
+        }})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_pestle_get] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "PESTLE verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/pestle", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_pestle_save():
+    """PESTLE verisini kaydet (upsert)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import PestelAnalysis
+        import json as _json
+        payload = request.get_json(silent=True) or {}
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        pestle = PestelAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
+        if not pestle:
+            pestle = PestelAnalysis(tenant_id=tid, plan_year_id=active_py.id)
+            db.session.add(pestle)
+
+        pestle.political     = _json.dumps(payload.get("political", []),     ensure_ascii=False)
+        pestle.economic      = _json.dumps(payload.get("economic", []),      ensure_ascii=False)
+        pestle.social        = _json.dumps(payload.get("social", []),        ensure_ascii=False)
+        pestle.technological = _json.dumps(payload.get("technological", []), ensure_ascii=False)
+        pestle.environmental = _json.dumps(payload.get("environmental", []), ensure_ascii=False)
+        pestle.legal         = _json.dumps(payload.get("legal", []),         ensure_ascii=False)
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": pestle.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_pestle_save] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "PESTLE kaydedilemedi."}), 500
+
+
+# ── OKR API'leri ──────────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/api/okr", methods=["GET"])
+@login_required
+def sp_api_okr_list():
+    """Aktif plan year için OKR listesi."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrObjective, OkrKeyResult
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": True, "data": [], "plan_year_id": None})
+
+        objectives = (OkrObjective.query
+                      .filter_by(tenant_id=tid, plan_year_id=active_py.id, is_active=True)
+                      .order_by(OkrObjective.quarter.nullsfirst(), OkrObjective.order_no)
+                      .all())
+
+        def _obj_dict(o):
+            krs = [k for k in o.key_results if k.is_active]
+            avg_progress = None
+            pcts = [k.progress_pct for k in krs if k.progress_pct is not None]
+            if pcts:
+                avg_progress = round(sum(pcts) / len(pcts), 1)
+            return {
+                "id":          o.id,
+                "title":       o.title,
+                "description": o.description,
+                "quarter":     o.quarter,
+                "owner":       o.owner,
+                "order_no":    o.order_no,
+                "avg_progress": avg_progress,
+                "key_results": [{
+                    "id":            k.id,
+                    "title":         k.title,
+                    "metric":        k.metric,
+                    "start_value":   k.start_value,
+                    "target_value":  k.target_value,
+                    "current_value": k.current_value,
+                    "progress_pct":  k.progress_pct,
+                    "order_no":      k.order_no,
+                } for k in krs],
+            }
+
+        return jsonify({
+            "success": True,
+            "data": [_obj_dict(o) for o in objectives],
+            "plan_year_id": active_py.id,
+            "year": active_py.year,
+        })
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_okr_list] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "OKR verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/okr/objective", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_okr_objective_create():
+    """Yeni Objective ekle."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrObjective
+        payload = request.get_json(silent=True) or {}
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+        title = (payload.get("title") or "").strip()
+        if not title:
+            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        obj = OkrObjective(
+            tenant_id=tid, plan_year_id=active_py.id,
+            title=title,
+            description=(payload.get("description") or "").strip() or None,
+            quarter=payload.get("quarter") or None,
+            owner=(payload.get("owner") or "").strip() or None,
+            order_no=payload.get("order_no") or 0,
+        )
+        db.session.add(obj)
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": obj.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_objective_create] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Objective eklenemedi."}), 500
+
+
+@app_bp.route("/sp/api/okr/objective/<int:obj_id>", methods=["PUT"])
+@login_required
+@sp_manage_required
+def sp_api_okr_objective_update(obj_id):
+    """Objective güncelle."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrObjective
+        payload = request.get_json(silent=True) or {}
+        obj = OkrObjective.query.filter_by(id=obj_id, tenant_id=tid, is_active=True).first_or_404()
+        title = (payload.get("title") or "").strip()
+        if not title:
+            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        obj.title       = title
+        obj.description = (payload.get("description") or "").strip() or None
+        obj.quarter     = payload.get("quarter") or None
+        obj.owner       = (payload.get("owner") or "").strip() or None
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_objective_update] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Güncellenemedi."}), 500
+
+
+@app_bp.route("/sp/api/okr/objective/<int:obj_id>", methods=["DELETE"])
+@login_required
+@sp_manage_required
+def sp_api_okr_objective_delete(obj_id):
+    """Objective sil (soft)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrObjective
+        obj = OkrObjective.query.filter_by(id=obj_id, tenant_id=tid, is_active=True).first_or_404()
+        obj.is_active = False
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_objective_delete] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Silinemedi."}), 500
+
+
+@app_bp.route("/sp/api/okr/objective/<int:obj_id>/kr", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_okr_kr_create(obj_id):
+    """Key Result ekle."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrObjective, OkrKeyResult
+        payload = request.get_json(silent=True) or {}
+        obj = OkrObjective.query.filter_by(id=obj_id, tenant_id=tid, is_active=True).first_or_404()
+        title = (payload.get("title") or "").strip()
+        if not title:
+            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        kr = OkrKeyResult(
+            objective_id=obj.id,
+            title=title,
+            metric=(payload.get("metric") or "").strip() or None,
+            start_value=payload.get("start_value"),
+            target_value=payload.get("target_value"),
+            current_value=payload.get("current_value"),
+            order_no=payload.get("order_no") or 0,
+        )
+        db.session.add(kr)
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": kr.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_kr_create] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "KR eklenemedi."}), 500
+
+
+@app_bp.route("/sp/api/okr/kr/<int:kr_id>", methods=["PUT"])
+@login_required
+@sp_manage_required
+def sp_api_okr_kr_update(kr_id):
+    """Key Result güncelle (ilerleme dahil)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrKeyResult, OkrObjective
+        payload = request.get_json(silent=True) or {}
+        kr = (OkrKeyResult.query.join(OkrObjective)
+              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active == True)
+              .first_or_404())
+        if "title" in payload:
+            kr.title = (payload["title"] or "").strip() or kr.title
+        if "metric" in payload:
+            kr.metric = (payload["metric"] or "").strip() or None
+        if "start_value" in payload:
+            kr.start_value = payload["start_value"]
+        if "target_value" in payload:
+            kr.target_value = payload["target_value"]
+        if "current_value" in payload:
+            kr.current_value = payload["current_value"]
+        db.session.commit()
+        return jsonify({"success": True, "data": {"progress_pct": kr.progress_pct}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_kr_update] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "KR güncellenemedi."}), 500
+
+
+@app_bp.route("/sp/api/okr/kr/<int:kr_id>", methods=["DELETE"])
+@login_required
+@sp_manage_required
+def sp_api_okr_kr_delete(kr_id):
+    """Key Result sil (soft)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.okr import OkrKeyResult, OkrObjective
+        kr = (OkrKeyResult.query.join(OkrObjective)
+              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active == True)
+              .first_or_404())
+        kr.is_active = False
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_okr_kr_delete] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "KR silinemedi."}), 500
+
+
+# ── BSC API'leri ──────────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/api/bsc", methods=["GET"])
+@login_required
+def sp_api_bsc_get():
+    """BSC verisi: 4 perspektif × KPI'lar + strateji bağlantıları + performans."""
+    tid = current_user.tenant_id
+    try:
+        import datetime as _dt
+        from app.models.bsc import BscKpiPerspective, BSC_PERSPECTIVES
+        from app.models.process import Process, ProcessKpi, KpiData
+        from app.models.core import Strategy, SubStrategy
+        from app.services.plan_year_service import get_active_plan_year_for_user
+
+        active_py = get_active_plan_year_for_user(current_user)
+        year = active_py.year if active_py else _dt.date.today().year
+        py_id = active_py.id if active_py else None
+
+        # Tüm aktif KPI'lar
+        kpis = (
+            ProcessKpi.query.join(Process)
+            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .all()
+        )
+        kpi_map = {k.id: k for k in kpis}
+        proc_map = {p.id: p for p in Process.query.filter_by(tenant_id=tid, is_active=True).all()}
+
+        # Perspektif atamaları
+        persp_rows = BscKpiPerspective.query.filter_by(tenant_id=tid, plan_year_id=py_id).all() if py_id else []
+        persp_map = {r.process_kpi_id: r.perspective for r in persp_rows}
+
+        # En son KPI verileri
+        kpi_ids = [k.id for k in kpis]
+        latest_data = {}
+        if kpi_ids:
+            rows = (
+                KpiData.query
+                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active == True)
+                .order_by(KpiData.data_date.desc())
+                .all()
+            )
+            for d in rows:
+                if d.process_kpi_id not in latest_data:
+                    latest_data[d.process_kpi_id] = d
+
+        # Strateji hiyerarşisi
+        strategies = Strategy.query.filter_by(tenant_id=tid, is_active=True).order_by(Strategy.code).all()
+        sub_strats = SubStrategy.query.join(Strategy).filter(
+            Strategy.tenant_id == tid, Strategy.is_active == True, SubStrategy.is_active == True
+        ).all()
+        strat_map = {s.id: s for s in strategies}
+        sub_map   = {ss.id: ss for ss in sub_strats}
+
+        def _kpi_perf(kpi_id):
+            kpi = kpi_map.get(kpi_id)
+            d   = latest_data.get(kpi_id)
+            if not kpi or not d:
+                return None
+            try:
+                target = float(kpi.target_value or 0)
+                actual = float(d.actual_value or 0)
+                if target <= 0:
+                    return None
+                if (kpi.direction or "Increasing") == "Decreasing":
+                    return round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
+                return round(min(100.0, actual / target * 100), 1)
+            except (ValueError, TypeError):
+                return None
+
+        def _kpi_dict(k):
+            proc = proc_map.get(k.process_id)
+            d    = latest_data.get(k.id)
+            perf = _kpi_perf(k.id)
+            ss   = sub_map.get(k.sub_strategy_id) if k.sub_strategy_id else None
+            s    = strat_map.get(ss.strategy_id) if ss else None
+            return {
+                "id":             k.id,
+                "code":           k.code or "",
+                "name":           k.name,
+                "unit":           k.unit or "",
+                "target_value":   k.target_value,
+                "actual_value":   d.actual_value if d else None,
+                "perf_pct":       perf,
+                "weight":         k.weight,
+                "direction":      k.direction or "Increasing",
+                "process_id":     k.process_id,
+                "process_name":   proc.name if proc else "—",
+                "process_code":   proc.code or "" if proc else "",
+                "sub_strategy_id":    k.sub_strategy_id,
+                "sub_strategy_title": ss.title if ss else None,
+                "sub_strategy_code":  ss.code or "" if ss else None,
+                "strategy_id":    s.id if s else None,
+                "strategy_title": s.title if s else None,
+                "strategy_code":  s.code or "" if s else None,
+                "perspective":    persp_map.get(k.id),
+            }
+
+        # Perspektif bazlı grupla
+        perspectives = {}
+        unassigned   = []
+        for k in kpis:
+            kd = _kpi_dict(k)
+            p  = persp_map.get(k.id)
+            if p:
+                perspectives.setdefault(p, []).append(kd)
+            else:
+                unassigned.append(kd)
+
+        # Perspektif özet skorları
+        def _persp_score(kpi_list):
+            scores = [k["perf_pct"] for k in kpi_list if k["perf_pct"] is not None]
+            return round(sum(scores) / len(scores), 1) if scores else None
+
+        persp_summary = {}
+        for key, label in BSC_PERSPECTIVES:
+            items = perspectives.get(key, [])
+            persp_summary[key] = {
+                "label":     label,
+                "kpi_count": len(items),
+                "score":     _persp_score(items),
+                "kpis":      items,
+            }
+
+        # Strateji haritası: Strateji → Alt Strateji → KPI'lar (perspektifle)
+        strat_map_data = []
+        for s in strategies:
+            subs_data = []
+            for ss in sub_strats:
+                if ss.strategy_id != s.id:
+                    continue
+                ss_kpis = [_kpi_dict(k) for k in kpis if k.sub_strategy_id == ss.id]
+                if not ss_kpis:
+                    continue
+                subs_data.append({
+                    "id":    ss.id,
+                    "code":  ss.code or "",
+                    "title": ss.title,
+                    "kpis":  ss_kpis,
+                    "score": _persp_score(ss_kpis),
+                })
+            if subs_data:
+                all_kpis = [k for ss in subs_data for k in ss["kpis"]]
+                strat_map_data.append({
+                    "id":    s.id,
+                    "code":  s.code or "",
+                    "title": s.title,
+                    "score": _persp_score(all_kpis),
+                    "sub_strategies": subs_data,
+                })
+
+        return jsonify({
+            "success":      True,
+            "year":         year,
+            "plan_year_id": py_id,
+            "perspectives": persp_summary,
+            "unassigned":   unassigned,
+            "strategy_map": strat_map_data,
+            "toplam_kpi":   len(kpis),
+            "atanmis_kpi":  len(kpis) - len(unassigned),
+        })
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_bsc_get] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "BSC verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/bsc/assign", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_bsc_assign():
+    """KPI'ya perspektif ata (upsert)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.bsc import BscKpiPerspective
+        payload = request.get_json(silent=True) or {}
+        kpi_id      = payload.get("kpi_id")
+        perspective = (payload.get("perspective") or "").strip()
+        active_py   = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+        if not kpi_id:
+            return jsonify({"success": False, "message": "kpi_id zorunludur."}), 400
+
+        row = BscKpiPerspective.query.filter_by(
+            tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
+        ).first()
+
+        if not perspective:
+            # Atamayı kaldır
+            if row:
+                db.session.delete(row)
+                db.session.commit()
+            return jsonify({"success": True, "action": "removed"})
+
+        if row:
+            row.perspective = perspective
+        else:
+            row = BscKpiPerspective(
+                tenant_id=tid, plan_year_id=active_py.id,
+                process_kpi_id=kpi_id, perspective=perspective,
+            )
+            db.session.add(row)
+        db.session.commit()
+        return jsonify({"success": True, "action": "assigned", "data": {"id": row.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_bsc_assign] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Atama kaydedilemedi."}), 500
+
+
+@app_bp.route("/sp/api/bsc/assign-bulk", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_bsc_assign_bulk():
+    """Birden fazla KPI'ya aynı anda perspektif ata."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.bsc import BscKpiPerspective
+        payload     = request.get_json(silent=True) or {}
+        kpi_ids     = payload.get("kpi_ids") or []
+        perspective = (payload.get("perspective") or "").strip()
+        active_py   = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        for kpi_id in kpi_ids:
+            row = BscKpiPerspective.query.filter_by(
+                tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
+            ).first()
+            if not perspective:
+                if row:
+                    db.session.delete(row)
+            elif row:
+                row.perspective = perspective
+            else:
+                db.session.add(BscKpiPerspective(
+                    tenant_id=tid, plan_year_id=active_py.id,
+                    process_kpi_id=kpi_id, perspective=perspective,
+                ))
+        db.session.commit()
+        return jsonify({"success": True, "updated": len(kpi_ids)})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_bsc_assign_bulk] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Toplu atama kaydedilemedi."}), 500

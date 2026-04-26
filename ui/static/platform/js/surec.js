@@ -2690,10 +2690,13 @@
     const btnKpiDel = e.target.closest(".btn-kpi-delete");
     if (btnKpiDel) {
       if (!canCrudPg) return;
-      const ok = await confirmDelete("Performans göstergesi silinsin mi?", "Bu PG ve tüm verileri pasife alınacak.");
+      const ok = await confirmDelete("Performans göstergesi silinsin mi?", "Seçili yıl için kaldırılacaktır (plan yılı kapalıysa tümden pasife alınır).");
       if (!ok) return;
       try {
-        const data = await postJson(`${KPI_DELETE_BASE}${btnKpiDel.dataset.kpiId}`, {});
+        const selectedYear = yearSelect ? parseInt(yearSelect.value, 10) : null;
+        const data = await postJson(`${KPI_DELETE_BASE}${btnKpiDel.dataset.kpiId}`, {
+          year: Number.isFinite(selectedYear) ? selectedYear : null,
+        });
         if (data.success) { toastSuccess("Performans göstergesi silindi."); loadKarne(); }
         else showError(data.message);
       } catch (err) { showError(err.message); }

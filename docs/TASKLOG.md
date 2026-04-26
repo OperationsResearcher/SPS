@@ -3,6 +3,230 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-098 | 2026-04-26 | ✅ Tamamlandı
+
+**Görev:** `/sp/donemler` karşılaştırmasında legacy süreçler nedeniyle KPI farkının görünmemesi için süreç sorgu kapsamını düzeltme
+**Modül:** sp / dönem karşılaştırma
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → süreç karşılaştırma sorgularına `plan_year_id IS NULL` legacy kayıtları eklendi
+
+### Yapılan İşlem
+`sp_api_donem_karsilastir` içinde `procs1/procs2` sorguları yalnızca `plan_year_id=<yıl>` yerine `plan_year_id=<yıl> OR NULL` olacak şekilde güncellendi. Böylece legacy (NULL etiketli) süreçlerin KPI'ları da karşılaştırma zincirine giriyor ve `KpiYearConfig.is_included` farkları (ör. 2024 hariç, 2026 dahil) UI’de görünür hale geliyor.
+
+### Notlar
+KMF için ilgili PG (`id=343`) doğrulaması: `2024 is_included=False`, `2025/2026 is_included=True`.
+
+---
+
+## TASK-097 | 2026-04-26 | ✅ Tamamlandı
+
+**Görev:** `/sp/donemler` dönem karşılaştırmasında legacy KPI'larda (plan_year_id=NULL) farkların görünmemesi sorununu düzeltme
+**Modül:** sp / dönem karşılaştırma
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → KPI karşılaştırma eşleştirmesi ve yıllık config fark analizi güncellendi
+
+### Yapılan İşlem
+`sp_api_donem_karsilastir` içinde KPI karşılaştırması yalnızca `process_kpis.plan_year_id` dolu kayıtlarla sınırlı kalmayacak şekilde süreç bazlı genişletildi. Legacy aynı-kayıt kullanımında (aynı `kpi.id` iki yılda ortak) çiftleme mantığı iyileştirildi. KPI diff hesabına `KpiYearConfig` efektif değerleri (hedef, birim, yön, periyot, ağırlık) ve özellikle `is_included` (`Plana Dahil`) farkı eklendi.
+
+### Notlar
+Bu sayede yıl bazlı “yalnızca 2024'ten kaldırma” gibi işlemler `donemler` karşılaştırma panelinde KPI farkı olarak görünür.
+
+---
+
+## TASK-096 | 2026-04-26 | ✅ Tamamlandı
+
+**Görev:** Plan döneminde PG silmenin tüm yılları etkilemesi hatasını düzeltme
+**Modül:** surec / sp plan-year uyumluluğu
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → PG ekle/sil akışında plan-year bağlamı düzeltildi; year bazlı hariç bırakma eklendi
+- `ui/static/platform/js/surec.js` → PG silme isteğine seçili yılı gönderen istemci düzeltmesi
+
+### Yapılan İşlem
+Plan-year açık kurumlarda PG silme işlemi global `is_active=False` yerine seçili yıl için `KpiYearConfig.is_included=False` olacak şekilde güncellendi. Karne ve KPI liste API’lerinde `is_included=False` olan PG’ler seçili yıl için görünmez yapıldı. Ayrıca yeni eklenen PG kayıtlarının `plan_year_id` alanı aktif döneme bağlandı.
+
+### Notlar
+Bu düzeltme geçmişte global soft-delete edilmiş PG kayıtlarını geri getirmez; mevcut sorunlu kayıtlar için ayrı veri onarım adımı gerekir.
+
+---
+
+## TASK-095 | 2026-04-22 | ✅ Tamamlandı
+
+**Görev:** VM’de tekrar eden erişim timeout sorunu için canlı teşhis + gunicorn kapasite profili kalıcı iyileştirmesi
+**Modül:** deployment / backend runtime
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `Dockerfile` → Gunicorn varsayılanları 8 worker / 1 thread, daha düşük keep-alive, max-requests recycle ile güncellendi
+- `scripts/ops/live_diag.sql` → VM PostgreSQL canlı teşhis sorguları eklendi
+- `scripts/ops/vm_local_health_probe.py` → VM içinden URL bazlı ardışık timeout/latency probe aracı eklendi
+
+### Yapılan İşlem
+Canlı VM’de hem dış uçtan hem de VM içinden tekrar eden probe çalıştırılarak timeout’un Cloudflare değil uygulama worker katmanında oluştuğu doğrulandı. Canlıda worker artışıyla timeout oranı düştüğü gözlemlendi; ardından Dockerfile’da gunicorn çalışma profili kalıcı olarak güncellenip VM’de image rebuild + container recreate yapıldı.
+
+### Notlar
+Dağıtım sonrası VM içi `/health` 20/20 başarılı, dış dünyadan `health/login/home/process` smoke testleri timeout’suz geçti.
+
+---
+
+## TASK-094 | 2026-04-20 | ✅ Tamamlandı
+
+**Görev:** VM tarafında aralıklı yavaşlama/spinner için bakım modu DB kontrolüne TTL cache hotfix uygulandı
+**Modül:** backend / maintenance
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/maintenance_service.py` → Her istekte DB sorgusunu azaltmak için thread-safe bakım modu cache’i (TTL + invalidation) eklendi
+- `config.py` → `MAINTENANCE_DB_CACHE_TTL_SECONDS` ayarı eklendi (varsayılan 5 sn)
+
+### Yapılan İşlem
+`maintenance_active()` akışında bakım modu bayrağı artık kısa süreli bellek cache’i üzerinden okunuyor; cache süresi dolduğunda DB’den yenileniyor. Yönetim paneli durum sorgusunda `force_refresh=True` ile anlık değer alınmaya devam ediyor, bakım modu toggle edildiğinde cache otomatik invalidated ediliyor.
+
+### Notlar
+Aralıklı `/` ve `/process` timeout gözlemlendi; bu hotfix request başına DB yükünü azaltarak spinner/yavaşlık etkisini düşürmek için uygulandı.
+
+---
+
+## TASK-093 | 2026-04-14 | ✅ Tamamlandı
+
+**Görev:** KS-Radar OKR analizi modali eklendi + SWOT/TOWS/PESTLE CRUD desteklendi
+**Modül:** k_radar / ks / okr
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/okr.py` → Yeni: OkrObjective + OkrKeyResult modelleri
+- `micro/modules/sp/routes.py` → 7 yeni OKR API endpoint (list, obj CRUD, kr CRUD)
+- `micro/modules/k_radar/routes.py` → Eski KS alt sayfa route’ları silindi
+- `ui/templates/platform/k_radar/ks.html` → OKR API URL’leri eklendi
+- `ui/static/platform/js/k_radar_ks.js` → loadOkrModal() + SWOT/TOWS/PESTLE CRUD
+- `ui/static/platform/css/k_radar.css` → OKR + CRUD stilleri
+
+### Yapılan İşlem
+OKR modeli (Objective + KeyResult) oluşturuldu, tablolar create_all ile yaratıldı. KS-Radar hub’ında OKR kartına tıklayınca modal açılıyor: çeyrek bazlı gruplandırma, ilerleme bar’ları, Swal ile Objective/KR ekleme-düzenleme-silme. SWOT/TOWS/PESTLE modalları da CRUD destekli hale getirildi.
+
+---
+
+## TASK-092 | 2026-04-14 | ✅ Tamamlandı
+
+**Görev:** SP modülüne SWOT/TOWS/PESTLE veri giriş ekranları eklendi
+**Modül:** sp / stratejik analiz
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes.py` → 6 yeni API endpoint: GET/POST için swot, tows, pestle
+- `ui/templates/platform/sp/index.html` → 03.5 numaralı "Stratejik Analizler" kartı eklendi (Değerler ile Strateji Listesi arasına)
+- `ui/static/platform/js/sp.js` → SWOT/TOWS/PESTLE yükleme, madde ekleme/silme, kaydetme fonksiyonları
+- `ui/static/platform/css/sp.css` → Analiz kartı stilleri (2×2 grid, PESTLE 3×2 grid)
+
+### Yapılan İşlem
+SP sayfasında (\`/sp\`) Stratejik Analizler kartı eklendi. Üç sekme: SWOT (4 kadran), TOWS (SO/ST/WO/WT), PESTLE (6 faktör). Her sekme madde ekleme/silme + kaydet butonu içeriyor. Veriler aktif plan year'a bağlı olarak `swot_analyses`, `tows_analyses`, `pestel_analyses` tablolarına kaydediliyor. KS-Radar bu verileri otomatik okuyacak.
+
+---
+
+## TASK-091 | 2026-04-14 | ✅ Tamamlandı
+
+**Görev:** 404 ve 500 hata sayfaları eklendi
+**Modül:** platform / errors
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/errors/404.html` → Yeni oluşturuldu
+- `ui/templates/platform/errors/500.html` → Yeni oluşturuldu (error_id desteği)
+- `__init__.py` → 404, 403, 500 error handler'ları eklendi; 500'de DB rollback + UUID hata kodu
+
+### Yapılan İşlem
+403 sayfasıyla aynı stilde 404 (sarı ikon) ve 500 (kırmızı ikon) sayfaları oluşturuldu. 500 sayfasında her hataya benzersiz 8 karakterlik hata kodu üretiliyor, log'a yazılıyor ve kullanıcıya gösteriliyor. Flask error handler'ları `__init__.py`'ye eklendi.
+
+---
+
+## TASK-089 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** VM KMF salt okunur anlık görüntü + yerel repo → canlı deploy (veri kaynağı VM; KMF’ye DB’den müdahale yok)
+**Modül:** deployment, ops, docs, çoklu modül (k_rapor, surec, tenant_backup, …)
+**Durum:** ✅ Tamamlandı
+
+### İlke
+- **Tüm üretim verisi VM’de kalır**; bu işlemde **tenant verisi import/restore/sync yapılmadı**.
+- **KMF (`tenant_id=16`) satırlarına kasıtlı UPDATE/DELETE yok**; deploy öncesi/sonrası sayımlar aynı.
+
+### Deploy öncesi — VM KMF (salt okuma, `scripts/kmf_task084_counts.py`)
+
+| Metrik | Değer |
+|--------|------:|
+| Kullanıcı | 8 |
+| Süreç | 11 |
+| PG | 135 |
+| PGV | 318 |
+| plan_years | 7 |
+| Strateji | 6 |
+| Alt strateji | 21 |
+
+### Yedek ve güvenlik
+- `scripts/vm_safe_deploy.sh` adım **1/6**: tam PostgreSQL yedek (`pg_dump` gzip). Örnek dosya: `backups/pg_kokpitim_db_full_20260412_205430.sql.gz` (VM host yolu: `/home/kokpitim.com/public_html/backups/`).
+- Betik PostgreSQL URI önkoşulunu kontrol eder; temel tablo satır sayıları deploy öncesi/sonrası **aynı** doğrulandı (`OK`).
+- Alembic: yeni revision uygulanmadı (head zaten güncel).
+
+### Git / imaj
+- **`main`:** `1cd2d3a` → `c4887e3` push; VM’de fast-forward + Docker image `sps_web_final:latest` + `sps-web` yeniden oluşturuldu.
+- Özet commit kapsamı: K-Rapor modülü, admin URL düzeltmeleri, KMF ops betikleri (`kmf_hybrid_sync`, `kmf_compare_local_vm`, `kmf_pull_plan_years_from_vm`, `vm_export`/`vm_apply`), `tenant_backup_service` restore iyileştirmeleri, surec/K-Vektör plan_year NULL uyumu, TASKLOG ve diğer UI düzeltmeleri.
+
+### Dokümantasyon
+- `docs/ops/vm_kmf_readonly_snapshot.md` — deploy öncesi KMF tablosu + ham JSON + deploy notu.
+
+### Deploy sonrası doğrulama
+- KMF sayıları yukarıdaki tablo ile **değişmedi**; `/health` healthy.
+
+---
+
+## TASK-089 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** KS-Radar (Stratejik Planlama) alt modülü geliştirildi — SWOT, TOWS, PESTLE, GAP, Hub
+**Modül:** k_radar / ks
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → 6 yeni fonksiyon: `get_ks_swot_real`, `get_ks_tows_real`, `get_ks_pestel_real`, `get_ks_porter_real`, `get_ks_gap_real`, `get_ks_strateji_real`
+- `micro/modules/k_radar/routes.py` → 6 yeni API endpoint eklendi (`/k-radar/api/ks/*-real`)
+- `ui/templates/platform/k_radar/ks.html` → Hub sayfası sıfırdan yeniden yazıldı
+- `ui/templates/platform/k_radar/ks_swot.html` → Tam SWOT matrisi (4 kadran)
+- `ui/templates/platform/k_radar/ks_tows.html` → Tam TOWS matrisi (SO/ST/WO/WT)
+- `ui/templates/platform/k_radar/ks_pestle.html` → Radar chart + 6 faktör kartı
+- `ui/templates/platform/k_radar/ks_gap.html` → Bar chart + pie + tablo
+- `ui/static/platform/js/k_radar_ks.js` → Yeni JS dosyası (hub + 4 sayfa)
+- `ui/static/platform/css/k_radar.css` → Yeni CSS dosyası (SWOT/TOWS/PESTLE stilleri)
+
+### Yapılan İşlem
+KS-Radar iskelet sayfaları gerçek içerikle dolduruldu. DB'deki `swot_analyses`, `tows_analyses`, `pestel_analyses` tabloları artık kullanılıyor. Veri yoksa SP modülüne yönlendirme yapılıyor. Hub sayfasında 4 özet stat kartı + 6 modül kartı + strateji kapsama listesi var. SWOT/TOWS tam matris görünümü, PESTLE radar chart + 6 faktör kartı, GAP bar+pie chart + tablo.
+
+### Notlar
+SWOT/TOWS/PESTLE verileri SP modülünde henüz doldurulmamış (boş kayıtlar var). SP modülüne veri giriş ekranları eklendiğinde KS-Radar otomatik dolacak.
+
+---
+
+## TASK-088 | 2026-04-12 | ✅ Tamamlandı
+
+**Görev:** Karne sayfasında başarı puanı yanlış hesaplanıyordu — ham değer vs yüzde karışıklığı giderildi
+**Modül:** surec / karne
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes.py` → `utils.karne_hesaplamalar` import edildi; `surec_api_karne`'ye `basari_puani` alanı eklendi (backend hesaplama)
+- `ui/static/platform/js/surec.js` → `formatKanbanBasariPuaniLikeTable` backend'den gelen `basari_puani`'yı öncelikli kullanacak şekilde güncellendi
+- `ui/static/platform/js/pg_tablo_modal.js` → PG tablo modalında backend `basari_puani` öncelikli kullanılıyor
+
+### Yapılan İşlem
+Kök neden: Başarı puanı aralıkları DB'de ham değer olarak tanımlı (`{"3":"250-300"}`), ancak frontend `hesaplaBasariPuaniMicro` fonksiyonuna yüzde değeri (%100) geçiyordu. 300 gerçekleşen / 300 hedef = %100, bu da `0-149` aralığına (puan 1) düşüyordu. Çözüm: backend `surec_api_karne` API'si artık `hesapla_basari_puani(year_rollup=300, araliklar, direction)` ile doğru puanı hesaplayıp `basari_puani` alanı olarak döndürüyor. Frontend bu değeri öncelikli kullanıyor.
+
+### Notlar
+Yüzde bazlı aralık kullanan PG'ler için frontend fallback korundu.
+
+---
+
 ## TASK-087 | 2026-04-12 | ✅ Tamamlandı
 
 **Görev:** K-Rapor'a 8 yeni analiz sekmesi eklendi

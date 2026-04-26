@@ -27,7 +27,8 @@ from app.models.process import (
 )
 from app.models.core import User, Strategy, Tenant
 from app.services.plan_year_service import (
-    get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years
+    get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years,
+    upsert_kpi_year_config,
 )
 from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
@@ -674,8 +675,11 @@ def surec_api_kpi_add():
     if not user_can_crud_pg_and_activity(current_user, p):
         return jsonify({"success": False, "message": "PG ekleme yetkiniz yok."}), 403
     try:
+        active_py = get_active_plan_year_for_user(current_user)
+        kpi_plan_year_id = active_py.id if active_py else p.plan_year_id
         kpi = ProcessKpi(
             process_id=p.id,
+            plan_year_id=kpi_plan_year_id,
             name=data.get("name"),
             code=data.get("code"),
             description=data.get("description"),
@@ -825,9 +829,29 @@ def surec_api_kpi_delete(kpi_id):
     if not proc or not user_can_crud_pg_and_activity(current_user, proc):
         return jsonify({"success": False, "message": "PG silme yetkiniz yok."}), 403
     try:
+        data = request.get_json(silent=True) or {}
+        tenant = current_user.tenant
+        plan_year_enabled = bool(tenant and getattr(tenant, "plan_year_enabled", False))
+        try:
+            target_year = int(data.get("year")) if data.get("year") is not None else None
+        except (TypeError, ValueError):
+            target_year = None
+
+        if plan_year_enabled:
+            py = get_plan_year(current_user.tenant_id, target_year) if target_year else get_active_plan_year_for_user(current_user)
+            if py:
+                # Plan-year modunda silme, sadece seçili yıla özel hariç bırakma yapar.
+                upsert_kpi_year_config(py, kpi.id, {"is_included": False})
+                return jsonify({
+                    "success": True,
+                    "message": f"Performans göstergesi {py.year} yılı için kaldırıldı.",
+                    "scope": "year",
+                    "year": py.year,
+                })
+
         kpi.is_active = False
         db.session.commit()
-        return jsonify({"success": True, "message": "Performans göstergesi silindi."})
+        return jsonify({"success": True, "message": "Performans göstergesi silindi.", "scope": "global"})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_delete] {e}")
@@ -848,24 +872,25 @@ def surec_api_kpi_list(process_id):
     _py_obj = get_plan_year(current_user.tenant_id, year_param) if _py_enabled else None
     _cfg_map = get_kpi_configs_bulk(kpis, _py_obj) if kpis else {}
 
-    return jsonify({
-        "success": True,
-        "kpis": [
-            {
-                "id": k.id,
-                "name": k.name,
-                "code": k.code,
-                "target_value": _cfg_map.get(k.id, {}).get("target_value", k.target_value),
-                "unit": _cfg_map.get(k.id, {}).get("unit", k.unit),
-                "period": _cfg_map.get(k.id, {}).get("period", k.period),
-                "direction": _cfg_map.get(k.id, {}).get("direction", k.direction),
-                "weight": _cfg_map.get(k.id, {}).get("weight", k.weight),
-                "sub_strategy_id": k.sub_strategy_id,
-                "sub_strategy_title": k.sub_strategy.title if k.sub_strategy else None,
-            }
-            for k in kpis
-        ],
-    })
+    kpi_items = []
+    for k in kpis:
+        cfg = _cfg_map.get(k.id, {})
+        if cfg.get("is_included", True) is False:
+            continue
+        kpi_items.append({
+            "id": k.id,
+            "name": k.name,
+            "code": k.code,
+            "target_value": cfg.get("target_value", k.target_value),
+            "unit": cfg.get("unit", k.unit),
+            "period": cfg.get("period", k.period),
+            "direction": cfg.get("direction", k.direction),
+            "weight": cfg.get("weight", k.weight),
+            "sub_strategy_id": k.sub_strategy_id,
+            "sub_strategy_title": k.sub_strategy.title if k.sub_strategy else None,
+        })
+
+    return jsonify({"success": True, "kpis": kpi_items})
 
 
 # ──────────────────────────────────────────────────
@@ -2019,6 +2044,9 @@ def surec_api_karne(process_id):
                 _basari_puani = _hesapla_basari_puani(year_rollup, _bpa_dict, _direction or "Increasing")
             except Exception:
                 pass
+
+        if not _is_included:
+            continue
 
         kpi_list.append({
             "id": k.id,
