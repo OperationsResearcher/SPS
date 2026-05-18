@@ -1,0 +1,56 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-page-hero">
+  <div class="mk-container">
+    <div class="mk-breadcrumb"><a href="/ozellikler">Özellikler</a> / Analiz Merkezi</div>
+    <h1 class="mk-page-title">Kurumunuzun nabzını gerçek zamanlı tutun.</h1>
+    <p class="mk-page-sub">K-Radar analitik motoru ve K-Rapor raporlama sistemi — stratejik, operasyonel ve bireysel verileri tek merkezde birleştirir.</p>
+    <a href="/demo-talep" class="mk-btn mk-btn-primary mk-btn-lg">Demo Talep Et</a>
+  </div>
+</section>
+<section class="mk-section">
+  <div class="mk-container">
+    <h2 class="mk-subsection-title">K-Radar — Analitik Merkez</h2>
+    <div class="mk-feature-list">
+      {% set kradar = [
+        ("fa-star", "Vizyon Skoru", "0-1000 ölçeğinde kurumsal performans skoru. Strateji, süreç ve proje verisinden hesaplanır."),
+        ("fa-chart-line", "GAP Analizi", "Hedef vs gerçekleşen. Hangi süreçte ne kadar açık var? Görsel ısı haritası formatında."),
+        ("fa-sitemap", "Strateji Kapsama Analizi", "Boş / kısmi / tam strateji oranı. Hangi stratejik alanlarda KPI tanımlı değil?"),
+        ("fa-fire", "Risk Isı Haritası", "Süreç ve proje risklerini görsel matris üzerinde izleyin."),
+        ("fa-coins", "EVM Metrikleri", "SPI, CPI. Portföy bazlı proje sağlığı."),
+        ("fa-wand-sparkles", "Trend Analizi + Tahminleme", "Geçmiş veriden geleceğe projeksiyon."),
+        ("fa-magnifying-glass-chart", "Anomali Tespiti", "z-score, IQR, hareketli ortalama — sistem sapmaları otomatik tespit eder ve uyarır."),
+        ("fa-scale-balanced", "Kurumlar Arası Karşılaştırma", "Çok-tenant yapısında birimler arası benchmark."),
+      ] %}
+      {% for icon, title, desc in kradar %}
+      <div class="mk-feat-row fade-in">
+        <div class="mk-feat-row-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas {{ icon }}"></i></div>
+        <div class="mk-feat-row-body"><h3>{{ title }}</h3><p>{{ desc }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="mk-subsection-title" style="margin-top:3rem;">K-Rapor — Raporlama Motoru</h2>
+    <div class="mk-feature-list">
+      {% set krapor = [
+        ("fa-chart-pie", "14 Analiz Sekmesi", "Kurumsal özet, Süreç performansı, Strateji kapsama, Faaliyet matrisi, Bireysel karne, Aktivite heatmap, Sorumlu analizi, SWOT/TOWS trend ve daha fazlası."),
+        ("fa-calculator", "Otomatik Başarı Skorları", "Her sekme için hesaplanmış, sunuma hazır metrikler."),
+        ("fa-file-excel", "Excel Export", "Tüm rapor sekmelerini Excel'e aktarın."),
+        ("fa-clock-rotate-left", "Periyodik Otomatik Raporlama", "Günlük, haftalık, aylık — zamanlanmış rapor üretimi."),
+      ] %}
+      {% for icon, title, desc in krapor %}
+      <div class="mk-feat-row fade-in">
+        <div class="mk-feat-row-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas {{ icon }}"></i></div>
+        <div class="mk-feat-row-body"><h3>{{ title }}</h3><p>{{ desc }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="mk-cta-section">
+  <div class="mk-container">
+    <h2 class="mk-cta-title">Analitik merkezinizi kurmaya hazır mısınız?</h2>
+    <a href="/demo-talep" class="mk-btn mk-btn-white mk-btn-lg">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+{% endblock %}

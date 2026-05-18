@@ -760,3 +760,117 @@
 .sp-gorev-status-dot[data-status="İptal"] { background: #ef4444; }
 .sp-gorev-name { flex: 1; }
 .gorev-count { font-size: 0.75rem; color: var(--text-muted, #9ca3af); }
+
+/* ── Stratejik Analizler (SWOT / TOWS / PESTLE) ─────────────────────────────── */
+.sp-analiz-tab { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.sp-analiz-tab.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+.sp-analiz-tab:hover:not(.active) { background: #e2e8f0; }
+
+.sp-analiz-panel { animation: mc-fade-in 0.15s ease; }
+
+/* 2×2 grid (SWOT / TOWS) */
+.sp-analiz-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sp-analiz-quadrant {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+.sp-q-header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sp-q-s .sp-q-header  { background: #d1fae5; color: #065f46; }
+.sp-q-w .sp-q-header  { background: #fee2e2; color: #991b1b; }
+.sp-q-o .sp-q-header  { background: #dbeafe; color: #1e40af; }
+.sp-q-t .sp-q-header  { background: #fef3c7; color: #92400e; }
+.sp-q-so .sp-q-header { background: #d1fae5; color: #065f46; }
+.sp-q-st .sp-q-header { background: #eef2ff; color: #3730a3; }
+.sp-q-wo .sp-q-header { background: #dbeafe; color: #1e40af; }
+.sp-q-wt .sp-q-header { background: #fef3c7; color: #92400e; }
+
+.sp-q-list {
+  padding: 8px 12px;
+  min-height: 60px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sp-analiz-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 5px 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #374151;
+}
+.sp-analiz-item-text { flex: 1; line-height: 1.4; }
+.sp-analiz-del-btn {
+  border: none;
+  background: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.sp-analiz-del-btn:hover { color: #ef4444; background: #fee2e2; }
+
+.sp-q-add-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+.sp-analiz-input { height: 32px; font-size: 12px; }
+
+/* PESTLE 3×2 grid */
+.sp-pestle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.sp-pestle-factor {
+  border-radius: 10px;
+  border: 2px solid var(--factor-color, #6366f1);
+  overflow: hidden;
+}
+.sp-pestle-header {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--factor-color, #6366f1) 12%, white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sp-pestle-abbr {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--factor-color, #6366f1);
+  width: 20px;
+}
+.sp-pestle-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  .sp-analiz-grid-2x2 { grid-template-columns: 1fr; }
+  .sp-pestle-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .sp-pestle-grid { grid-template-columns: 1fr; }
+}

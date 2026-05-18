@@ -1,7 +1,26 @@
-# TASKLOG — Kokpitim Görev Takip Defteri
+﻿# TASKLOG — Kokpitim Görev Takip Defteri
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
+
+## TASK-099 | 2026-04-26 | ✅ Tamamlandı
+
+**Görev:** VM'de KMF hedef PG için yıl bazlı görünürlük onarımı + yerel plan-year düzeltmelerini canlıya yayınlama
+**Modül:** vm ops / sp-surec deploy
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/vm_kmf_pg_visibility_check.sql` → Hedef PG yıl bazlı görünürlük doğrulama sorgusu
+- `scripts/ops/vm_kmf_pg_find_target.sql` → VM'de hedef PG'yi daraltılmış filtreyle tespit sorgusu
+- `scripts/ops/vm_kmf_pg_target_fix.sql` → Hedef PG için `is_active` + `is_included` onarım SQL'i
+
+### Yapılan İşlem
+VM PostgreSQL üzerinde yalnızca KMF tenant ve ilgili PG satırı hedeflenerek `kpi_id=343` için kayıt aktifleştirildi; `kpi_year_configs` satırları 2024 için `false`, diğer plan yılları için `true` olacak şekilde upsert edildi. Ardından `vm_safe_deploy.sh` ile `main` dalındaki plan-year karşılaştırma/silme düzeltmeleri canlıya alındı; deploy script'in satır sayısı kontrolü "değişmedi" olarak geçti.
+
+### Notlar
+`kpi_data`, `process_activities` ve diğer temel tabloların satır sayıları deploy öncesi/sonrası aynı kaldı; PG veri girişleri silinmedi.
+
+---
 
 ## TASK-098 | 2026-04-26 | ✅ Tamamlandı
 
@@ -92,6 +111,25 @@ Aralıklı `/` ve `/process` timeout gözlemlendi; bu hotfix request başına DB
 
 ---
 
+## TASK-094 | 2026-05-05 | ✅ Tamamlandı
+
+**Görev:** Kokpitim tanıtım web sitesi (marketing_bp) oluşturuldu
+**Modül:** marketing
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/marketing/__init__.py` → Yeni Blueprint
+- `micro/modules/marketing/routes.py` → 12 route + blog + sitemap + robots.txt
+- `templates/marketing/` → 13 template (base, index, 5 özellik, nasıl çalışır, demo, blog, iletişim)
+- `static/marketing/css/marketing.css` → Tam marketing CSS sistemi
+- `static/marketing/js/marketing.js` → Navbar scroll, hamburger, accordion, sayaç, fade-in, form validasyon
+- `content/blog/` → 2 blog yazısı (Markdown)
+- `__init__.py` → marketing_bp en önce register edildi (/ çakışması çözüldü)
+
+### Yapılan İşlem
+docs/kirowebsitesi.md belgesindeki talimatlar uygulandı. marketing_bp Blueprint'i app_bp'den önce register edilerek / route çakışması çözüldü. Mevcut hiçbir route/template değiştirilmedi. Tüm sayfalar @login_required olmadan herkese açık. Demo talep ve iletişim formları Flask-WTF CSRF + honeypot spam korumalı. Blog Markdown tabanlı (python-markdown). sitemap.xml ve robots.txt route'ları eklendi.
+
+---
 ## TASK-093 | 2026-04-14 | ✅ Tamamlandı
 
 **Görev:** KS-Radar OKR analizi modali eklendi + SWOT/TOWS/PESTLE CRUD desteklendi
@@ -550,6 +588,25 @@ Yok.
 
 ---
 
+## TASK-094 | 2026-05-05 | ✅ Tamamlandı
+
+**Görev:** Kokpitim tanıtım web sitesi (marketing_bp) oluşturuldu
+**Modül:** marketing
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/marketing/__init__.py` → Yeni Blueprint
+- `micro/modules/marketing/routes.py` → 12 route + blog + sitemap + robots.txt
+- `templates/marketing/` → 13 template (base, index, 5 özellik, nasıl çalışır, demo, blog, iletişim)
+- `static/marketing/css/marketing.css` → Tam marketing CSS sistemi
+- `static/marketing/js/marketing.js` → Navbar scroll, hamburger, accordion, sayaç, fade-in, form validasyon
+- `content/blog/` → 2 blog yazısı (Markdown)
+- `__init__.py` → marketing_bp en önce register edildi (/ çakışması çözüldü)
+
+### Yapılan İşlem
+docs/kirowebsitesi.md belgesindeki talimatlar uygulandı. marketing_bp Blueprint'i app_bp'den önce register edilerek / route çakışması çözüldü. Mevcut hiçbir route/template değiştirilmedi. Tüm sayfalar @login_required olmadan herkese açık. Demo talep ve iletişim formları Flask-WTF CSRF + honeypot spam korumalı. Blog Markdown tabanlı (python-markdown). sitemap.xml ve robots.txt route'ları eklendi.
+
+---
 ## TASK-093 | 2026-04-11 | ✅ Tamamlandı
 
 **Görev:** Süreç listesinde K-Vektör skoru gösterimi + yıl fix
@@ -1710,6 +1767,25 @@ Yönetim panelinde son 24 saat/7 gün/aktif değerlerinin sürekli 0 gelmesinin 
 
 ---
 
+## TASK-094 | 2026-05-05 | ✅ Tamamlandı
+
+**Görev:** Kokpitim tanıtım web sitesi (marketing_bp) oluşturuldu
+**Modül:** marketing
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/marketing/__init__.py` → Yeni Blueprint
+- `micro/modules/marketing/routes.py` → 12 route + blog + sitemap + robots.txt
+- `templates/marketing/` → 13 template (base, index, 5 özellik, nasıl çalışır, demo, blog, iletişim)
+- `static/marketing/css/marketing.css` → Tam marketing CSS sistemi
+- `static/marketing/js/marketing.js` → Navbar scroll, hamburger, accordion, sayaç, fade-in, form validasyon
+- `content/blog/` → 2 blog yazısı (Markdown)
+- `__init__.py` → marketing_bp en önce register edildi (/ çakışması çözüldü)
+
+### Yapılan İşlem
+docs/kirowebsitesi.md belgesindeki talimatlar uygulandı. marketing_bp Blueprint'i app_bp'den önce register edilerek / route çakışması çözüldü. Mevcut hiçbir route/template değiştirilmedi. Tüm sayfalar @login_required olmadan herkese açık. Demo talep ve iletişim formları Flask-WTF CSRF + honeypot spam korumalı. Blog Markdown tabanlı (python-markdown). sitemap.xml ve robots.txt route'ları eklendi.
+
+---
 ## TASK-093 | 2026-03-21 | ✅ Tamamlandı
 
 **Görev:** Süreç karnesi PG **kartına tıklayınca VGS açılması kaldırıldı**; favori / düzenle / sil yanına **asa (fa-wand-magic-sparkles) `btn-kpi-vgs`** ile VGS; yardımcı sihirbaz Swal metni güncellendi; `kb-card--clickable` kaldırıldı
@@ -2847,3 +2923,4 @@ Sistem test ediliyor. Sonraki görevlerden itibaren her değişiklikte TASKLOG o
 Yok.
 
 ---
+

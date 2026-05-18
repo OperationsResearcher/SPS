@@ -1,0 +1,39 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-page-hero">
+  <div class="mk-container">
+    <div class="mk-breadcrumb"><a href="/ozellikler">Özellikler</a> / Performans Takibi</div>
+    <h1 class="mk-page-title">KPI'ınızı Excel'de kaybetmeyin.</h1>
+    <p class="mk-page-sub">Otomatik başarı puanından anomali tespitine, trend analizinden tahminlemeye — verileriniz size konuşuyor.</p>
+    <a href="/demo-talep" class="mk-btn mk-btn-primary mk-btn-lg">Demo Talep Et</a>
+  </div>
+</section>
+<section class="mk-section">
+  <div class="mk-container">
+    <div class="mk-feature-list">
+      {% set features = [
+        ("fa-user-check", "Bireysel Performans Karnesi", "Çalışan bazlı PG takibi. Bireysel hedefler kurumsal stratejiye bağlı — 'neden bu hedef var?' sorusu cevaplı."),
+        ("fa-star", "Otomatik Başarı Puanı", "1-5 skala, ağırlıklı hesaplama. Çalışan, süreç veya kurum bazında genel skor."),
+        ("fa-chart-line", "Trend Analizi", "Zaman serisi grafikleri. Performans nereye gidiyor? Dönemler arası karşılaştırma."),
+        ("fa-triangle-exclamation", "Sapma Uyarıları", "Hedeften sapma bildirim eşiği tanımlayın. WebSocket ile anlık push — gecikme yok."),
+        ("fa-star-half-stroke", "Favori PG'ler", "Sık kullandığınız göstergeleri sabitleyin. Hızlı erişim, kişiselleştirilmiş dashboard."),
+        ("fa-arrows-left-right", "Dönem Karşılaştırması", "Geçmiş periyotlarla yanyana görüntüleme. Bu ay geçen aya göre nerede?"),
+        ("fa-magnifying-glass-chart", "Anomali Tespiti", "z-score, IQR ve hareketli ortalama yöntemleriyle otomatik uyarı. Beklenmedik değişimleri kaçırmayın."),
+        ("fa-wand-sparkles", "Tahminleme", "Trend verisinden gelecek dönem projeksiyonu. Hedefe ulaşılacak mı? Sistem önceden söylüyor."),
+      ] %}
+      {% for icon, title, desc in features %}
+      <div class="mk-feat-row fade-in">
+        <div class="mk-feat-row-icon"><i class="fas {{ icon }}"></i></div>
+        <div class="mk-feat-row-body"><h3>{{ title }}</h3><p>{{ desc }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="mk-cta-section">
+  <div class="mk-container">
+    <h2 class="mk-cta-title">KPI'larınızı gerçek zamanlı izlemeye hazır mısınız?</h2>
+    <a href="/demo-talep" class="mk-btn mk-btn-white mk-btn-lg">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+{% endblock %}

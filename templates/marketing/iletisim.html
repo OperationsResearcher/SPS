@@ -1,0 +1,61 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-section mk-form-section">
+  <div class="mk-container mk-form-container">
+    <div class="mk-form-header">
+      <h1 class="mk-page-title">İletişime Geçin</h1>
+      <p class="mk-page-sub">Sorularınız için buradayız.</p>
+    </div>
+
+    {% if success %}
+    <div class="mk-success-box">
+      <i class="fas fa-circle-check"></i>
+      <h3>Mesajınız alındı!</h3>
+      <p>En kısa sürede size dönüş yapacağız.</p>
+      <a href="/" class="mk-btn mk-btn-primary">Ana Sayfaya Dön</a>
+    </div>
+    {% else %}
+
+    {% if error %}
+    <div class="mk-error-box"><i class="fas fa-circle-exclamation"></i> {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/iletisim" class="mk-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+
+      <div class="mk-form-grid">
+        <div class="mk-form-group">
+          <label>Ad Soyad <span class="req">*</span></label>
+          <input type="text" name="ad_soyad" required value="{{ form_data.ad_soyad if form_data else '' }}" placeholder="Adınız Soyadınız">
+        </div>
+        <div class="mk-form-group">
+          <label>E-posta <span class="req">*</span></label>
+          <input type="email" name="email" required value="{{ form_data.email if form_data else '' }}" placeholder="ornek@kurum.com">
+        </div>
+        <div class="mk-form-group mk-form-group-full">
+          <label>Konu <span class="req">*</span></label>
+          <select name="konu" required>
+            <option value="">Seçiniz</option>
+            <option value="Demo Talebi">Demo Talebi</option>
+            <option value="Teknik Soru">Teknik Soru</option>
+            <option value="İş Birliği">İş Birliği</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+        </div>
+        <div class="mk-form-group mk-form-group-full">
+          <label>Mesaj <span class="req">*</span></label>
+          <textarea name="mesaj" rows="5" required placeholder="Mesajınızı buraya yazın...">{{ form_data.mesaj if form_data else '' }}</textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="mk-btn mk-btn-primary mk-btn-full">Gönder <i class="fas fa-paper-plane"></i></button>
+    </form>
+
+    <div class="mk-contact-info">
+      <a href="mailto:info@kokpitim.com"><i class="fas fa-envelope"></i> info@kokpitim.com</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -27,5 +27,8 @@ ENV FLASK_ENV=production
 ENV TRUST_PROXY=1
 
 EXPOSE 5000
-# --timeout: Cloudflare origin limitinden (100s) düşük; takılı worker yenilensin
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "--timeout", "90", "--graceful-timeout", "25", "run:app"]
+# Üretimde aralıklı takılan worker etkisini azaltmak için:
+# - worker sayısı artırıldı
+# - keep-alive düşürüldü
+# - max-requests ile periyodik worker yenileme açıldı
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:5000 --workers ${GUNICORN_WORKERS:-8} --threads ${GUNICORN_THREADS:-1} --timeout ${GUNICORN_TIMEOUT:-60} --graceful-timeout ${GUNICORN_GRACEFUL_TIMEOUT:-20} --keep-alive ${GUNICORN_KEEPALIVE:-2} --max-requests ${GUNICORN_MAX_REQUESTS:-1000} --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-100} run:app"]

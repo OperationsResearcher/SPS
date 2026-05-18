@@ -193,6 +193,11 @@ def create_app(config_name=None):
     app.register_blueprint(v3_bp)
 
     # 4.9 Platform — güncel kurulum için app.create_app (app/__init__.py) kullanın; kök URL orada.
+    # Marketing (tanıtım sitesi)
+    from micro.modules.marketing import marketing_bp
+    import micro.modules.marketing.routes  # noqa: F401 — route'ları kaydet
+    app.register_blueprint(marketing_bp)
+
     import micro  # noqa: F401
     from platform_core import app_bp
     app.register_blueprint(app_bp)
@@ -348,5 +353,28 @@ def create_app(config_name=None):
         #                 if 'estimated_time' not in task_columns:
         #                     if is_sqlite:
         #                         db.session.execute(text("ALTER TABLE task ADD COLUMN estimated
+
+    # ── Hata Sayfaları ────────────────────────────────────────────────────────
+    @app.errorhandler(404)
+    def page_not_found(e):
+        from flask import render_template
+        return render_template("platform/errors/404.html"), 404
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        from flask import render_template
+        return render_template("platform/errors/403.html"), 403
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        import uuid
+        from flask import render_template
+        error_id = str(uuid.uuid4())[:8].upper()
+        app.logger.error(f"[500] error_id={error_id} — {e}")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        return render_template("platform/errors/500.html", error_id=error_id), 500
 
     return app

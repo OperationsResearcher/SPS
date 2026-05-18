@@ -92,6 +92,9 @@ class Config:
         "yes",
     )
     MAINTENANCE_BYPASS_SECRET = (os.environ.get("MAINTENANCE_BYPASS_SECRET") or "").strip() or None
+    MAINTENANCE_DB_CACHE_TTL_SECONDS = float(
+        os.environ.get("MAINTENANCE_DB_CACHE_TTL_SECONDS", "5")
+    )
 
     # Tek yapı: legacy URL öneki kaldırıldı.
     LEGACY_URL_PREFIX = "/"

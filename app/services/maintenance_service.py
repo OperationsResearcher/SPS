@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import threading
+import time
+
 from flask import Flask
 
 from app.models import db
@@ -9,6 +12,10 @@ from app.models.system_setting import SystemSetting
 
 KEY_MAINTENANCE = "maintenance_mode"
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
+_DEFAULT_DB_CACHE_TTL_SECONDS = 5.0
+_CACHE_LOCK = threading.Lock()
+_MAINTENANCE_CACHE_VALUE: bool | None = None
+_MAINTENANCE_CACHE_EXPIRES_AT = 0.0
 
 
 def _truthy(s: str | None) -> bool:
@@ -25,9 +32,47 @@ def maintenance_env_force(app: Flask) -> bool:
     return bool(app.config.get("MAINTENANCE_ENV_FORCE"))
 
 
-def maintenance_db_enabled() -> bool:
+def _maintenance_db_cache_ttl(app: Flask) -> float:
+    raw_ttl = app.config.get(
+        "MAINTENANCE_DB_CACHE_TTL_SECONDS",
+        _DEFAULT_DB_CACHE_TTL_SECONDS,
+    )
+    try:
+        ttl = float(raw_ttl)
+    except (TypeError, ValueError):
+        return _DEFAULT_DB_CACHE_TTL_SECONDS
+    return ttl if ttl >= 0 else 0.0
+
+
+def _invalidate_maintenance_cache() -> None:
+    global _MAINTENANCE_CACHE_VALUE, _MAINTENANCE_CACHE_EXPIRES_AT
+    with _CACHE_LOCK:
+        _MAINTENANCE_CACHE_VALUE = None
+        _MAINTENANCE_CACHE_EXPIRES_AT = 0.0
+
+
+def maintenance_db_enabled(app: Flask, force_refresh: bool = False) -> bool:
+    global _MAINTENANCE_CACHE_VALUE, _MAINTENANCE_CACHE_EXPIRES_AT
+    ttl = _maintenance_db_cache_ttl(app)
+    now = time.monotonic()
+
+    if not force_refresh and ttl > 0:
+        with _CACHE_LOCK:
+            if (
+                _MAINTENANCE_CACHE_VALUE is not None
+                and now < _MAINTENANCE_CACHE_EXPIRES_AT
+            ):
+                return _MAINTENANCE_CACHE_VALUE
+
     row = SystemSetting.query.filter_by(key=KEY_MAINTENANCE).first()
-    return _truthy(row.value) if row else False
+    value = _truthy(row.value) if row else False
+
+    if ttl > 0:
+        with _CACHE_LOCK:
+            _MAINTENANCE_CACHE_VALUE = value
+            _MAINTENANCE_CACHE_EXPIRES_AT = now + ttl
+
+    return value
 
 
 def maintenance_active(app: Flask) -> bool:
@@ -39,7 +84,7 @@ def maintenance_active(app: Flask) -> bool:
     if maintenance_env_force(app):
         return True
     try:
-        return maintenance_db_enabled()
+        return maintenance_db_enabled(app)
     except Exception:
         db.session.rollback()
         return False
@@ -53,13 +98,14 @@ def set_maintenance_db(enabled: bool) -> None:
     else:
         db.session.add(SystemSetting(key=KEY_MAINTENANCE, value=val))
     db.session.commit()
+    _invalidate_maintenance_cache()
 
 
 def maintenance_status_for_admin(app: Flask) -> dict:
     """Yonetim paneli API."""
     db_en = False
     try:
-        db_en = maintenance_db_enabled()
+        db_en = maintenance_db_enabled(app, force_refresh=True)
     except Exception:
         db.session.rollback()
     env_f = maintenance_env_force(app)

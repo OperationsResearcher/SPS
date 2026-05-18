@@ -809,3 +809,385 @@ def list_recommendation_action_history(
             "pages": pages,
         },
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# KS-Radar — Gerçek DB Verisi Fonksiyonları
+# ══════════════════════════════════════════════════════════════════════════════
+
+import json as _json
+
+
+def _parse_json_list(raw: str | None) -> list:
+    """JSON string'i listeye çevirir, hata durumunda boş liste döner."""
+    if not raw:
+        return []
+    try:
+        result = _json.loads(raw)
+        return result if isinstance(result, list) else []
+    except Exception:
+        return []
+
+
+def _parse_json_obj(raw: str | None) -> dict:
+    """JSON string'i dict'e çevirir, hata durumunda boş dict döner."""
+    if not raw:
+        return {}
+    try:
+        result = _json.loads(raw)
+        return result if isinstance(result, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_plan_year_for_tenant(tenant_id: int, year: int | None = None):
+    """Tenant için plan year döner. year verilmezse en güncel yılı alır."""
+    from app.models.plan_year import PlanYear
+    if year:
+        py = PlanYear.query.filter_by(tenant_id=tenant_id, year=year).first()
+        if py:
+            return py
+    # En son yıl
+    return PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).first()
+
+
+def get_ks_swot_real(tenant_id: int, year: int | None = None) -> dict:
+    """Gerçek SWOT verisi — swot_analyses tablosundan."""
+    from app.models.swot import SwotAnalysis
+    from app.models.plan_year import PlanYear
+
+    all_pys = PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).all()
+    py_map = {py.id: py.year for py in all_pys}
+
+    # Önce istenen yıl, yoksa verisi olan en son kayıt
+    swot = None
+    if year:
+        target_py = next((py for py in all_pys if py.year == year), None)
+        if target_py:
+            swot = SwotAnalysis.query.filter_by(tenant_id=tenant_id, plan_year_id=target_py.id).first()
+
+    if not swot or not any([swot.strengths, swot.weaknesses, swot.opportunities, swot.threats]):
+        # Verisi olan en son SWOT'u bul (updated_at'e göre)
+        swot = (SwotAnalysis.query
+                .filter_by(tenant_id=tenant_id)
+                .order_by(SwotAnalysis.updated_at.desc())
+                .first())
+        # Hâlâ boşsa None yap
+        if swot and not any([swot.strengths, swot.weaknesses, swot.opportunities, swot.threats]):
+            swot = None
+
+    if not swot:
+        return {
+            "mevcut": False, "year": year,
+            "strengths": [], "weaknesses": [], "opportunities": [], "threats": [],
+            "ozet": {"S": 0, "W": 0, "O": 0, "T": 0},
+            "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+        }
+
+    s_list = _parse_json_list(swot.strengths)
+    w_list = _parse_json_list(swot.weaknesses)
+    o_list = _parse_json_list(swot.opportunities)
+    t_list = _parse_json_list(swot.threats)
+    py_year = py_map.get(swot.plan_year_id, year)
+
+    return {
+        "mevcut": True,
+        "swot_id": swot.id,
+        "plan_year_id": swot.plan_year_id,
+        "year": py_year,
+        "guncelleme": str(swot.updated_at)[:10] if swot.updated_at else None,
+        "strengths":     s_list,
+        "weaknesses":    w_list,
+        "opportunities": o_list,
+        "threats":       t_list,
+        "ozet": {"S": len(s_list), "W": len(w_list), "O": len(o_list), "T": len(t_list)},
+        "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+    }
+
+
+def get_ks_tows_real(tenant_id: int, year: int | None = None) -> dict:
+    """Gerçek TOWS verisi — tows_analyses tablosundan."""
+    from app.models.swot import TowsAnalysis
+    from app.models.plan_year import PlanYear
+
+    all_pys = PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).all()
+    py_map = {py.id: py.year for py in all_pys}
+
+    tows = None
+    if year:
+        target_py = next((py for py in all_pys if py.year == year), None)
+        if target_py:
+            tows = TowsAnalysis.query.filter_by(tenant_id=tenant_id, plan_year_id=target_py.id).first()
+
+    if not tows or not any([tows.so_strategies, tows.st_strategies, tows.wo_strategies, tows.wt_strategies]):
+        tows = (TowsAnalysis.query
+                .filter_by(tenant_id=tenant_id)
+                .order_by(TowsAnalysis.updated_at.desc())
+                .first())
+        if tows and not any([tows.so_strategies, tows.st_strategies, tows.wo_strategies, tows.wt_strategies]):
+            tows = None
+
+    if not tows:
+        return {
+            "mevcut": False, "year": year,
+            "so": [], "st": [], "wo": [], "wt": [],
+            "ozet": {"SO": 0, "ST": 0, "WO": 0, "WT": 0},
+            "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+        }
+
+    so = _parse_json_list(tows.so_strategies)
+    st = _parse_json_list(tows.st_strategies)
+    wo = _parse_json_list(tows.wo_strategies)
+    wt = _parse_json_list(tows.wt_strategies)
+    py_year = py_map.get(tows.plan_year_id, year)
+
+    return {
+        "mevcut": True,
+        "tows_id": tows.id,
+        "plan_year_id": tows.plan_year_id,
+        "year": py_year,
+        "guncelleme": str(tows.updated_at)[:10] if tows.updated_at else None,
+        "so": so, "st": st, "wo": wo, "wt": wt,
+        "ozet": {"SO": len(so), "ST": len(st), "WO": len(wo), "WT": len(wt)},
+        "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+    }
+
+
+def get_ks_pestel_real(tenant_id: int, year: int | None = None) -> dict:
+    """Gerçek PESTEL verisi — pestel_analyses tablosundan."""
+    from app.models.swot import PestelAnalysis
+    from app.models.plan_year import PlanYear
+
+    all_pys = PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).all()
+    py_map = {py.id: py.year for py in all_pys}
+
+    pestel = None
+    if year:
+        target_py = next((py for py in all_pys if py.year == year), None)
+        if target_py:
+            pestel = PestelAnalysis.query.filter_by(tenant_id=tenant_id, plan_year_id=target_py.id).first()
+
+    if not pestel or not any([pestel.political, pestel.economic, pestel.social, pestel.technological, pestel.environmental, pestel.legal]):
+        pestel = (PestelAnalysis.query
+                  .filter_by(tenant_id=tenant_id)
+                  .order_by(PestelAnalysis.updated_at.desc())
+                  .first())
+        if pestel and not any([pestel.political, pestel.economic, pestel.social, pestel.technological, pestel.environmental, pestel.legal]):
+            pestel = None
+
+    if not pestel:
+        return {
+            "mevcut": False, "year": year,
+            "political": [], "economic": [], "social": [],
+            "technological": [], "environmental": [], "legal": [],
+            "ozet": {"P": 0, "E": 0, "S": 0, "T": 0, "E2": 0, "L": 0},
+            "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+        }
+
+    p_list  = _parse_json_list(pestel.political)
+    e_list  = _parse_json_list(pestel.economic)
+    s_list  = _parse_json_list(pestel.social)
+    t_list  = _parse_json_list(pestel.technological)
+    e2_list = _parse_json_list(pestel.environmental)
+    l_list  = _parse_json_list(pestel.legal)
+    py_year = py_map.get(pestel.plan_year_id, year)
+
+    return {
+        "mevcut": True,
+        "pestel_id": pestel.id,
+        "plan_year_id": pestel.plan_year_id,
+        "year": py_year,
+        "guncelleme": str(pestel.updated_at)[:10] if pestel.updated_at else None,
+        "political": p_list, "economic": e_list, "social": s_list,
+        "technological": t_list, "environmental": e2_list, "legal": l_list,
+        "ozet": {"P": len(p_list), "E": len(e_list), "S": len(s_list),
+                 "T": len(t_list), "E2": len(e2_list), "L": len(l_list)},
+        "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+    }
+
+
+def get_ks_porter_real(tenant_id: int, year: int | None = None) -> dict:
+    """Gerçek Porter 5 Kuvvet verisi."""
+    from app.models.swot import PorterFiveForcesAnalysis
+    from app.models.plan_year import PlanYear
+
+    all_pys = PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).all()
+    py_map = {py.id: py.year for py in all_pys}
+    target_py = _get_plan_year_for_tenant(tenant_id, year)
+
+    porter = None
+    if target_py:
+        porter = PorterFiveForcesAnalysis.query.filter_by(tenant_id=tenant_id, plan_year_id=target_py.id).first()
+
+    if not porter:
+        all_p = PorterFiveForcesAnalysis.query.filter_by(tenant_id=tenant_id).order_by(PorterFiveForcesAnalysis.updated_at.desc()).all()
+        for p in all_p:
+            if any([p.rivalry_intensity, p.supplier_power, p.buyer_power, p.new_entrant_threat, p.substitute_threat]):
+                porter = p
+                break
+
+    def _parse_force(raw):
+        obj = _parse_json_obj(raw)
+        return {"score": obj.get("score"), "items": obj.get("items", [])}
+
+    if not porter:
+        return {
+            "mevcut": False, "year": year,
+            "rivalry": {"score": None, "items": []},
+            "supplier": {"score": None, "items": []},
+            "buyer": {"score": None, "items": []},
+            "new_entrant": {"score": None, "items": []},
+            "substitute": {"score": None, "items": []},
+            "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+        }
+
+    py_year = py_map.get(porter.plan_year_id, year)
+    return {
+        "mevcut": True,
+        "porter_id": porter.id,
+        "plan_year_id": porter.plan_year_id,
+        "year": py_year,
+        "guncelleme": str(porter.updated_at)[:10] if porter.updated_at else None,
+        "rivalry":     _parse_force(porter.rivalry_intensity),
+        "supplier":    _parse_force(porter.supplier_power),
+        "buyer":       _parse_force(porter.buyer_power),
+        "new_entrant": _parse_force(porter.new_entrant_threat),
+        "substitute":  _parse_force(porter.substitute_threat),
+        "yillar": [{"id": py.id, "year": py.year} for py in all_pys],
+    }
+
+
+def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
+    """GAP analizi — hedef vs gerçekleşen, süreç bazlı."""
+    from app.models.process import Process, ProcessKpi, KpiData
+    import datetime as _dt
+
+    cur_year = year or _dt.date.today().year
+    processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(Process.code).all()
+    kpis = (
+        ProcessKpi.query.join(Process)
+        .filter(Process.tenant_id == tenant_id, Process.is_active == True, ProcessKpi.is_active == True)
+        .all()
+    )
+    kpi_map = {k.id: k for k in kpis}
+    proc_map = {p.id: p for p in processes}
+
+    kpi_ids = [k.id for k in kpis]
+    latest_data = {}
+    if kpi_ids:
+        rows = (
+            KpiData.query
+            .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == cur_year, KpiData.is_active == True)
+            .order_by(KpiData.data_date.desc())
+            .all()
+        )
+        for d in rows:
+            if d.process_kpi_id not in latest_data:
+                latest_data[d.process_kpi_id] = d
+
+    # Süreç bazlı gap hesapla
+    proc_gaps = {}
+    for kpi_id, d in latest_data.items():
+        kpi = kpi_map.get(kpi_id)
+        if not kpi:
+            continue
+        try:
+            target = float(kpi.target_value or 0)
+            actual = float(d.actual_value or 0)
+            if target <= 0:
+                continue
+            if getattr(kpi, 'direction', 'Increasing') == 'lower_is_better':
+                pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
+            else:
+                pct = round(min(100.0, actual / target * 100), 1)
+            gap = round(pct - 100, 1)
+            pid = kpi.process_id
+            if pid not in proc_gaps:
+                proc_gaps[pid] = {"scores": [], "kpi_count": 0}
+            proc_gaps[pid]["scores"].append(pct)
+            proc_gaps[pid]["kpi_count"] += 1
+        except (ValueError, TypeError):
+            pass
+
+    gap_rows = []
+    for pid, data in proc_gaps.items():
+        proc = proc_map.get(pid)
+        if not proc:
+            continue
+        scores = data["scores"]
+        ort = round(sum(scores) / len(scores), 1) if scores else 0
+        gap_rows.append({
+            "process_id": pid,
+            "code": proc.code or "",
+            "name": proc.name,
+            "kpi_count": data["kpi_count"],
+            "ort_basari": ort,
+            "gap": round(ort - 100, 1),
+            "durum": "hedefte" if ort >= 80 else ("riskli" if ort >= 50 else "kritik"),
+        })
+    gap_rows.sort(key=lambda x: x["ort_basari"])
+
+    toplam_kpi = len(kpi_ids)
+    veri_girilen = len(latest_data)
+    tum_skorlar = [r["ort_basari"] for r in gap_rows]
+    genel_ort = round(sum(tum_skorlar) / len(tum_skorlar), 1) if tum_skorlar else 0
+
+    return {
+        "year": cur_year,
+        "toplam_kpi": toplam_kpi,
+        "veri_girilen": veri_girilen,
+        "genel_ort_basari": genel_ort,
+        "genel_gap": round(genel_ort - 100, 1),
+        "hedefte": sum(1 for r in gap_rows if r["durum"] == "hedefte"),
+        "riskli":  sum(1 for r in gap_rows if r["durum"] == "riskli"),
+        "kritik":  sum(1 for r in gap_rows if r["durum"] == "kritik"),
+        "surec_gap_listesi": gap_rows,
+    }
+
+
+def get_ks_strateji_real(tenant_id: int) -> dict:
+    """Strateji hiyerarşisi + süreç bağlantıları + skor."""
+    from app.models.core import Strategy, SubStrategy
+    from app.models.process import Process
+
+    strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(Strategy.code).all()
+    all_processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+    proc_map = {p.id: p for p in all_processes}
+
+    linked_proc_ids = set()
+    strat_list = []
+    for s in strategies:
+        subs = SubStrategy.query.filter_by(strategy_id=s.id, is_active=True).all()
+        sub_list = []
+        for ss in subs:
+            linked = [p for p in (ss.processes or []) if p.is_active and p.tenant_id == tenant_id]
+            for p in linked:
+                linked_proc_ids.add(p.id)
+            sub_list.append({
+                "id": ss.id,
+                "code": ss.code or "",
+                "title": ss.title,
+                "surec_sayisi": len(linked),
+            })
+        strat_list.append({
+            "id": s.id,
+            "code": s.code or "",
+            "title": s.title,
+            "alt_strateji_sayisi": len(subs),
+            "bagli_surec_sayisi": sum(ss["surec_sayisi"] for ss in sub_list),
+            "alt_stratejiler": sub_list,
+        })
+
+    stratejisiz = [p for p in all_processes if p.id not in linked_proc_ids]
+    kapsam_pct = round(len(linked_proc_ids) / len(all_processes) * 100, 1) if all_processes else 0
+
+    return {
+        "toplam_strateji": len(strategies),
+        "toplam_alt_strateji": sum(s["alt_strateji_sayisi"] for s in strat_list),
+        "toplam_surec": len(all_processes),
+        "bagli_surec": len(linked_proc_ids),
+        "stratejisiz_surec": len(stratejisiz),
+        "kapsam_pct": kapsam_pct,
+        "stratejiler": strat_list,
+        "stratejisiz_surecler": [{"id": p.id, "code": p.code or "", "name": p.name} for p in stratejisiz],
+    }

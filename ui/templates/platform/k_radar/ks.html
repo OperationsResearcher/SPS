@@ -1,32 +1,374 @@
 {% extends "platform/base.html" %}
-{% block title %}K-Radar KS{% endblock %}
+{% block title %}KS-Radar — Stratejik Planlama Analizi{% endblock %}
 {% block page_title %}KS-Radar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/k_radar.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
 {% block content %}
-<div id="k-radar-ks-root" data-url="{{ url_for('app_bp.k_radar_api_ks') }}" style="max-width:900px; margin:0 auto;">
-  <div class="mc-card">
-    <div class="mc-card-body">
-      <h3 style="margin-top:0;">Strateji Radari</h3>
-      <p style="color:#64748b;">Aktif strateji-surec kapsam skoru.</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_swot') }}">SWOT</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_pestle') }}">PESTLE</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_tows') }}">TOWS</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_gap') }}">Gap</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_okr') }}">OKR</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_hoshin') }}">Hoshin</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_ansoff') }}">Ansoff</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_bcg') }}">BCG</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_bsc') }}">BSC</a>
-        <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks_efqm') }}">EFQM</a>
+<div class="mc-page-content-wide"
+     id="ks-hub-root"
+     data-api-ks="{{ url_for('app_bp.k_radar_api_ks') }}"
+     data-api-swot="{{ url_for('app_bp.k_radar_api_ks_swot_real') }}"
+     data-api-tows="{{ url_for('app_bp.k_radar_api_ks_tows_real') }}"
+     data-api-pestle="{{ url_for('app_bp.k_radar_api_ks_pestel_real') }}"
+     data-api-gap="{{ url_for('app_bp.k_radar_api_ks_gap_real') }}"
+     data-api-strateji="{{ url_for('app_bp.k_radar_api_ks_strateji_real') }}"
+     data-api-swot-save="{{ url_for('app_bp.sp_api_swot_save') }}"
+     data-api-tows-save="{{ url_for('app_bp.sp_api_tows_save') }}"
+     data-api-pestle-save="{{ url_for('app_bp.sp_api_pestle_save') }}"
+     data-api-okr="{{ url_for('app_bp.sp_api_okr_list') }}"
+     data-api-okr-obj-create="{{ url_for('app_bp.sp_api_okr_objective_create') }}"
+     data-api-okr-obj-base="{{ url_for('app_bp.sp_api_okr_objective_update', obj_id=0)[:-1] }}"
+     data-api-okr-kr-base="{{ url_for('app_bp.sp_api_okr_kr_update', kr_id=0)[:-1] }}"
+     data-api-bsc="{{ url_for('app_bp.sp_api_bsc_get') }}"
+     data-api-bsc-assign="{{ url_for('app_bp.sp_api_bsc_assign') }}"
+     data-can-manage="{{ 'true' if can_manage_k_radar else 'false' }}">
+
+  <!-- Başlık -->
+  <div class="kr-header" style="margin-bottom:20px;">
+    <div class="kr-header-left">
+      <div class="kr-header-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+        <i class="fas fa-chess-knight"></i>
       </div>
-      <div><strong>Skor:</strong> <span id="ks-score">-</span></div>
-      <div><strong>Band:</strong> <span id="ks-band">-</span></div>
-      <div><strong>Strateji:</strong> <span id="ks-strategy-count">-</span></div>
-      <div><strong>Surec:</strong> <span id="ks-process-count">-</span></div>
+      <div>
+        <h1 class="kr-header-title">KS-Radar</h1>
+        <p class="kr-header-sub">Stratejik Planlama Analiz Merkezi</p>
+      </div>
+    </div>
+    <a href="{{ url_for('app_bp.k_radar_hub') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+      <i class="fas fa-arrow-left"></i> K-Radar Hub
+    </a>
+  </div>
+
+  <!-- Özet Skor Kartları -->
+  <div class="mc-grid-4" style="margin-bottom:24px;">
+    <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
+      <div class="mc-stat-label">Strateji Kapsamı</div>
+      <div class="mc-stat-value" id="ks-kapsam-pct">—</div>
+      <div class="mc-stat-sub" id="ks-kapsam-sub">Yükleniyor…</div>
+    </div>
+    <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-icon"><i class="fas fa-sitemap"></i></div>
+      <div class="mc-stat-label">Toplam Strateji</div>
+      <div class="mc-stat-value" id="ks-strat-count">—</div>
+      <div class="mc-stat-sub" id="ks-sub-strat-count">— alt strateji</div>
+    </div>
+    <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-icon"><i class="fas fa-gauge-high"></i></div>
+      <div class="mc-stat-label">Genel PG Başarısı</div>
+      <div class="mc-stat-value" id="ks-pg-basari">—</div>
+      <div class="mc-stat-sub" id="ks-pg-sub">Yükleniyor…</div>
+    </div>
+    <div class="mc-stat-card" id="ks-skor-card">
+      <div class="mc-stat-icon"><i class="fas fa-star"></i></div>
+      <div class="mc-stat-label">KS Skoru</div>
+      <div class="mc-stat-value" id="ks-skor">—</div>
+      <div class="mc-stat-sub" id="ks-band">—</div>
+    </div>
+  </div>
+
+  <!-- Analiz Modülleri Grid -->
+  <div class="mc-grid-3" style="margin-bottom:24px;">
+
+    <!-- SWOT -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="swot" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-th-large" style="color:#6366f1;"></i> SWOT Analizi</span>
+        <span class="mc-badge mc-badge-indigo" id="ks-swot-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div class="ks-module-grid">
+          <div class="ks-quad ks-quad-s"><span class="ks-quad-label">S</span><span class="ks-quad-val" id="ks-swot-s">—</span></div>
+          <div class="ks-quad ks-quad-w"><span class="ks-quad-label">W</span><span class="ks-quad-val" id="ks-swot-w">—</span></div>
+          <div class="ks-quad ks-quad-o"><span class="ks-quad-label">O</span><span class="ks-quad-val" id="ks-swot-o">—</span></div>
+          <div class="ks-quad ks-quad-t"><span class="ks-quad-label">T</span><span class="ks-quad-val" id="ks-swot-t">—</span></div>
+        </div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- TOWS -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="tows" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left" style="color:#8b5cf6;"></i> TOWS Matrisi</span>
+        <span class="mc-badge mc-badge-purple" id="ks-tows-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div class="ks-module-grid">
+          <div class="ks-quad ks-quad-so"><span class="ks-quad-label">SO</span><span class="ks-quad-val" id="ks-tows-so">—</span></div>
+          <div class="ks-quad ks-quad-st"><span class="ks-quad-label">ST</span><span class="ks-quad-val" id="ks-tows-st">—</span></div>
+          <div class="ks-quad ks-quad-wo"><span class="ks-quad-label">WO</span><span class="ks-quad-val" id="ks-tows-wo">—</span></div>
+          <div class="ks-quad ks-quad-wt"><span class="ks-quad-label">WT</span><span class="ks-quad-val" id="ks-tows-wt">—</span></div>
+        </div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- PESTLE -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="pestle" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-globe" style="color:#10b981;"></i> PESTLE Analizi</span>
+        <span class="mc-badge mc-badge-emerald" id="ks-pestle-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div id="ks-pestle-mini" class="ks-pestle-bars"></div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- GAP -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="gap" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#f59e0b;"></i> GAP Analizi</span>
+        <span class="mc-badge mc-badge-warning" id="ks-gap-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#10b981;" id="ks-gap-hedefte">—</div><div style="font-size:11px;color:#64748b;">Hedefte</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#f59e0b;" id="ks-gap-riskli">—</div><div style="font-size:11px;color:#64748b;">Riskli</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#ef4444;" id="ks-gap-kritik">—</div><div style="font-size:11px;color:#64748b;">Kritik</div></div>
+        </div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- OKR -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="okr" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#3b82f6;"></i> OKR</span>
+        <span class="mc-badge mc-badge-indigo" id="ks-okr-badge">—</span>
+      </div>
+      <div class="mc-card-body" style="color:#64748b;font-size:13px;">
+        Hedef ve Anahtar Sonuç hiyerarşisi, çeyrek bazlı ilerleme takibi.
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- BSC -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="bsc" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-table-cells-large" style="color:#ec4899;"></i> BSC</span>
+        <span class="mc-badge mc-badge-pink" id="ks-bsc-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div id="ks-bsc-mini" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#6366f1;" id="ks-bsc-fin">—</div><div style="font-size:10px;color:#64748b;">Finansal</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-bsc-mus">—</div><div style="font-size:10px;color:#64748b;">Müşteri</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-bsc-sur">—</div><div style="font-size:10px;color:#64748b;">İç Süreç</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#3b82f6;" id="ks-bsc-ogr">—</div><div style="font-size:10px;color:#64748b;">Öğrenme</div></div>
+        </div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Strateji Kapsama Özeti -->
+  <div class="mc-card">
+    <div class="mc-card-header">
+      <span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji → Süreç Kapsama Özeti</span>
+      <span id="ks-strat-kapsam-badge" class="mc-badge mc-badge-indigo"></span>
+    </div>
+    <div class="mc-card-body" style="padding:0;">
+      <div id="ks-strat-list" class="kr-rank-list">
+        <div class="kr-loading" style="padding:24px;">Yükleniyor…</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MODALLER ══════════════════════════════════════════════════════════════ -->
+
+<!-- SWOT Modal -->
+<div id="ks-modal-swot" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-th-large"></i> SWOT Analizi</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-modal-swot-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
     </div>
   </div>
 </div>
+
+<!-- TOWS Modal -->
+<div id="ks-modal-tows" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Matrisi</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-modal-tows-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PESTLE Modal -->
+<div id="ks-modal-pestle" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-globe"></i> PESTLE Analizi</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-modal-pestle-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GAP Modal -->
+<div id="ks-modal-gap" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-chart-line"></i> GAP Analizi</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-modal-gap-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <canvas id="ks-gap-modal-chart" height="220" style="margin-top:16px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- OKR Modal -->
+<div id="ks-modal-okr" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-crosshairs"></i> OKR — Hedefler ve Anahtar Sonuçlar</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-modal-okr-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- OKR — Objective Ekle/Düzenle Modal -->
+<div id="ks-okr-obj-modal" class="mc-modal-overlay" style="z-index:10000;">
+  <div class="mc-modal mc-modal-md">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-bullseye"></i> <span id="ks-okr-obj-modal-title">Hedef Ekle</span></div>
+      <button class="mc-modal-close" id="ks-okr-obj-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div class="mc-form-grid">
+        <div class="mc-form-group full">
+          <label class="mc-form-label">Hedef Başlığı <span class="req">*</span></label>
+          <input type="text" id="okr-obj-title" class="mc-form-input" placeholder="Nereye gitmek istiyoruz?">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label">Çeyrek</label>
+          <select id="okr-obj-quarter" class="mc-form-input">
+            <option value="">Yıllık</option>
+            <option value="1">Ç1 — Ocak–Mart</option>
+            <option value="2">Ç2 — Nisan–Haziran</option>
+            <option value="3">Ç3 — Temmuz–Eylül</option>
+            <option value="4">Ç4 — Ekim–Aralık</option>
+          </select>
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label">Sorumlu</label>
+          <input type="text" id="okr-obj-owner" class="mc-form-input" placeholder="Kişi veya ekip">
+        </div>
+        <div class="mc-form-group full">
+          <label class="mc-form-label">Açıklama</label>
+          <textarea id="okr-obj-desc" class="mc-form-input" rows="2" placeholder="Opsiyonel açıklama"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button class="mc-btn mc-btn-secondary" id="ks-okr-obj-modal-cancel">İptal</button>
+      <button class="mc-btn mc-btn-primary" id="ks-okr-obj-modal-save"><i class="fas fa-save"></i> Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OKR — Key Result Ekle/Düzenle Modal -->
+<div id="ks-okr-kr-modal" class="mc-modal-overlay" style="z-index:10000;">
+  <div class="mc-modal mc-modal-md">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-key"></i> <span id="ks-okr-kr-modal-title">Anahtar Sonuç Ekle</span></div>
+      <button class="mc-modal-close" id="ks-okr-kr-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div class="mc-form-grid">
+        <div class="mc-form-group full">
+          <label class="mc-form-label">KR Başlığı <span class="req">*</span></label>
+          <input type="text" id="okr-kr-title" class="mc-form-input" placeholder="Oraya vardığımızı nasıl anlayacağız?">
+        </div>
+        <div class="mc-form-group full">
+          <label class="mc-form-label">Ölçüm Birimi</label>
+          <input type="text" id="okr-kr-metric" class="mc-form-input" placeholder="%, adet, puan, TL…">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label">Başlangıç Değeri</label>
+          <input type="number" id="okr-kr-start" class="mc-form-input" placeholder="0" step="any">
+        </div>
+        <div class="mc-form-group">
+          <label class="mc-form-label">Hedef Değer <span class="req">*</span></label>
+          <input type="number" id="okr-kr-target" class="mc-form-input" placeholder="100" step="any">
+        </div>
+        <div class="mc-form-group full">
+          <label class="mc-form-label">Güncel Değer</label>
+          <input type="number" id="okr-kr-current" class="mc-form-input" placeholder="Mevcut ilerleme" step="any">
+        </div>
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button class="mc-btn mc-btn-secondary" id="ks-okr-kr-modal-cancel">İptal</button>
+      <button class="mc-btn mc-btn-primary" id="ks-okr-kr-modal-save"><i class="fas fa-save"></i> Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- BSC Modal -->
+<div id="ks-modal-bsc" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-table-cells-large"></i> BSC — Balanced Scorecard</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body" style="padding:0;">
+      <div id="ks-modal-bsc-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BSC — KPI Perspektif Atama Modal -->
+<div id="ks-bsc-assign-modal" class="mc-modal-overlay" style="z-index:10000;">
+  <div class="mc-modal mc-modal-md">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-tag"></i> Perspektif Ata</div>
+      <button class="mc-modal-close" id="ks-bsc-assign-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body">
+      <div id="ks-bsc-assign-kpi-name" style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:16px;"></div>
+      <div class="mc-form-group">
+        <label class="mc-form-label">Perspektif</label>
+        <select id="ks-bsc-assign-select" class="mc-form-input">
+          <option value="">— Atama Kaldır —</option>
+          <option value="finansal">Finansal</option>
+          <option value="musteri">Müşteri</option>
+          <option value="ic_surec">İç Süreçler</option>
+          <option value="ogrenme">Öğrenme &amp; Gelişim</option>
+        </select>
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button class="mc-btn mc-btn-secondary" id="ks-bsc-assign-cancel">İptal</button>
+      <button class="mc-btn mc-btn-primary" id="ks-bsc-assign-save"><i class="fas fa-save"></i> Kaydet</button>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
+
 {% block extra_js %}
-<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar_ks.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}

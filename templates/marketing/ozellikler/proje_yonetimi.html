@@ -1,0 +1,41 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-page-hero">
+  <div class="mk-container">
+    <div class="mk-breadcrumb"><a href="/ozellikler">Özellikler</a> / Proje Yönetimi</div>
+    <h1 class="mk-page-title">Projeler stratejiden bağımsız değil.</h1>
+    <p class="mk-page-sub">Görev takibinden EVM'e, RAID yönetiminden kaynak kapasitesine — projeleriniz stratejik hedeflerinizle konuşuyor.</p>
+    <a href="/demo-talep" class="mk-btn mk-btn-primary mk-btn-lg">Demo Talep Et</a>
+  </div>
+</section>
+<section class="mk-section">
+  <div class="mk-container">
+    <div class="mk-feature-list">
+      {% set features = [
+        ("fa-folder-open", "Proje Portföyü", "Tüm projeler tek ekranda. Durum, sağlık skoru, tamamlanma oranı."),
+        ("fa-list-check", "Görev Yönetimi", "Görev oluştur, ata, takip et. Bağımlılıklar, öncelikler."),
+        ("fa-bars-progress", "Gantt Görünümü", "Zaman çizelgesi planlaması. Kritik yol görsel."),
+        ("fa-triangle-exclamation", "RAID Yönetimi", "Risk, Aksiyon, Sorun, Karar. Proje riski sistematik takip."),
+        ("fa-users-gear", "Kaynak Kapasite Planlaması", "Kişi bazlı iş yükü analizi. Kim ne kadar yüklü?"),
+        ("fa-coins", "EVM — Kazanılmış Değer Analizi", "SPI ve CPI metrikleri. Proje zamanında mı, bütçede mi?"),
+        ("fa-route", "CPM — Kritik Yol Metodu", "Kritik görev zinciri. Hangi görev gecikirirse proje gecikir?"),
+        ("fa-rotate", "Sprint Yönetimi", "Çevik proje takibi. Backlog, aktif sprint, tamamlanan."),
+        ("fa-heart-pulse", "Proje Sağlık Skoru", "Otomatik hesaplanan sağlık göstergesi. Yeşil / sarı / kırmızı — durumu anlık görün."),
+        ("fa-link", "Strateji Bağlantısı", "Her proje hangi stratejik hedefe katkı sağlıyor? Portföy → strateji hizalama analizi."),
+      ] %}
+      {% for icon, title, desc in features %}
+      <div class="mk-feat-row fade-in">
+        <div class="mk-feat-row-icon"><i class="fas {{ icon }}"></i></div>
+        <div class="mk-feat-row-body"><h3>{{ title }}</h3><p>{{ desc }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="mk-cta-section">
+  <div class="mk-container">
+    <h2 class="mk-cta-title">Projelerinizi stratejiye bağlamaya hazır mısınız?</h2>
+    <a href="/demo-talep" class="mk-btn mk-btn-white mk-btn-lg">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+{% endblock %}

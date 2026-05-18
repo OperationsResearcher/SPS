@@ -1,0 +1,32 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-page-hero">
+  <div class="mk-container">
+    <h1 class="mk-page-title">Kurumsal Yönetim Üzerine</h1>
+    <p class="mk-page-sub">Stratejik planlama, süreç yönetimi ve performans takibi hakkında.</p>
+  </div>
+</section>
+<section class="mk-section">
+  <div class="mk-container">
+    {% if posts %}
+    <div class="mk-blog-grid">
+      {% for post in posts %}
+      <a href="/blog/{{ post.slug }}" class="mk-blog-card fade-in">
+        <div class="mk-blog-card-body">
+          <div class="mk-blog-date">{{ post.date }}</div>
+          <h3 class="mk-blog-title">{{ post.title }}</h3>
+          <p class="mk-blog-summary">{{ post.summary }}</p>
+          <span class="mk-feat-link">Devamını oku <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="mk-empty-blog">
+      <i class="fas fa-pen-to-square"></i>
+      <p>Yakında içerikler yayınlanacak.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

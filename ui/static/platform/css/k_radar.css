@@ -1,0 +1,318 @@
+/* K-Radar & KS-Radar Stilleri */
+
+/* ── KS Modül Kartı ──────────────────────────────────────────────────────────── */
+.ks-module-card { color: inherit; }
+.ks-module-card:hover { color: inherit; }
+.ks-module-footer {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* SWOT 2×2 mini grid (hub) */
+.ks-module-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.ks-quad {
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ks-quad-label { font-size: 11px; font-weight: 700; }
+.ks-quad-val   { font-size: 20px; font-weight: 800; }
+.ks-quad-s  { background: #d1fae5; color: #065f46; }
+.ks-quad-w  { background: #fee2e2; color: #991b1b; }
+.ks-quad-o  { background: #dbeafe; color: #1e40af; }
+.ks-quad-t  { background: #fef3c7; color: #92400e; }
+.ks-quad-so { background: #d1fae5; color: #065f46; }
+.ks-quad-st { background: #eef2ff; color: #3730a3; }
+.ks-quad-wo { background: #dbeafe; color: #1e40af; }
+.ks-quad-wt { background: #fef3c7; color: #92400e; }
+
+/* PESTLE mini barlar (hub) */
+.ks-pestle-bars { display: flex; flex-direction: column; gap: 4px; }
+
+/* ── SWOT Matrisi (tam sayfa) ────────────────────────────────────────────────── */
+.ks-swot-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ks-swot-cell {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+.ks-swot-cell-header {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ks-swot-s .ks-swot-cell-header { background: #d1fae5; color: #065f46; }
+.ks-swot-w .ks-swot-cell-header { background: #fee2e2; color: #991b1b; }
+.ks-swot-o .ks-swot-cell-header { background: #dbeafe; color: #1e40af; }
+.ks-swot-t .ks-swot-cell-header { background: #fef3c7; color: #92400e; }
+
+.ks-swot-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 80px;
+  background: white;
+}
+.ks-swot-item {
+  font-size: 13px;
+  color: #374151;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #e2e8f0;
+  line-height: 1.4;
+}
+.ks-swot-empty {
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* ── TOWS Matrisi ────────────────────────────────────────────────────────────── */
+.ks-tows-matrix {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.ks-tows-header-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+}
+.ks-tows-corner {
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.ks-tows-col-header {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+.ks-tows-s-header { background: #d1fae5; color: #065f46; border-right: 1px solid #e2e8f0; }
+.ks-tows-w-header { background: #fee2e2; color: #991b1b; }
+.ks-tows-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  border-top: 1px solid #e2e8f0;
+}
+.ks-tows-row-header {
+  padding: 12px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-align: center;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ks-tows-o-header { background: #dbeafe; color: #1e40af; }
+.ks-tows-t-header { background: #fef3c7; color: #92400e; }
+.ks-tows-cell {
+  padding: 12px 16px;
+  border-right: 1px solid #e2e8f0;
+}
+.ks-tows-cell:last-child { border-right: none; }
+.ks-tows-cell-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.ks-tows-so { background: #f0fdf4; }
+.ks-tows-wo { background: #eff6ff; }
+.ks-tows-st { background: #eef2ff; }
+.ks-tows-wt { background: #fffbeb; }
+
+/* ── KR Bar/Rank (k_rapor'dan taşındı) ──────────────────────────────────────── */
+.kr-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.kr-header-left { display:flex; align-items:center; gap:14px; }
+.kr-header-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; flex-shrink:0; }
+.kr-header-title { font-size:20px; font-weight:700; color:#1e293b; margin:0 0 2px; }
+.kr-header-sub   { font-size:13px; color:#64748b; margin:0; }
+.kr-loading { color:#94a3b8; font-size:13px; text-align:center; padding:16px; }
+.kr-rank-list { display:flex; flex-direction:column; }
+.kr-rank-item { display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid #f1f5f9; }
+.kr-rank-item:last-child { border-bottom:none; }
+.kr-rank-code { flex:0 0 60px; font-size:11px; color:#64748b; }
+.kr-rank-name { flex:1; font-size:12.5px; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kr-rank-score { flex:0 0 60px; text-align:right; font-size:13px; font-weight:700; }
+.kr-rank-score.high { color:#10b981; }
+.kr-rank-score.mid  { color:#f59e0b; }
+.kr-rank-score.low  { color:#ef4444; }
+.kr-bar-row   { display:flex; align-items:center; gap:10px; }
+.kr-bar-label { flex:0 0 160px; font-size:12px; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kr-bar-track { flex:1; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+.kr-bar-fill  { height:100%; border-radius:4px; background:linear-gradient(90deg,#6366f1,#8b5cf6); transition:width .4s ease; }
+.kr-bar-pct   { flex:0 0 38px; font-size:12px; font-weight:600; color:#1e293b; text-align:right; }
+.kr-perf-bar-wrap  { display:flex; align-items:center; gap:6px; }
+.kr-perf-bar-track { flex:1; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden; min-width:60px; }
+.kr-perf-bar-fill  { height:100%; border-radius:3px; background:#10b981; }
+.kr-perf-pct       { font-size:12px; font-weight:600; white-space:nowrap; }
+.mc-page-content-wide { max-width:1200px; margin:0 auto; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ks-swot-matrix { grid-template-columns: 1fr; }
+  .ks-tows-header-row, .ks-tows-row { grid-template-columns: 60px 1fr 1fr; }
+}
+
+/* ── KS Modal CRUD Stilleri ──────────────────────────────────────────────────── */
+.ks-swot-item-edit { justify-content: space-between; }
+.ks-swot-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.ks-item-btn {
+  border: none; background: none; cursor: pointer;
+  padding: 3px 6px; border-radius: 4px; font-size: 11px; color: #94a3b8;
+  transition: all 0.15s;
+}
+.ks-item-edit:hover { color: #6366f1; background: #eef2ff; }
+.ks-item-del:hover  { color: #ef4444; background: #fee2e2; }
+
+.ks-add-row {
+  display: flex; gap: 6px; padding: 8px 12px;
+  background: #f8fafc; border-top: 1px solid #f1f5f9;
+}
+.ks-add-row .mc-form-input { flex: 1; }
+
+/* ── OKR Stilleri ────────────────────────────────────────────────────────────── */
+.okr-section { margin-bottom: 24px; }
+.okr-section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #94a3b8;
+  padding: 0 0 10px; border-bottom: 1px solid #f1f5f9; margin-bottom: 12px;
+}
+
+.okr-obj-card {
+  border: 1px solid #e2e8f0; border-radius: 12px;
+  margin-bottom: 12px; overflow: hidden;
+  background: white;
+}
+.okr-obj-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9; gap: 10px; flex-wrap: wrap;
+}
+.okr-obj-title-wrap { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.okr-obj-icon { color: #6366f1; font-size: 14px; flex-shrink: 0; }
+.okr-obj-title { font-size: 14px; font-weight: 600; color: #1e293b; }
+.okr-obj-owner { font-size: 11px; color: #94a3b8; white-space: nowrap; }
+.okr-obj-desc { font-size: 12px; color: #64748b; padding: 8px 16px; border-bottom: 1px solid #f1f5f9; }
+
+.okr-kr-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 8px; }
+.okr-kr-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; background: #f8fafc; border-radius: 8px;
+  flex-wrap: wrap;
+}
+.okr-kr-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.okr-kr-title > span:first-child { font-size: 13px; color: #374151; font-weight: 500; }
+.okr-kr-metric { font-size: 11px; color: #6366f1; font-weight: 600; }
+.okr-kr-values { font-size: 11px; color: #94a3b8; }
+.okr-kr-bar-wrap { display: flex; align-items: center; gap: 6px; flex: 0 0 160px; }
+.okr-kr-bar-track { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+.okr-kr-bar-fill  { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.okr-kr-pct { font-size: 12px; font-weight: 700; white-space: nowrap; flex: 0 0 36px; text-align: right; }
+.okr-kr-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .okr-kr-bar-wrap { flex: 0 0 100%; }
+}
+
+/* ── BSC Stilleri ────────────────────────────────────────────────────────────── */
+.bsc-tabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  border-bottom: 2px solid #e2e8f0; margin-bottom: 0;
+}
+.bsc-tab {
+  padding: 8px 14px; background: none; border: none;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  font-size: 12px; font-weight: 500; color: #64748b;
+  cursor: pointer; border-radius: 6px 6px 0 0;
+  transition: color .15s, border-color .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.bsc-tab:hover  { color: #6366f1; }
+.bsc-tab.active { color: #6366f1; border-bottom-color: #6366f1; font-weight: 600; }
+.bsc-panel         { display: none; }
+.bsc-panel.active  { display: block; }
+
+/* 4 perspektif grid */
+.bsc-persp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.bsc-persp-card {
+  border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+}
+.bsc-persp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+}
+.bsc-kpi-list { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+.bsc-kpi-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; background: #f8fafc; border-radius: 6px;
+}
+.bsc-kpi-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.bsc-kpi-code { font-size: 10px; color: #6366f1; font-weight: 700; }
+.bsc-kpi-name { font-size: 12px; color: #374151; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bsc-kpi-proc { font-size: 10px; color: #94a3b8; }
+.bsc-kpi-perf { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Strateji Haritası */
+.bsc-map-wrap { display: flex; flex-direction: column; gap: 12px; }
+.bsc-map-strat {
+  border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
+}
+.bsc-map-strat-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+}
+.bsc-map-strat-code  { font-size: 11px; font-weight: 700; color: #6366f1; flex: 0 0 50px; }
+.bsc-map-strat-title { flex: 1; font-size: 13px; font-weight: 600; color: #1e293b; }
+.bsc-map-subs { padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+.bsc-map-sub { padding: 8px 10px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #c7d2fe; }
+.bsc-map-sub-header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.bsc-map-sub-code  { font-size: 10px; font-weight: 700; color: #8b5cf6; flex: 0 0 50px; }
+.bsc-map-sub-title { flex: 1; font-size: 12px; color: #475569; }
+.bsc-map-kpi-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.bsc-map-kpi-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px; font-size: 11px;
+  background: white; border: 1.5px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .bsc-persp-grid { grid-template-columns: 1fr; }
+}

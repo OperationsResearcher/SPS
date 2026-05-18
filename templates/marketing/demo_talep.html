@@ -1,0 +1,99 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-section mk-form-section">
+  <div class="mk-container mk-form-container">
+    <div class="mk-form-header">
+      <h1 class="mk-page-title">Platformu 30 dakikada canlı görün.</h1>
+      <p class="mk-page-sub">Formu doldurun, size en kısa sürede ulaşalım.</p>
+    </div>
+
+    {% if success %}
+    <div class="mk-success-box">
+      <i class="fas fa-circle-check"></i>
+      <h3>Talebiniz alındı!</h3>
+      <p>En geç 1 iş günü içinde size ulaşacağız. Teşekkür ederiz.</p>
+      <a href="/" class="mk-btn mk-btn-primary">Ana Sayfaya Dön</a>
+    </div>
+    {% else %}
+
+    {% if error %}
+    <div class="mk-error-box"><i class="fas fa-circle-exclamation"></i> {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/demo-talep" class="mk-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <!-- Honeypot -->
+      <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+
+      <div class="mk-form-grid">
+        <div class="mk-form-group">
+          <label>Ad Soyad <span class="req">*</span></label>
+          <input type="text" name="ad_soyad" required value="{{ form_data.ad_soyad if form_data else '' }}" placeholder="Adınız Soyadınız">
+        </div>
+        <div class="mk-form-group">
+          <label>Kurum Adı <span class="req">*</span></label>
+          <input type="text" name="kurum" required value="{{ form_data.kurum if form_data else '' }}" placeholder="Kurumunuzun adı">
+        </div>
+        <div class="mk-form-group">
+          <label>Görev / Unvan <span class="req">*</span></label>
+          <input type="text" name="gorev" required value="{{ form_data.gorev if form_data else '' }}" placeholder="Örn: Kalite Müdürü">
+        </div>
+        <div class="mk-form-group">
+          <label>Sektör <span class="req">*</span></label>
+          <select name="sektor" required>
+            <option value="">Seçiniz</option>
+            <option value="Kamu" {% if form_data and form_data.sektor == 'Kamu' %}selected{% endif %}>Kamu</option>
+            <option value="Sağlık" {% if form_data and form_data.sektor == 'Sağlık' %}selected{% endif %}>Sağlık</option>
+            <option value="Eğitim" {% if form_data and form_data.sektor == 'Eğitim' %}selected{% endif %}>Eğitim</option>
+            <option value="Üretim" {% if form_data and form_data.sektor == 'Üretim' %}selected{% endif %}>Üretim</option>
+            <option value="Hizmet / Danışmanlık" {% if form_data and form_data.sektor == 'Hizmet / Danışmanlık' %}selected{% endif %}>Hizmet / Danışmanlık</option>
+            <option value="Diğer" {% if form_data and form_data.sektor == 'Diğer' %}selected{% endif %}>Diğer</option>
+          </select>
+        </div>
+        <div class="mk-form-group">
+          <label>Kurum Çalışan Sayısı <span class="req">*</span></label>
+          <select name="calisan" required>
+            <option value="">Seçiniz</option>
+            <option value="1-50">1 – 50</option>
+            <option value="51-200">51 – 200</option>
+            <option value="201-1000">201 – 1.000</option>
+            <option value="1000+">1.000+</option>
+          </select>
+        </div>
+        <div class="mk-form-group">
+          <label>E-posta <span class="req">*</span></label>
+          <input type="email" name="email" required value="{{ form_data.email if form_data else '' }}" placeholder="ornek@kurum.com">
+        </div>
+        <div class="mk-form-group">
+          <label>Telefon <span class="req">*</span></label>
+          <input type="tel" name="telefon" required value="{{ form_data.telefon if form_data else '' }}" placeholder="+90 5XX XXX XX XX">
+        </div>
+      </div>
+
+      <div class="mk-form-group mk-form-group-full">
+        <label>Görmek istediğiniz modüller</label>
+        <div class="mk-checkbox-grid">
+          {% for m in ['Stratejik Planlama (SP)', 'Süreç Yönetimi', 'KPI & Performans Takibi', 'Proje Yönetimi', 'K-Radar & K-Rapor (Analiz)'] %}
+          <label class="mk-checkbox-label">
+            <input type="checkbox" name="moduller" value="{{ m }}"> {{ m }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="mk-form-group mk-form-group-full">
+        <label>Mesajınız (isteğe bağlı)</label>
+        <textarea name="mesaj" rows="3" placeholder="Özel bir sorunuz veya notunuz varsa buraya yazabilirsiniz.">{{ form_data.mesaj if form_data else '' }}</textarea>
+      </div>
+
+      <button type="submit" class="mk-btn mk-btn-primary mk-btn-full">Demo Talep Gönder <i class="fas fa-arrow-right"></i></button>
+
+      <div class="mk-form-trust">
+        <span><i class="fas fa-lock"></i> Bilgileriniz üçüncü taraflarla paylaşılmaz.</span>
+        <span><i class="fas fa-calendar-check"></i> En geç 1 iş günü içinde size ulaşırız.</span>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

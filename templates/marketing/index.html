@@ -1,0 +1,199 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────────── -->
+<section class="mk-hero">
+  <div class="mk-hero-inner">
+    <div class="mk-hero-text">
+      <h1 class="mk-hero-h1">Strateji Belgede<br>Kalmasın.<br><span class="mk-hero-accent">Süreçte Yaşasın.</span></h1>
+      <p class="mk-hero-sub">
+        Kokpitim; stratejik planınızı alt stratejilere, alt stratejileri süreçlere,
+        süreçleri ölçülebilir performans göstergelerine bağlar.
+        Hepsini tek ekranda, Türkçe.
+      </p>
+      <div class="mk-hero-actions">
+        <a href="/demo-talep" class="mk-btn mk-btn-white">Demo Talep Et</a>
+        <a href="/nasil-calisir" class="mk-btn mk-btn-ghost">Nasıl Çalışır? <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <div class="mk-hero-visual">
+      <div class="mk-dashboard-mock">
+        <div class="mk-mock-topbar">
+          <span class="mk-mock-dot"></span><span class="mk-mock-dot"></span><span class="mk-mock-dot"></span>
+          <span class="mk-mock-title">K-Rapor — Kurumsal Raporlama</span>
+        </div>
+        <div class="mk-mock-body">
+          <div class="mk-mock-stats">
+            <div class="mk-mock-stat"><div class="mk-mock-val" style="color:#6366f1;">63</div><div class="mk-mock-lbl">Süreç</div></div>
+            <div class="mk-mock-stat"><div class="mk-mock-val" style="color:#10b981;">500</div><div class="mk-mock-lbl">PG</div></div>
+            <div class="mk-mock-stat"><div class="mk-mock-val" style="color:#f59e0b;">64</div><div class="mk-mock-lbl">Strateji</div></div>
+            <div class="mk-mock-stat"><div class="mk-mock-val" style="color:#8b5cf6;">5.960</div><div class="mk-mock-lbl">Veri</div></div>
+          </div>
+          <div class="mk-mock-bars">
+            <div class="mk-mock-bar-row"><span>Stratejik Planlama</span><div class="mk-mock-bar"><div style="width:82%;background:#6366f1;"></div></div><span>82%</span></div>
+            <div class="mk-mock-bar-row"><span>Süreç Performansı</span><div class="mk-mock-bar"><div style="width:74%;background:#10b981;"></div></div><span>74%</span></div>
+            <div class="mk-mock-bar-row"><span>Proje Sağlığı</span><div class="mk-mock-bar"><div style="width:68%;background:#f59e0b;"></div></div><span>68%</span></div>
+            <div class="mk-mock-bar-row"><span>Bireysel Hedefler</span><div class="mk-mock-bar"><div style="width:91%;background:#8b5cf6;"></div></div><span>91%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RAKAMLAR ───────────────────────────────────────────────────────────────── -->
+<section class="mk-stats">
+  <div class="mk-stats-inner">
+    <div class="mk-stat-item"><div class="mk-stat-num" data-target="17">0</div><div class="mk-stat-lbl">Aktif Kurum</div></div>
+    <div class="mk-stat-item"><div class="mk-stat-num" data-target="82">0</div><div class="mk-stat-lbl">Kullanıcı</div></div>
+    <div class="mk-stat-item"><div class="mk-stat-num" data-target="64">0</div><div class="mk-stat-lbl">Takip Edilen Süreç</div></div>
+    <div class="mk-stat-item"><div class="mk-stat-num" data-target="4674">0</div><div class="mk-stat-lbl">KPI Verisi</div></div>
+  </div>
+</section>
+
+<!-- ── SORUN BÖLÜMÜ ───────────────────────────────────────────────────────────── -->
+<section class="mk-section mk-problems">
+  <div class="mk-container">
+    <h2 class="mk-section-title fade-in">Yönetim toplantısında bu sorulardan birini sordunuz mu?</h2>
+    <div class="mk-accordion fade-in">
+      <div class="mk-acc-item">
+        <button class="mk-acc-btn"><i class="fas fa-question-circle"></i> "Geçen yılki stratejik planımız nerede?"</button>
+        <div class="mk-acc-body"><p><strong>Kokpitim:</strong> Plan yılı yönetimi ile her dönem arşivde. Geçmiş yıllarla anlık karşılaştırma yapabilirsiniz.</p></div>
+      </div>
+      <div class="mk-acc-item">
+        <button class="mk-acc-btn"><i class="fas fa-question-circle"></i> "Bu KPI'yı kim güncelledi, ne zaman?"</button>
+        <div class="mk-acc-body"><p><strong>Kokpitim:</strong> Tam audit log. Her veri girişinde kimin, ne zaman, ne değiştirdiği kayıt altında.</p></div>
+      </div>
+      <div class="mk-acc-item">
+        <button class="mk-acc-btn"><i class="fas fa-question-circle"></i> "Sürecin performansı nasıl ölçülüyor?"</button>
+        <div class="mk-acc-body"><p><strong>Kokpitim:</strong> Her sürece bağlı süreç karnesi. KPI bazlı otomatik başarı puanı hesaplanır.</p></div>
+      </div>
+      <div class="mk-acc-item">
+        <button class="mk-acc-btn"><i class="fas fa-question-circle"></i> "Bireysel hedefler kurumsal hedefle nasıl bağlantılı?"</button>
+        <div class="mk-acc-body"><p><strong>Kokpitim:</strong> Strateji → Süreç → Bireysel PG zinciri. Her çalışan "neden bu hedef var?" sorusunun yanıtını görür.</p></div>
+      </div>
+      <div class="mk-acc-item">
+        <button class="mk-acc-btn"><i class="fas fa-question-circle"></i> "Aylık faaliyet raporunu hazırlamak neden bu kadar uzun sürüyor?"</button>
+        <div class="mk-acc-body"><p><strong>Kokpitim:</strong> K-Rapor ile tek tıkla. 14 analiz sekmesi, Excel export, otomatik periyodik raporlama.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ZİNCİR BÖLÜMÜ ──────────────────────────────────────────────────────────── -->
+<section class="mk-section mk-chain-section">
+  <div class="mk-container">
+    <h2 class="mk-section-title fade-in">Rakipler bu adımları ayrı modüllerde çözüyor.<br><span style="color:var(--mk-primary);">Kokpitim'de her halka birbiriyle konuşuyor.</span></h2>
+    <div class="mk-chain fade-in">
+      <div class="mk-chain-node">
+        <div class="mk-chain-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="mk-chain-label">Misyon & Vizyon</div>
+      </div>
+      <div class="mk-chain-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="mk-chain-node">
+        <div class="mk-chain-icon"><i class="fas fa-chess-knight"></i></div>
+        <div class="mk-chain-label">Analizler<br><small>SWOT · TOWS · PESTLE</small></div>
+      </div>
+      <div class="mk-chain-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="mk-chain-node">
+        <div class="mk-chain-icon"><i class="fas fa-sitemap"></i></div>
+        <div class="mk-chain-label">Stratejiler</div>
+      </div>
+      <div class="mk-chain-arrow mk-chain-arrow-down"><i class="fas fa-arrow-down"></i></div>
+      <div class="mk-chain-node mk-chain-node-bottom">
+        <div class="mk-chain-icon"><i class="fas fa-user-check"></i></div>
+        <div class="mk-chain-label">Bireysel Hedefler</div>
+      </div>
+      <div class="mk-chain-arrow mk-chain-arrow-left"><i class="fas fa-arrow-left"></i></div>
+      <div class="mk-chain-node mk-chain-node-bottom">
+        <div class="mk-chain-icon"><i class="fas fa-gears"></i></div>
+        <div class="mk-chain-label">Süreçler ↔ KPI / PG</div>
+      </div>
+    </div>
+    <p class="mk-chain-note fade-in">Bir strateji değiştiğinde bağlı süreçler, KPI'lar ve bireysel hedefler otomatik olarak ilişkilendiriliyor.</p>
+  </div>
+</section>
+
+<!-- ── ÖZELLİKLER KARTLARI ───────────────────────────────────────────────────── -->
+<section class="mk-section">
+  <div class="mk-container">
+    <h2 class="mk-section-title fade-in">Kurumunuzun tamamı, tek platformda</h2>
+    <div class="mk-features-grid fade-in">
+      <a href="/ozellikler/stratejik-planlama" class="mk-feat-card">
+        <div class="mk-feat-icon" style="background:#eef2ff;color:#6366f1;"><i class="fas fa-bullseye"></i></div>
+        <h3>Stratejik Planlama</h3>
+        <p>SWOT, TOWS, PESTLE, OKR, BSC. Strateji haritanızı oluşturun, yıl boyunca canlı tutun.</p>
+        <span class="mk-feat-link">Devamını gör <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ozellikler/surec-yonetimi" class="mk-feat-card">
+        <div class="mk-feat-icon" style="background:#d1fae5;color:#059669;"><i class="fas fa-gears"></i></div>
+        <h3>Süreç Yönetimi</h3>
+        <p>Süreç karnesi, KPI bağlantısı, Veri Giriş Sihirbazı, tam audit log. Hiçbir şey kaybolmaz.</p>
+        <span class="mk-feat-link">Devamını gör <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ozellikler/performans-takibi" class="mk-feat-card">
+        <div class="mk-feat-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-chart-line"></i></div>
+        <h3>Performans Takibi</h3>
+        <p>Otomatik başarı puanı, trend analizi, sapma uyarıları, anomali tespiti.</p>
+        <span class="mk-feat-link">Devamını gör <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ozellikler/proje-yonetimi" class="mk-feat-card">
+        <div class="mk-feat-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-folder-open"></i></div>
+        <h3>Proje Yönetimi</h3>
+        <p>Gantt, RAID, EVM, kaynak kapasitesi, sprint takibi. Projeler stratejiden bağımsız değil.</p>
+        <span class="mk-feat-link">Devamını gör <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ozellikler/analiz-merkezi" class="mk-feat-card mk-feat-card-wide">
+        <div class="mk-feat-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-satellite-dish"></i></div>
+        <h3>K-Radar & K-Rapor</h3>
+        <p>Analitik merkez + tek tıkla kurumsal raporlama. 14 analiz sekmesi, Excel export, periyodik otomatik rapor.</p>
+        <span class="mk-feat-link">Devamını gör <i class="fas fa-arrow-right"></i></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── NASIL ÇALIŞIR? (ÖZET) ──────────────────────────────────────────────────── -->
+<section class="mk-section mk-how-section">
+  <div class="mk-container">
+    <h2 class="mk-section-title fade-in">İlk haftadan itibaren çalışıyor</h2>
+    <div class="mk-steps fade-in">
+      <div class="mk-step">
+        <div class="mk-step-num">1</div>
+        <h3>Kurumunuzu tanımlayın <span class="mk-step-when">Gün 1</span></h3>
+        <p>Kullanıcı ve rolleri oluşturun. Misyon, vizyon ve ana stratejilerinizi girin. Süreç ağacınızı kurun.</p>
+      </div>
+      <div class="mk-step-divider"><i class="fas fa-arrow-right"></i></div>
+      <div class="mk-step">
+        <div class="mk-step-num">2</div>
+        <h3>Bağlantıları kurun <span class="mk-step-when">Hafta 1</span></h3>
+        <p>Her süreci ilgili alt stratejiye bağlayın. KPI'ları tanımlayın: hedef değer, periyot, sorumlu.</p>
+      </div>
+      <div class="mk-step-divider"><i class="fas fa-arrow-right"></i></div>
+      <div class="mk-step">
+        <div class="mk-step-num">3</div>
+        <h3>Takip edin, raporlayın <span class="mk-step-when">Hafta 2+</span></h3>
+        <p>VGS ile periyodik veri girişi yapın. Dashboard'dan anlık performansı izleyin. K-Rapor ile raporunuzu dakikada hazırlayın.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="/nasil-calisir" class="mk-btn mk-btn-outline-dark">Detaylı Anlatım <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ── SON CTA ─────────────────────────────────────────────────────────────────── -->
+<section class="mk-cta-section">
+  <div class="mk-container">
+    <h2 class="mk-cta-title">Stratejik planınız bu yıl rafa kalkmayacak.</h2>
+    <p class="mk-cta-sub">30 dakikalık demo ile platformu canlı görün. Kuruluma gerek yok, IT desteği gerekmez.</p>
+    <a href="/demo-talep" class="mk-btn mk-btn-white mk-btn-lg">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+    <div class="mk-cta-trust">
+      <span><i class="fas fa-flag"></i> %100 Türkçe arayüz ve destek</span>
+      <span><i class="fas fa-lock"></i> Veriler Türkiye'deki sunucularda</span>
+      <span><i class="fas fa-chart-bar"></i> Kurumunuza özel izolasyon</span>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

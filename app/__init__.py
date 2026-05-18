@@ -125,6 +125,11 @@ def create_app(config_class=None):
         methods=["GET"],
     )
 
+    # ── 1.5) Marketing (tanıtım sitesi) — app_bp'den önce register edilmeli
+    from micro.modules.marketing import marketing_bp
+    import micro.modules.marketing.routes  # noqa: F401
+    app.register_blueprint(marketing_bp)
+
     # ── 2) Platform (kök "/")
     from platform_core import app_bp
 

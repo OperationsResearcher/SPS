@@ -1,0 +1,20 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-section">
+  <div class="mk-container mk-blog-post-container">
+    <div class="mk-breadcrumb"><a href="/blog">Blog</a> / {{ meta.title }}</div>
+    <h1 class="mk-blog-post-title">{{ meta.title }}</h1>
+    <div class="mk-blog-post-meta">
+      <span><i class="fas fa-calendar"></i> {{ meta.date }}</span>
+      <span><i class="fas fa-user"></i> {{ meta.author | default('Kokpitim') }}</span>
+    </div>
+    <div class="mk-blog-post-body">
+      {{ html_content | safe }}
+    </div>
+    <div class="mk-blog-post-cta">
+      <h3>Kokpitim'i canlı görmek ister misiniz?</h3>
+      <a href="/demo-talep" class="mk-btn mk-btn-primary">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

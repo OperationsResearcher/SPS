@@ -1,0 +1,44 @@
+{% extends "marketing/base.html" %}
+{% block content %}
+<section class="mk-page-hero">
+  <div class="mk-container">
+    <div class="mk-breadcrumb"><a href="/ozellikler">Özellikler</a> / Stratejik Planlama</div>
+    <h1 class="mk-page-title">Stratejik planınız yılda bir değil, her gün güncel</h1>
+    <p class="mk-page-sub">Misyon ve vizyonunuzdan alt stratejilere, SWOT'tan TOWS aksiyonlarına — tüm stratejik yönetim döngüsü tek platformda.</p>
+    <a href="/demo-talep" class="mk-btn mk-btn-primary mk-btn-lg">Demo Talep Et</a>
+  </div>
+</section>
+<section class="mk-section">
+  <div class="mk-container">
+    <div class="mk-feature-list">
+      {% set features = [
+        ("fa-calendar-check", "Plan Yılı Yönetimi", "Yıllık dönemler bazlı planlama. Geçmiş yılların verileriyle anlık karşılaştırma yapın. Kaç stratejik hedef gerçekleşti?"),
+        ("fa-bullseye", "Misyon & Vizyon Yönetimi", "Kurumsal kimliği dijital ortamda tanımlayın. Tüm kullanıcılar görebilir, üst yönetim güncelleyebilir."),
+        ("fa-sitemap", "Strateji Hiyerarşisi", "Ana Strateji → Alt Strateji → Süreç bağlantısı. Her alt strateji hangi süreci besliyor, görsel olarak izlenir."),
+        ("fa-th-large", "SWOT Analizi", "Güçlü/zayıf yönler, fırsatlar, tehditler. Yıllara göre SWOT trendi — kurumsal olgunluk izlenir."),
+        ("fa-arrows-split-up-and-left", "TOWS Matrisi", "SO, ST, WO, WT stratejik aksiyonları. SWOT çıktıları otomatik TOWS'u besler."),
+        ("fa-globe", "PESTLE Analizi", "6 faktörlü dış çevre taraması: Politik, Ekonomik, Sosyal, Teknolojik, Yasal, Çevresel."),
+        ("fa-crosshairs", "OKR Yönetimi", "Çeyreklik hedefler ve anahtar sonuçlar. Hedef gerçekleşme takibi dönem bazlı."),
+        ("fa-table-cells-large", "BSC — Balanced Scorecard", "4 perspektif: Finansal, Müşteri, İç Süreçler, Öğrenme & Gelişim. Her perspektif KPI'larla desteklenir."),
+        ("fa-project-diagram", "Strateji Haritası", "Görsel akış diyagramı — strateji hiyerarşisi tek ekranda."),
+        ("fa-weight-scale", "K-Vektör", "Strateji ağırlık dağılımı ve kota analizi."),
+      ] %}
+      {% for icon, title, desc in features %}
+      <div class="mk-feat-row fade-in">
+        <div class="mk-feat-row-icon"><i class="fas {{ icon }}"></i></div>
+        <div class="mk-feat-row-body">
+          <h3>{{ title }}</h3>
+          <p>{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="mk-cta-section">
+  <div class="mk-container">
+    <h2 class="mk-cta-title">Stratejik planlamanızı dijitalleştirmeye hazır mısınız?</h2>
+    <a href="/demo-talep" class="mk-btn mk-btn-white mk-btn-lg">Demo Talep Et <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+{% endblock %}

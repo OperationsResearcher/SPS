@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ page_description | default('Kokpitim — Stratejik Yönetim Platformu') }}">
+  <meta property="og:title" content="{{ page_title | default('Kokpitim') }}">
+  <meta property="og:description" content="{{ page_description | default('') }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kokpitim.com{{ request.path }}">
+  <title>{{ page_title | default('Kokpitim') }}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- Marketing CSS -->
+  <link rel="stylesheet" href="/static/marketing/css/marketing.css">
+
+  <!-- Google Analytics placeholder -->
+  <!-- GA_MEASUREMENT_ID buraya gelecek -->
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
+<nav class="mk-nav" id="mk-nav">
+  <div class="mk-nav-inner">
+    <!-- Logo -->
+    <a href="/" class="mk-logo">Kokpitim</a>
+
+    <!-- Desktop menü -->
+    <ul class="mk-nav-links" id="mk-nav-links">
+      <li class="mk-dropdown">
+        <button class="mk-nav-link mk-dropdown-btn" aria-expanded="false">
+          Özellikler <i class="fas fa-chevron-down mk-chevron"></i>
+        </button>
+        <div class="mk-dropdown-menu">
+          <a href="/ozellikler/stratejik-planlama"><i class="fas fa-bullseye"></i> Stratejik Planlama</a>
+          <a href="/ozellikler/surec-yonetimi"><i class="fas fa-gears"></i> Süreç Yönetimi</a>
+          <a href="/ozellikler/performans-takibi"><i class="fas fa-chart-line"></i> Performans Takibi</a>
+          <a href="/ozellikler/proje-yonetimi"><i class="fas fa-folder-open"></i> Proje Yönetimi</a>
+          <a href="/ozellikler/analiz-merkezi"><i class="fas fa-satellite-dish"></i> Analiz Merkezi (K-Radar & K-Rapor)</a>
+        </div>
+      </li>
+      <li><a href="/nasil-calisir" class="mk-nav-link">Nasıl Çalışır?</a></li>
+      <li><a href="/blog" class="mk-nav-link">Blog</a></li>
+      <li><a href="/iletisim" class="mk-nav-link">İletişim</a></li>
+    </ul>
+
+    <!-- Sağ butonlar -->
+    <div class="mk-nav-actions">
+      <a href="/login" class="mk-btn mk-btn-outline">Giriş Yap</a>
+      <a href="/demo-talep" class="mk-btn mk-btn-primary">Demo Talep Et</a>
+    </div>
+
+    <!-- Hamburger -->
+    <button class="mk-hamburger" id="mk-hamburger" aria-label="Menüyü aç/kapat">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobil menü -->
+  <div class="mk-mobile-menu" id="mk-mobile-menu">
+    <a href="/ozellikler/stratejik-planlama">Stratejik Planlama</a>
+    <a href="/ozellikler/surec-yonetimi">Süreç Yönetimi</a>
+    <a href="/ozellikler/performans-takibi">Performans Takibi</a>
+    <a href="/ozellikler/proje-yonetimi">Proje Yönetimi</a>
+    <a href="/ozellikler/analiz-merkezi">Analiz Merkezi</a>
+    <a href="/nasil-calisir">Nasıl Çalışır?</a>
+    <a href="/blog">Blog</a>
+    <a href="/iletisim">İletişim</a>
+    <div class="mk-mobile-actions">
+      <a href="/login" class="mk-btn mk-btn-outline">Giriş Yap</a>
+      <a href="/demo-talep" class="mk-btn mk-btn-primary">Demo Talep Et</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── İÇERİK ──────────────────────────────────────────────────────────────── -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer class="mk-footer">
+  <div class="mk-footer-inner">
+    <div class="mk-footer-col">
+      <div class="mk-footer-logo">Kokpitim</div>
+      <p class="mk-footer-tagline">Stratejiyi sahaya taşıyan platform.</p>
+      <a href="mailto:info@kokpitim.com" class="mk-footer-email">info@kokpitim.com</a>
+    </div>
+    <div class="mk-footer-col">
+      <div class="mk-footer-heading">Özellikler</div>
+      <ul>
+        <li><a href="/ozellikler/stratejik-planlama">Stratejik Planlama</a></li>
+        <li><a href="/ozellikler/surec-yonetimi">Süreç Yönetimi</a></li>
+        <li><a href="/ozellikler/performans-takibi">Performans Takibi</a></li>
+        <li><a href="/ozellikler/proje-yonetimi">Proje Yönetimi</a></li>
+        <li><a href="/ozellikler/analiz-merkezi">Analiz Merkezi</a></li>
+      </ul>
+    </div>
+    <div class="mk-footer-col">
+      <div class="mk-footer-heading">Hızlı Erişim</div>
+      <ul>
+        <li><a href="/nasil-calisir">Nasıl Çalışır?</a></li>
+        <li><a href="/demo-talep">Demo Talep Et</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/iletisim">İletişim</a></li>
+        <li><a href="/login">Giriş Yap</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mk-footer-bottom">
+    <span>© 2026 Kokpitim. Tüm hakları saklıdır.</span>
+    <span class="mk-footer-links">
+      <a href="#">KVKK Aydınlatma Metni</a>
+      <a href="#">Gizlilik Politikası</a>
+    </span>
+  </div>
+</footer>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Marketing JS -->
+<script src="/static/marketing/js/marketing.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -60,21 +60,32 @@ def _safe_json(callable_fn):
 
 
 def _ks_swot_summary(tenant_id: int) -> dict:
+    from app.models.process import Process, ProcessKpi, KpiData
     process_count = Process.query.filter_by(tenant_id=tenant_id, is_active=True).count()
-    low_perf = db.session.execute(
-        text(
-            """
-            SELECT COUNT(*) FROM kpi_data kd
-            JOIN process_kpis pk ON pk.id = kd.process_kpi_id
-            JOIN processes p ON p.id = pk.process_id
-            WHERE p.tenant_id=:tid AND p.is_active=true AND kd.is_active=true
-              AND NULLIF(kd.target_value, '') IS NOT NULL
-              AND NULLIF(kd.actual_value, '') IS NOT NULL
-              AND (CAST(kd.actual_value AS FLOAT) / NULLIF(CAST(kd.target_value AS FLOAT),0)) < 0.8
-            """
-        ),
-        {"tid": tenant_id},
-    ).scalar()
+    try:
+        kpis = (
+            ProcessKpi.query.join(Process)
+            .filter(Process.tenant_id == tenant_id, Process.is_active == True, ProcessKpi.is_active == True)
+            .all()
+        )
+        kpi_ids = [k.id for k in kpis]
+        low_perf = 0
+        if kpi_ids:
+            rows = (
+                KpiData.query
+                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.is_active == True)
+                .all()
+            )
+            for r in rows:
+                try:
+                    actual = float(r.actual_value)
+                    target = float(r.target_value)
+                    if target > 0 and (actual / target) < 0.8:
+                        low_perf += 1
+                except (ValueError, TypeError):
+                    pass
+    except Exception:
+        low_perf = 0
     return {"process_count": int(process_count or 0), "low_perf_kpi_rows": int(low_perf or 0)}
 
 
@@ -93,71 +104,6 @@ def k_radar_hub():
 @login_required
 def k_radar_ks():
     return render_template("platform/k_radar/ks.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/swot")
-@login_required
-def k_radar_ks_swot():
-    tenant_id = _required_tenant_id()
-    return render_template(
-        "platform/k_radar/ks_swot.html",
-        can_manage_k_radar=_can_manage_k_radar(),
-        summary=_ks_swot_summary(tenant_id),
-    )
-
-
-@app_bp.route("/k-radar/ks/pestle")
-@login_required
-def k_radar_ks_pestle():
-    return render_template("platform/k_radar/ks_pestle.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/tows")
-@login_required
-def k_radar_ks_tows():
-    return render_template("platform/k_radar/ks_tows.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/gap")
-@login_required
-def k_radar_ks_gap():
-    return render_template("platform/k_radar/ks_gap.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/okr")
-@login_required
-def k_radar_ks_okr():
-    return render_template("platform/k_radar/ks_okr.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/bsc")
-@login_required
-def k_radar_ks_bsc():
-    return render_template("platform/k_radar/ks_bsc.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/efqm")
-@login_required
-def k_radar_ks_efqm():
-    return render_template("platform/k_radar/ks_efqm.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/hoshin")
-@login_required
-def k_radar_ks_hoshin():
-    return render_template("platform/k_radar/ks_hoshin.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/ansoff")
-@login_required
-def k_radar_ks_ansoff():
-    return render_template("platform/k_radar/ks_ansoff.html", can_manage_k_radar=_can_manage_k_radar())
-
-
-@app_bp.route("/k-radar/ks/bcg")
-@login_required
-def k_radar_ks_bcg():
-    return render_template("platform/k_radar/ks_bcg.html", can_manage_k_radar=_can_manage_k_radar())
 
 
 @app_bp.route("/k-radar/kp")
@@ -933,3 +879,64 @@ def k_radar_api_recommendation_history_csv():
             },
         )
     return _safe_json(_build_csv)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# KS-Radar — Gerçek Veri API'leri
+# ══════════════════════════════════════════════════════════════════════════════
+
+from services.k_radar_service import (
+    get_ks_swot_real, get_ks_tows_real, get_ks_pestel_real,
+    get_ks_porter_real, get_ks_gap_real, get_ks_strateji_real,
+)
+
+
+@app_bp.route("/k-radar/api/ks/swot-real")
+@login_required
+def k_radar_api_ks_swot_real():
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_swot_real(_required_tenant_id(), year)}))
+
+
+@app_bp.route("/k-radar/api/ks/tows-real")
+@login_required
+def k_radar_api_ks_tows_real():
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_tows_real(_required_tenant_id(), year)}))
+
+
+@app_bp.route("/k-radar/api/ks/pestel-real")
+@login_required
+def k_radar_api_ks_pestel_real():
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_pestel_real(_required_tenant_id(), year)}))
+
+
+@app_bp.route("/k-radar/api/ks/porter-real")
+@login_required
+def k_radar_api_ks_porter_real():
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_porter_real(_required_tenant_id(), year)}))
+
+
+@app_bp.route("/k-radar/api/ks/gap-real")
+@login_required
+def k_radar_api_ks_gap_real():
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_gap_real(_required_tenant_id(), year)}))
+
+
+@app_bp.route("/k-radar/api/ks/strateji-real")
+@login_required
+def k_radar_api_ks_strateji_real():
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_strateji_real(_required_tenant_id())}))
