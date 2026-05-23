@@ -53,6 +53,41 @@ def filter_by_plan_year(
     return query.filter(col == plan_year_id)
 
 
+def filter_by_plan_year_scoped(
+    query: Query,
+    model: Any,
+    plan_year_id: Optional[int],
+    tenant_id: int,
+    include_null: bool = True,
+) -> Query:
+    """plan_year + tenant_id güvenlik kombinasyonu (Sprint 53 — Ö2).
+
+    Bu varyant, NULL legacy verileri SADECE aynı tenant'a aitse dahil eder.
+    Cross-tenant veri sızıntısı koruması için kritik.
+
+    SQL eşdeğeri:
+        WHERE (plan_year_id = X) OR (plan_year_id IS NULL AND tenant_id = T)
+    """
+    from sqlalchemy import and_, or_
+
+    if plan_year_id is None:
+        return query
+
+    col = getattr(model, "plan_year_id", None)
+    tenant_col = getattr(model, "tenant_id", None)
+    if col is None:
+        raise AttributeError(f"{model.__name__} modelinde plan_year_id yok")
+
+    if include_null and tenant_col is not None:
+        return query.filter(
+            or_(col == plan_year_id, and_(col.is_(None), tenant_col == tenant_id))
+        )
+    if include_null:
+        # Tenant_id yoksa basit OR
+        return query.filter(or_(col == plan_year_id, col.is_(None)))
+    return query.filter(col == plan_year_id)
+
+
 def get_active_plan_year_id(user) -> Optional[int]:
     """Kullanıcı için aktif plan year id'sini döndürür. None ise legacy mode (tenant'ta plan year yok).
 

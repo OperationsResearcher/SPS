@@ -3,6 +3,36 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-117 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Stratejik planlama geliştirme planı S53-S57 — 5 sprint somut çıktı (Ö1-Ö5, Ö8)
+**Modül:** app/services/, app/models/, micro/modules/sp/, ui/templates/platform/sp/, migrations/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/utils/plan_year_filter.py` → `filter_by_plan_year_scoped()` helper (S53/Ö2)
+- `micro/modules/k_rapor/routes.py` → helper kullanımı + syntax fix (S53)
+- `micro/modules/proje/routes_project_crud.py` → plan_year_id form alanı (S53/Ö3)
+- `app/services/quarterly_review_service.py` → yeni; çeyreklik review aggregator (S54/Ö1)
+- `micro/modules/sp/routes_donemler.py` → `/sp/ceyreklik-review` + JSON API (S54/Ö1)
+- `ui/templates/platform/sp/ceyreklik_review.html` → yeni dashboard (S54/Ö1)
+- `app/models/initiative.py` + migration `a4b5c6d7e008` → Initiative + Milestone (S55/Ö4)
+- `micro/modules/sp/routes_initiative.py` + `initiatives.html` → CRUD UI (S55/Ö4)
+- `app/models/plan_year.py` + migration `b5c6d7e8f009` → scenario_of_id + scenario_label (S56/Ö5)
+- `app/services/plan_year_service.py` → `clone_full_plan_year(as_scenario_label=...)` (S56)
+- `micro/modules/sp/routes_scenario.py` + `scenarios.html` → senaryo dalları UI (S56/Ö5)
+- `app/models/replan_trigger.py` + migration `c6d7e8f9g010` → ReplanTrigger + Event (S57/Ö8)
+- `app/services/replan_trigger_service.py` → değerlendirme motoru (S57/Ö8)
+- `micro/modules/sp/routes_replan_trigger.py` + `replan_triggers.html` → trigger UI (S57/Ö8)
+
+### Yapılan İşlem
+docs/SP-DONEM-ANALIZ-2026.md'deki 12 öneriden 5 tanesi (Ö1, Ö2, Ö3, Ö4, Ö5, Ö8) somut olarak uygulandı: Çeyreklik review wizard, plan_year NULL legacy uyum helper'ı, Project planYear form alanı, Multi-Year Initiative tabloları/CRUD, PlanYear senaryo dallanma (partial unique index), trigger-based otomatik replan motoru. 3 yeni Alembic migration uygulandı (a4-c6 zinciri f6g7h8i9j013 üzerine).
+
+### Notlar
+VM deploy ertelendi (kullanıcı önceki direktif). Trigger eval cron entegrasyonu (APScheduler) sonraki sprintte yapılabilir — şu an manuel "Şimdi Değerlendir" butonu var. Senaryo karşılaştırma UI'sı henüz yok; mevcut donem-karsilastir endpoint'i scenario_of_id'yi de göstermek için genişletilebilir.
+
+---
+
 ## TASK-116 | 2026-05-23 | ✅ Tamamlandı (sadece yerel)
 
 **Görev:** 9 Sprint paralel uygulaması — audit + roadmap + 6 sprint somut çıktı

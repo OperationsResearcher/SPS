@@ -1,0 +1,175 @@
+{% extends "platform/base.html" %}
+{% block title %}Replan Trigger'lar — Kokpitim{% endblock %}
+{% block page_title %}Otomatik Replan Tetikleyicileri{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;"
+     id="rt-root"
+     data-list-url="{{ url_for('app_bp.sp_api_triggers_list') }}"
+     data-create-url="{{ url_for('app_bp.sp_api_triggers_create') }}"
+     data-evaluate-url="{{ url_for('app_bp.sp_api_triggers_evaluate') }}"
+     data-events-url="{{ url_for('app_bp.sp_api_triggers_events') }}">
+
+  <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+        <i class="fas fa-bolt"></i> Replan Trigger'ları
+      </h2>
+      <p style="font-size:13px; color:#64748b; margin:0;">
+        Belirli koşullar gerçekleştiğinde otomatik strateji yeniden değerlendirme tetikleyicileri.
+      </p>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="mc-btn mc-btn-secondary" id="rt-eval">
+        <i class="fas fa-play"></i> Şimdi Değerlendir
+      </button>
+      <button class="mc-btn mc-btn-primary" id="rt-new">
+        <i class="fas fa-plus"></i> Yeni Trigger
+      </button>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div>
+      <h3 style="font-size:14px; color:#475569; margin:0 0 8px;">Aktif Trigger'lar</h3>
+      <div id="rt-list"></div>
+    </div>
+    <div>
+      <h3 style="font-size:14px; color:#475569; margin:0 0 8px;">Son Ateşlemeler</h3>
+      <div id="rt-events"></div>
+    </div>
+  </div>
+
+  <div class="mc-modal-overlay" id="rt-modal" style="display:none;">
+    <div class="mc-modal-lg">
+      <div class="mc-modal-header">
+        <h3>Yeni Trigger</h3>
+        <button class="mc-modal-close" type="button" id="rt-modal-close">✕</button>
+      </div>
+      <div class="mc-modal-body">
+        <form id="rt-form" style="display:grid; gap:12px;">
+          <label>Ad<input class="mc-input" name="name" required></label>
+          <label>Açıklama<textarea class="mc-input" name="description" rows="2"></textarea></label>
+          <label>Trigger Tipi
+            <select class="mc-input" name="trigger_type">
+              <option value="kpi_below_target">KPI Hedef Altında</option>
+              <option value="overdue_activity_pct">Gecikmiş Faaliyet Oranı</option>
+              <option value="risk_score">Risk Skoru</option>
+              <option value="anomaly_high">Anomali (Yüksek)</option>
+            </select>
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <label>Target KPI ID<input class="mc-input" type="number" name="target_kpi_id"></label>
+            <label>Operatör
+              <select class="mc-input" name="threshold_operator">
+                <option value="<">&lt;</option>
+                <option value="<=">&lt;=</option>
+                <option value=">">&gt;</option>
+                <option value=">=">&gt;=</option>
+              </select>
+            </label>
+            <label>Eşik<input class="mc-input" type="number" step="0.01" name="threshold_value"></label>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <label>Ardışık Dönem<input class="mc-input" type="number" name="consecutive_periods" value="1"></label>
+            <label>Aksiyon
+              <select class="mc-input" name="action">
+                <option value="notify">Bildirim</option>
+                <option value="suggest_pivot">Pivot Öner</option>
+                <option value="create_review">Review Aç</option>
+              </select>
+            </label>
+            <label>Önem
+              <select class="mc-input" name="severity">
+                <option value="low">Düşük</option>
+                <option value="medium" selected>Orta</option>
+                <option value="high">Yüksek</option>
+                <option value="critical">Kritik</option>
+              </select>
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="mc-modal-footer">
+        <button class="mc-btn mc-btn-secondary" id="rt-cancel">İptal</button>
+        <button class="mc-btn mc-btn-primary" id="rt-save">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const r = document.getElementById('rt-root');
+  const modal = document.getElementById('rt-modal');
+
+  function sevColor(s) {
+    return {low:'#64748b', medium:'#0ea5e9', high:'#f59e0b', critical:'#dc2626'}[s] || '#64748b';
+  }
+
+  async function load() {
+    const [j1, j2] = await Promise.all([
+      fetch(r.dataset.listUrl).then(r => r.json()),
+      fetch(r.dataset.eventsUrl).then(r => r.json()),
+    ]);
+    const list = document.getElementById('rt-list');
+    if (!j1.items || !j1.items.length) {
+      list.innerHTML = '<div class="mc-card" style="padding:20px;color:#64748b;">Trigger yok.</div>';
+    } else {
+      list.innerHTML = j1.items.filter(i => i.is_active).map(i => `
+        <div class="mc-card" style="padding:12px;margin-bottom:8px;border-left:3px solid ${sevColor(i.severity)};">
+          <div style="font-weight:600;color:#1e293b;">${i.name}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:4px;">
+            ${i.trigger_type} • ${i.threshold_operator || ''} ${i.threshold_value ?? ''} • ${i.consecutive_periods} dönem
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
+            ${i.fire_count} kez ateşlendi ${i.last_fired_at ? '• son: ' + new Date(i.last_fired_at).toLocaleString('tr-TR') : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+    const ev = document.getElementById('rt-events');
+    if (!j2.items || !j2.items.length) {
+      ev.innerHTML = '<div class="mc-card" style="padding:20px;color:#64748b;">Henüz olay yok.</div>';
+    } else {
+      ev.innerHTML = j2.items.map(e => `
+        <div class="mc-card" style="padding:12px;margin-bottom:8px;">
+          <div style="font-size:12px;color:#64748b;">${new Date(e.fired_at).toLocaleString('tr-TR')}</div>
+          <div style="font-size:13px;color:#1e293b;">Trigger #${e.trigger_id} → ${e.action_taken || '—'}</div>
+          ${e.payload ? `<pre style="font-size:11px;background:#f8fafc;padding:6px;margin-top:4px;border-radius:4px;">${e.payload}</pre>` : ''}
+        </div>
+      `).join('');
+    }
+  }
+
+  document.getElementById('rt-new').onclick = () => modal.style.display = 'flex';
+  document.getElementById('rt-modal-close').onclick = () => modal.style.display = 'none';
+  document.getElementById('rt-cancel').onclick = () => modal.style.display = 'none';
+
+  document.getElementById('rt-save').onclick = async () => {
+    const f = document.getElementById('rt-form');
+    const d = {};
+    new FormData(f).forEach((v, k) => { if (v !== '') d[k] = v; });
+    const res = await fetch(r.dataset.createUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(d),
+    });
+    const j = await res.json();
+    if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+    modal.style.display = 'none';
+    f.reset();
+    load();
+  };
+
+  document.getElementById('rt-eval').onclick = async () => {
+    const res = await fetch(r.dataset.evaluateUrl, {method: 'POST'});
+    const j = await res.json();
+    alert(j.fired_count + ' trigger ateşlendi');
+    load();
+  };
+
+  load();
+})();
+</script>
+{% endblock %}

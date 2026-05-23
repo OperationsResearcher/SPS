@@ -998,12 +998,13 @@ def k_rapor_api_k_vektor():
                 .filter(
                     Strategy.is_active == True,
                     SubStrategy.is_active == True,
-                    or_(
-                        Strategy.plan_year_id == plan_year.id,
-                        and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tid),
-                    ),
-                ).all()
+                )
             )
+            # Sprint 53: helper kullanımı (Ö2) — tenant-aware NULL legacy uyum
+            from app.utils.plan_year_filter import filter_by_plan_year_scoped
+            sub_list = filter_by_plan_year_scoped(
+                sub_list, Strategy, plan_year.id, tid, include_null=True
+            ).all()
         else:
             sub_list = (
                 SubStrategy.query.join(Strategy)

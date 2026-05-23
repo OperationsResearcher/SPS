@@ -56,5 +56,20 @@ from app.models.plan_year import (  # noqa: E402
     IndividualKpiYearConfig,
 )
 from app.models.tenant_year import TenantYearIdentity  # noqa: E402
+from app.models.initiative import Initiative, InitiativeMilestone  # noqa: E402
+from app.models.replan_trigger import ReplanTrigger, ReplanTriggerEvent  # noqa: E402
 from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis  # noqa: E402
 from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity  # noqa: E402
+from app.models.portfolio_project import (  # noqa: E402
+    Project,
+    Task,
+    RaidItem,
+    TaskImpact,
+    TaskComment,
+    ProjectFile,
+    project_members,
+    project_observers,
+    project_leaders,
+    project_related_processes,
+    task_predecessors,
+)

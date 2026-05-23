@@ -16,7 +16,9 @@ from sqlalchemy.orm import joinedload
 from platform_core import app_bp
 from app.models.core import User as CoreUser
 from app.models.process import Process as AppProcess
-from models import Project, Surec, Task, db
+from extensions import db
+from app.models.process import Process as Surec
+from app.models.portfolio_project import Project, Task
 from utils.task_status import normalize_task_status
 
 from app_platform.modules.proje.display import build_user_labels_map, collect_project_user_ids, user_display
@@ -175,6 +177,19 @@ def project_new():
         "notify_observers": request.form.get("notification_notify_observers") is not None,
     }
 
+    # Sprint 53 (Ö3): plan_year_id form alanından al veya aktif yıla düşür
+    plan_year_id_raw = request.form.get("plan_year_id")
+    plan_year_id = None
+    if plan_year_id_raw and plan_year_id_raw.isdigit():
+        plan_year_id = int(plan_year_id_raw)
+    else:
+        try:
+            from app.services.plan_year_service import get_active_plan_year_for_user
+            py = get_active_plan_year_for_user(current_user)
+            plan_year_id = py.id if py else None
+        except Exception:
+            pass
+
     proj = Project(
         name=name,
         description=description,
@@ -183,6 +198,7 @@ def project_new():
         priority=priority,
         kurum_id=kid,
         manager_id=leader_ids[0],
+        plan_year_id=plan_year_id,
     )
     try:
         proj.notification_settings = json.dumps(notification_settings, ensure_ascii=False)
@@ -378,11 +394,13 @@ def project_delete(project_id: int):
         flash("Proje silme yetkiniz yok.", "danger")
         return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
+    from datetime import datetime, timezone
     kid = kurum_id()
     proj = Project.query.filter_by(id=project_id, kurum_id=kid).first_or_404()
     name = proj.name
-    proj.related_processes.clear()
-    db.session.delete(proj)
+    proj.is_active = False
+    proj.deleted_at = datetime.now(timezone.utc)
+    proj.deleted_by = current_user.id
     db.session.commit()
     flash(f'"{name}" silindi.', "success")
     return redirect(url_for("app_bp.project_list"))

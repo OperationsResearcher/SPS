@@ -29,6 +29,14 @@ class PlanYear(db.Model):
     )
     closed_at = db.Column(db.DateTime, nullable=True)
 
+    # Sprint 56 (Ö5): Scenario branching
+    scenario_of_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
+    )
+    scenario_label = db.Column(db.String(80), nullable=True)
+    # "baseline" / "optimistic" / "pessimistic" / custom
+
     tenant = db.relationship(
         "Tenant", backref=db.backref("plan_years", lazy="dynamic")
     )
@@ -38,8 +46,10 @@ class PlanYear(db.Model):
     )
 
     __table_args__ = (
+        # Sprint 56: scenarios bypass tenant+year uniqueness via partial index (migration)
         db.UniqueConstraint("tenant_id", "year", name="uq_plan_year_tenant_year"),
         db.Index("idx_plan_year_tenant_status", "tenant_id", "status"),
+        db.Index("idx_plan_year_scenario_of", "scenario_of_id"),
     )
 
     def __repr__(self):

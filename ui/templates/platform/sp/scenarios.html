@@ -1,0 +1,129 @@
+{% extends "platform/base.html" %}
+{% block title %}Senaryolar — Kokpitim{% endblock %}
+{% block page_title %}Senaryo Dalları (What-If){% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;"
+     id="sc-root"
+     data-list-url="{{ url_for('app_bp.sp_api_scenarios_list') }}"
+     data-create-url="{{ url_for('app_bp.sp_api_scenario_create') }}">
+
+  <div class="mc-page-header" style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+      <i class="fas fa-code-branch"></i> Senaryo Dalları
+    </h2>
+    <p style="font-size:13px; color:#64748b; margin:0;">
+      Bir plan yılından "iyimser / kötümser / baseline" what-if senaryoları üret. Tüm strateji/KPI/süreç kopyalanır; bağımsız düzenlenebilir.
+    </p>
+  </div>
+
+  <div class="mc-card" style="padding:16px; margin-bottom:20px;">
+    <form id="sc-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+      <div>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Kaynak Plan Yılı</label>
+        <select id="sc-base" class="mc-input" style="min-width:280px;"></select>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Senaryo Etiketi</label>
+        <select id="sc-label" class="mc-input" style="width:180px;">
+          <option value="optimistic">İyimser</option>
+          <option value="pessimistic">Kötümser</option>
+          <option value="baseline">Baseline</option>
+        </select>
+      </div>
+      <button type="submit" class="mc-btn mc-btn-primary">
+        <i class="fas fa-plus"></i> Senaryo Oluştur
+      </button>
+    </form>
+  </div>
+
+  <div id="sc-list"></div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById('sc-root');
+  const listUrl = root.dataset.listUrl;
+  const createUrl = root.dataset.createUrl;
+
+  function labelTr(l) {
+    return {optimistic:'İyimser', pessimistic:'Kötümser', baseline:'Baseline'}[l] || l;
+  }
+
+  async function load() {
+    const res = await fetch(listUrl);
+    const j = await res.json();
+    const items = j.items || [];
+
+    // Base selector
+    const baseSel = document.getElementById('sc-base');
+    baseSel.innerHTML = items.filter(i => !i.is_scenario).map(i =>
+      `<option value="${i.id}">${i.year} — ${i.name || ''} (${i.status})</option>`
+    ).join('');
+
+    // Grup: parent → scenarios
+    const byParent = {};
+    items.forEach(i => {
+      if (i.is_scenario) {
+        (byParent[i.scenario_of_id] = byParent[i.scenario_of_id] || []).push(i);
+      }
+    });
+
+    const ul = document.getElementById('sc-list');
+    const parents = items.filter(i => !i.is_scenario);
+    if (parents.length === 0) {
+      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Plan yılı yok.</div>';
+      return;
+    }
+    ul.innerHTML = parents.map(p => {
+      const scenarios = byParent[p.id] || [];
+      return `
+        <div class="mc-card" style="padding:16px;margin-bottom:12px;">
+          <div style="font-size:15px;font-weight:600;color:#1e293b;">
+            <i class="fas fa-calendar-alt"></i> ${p.year} — ${p.name || ''}
+            <span style="font-size:11px;color:#64748b;font-weight:400;">(${p.status})</span>
+          </div>
+          ${scenarios.length === 0 ?
+            '<div style="color:#94a3b8;font-size:12px;margin-top:8px;">— Senaryo yok</div>' :
+            '<div style="margin-top:12px;padding-left:24px;border-left:2px solid #e2e8f0;">' +
+            scenarios.map(s => `
+              <div style="padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${labelTr(s.scenario_label)}</span>
+                  <span style="margin-left:8px;color:#475569;font-size:13px;">${s.name}</span>
+                </div>
+                <a href="/sp/donemler" style="font-size:12px;color:#0ea5e9;">Düzenle →</a>
+              </div>
+            `).join('') + '</div>'
+          }
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('sc-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const base_plan_year_id = parseInt(document.getElementById('sc-base').value);
+    const scenario_label = document.getElementById('sc-label').value;
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Oluşturuluyor...';
+    try {
+      const res = await fetch(createUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({base_plan_year_id, scenario_label}),
+      });
+      const j = await res.json();
+      if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+      load();
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-plus"></i> Senaryo Oluştur';
+    }
+  });
+
+  load();
+})();
+</script>
+{% endblock %}
