@@ -1,0 +1,248 @@
+{% extends "platform/base.html" %}
+{% block title %}Risk Yönetimi{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-shield-exclamation"></i> Risk Yönetimi</h2>
+            <p class="text-muted mb-0">RAID + K-Radar Heatmap birleşik görünüm</p>
+        </div>
+        <button class="btn btn-primary" onclick="openRiskModal()">
+            <i class="bi bi-plus-circle"></i> Risk Ekle
+        </button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted">Risk Matrisi (5×5)</h6>
+                    <table class="table table-bordered table-sm risk-matrix mt-2">
+                        <thead><tr><th></th>
+                            {% for i in range(1,6) %}<th class="text-center">{{ i }}</th>{% endfor %}
+                        </tr></thead>
+                        <tbody id="matrix-body"></tbody>
+                    </table>
+                    <small class="text-muted">Satır: Olasılık · Sütun: Etki</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex gap-2">
+                    <select id="filter-severity" class="form-select form-select-sm" onchange="loadRisks()">
+                        <option value="">Tüm severity</option>
+                        <option value="critical">Kritik</option>
+                        <option value="high">Yüksek</option>
+                        <option value="medium">Orta</option>
+                        <option value="low">Düşük</option>
+                    </select>
+                    <select id="filter-status" class="form-select form-select-sm" onchange="loadRisks()">
+                        <option value="">Tüm durum</option>
+                        <option value="Open">Açık</option>
+                        <option value="Mitigating">Azaltılıyor</option>
+                        <option value="Closed">Kapalı</option>
+                    </select>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light"><tr>
+                            <th>Risk</th><th class="text-center">Olas.</th><th class="text-center">Etki</th>
+                            <th class="text-center">RPN</th><th class="text-center">Severity</th>
+                            <th>Durum</th><th>Kaynak</th><th></th>
+                        </tr></thead>
+                        <tbody id="risk-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Modal -->
+<div class="mc-modal-overlay" id="modal-risk">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3 id="risk-modal-title">Yeni Risk</h3>
+            <button class="mc-modal-close" onclick="closeRiskModal()">✕</button>
+        </div>
+        <div class="mc-modal-body">
+            <input type="hidden" id="risk-id" />
+            <div class="mb-3">
+                <label class="form-label">Risk Başlığı <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="risk-title" maxlength="255" />
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Olasılık (1-5)</label>
+                    <input type="number" min="1" max="5" class="form-control" id="risk-probability" value="3" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Etki (1-5)</label>
+                    <input type="number" min="1" max="5" class="form-control" id="risk-impact" value="3" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Durum</label>
+                    <select class="form-select" id="risk-status">
+                        <option value="Open">Açık</option>
+                        <option value="Mitigating">Azaltılıyor</option>
+                        <option value="Closed">Kapalı</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Kaynak</label>
+                    <select class="form-select" id="risk-source">
+                        <option value="manual">Manuel</option>
+                        <option value="process">Süreç</option>
+                        <option value="project">Proje</option>
+                        <option value="pestel">PESTEL</option>
+                        <option value="swot">SWOT</option>
+                        <option value="porter">Porter</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="mc-modal-footer">
+            <button class="mc-btn mc-btn-secondary" onclick="closeRiskModal()">İptal</button>
+            <button class="mc-btn mc-btn-primary" onclick="saveRisk()">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const SEVERITY_CLASS = {
+    critical: "danger", high: "warning", medium: "info", low: "secondary"
+};
+
+async function loadRisks() {
+    const sev = document.getElementById("filter-severity").value;
+    const st = document.getElementById("filter-status").value;
+    const params = new URLSearchParams();
+    if (sev) params.set("severity", sev);
+    if (st) params.set("status", st);
+    const resp = await fetch("/k-radar/api/risk/list?" + params);
+    const data = await resp.json();
+    const tbody = document.getElementById("risk-tbody");
+    tbody.innerHTML = "";
+    (data.data || []).forEach(r => {
+        const cls = SEVERITY_CLASS[r.severity] || "secondary";
+        tbody.innerHTML += `
+            <tr>
+                <td>${escapeHtml(r.title)}</td>
+                <td class="text-center">${r.probability}</td>
+                <td class="text-center">${r.impact}</td>
+                <td class="text-center"><strong>${r.rpn}</strong></td>
+                <td class="text-center"><span class="badge bg-${cls}">${r.severity}</span></td>
+                <td>${escapeHtml(r.status || "—")}</td>
+                <td><small class="text-muted">${escapeHtml(r.source_type || "—")}</small></td>
+                <td>
+                    <button class="btn btn-sm btn-link" onclick="editRisk(${r.id})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-link text-danger" onclick="deleteRisk(${r.id})"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>`;
+    });
+}
+
+async function loadMatrix() {
+    const resp = await fetch("/k-radar/api/risk/matrix");
+    const data = await resp.json();
+    const body = document.getElementById("matrix-body");
+    body.innerHTML = "";
+    for (let p = 5; p >= 1; p--) {
+        let row = `<tr><th class="text-center">${p}</th>`;
+        for (let i = 1; i <= 5; i++) {
+            const count = data.matrix[p - 1][i - 1];
+            const rpn = p * i;
+            const bg = rpn >= 16 ? "#dc3545" : rpn >= 10 ? "#ffc107" : rpn >= 5 ? "#0dcaf0" : "#e9ecef";
+            const fg = rpn >= 16 ? "white" : "inherit";
+            row += `<td style="background:${bg};color:${fg};text-align:center;font-weight:bold;">${count || ""}</td>`;
+        }
+        row += "</tr>";
+        body.innerHTML += row;
+    }
+}
+
+function openRiskModal() {
+    document.getElementById("risk-id").value = "";
+    document.getElementById("risk-title").value = "";
+    document.getElementById("risk-probability").value = "3";
+    document.getElementById("risk-impact").value = "3";
+    document.getElementById("risk-status").value = "Open";
+    document.getElementById("risk-source").value = "manual";
+    document.getElementById("risk-modal-title").textContent = "Yeni Risk";
+    document.getElementById("modal-risk").classList.add("active");
+}
+
+function closeRiskModal() {
+    document.getElementById("modal-risk").classList.remove("active");
+}
+
+async function editRisk(id) {
+    const resp = await fetch("/k-radar/api/risk/list");
+    const data = await resp.json();
+    const r = (data.data || []).find(x => x.id === id);
+    if (!r) return;
+    document.getElementById("risk-id").value = id;
+    document.getElementById("risk-title").value = r.title;
+    document.getElementById("risk-probability").value = r.probability;
+    document.getElementById("risk-impact").value = r.impact;
+    document.getElementById("risk-status").value = r.status || "Open";
+    document.getElementById("risk-modal-title").textContent = "Risk Düzenle";
+    document.getElementById("modal-risk").classList.add("active");
+}
+
+async function saveRisk() {
+    const id = document.getElementById("risk-id").value;
+    const body = {
+        title: document.getElementById("risk-title").value.trim(),
+        probability: parseInt(document.getElementById("risk-probability").value),
+        impact: parseInt(document.getElementById("risk-impact").value),
+        status: document.getElementById("risk-status").value,
+        source_type: document.getElementById("risk-source").value,
+    };
+    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    const url = id ? `/k-radar/api/risk/${id}` : "/k-radar/api/risk/add";
+    const resp = await fetch(url, {
+        method: id ? "PUT" : "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (!data.success) { Swal.fire({ icon: "error", text: data.message }); return; }
+    closeRiskModal();
+    await Promise.all([loadRisks(), loadMatrix()]);
+}
+
+async function deleteRisk(id) {
+    const r = await Swal.fire({ icon: "warning", title: "Sil?", showCancelButton: true });
+    if (!r.isConfirmed) return;
+    await fetch(`/k-radar/api/risk/${id}`, { method: "DELETE" });
+    await Promise.all([loadRisks(), loadMatrix()]);
+}
+
+function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadRisks();
+    loadMatrix();
+});
+</script>
+
+<style>
+.risk-matrix th, .risk-matrix td { width: 16%; padding: 0.5rem !important; }
+.mc-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center; }
+.mc-modal-overlay.active { display: flex; }
+.mc-modal-lg { background: white; border-radius: 8px; width: 90%; max-width: 700px; }
+.mc-modal-header, .mc-modal-footer { padding: 1rem; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+.mc-modal-footer { border-top: 1px solid #dee2e6; border-bottom: none; justify-content: flex-end; gap: 0.5rem; }
+.mc-modal-body { padding: 1rem; }
+.mc-modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+.mc-btn { padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; border: none; }
+.mc-btn-primary { background: #0d6efd; color: white; }
+.mc-btn-secondary { background: #6c757d; color: white; }
+</style>
+{% endblock %}

@@ -253,6 +253,18 @@ def sp_api_pestle_save():
 
 # ── OKR API'leri ──────────────────────────────────────────────────────────────
 
+@app_bp.route("/sp/api/okr/sync-kpis", methods=["POST"])
+@login_required
+def sp_api_okr_sync_kpis():
+    """Sprint 33: Tüm bağlı KR'leri KPI'larından senkronize et."""
+    from app.services.okr_kpi_sync import sync_all_krs_for_tenant
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    py = get_active_plan_year_for_user(current_user)
+    py_id = py.id if py else None
+    result = sync_all_krs_for_tenant(current_user.tenant_id, plan_year_id=py_id)
+    return jsonify(result)
+
+
 # Sprint 13 — OKR UI sayfası
 @app_bp.route("/sp/okr")
 @login_required

@@ -1,0 +1,115 @@
+# English translations for Kokpitim
+# Sprint 31: i18n iskelet — temel UI string'leri
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Kokpitim 1.0.7\n"
+"POT-Creation-Date: 2026-05-23 12:00+0300\n"
+"PO-Revision-Date: 2026-05-23 12:00+0300\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Genel
+msgid "Hoş geldiniz"
+msgstr "Welcome"
+
+msgid "Giriş"
+msgstr "Login"
+
+msgid "Çıkış"
+msgstr "Logout"
+
+msgid "Profil"
+msgstr "Profile"
+
+msgid "Ayarlar"
+msgstr "Settings"
+
+msgid "Kaydet"
+msgstr "Save"
+
+msgid "İptal"
+msgstr "Cancel"
+
+msgid "Sil"
+msgstr "Delete"
+
+msgid "Düzenle"
+msgstr "Edit"
+
+msgid "Ekle"
+msgstr "Add"
+
+msgid "Ara"
+msgstr "Search"
+
+# Modüller
+msgid "Stratejik Planlama"
+msgstr "Strategic Planning"
+
+msgid "Süreçler"
+msgstr "Processes"
+
+msgid "Performans Göstergeleri"
+msgstr "Performance Indicators"
+
+msgid "Faaliyetler"
+msgstr "Activities"
+
+msgid "Projeler"
+msgstr "Projects"
+
+msgid "Bireysel Karne"
+msgstr "Individual Scorecard"
+
+msgid "Kurum Paneli"
+msgstr "Organization Panel"
+
+msgid "Raporlar"
+msgstr "Reports"
+
+# Mesajlar
+msgid "Profil başarıyla güncellendi."
+msgstr "Profile updated successfully."
+
+msgid "Giriş başarılı."
+msgstr "Login successful."
+
+msgid "Geçersiz e-posta veya şifre."
+msgstr "Invalid email or password."
+
+msgid "Şifre boş olamaz."
+msgstr "Password cannot be empty."
+
+msgid "Çok fazla başarısız deneme. Hesap kilitlendi."
+msgstr "Too many failed attempts. Account locked."
+
+# KVKK
+msgid "Verilerimi İndir"
+msgstr "Download My Data"
+
+msgid "Hesabımı Sil"
+msgstr "Delete My Account"
+
+# 2FA
+msgid "İki faktörlü kimlik doğrulama"
+msgstr "Two-factor authentication"
+
+msgid "Doğrulama kodu hatalı."
+msgstr "Invalid verification code."
+
+# Yetki
+msgid "Bu sayfayı görüntüleme yetkiniz yok."
+msgstr "You don't have permission to view this page."
+
+msgid "Yetkisiz"
+msgstr "Unauthorized"
+
+# Anomali
+msgid "KPI Anomali Tespiti"
+msgstr "KPI Anomaly Detection"
+
+msgid "Anomali bulunamadı"
+msgstr "No anomalies found"

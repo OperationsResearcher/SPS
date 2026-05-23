@@ -73,3 +73,37 @@ Toplam silinen: ~3.940 satır
 ---
 
 **Sprint 4'te yapılan:** Bu harita yayınlandı. Asıl silme Sprint 9'da.
+
+---
+
+## 🔄 GÜNCELLEME — Sprint 35 (2026-05-23)
+
+### Bugüne kadar tamamlanan sunset
+
+| Dosya | Satır | Durum |
+|---|:-:|---|
+| `app/routes/dashboard.py` | 264 | ✅ Sprint 9'da silindi |
+| `templates/dashboard/*` | ~750 | ✅ Sprint 9'da silindi |
+| `decorators.py` (root) | 207 | ✅ Sprint 20'de silindi + `app/utils/project_rbac.py`'ye taşındı |
+
+### Hâlâ açık (toplam ~3.940 satır)
+
+| Dosya | Satır | Sunset planı |
+|---|:-:|---|
+| `app/routes/process.py` | 1.805 | **Sprint 36-37**: Lazy import zaten yapıldı (Sprint 29-30). KpiDataAudit logic micro/surec'e taşı, sonra sil |
+| `app/routes/admin.py` | 1.141 | **Sprint 38-39**: micro/admin merge tamamla, sonra sil |
+| `app/routes/strategy.py` | 195 | **Sprint 36**: Templates Sprint 20'de güncellendi; bu sprint silinebilir |
+| `app/routes/auth.py` | 302 | **Sprint 40**: micro/shared/auth ile merge |
+| `auth/routes.py` | 250 | **Sprint 40**: Aynı |
+| `main/routes/` | 328 | **Sprint 41-42**: Parça parça micro modüllere |
+
+### Sprint 36 için somut adımlar
+
+1. `app/routes/strategy.py` audit + endpoint usage analyze
+2. micro/sp ile fonksiyon paritesi onayı
+3. Template'leri tekrar grep'le (Sprint 20'de güncellendi mi tam?)
+4. Conditional disable: `LEGACY_STRATEGY_BP_ENABLED=False` flag ekle
+5. CI test geç → dosyayı sil
+
+**Tahmini efor:** 4 saat (low-risk legacy temizlik)
+

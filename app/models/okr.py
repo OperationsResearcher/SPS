@@ -60,6 +60,13 @@ class OkrKeyResult(db.Model):
     current_value = db.Column(db.Float, nullable=True)                 # Güncel değer
     order_no      = db.Column(db.Integer, default=0)
 
+    # Sprint 33: ProcessKpi bağı — bağlıysa current_value otomatik sync edilebilir
+    linked_process_kpi_id = db.Column(
+        db.Integer, db.ForeignKey("process_kpis.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+    linked_process_kpi    = db.relationship("ProcessKpi", lazy="select")
+
     is_active     = db.Column(db.Boolean, default=True, nullable=False)
     created_at    = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at    = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
