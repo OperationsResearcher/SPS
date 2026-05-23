@@ -90,7 +90,7 @@ def api_strategic_planning_graph():
 
         nodes = []
         edges = []
-        kurum_panel_url = url_for("dashboard_bp.tenant_dashboard")
+        kurum_panel_url = url_for("app_bp.kurum")  # Sprint 9: dashboard_bp → kurum panel
 
         def _label_with_score(prefix: str, name: str, score: float) -> str:
             sc = int(round(score)) if score is not None else 0

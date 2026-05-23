@@ -62,11 +62,42 @@ def create_app(config_class=None):
     # Initialize security utilities
     from app.utils.security import init_limiter, set_security_headers
     init_limiter(app)
-    talisman.init_app(
-        app,
-        force_https=False,
-        content_security_policy=False,
-    )
+
+    _flask_env = (os.environ.get("FLASK_ENV") or "").lower()
+    if _flask_env == "production":
+        talisman.init_app(
+            app,
+            force_https=False,
+            content_security_policy={
+                "default-src": "'self'",
+                "script-src": (
+                    "'self' 'unsafe-inline' 'unsafe-eval' "
+                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
+                ),
+                "style-src": (
+                    "'self' 'unsafe-inline' "
+                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com"
+                ),
+                "font-src": (
+                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com"
+                ),
+                "img-src": "'self' data: https: blob:",
+                "connect-src": (
+                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
+                ),
+                "frame-ancestors": "'none'",
+                "base-uri": "'self'",
+                "form-action": "'self'",
+            },
+            frame_options="DENY",
+            referrer_policy="strict-origin-when-cross-origin",
+        )
+    else:
+        talisman.init_app(
+            app,
+            force_https=False,
+            content_security_policy=False,
+        )
 
     # Initialize error tracking
     from app.utils.error_tracking import setup_logging, init_sentry
@@ -91,6 +122,12 @@ def create_app(config_class=None):
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id)) if user_id else None
+
+    from app.utils.safe_urls import safe_url_for
+
+    @app.context_processor
+    def _inject_safe_url_for():
+        return {"safe_url_for": safe_url_for}
 
     @app.route("/health")
     def global_health():
@@ -137,7 +174,7 @@ def create_app(config_class=None):
 
     # ── 3) Uygulama blueprint'leri (tek yapı)
     from app.routes.admin import admin_bp
-    from app.routes.dashboard import dashboard_bp
+    # Sprint 9: app.routes.dashboard kaldırıldı — fonksiyonlar micro/masaustu + micro/kurum'a taşındı
     from app.routes.hgs import hgs_bp
     from app.routes.strategy import strategy_bp
     from app.routes.process import process_bp
@@ -149,10 +186,11 @@ def create_app(config_class=None):
     from app.api.ai import ai_bp
 
     app.register_blueprint(hgs_bp, url_prefix="")
-    app.register_blueprint(dashboard_bp, url_prefix="")
+    # Sprint 9: LEGACY_DASHBOARD_BP_ENABLED kaldırıldı (dashboard.py silindi)
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(strategy_bp, url_prefix="")
-    app.register_blueprint(process_bp, url_prefix="")
+    if app.config.get("LEGACY_PROCESS_BP_ENABLED"):
+        app.register_blueprint(process_bp, url_prefix="")
     app.register_blueprint(core_bp, url_prefix="")
 
     app.register_blueprint(app_api_v1_bp, url_prefix="")
@@ -176,8 +214,14 @@ def create_app(config_class=None):
         init_backup_scheduler(app)
         from services.k_radar_scheduler_service import init_k_radar_scheduler
         init_k_radar_scheduler(app)
+        _init_early_warning_scheduler(app)
 
-    # Kök yollar: /projeler, süreç, strateji projeleri vb.
+    # Legacy HTML sunset (GET yönlendirme / 410) — main_bp'den önce kayıt
+    from app.middleware.legacy_sunset import init_legacy_sunset
+
+    init_legacy_sunset(app)
+
+    # Kök yollar: /projeler, süreç API vb. (HTML sayfaları middleware ile platforma gider)
     from main.routes import main_bp as kokpitim_main_bp
 
     app.register_blueprint(kokpitim_main_bp, url_prefix="")
@@ -190,5 +234,28 @@ def create_app(config_class=None):
     import importlib
 
     importlib.import_module("app.socketio_events")
+
+    return app
+
+
+def _init_early_warning_scheduler(app) -> None:
+    """Erken uyarı servisini her gece 02:00'de çalıştırır."""
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.cron import CronTrigger
+        from services.early_warning_service import run_early_warning
+
+        scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
+        scheduler.add_job(
+            func=run_early_warning,
+            args=[app],
+            trigger=CronTrigger(hour=2, minute=0),
+            id="early_warning_nightly",
+            replace_existing=True,
+        )
+        scheduler.start()
+        app.logger.info("[early_warning] Zamanlayıcı başlatıldı (her gece 02:00).")
+    except ImportError:
+        app.logger.warning("[early_warning] apscheduler kurulu değil, zamanlayıcı atlandı.")
 
     return app

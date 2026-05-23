@@ -771,7 +771,7 @@ def kule_iletisim():
     """Kule İletişim yönetim paneli (Admin ve Yönetici erişimi)."""
     if current_user.role.name not in ['Admin', 'tenant_admin', 'executive_manager']:
         flash("Bu sayfayı görüntüleme yetkiniz yok.", "warning")
-        return redirect(url_for('dashboard_bp.index'))
+        return redirect(url_for('app_bp.masaustu'))  # Sprint 9: dashboard_bp → masaustu
     
     # Filter by tenant if not Admin
     query = Ticket.query
