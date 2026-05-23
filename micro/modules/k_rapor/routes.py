@@ -1408,6 +1408,79 @@ def k_rapor_api_export_excel():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PDF EXPORT (Sprint 11.3 — app/utils/pdf_export.py altyapısı)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app_bp.route("/k-rapor/api/export-pdf")
+@login_required
+def k_rapor_api_export_pdf():
+    """K-Rapor kurumsal özet PDF (executive summary).
+
+    Yapı: Tenant header + Genel özet tablosu + Süreç skorları + KPI durumu
+    """
+    from app.utils.pdf_export import make_pdf, kvp_table
+    from app.models.process import Process, ProcessKpi
+    from app.models.core import Strategy, Tenant
+    from flask import send_file
+    import io
+
+    tid = current_user.tenant_id
+    year = request.args.get("year", _dt.date.today().year, type=int)
+
+    try:
+        tenant = Tenant.query.get(tid)
+        if not tenant:
+            return jsonify({"success": False, "message": "Kurum bulunamadı."}), 404
+
+        # Özet sayılar
+        strategy_count = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
+        process_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
+        kpi_count = (
+            ProcessKpi.query.join(Process)
+            .filter(Process.tenant_id == tid, ProcessKpi.is_active == True)
+            .count()
+        )
+
+        sections = [
+            {
+                "heading": "Genel Özet",
+                "body": (
+                    f"Kurum vizyonu, stratejik plan dönemi ve operasyonel performansın "
+                    f"konsolide görünümü. Rapor tarihi: {_dt.date.today().strftime('%d %B %Y')}."
+                ),
+                "table": kvp_table([
+                    ("Plan yılı", year),
+                    ("Stratejik hedef sayısı", strategy_count),
+                    ("Aktif süreç sayısı", process_count),
+                    ("Toplam performans göstergesi", kpi_count),
+                    ("Aktif kullanıcı sayısı", tenant.employee_count or "—"),
+                ]),
+            },
+        ]
+        if tenant.vision:
+            sections.insert(0, {"heading": "Vizyon", "body": tenant.vision})
+        if tenant.purpose:
+            sections.insert(1, {"heading": "Amaç (Misyon)", "body": tenant.purpose})
+
+        pdf_bytes = make_pdf(
+            title="K-Rapor Kurumsal Özet",
+            sections=sections,
+            tenant_name=tenant.name,
+            footer=f"Bu rapor Kokpitim platformu tarafından otomatik üretilmiştir · {_dt.date.today().isoformat()}",
+        )
+
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            as_attachment=True,
+            download_name=f"k-rapor-ozet-{year}.pdf",
+            mimetype="application/pdf",
+        )
+    except Exception as e:
+        current_app.logger.error(f"[k_rapor_api_export_pdf] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # YENİ RAPORLAR (1-8)
 # ══════════════════════════════════════════════════════════════════════════════
 

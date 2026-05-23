@@ -28,7 +28,9 @@ API_ROUTES = [
     "/k-rapor/api/kurumsal",
     "/k-rapor/api/surec-pg",
     "/k-rapor/api/uyari",
+    "/k-rapor/api/export-pdf",  # Sprint 11.3
     "/bireysel/api/karne",
+    "/bireysel/api/karne/export-pdf",  # Sprint 11.3
     "/kurum/api/overview",
     "/sp/api/plan-years",
     "/k-radar/api/hub-summary",

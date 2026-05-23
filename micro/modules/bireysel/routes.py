@@ -542,3 +542,99 @@ def bireysel_api_pg_series(pg_id):
         "monthly": {str(k): v for k, v in monthly_last.items()},
     })
 
+
+
+# ── Hizalama Skoru ────────────────────────────────────────────────────────────
+
+@app_bp.route("/bireysel/api/hizalama-skoru")
+@login_required
+def bireysel_api_hizalama_skoru():
+    """Oturum kullanıcısının bireysel→stratejik hizalama skorunu döner."""
+    from services.alignment_score_service import get_user_alignment_score
+    data = get_user_alignment_score(current_user.id, current_user.tenant_id)
+    return jsonify({"success": True, "data": data})
+
+
+@app_bp.route("/bireysel/api/ekip-hizalama")
+@login_required
+def bireysel_api_ekip_hizalama():
+    """Yöneticiler için tüm ekip hizalama özeti."""
+    _MANAGE_ROLES = ("tenant_admin", "executive_manager", "Admin")
+    if not current_user.role or current_user.role.name not in _MANAGE_ROLES:
+        return jsonify({"success": False, "message": "Yetkisiz."}), 403
+    from services.alignment_score_service import get_team_alignment_summary
+    data = get_team_alignment_summary(current_user.tenant_id)
+    return jsonify({"success": True, "data": data})
+
+
+# ── Bireysel Karne PDF Export (Sprint 11.3) ──────────────────────────────────
+
+@app_bp.route("/bireysel/api/karne/export-pdf")
+@login_required
+def bireysel_api_karne_export_pdf():
+    """Kullanıcının bireysel karnesini PDF olarak indir."""
+    from app.utils.pdf_export import make_pdf, kvp_table
+    from app.models.process import IndividualPerformanceIndicator
+    from app.models.core import Tenant
+    from flask import send_file
+    import io
+    import datetime as _dt
+
+    try:
+        year = request.args.get("year", _dt.date.today().year, type=int)
+        tenant = Tenant.query.get(current_user.tenant_id) if current_user.tenant_id else None
+
+        pgs = (
+            IndividualPerformanceIndicator.query
+            .filter_by(user_id=current_user.id, is_active=True)
+            .all()
+        )
+
+        if pgs:
+            pg_table = [["Kod", "PG Adı", "Birim", "Hedef", "Ağırlık"]]
+            for pg in pgs:
+                pg_table.append([
+                    str(pg.code or "—"),
+                    str(pg.name or "—"),
+                    str(pg.unit or "—"),
+                    str(pg.target_value or "—"),
+                    f"%{pg.weight}" if pg.weight else "—",
+                ])
+        else:
+            pg_table = [["Bilgi"], ["Henüz atanmış bireysel PG yok."]]
+
+        full_name = f"{current_user.first_name or ''} {current_user.last_name or ''}".strip()
+        sections = [
+            {
+                "heading": "Kullanıcı Bilgileri",
+                "table": kvp_table([
+                    ("Ad Soyad", full_name or current_user.email),
+                    ("E-posta", current_user.email),
+                    ("Unvan", current_user.job_title or "—"),
+                    ("Departman", current_user.department or "—"),
+                    ("Plan yılı", year),
+                ]),
+            },
+            {
+                "heading": "Bireysel Performans Göstergeleri",
+                "table": pg_table,
+            },
+        ]
+
+        pdf_bytes = make_pdf(
+            title="Bireysel Performans Karnesi",
+            sections=sections,
+            tenant_name=tenant.name if tenant else None,
+            footer=f"Kokpitim · {_dt.date.today().isoformat()}",
+        )
+
+        safe_name = (full_name or current_user.email or "karne").replace(" ", "_")
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            as_attachment=True,
+            download_name=f"bireysel-karne-{safe_name}-{year}.pdf",
+            mimetype="application/pdf",
+        )
+    except Exception as e:
+        current_app.logger.error(f"[bireysel_karne_pdf] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
