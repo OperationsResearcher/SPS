@@ -39,18 +39,41 @@ def login():
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
+        ip = request.remote_addr or "unknown"
 
         if not email or not password:
             flash("E-posta ve şifre gereklidir.", "danger")
             return render_template("auth/login.html")
 
+        # Sprint 19.2: brute force koruması
+        from app.utils.login_throttle import is_locked, record_failure, clear_failures
+        locked, remaining = is_locked(email, ip)
+        if locked:
+            _write_auth_audit("LOGIN_BLOCKED_LOCKED", None)
+            mins = max(1, remaining // 60)
+            flash(f"Çok fazla başarısız deneme. Hesap {mins} dakika boyunca kilitli.", "danger")
+            return render_template("auth/login.html"), 429
+
         user = User.query.filter_by(email=email, is_active=True).first()
         if not user or not check_password_hash(user.password_hash, password):
             _write_auth_audit("LOGIN_FAILED", None)
-            flash("Geçersiz e-posta veya şifre.", "danger")
+            now_locked, attempts = record_failure(email, ip)
+            if now_locked:
+                flash(
+                    "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi.",
+                    "danger"
+                )
+                _write_auth_audit("ACCOUNT_LOCKED", None)
+            else:
+                remaining_attempts = max(0, 5 - attempts)
+                flash(
+                    f"Geçersiz e-posta veya şifre. ({remaining_attempts} deneme hakkı kaldı)",
+                    "danger"
+                )
             return render_template("auth/login.html")
 
         login_user(user)
+        clear_failures(email)  # başarılı login → sayaç sıfır
         _write_auth_audit("OTURUM AÇMA", user)
         flash("Giriş başarılı.", "success")
         next_url = request.args.get("next") or url_for("app_bp.launcher")
