@@ -1,0 +1,162 @@
+# ============================================================================
+# TOMOFIL — YIL EVRIMI DELTA'LARI (2021-2026)
+# ============================================================================
+# 2026 baseline: tenant_data.yaml
+# Bu dosya: her yil icin "neler vardi / neler yoktu" delta'lari.
+#
+# Script algoritmasi:
+#   1. 2026 baseline'i tenant_data.yaml'dan al.
+#   2. 2026'dan baslayarak geriye dogru git: her yil icin
+#      a. Yil delta'sini uygula (add_back yapilmis seyleri cikar, removed olanlari ekle)
+#      b. O yil icin Strategy/SubStrategy/Process/ProcessKpi kayitlarini yaz (plan_year_id ile)
+#      c. source_*_id ile bir sonraki yila zinciri kur.
+#
+# Ornek: 2024'te eklenen H5 (EV Pivot) -> 2023'te ve daha geride YOKTU.
+#        Yani 2023'te yazarken H5 ve bagli her sey atlanir.
+# ============================================================================
+
+# Her yil icin: O yil ile bir onceki yil arasindaki degisim
+#   - added_strategies: O yilda yeni eklenen ana strateji kodlari
+#   - added_sub_strategies: o yilda yeni eklenen alt strateji kodlari
+#   - removed_sub_strategies: o yilda terkedilen alt stratejiler (sonraki yilda yok)
+#   - paused_sub_strategies: pasif (is_active=False)
+#   - added_processes: o yilda eklenen surec kodlari
+#   - kpi_targets_override: KPI hedef revizyonu varsa (kod -> yeni hedef)
+
+years:
+  # ─── 2021 — KURULUS ───────────────────────────────────────────────────
+  2021:
+    note: "Kurulus yili. H1, H2, H3 ana stratejileri. 6 surec. ~22 KPI."
+    active_strategies: ["H1", "H2", "H3"]
+    active_sub_strategies:
+      - "1.A"
+      - "1.A.1"   # Motor blok parca (Ford Otosan)
+      - "1.A.2"   # Ictern yanmali motor krank mili — 2024'te pasifestirilecek
+      - "1.A.3"   # Sanziman disli (Tofas)
+      - "2.A"
+      - "2.A.1"   # 5-eksen islem merkezi (kurulus 2 adet)
+      - "2.B"
+      - "2.B.1"   # ISO 9001 (IATF henuz yok)
+      - "2.B.2"   # PPM sifir hata hedefi
+      - "2.C"
+      - "2.C.1"   # OEE
+      - "3.A"
+      - "3.A.1"   # BUU stajyer programi
+      - "3.B"
+      - "3.B.1"   # ISO 9001 entegrasyon
+    active_processes: ["P2M", "S2P", "A2R", "H2R", "R2R", "I2R"]
+    active_kpi_codes: ["P2M-01","P2M-02","P2M-03","P2M-04","S2P-01","S2P-02","S2P-03","S2P-05","A2R-01","A2R-02","A2R-03","H2R-01","H2R-02","H2R-03","H2R-04","H2R-05","H2R-06","R2R-01","R2R-02","R2R-04","R2R-05","I2R-01","I2R-02","I2R-03","I2R-04","I2R-05","S2E-01","S2E-02","S2E-03","S2E-04"]
+    # Not: S2E zaten kurulustan beri var (PMO yok ama strateji yonetimi var)
+
+  # ─── 2022 — PANDEMI/CHIP KRIZI ────────────────────────────────────────
+  2022:
+    note: "Pandemi etkisi. Avrupa pazar arastirma ertelendi. Esnek/hibrit calisma eklendi."
+    inherits_from: 2021
+    add_sub_strategies:
+      - "3.C"     # Esnek ve Hibrit Calisma (pandemi mirasi)
+    # KPI hedef revizyonu (pandemi yili kucultmeleri)
+    kpi_targets_override:
+      P2M-01: {target_2022: 65}     # OEE hedefi indirildi (65)
+      A2R-02: {target_2022: 3}      # Musteri sayisi hedefi 3'te tutuldu
+
+  # ─── 2023 — IHRACAT ACILIMI ───────────────────────────────────────────
+  2023:
+    note: "H4 (Ihracat) eklendi. APQP/PPAP olgunlasti. C2L sureci eklendi."
+    inherits_from: 2022
+    add_strategies: ["H4"]
+    add_sub_strategies:
+      - "2.D"     # APQP/PPAP olgunlastirma
+      - "4.A"
+      - "4.A.1"   # Almanya VW onboarding (devam ediyor, basladi)
+    add_processes: ["C2L"]
+    add_kpi_codes: ["C2L-01","C2L-02","C2L-03","C2L-05","R2R-03","A2R-04"]
+    # 2.B.1 IATF 16949 olarak yukseltildi (description revize)
+    sub_strategy_description_overrides:
+      "2.B.1": "IATF 16949 sertifikası ilk yıl (2023 alındı)"
+
+  # ─── 2024 — EV PIVOT (BUYUK KIRILMA) ──────────────────────────────────
+  2024:
+    note: "EV Pivot karari. H5 eklendi. Ictern yanmali motor krank mili pasifestirildi."
+    inherits_from: 2023
+    add_strategies: ["H5"]
+    add_sub_strategies:
+      - "5.A"
+      - "5.A.1"   # Stator lamination
+      - "5.A.2"   # Rotor mil + miknatis
+      - "5.A.3"   # Hairpin sargi (Bosch lisans)
+      - "5.B"
+      - "5.B.1"   # Batarya kasasi (TOGG)
+    paused_sub_strategies:
+      - "1.A.2"   # Ictern yanmali motor krank mili — PASIFE alindi (still recorded, is_active=False)
+    add_processes: ["B2R"]
+    add_kpi_codes: ["P2M-05","P2M-06","C2L-04","B2R-01","B2R-02","B2R-03","B2R-04","A2R-05"]
+
+  # ─── 2025 — SURDURULEBILIRLIK + CBAM ──────────────────────────────────
+  2025:
+    note: "H6 eklendi (Surdurulebilirlik). R2M sureci eklendi. Asya pazar arastirma terkedildi."
+    inherits_from: 2024
+    add_strategies: ["H6"]
+    add_sub_strategies:
+      - "4.A.2"   # CBAM uyum hazirligi
+      - "6.A"
+      - "6.A.1"   # Scope 1+2 olcum
+      - "6.B"
+      - "6.B.1"   # Geri donusumlu aluminyum
+    add_processes: ["R2M"]
+    add_kpi_codes: ["R2M-01","R2M-02","R2M-03","R2M-04","R2M-05","S2P-04"]
+    # Avrupa pazar arastirma 2022'de ertelenmisti, 2025'te tamamen terk edildi (DB'de yok zaten)
+
+  # ─── 2026 — DIJITAL DONUSUM ───────────────────────────────────────────
+  2026:
+    note: "H7 eklendi (Dijital Donusum). D2I sureci eklendi. V2G/V2H eklendi. Cati GES projesi."
+    inherits_from: 2025
+    add_strategies: ["H7"]
+    add_sub_strategies:
+      - "5.A.4"   # V2G/V2H teknoloji izleme
+      - "6.A.2"   # Cati GES 250 kWp
+      - "7.A"
+      - "7.A.1"   # Predictive maintenance
+      - "7.A.2"   # Dijital ikiz
+      - "7.A.3"   # MES + ERP entegrasyon
+    add_processes: ["D2I"]
+    add_kpi_codes: ["D2I-01","D2I-02","D2I-03","D2I-04","D2I-05"]
+    # 2026 = baseline (tenant_data.yaml ile birebir)
+
+# ============================================================================
+# OKRs — Yıllık sayı (2026 detayli, gerisi sayilarla uretilir)
+# ============================================================================
+okr_counts_per_year:
+  2021: 3    # 3 obj x 3 KR = 9
+  2022: 3
+  2023: 4
+  2024: 5
+  2025: 5
+  2026: 5    # tenant_data.yaml'da detayli
+
+# Geri yıllar için OKR temalari (script tema-bazli kisa metin uretir)
+okr_themes:
+  2021:
+    - { title: "İlk OEM müşteriyi kazan",                                   owner: "CEO" }
+    - { title: "IATF 16949 sertifikasyon başlangıcı",                       owner: "COO" }
+    - { title: "30 kişilik temel kadroyu kur",                              owner: "CHRO" }
+  2022:
+    - { title: "Pandemi/chip krizinde nakit akış yönetimi",                  owner: "CFO" }
+    - { title: "Kalite olgunlaşması: PPM <250",                              owner: "COO" }
+    - { title: "Esnek çalışma modelini oturt",                               owner: "CHRO" }
+  2023:
+    - { title: "İlk Avrupa müşteriyi kazan (Almanya)",                       owner: "CEO" }
+    - { title: "IATF 16949 sertifikasını al",                                owner: "COO" }
+    - { title: "APQP/PPAP süreçlerini olgunlaştır",                          owner: "Ar-Ge Müdürü" }
+    - { title: "Kadroyu 75 kişiye toparla",                                  owner: "CHRO" }
+  2024:
+    - { title: "EV Pivot kararı + ilk stator hattı kurulumu",                owner: "CEO + COO" }
+    - { title: "TOGG batarya kasası tedariği başlat",                        owner: "Satış" }
+    - { title: "Hairpin lisansı (Bosch) imzala",                             owner: "Ar-Ge" }
+    - { title: "OEE %75 hedefi",                                              owner: "COO" }
+    - { title: "İhracat payı %15 hedefi",                                     owner: "İhracat" }
+  2025:
+    - { title: "CBAM hazırlık programı başlat",                              owner: "ESG" }
+    - { title: "EV cirosu payını %30 yap",                                    owner: "Satış" }
+    - { title: "Geri dönüşümlü alüminyum %15 hedefi",                        owner: "Tedarik" }
+    - { title: "Alüminyum geri dönüşüm hattı kur",                            owner: "Üretim" }
+    - { title: "ISO 14001 + ISO 45001 sertifikalarını al",                   owner: "Kalite" }

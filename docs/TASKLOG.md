@@ -3,6 +3,399 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-115 | 2026-05-23 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Tomofil demo tenant v2 — 6 yıllık (2021-2026) evrim + EV pivot hikayesi + generic seed script
+**Modül:** scripts/, docs/sablon.md, docs/tomofil-demo/
+**Durum:** ✅ Yerelde tamamlandı — VM yayını yapılmadı
+
+### Oluşturulan / Değiştirilen Dosyalar
+- `docs/sablon.md` → yeni — boş şablon, 21 bölümlü demo-tenant onboarding rehberi
+- `docs/tomofil-demo/sablon-dolu.md` → yeni — doldurulmuş örnek (insanlar için doküman)
+- `docs/tomofil-demo/tenant_data.yaml` → yeni — script için 2026 baseline yapılandırılmış veri
+- `docs/tomofil-demo/year_deltas.yaml` → yeni — 2021-2025 yıllara göre strateji/süreç/KPI evrim delta'ları
+- `scripts/seed_generic_tenant.py` → yeni — YAML-driven generic tenant seeder (--data --deltas --dry-run/--commit/--reset)
+
+### Yapılan İşlem
+Tomofil yerel PG (`kokpitim_db`) içine `tenant_id=26` ile yeniden açıldı: yerli EV parça üreticisi profili, 2021 kuruluş, 100 çalışan (97 user — admin + 20 manuel yönetici + 76 bulk), 7 plan yılı, 6 yıllık strateji evrimi (3 → 7 ana strateji, ~16 değişim eventi), 28 Strategy + 135 SubStrategy + 46 Process + 221 ProcessKpi (yıllara göre ayrı kayıt, source_*_id zinciri ile), 679 KpiData (2026 aylık + 2024-25 çeyreklik + 2021-23 yıllık), 4 proje + 13 görev, 6×4 = 24 SWOT/TOWS/PESTEL/Porter analizi, K-Vektor ağırlıkları (18), K-Radar tüm modüller (71 kayıt). OKR tabloları DB'de migrate edilmediği için skip edildi.
+
+### Notlar
+- Login: `admin@tomofil.test` / `Tomofil2026!`
+- Hikaye: 2021 kuruluş → 2022 chip krizi → 2023 ihracat (H4) → 2024 EV pivot (H5) → 2025 sürdürülebilirlik (H6) → 2026 dijital dönüşüm (H7)
+- `1.A.2` (İçten Yanmalı Motor Krank Mili) 2024'te is_active=False olarak pasifestirildi (kayıtta var, görünmüyor)
+- Toplu kullanıcı sayısı 80 hedeflendi, departman dağılımları toplamı 76 — istenirse 4'lük ince ayar yapılabilir
+- Project tablosunda ORM ↔ DB şema sapması var (is_active, deleted_at fazla); script raw SQL'e düşüyor
+- Task tablosu da benzer şekilde raw SQL ile yazıldı (due_date alanı, end_date değil)
+- OKR migration eksiği ayrı bir task: kokpitim'in OKR modülünü gerçekten kullanıyorsa alembic'e migration eklenmeli
+- VM yayını kullanıcı yerel doğrulama yapana kadar bekliyor
+
+---
+
+## TASK-114 | 2026-05-22 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Tomofil Group N.V. örnek/test tenantı — Phase 1 seed (yereldeki PostgreSQL'e)
+**Modül:** scripts/, docs/tomofil/
+**Durum:** ✅ Yerelde tamamlandı — VM'e yayın **YAPILMADI** (kullanıcı yerel test ediyor)
+
+### Oluşturulan / Değiştirilen Dosyalar
+- `scripts/seed_tomofil_full.py` → yeni — idempotent seeder (`--dry-run` / `--commit` / `--reset`)
+- `docs/tomofil/` → kaynak dosyalar (strateji ağacı md + 3.800 çalışan JSON + atomik veri JSON + 2 PDF)
+
+### Yapılan İşlem
+Yerel PostgreSQL (`kokpitim_db`) içine `tenant_id=21` ile yeni tenant açıldı: 3.801 kullanıcı (admin dahil), 10 plan yılı (2026 active, 2027-2035 draft), 14 süreç (A2R, C2L, P2M…), 6 ana + 73 alt strateji (H1-H6 → 1.A → 1.A.1 prefix hiyerarşi), 120 ProcessKpi, 14 süreç sahibi. Strateji ağacı md'den regex ile parse edildi, kullanıcılar Workday HCM formatındaki JSON'dan bulk insert ile yüklendi.
+
+### Notlar
+- Login: `admin@tomofil.test` / `Tomofil2026!` (role=tenant_admin)
+- O2C sürecinde çalışan JSON'da yönetici kademesi olmadığı için fallback olarak admin user owner atandı.
+- Phase 2 (kaynak `Tomofil_Veriler_v3.json` → 25.300 atomik kayıt → `kpi_data` agregasyonu ve PDF kopyalama) ayrı bir script ile yerel test sonrası yapılacak.
+- VM (Oracle Cloud) yayını kullanıcı yerel doğrulama yapana kadar bekliyor.
+
+---
+
+## TASK-113 | 2026-05-21 | ✅ Tamamlandı
+
+**Görev:** Terim standardı — «VM» = Oracle Cloud üretim; dokümantasyon ve deploy betikleri güncellemesi
+**Modül:** docs, scripts/ops/oracle, scripts/vm_safe_deploy.sh, scripts/vm_smoke_check.ps1, CLAUDE.md, Agents
+**Durum:** ✅ Tamamlandı
+
+### Oluşturulan / Değiştirilen Dosyalar
+- `docs/ORACLE-PROD-VM.md` → yeni — tek referans: SSH, dizinler, terim tablosu (VM / yerel / GCP arşiv)
+- `scripts/ops/oracle/oracle_safe_deploy.sh` → yeni — rutin Oracle deploy (PG yedek, pull, Docker, Alembic, satır sayısı)
+- `docs/KURALLAR-MASTER.md`, `docs/PROJE-MASTER.md` (bölüm 12) → üretim Oracle; GCP arşiv
+- `docs/YERELDEN_VM_YAYIN.md`, `docs/VM_DEN_YERELE.md`, `docs/VM-YEREL-SENKRON-REHBERI.md` → `ssh`/`scp`, `/opt/kokpitim/`
+- `docs/ORACLE_DEPLOY_ADIMLAR.md`, `docs/gcp2oraclegecisplani.md` → geçiş tamamlandı notu
+- `docs/clauderapor.md`, `docs/kirowebsitesi.md`, `Agents/KURALLAR-MASTER.md`, `CLAUDE.md` → VM = Oracle
+- `scripts/vm_safe_deploy.sh` → LEGACY GCP üst notu
+- `scripts/vm_smoke_check.ps1` → varsayılan hedef Oracle SSH (`kokpitim-web`)
+
+### Yapılan İşlem
+GCP→Oracle geçişi sonrası repoda «VM» ifadesi **Oracle `kokpitim-v2` (`129.159.30.175`)** anlamına sabitlendi. Eski `sps-server-v2` / `gcloud` komutları tarihsel arşiv olarak işaretlendi; canlı yayın yordamı `oracle_safe_deploy.sh` ile hizalandı.
+
+### Notlar
+- Üretim: `ubuntu@129.159.30.175`, uygulama `/opt/kokpitim/app`, container `kokpitim-web`, PG `kokpitim_db` @ `127.0.0.1`.
+- GCP Faz 0 yedekleri: `backups/oracle_migration/` — değişmedi.
+
+---
+
+## TASK-112 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** 19mayonderi.md planı — 10 yeni özellik uygulaması
+**Modül:** masaustu, surec/kpi_data, sp, admin, bireysel, k_radar_service, app/socketio_events
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Oluşturulan Dosyalar
+- `services/executive_morning_service.py` → yeni — KPI/faaliyet/proje durum özeti API servisi
+- `micro/modules/masaustu/routes.py` → `/api/morning-summary` endpoint eklendi
+- `ui/templates/platform/masaustu/index.html` → Yönetici Sabah Özeti widget eklendi
+- `ui/static/platform/js/masaustu.js` → widget JS + WebSocket refresh dinleyicisi
+- `micro/modules/surec/routes_kpi_data.py` → `/process/api/kpi-data/bulk-template` (Excel şablon), `/process/api/kpi-data/bulk-import` (toplu yükleme), `/process/api/kpi/<id>/score-detail` (puan şeffaflığı) eklendi
+- `services/early_warning_service.py` → yeni — gece KPI trend analizi + bildirim servisi
+- `app/__init__.py` → `_init_early_warning_scheduler()` — APScheduler ile her gece 02:00 tetikleyici
+- `services/k_radar_service.py` → `_get_radar_weights()` eklendi, `get_hub_summary` tenant'a özgü ağırlık kullanıyor
+- `micro/modules/admin/routes.py` → `/admin/k-radar/weights` GET+POST endpoint eklendi
+- `micro/modules/sp/routes_pages.py` → `/sp/strateji-haritasi`, `/sp/api/strateji-haritasi`, `/sp/rapor/donemsel` eklendi
+- `ui/templates/platform/sp/strateji_haritasi.html` → yeni — vis-network ağaç görselleştirme
+- `services/period_report_service.py` → yeni — dönemsel KPI karşılaştırma Excel raporu
+- `services/alignment_score_service.py` → yeni — bireysel→stratejik hizalama skoru hesaplama
+- `micro/modules/bireysel/routes.py` → `/bireysel/api/hizalama-skoru`, `/bireysel/api/ekip-hizalama` eklendi
+- `micro/modules/sp/routes_plan_year.py` → sihirbaz endpoint'leri: `/sp/sihirbaz/yeni-yil`, preview, uygula
+- `ui/templates/platform/sp/sihirbaz_yeni_yil.html` → yeni — 3 adımlı plan yılı geçiş sihirbazı
+- `app/socketio_events.py` → `kpi_data_entered` event + `notify_kpi_update()` yardımcı fonksiyonu
+
+### Yapılan İşlem
+19mayonderi.md planındaki 10 maddenin tamamı uygulandı. Uygulama import testi geçti (`create_app()` hatasız).
+
+### Notlar
+- APScheduler kurulu değilse erken uyarı zamanlayıcısı sessizce atlanır (WARNING log).
+- D-3 KPI şeffaflığı backend API olarak tamamlandı; frontend karne sayfasına "Nasıl hesaplandı?" butonu sonraki oturumda eklenebilir.
+- D-4 WebSocket: morning_summary_refresh eventi masaüstü JS'ine bağlandı; KPI kayıt endpoint'lerinden `notify_kpi_update()` çağrısı sonraki oturumda eklenebilir.
+
+---
+
+## TASK-111 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** İyileştirme Turu 2 — K-Radar cache, source chain N+1 fix, Project tam soft delete
+**Modül:** services/k_radar_service, surec/karne, proje, migrations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → 11 fonksiyona `@cache.memoize(timeout=300)` eklendi (get_hub_summary, get_ks_data, get_ks_extended_data, get_kp_data, get_kp_extended_data, get_kpr_data, get_kpr_extended_data, get_cross_heatmap_data, get_cross_extended_data, get_ks_*_real serisi)
+- `micro/modules/surec/routes_karne.py` → `_resolve_process_by_source_chain` yeniden yazıldı: tenant'ın tüm klonlu süreçleri tek sorguda çekilip bellekte BFS yapılıyor (N+1 → 2 sorgu)
+- `app/models/portfolio_project.py` → Project modeline `is_active`, `deleted_at`, `deleted_by` kolonları eklendi
+- `micro/modules/proje/routes_project_crud.py` → proje silme: `is_active=False + deleted_at + deleted_by` (gerçek soft delete)
+- `micro/modules/proje/project_list_query.py` → `is_active=True` filtresi eklendi
+- `micro/modules/proje/permissions.py` → `accessible_projects_query`'e `is_active=True` filtresi eklendi
+- `migrations/versions/a1b2c3d4e008_project_soft_delete.py` → yeni Alembic migration (upgrade + downgrade)
+
+### Yapılan İşlem
+K-Radar sayfaları artık 5 dakika boyunca DB'ye gitmiyor; aynı tenant için ikinci ziyaret önbellekten dönüyor. Yıl navigasyonu BFS'i 30+ sorgudan 2 sorguya indi. Project modeli diğer modeller (Process, KpiData) ile aynı soft delete standardına kavuştu; migration'ı `flask db upgrade` ile uygulamak yeterli.
+
+### Notlar
+- Login rate limit incelendi; `app/routes/auth.py:33` satırında `@limiter.limit(RATELIMIT_LOGIN)` zaten uygulanmıştı, ek değişiklik gerekmedi.
+- Cache invalidation: K-Radar verileri değiştiğinde (yeni KPI, yeni proje) önbellek 5 dk içinde kendiliğinden sona erer. Anlık yenileme gerekirse `cache.delete_memoized(get_hub_summary, tenant_id)` çağrılabilir.
+
+---
+
+## TASK-110 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** İyileştirme planı uygulaması — soft delete, N+1 fix, k_radar bölme, smoke testler, console.log temizliği
+**Modül:** proje, surec/karne, k_radar, tests, static/js
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/proje/routes_project_crud.py` → proje silme hard delete → `is_archived=True` (soft delete)
+- `micro/modules/surec/routes_karne.py` → N+1 fix: KpiData ve ActivityTrack bulk prefetch + selectinload (kpi.sub_strategy→strategy, activity.assignment_links→user, reminders, process_kpi)
+- `micro/modules/k_radar/routes.py` → 943 satırlık monolit → import hub'a dönüştürüldü
+- `micro/modules/k_radar/routes_common.py` → yeni (hub, recommendations, schedule)
+- `micro/modules/k_radar/routes_ks.py` → yeni (KS radar: swot, pestle, tows, gap, okr, bsc, efqm, hoshin, ansoff, bcg + gerçek veri API'leri)
+- `micro/modules/k_radar/routes_kp.py` → yeni (KP radar: darbogaz, pareto, sla, benchmark, oee, vsm, kapasite, olgunluk CRUD)
+- `micro/modules/k_radar/routes_kpr.py` → yeni (KPR radar: cpm, evm, risk, kaynak-kapasite, gantt)
+- `micro/modules/k_radar/routes_cross.py` → yeni (Cross: paydas CRUD, rekabet, a3, anket)
+- `tests/test_smoke_routes.py` → yeni (k_radar, proje, surec karne smoke testleri; unauthenticated 302 kontrolü)
+- `static/js/admin_panel.js` → 34 console.log satırı kaldırıldı
+
+### Yapılan İşlem
+Analiz planındaki tüm öncelikli maddeler uygulandı. Karne endpoint'i artık N+1 yerine 2 bulk SELECT ile çalışıyor (KpiData: yıl×önceki yıl, ActivityTrack: tek sorgu). k_radar modülü sp/surec ile aynı pattern'e getirildi (5 alt dosya). Üretimde kullanıcı bilgilerini sızdıran console.log'lar temizlendi.
+
+### Notlar
+- `BscKpiPerspective` ve `ProcessSubStrategyLink` hard delete'leri junction table semantiği taşıdığından değiştirilmedi (veri kaybı riski yok, mapping ilişkisi).
+- Project modeline `is_active` + `deleted_at` kolonu eklemek için Alembic migration henüz oluşturulmadı; `is_archived` şimdilik soft delete proxy olarak kullanılıyor.
+- TODO'lar (`app/api/auth.py`, `services/webhook_service.py`, `services/report_service.py`) backlog'a alındı: Webhook implementasyonu, PDF export, Redis rate limiting.
+
+---
+
+## TASK-110 | 2026-05-20 | ✅ Tamamlandı
+
+**Görev:** `/sp/strateji-haritasi` BuildError + ikon düzeltmesi + hata sayfaları
+**Modül:** SP, templates, components.css, safe_urls
+**Durum:** ✅ Tamamlandı
+
+### Kök neden
+1. `url_for('app_bp.sp_index')` — endpoint yok (`app_bp.sp` olmalı)
+2. Hata sayfası `templates/base.html` → kayıtsız `dashboard_bp.index` (ikinci BuildError)
+3. FA webfont yolu: `all.min.css` içinde `../webfonts` → `/m/platform/vendor/webfonts` (yanlış)
+
+### Düzeltmeler
+- `strateji_haritasi.html`: `app_bp.sp`, vis-network CSS
+- `components.css`: doğru `@font-face` yolları
+- `safe_url_for` + legacy `base.html` güncellemesi
+- Hata şablonları: `errors/_minimal.html` (platform, dashboard_bp yok)
+- API join düzeltmesi (`ProcessSubStrategyLink`)
+
+### Test
+`tests/test_sp_strateji_haritasi.py` — 2 passed
+
+---
+
+## TASK-109 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** Dalga D — E2E akış, tenant izolasyonu, N+1 guard, JSON API hata yanıtı
+**Modül:** tests, app/utils/error_handlers
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `tests/test_e2e_flow.py`, `test_tenant_isolation.py`, `test_process_n1_guard.py`
+- `app/utils/error_handlers.py` → `/process/api/*` ve Accept: json için JSON 403/404
+
+### Yapılan İşlem
+Platform sayfa akışı ve süreç API tenant izolasyonu otomatik testlere alındı. Pytest: **66 passed**.
+
+---
+
+## TASK-108 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** Dalga C — main/routes paket bölme, deprecated decorator, budama dokümanı
+**Modül:** main/routes/, main/deprecated.py
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `main/routes/` → `_common`, `pages`, `kurum_panel`, `strategy_api`, `projects`
+- `main/routes_monolith_backup.py` (yedek)
+- `main/deprecated.py`, `scripts/dev/split_main_routes.py`
+- `docs/LEGACY_ROUTE_DEPRECATION.md`
+- `main/routes.py` kaldırıldı (paket)
+
+### Yapılan İşlem
+7600+ satırlık monolit 5 modüle bölündü. GET legacy sayfalarına `@legacy_html_to_platform` yedek yönlendirme eklendi.
+
+---
+
+## TASK-107 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** Dalga B — Model shim birliği, süreç API canonical doküman, paylaşılan redirect config
+**Modül:** app/models, app/legacy_redirect_config.py, docs, tests
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/user_legacy.py`, `strategy_legacy.py`, `legacy_extras.py`, `legacy_bridge.py`
+- `app/legacy_redirect_config.py` → middleware ortak config
+- `docs/MODEL_MERGE_PLAN.md`, `docs/PROCESS_API_CANONICAL.md`
+- `tests/test_process_api_surface.py`
+- `scripts/ci/check_no_raw_models_import.py` → shim allowlist
+
+### Yapılan İşlem
+Runtime `from models` yalnızca `app/models/*_legacy.py` shim'lerinde. `legacy_bridge` canonical süreç/portföy + legacy shim re-export.
+
+---
+
+## TASK-106 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** Dalga A — Legacy sunset (HTML yönlendirme, 410 Gone, çift blueprint kapatma, yol haritası)
+**Modül:** middleware, config, docs, tests
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/middleware/legacy_sunset.py` → GET/HEAD 301 platform, `/v2`/`/v3`/`/bsc` 410, `/projeler` rewrite
+- `app/middleware/__init__.py` → paket
+- `app/__init__.py` → sunset kaydı; `LEGACY_*_BP_ENABLED` ile dashboard/process BP koşullu
+- `config.py` → `LEGACY_SUNSET_ENABLED`, `LEGACY_PROCESS_BP_ENABLED`, `LEGACY_DASHBOARD_BP_ENABLED`
+- `main/routes.py` → kök `/` launcher/login
+- `app/utils/error_handlers.py` → `HTTPException` handler (410 dahil)
+- `scripts/dev/analyze_legacy_access_log.py` → nginx log analizi
+- `docs/IYILESTIRME-YOL-HARITASI.md`, `docs/LEGACY_REDIRECT_MAP.md`, `DEPLOY_SMOKE_CHECKLIST.md`
+- `tests/test_legacy_sunset.py`
+
+### Yapılan İşlem
+Dalga A tamamlandı: eski bookmark’lar platforma 301 ile yönleniyor; v2/v3/bsc 410; çift `/process` ve legacy dashboard BP varsayılan kapalı. `_should_skip` düzeltildi (`/projeler`, `/kurum-paneli` artık yanlışlıkla atlanmıyor).
+
+### Notlar
+Dalga B: `main/routes.py` model import birliği ve süreç API tekilleştirme. `LEGACY_SUNSET_ENABLED=false` acil geri alma anahtarı.
+
+---
+
+## TASK-105 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** İyileştirme paketi toplu uygulama (dokümantasyon, güvenlik, test, N+1, statik varlık, envanter)
+**Modül:** docs, config, CI, tests, models, main
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → `ProductionConfig`, `get_config(production)`, HGS bypass kapalı
+- `app/__init__.py` → CSP `connect-src` CDN
+- `app/models/process.py`, `core.py` → ilişki `lazy='select'`
+- `ui/static/platform/vendor/fontawesome/` → FA 6.5.1 css+webfont hizası
+- `main/admin.py` → `app.models.audit.AuditLog`
+- `docs/PROJE-MASTER.md`, `KURALLAR-MASTER.md`, `DEPLOY_SMOKE_CHECKLIST.md`, `YEDEKLER_POLICY.md`, `STATIC_ASSETS_PLATFORM.md`, `LEGACY_ROUTE_INVENTORY.md`
+- `scripts/dev/inventory_legacy_routes.py`, `.env.example`, `pytest.ini`, `.github/workflows/ci.yml`
+- `tests/test_hgs_security.py`, `tests/test_import_guards.py`
+
+### Yapılan İşlem
+Önceki oturumdaki açık iyileştirme önerileri tek pakette uygulandı: prod güvenlik sertleştirmesi, dokümantasyon senkronu, legacy route envanteri, CI tam test suite (46 test), Font Awesome sürüm hizası.
+
+### Notlar
+Tailwind CDN bilinçli bırakıldı. `app/routes/process.py` / legacy birleştirme ayrı büyük faz.
+
+---
+
+## TASK-104 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** P3 kapanış — `legacy_bridge`, CI import politikası, production Redis rate limit, test suite
+**Modül:** app/models, CI, güvenlik, tests
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/legacy_bridge.py` → tek köprü: canonical süreç/portföy + legacy kullanıcı/strateji
+- `scripts/dev/migrate_models_imports.py` → 43 dosyada `from models` → `legacy_bridge`
+- `scripts/ci/check_no_raw_models_import.py` + CI workflow güncellemesi
+- `app/utils/security.py` → production’da `REDIS_URL` ile rate limit storage
+- `app/models/core.py` → `Tenant.k_radar_enabled`
+- `app/models/process.py` → legacy PG/veri synonym’leri (`kaynak_surec_pg_id`, `giris_periyot_*`, `pg_id`)
+- `tests/conftest.py`, `test_services.py`, `test_project_service.py` → güncel API ile hizalı
+
+### Yapılan İşlem
+Runtime kodunda doğrudan `models` import’u `legacy_bridge` üzerinden toplandı. CI üç guard ile korunuyor (tek db, portföy, raw models). Production rate limit Redis’e düşebiliyor. Pytest: **42 passed**.
+
+### Notlar
+`scripts/` seed/migration betikleri bilinçli olarak `from models` kullanmaya devam edebilir. Uzun vadede `IndividualKpiData` / `IndividualPerformanceIndicator` tam legacy tablo birleşimi ayrı faz.
+
+---
+
+## TASK-103 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** P3 devam — `main/routes.py`, `api/routes.py`, kurum ve masaustu portföy import migrasyonu
+**Modül:** main, api, micro/kurum, micro/masaustu
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `main/routes.py` → Project/Task/ProjectFile vb. `app.models.portfolio_project`; `db` → `extensions.db`
+- `api/routes.py` → tüm proje portföy modelleri `portfolio_project`; `task_predecessors` dahil
+- `micro/modules/kurum/kurum_overview.py`, `micro/modules/masaustu/routes.py` → portfolio import
+- `scripts/ci/check_portfolio_imports.py` (proje/kurum/masaustu/main/api kapsamı); CI güncellendi
+
+### Yapılan İşlem
+Legacy `from models import Project` kullanımı ana route katmanlarından ve kurum/masaüstü modüllerinden kaldırıldı. CI ile bu dosyalarda portföy sembollerinin `models` üzerinden import edilmesi engellendi.
+
+### Notlar
+`main/routes.py` içinde Surec, Kurum, strateji legacy modelleri hâlâ `models` paketinden geliyor — ayrı faz.
+
+---
+
+## TASK-102 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** P3 — legacy proje modellerini `app.models.portfolio_project` altına taşıma; micro/proje import migrasyonu
+**Modül:** app/models, micro/proje, models (shim)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/portfolio_project.py` → portföy Project/Task/RAID modelleri (eski `models/project.py` içeriği)
+- `models/project.py` → `app.models.portfolio_project` re-export shim
+- `app/models/__init__.py` → Alembic için portfolio export
+- `micro/modules/proje/*.py` → `app.models.portfolio_project` + `extensions.db`
+- `scripts/ci/check_proje_imports.py`, `.github/workflows/ci.yml`
+
+### Yapılan İşlem
+Proje portföy modelleri canonical konuma alındı; micro proje modülündeki tüm `from models import Project` kullanımları kaldırıldı. Legacy `models.project` geriye dönük uyumluluk için ince shim olarak kaldı.
+
+### Notlar
+`api/routes.py` ve `main/routes.py` hâlâ `models` kullanıyor — sonraki faz.
+
+---
+
+## TASK-101 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** P2 — surec/sp route bölme, login rate limit, production CSP
+**Modül:** micro/surec, micro/sp, auth, app factory
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/` → `helpers.py`, `routes_process.py`, `routes_kpi.py`, `routes_kpi_data.py`, `routes_activity.py`, `routes_karne.py`, `routes_legacy.py`
+- `micro/modules/sp/` → `helpers.py`, `routes_pages.py`, `routes_strategy.py`, `routes_flow.py`, `routes_plan_year.py`, `routes_donemler.py`, `routes_sp_proje.py`, `routes_analysis.py`
+- `app/routes/auth.py` → POST `/login` rate limit
+- `config.py` → `RATELIMIT_LOGIN`, testte `RATELIMIT_ENABLED=False`
+- `app/__init__.py` → production CSP (Talisman)
+- `scripts/dev/split_module_routes.py`, `fix_split_route_headers.py`
+
+### Yapılan İşlem
+2000+ satırlık monolit route dosyaları alt modüllere bölündü; ortak yardımcılar `helpers.py` içinde toplandı. Giriş endpoint’ine dakika/saat limiti eklendi. Production ortamında temel CSP etkinleştirildi (geliştirmede kapalı).
+
+### Notlar
+Legacy `models/` → `app/models/` migrasyonu sonraki faz (proje modülü öncelikli).
+
+---
+
+## TASK-100 | 2026-05-19 | ✅ Tamamlandı
+
+**Görev:** 19mayisyedek yedek noktası + P0/P1 mimari iyileştirmeler (tek db, fabrika shim, CI, plan_year test)
+**Modül:** altyapı / güvenlik / test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `19mayisyedek` dalı + tag → commit `0192ee5` tam kod anlık görüntüsü
+- `docs/19MAYISYEDEK_RESTORE.md`, `scripts/ops/restore_19mayisyedek.ps1` → geri dönüş
+- `__init__.py` → `app.create_app` shim (eski fabrika dalda korunur)
+- `app/extensions.py` + 7 servis → tek `extensions.db`
+- `.gitignore`, `.github/workflows/ci.yml`, `scripts/ci/check_single_db.py`
+- `tests/test_plan_year.py` → KpiYearConfig / get_kpi_config testleri
+- `docs/KURALLAR-MASTER.md` → güvenlik borcu tablosu güncellendi
+
+### Yapılan İşlem
+İyileştirmelere başlamadan önce `19mayisyedek` adlı git dalı ve etiket ile yedek alındı. Ardından ikinci SQLAlchemy db riski giderildi, kök fabrika ince shim'e indirildi, CI'da db import kontrolü ve plan_year regresyon testleri eklendi.
+
+### Notlar
+Geri dönüş: `.\scripts\ops\restore_19mayisyedek.ps1` veya `git checkout 19mayisyedek && git reset --hard 0192ee5`
+
+---
+
 ## TASK-099 | 2026-04-26 | ✅ Tamamlandı
 
 **Görev:** VM'de KMF hedef PG için yıl bazlı görünürlük onarımı + yerel plan-year düzeltmelerini canlıya yayınlama

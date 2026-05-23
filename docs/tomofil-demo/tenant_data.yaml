@@ -1,0 +1,549 @@
+# ============================================================================
+# TOMOFIL OTOMOTIV — 2026 BASELINE (Script-readable structured data)
+# ============================================================================
+# Bu dosya, seed_generic_tenant.py icin tek gercek kaynak.
+# Insanlar icin doc: docs/tomofil-demo/sablon-dolu.md
+# Yillik evrim:      docs/tomofil-demo/year_deltas.yaml
+# ============================================================================
+
+tenant:
+  name: "Tomofil Otomotiv Sanayi ve Ticaret A.Ş."
+  short_name: "Tomofil"
+  sector: "Otomotiv / Yan Sanayi"
+  activity_area: "Elektrikli araç parçaları (e-motor stator/rotor + batarya hücre kasası); klasik motor parçaları"
+  employee_count: 100
+  contact_email: "info@tomofil.test"
+  phone_number: "+90 224 555 0250"
+  website_url: "https://tomofil.test"
+  tax_office: "Bursa Osmangazi"
+  tax_number: "8765432109"
+  max_user_count: 150
+  license_end_date: "2027-12-31"
+  vision: |
+    2030 yılında Türkiye ve Avrupa elektrikli araç ekosisteminin en güvenilen
+    hassas parça tedarikçisi olmak; OEM'lerin "tier-1 tercih" listesinde yer almak.
+  purpose: |
+    Türkiye'nin otomotiv sanayisinin elektrikli araç dönüşümüne hassas mühendislik,
+    güvenilir kalite ve sürdürülebilir üretimle katkı sağlamak.
+  core_values: "Mühendislik Disiplini, Şeffaflık, Sürekli İyileştirme, Çevik Adaptasyon, Sürdürülebilirlik"
+  code_of_ethics: |
+    IATF 16949 + ISO 9001 + ISO 14001 + ISO 45001 entegre yönetim sistemi.
+    Tedarikçilerden çocuk işçi ve modern kölelik beyanı zorunlu. Konflikt mineralleri (3TG)
+    raporlaması yıllık. Çalışan rüşvet/yolsuzluk eğitimi zorunlu.
+  quality_policy: |
+    PPM hedefi <50, IATF 16949 sertifikası 2023'ten beri aktif. APQP/PPAP süreçleri
+    her yeni parça için uygulanır. Müşteri reklamasyonu 24 saat içinde 8D başlatma.
+  plan_year_enabled: true
+  plan_year_start: 2021
+  k_vektor_enabled: true
+  k_radar_enabled: true
+  package_id: 1
+
+# ============================================================================
+admin:
+  email: "admin@tomofil.test"
+  password: "Tomofil2026!"
+  first_name: "Tomofil"
+  last_name: "Yönetici"
+  phone_number: "+90 532 555 0001"
+  job_title: "Tenant Yöneticisi"
+  department: "Yönetim / IT"
+
+# ============================================================================
+plan_years:
+  - { year: 2021, name: "2021 Kuruluş Yılı Planı",       status: "closed" }
+  - { year: 2022, name: "2022 Toparlanma Planı",          status: "closed" }
+  - { year: 2023, name: "2023 İhracat Açılım Planı",     status: "closed" }
+  - { year: 2024, name: "2024 EV Pivot Stratejik Planı", status: "closed" }
+  - { year: 2025, name: "2025 Sürdürülebilirlik Planı",  status: "closed" }
+  - { year: 2026, name: "2026 Dijital Dönüşüm Planı",    status: "active" }
+  - { year: 2027, name: "2027 Stratejik Planı (taslak)", status: "draft"  }
+
+# ============================================================================
+# STRATEJILER (2026 baseline) — yillik turetme year_deltas.yaml'a gore.
+# ============================================================================
+strategies:
+  - code: "H1"
+    title: "Yerli OEM'lere Klasik Motor Parça Tedariki"
+    description: "Geleneksel içten yanmalı motor parçaları; payı azalmakla birlikte istikrar getiren kaynak."
+    sub_strategies:
+      - { code: "1.A",   title: "Hassas Mekanik Parça Üretimi" }
+      - { code: "1.A.1", title: "Motor Blok ve Silindir Parçaları (Ford Otosan)" }
+      - { code: "1.A.3", title: "Şanzıman Dişli ve Mil Üretimi (Tofaş)" }
+  - code: "H2"
+    title: "Üretim Kapasitesi ve Kalite Mükemmelliği"
+    description: "IATF 16949 sertifikalı, sıfır hata felsefesi, OEE artışı."
+    sub_strategies:
+      - { code: "2.A",   title: "CNC + 5-Eksen İşleme Kapasitesi" }
+      - { code: "2.A.1", title: "5-Eksen İşleme Merkezi (2 → 6 adet, 2030)" }
+      - { code: "2.B",   title: "Kalite Yönetim Sistemi" }
+      - { code: "2.B.1", title: "IATF 16949 + ISO 9001 Sertifika Bakımı" }
+      - { code: "2.B.2", title: "PPM <50 — Sıfır Hata Hedefi" }
+      - { code: "2.C",   title: "Üretim Verimliliği" }
+      - { code: "2.C.1", title: "OEE %72 → %88 (2030)" }
+      - { code: "2.D",   title: "APQP / PPAP Olgunlaştırma" }
+  - code: "H3"
+    title: "İnsan, Kültür ve Kurumsallaşma"
+    description: "Bursa yetenek havzasında çekici işveren; ESOP + eğitim + iyi yönetişim."
+    sub_strategies:
+      - { code: "3.A",   title: "Yetenek Çekme ve Tutma" }
+      - { code: "3.A.1", title: "Bursa Üniversite Stajı Programı (BUÜ, Uludağ)" }
+      - { code: "3.B",   title: "Kurumsal Yönetişim" }
+      - { code: "3.B.1", title: "ISO 9001 + IATF Entegre Yönetim Sistemi Olgunlaşması" }
+      - { code: "3.C",   title: "Esnek ve Hibrit Çalışma" }
+  - code: "H4"
+    title: "İhracat Açılımı ve Avrupa Pazarı"
+    description: "İlk Avrupa müşterisi 2023'te kazanıldı; bugün ihracat payı %22."
+    sub_strategies:
+      - { code: "4.A",   title: "Avrupa Tier-1 Tedarikçi Sertifikasyonu" }
+      - { code: "4.A.1", title: "Almanya VW Group Onboarding (devam)" }
+      - { code: "4.A.2", title: "CBAM Uyum Hazırlığı (2027 yürürlük)" }
+  - code: "H5"
+    title: "Elektrikli Araç Parça Üretimi (EV Pivot)"
+    description: "2024'te başlayan stratejik pivot; bugün cironun %38'i. 2030 hedef %75."
+    sub_strategies:
+      - { code: "5.A",   title: "E-Motor Stator ve Rotor Üretimi" }
+      - { code: "5.A.1", title: "Stator Lamination — Yıllık 25.000 → 80.000 adet" }
+      - { code: "5.A.2", title: "Rotor Mil + Mıknatıs Montaj" }
+      - { code: "5.A.3", title: "Hairpin Sargı Teknolojisi Lisansı (Bosch ortaklığı)" }
+      - { code: "5.A.4", title: "V2G / V2H Teknoloji İzleme" }
+      - { code: "5.B",   title: "Batarya Hücre Kasası Üretimi" }
+      - { code: "5.B.1", title: "Alüminyum Pres + İşleme — TOGG Tedariki" }
+  - code: "H6"
+    title: "Sürdürülebilirlik ve ESG Liderliği"
+    description: "CBAM hazırlık + müşteri ESG talebi + B Corp yolculuğu."
+    sub_strategies:
+      - { code: "6.A",   title: "Karbon Ayak İzi Yönetimi" }
+      - { code: "6.A.1", title: "Scope 1+2 Ölçümü ve Yıllık Raporlama" }
+      - { code: "6.A.2", title: "Çatı GES — 250 kWp (2026)" }
+      - { code: "6.B",   title: "Geri Dönüşümlü Hammadde" }
+      - { code: "6.B.1", title: "Alüminyum Geri Dönüşüm %40 hedefi (batarya kasası)" }
+  - code: "H7"
+    title: "Dijital Operasyon ve Endüstri 4.0"
+    description: "Predictive maintenance + dijital ikiz + MES entegrasyonu."
+    sub_strategies:
+      - { code: "7.A",   title: "Industry 4.0 Altyapı" }
+      - { code: "7.A.1", title: "Predictive Maintenance — IoT Sensör + ML Model" }
+      - { code: "7.A.2", title: "Dijital İkiz — Hat 2 Sanal Devreye Alma" }
+      - { code: "7.A.3", title: "MES + ERP Tam Entegrasyon" }
+
+# ============================================================================
+# SURECLER (2026 baseline)
+# ============================================================================
+processes:
+  - { code: "P2M", name: "Planlama'dan Üretime",  english_name: "Plan-to-Manufacture",  weight: 18, description: "CNC + montaj + kalite kontrol",                                  linked_sub_strategy_codes: ["2.A.1", "2.C.1", "5.A.1", "5.B.1", "7.A.1"], owner_email: "mehmet.aktas@tomofil.test" }
+  - { code: "S2P", name: "Tedarik'ten Ödemeye",   english_name: "Source-to-Pay",        weight: 12, description: "Çelik + alüminyum + bakır tedarik",                              linked_sub_strategy_codes: ["6.B.1"], owner_email: "ali.kaplan@tomofil.test" }
+  - { code: "A2R", name: "Müşteri Edinme ve Tutma", english_name: "Acquire-to-Retain",   weight: 12, description: "OEM ilişki yönetimi, RFQ",                                       linked_sub_strategy_codes: ["1.A.1", "4.A.1", "5.A.1"], owner_email: "sibel.demir@tomofil.test" }
+  - { code: "H2R", name: "İşe Alım'dan Emekliliğe", english_name: "Hire-to-Retire",     weight: 8,  description: "İK yaşam döngüsü",                                                linked_sub_strategy_codes: ["3.A.1", "3.C"], owner_email: "pinar.aksoy@tomofil.test" }
+  - { code: "R2R", name: "Kayıt'tan Raporlamaya", english_name: "Record-to-Report",     weight: 8,  description: "Mali kayıt + IATF doküman",                                       linked_sub_strategy_codes: ["2.B.1"], owner_email: "okan.celikkol@tomofil.test" }
+  - { code: "I2R", name: "Sorun'dan Çözüme",      english_name: "Issue-to-Resolution",  weight: 7,  description: "8D + reklamasyon yönetimi",                                       linked_sub_strategy_codes: ["2.B.2"], owner_email: "esra.sen@tomofil.test" }
+  - { code: "C2L", name: "Konsept'ten Lansmana",  english_name: "Concept-to-Launch",    weight: 10, description: "Yeni parça APQP/PPAP süreci",                                     linked_sub_strategy_codes: ["2.D", "4.A.1", "5.A.1", "5.B.1"], owner_email: "taylan.koc@tomofil.test" }
+  - { code: "B2R", name: "Bataryadan Geri Dönüşüme", english_name: "Battery-to-Recycle", weight: 8, description: "Batarya kasası geri kazanım + alüminyum döngü",                  linked_sub_strategy_codes: ["6.B.1"], owner_email: "mehmet.aktas@tomofil.test" }
+  - { code: "R2M", name: "Risk'ten Azaltmaya",    english_name: "Risk-to-Mitigation",   weight: 7,  description: "CBAM, döviz, OEM bağımlılık riskleri",                           linked_sub_strategy_codes: ["4.A.2", "6.A.1"], owner_email: "okan.celikkol@tomofil.test" }
+  - { code: "D2I", name: "Veri'den İçgörüye",     english_name: "Data-to-Insight",      weight: 5,  description: "BI + IoT veri akışı + analitik",                                  linked_sub_strategy_codes: ["7.A.1", "7.A.2", "7.A.3"], owner_email: "fatih.demirel@tomofil.test" }
+  - { code: "S2E", name: "Strateji'den İcraya",   english_name: "Strategy-to-Execution", weight: 5, description: "Stratejik plan yönetişimi + OKR",                                 linked_sub_strategy_codes: [], owner_email: "admin@tomofil.test" }
+
+# ============================================================================
+# KPI'LAR (2026 baseline — ~50)
+# ============================================================================
+# is_important: true olanlar UI'da yildiz isaretlenir.
+# direction: Increasing / Decreasing  | period: Aylik / Ceyreklik / Yillik / Haftalik
+# baseline_2021: KPI ilk olcum / olmadan onceki referans deger (kpi_data uretiminde kullanilir)
+process_kpis:
+  # ─── P2M ─────────────────────────────────────────────────────────────
+  - { process_code: "P2M", code: "P2M-01", name: "OEE (%)",                              unit: "%",     period: "Aylik",  target_value: "88",   direction: "Increasing", weight: 25, is_important: true,  linked_sub_strategy_code: "2.C.1", baseline_2021: 62, baseline_2026_actual: 76 }
+  - { process_code: "P2M", code: "P2M-02", name: "FPY — First Pass Yield (%)",           unit: "%",     period: "Aylik",  target_value: "98",   direction: "Increasing", weight: 20, is_important: true,  baseline_2021: 88, baseline_2026_actual: 93 }
+  - { process_code: "P2M", code: "P2M-03", name: "PPM Hata Oranı",                       unit: "ppm",   period: "Aylik",  target_value: "50",   direction: "Decreasing", weight: 20, is_important: true,  linked_sub_strategy_code: "2.B.2", baseline_2021: 380, baseline_2026_actual: 110 }
+  - { process_code: "P2M", code: "P2M-04", name: "Birim Üretim Maliyeti (TL/parça)",     unit: "TL",    period: "Aylik",  target_value: "145",  direction: "Decreasing", weight: 15, baseline_2021: 240, baseline_2026_actual: 170 }
+  - { process_code: "P2M", code: "P2M-05", name: "Aylık Üretim Adedi (e-motor stator)", unit: "adet",  period: "Aylik",  target_value: "6500", direction: "Increasing", weight: 10, linked_sub_strategy_code: "5.A.1", baseline_2021: 0, baseline_2026_actual: 4200, start_year: 2024 }
+  - { process_code: "P2M", code: "P2M-06", name: "Yenilenebilir Enerji Oranı (%)",       unit: "%",     period: "Aylik",  target_value: "45",   direction: "Increasing", weight: 10, linked_sub_strategy_code: "6.A.2", baseline_2021: 0, baseline_2026_actual: 22, start_year: 2025 }
+  # ─── S2P ─────────────────────────────────────────────────────────────
+  - { process_code: "S2P", code: "S2P-01", name: "Tedarikçi OTD (%)",                    unit: "%",     period: "Aylik",  target_value: "96",   direction: "Increasing", weight: 30, is_important: true, baseline_2021: 78, baseline_2026_actual: 90 }
+  - { process_code: "S2P", code: "S2P-02", name: "Çift-Kaynak Oranı (%)",                unit: "%",     period: "Ceyreklik", target_value: "100", direction: "Increasing", weight: 25, is_important: true, baseline_2021: 45, baseline_2026_actual: 85 }
+  - { process_code: "S2P", code: "S2P-03", name: "Hammadde Maliyeti Sapması (%)",        unit: "%",     period: "Aylik",  target_value: "3",    direction: "Decreasing", weight: 20, baseline_2021: 18, baseline_2026_actual: 8 }
+  - { process_code: "S2P", code: "S2P-04", name: "Geri Dönüşmüş Alüminyum Oranı (%)",   unit: "%",     period: "Aylik",  target_value: "40",   direction: "Increasing", weight: 15, linked_sub_strategy_code: "6.B.1", baseline_2021: 0, baseline_2026_actual: 18, start_year: 2025 }
+  - { process_code: "S2P", code: "S2P-05", name: "Tedarikçi Kalite (PPM)",                unit: "ppm",   period: "Aylik",  target_value: "80",   direction: "Decreasing", weight: 10, baseline_2021: 420, baseline_2026_actual: 160 }
+  # ─── A2R ─────────────────────────────────────────────────────────────
+  - { process_code: "A2R", code: "A2R-01", name: "RFQ → Sipariş Dönüşümü (%)",          unit: "%",     period: "Aylik",  target_value: "32",   direction: "Increasing", weight: 25, is_important: true, baseline_2021: 12, baseline_2026_actual: 24 }
+  - { process_code: "A2R", code: "A2R-02", name: "Müşteri Sayısı (OEM + Tier-1)",       unit: "adet",  period: "Yillik", target_value: "14",   direction: "Increasing", weight: 15, baseline_2021: 2,  baseline_2026_actual: 10 }
+  - { process_code: "A2R", code: "A2R-03", name: "Müşteri NPS",                          unit: "skor",  period: "Yillik", target_value: "62",   direction: "Increasing", weight: 20, is_important: true, baseline_2021: 25, baseline_2026_actual: 42 }
+  - { process_code: "A2R", code: "A2R-04", name: "İhracat Payı (%)",                     unit: "%",     period: "Ceyreklik", target_value: "32", direction: "Increasing", weight: 25, is_important: true, linked_sub_strategy_code: "4.A.1", baseline_2021: 0, baseline_2026_actual: 26, start_year: 2023 }
+  - { process_code: "A2R", code: "A2R-05", name: "EV Cirosu Payı (%)",                   unit: "%",     period: "Ceyreklik", target_value: "48", direction: "Increasing", weight: 15, is_important: true, linked_sub_strategy_code: "5.A.1", baseline_2021: 0, baseline_2026_actual: 41, start_year: 2024 }
+  # ─── C2L (2023'te baslar) ────────────────────────────────────────────
+  - { process_code: "C2L", code: "C2L-01", name: "APQP Aşama Tamamlama Süresi (gün)",   unit: "gün",   period: "Aylik",  target_value: "180",  direction: "Decreasing", weight: 25, linked_sub_strategy_code: "2.D", baseline_2021: 320, baseline_2026_actual: 220, start_year: 2023 }
+  - { process_code: "C2L", code: "C2L-02", name: "PPAP İlk Defa Onay (%)",               unit: "%",     period: "Ceyreklik", target_value: "85", direction: "Increasing", weight: 25, is_important: true, baseline_2021: 45, baseline_2026_actual: 68, start_year: 2023 }
+  - { process_code: "C2L", code: "C2L-03", name: "Yıllık Yeni Parça Tesciliği",          unit: "adet",  period: "Yillik", target_value: "18",   direction: "Increasing", weight: 20, baseline_2021: 5, baseline_2026_actual: 14, start_year: 2023 }
+  - { process_code: "C2L", code: "C2L-04", name: "Hairpin Sargı Teknolojisi Olgunluğu", unit: "skor",  period: "Ceyreklik", target_value: "4.5", direction: "Increasing", weight: 15, linked_sub_strategy_code: "5.A.3", baseline_2021: 0, baseline_2026_actual: 3.5, start_year: 2024 }
+  - { process_code: "C2L", code: "C2L-05", name: "Tasarım → İlk Numune Süresi (gün)",   unit: "gün",   period: "Aylik",  target_value: "45",   direction: "Decreasing", weight: 15, baseline_2021: 95, baseline_2026_actual: 60, start_year: 2023 }
+  # ─── B2R (2024'te baslar) ────────────────────────────────────────────
+  - { process_code: "B2R", code: "B2R-01", name: "Batarya Kasası Geri Kazanım Oranı (%)", unit: "%",   period: "Aylik",  target_value: "92",   direction: "Increasing", weight: 35, is_important: true, linked_sub_strategy_code: "6.B.1", baseline_2021: 0, baseline_2026_actual: 78, start_year: 2024 }
+  - { process_code: "B2R", code: "B2R-02", name: "Alüminyum Döngü Verimi (%)",            unit: "%",   period: "Aylik",  target_value: "97",   direction: "Increasing", weight: 30, baseline_2021: 0, baseline_2026_actual: 88, start_year: 2024 }
+  - { process_code: "B2R", code: "B2R-03", name: "Atık Aluminyum Hurda Geliri (TL/ay)",  unit: "TL",  period: "Aylik",  target_value: "180000", direction: "Increasing", weight: 20, baseline_2021: 0, baseline_2026_actual: 110000, start_year: 2024 }
+  - { process_code: "B2R", code: "B2R-04", name: "Karbon Tasarrufu (ton CO2/yıl)",        unit: "ton", period: "Yillik", target_value: "85",   direction: "Increasing", weight: 15, baseline_2021: 0, baseline_2026_actual: 48, start_year: 2024 }
+  # ─── H2R ─────────────────────────────────────────────────────────────
+  - { process_code: "H2R", code: "H2R-01", name: "İşe Alım Süresi (gün)",                  unit: "gün",  period: "Aylik",  target_value: "32",  direction: "Decreasing", weight: 20, baseline_2021: 55, baseline_2026_actual: 38 }
+  - { process_code: "H2R", code: "H2R-02", name: "eNPS",                                    unit: "skor", period: "Yillik", target_value: "50",  direction: "Increasing", weight: 25, is_important: true, baseline_2021: 18, baseline_2026_actual: 32 }
+  - { process_code: "H2R", code: "H2R-03", name: "Yıllık Çıkış Oranı (%)",                  unit: "%",   period: "Yillik", target_value: "6",   direction: "Decreasing", weight: 20, is_important: true, baseline_2021: 15, baseline_2026_actual: 8 }
+  - { process_code: "H2R", code: "H2R-04", name: "Eğitim Saati/Kişi (yıl)",                unit: "saat", period: "Yillik", target_value: "48",  direction: "Increasing", weight: 15, baseline_2021: 12, baseline_2026_actual: 32 }
+  - { process_code: "H2R", code: "H2R-05", name: "Cinsiyet Çeşitliliği — Kadın Mühendis (%)", unit: "%", period: "Yillik", target_value: "30", direction: "Increasing", weight: 10, baseline_2021: 12, baseline_2026_actual: 22 }
+  - { process_code: "H2R", code: "H2R-06", name: "Onboarding Tamamlama (%)",                unit: "%",  period: "Aylik",  target_value: "95",  direction: "Increasing", weight: 10, baseline_2021: 72, baseline_2026_actual: 88 }
+  # ─── R2R ─────────────────────────────────────────────────────────────
+  - { process_code: "R2R", code: "R2R-01", name: "Ay Kapanış Süresi (iş günü)",             unit: "gün",  period: "Aylik",  target_value: "5",    direction: "Decreasing", weight: 25, baseline_2021: 12, baseline_2026_actual: 7 }
+  - { process_code: "R2R", code: "R2R-02", name: "Mali Rapor Doğruluğu (%)",                 unit: "%",    period: "Aylik",  target_value: "99.7", direction: "Increasing", weight: 25, is_important: true, baseline_2021: 96, baseline_2026_actual: 98.6 }
+  - { process_code: "R2R", code: "R2R-03", name: "IATF Doküman Doğruluğu (%)",                unit: "%",   period: "Ceyreklik", target_value: "100", direction: "Increasing", weight: 20, is_important: true, linked_sub_strategy_code: "2.B.1", baseline_2021: 78, baseline_2026_actual: 95, start_year: 2023 }
+  - { process_code: "R2R", code: "R2R-04", name: "Denetim Bulgu Sayısı (IATF/ISO)",          unit: "adet", period: "Yillik", target_value: "0",    direction: "Decreasing", weight: 20, is_important: true, baseline_2021: 8, baseline_2026_actual: 1 }
+  - { process_code: "R2R", code: "R2R-05", name: "EBITDA Marjı (%)",                          unit: "%",   period: "Yillik", target_value: "18",   direction: "Increasing", weight: 10, is_important: true, baseline_2021: 6, baseline_2026_actual: 13 }
+  # ─── I2R ─────────────────────────────────────────────────────────────
+  - { process_code: "I2R", code: "I2R-01", name: "8D Açma Süresi (saat)",                    unit: "saat", period: "Aylik",  target_value: "24", direction: "Decreasing", weight: 25, is_important: true, baseline_2021: 96, baseline_2026_actual: 38 }
+  - { process_code: "I2R", code: "I2R-02", name: "Reklamasyon Çözüm Süresi (gün)",            unit: "gün", period: "Aylik",  target_value: "14", direction: "Decreasing", weight: 25, baseline_2021: 42, baseline_2026_actual: 22 }
+  - { process_code: "I2R", code: "I2R-03", name: "Garanti Maliyeti / Sevkiyat (TL/parça)",   unit: "TL",  period: "Aylik",  target_value: "8",  direction: "Decreasing", weight: 20, baseline_2021: 38, baseline_2026_actual: 15 }
+  - { process_code: "I2R", code: "I2R-04", name: "Kalıcı Çözüm Oranı (%)",                    unit: "%",   period: "Ceyreklik", target_value: "95", direction: "Increasing", weight: 20, is_important: true, baseline_2021: 58, baseline_2026_actual: 82 }
+  - { process_code: "I2R", code: "I2R-05", name: "Müşteri Reklamasyon Sayısı / Ay",          unit: "adet", period: "Aylik", target_value: "2", direction: "Decreasing", weight: 10, baseline_2021: 12, baseline_2026_actual: 5 }
+  # ─── R2M (2025'te baslar) ────────────────────────────────────────────
+  - { process_code: "R2M", code: "R2M-01", name: "CBAM Hazırlık Olgunluk Skoru",              unit: "skor", period: "Ceyreklik", target_value: "4.5", direction: "Increasing", weight: 30, is_important: true, linked_sub_strategy_code: "4.A.2", baseline_2021: 0, baseline_2026_actual: 3.2, start_year: 2025 }
+  - { process_code: "R2M", code: "R2M-02", name: "OEM Müşteri Konsantrasyon Riski (%)",       unit: "%",   period: "Ceyreklik", target_value: "40", direction: "Decreasing", weight: 25, is_important: true, baseline_2021: 78, baseline_2026_actual: 58, start_year: 2025 }
+  - { process_code: "R2M", code: "R2M-03", name: "Döviz Kuru Hedge Oranı (%)",                 unit: "%",  period: "Aylik",  target_value: "75",   direction: "Increasing", weight: 25, baseline_2021: 0, baseline_2026_actual: 52, start_year: 2025 }
+  - { process_code: "R2M", code: "R2M-04", name: "Aktif Risk Sayısı",                          unit: "adet", period: "Ceyreklik", target_value: "15", direction: "Decreasing", weight: 10, baseline_2021: 0, baseline_2026_actual: 22, start_year: 2025 }
+  - { process_code: "R2M", code: "R2M-05", name: "Risk Azaltma Etkinliği (%)",                 unit: "%",   period: "Yillik", target_value: "85",   direction: "Increasing", weight: 10, baseline_2021: 0, baseline_2026_actual: 68, start_year: 2025 }
+  # ─── D2I (2026'da baslar) ────────────────────────────────────────────
+  - { process_code: "D2I", code: "D2I-01", name: "Predictive Maintenance Yakalama (%)",       unit: "%",   period: "Aylik",  target_value: "75",  direction: "Increasing", weight: 30, is_important: true, linked_sub_strategy_code: "7.A.1", baseline_2021: 0, baseline_2026_actual: 28, start_year: 2026 }
+  - { process_code: "D2I", code: "D2I-02", name: "Dijital İkiz Doğruluk (%)",                  unit: "%",  period: "Ceyreklik", target_value: "92", direction: "Increasing", weight: 25, linked_sub_strategy_code: "7.A.2", baseline_2021: 0, baseline_2026_actual: 65, start_year: 2026 }
+  - { process_code: "D2I", code: "D2I-03", name: "MES → ERP Veri Senkron Hata Oranı (%)",     unit: "%",   period: "Haftalik", target_value: "0.5", direction: "Decreasing", weight: 20, linked_sub_strategy_code: "7.A.3", baseline_2021: 0, baseline_2026_actual: 2.8, start_year: 2026 }
+  - { process_code: "D2I", code: "D2I-04", name: "Self-Service Analitik Kullanıcı Sayısı",     unit: "kişi", period: "Aylik",  target_value: "45",  direction: "Increasing", weight: 15, baseline_2021: 0, baseline_2026_actual: 18, start_year: 2026 }
+  - { process_code: "D2I", code: "D2I-05", name: "Veri Kalite Skoru",                          unit: "skor", period: "Ceyreklik", target_value: "92", direction: "Increasing", weight: 10, baseline_2021: 0, baseline_2026_actual: 72, start_year: 2026 }
+  # ─── S2E ─────────────────────────────────────────────────────────────
+  - { process_code: "S2E", code: "S2E-01", name: "OKR Hedef Gerçekleşme (%)",                  unit: "%",   period: "Ceyreklik", target_value: "78", direction: "Increasing", weight: 30, is_important: true, baseline_2021: 32, baseline_2026_actual: 62 }
+  - { process_code: "S2E", code: "S2E-02", name: "Süreç Olgunluk Ortalaması (1-5)",            unit: "skor", period: "Yillik", target_value: "4.0", direction: "Increasing", weight: 30, is_important: true, baseline_2021: 1.8, baseline_2026_actual: 3.0 }
+  - { process_code: "S2E", code: "S2E-03", name: "Stratejik İnisiyatif Tamamlama (%)",          unit: "%",  period: "Yillik", target_value: "85",  direction: "Increasing", weight: 20, baseline_2021: 45, baseline_2026_actual: 72 }
+  - { process_code: "S2E", code: "S2E-04", name: "Yönetim Raporu Yayın Doğruluğu (%)",          unit: "%",  period: "Aylik",  target_value: "99",  direction: "Increasing", weight: 20, baseline_2021: 78, baseline_2026_actual: 95 }
+
+# ============================================================================
+# MANUEL KULLANICILAR (20 — yoneticiler + surec sahipleri)
+# ============================================================================
+# Geri kalan ~80 calisan, employees_generation kurali ile uretilir.
+users:
+  # C-Suite
+  - { email: "deniz.tunc@tomofil.test",       first_name: "Deniz",     last_name: "Tunç",       role: "executive_manager", job_title: "CEO",                          department: "Yönetim",                       process_codes: ["S2E"],          hire_year: 2021 }
+  - { email: "cansu.aydin@tomofil.test",      first_name: "Cansu",     last_name: "Aydın",      role: "executive_manager", job_title: "COO",                          department: "Yönetim",                       process_codes: ["P2M","S2P"],   hire_year: 2021 }
+  - { email: "okan.celikkol@tomofil.test",    first_name: "Okan",      last_name: "Çelikkol",   role: "executive_manager", job_title: "CFO",                          department: "Finans",                        process_codes: ["R2R","R2M"],   hire_year: 2022 }
+  - { email: "selim.korkmaz@tomofil.test",    first_name: "Selim",     last_name: "Korkmaz",    role: "executive_manager", job_title: "CTO",                          department: "Bilgi Teknolojileri",           process_codes: ["D2I"],          hire_year: 2024 }
+  - { email: "esin.demir@tomofil.test",       first_name: "Esin",      last_name: "Demir",      role: "executive_manager", job_title: "CHRO",                         department: "İnsan Kaynakları",              process_codes: ["H2R"],          hire_year: 2023 }
+  # Surec sahipleri
+  - { email: "mehmet.aktas@tomofil.test",     first_name: "Mehmet",    last_name: "Aktaş",      role: "executive_manager", job_title: "Üretim Müdürü",                department: "Üretim — CNC + Montaj",         process_codes: ["P2M","B2R"],   hire_year: 2021 }
+  - { email: "ali.kaplan@tomofil.test",       first_name: "Ali",       last_name: "Kaplan",     role: "executive_manager", job_title: "Tedarik Müdürü",                department: "Tedarik ve Lojistik",           process_codes: ["S2P"],          hire_year: 2021 }
+  - { email: "sibel.demir@tomofil.test",      first_name: "Sibel",     last_name: "Demir",      role: "executive_manager", job_title: "Satış Direktörü",              department: "Satış (OEM + İhracat)",         process_codes: ["A2R"],          hire_year: 2023 }
+  - { email: "pinar.aksoy@tomofil.test",      first_name: "Pınar",     last_name: "Aksoy",      role: "executive_manager", job_title: "İK Müdürü",                    department: "İnsan Kaynakları",              process_codes: ["H2R"],          hire_year: 2022 }
+  - { email: "esra.sen@tomofil.test",         first_name: "Esra",      last_name: "Şen",        role: "executive_manager", job_title: "Müşteri Hizmetleri Müdürü",    department: "Müşteri Hizmetleri ve Garanti", process_codes: ["I2R"],          hire_year: 2022 }
+  - { email: "taylan.koc@tomofil.test",       first_name: "Taylan",    last_name: "Koç",        role: "executive_manager", job_title: "Ar-Ge Müdürü",                  department: "Ar-Ge ve Tasarım",              process_codes: ["C2L"],          hire_year: 2023 }
+  - { email: "fatih.demirel@tomofil.test",    first_name: "Fatih",     last_name: "Demirel",    role: "executive_manager", job_title: "Veri ve Analitik Yöneticisi",  department: "Bilgi Teknolojileri",           process_codes: ["D2I"],          hire_year: 2026 }
+  # Departman / Birim
+  - { email: "ozge.kara@tomofil.test",        first_name: "Özge",      last_name: "Kara",       role: "executive_manager", job_title: "Kalite Güvence Müdürü",         department: "Üretim — Kalite Güvence",       process_codes: ["P2M","I2R"],   hire_year: 2021 }
+  - { email: "burak.yilmaz@tomofil.test",     first_name: "Burak",     last_name: "Yılmaz",     role: "executive_manager", job_title: "Bakım Müdürü",                  department: "Üretim — Bakım",                process_codes: ["P2M","D2I"],   hire_year: 2021 }
+  - { email: "ipek.gunes@tomofil.test",       first_name: "İpek",      last_name: "Güneş",      role: "executive_manager", job_title: "Sürdürülebilirlik Direktörü",   department: "Sürdürülebilirlik ve ESG",      process_codes: ["B2R","R2M"],   hire_year: 2025 }
+  - { email: "mert.aslan@tomofil.test",       first_name: "Mert",      last_name: "Aslan",      role: "executive_manager", job_title: "İhracat Müdürü",                department: "Satış (OEM + İhracat)",         process_codes: ["A2R","R2M"],   hire_year: 2023 }
+  - { email: "leyla.celik@tomofil.test",      first_name: "Leyla",     last_name: "Çelik",      role: "executive_manager", job_title: "EV Teknoloji Lideri",           department: "Ar-Ge ve Tasarım",              process_codes: ["C2L"],          hire_year: 2024 }
+  - { email: "tuncay.ozdemir@tomofil.test",   first_name: "Tuncay",    last_name: "Özdemir",    role: "executive_manager", job_title: "HSE Müdürü",                    department: "Sağlık-Güvenlik-Çevre",         process_codes: ["R2M"],          hire_year: 2021 }
+  - { email: "ferda.bulut@tomofil.test",      first_name: "Ferda",     last_name: "Bulut",      role: "executive_manager", job_title: "Strateji ve PMO Lideri",        department: "Strateji ve PMO",               process_codes: ["S2E"],          hire_year: 2023 }
+  - { email: "selin.akar@tomofil.test",       first_name: "Selin",     last_name: "Akar",       role: "executive_manager", job_title: "Pazarlama Yöneticisi",          department: "Pazarlama ve İletişim",         process_codes: ["A2R"],          hire_year: 2024 }
+
+# ============================================================================
+# CALISAN URETIM KURALLARI (bulk: ~80 kisi)
+# ============================================================================
+# Generic seed script bu kurallari kullanarak 80 calisan uretir.
+# Manuel 20 + bulk 80 + admin 1 = 101 user
+employees_generation:
+  total_bulk: 80
+  password: "Tomofil2026!"
+  # Departman dagilimi (manuel kullanicilarin kapsadigi ek sayilar):
+  departments:
+    - { name: "Üretim — CNC + Montaj",         count: 22, role: "standard_user", titles: ["CNC Operatörü", "CNC Operatörü (Kıdemli)", "Montaj Operatörü", "Ustabaşı"] }
+    - { name: "Üretim — Kalite Güvence",       count: 7,  role: "standard_user", titles: ["Kalite Kontrol Uzmanı", "Kalite Mühendisi", "Saha Kontrol Operatörü"] }
+    - { name: "Üretim — Bakım",                count: 5,  role: "standard_user", titles: ["Bakım Teknisyeni", "Bakım Mühendisi", "Mekatronik Teknisyen"] }
+    - { name: "Ar-Ge ve Tasarım",               count: 8,  role: "standard_user", titles: ["Makine Mühendisi (Ar-Ge)", "Tasarım Uzmanı", "APQP Uzmanı", "Elektrik Mühendisi (EV)"] }
+    - { name: "Tedarik ve Lojistik",            count: 6,  role: "standard_user", titles: ["Satınalma Uzmanı", "Lojistik Uzmanı", "Tedarikçi Geliştirme Uzmanı", "Sevkiyat Operatörü"] }
+    - { name: "Satış (OEM + İhracat)",          count: 5,  role: "standard_user", titles: ["Satış Uzmanı", "Key Account Manager", "İhracat Uzmanı"] }
+    - { name: "İnsan Kaynakları",               count: 3,  role: "standard_user", titles: ["İK Uzmanı", "Eğitim Sorumlusu"] }
+    - { name: "Finans ve Muhasebe",             count: 4,  role: "standard_user", titles: ["Muhasebe Uzmanı", "Mali Analist", "Bütçe Uzmanı"] }
+    - { name: "Bilgi Teknolojileri",            count: 3,  role: "standard_user", titles: ["BT Uzmanı", "Veri Analisti", "Sistem Yöneticisi"] }
+    - { name: "Sürdürülebilirlik ve ESG",       count: 2,  role: "standard_user", titles: ["ESG Uzmanı", "Karbon Ölçüm Uzmanı"] }
+    - { name: "Müşteri Hizmetleri ve Garanti",  count: 2,  role: "standard_user", titles: ["Müşteri Hizmetleri Uzmanı", "8D Sorumlusu"] }
+    - { name: "Strateji ve PMO",                count: 2,  role: "standard_user", titles: ["Proje Yöneticisi", "Strateji Uzmanı"] }
+    - { name: "Sağlık-Güvenlik-Çevre",          count: 2,  role: "standard_user", titles: ["İSG Uzmanı", "Çevre Uzmanı"] }
+    - { name: "Pazarlama ve İletişim",          count: 1,  role: "standard_user", titles: ["Pazarlama Uzmanı"] }
+    - { name: "Hukuk ve Uyum",                  count: 2,  role: "standard_user", titles: ["Hukuk Müşaviri", "Uyum Uzmanı"] }
+    - { name: "Eğitim ve Akademi",              count: 2,  role: "standard_user", titles: ["Eğitim Tasarım Uzmanı", "Çırak/Stajyer Sorumlusu"] }
+  # Calisan ismi havuzu (Turk isim/soyisim)
+  first_names_male:   ["Ahmet","Mehmet","Mustafa","Ali","Hüseyin","İbrahim","Hasan","Murat","Yusuf","Emre","Burak","Onur","Serkan","Cem","Tolga","Levent","Kerem","Berk","Furkan","Eren","Volkan","Engin","Caner","Sinan","Tayfun","Erdem","Barış","Ozan","Kaan","Doğan","Can","Mete","Gökhan","Ergin","Selçuk","Mert","Halil","Ramazan","Yiğit","Bora","Korhan","Erkan","Hakan","Umut","Berkay","Atakan"]
+  first_names_female: ["Ayşe","Fatma","Emine","Hatice","Zeynep","Elif","Merve","Şeyma","Esra","Buse","Selin","Eda","Aslı","Cansu","Pınar","Burcu","Tuğçe","Gizem","Sema","Nilgün","Funda","Yeliz","İlayda","Sıla","Beyza","Damla","Gamze","Banu","Nurdan","Ece","İrem","Sevda","Begüm","Tuğba","Defne","Berrin","Asuman","Esma","Hande","Sevgi","Şule","Tülay","Gözde","Aslıhan","Çiğdem"]
+  last_names:         ["Yılmaz","Kaya","Demir","Çelik","Şahin","Yıldız","Yıldırım","Öztürk","Aydın","Özdemir","Arslan","Doğan","Kılıç","Aslan","Çetin","Kara","Koç","Kurt","Özkan","Şimşek","Erdoğan","Akın","Çakır","Polat","Ünal","Bulut","Tekin","Korkmaz","Erdem","Güneş","Kaplan","Avcı","Tunç","Saraç","Aktaş","Kahraman","Gül","Acar","Bayram","Demirel","Toprak","Güler","Soylu","Karadağ","Boz","Uçar","Eren","Köse"]
+  female_ratio: 0.22  # %22 kadin oran
+  # Ise alim yili dagilimi (pandemi etkili, year_deltas ile uyumlu)
+  hire_year_distribution: {2021: 35, 2022: 5, 2023: 12, 2024: 15, 2025: 8, 2026: 5}
+
+# ============================================================================
+# SUREC FAALIYETLERI (10 ornek — 2024-2026)
+# ============================================================================
+process_activities:
+  - { process_code: "C2L", name: "E-motor Stator Lamination Hat Kurulumu", description: "İlk e-motor stator hattı devreye alma — TOGG ve Renault Türkiye için.", start_date: "2024-01-15", end_date: "2024-09-30", status: "Tamamlandı", progress: 100, assignee_emails: ["leyla.celik@tomofil.test"], linked_kpi_code: "P2M-05" }
+  - { process_code: "C2L", name: "Hairpin Sargı Teknolojisi Lisansı (Bosch)", description: "Bosch ile teknoloji transfer + ortak APQP süreci.", start_date: "2024-06-01", end_date: "2025-12-31", status: "Devam Ediyor", progress: 80, assignee_emails: ["leyla.celik@tomofil.test","taylan.koc@tomofil.test"], linked_kpi_code: "C2L-04" }
+  - { process_code: "P2M", name: "5-Eksen İşleme Merkezi #3 Yatırımı", description: "DMG Mori 5-eksen alımı + devreye alma.", start_date: "2025-03-01", end_date: "2025-12-31", status: "Tamamlandı", progress: 100, assignee_emails: ["mehmet.aktas@tomofil.test"], linked_kpi_code: "P2M-01" }
+  - { process_code: "B2R", name: "Alüminyum Hurda Geri Dönüşüm Hattı Kurulumu", description: "İçeride döküm yerine geri kazanım hattı.", start_date: "2024-09-01", end_date: "2025-06-30", status: "Tamamlandı", progress: 100, assignee_emails: ["ipek.gunes@tomofil.test","mehmet.aktas@tomofil.test"], linked_kpi_code: "B2R-01" }
+  - { process_code: "R2M", name: "CBAM Hazırlık Programı (Faz 1)", description: "Karbon ölçüm + raporlama altyapısı + tedarikçi yönlendirme.", start_date: "2025-04-01", end_date: "2026-12-31", status: "Devam Ediyor", progress: 65, assignee_emails: ["ipek.gunes@tomofil.test","okan.celikkol@tomofil.test"], linked_kpi_code: "R2M-01" }
+  - { process_code: "P2M", name: "Çatı GES Yatırımı 250 kWp", description: "Çatı güneş enerjisi devreye alma.", start_date: "2026-02-01", end_date: "2026-09-30", status: "Devam Ediyor", progress: 55, assignee_emails: ["ipek.gunes@tomofil.test"], linked_kpi_code: "P2M-06" }
+  - { process_code: "D2I", name: "Predictive Maintenance Pilot (Hat 2)", description: "5 CNC tezgah + ML model.", start_date: "2026-03-15", end_date: "2026-10-31", status: "Devam Ediyor", progress: 35, assignee_emails: ["fatih.demirel@tomofil.test","burak.yilmaz@tomofil.test"], linked_kpi_code: "D2I-01" }
+  - { process_code: "D2I", name: "Dijital İkiz — Hat 2 PoC", description: "Sanal devreye alma + senaryo testi.", start_date: "2026-04-01", end_date: "2026-12-31", status: "Devam Ediyor", progress: 20, assignee_emails: ["fatih.demirel@tomofil.test"], linked_kpi_code: "D2I-02" }
+  - { process_code: "H2R", name: "Pandemi Sonrası Kadro Yapılandırma", description: "2022 daraltma sonrası 2023 toparlanma + yeni işe alım planı.", start_date: "2023-01-01", end_date: "2023-06-30", status: "Tamamlandı", progress: 100, assignee_emails: ["pinar.aksoy@tomofil.test"], linked_kpi_code: "H2R-01" }
+  - { process_code: "A2R", name: "İlk Avrupa Müşteri Kazanımı (Almanya)", description: "VW Group tier-2 onboarding süreci.", start_date: "2023-02-01", end_date: "2023-11-30", status: "Tamamlandı", progress: 100, assignee_emails: ["mert.aslan@tomofil.test"], linked_kpi_code: "A2R-04" }
+
+# ============================================================================
+# PROJELER + GOREVLER
+# ============================================================================
+projects:
+  - name: "EV Pivot — e-Motor Stator Hattı"
+    description: "Tomofil'in en kritik stratejik projesi. EV parça portföyünün omurgası."
+    start_date: "2024-01-15"
+    end_date: "2025-12-31"
+    priority: "Yüksek"
+    manager_email: "leyla.celik@tomofil.test"
+    health_status: "İyi"
+    linked_sub_strategy_codes: ["5.A.1", "5.A.3"]
+    tasks:
+      - { title: "Yatırım onayı + makine seçimi",  assignee_email: "cansu.aydin@tomofil.test", start_date: "2024-01-15", end_date: "2024-04-30", status: "Tamamlandı", priority: "High" }
+      - { title: "Hat kurulumu (Schuler pres + Trumpf laser)", assignee_email: "mehmet.aktas@tomofil.test", start_date: "2024-05-01", end_date: "2024-08-31", status: "Tamamlandı", priority: "High" }
+      - { title: "Hairpin sargı pilot lot (Bosch lisans)", assignee_email: "leyla.celik@tomofil.test", start_date: "2024-09-01", end_date: "2025-06-30", status: "Tamamlandı", priority: "High" }
+      - { title: "PPAP — TOGG için ilk 50 örnek", assignee_email: "taylan.koc@tomofil.test", start_date: "2025-07-01", end_date: "2025-12-31", status: "Tamamlandı", priority: "High" }
+  - name: "CBAM Uyum Programı"
+    description: "Avrupa CBAM zorunluluğu öncesi karbon ayak izi hazırlığı."
+    start_date: "2025-04-01"
+    end_date: "2026-12-31"
+    priority: "Yüksek"
+    manager_email: "ipek.gunes@tomofil.test"
+    health_status: "İyi"
+    linked_sub_strategy_codes: ["4.A.2", "6.A.1"]
+    tasks:
+      - { title: "Scope 1+2 ölçüm metodolojisi", assignee_email: "ipek.gunes@tomofil.test", start_date: "2025-04-01", end_date: "2025-09-30", status: "Tamamlandı", priority: "High" }
+      - { title: "Tedarikçi karbon beyanı toplama", assignee_email: "ali.kaplan@tomofil.test", start_date: "2025-08-01", end_date: "2026-06-30", status: "Devam Ediyor", priority: "High" }
+      - { title: "Çatı GES devreye alma (250 kWp)", assignee_email: "ipek.gunes@tomofil.test", start_date: "2026-02-01", end_date: "2026-09-30", status: "Devam Ediyor", priority: "Medium" }
+      - { title: "Karbon raporlama yazılımı entegrasyonu", assignee_email: "fatih.demirel@tomofil.test", start_date: "2026-05-01", end_date: "2026-11-30", status: "Yapılacak", priority: "Medium" }
+  - name: "Industry 4.0 — Predictive Maintenance"
+    description: "OEE %72→%88 hedefinin ana yatırımı."
+    start_date: "2026-01-01"
+    end_date: "2027-06-30"
+    priority: "Yüksek"
+    manager_email: "fatih.demirel@tomofil.test"
+    health_status: "İyi"
+    linked_sub_strategy_codes: ["7.A.1", "7.A.2"]
+    tasks:
+      - { title: "Hat 2'ye IoT sensör montajı (5 tezgah)", assignee_email: "burak.yilmaz@tomofil.test", start_date: "2026-03-15", end_date: "2026-06-30", status: "Devam Ediyor", priority: "High" }
+      - { title: "ML model geliştirme + eğitim verisi",      assignee_email: "fatih.demirel@tomofil.test", start_date: "2026-04-01", end_date: "2026-10-31", status: "Devam Ediyor", priority: "High" }
+      - { title: "Dijital ikiz simülasyon ortamı",            assignee_email: "fatih.demirel@tomofil.test", start_date: "2026-05-01", end_date: "2026-12-31", status: "Devam Ediyor", priority: "Medium" }
+  - name: "Avrupa İhracat — VW Onboarding"
+    description: "VW Group tier-1 sertifikasyon süreci."
+    start_date: "2025-09-01"
+    end_date: "2027-03-31"
+    priority: "Yüksek"
+    manager_email: "mert.aslan@tomofil.test"
+    health_status: "Risk"
+    linked_sub_strategy_codes: ["4.A.1"]
+    tasks:
+      - { title: "VW Formel Q denetim hazırlığı", assignee_email: "ozge.kara@tomofil.test", start_date: "2025-09-01", end_date: "2026-04-30", status: "Tamamlandı", priority: "High" }
+      - { title: "Tier-1 onaylı sertifikasyon",   assignee_email: "mert.aslan@tomofil.test", start_date: "2026-05-01", end_date: "2027-03-31", status: "Devam Ediyor", priority: "High" }
+
+# ============================================================================
+# K-VEKTOR (2026)
+# ============================================================================
+k_vektor_weights:
+  strategies:
+    - { code: "H1", weight: 12 }
+    - { code: "H2", weight: 18 }
+    - { code: "H3", weight: 8  }
+    - { code: "H4", weight: 14 }
+    - { code: "H5", weight: 25 }
+    - { code: "H6", weight: 12 }
+    - { code: "H7", weight: 11 }
+  sub_strategies:
+    - { code: "5.A.1", weight: 35 }
+    - { code: "5.A.2", weight: 25 }
+    - { code: "5.A.3", weight: 20 }
+    - { code: "5.A.4", weight: 5  }
+    - { code: "5.B.1", weight: 15 }
+    - { code: "7.A.1", weight: 45 }
+    - { code: "7.A.2", weight: 30 }
+    - { code: "7.A.3", weight: 25 }
+    - { code: "6.A.1", weight: 35 }
+    - { code: "6.A.2", weight: 35 }
+    - { code: "6.B.1", weight: 30 }
+
+# ============================================================================
+# K-RADAR
+# ============================================================================
+process_maturity:
+  - { process_code: "P2M", maturity_level: 4, dimension: "Üretim",         assessor_email: "mehmet.aktas@tomofil.test" }
+  - { process_code: "S2P", maturity_level: 3, dimension: "Tedarik",        assessor_email: "ali.kaplan@tomofil.test" }
+  - { process_code: "A2R", maturity_level: 3, dimension: "Satış",          assessor_email: "sibel.demir@tomofil.test" }
+  - { process_code: "C2L", maturity_level: 3, dimension: "Ar-Ge",          assessor_email: "taylan.koc@tomofil.test" }
+  - { process_code: "H2R", maturity_level: 3, dimension: "İK",             assessor_email: "pinar.aksoy@tomofil.test" }
+  - { process_code: "R2R", maturity_level: 4, dimension: "Finans",         assessor_email: "okan.celikkol@tomofil.test" }
+  - { process_code: "I2R", maturity_level: 4, dimension: "Müşteri",        assessor_email: "esra.sen@tomofil.test" }
+  - { process_code: "B2R", maturity_level: 2, dimension: "Geri Dönüşüm",   assessor_email: "ipek.gunes@tomofil.test" }
+  - { process_code: "R2M", maturity_level: 2, dimension: "Risk",           assessor_email: "okan.celikkol@tomofil.test" }
+  - { process_code: "D2I", maturity_level: 2, dimension: "Veri",           assessor_email: "fatih.demirel@tomofil.test" }
+  - { process_code: "S2E", maturity_level: 3, dimension: "Strateji",       assessor_email: "ferda.bulut@tomofil.test" }
+
+bottlenecks:
+  - { process_code: "P2M", kpi_code: "P2M-01", severity: "Yüksek", note: "Hat 2 CNC tezgahında plansız duruşlar artıyor", triggered_at: "2026-03-15" }
+  - { process_code: "S2P", kpi_code: "S2P-01", severity: "Kritik", note: "Neodimyum mıknatıs tedariğinde Çin lead-time 18 hafta", triggered_at: "2026-02-10" }
+  - { process_code: "C2L", kpi_code: "C2L-02", severity: "Orta",   note: "PPAP ilk-onay oranı %62 — sektör %85", triggered_at: "2026-01-20" }
+
+value_chain:
+  - { category: "primary", title: "Hammadde Kabul",         linked_process_code: "S2P", muda_type: "Bekleme",  note: "Sertifika kontrolü 18 saat" }
+  - { category: "primary", title: "CNC İşleme",              linked_process_code: "P2M", muda_type: "Hareket",  note: "Operatör tezgah arası 12 dk" }
+  - { category: "primary", title: "Montaj + Test",           linked_process_code: "P2M", muda_type: "Hata",     note: "EV stator test fixture sayısı yetersiz" }
+  - { category: "primary", title: "Sevkiyat",                linked_process_code: "S2P", muda_type: "Stok",     note: "Bursa→Avrupa konteyner bekleme 5 gün" }
+  - { category: "primary", title: "Müşteri Hizmeti (8D)",     linked_process_code: "I2R", muda_type: null,       note: "—" }
+  - { category: "support", title: "Yönetişim",                linked_process_code: "S2E", muda_type: null,       note: "—" }
+  - { category: "support", title: "Ar-Ge",                    linked_process_code: "C2L", muda_type: "Beklenti", note: "Yeni teknoloji izleme dağınık" }
+  - { category: "support", title: "İK + Eğitim",              linked_process_code: "H2R", muda_type: null,       note: "—" }
+
+evm_snapshots:
+  - { project_name: "EV Pivot — e-Motor Stator Hattı",        snapshot_date: "2024-12-31", pv: 4500000, ev: 4200000, ac: 4380000, spi: 0.93, cpi: 0.96 }
+  - { project_name: "EV Pivot — e-Motor Stator Hattı",        snapshot_date: "2025-12-31", pv: 8200000, ev: 8050000, ac: 8150000, spi: 0.98, cpi: 0.99 }
+  - { project_name: "CBAM Uyum Programı",                     snapshot_date: "2026-03-31", pv: 850000,  ev: 720000,  ac: 780000,  spi: 0.85, cpi: 0.92 }
+  - { project_name: "Industry 4.0 — Predictive Maintenance",  snapshot_date: "2026-04-30", pv: 620000,  ev: 540000,  ac: 580000,  spi: 0.87, cpi: 0.93 }
+  - { project_name: "Avrupa İhracat — VW Onboarding",         snapshot_date: "2026-03-31", pv: 380000,  ev: 290000,  ac: 350000,  spi: 0.76, cpi: 0.83 }
+
+risks:
+  - { plan_year: 2026, title: "AB CBAM yürürlüğe girmesi (2027)",                probability: 5, impact: 5, owner_email: "ipek.gunes@tomofil.test",     status: "Mitigating", source_type: "pestel" }
+  - { plan_year: 2026, title: "Neodimyum mıknatıs tedarik krizi",                 probability: 4, impact: 5, owner_email: "ali.kaplan@tomofil.test",      status: "Open",       source_type: "process" }
+  - { plan_year: 2026, title: "TL volatilitesi — ithal hammadde",                 probability: 5, impact: 4, owner_email: "okan.celikkol@tomofil.test",   status: "Mitigating", source_type: "pestel" }
+  - { plan_year: 2026, title: "Müşteri konsantrasyonu — top 3 müşteri %58 ciro",  probability: 3, impact: 5, owner_email: "sibel.demir@tomofil.test",     status: "Mitigating", source_type: "swot" }
+  - { plan_year: 2026, title: "Chip krizinin yeniden alevlenmesi",                 probability: 3, impact: 5, owner_email: "ali.kaplan@tomofil.test",      status: "Open",       source_type: "pestel" }
+  - { plan_year: 2026, title: "VW onboarding gecikmesi",                           probability: 3, impact: 4, owner_email: "mert.aslan@tomofil.test",      status: "Open",       source_type: "project" }
+  - { plan_year: 2026, title: "Yetenekli mühendis kaybı (Almanya rekabeti)",        probability: 4, impact: 3, owner_email: "esin.demir@tomofil.test",     status: "Mitigating", source_type: "swot" }
+  - { plan_year: 2026, title: "Predictive maintenance pilot başarısızlık riski",    probability: 2, impact: 3, owner_email: "fatih.demirel@tomofil.test",   status: "Open",       source_type: "project" }
+  - { plan_year: 2026, title: "TOGG üretim takvimi gecikmesi (müşteri etkisi)",     probability: 3, impact: 4, owner_email: "sibel.demir@tomofil.test",     status: "Open",       source_type: "porter" }
+  - { plan_year: 2026, title: "İSG kazası — yeni hat eğitim aşaması",               probability: 2, impact: 5, owner_email: "tuncay.ozdemir@tomofil.test", status: "Mitigating", source_type: "process" }
+
+stakeholders:
+  - { plan_year: 2026, name: "TOGG",                     role: "müşteri (EV)",     influence: 5, interest: 5, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "Ford Otosan",               role: "müşteri (OEM)",    influence: 5, interest: 4, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "Tofaş",                     role: "müşteri (OEM)",    influence: 4, interest: 4, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "VW Group (potansiyel)",     role: "müşteri (Avrupa)", influence: 5, interest: 4, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "Renault Türkiye",           role: "müşteri (OEM)",    influence: 3, interest: 3, strategy: "Keep Satisfied" }
+  - { plan_year: 2026, name: "Bosch (lisans ortağı)",      role: "teknoloji ortağı", influence: 4, interest: 4, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "Çelik/Alüminyum Tedarikçileri", role: "tedarikçi",      influence: 4, interest: 3, strategy: "Keep Satisfied" }
+  - { plan_year: 2026, name: "Çalışanlar (üretim)",        role: "iç paydaş",        influence: 4, interest: 5, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "Yatırımcılar / Ortaklar",   role: "yatırımcı",        influence: 5, interest: 5, strategy: "Manage Closely" }
+  - { plan_year: 2026, name: "TÜBİTAK + KOSGEB",          role: "regülatör/teşvik", influence: 3, interest: 2, strategy: "Keep Informed" }
+  - { plan_year: 2026, name: "Bursa OSB Yönetimi",         role: "topluluk",         influence: 2, interest: 3, strategy: "Keep Informed" }
+  - { plan_year: 2026, name: "Çevre Bakanlığı (CBAM)",     role: "regülatör",        influence: 5, interest: 3, strategy: "Keep Satisfied" }
+
+stakeholder_surveys:
+  - { stakeholder_type: "OEM Müşteri",  period: "2021",     score: 35, comment: "İlk yıl baseline",  source: "Annual Customer NPS" }
+  - { stakeholder_type: "OEM Müşteri",  period: "2022",     score: 28, comment: "Pandemi etki",      source: "Annual Customer NPS" }
+  - { stakeholder_type: "OEM Müşteri",  period: "2023",     score: 42, comment: "Toparlanma",        source: "Annual Customer NPS" }
+  - { stakeholder_type: "OEM Müşteri",  period: "2024",     score: 48, comment: "EV güveni",         source: "Annual Customer NPS" }
+  - { stakeholder_type: "OEM Müşteri",  period: "2025",     score: 55, comment: "Sürdürülebilirlik kazanım", source: "Annual Customer NPS" }
+  - { stakeholder_type: "OEM Müşteri",  period: "2026 Q1",  score: 58, comment: "Trend pozitif",     source: "Pulse" }
+  - { stakeholder_type: "Çalışan",      period: "2021",     score: 18, comment: "eNPS baseline kuruluş", source: "eNPS" }
+  - { stakeholder_type: "Çalışan",      period: "2022",     score: 8,  comment: "Pandemi dipte",     source: "eNPS" }
+  - { stakeholder_type: "Çalışan",      period: "2023",     score: 22, comment: "Toparlanma",        source: "eNPS" }
+  - { stakeholder_type: "Çalışan",      period: "2024",     score: 28, comment: "EV heyecan",        source: "eNPS" }
+  - { stakeholder_type: "Çalışan",      period: "2025",     score: 32, comment: "İstikrar",          source: "eNPS" }
+  - { stakeholder_type: "Çalışan",      period: "2026 Q1",  score: 38, comment: "Hedef yolda",       source: "Pulse" }
+  - { stakeholder_type: "Tedarikçi",    period: "2025",     score: 42, comment: "İlk tedarikçi memnuniyet anketi", source: "Annual Supplier Survey" }
+
+a3_reports:
+  - source_type: "process"
+    problem: "OEE Hat 2'de %68'e düştü (hedef %80)"
+    root_cause_json: '{"5_neden": ["Plansız duruşlar arttı","CNC tezgah yaşlanıyor (2021 alımı)","Bakım reaktif, predictive değil","Operatör eğitimi standardize değil","Yedek parça stoku optimize değil"]}'
+    countermeasures: |
+      • Predictive Maintenance pilotu (Hat 2 başlangıç)
+      • Operatör standart eğitim modülü
+      • Kritik yedek parça min-max stok seviyeleri
+  - source_type: "process"
+    problem: "PPAP ilk-onay oranı %62 (sektör %85)"
+    root_cause_json: '{"5_neden": ["Müşteri spec''leri tam anlaşılmıyor","FMEA güncel değil","Ar-Ge ve Üretim arası iletişim zayıf","DOE çalışmaları yetersiz","PPAP dokümanı manuel hazırlanıyor"]}'
+    countermeasures: |
+      • Müşteri spec inceleme kontrol listesi
+      • FMEA quarterly review
+      • PPAP doküman otomasyonu (template)
+
+competitors:
+  - { plan_year: 2026, competitor_name: "Anadolu Otomotiv (yerli)",  dimension: "Fiyat",          our_score: 65, their_score: 72 }
+  - { plan_year: 2026, competitor_name: "Anadolu Otomotiv (yerli)",  dimension: "EV Yetkinliği",  our_score: 80, their_score: 45 }
+  - { plan_year: 2026, competitor_name: "TI Türkiye (Avrupa kökenli)", dimension: "Kalite (PPM)", our_score: 78, their_score: 92 }
+  - { plan_year: 2026, competitor_name: "TI Türkiye (Avrupa kökenli)", dimension: "Marka",        our_score: 45, their_score: 88 }
+  - { plan_year: 2026, competitor_name: "BorgWarner (uluslararası)",  dimension: "EV Teknolojisi", our_score: 70, their_score: 95 }
+  - { plan_year: 2026, competitor_name: "BorgWarner (uluslararası)",  dimension: "Esneklik",      our_score: 85, their_score: 55 }
+  - { plan_year: 2026, competitor_name: "Çin Tedarikçileri (Geely)",  dimension: "Fiyat",          our_score: 65, their_score: 95 }
+  - { plan_year: 2026, competitor_name: "Çin Tedarikçileri (Geely)",  dimension: "Lead-time",      our_score: 80, their_score: 70 }
+
+# ============================================================================
+# SWOT/TOWS/PESTEL/PORTER — 2026 detayli; diger yillar themes ile uretilir
+# ============================================================================
+swot_2026:
+  strengths: |
+    • IATF 16949 + ISO 9001 + ISO 14001 + ISO 45001 dörtlü sertifika
+    • Bursa Demirtaş OSB'de stratejik konum (OEM müşterilerine 30 km)
+    • Hairpin sargı teknolojisi lisansı (Türkiye'de sınırlı oyuncu)
+    • TOGG ile aktif tedarik anlaşması (EV pazarındaki ilk yerli oyuncu)
+    • Sıfır borç, %22 EBITDA marjı
+    • 6 yıllık kurumsal yönetişim olgunluğu (kuruluştan kokpitim kullanımı)
+  weaknesses: |
+    • Müşteri konsantrasyonu yüksek: top 3 müşteri %58 ciro
+    • Avrupa pazarına henüz tier-1 olarak doğrudan giremiyor (VW süreci devam)
+    • Predictive maintenance / dijital ikiz henüz pilot aşamada
+    • 100 çalışanlık ölçekte CAPEX yatırım gücü sınırlı
+    • Ar-Ge yatırımı/ciro oranı %4 — global rakiplerin gerisinde
+  opportunities: |
+    • Türkiye EV pazarı 2030'a kadar 5x büyüyor (TOGG, Anadolu Isuzu vb.)
+    • Avrupa otomotiv tedarik zincirinde Türkiye yükselen oyuncu (post-China+1+1)
+    • CBAM hazırlığı tamamlanmışlık avantaja dönüşebilir
+    • Yerli ve milli teşvikler (TÜBİTAK + KOSGEB)
+    • V2G/V2H teknolojisi için erken pozisyonlanma
+  threats: |
+    • TL volatilitesi (hammadde %45 ithal)
+    • Çin EV parça üreticilerinin Avrupa'ya dümdüz girmesi
+    • Chip krizinin yeniden alevlenmesi (semi shortage)
+    • Hammadde fiyat artışı (lityum, neodimyum)
+    • Yetenekli mühendis havzasının Almanya'ya kaybedilmesi
+
+# Yillara gore SWOT/TOWS/PESTEL/Porter temalar (script kisaltilmis metin uretir)
+analyses_year_themes:
+  2021: "Kuruluş, ilk OEM müşteri, sıfır geçmiş veri. Strengths: kurucu mühendis kadrosu, Bursa OSB konumu, ilk büyük sözleşme. Weaknesses: marka yok, deneyim yok, sınırlı sermaye. Opportunities: yerli üretim teşvikleri, Ford Otosan tedarik açığı. Threats: bilinmezlik, müşteri konsantrasyon riski."
+  2022: "Pandemi + chip krizi. Strengths: küçük ölçek hızlı adapte. Weaknesses: kadro daraltma, finansal stres. Opportunities: yerlileşme baskısı artıyor. Threats: tedarik zinciri kopuşları, OEM üretim durması."
+  2023: "Toparlanma + Avrupa açılım. Strengths: IATF sertifika alındı, ilk Avrupa müşteri. Weaknesses: ihracat yetkinlik az. Opportunities: Avrupa Türkiye'ye yöneliyor. Threats: TL volatilitesi yüksek."
+  2024: "EV pivot kararı. Strengths: Bosch lisans, TOGG anlaşması. Weaknesses: EV teknolojisi yeni, kadro gelişimi gerek. Opportunities: Türkiye EV pazarı patlama. Threats: Çin parça rekabeti."
+  2025: "Sürdürülebilirlik + CBAM. Strengths: yeşil dönüşüm yatırımları başladı. Weaknesses: ESG raporlama yeni. Opportunities: ESG müşteri talebi artıyor. Threats: CBAM 2027 yürürlük."
+  2026: "Dijital dönüşüm + Industry 4.0. Detayli yukarida (swot_2026)."
+
+# ============================================================================
+# OKRs — 2026 (eski yillar deltas'tan uretilir)
+# ============================================================================
+okrs_2026:
+  - { title: "EV cirosu payını %38'den %48'e çıkar", owner: "Deniz Tunç (CEO)", key_results: [
+      { title: "EV ciro payı (%) %38 → %48",          metric: "%",      start_value: 38,    target_value: 48,     current_value: 41 },
+      { title: "Yeni EV müşteri sayısı 0 → 2",        metric: "adet",   start_value: 0,     target_value: 2,      current_value: 1 },
+      { title: "EV parça yıllık adedi 78k → 145k",   metric: "adet",   start_value: 78000, target_value: 145000, current_value: 95000 }
+    ]}
+  - { title: "OEE %72 → %85 (Industry 4.0)", owner: "Cansu Aydın (COO)", key_results: [
+      { title: "OEE (%) 72 → 85",                     metric: "%",      start_value: 72,   target_value: 85,  current_value: 76 },
+      { title: "Predictive maintenance yakalama %",    metric: "%",      start_value: 0,    target_value: 75,  current_value: 28 },
+      { title: "PPM hata oranı 180 → 50",              metric: "ppm",    start_value: 180,  target_value: 50,  current_value: 110 }
+    ]}
+  - { title: "Avrupa tier-1 sertifikasyonu (VW)", owner: "Sibel Demir (CMO)", key_results: [
+      { title: "VW Formel Q skoru 75 → 92",            metric: "skor",   start_value: 75,   target_value: 92,  current_value: 84 },
+      { title: "Avrupa müşteri sayısı 2 → 4",          metric: "adet",   start_value: 2,    target_value: 4,   current_value: 3 },
+      { title: "İhracat ciro payı %22 → %32",         metric: "%",      start_value: 22,   target_value: 32,  current_value: 26 }
+    ]}
+  - { title: "CBAM hazırlığını tamamla (2027 yürürlük öncesi)", owner: "İpek Güneş (CSO)", key_results: [
+      { title: "Tedarikçi karbon beyanı %15 → %95",    metric: "%",      start_value: 15,    target_value: 95, current_value: 58 },
+      { title: "Scope 1+2 ölçümü tamamlandı (binary)", metric: "0/1",    start_value: 0,     target_value: 1,  current_value: 1 },
+      { title: "Yenilenebilir enerji oranı %12 → %45", metric: "%",      start_value: 12,    target_value: 45, current_value: 22 }
+    ]}
+  - { title: "eNPS +32 → +55 (Kurum kültürü güçlendirme)", owner: "Esin Demir (CHRO)", key_results: [
+      { title: "eNPS skoru +32 → +55",                 metric: "skor",   start_value: 32,  target_value: 55,  current_value: 38 },
+      { title: "Eğitim saati/kişi 26 → 48",            metric: "saat",   start_value: 26,  target_value: 48,  current_value: 31 },
+      { title: "Kadın mühendis oranı %18 → %30",       metric: "%",      start_value: 18,  target_value: 30,  current_value: 22 }
+    ]}
