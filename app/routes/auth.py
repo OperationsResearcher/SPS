@@ -137,6 +137,13 @@ def profile():
         current_user.profile_picture = profile_picture
         password_changed = False
         if new_password:
+            # Sprint 22: password complexity policy
+            from app.utils.password_policy import validate_password
+            ok, errs = validate_password(new_password, username=current_user.email)
+            if not ok:
+                for e in errs:
+                    flash(e, "danger")
+                return redirect(url_for("auth_bp.profile"))
             current_user.password_hash = generate_password_hash(new_password)
             password_changed = True
         db.session.commit()

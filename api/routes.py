@@ -8,7 +8,7 @@ import os
 import uuid
 from flask_login import login_required, current_user
 from extensions import csrf
-from decorators import project_access_required, project_manager_required, project_member_required, project_observer_allowed, role_required
+from app.utils.project_rbac import project_access_required, project_manager_required, project_member_required, project_observer_allowed, role_required
 
 
 def _invalidate_executive_dashboard_cache(kurum_id: int | None = None):
@@ -22,18 +22,43 @@ def _invalidate_executive_dashboard_cache(kurum_id: int | None = None):
         return
     except Exception:
         return
-from models import (
-    db, User, Kurum, Surec, AnaStrateji, AltStrateji,
+from extensions import db
+from app.models.portfolio_project import (
+    Project,
+    Task,
+    TaskImpact,
+    TaskComment,
+    TaskMention,
+    ProjectFile,
+    Tag,
+    TaskSubtask,
+    TimeEntry,
+    TaskActivity,
+    ProjectTemplate,
+    TaskTemplate,
+    Sprint,
+    TaskSprint,
+    ProjectRisk,
+    TaskDependency,
+    IntegrationHook,
+    RuleDefinition,
+    SLA,
+    RecurringTask,
+    WorkingDay,
+    CapacityPlan,
+    RaidItem,
+    TaskBaseline,
+    project_leaders,
+    task_predecessors,
+)
+from app.models.legacy_bridge import (
+    User, Kurum, Surec, AnaStrateji, AltStrateji,
     BireyselFaaliyet, BireyselPerformansGostergesi,
     PerformansGostergeVeri, PerformansGostergeVeriAudit, SurecPerformansGostergesi, SurecFaaliyet,
     FaaliyetTakip, surec_liderleri, surec_uyeleri,
     Notification, UserActivityLog, FavoriKPI, DashboardLayout,
-    KullaniciYetki, Project, Task, TaskImpact, TaskComment, TaskMention, ProjectFile,  # Proje Yönetimi modelleri
-    Tag, TaskSubtask, TimeEntry, TaskActivity, ProjectTemplate, TaskTemplate, Sprint, TaskSprint,  # Yeni modeller
-    ProjectRisk, TaskDependency, IntegrationHook, RuleDefinition, SLA, RecurringTask, WorkingDay, CapacityPlan, RaidItem, TaskBaseline,  # Risk ve bağımlılıklar
-    project_leaders,
+    KullaniciYetki,
 )
-from models import task_predecessors
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 
@@ -2072,7 +2097,7 @@ def api_proje_dosya_sil(project_id, file_id):
             return jsonify({'success': False, 'message': 'Bu dosyaya erişim yetkiniz yok'}), 403
         
         # Sadece yönetici veya dosyayı yükleyen silebilir
-        from decorators import _get_user_project_role
+        from app.utils.project_rbac import _get_user_project_role
         user_role = _get_user_project_role(project, current_user.id)
         if user_role != 'manager' and project_file.user_id != current_user.id:
             return jsonify({'success': False, 'message': 'Bu dosyayı silme yetkiniz yok'}), 403
@@ -2835,7 +2860,7 @@ def api_pg_veri_proje_gorevleri():
 def api_notifications():
     """Kullanıcının bildirimlerini getir"""
     try:
-        from models import Notification
+        from app.models.legacy_bridge import Notification
         notifications = Notification.query.filter_by(
             user_id=current_user.id
         ).order_by(
@@ -2880,7 +2905,7 @@ def api_notifications():
 def api_notification_mark_read(notification_id):
     """Tek bir bildirimi okundu işaretle"""
     try:
-        from models import Notification
+        from app.models.legacy_bridge import Notification
         notif = Notification.query.get_or_404(notification_id)
         if notif.user_id != current_user.id:
             return jsonify({'success': False, 'message': 'Bu bildirime erişim yetkiniz yok'}), 403
@@ -2901,7 +2926,7 @@ def api_notification_mark_read(notification_id):
 def api_notifications_count():
     """Okunmamış bildirim sayısını getir"""
     try:
-        from models import Notification
+        from app.models.legacy_bridge import Notification
         count = Notification.query.filter_by(
             user_id=current_user.id,
             okundu=False
@@ -2922,7 +2947,7 @@ def api_notifications_count():
 def api_notifications_mark_all_read():
     """Tüm bildirimleri okundu işaretle"""
     try:
-        from models import Notification
+        from app.models.legacy_bridge import Notification
         Notification.query.filter_by(
             user_id=current_user.id,
             okundu=False

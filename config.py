@@ -40,9 +40,12 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax"
+    # Sprint 22: SameSite=Strict (CSRF güvenliği — payment-style strict)
+    # Lax → Strict geçişi: cross-site form post engellenir, top-level GET izin verir
+    SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Strict")
     REMEMBER_COOKIE_SECURE = True
     REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SAMESITE = "Strict"  # Sprint 22
 
     # CSRF Protection
     WTF_CSRF_ENABLED = True
@@ -63,10 +66,18 @@ class Config:
 
     # Rate Limiting (yüksek trafik/çoklu modal istekleri için geniş limitler)
     # REDIS_URL ile otomatik bağlama yok: konteynerde Redis yoksa limiter her istekte kilitlenir.
+    # Üretimde REDIS_URL tanımlıysa init_limiter otomatik Redis kullanır (memory:// yerine)
     RATELIMIT_STORAGE_URL = os.environ.get("RATELIMIT_STORAGE_URL", "memory://")
     RATELIMIT_ENABLED = True
     RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
+    RATELIMIT_LOGIN = os.environ.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour")
     HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
+
+    # Dalga A: legacy HTML yönlendirme middleware (GET → platform)
+    LEGACY_SUNSET_ENABLED = os.environ.get("LEGACY_SUNSET_ENABLED", "true").lower() == "true"
+    # Çift /process yüzeyi — micro/surec canonical; legacy process_bp kapalı
+    LEGACY_PROCESS_BP_ENABLED = os.environ.get("LEGACY_PROCESS_BP_ENABLED", "false").lower() == "true"
+    LEGACY_DASHBOARD_BP_ENABLED = os.environ.get("LEGACY_DASHBOARD_BP_ENABLED", "false").lower() == "true"
 
     # Error Tracking (Sentry - optional)
     SENTRY_DSN = os.environ.get("SENTRY_DSN")
@@ -116,6 +127,7 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI", "sqlite:///:memory:")
     SQLALCHEMY_ENGINE_OPTIONS = {}
     WTF_CSRF_ENABLED = False
+    RATELIMIT_ENABLED = False
 
 
 class DevelopmentConfig(Config):
@@ -127,6 +139,8 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Üretim profili (hazırlık scriptleri ve doğrudan kullanım için)."""
     DEBUG = False
+    # Üretimde HGS bypass asla açılmaz (.env yanlış set edilse bile)
+    HGS_BYPASS_ENABLED = False
 
     def __init__(self):
         _apply_runtime_db_uri(self)
@@ -141,6 +155,8 @@ def get_config():
         cfg = DevelopmentConfig()
         _apply_runtime_db_uri(cfg)
         return cfg
+    if env == "production":
+        return ProductionConfig()
     cfg = Config()
     _apply_runtime_db_uri(cfg)
     return cfg

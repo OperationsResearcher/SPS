@@ -26,7 +26,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-2">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold text-dark d-flex align-items-center"
-                href="{{ url_for('dashboard_bp.index') }}">
+                href="{{ safe_url_for('dashboard_bp.index') }}">
                 <img src="{{ url_for('static', filename='img/kokpitim-logo.png') }}?v=11" alt="Kokpitim"
                     class="kokpitim-navbar-logo me-2">
                 Kokpitim
@@ -35,24 +35,24 @@
             <div class="navbar-nav me-auto ms-3 d-none d-lg-flex">
                 {% if current_user.role and current_user.role.name in ['Admin', 'tenant_admin', 'executive_manager'] %}
                 <div class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{{ url_for('dashboard_bp.tenant_dashboard') }}">
+                    <a class="nav-link text-dark fw-medium" href="{{ safe_url_for('dashboard_bp.tenant_dashboard') }}">
                         <i class="fas fa-building text-primary me-1"></i>Kurum Paneli
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{{ url_for('process_bp.index') }}">
+                    <a class="nav-link text-dark fw-medium" href="{{ safe_url_for('process_bp.index') }}">
                         <i class="fas fa-project-diagram text-primary me-1"></i>Süreçler
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link text-dark fw-medium" href="{{ url_for('strategy_bp.strategic_planning_flow') }}">
+                    <a class="nav-link text-dark fw-medium" href="{{ url_for('app_bp.sp') }}">
                         <i class="fas fa-sitemap text-primary me-1"></i>Strateji Akışı
                     </a>
                 </div>
                 {% endif %}
                 <div class="nav-item">
                     <a class="nav-link text-dark fw-medium {% if request.endpoint == 'dashboard_bp.performans_kartim' %}active fw-bold{% endif %}"
-                        href="{{ url_for('dashboard_bp.performans_kartim') }}">
+                        href="{{ safe_url_for('dashboard_bp.performans_kartim') }}">
                         <i class="fas fa-chart-line text-primary me-1"></i>Performans Kartım
                     </a>
                 </div>
@@ -134,7 +134,7 @@
         <div class="row">
             <aside class="col-md-2 bg-light border-end min-vh-100 py-3 layout-sidebar-aside">
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="{{ url_for('dashboard_bp.index') }}"><i
+                    <a class="nav-link" href="{{ safe_url_for('dashboard_bp.index') }}"><i
                             class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
                     {% if current_user.role and current_user.role.name == 'Admin' %}
                     <span class="nav-link text-muted small text-uppercase mt-2">Yönetici Paneli</span>
@@ -146,10 +146,10 @@
                             class="fas fa-building me-2"></i>Kurum (Müşteri) Yönetimi</a>
                     {% endif %}
                     <span class="nav-link text-muted small text-uppercase mt-2">Strateji Yönetimi</span>
-                    <a class="nav-link ps-4" href="{{ url_for('process_bp.index') }}"><i
+                    <a class="nav-link ps-4" href="{{ safe_url_for('process_bp.index') }}"><i
                             class="fas fa-project-diagram me-2"></i>Süreç Yönetimi</a>
                     <a class="nav-link ps-4 {% if request.endpoint == 'dashboard_bp.performans_kartim' %}active fw-bold{% endif %}"
-                        href="{{ url_for('dashboard_bp.performans_kartim') }}"><i
+                        href="{{ safe_url_for('dashboard_bp.performans_kartim') }}"><i
                             class="fas fa-chart-line me-2"></i>Performans Kartım</a>
                 </nav>
             </aside>

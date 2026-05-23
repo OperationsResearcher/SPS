@@ -29,7 +29,7 @@
                     </select>
                 </form>
                 {% if selected_tenant %}
-                <a href="{{ url_for('strategy_bp.strategic_planning_dynamic', tenant_id=selected_tenant.id) }}" class="btn btn-light btn-sm">
+                <a href="{{ url_for('app_bp.sp') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-bolt me-1"></i>Dinamik Akış
                 </a>
                 {% endif %}

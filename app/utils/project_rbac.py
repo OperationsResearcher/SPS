@@ -6,7 +6,7 @@ Proje Yönetimi için RBAC (Role-Based Access Control) decorator'ları
 from functools import wraps
 from flask import jsonify, request
 from flask_login import current_user
-from models import Project, db
+from app.models.legacy_bridge import Project, db
 from sqlalchemy import and_
 
 
@@ -87,7 +87,7 @@ def _get_user_project_role(project, user_id):
     # Proje yöneticisi / lider kontrolü
     if project.manager_id == user_id:
         return 'manager'
-    from models import project_leaders
+    from app.models.legacy_bridge import project_leaders
     if (
         db.session.query(project_leaders)
         .filter(project_leaders.c.project_id == project.id, project_leaders.c.user_id == user_id)
@@ -96,7 +96,7 @@ def _get_user_project_role(project, user_id):
         return 'manager'
     
     # Üye kontrolü (association table üzerinden)
-    from models import project_members
+    from app.models.legacy_bridge import project_members
     member_exists = db.session.query(project_members).filter(
         and_(
             project_members.c.project_id == project.id,
@@ -108,7 +108,7 @@ def _get_user_project_role(project, user_id):
         return 'member'
     
     # Gözlemci kontrolü (association table üzerinden)
-    from models import project_observers
+    from app.models.legacy_bridge import project_observers
     observer_exists = db.session.query(project_observers).filter(
         and_(
             project_observers.c.project_id == project.id,
@@ -125,7 +125,7 @@ def _get_user_project_role(project, user_id):
 
     # Projeye bağlı süreçlerin liderleri de (ilişkili süreçlerde) manager seviyesinde kabul edilir
     try:
-        from models import surec_liderleri
+        from app.models.legacy_bridge import surec_liderleri
         related_ids = [p.id for p in (project.related_processes or [])]
         if related_ids:
             is_leader = db.session.query(surec_liderleri).filter(
