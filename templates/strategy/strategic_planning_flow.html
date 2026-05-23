@@ -37,7 +37,7 @@
                     <i class="fas fa-cog me-1"></i>Yönetim
                 </a>
                 {% endif %}
-                <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                <a class="btn btn-primary btn-sm" href="{{ safe_url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
                     <i class="fas fa-bolt me-1"></i>Dinamik Stratejik Planlama
                 </a>
                 {% if current_user.role and current_user.role.name in ('Admin', 'tenant_admin', 'executive_manager') %}
@@ -118,7 +118,7 @@
         <div class="col-12">
             <div class="strategy-flow-bsc-box">
                 <p class="bsc-desc mb-0">Neden sonuç ilişkisi kurmanıza yardımcı olur.</p>
-                <a class="btn btn-primary btn-sm" href="{{ url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                <a class="btn btn-primary btn-sm" href="{{ safe_url_for('strategy_bp.strategic_planning_dynamic') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
                     <i class="fas fa-map me-1"></i>Haritayı Gör
                 </a>
             </div>
@@ -186,7 +186,7 @@
 </div>
 
 {% if tenant %}
-<div data-strategy-flow-config="{{ url_for('strategy_bp.strategic_planning_flow') }}" data-tenant-id="{{ tenant.id }}" class="d-none" id="strategyFlowConfig"></div>
+<div data-strategy-flow-config="{{ safe_url_for('strategy_bp.strategic_planning_flow') }}" data-tenant-id="{{ tenant.id }}" class="d-none" id="strategyFlowConfig"></div>
 <script src="{{ url_for('static', filename='js/strategy_planning_flow.js') }}"></script>
 {% endif %}
 {% endblock %}

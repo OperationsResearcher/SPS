@@ -1,0 +1,107 @@
+# Turkish translations for Kokpitim (default locale)
+# Sprint 38: i18n kapsamı genişletme
+msgid ""
+msgstr ""
+"Project-Id-Version: Kokpitim 1.0.7\n"
+"POT-Creation-Date: 2026-05-23 12:00+0300\n"
+"PO-Revision-Date: 2026-05-23 12:00+0300\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hoş geldiniz"
+msgstr "Hoş geldiniz"
+
+msgid "Giriş"
+msgstr "Giriş"
+
+msgid "Çıkış"
+msgstr "Çıkış"
+
+msgid "Profil"
+msgstr "Profil"
+
+msgid "Ayarlar"
+msgstr "Ayarlar"
+
+msgid "Kaydet"
+msgstr "Kaydet"
+
+msgid "İptal"
+msgstr "İptal"
+
+msgid "Sil"
+msgstr "Sil"
+
+msgid "Düzenle"
+msgstr "Düzenle"
+
+msgid "Ekle"
+msgstr "Ekle"
+
+msgid "Ara"
+msgstr "Ara"
+
+msgid "Stratejik Planlama"
+msgstr "Stratejik Planlama"
+
+msgid "Süreçler"
+msgstr "Süreçler"
+
+msgid "Performans Göstergeleri"
+msgstr "Performans Göstergeleri"
+
+msgid "Faaliyetler"
+msgstr "Faaliyetler"
+
+msgid "Projeler"
+msgstr "Projeler"
+
+msgid "Bireysel Karne"
+msgstr "Bireysel Karne"
+
+msgid "Kurum Paneli"
+msgstr "Kurum Paneli"
+
+msgid "Raporlar"
+msgstr "Raporlar"
+
+msgid "Profil başarıyla güncellendi."
+msgstr "Profil başarıyla güncellendi."
+
+msgid "Giriş başarılı."
+msgstr "Giriş başarılı."
+
+msgid "Geçersiz e-posta veya şifre."
+msgstr "Geçersiz e-posta veya şifre."
+
+msgid "Şifre boş olamaz."
+msgstr "Şifre boş olamaz."
+
+msgid "Çok fazla başarısız deneme. Hesap kilitlendi."
+msgstr "Çok fazla başarısız deneme. Hesap kilitlendi."
+
+msgid "Verilerimi İndir"
+msgstr "Verilerimi İndir"
+
+msgid "Hesabımı Sil"
+msgstr "Hesabımı Sil"
+
+msgid "İki faktörlü kimlik doğrulama"
+msgstr "İki faktörlü kimlik doğrulama"
+
+msgid "Doğrulama kodu hatalı."
+msgstr "Doğrulama kodu hatalı."
+
+msgid "Bu sayfayı görüntüleme yetkiniz yok."
+msgstr "Bu sayfayı görüntüleme yetkiniz yok."
+
+msgid "Yetkisiz"
+msgstr "Yetkisiz"
+
+msgid "KPI Anomali Tespiti"
+msgstr "KPI Anomali Tespiti"
+
+msgid "Anomali bulunamadı"
+msgstr "Anomali bulunamadı"

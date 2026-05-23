@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a class="btn btn-outline-primary btn-sm" href="{{ url_for('strategy_bp.strategic_planning_flow') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
+                <a class="btn btn-outline-primary btn-sm" href="{{ safe_url_for('strategy_bp.strategic_planning_flow') }}{% if tenant %}?tenant_id={{ tenant.id }}{% endif %}">
                     <i class="fas fa-list me-2"></i>Statik Akış
                 </a>
                 {% if current_user.role and current_user.role.name == 'Admin' %}
@@ -195,7 +195,7 @@
 </div>
 
 {% if tenant %}
-<div id="strategyFlowConfig" class="d-none" data-api-url="{{ url_for('strategy_bp.api_strategic_planning_graph') }}" data-tenant-id="{{ tenant.id }}"></div>
+<div id="strategyFlowConfig" class="d-none" data-api-url="{{ safe_url_for('strategy_bp.api_strategic_planning_graph') }}" data-tenant-id="{{ tenant.id }}"></div>
 <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
 <script src="{{ url_for('static', filename='js/strategy_dynamic_flow.js') }}"></script>
 {% endif %}
