@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-from models import db, User, Kurum, UserActivityLog
+from app.models.legacy_bridge import db, User, Kurum, UserActivityLog
 from extensions import limiter, csrf
 import json
 import os
@@ -60,8 +60,19 @@ def login():
         if not user:
             user = User.query.filter_by(username=username).first()
         
-        # Kolay giriş: şifre doğrulamasız giriş yapma
+        # Kolay giriş: şifre doğrulamasız giriş — SADECE Development + Local request
+        # Güvenlik: production'da TAM ENGELLENİR. Development'ta sadece 127.0.0.1'den gelen istek.
         if quick_login and user:
+            # PROD veya remote IP → reddet
+            _is_local = request.remote_addr in {"127.0.0.1", "::1", "localhost"}
+            _is_debug = current_app.config.get("DEBUG", False)
+            if not (_is_debug and _is_local):
+                current_app.logger.error(
+                    f"[quick_login] BLOCKED: ip={request.remote_addr} debug={_is_debug} "
+                    f"user={user.username if user else None}"
+                )
+                flash('Kolay giriş özelliği bu ortamda devre dışı. Lütfen şifre ile giriş yapın.', 'warning')
+                return redirect(url_for('auth.login'))
             login_user(user, remember=True)
             current_app.logger.info(f'Kullanıcı kolay giriş yaptı: {user.username} (ID: {user.id}, Kurum: {user.kurum.kisa_ad})')
             

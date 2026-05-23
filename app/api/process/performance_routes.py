@@ -25,8 +25,11 @@ def api_surec_karne_performans(surec_id):
     yil = request.args.get('yil', datetime.now().year, type=int)
     periyot = request.args.get('periyot', 'ceyrek', type=str)
     ay = request.args.get('ay', None, type=int)
-    debug_mode = request.args.get('debug', '0') == '1'
-    
+    # Güvenlik: debug parametresi sadece Admin role için aktif (stack trace exposure korumusu)
+    _is_admin = bool(current_user.is_authenticated and current_user.role
+                     and (current_user.role.name or "").lower() == "admin")
+    debug_mode = (request.args.get('debug', '0') == '1') and _is_admin
+
     try:
         data, status = ProcessPerformanceService.get_process_performance(
             user=current_user,

@@ -19,8 +19,31 @@ def is_pk_duplicate(err: Exception, table_name: str) -> bool:
     )
 
 
+import re as _re
+
+# Güvenlik: identifier sadece [a-zA-Z0-9_] olabilir (SQL injection koruması)
+_IDENTIFIER_RE = _re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+
+def _validate_identifier(name: str, kind: str) -> str:
+    """SQL identifier (table_name, column_name) güvenliğini doğrula."""
+    if not name or not _IDENTIFIER_RE.match(name):
+        raise ValueError(
+            f"Geçersiz {kind}: {name!r}. Sadece [a-zA-Z0-9_] karakterleri kabul edilir."
+        )
+    return name
+
+
 def sync_pg_sequence_if_needed(table_name: str, pk_column: str = "id") -> bool:
-    """PostgreSQL tablo sequence değerini MAX(id)+1'e hizala."""
+    """PostgreSQL tablo sequence değerini MAX(id)+1'e hizala.
+
+    Güvenlik: table_name ve pk_column SQL injection'a karşı strict regex ile
+    doğrulanır — f-string interpolation bu aşamadan sonra güvenlidir.
+    """
+    # SQL injection koruması
+    table_name = _validate_identifier(table_name, "table_name")
+    pk_column = _validate_identifier(pk_column, "pk_column")
+
     bind = db.session.get_bind() if hasattr(db.session, "get_bind") else None
     if bind is None:
         try:
@@ -37,6 +60,7 @@ def sync_pg_sequence_if_needed(table_name: str, pk_column: str = "id") -> bool:
     if not seq_name:
         return False
 
+    # Identifier'lar validate edildi — f-string güvenli
     db.session.execute(
         text(
             f"SELECT setval(:seq, COALESCE((SELECT MAX({pk_column}) FROM {table_name}), 0) + 1, false)"
