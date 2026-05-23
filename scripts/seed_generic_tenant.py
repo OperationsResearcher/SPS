@@ -272,6 +272,11 @@ def generate_bulk_employees(rules: dict, tenant_id: int, used_emails: set, pwd_h
 # Reset existing tenant fully
 # ---------------------------------------------------------------------------
 def reset_tenant(name: str, short_name: str):
+    """Mevcut tenant'ı tüm bağlı kayıtlarla birlikte siler.
+
+    Sıra ÖNEMLİ — FK kısıtları nedeniyle alt-katman önce silinmeli.
+    try/except kullanılmaz; her hata transaction'ı bozar ve rollback dışta yapılır.
+    """
     t = db.session.query(Tenant).filter(
         (Tenant.name == name) | (Tenant.short_name == short_name)
     ).first()
@@ -279,77 +284,60 @@ def reset_tenant(name: str, short_name: str):
         return False
     tid = t.id
     print(f"  [reset] Mevcut tenant id={tid} ve TÜM bağlı kayıtlar siliniyor...")
-    # User-bound (col, table)
-    user_tables = [
-        "activity_tracks", "audit_logs", "capacity_plan", "favorite_kpis",
-        "individual_activities", "individual_activity_tracks", "individual_kpi_data",
-        "individual_kpi_data_audits", "individual_performance_indicators",
-        "kpi_data_audits", "notifications", "plan_project_tasks",
-        "process_activity_assignees", "process_activity_reminders",
-        "process_leaders", "process_members", "process_owners_table",
-        "project_leaders", "project_members", "project_observers",
-        "push_subscriptions", "raid_item", "risk_heatmap_items",
+    # Sırayla — FK katmanlarına saygıyla
+    delete_queries = [
+        # 1) Audit + user-bound
+        "DELETE FROM audit_logs WHERE user_id IN (SELECT id FROM users WHERE tenant_id=:t)",
+        # 2) KPI data (process_kpis'e bağlı)
+        "DELETE FROM kpi_data WHERE process_kpi_id IN (SELECT k.id FROM process_kpis k JOIN processes p ON k.process_id=p.id WHERE p.tenant_id=:t)",
+        # 3) Process-bound m2m + faaliyetler
+        "DELETE FROM process_owners_table WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)",
+        "DELETE FROM process_leaders WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)",
+        "DELETE FROM process_members WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)",
+        "DELETE FROM process_activity_assignees WHERE activity_id IN (SELECT a.id FROM process_activities a JOIN processes p ON a.process_id=p.id WHERE p.tenant_id=:t)",
+        "DELETE FROM process_activities WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)",
+        # 4) Process'e bağlı K-Radar
+        "DELETE FROM bottleneck_log WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t) OR tenant_id=:t",
+        "DELETE FROM process_maturity WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t) OR tenant_id=:t",
+        "DELETE FROM value_chain_items WHERE linked_process_id IN (SELECT id FROM processes WHERE tenant_id=:t) OR tenant_id=:t",
+        # 5) K-Vektor
+        "DELETE FROM k_vektor_strategy_weights WHERE tenant_id=:t",
+        "DELETE FROM k_vektor_sub_strategy_weights WHERE tenant_id=:t",
+        # 6) Process kpis + processes
+        "DELETE FROM process_kpis WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)",
+        "DELETE FROM processes WHERE tenant_id=:t",
+        # 7) Strateji
+        "DELETE FROM sub_strategies WHERE strategy_id IN (SELECT id FROM strategies WHERE tenant_id=:t)",
+        "DELETE FROM strategies WHERE tenant_id=:t",
+        # 8) K-Radar diğer + analizler
+        "DELETE FROM evm_snapshots WHERE tenant_id=:t",
+        "DELETE FROM risk_heatmap_items WHERE tenant_id=:t",
+        "DELETE FROM stakeholder_maps WHERE tenant_id=:t",
+        "DELETE FROM stakeholder_surveys WHERE tenant_id=:t",
+        "DELETE FROM a3_reports WHERE tenant_id=:t",
+        "DELETE FROM competitor_analyses WHERE tenant_id=:t",
+        "DELETE FROM swot_analyses WHERE tenant_id=:t",
+        "DELETE FROM tows_analyses WHERE tenant_id=:t",
+        "DELETE FROM pestel_analyses WHERE tenant_id=:t",
+        "DELETE FROM porter_analyses WHERE tenant_id=:t",
+        # 9) OKR (tablo varsa)
+        "DELETE FROM okr_key_results WHERE objective_id IN (SELECT id FROM okr_objectives WHERE tenant_id=:t)",
+        "DELETE FROM okr_objectives WHERE tenant_id=:t",
+        # 10) Proje
+        "DELETE FROM task WHERE project_id IN (SELECT id FROM project WHERE tenant_id=:t)",
+        "DELETE FROM project WHERE tenant_id=:t",
+        # 11) Plan year + user + tenant
+        "DELETE FROM plan_years WHERE tenant_id=:t",
+        "UPDATE tenants SET package_id=NULL WHERE id=:t",
+        "DELETE FROM users WHERE tenant_id=:t",
+        "DELETE FROM tenants WHERE id=:t",
     ]
-    user_id_cols = {"raid_item": "owner_id", "risk_heatmap_items": "owner_id"}
-    for t_name in user_tables:
-        col = user_id_cols.get(t_name, "user_id")
-        try:
-            db.session.execute(text(
-                f"DELETE FROM {t_name} WHERE {col} IN (SELECT id FROM users WHERE tenant_id=:t)"
-            ), {"t": tid})
-        except Exception:
-            db.session.rollback()
-    # KPI data
-    db.session.execute(text(
-        "DELETE FROM kpi_data WHERE process_kpi_id IN "
-        "(SELECT k.id FROM process_kpis k JOIN processes p ON k.process_id=p.id WHERE p.tenant_id=:t)"
-    ), {"t": tid})
-    # Process activities + assignees
-    db.session.execute(text(
-        "DELETE FROM process_activity_assignees WHERE activity_id IN "
-        "(SELECT a.id FROM process_activities a JOIN processes p ON a.process_id=p.id WHERE p.tenant_id=:t)"
-    ), {"t": tid})
-    db.session.execute(text(
-        "DELETE FROM process_activities WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)"
-    ), {"t": tid})
-    # Process KPIs and processes
-    db.session.execute(text("DELETE FROM process_kpis WHERE process_id IN (SELECT id FROM processes WHERE tenant_id=:t)"), {"t": tid})
-    db.session.execute(text("DELETE FROM processes WHERE tenant_id=:t"), {"t": tid})
-    # K-Vektor + K-Radar tenant-bound
-    for t_name in ["k_vektor_strategy_weights", "k_vektor_sub_strategy_weights",
-                   "k_vektor_config_snapshots", "k_radar_recommendation_actions",
-                   "process_maturity", "bottleneck_log", "value_chain_items",
-                   "evm_snapshots", "risk_heatmap_items", "stakeholder_maps",
-                   "stakeholder_surveys", "a3_reports", "competitor_analyses",
-                   "swot_analyses", "tows_analyses", "pestel_analyses", "porter_analyses",
-                   "tenant_email_configs", "tenant_year_identities", "notifications",
-                   "pestel_analyses"]:
-        try:
-            db.session.execute(text(f"DELETE FROM {t_name} WHERE tenant_id=:t"), {"t": tid})
-        except Exception:
-            db.session.rollback()
-    # Projects + tasks
-    try:
-        db.session.execute(text("DELETE FROM task WHERE project_id IN (SELECT id FROM project WHERE tenant_id=:t)"), {"t": tid})
-        db.session.execute(text("DELETE FROM project WHERE tenant_id=:t"), {"t": tid})
-    except Exception:
-        db.session.rollback()
-    # OKR — okr_objectives doesn't have tenant_id in some setups; safe-attempt
-    try:
-        db.session.execute(text("DELETE FROM okr_key_results WHERE objective_id IN (SELECT id FROM okr_objectives WHERE tenant_id=:t)"), {"t": tid})
-        db.session.execute(text("DELETE FROM okr_objectives WHERE tenant_id=:t"), {"t": tid})
-    except Exception:
-        db.session.rollback()
-    # Sub-strategies, strategies, plan years
-    db.session.execute(text("DELETE FROM sub_strategies WHERE strategy_id IN (SELECT id FROM strategies WHERE tenant_id=:t)"), {"t": tid})
-    db.session.execute(text("DELETE FROM strategies WHERE tenant_id=:t"), {"t": tid})
-    db.session.execute(text("DELETE FROM plan_years WHERE tenant_id=:t"), {"t": tid})
-    # Users + tenant
-    db.session.execute(text("UPDATE tenants SET package_id=NULL WHERE id=:t"), {"t": tid})
-    db.session.execute(text("DELETE FROM users WHERE tenant_id=:t"), {"t": tid})
-    db.session.execute(text("DELETE FROM tenants WHERE id=:t"), {"t": tid})
+    for q in delete_queries:
+        n = db.session.execute(text(q), {"t": tid}).rowcount
+        if n:
+            print(f"    -{n}: {q[:60]}")
     db.session.flush()
-    print(f"  [reset] Tamamlandı.")
+    print(f"  [reset] tenant_id={tid} temizlendi.")
     return True
 
 
