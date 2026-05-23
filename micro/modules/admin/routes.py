@@ -1266,9 +1266,26 @@ def admin_tenants_logo(tenant_id):
     if len(blob) > _TENANT_LOGO_MAX_BYTES:
         return jsonify({"success": False, "message": "Dosya en fazla 2 MB olabilir."}), 400
 
+    # Sprint 2.5: Magic byte doğrulaması — SVG XSS engeller
+    from app.utils.upload_security import validate_uploaded_image, safe_filename
+    ok, msg, detected_ext = validate_uploaded_image(
+        blob, _TENANT_LOGO_EXT, accept_svg=(".svg" in _TENANT_LOGO_EXT)
+    )
+    if not ok:
+        current_app.logger.warning(
+            f"[logo_upload] reject tenant={tenant_id} user={current_user.id}: {msg}"
+        )
+        return jsonify({"success": False, "message": msg}), 400
+
+    # Sprint 2.6: Path traversal koruma — fname tamamen sayı + sabit ext
     folder = _tenant_logos_dir()
-    fname = f"{tenant_id}{ext}"
+    safe_ext = f".{detected_ext}"
+    fname = safe_filename(f"{tenant_id}{safe_ext}", fallback=f"{tenant_id}.png")
     dest = os.path.join(folder, fname)
+    # Çift kontrol: dest folder'ın içinde olmalı
+    if not os.path.abspath(dest).startswith(os.path.abspath(folder)):
+        current_app.logger.error(f"[logo_upload] path traversal blocked: {dest}")
+        return jsonify({"success": False, "message": "Geçersiz dosya yolu."}), 400
     try:
         for old in os.listdir(folder):
             if old.startswith(f"{tenant_id}.") and old != fname:
@@ -1597,6 +1614,67 @@ def admin_modules_add():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
+@app_bp.route("/admin/k-radar/weights", methods=["GET"])
+@login_required
+def admin_k_radar_weights_get():
+    """Mevcut K-Radar ağırlıklarını döner."""
+    if not _is_admin():
+        return _403()
+    import json
+    from app.models.system_setting import SystemSetting
+    tid = current_user.tenant_id
+    key = f"k_radar_weights_{tid}"
+    row = SystemSetting.query.filter_by(key=key).first()
+    defaults = {"ks": 2.0, "kp": 3.0, "kpr": 3.0, "bireysel": 2.0}
+    if row:
+        try:
+            weights = json.loads(row.value)
+        except Exception:
+            weights = defaults
+    else:
+        weights = defaults
+    return jsonify({"success": True, "weights": weights})
+
+
+@app_bp.route("/admin/k-radar/weights", methods=["POST"])
+@login_required
+def admin_k_radar_weights_save():
+    """K-Radar ağırlıklarını kaydeder ve cache'i temizler."""
+    if not _is_admin():
+        return _403()
+    import json
+    from app.models.system_setting import SystemSetting
+    from app.extensions import cache
+    payload = request.get_json(silent=True) or {}
+    try:
+        weights = {
+            "ks":       max(0.1, float(payload.get("ks",       2.0))),
+            "kp":       max(0.1, float(payload.get("kp",       3.0))),
+            "kpr":      max(0.1, float(payload.get("kpr",      3.0))),
+            "bireysel": max(0.1, float(payload.get("bireysel", 2.0))),
+        }
+    except (TypeError, ValueError) as e:
+        return jsonify({"success": False, "message": f"Geçersiz değer: {e}"}), 400
+
+    tid = current_user.tenant_id
+    key = f"k_radar_weights_{tid}"
+    row = SystemSetting.query.filter_by(key=key).first()
+    if row:
+        row.value = json.dumps(weights)
+    else:
+        db.session.add(SystemSetting(key=key, value=json.dumps(weights)))
+    try:
+        db.session.commit()
+        # K-Radar cache'i temizle (yeni ağırlıklar hemen geçerli olsun)
+        cache.delete_memoized(None)
+        cache.clear()
+        return jsonify({"success": True, "weights": weights, "message": "Ağırlıklar kaydedildi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_k_radar_weights] {e}")
+        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+
+
 @app_bp.route("/admin/modules/toggle/<int:mod_id>", methods=["POST"])
 @login_required
 def admin_modules_toggle(mod_id):
@@ -1614,3 +1692,4 @@ def admin_modules_toggle(mod_id):
         db.session.rollback()
         current_app.logger.error(f"[admin_modules_toggle] {e}")
         return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+
