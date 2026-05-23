@@ -64,6 +64,21 @@
                         <input type="text" class="form-control" id="obj-owner" maxlength="200" />
                     </div>
                 </div>
+                <!-- Sprint 17: Strateji bağı -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Bağlı Ana Strateji</label>
+                        <select class="form-select" id="obj-strategy">
+                            <option value="">— Strateji yok —</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Bağlı Alt Strateji</label>
+                        <select class="form-select" id="obj-sub-strategy">
+                            <option value="">— Alt strateji yok —</option>
+                        </select>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="mc-modal-footer">
@@ -118,6 +133,45 @@
 <script>
 const OKR_API = "/sp/api/okr";
 let allObjectives = [];
+let allStrategies = [];
+let allSubStrategies = [];
+
+async function loadStrategies() {
+    try {
+        const resp = await fetch("/sp/api/strategies");
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.success) {
+            allStrategies = data.data || [];
+            // Tüm sub_strategy'leri düzleştir
+            allSubStrategies = [];
+            allStrategies.forEach(s => (s.sub_strategies || []).forEach(ss => {
+                allSubStrategies.push({ ...ss, parent_code: s.code });
+            }));
+            populateStrategyDropdowns();
+        }
+    } catch (e) { console.warn("Strateji listesi alınamadı:", e); }
+}
+
+function populateStrategyDropdowns() {
+    const sSel = document.getElementById("obj-strategy");
+    const ssSel = document.getElementById("obj-sub-strategy");
+    if (!sSel || !ssSel) return;
+    sSel.innerHTML = '<option value="">— Strateji yok —</option>';
+    allStrategies.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = `${s.code || ""} — ${s.title || ""}`.trim();
+        sSel.appendChild(opt);
+    });
+    ssSel.innerHTML = '<option value="">— Alt strateji yok —</option>';
+    allSubStrategies.forEach(ss => {
+        const opt = document.createElement("option");
+        opt.value = ss.id;
+        opt.textContent = `${ss.code || ""} — ${ss.title || ""}`.trim();
+        ssSel.appendChild(opt);
+    });
+}
 
 async function loadOkrs() {
     try {
@@ -202,6 +256,8 @@ function renderOkrs() {
                 <div class="card-body">
                     ${obj.description ? `<p class="text-muted small">${escapeHtml(obj.description)}</p>` : ""}
                     ${obj.owner ? `<div class="small mb-2"><i class="bi bi-person"></i> ${escapeHtml(obj.owner)}</div>` : ""}
+                    ${obj.linked_strategy ? `<div class="small mb-1"><i class="bi bi-link-45deg"></i> Strateji: <span class="badge bg-primary-subtle text-primary">${escapeHtml(obj.linked_strategy.code)} — ${escapeHtml(obj.linked_strategy.title)}</span></div>` : ""}
+                    ${obj.linked_sub_strategy ? `<div class="small mb-2"><i class="bi bi-link-45deg"></i> Alt: <span class="badge bg-info-subtle text-info">${escapeHtml(obj.linked_sub_strategy.code)} — ${escapeHtml(obj.linked_sub_strategy.title)}</span></div>` : ""}
                     ${krsHtml || '<p class="text-muted small mb-0">Henüz anahtar sonuç yok.</p>'}
                 </div>
                 <div class="card-footer bg-white border-top">
@@ -222,6 +278,8 @@ function openObjectiveModal() {
     document.getElementById("obj-modal-title").textContent = "Yeni Hedef";
     document.getElementById("obj-id").value = "";
     document.getElementById("form-objective").reset();
+    document.getElementById("obj-strategy").value = "";
+    document.getElementById("obj-sub-strategy").value = "";
     document.getElementById("modal-objective").classList.add("active");
 }
 
@@ -238,6 +296,8 @@ function editObjective(id) {
     document.getElementById("obj-description").value = o.description || "";
     document.getElementById("obj-quarter").value = o.quarter || "";
     document.getElementById("obj-owner").value = o.owner || "";
+    document.getElementById("obj-strategy").value = o.linked_strategy_id || "";
+    document.getElementById("obj-sub-strategy").value = o.linked_sub_strategy_id || "";
     document.getElementById("modal-objective").classList.add("active");
 }
 
@@ -248,6 +308,8 @@ async function saveObjective() {
         description: document.getElementById("obj-description").value.trim(),
         quarter: parseInt(document.getElementById("obj-quarter").value) || null,
         owner: document.getElementById("obj-owner").value.trim(),
+        linked_strategy_id: parseInt(document.getElementById("obj-strategy").value) || null,
+        linked_sub_strategy_id: parseInt(document.getElementById("obj-sub-strategy").value) || null,
     };
     if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
     try {
@@ -351,7 +413,10 @@ async function deleteKr(krId) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadOkrs);
+document.addEventListener("DOMContentLoaded", () => {
+    loadStrategies();
+    loadOkrs();
+});
 </script>
 
 <style>

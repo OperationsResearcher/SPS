@@ -296,6 +296,17 @@ def sp_api_okr_list():
                 "owner":       o.owner,
                 "order_no":    o.order_no,
                 "avg_progress": avg_progress,
+                # Sprint 17: strateji bağı
+                "linked_strategy_id":     o.linked_strategy_id,
+                "linked_sub_strategy_id": o.linked_sub_strategy_id,
+                "linked_strategy":     (
+                    {"id": o.linked_strategy.id, "code": o.linked_strategy.code, "title": o.linked_strategy.title}
+                    if o.linked_strategy_id and o.linked_strategy else None
+                ),
+                "linked_sub_strategy": (
+                    {"id": o.linked_sub_strategy.id, "code": o.linked_sub_strategy.code, "title": o.linked_sub_strategy.title}
+                    if o.linked_sub_strategy_id and o.linked_sub_strategy else None
+                ),
                 "key_results": [{
                     "id":            k.id,
                     "title":         k.title,
@@ -341,6 +352,9 @@ def sp_api_okr_objective_create():
             quarter=payload.get("quarter") or None,
             owner=(payload.get("owner") or "").strip() or None,
             order_no=payload.get("order_no") or 0,
+            # Sprint 17: strateji bağı
+            linked_strategy_id=payload.get("linked_strategy_id") or None,
+            linked_sub_strategy_id=payload.get("linked_sub_strategy_id") or None,
         )
         db.session.add(obj)
         db.session.commit()
@@ -368,6 +382,11 @@ def sp_api_okr_objective_update(obj_id):
         obj.description = (payload.get("description") or "").strip() or None
         obj.quarter     = payload.get("quarter") or None
         obj.owner       = (payload.get("owner") or "").strip() or None
+        # Sprint 17: strateji bağı (None gönderirse temizler)
+        if "linked_strategy_id" in payload:
+            obj.linked_strategy_id = payload.get("linked_strategy_id") or None
+        if "linked_sub_strategy_id" in payload:
+            obj.linked_sub_strategy_id = payload.get("linked_sub_strategy_id") or None
         db.session.commit()
         return jsonify({"success": True})
     except Exception as e:

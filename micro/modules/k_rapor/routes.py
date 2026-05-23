@@ -1408,8 +1408,15 @@ def k_rapor_api_export_excel():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# KPI ANOMALI TESPİT + SLACK BİLDİRİM (Sprint 14)
+# KPI ANOMALI TESPİT + SLACK BİLDİRİM (Sprint 14-15)
 # ══════════════════════════════════════════════════════════════════════════════
+
+@app_bp.route("/k-rapor/anomalies")
+@login_required
+def k_rapor_anomalies_page():
+    """KPI anomali UI sayfası."""
+    return render_template("platform/k_rapor/anomalies.html")
+
 
 @app_bp.route("/k-rapor/api/anomalies")
 @login_required
@@ -1484,6 +1491,49 @@ def k_rapor_api_anomalies_notify_slack():
     except Exception as e:
         current_app.logger.error(f"[anomalies_notify_slack] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Slack gönderimi başarısız."}), 500
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# EMAIL DIGEST (Sprint 18)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app_bp.route("/k-rapor/api/digest/preview")
+@login_required
+def k_rapor_digest_preview():
+    """Digest mail içeriğini HTML olarak preview et."""
+    from app.services.email_digest_service import render_digest_html
+    try:
+        html = render_digest_html(current_user.tenant_id)
+        if not html:
+            return jsonify({"success": False, "message": "Tenant bulunamadı"}), 404
+        return html  # render HTML
+    except Exception as e:
+        current_app.logger.error(f"[digest_preview] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app_bp.route("/k-rapor/api/digest/send", methods=["POST"])
+@login_required
+def k_rapor_digest_send():
+    """Digest mail'i tenant yöneticilerine gönder.
+
+    Sadece tenant_admin + executive_manager + Admin role'leri tetikleyebilir.
+    Payload (opsiyonel): {"recipients": ["email1", "email2"]}
+    """
+    _MANAGE = ("tenant_admin", "executive_manager", "Admin")
+    if not current_user.role or current_user.role.name not in _MANAGE:
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
+
+    from app.services.email_digest_service import send_digest
+    payload = request.get_json(silent=True) or {}
+    recipients = payload.get("recipients") or None
+
+    try:
+        result = send_digest(current_user.tenant_id, recipients=recipients)
+        return jsonify(result)
+    except Exception as e:
+        current_app.logger.error(f"[digest_send] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════

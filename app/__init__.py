@@ -215,6 +215,7 @@ def create_app(config_class=None):
         from services.k_radar_scheduler_service import init_k_radar_scheduler
         init_k_radar_scheduler(app)
         _init_early_warning_scheduler(app)
+        _init_weekly_digest_scheduler(app)  # Sprint 18
 
     # Legacy HTML sunset (GET yönlendirme / 410) — main_bp'den önce kayıt
     from app.middleware.legacy_sunset import init_legacy_sunset
@@ -236,6 +237,35 @@ def create_app(config_class=None):
     importlib.import_module("app.socketio_events")
 
     return app
+
+
+def _init_weekly_digest_scheduler(app) -> None:
+    """Haftalık digest mail — her Pazartesi 09:00 (Europe/Istanbul)."""
+    if not app.config.get("DIGEST_SCHEDULER_ENABLED", False):
+        app.logger.info("[digest_scheduler] DIGEST_SCHEDULER_ENABLED=False — atlandı")
+        return
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.cron import CronTrigger
+
+        def _run():
+            with app.app_context():
+                from app.services.email_digest_service import schedule_digest_for_all_tenants
+                schedule_digest_for_all_tenants()
+
+        scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
+        scheduler.add_job(
+            func=_run,
+            trigger=CronTrigger(day_of_week="mon", hour=9, minute=0),
+            id="weekly_digest_monday",
+            replace_existing=True,
+        )
+        scheduler.start()
+        app.logger.info("[digest_scheduler] Haftalık digest — her Pazartesi 09:00 başlatıldı.")
+    except ImportError:
+        app.logger.warning("[digest_scheduler] apscheduler kurulu değil.")
+    except Exception as e:
+        app.logger.error(f"[digest_scheduler] Başlatma hatası: {e}")
 
 
 def _init_early_warning_scheduler(app) -> None:

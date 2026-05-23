@@ -154,6 +154,76 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Sprint 16: KVKK aksiyon paneli -->
+                <hr class="my-4">
+                <h5 class="mb-3"><i class="fas fa-shield-alt me-2"></i>KVKK / Veri Hakları</h5>
+                <p class="text-muted small mb-3">
+                    KVKK Madde 11 ve 7 gereği aşağıdaki haklara sahipsiniz:
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-info" onclick="kvkkExport()">
+                        <i class="fas fa-download me-2"></i>Verilerimi İndir (JSON)
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" onclick="kvkkDelete()">
+                        <i class="fas fa-user-slash me-2"></i>Hesabımı Sil
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-2">
+                    Verilerinizi indirebilir veya hesabınızı anonimleştirerek silebilirsiniz.
+                    Silme işlemi geri alınamaz.
+                </small>
+
+                <script>
+                async function kvkkExport() {
+                    try {
+                        const resp = await fetch("/api/user/export-my-data");
+                        if (!resp.ok) throw new Error("Sunucu hatası");
+                        const blob = await resp.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `kokpitim-verim-${new Date().toISOString().slice(0,10)}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        if (typeof Swal !== "undefined") {
+                            Swal.fire({ icon: "success", title: "İndirildi", timer: 2000, showConfirmButton: false });
+                        }
+                    } catch (e) {
+                        alert("Veri indirilemedi: " + e.message);
+                    }
+                }
+
+                async function kvkkDelete() {
+                    if (typeof Swal === "undefined") { alert("SweetAlert yüklenmedi"); return; }
+                    const { value: pwd } = await Swal.fire({
+                        icon: "warning",
+                        title: "Hesabınızı silmek istiyor musunuz?",
+                        html: `<p class="text-muted small">Bu işlem geri alınamaz. Verileriniz anonimleştirilir, audit kayıtları korunur.</p>
+                               <p class="text-muted small">Devam etmek için şifrenizi girin:</p>`,
+                        input: "password",
+                        inputPlaceholder: "Şifre",
+                        showCancelButton: true,
+                        confirmButtonText: "Evet, sil",
+                        confirmButtonColor: "#dc3545",
+                        cancelButtonText: "İptal",
+                    });
+                    if (!pwd) return;
+                    try {
+                        const fd = new FormData();
+                        fd.append("password", pwd);
+                        const resp = await fetch("/api/user/delete-my-account", { method: "POST", body: fd });
+                        const data = await resp.json();
+                        if (!data.success) throw new Error(data.message);
+                        await Swal.fire({ icon: "success", title: "Hesap silindi", text: data.message, confirmButtonText: "Çıkış" });
+                        window.location.href = "/login";
+                    } catch (e) {
+                        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+                    }
+                }
+                </script>
             </div>
         </div>
     </div>

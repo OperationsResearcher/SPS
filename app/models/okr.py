@@ -20,6 +20,13 @@ class OkrObjective(db.Model):
     owner         = db.Column(db.String(200), nullable=True)           # Sorumlu kişi/ekip
     order_no      = db.Column(db.Integer, default=0)
 
+    # Sprint 17: Strateji bağlama (her ikisi de opsiyonel; her ikisi de set edilebilir veya boş bırakılabilir)
+    linked_strategy_id     = db.Column(db.Integer, db.ForeignKey("strategies.id", ondelete="SET NULL"), nullable=True, index=True)
+    linked_sub_strategy_id = db.Column(db.Integer, db.ForeignKey("sub_strategies.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    linked_strategy        = db.relationship("Strategy", foreign_keys=[linked_strategy_id], lazy="select")
+    linked_sub_strategy    = db.relationship("SubStrategy", foreign_keys=[linked_sub_strategy_id], lazy="select")
+
     is_active     = db.Column(db.Boolean, default=True, nullable=False)
     created_at    = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at    = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
