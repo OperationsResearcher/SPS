@@ -3,6 +3,33 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-118 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Rekabet analizi sonrası 5 önerinin uygulanması — UX entegrasyon + AI Pivot + Exec Dashboard + TR Kamu şablonu + Initiative haritası
+**Modül:** ui/templates/platform/, app/services/, app/templates_data/, micro/modules/sp/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `ui/templates/platform/base.html` → SP altına 5 sub-link (exec dashboard, çeyreklik, initiative, scenario, replan, templates) — Hamle #1
+- `micro/modules/sp/helpers.py` → strateji haritası grafına Initiative node'ları (pembe, kesik kenar, dashed edge) — Hamle #3
+- `ui/templates/platform/sp/strateji_haritasi.html` → vis-network `initiative` group theme — Hamle #3
+- `app/services/exec_dashboard_service.py` → yeni; KPI/strateji/initiative/risk/anomali/trigger snapshot + health_score — Hamle #5
+- `app/services/ai_pivot_advisor_service.py` → yeni; Gemini LLM + heuristic fallback ile pivot önerileri — Hamle #2
+- `app/services/plan_year_template_service.py` → yeni; JSON şablon marketplace iskeleti — Hamle #4
+- `app/templates_data/sbb_kamu_template.json` → yeni; Cumhurbaşkanlığı SBB 2024-2028 uyumlu 5 stratejik amaç + 13 alt strateji + 8 KPI — Hamle #4
+- `micro/modules/sp/routes_exec_advisor.py` → yeni; 7 endpoint (exec-dashboard, exec-snapshot, ai-pivot, templates list/get/apply)
+- `ui/templates/platform/sp/exec_dashboard.html` → yeni; sağlık skoru hero + 6 metrik kartı + AI Pivot paneli
+- `ui/templates/platform/sp/templates.html` → yeni; şablon marketplace UI
+- `micro/modules/sp/routes.py` → yeni route modülünü import
+
+### Yapılan İşlem
+Önceki rekabet analizi raporundaki 5 öncelikli hamlenin tamamı uygulandı: (1) sidebar entegrasyonu — S54-S57 yatırımı artık menüden erişilebilir; (2) AI Strategy Pivot Advisor — exec snapshot + son 7 gün trigger event'leri Gemini'ye gönderiliyor, key yoksa heuristic kural motoru fallback'i; (3) strateji haritasına initiative node'ları (vis-network group `initiative`, kesik çizgili kenar); (4) Cumhurbaşkanlığı SBB Stratejik Plan Hazırlama Kılavuzu uyumlu kamu şablonu + apply servisi — global rakiplerde olmayan TR-spesifik diferansiyatör; (5) Exec Dashboard tek bakışta 360° strateji sağlığı (health_score ağırlıklı: KPI on-target %40 + coverage %20 + faaliyet timeliness %20 + risk %10 + anomali %10). Tomofil tenant'ında smoke: health 45.7, 221 KPI.
+
+### Notlar
+SBB şablonu MVP — sektör genişletme için private/ngo şablonları sonraki sprintte. AI Pivot'ın LLM modu için GEMINI_API_KEY/.env şart; yoksa heuristic mod ile silent fallback. Schema migration yok (mevcut tablolar yeterli).
+
+---
+
 ## TASK-117 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
 
 **Görev:** Stratejik planlama geliştirme planı S53-S57 — 5 sprint somut çıktı (Ö1-Ö5, Ö8)

@@ -1,0 +1,123 @@
+{% extends "platform/base.html" %}
+{% block title %}Plan Şablonları — Kokpitim{% endblock %}
+{% block page_title %}Plan Year Şablonları{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;"
+     id="tpl-root"
+     data-list-url="{{ url_for('app_bp.sp_api_templates_list') }}"
+     data-apply-base="{{ url_for('app_bp.sp_api_template_apply', code='__CODE__') }}">
+
+  <div class="mc-page-header" style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+      <i class="fas fa-store"></i> Hazır Plan Şablonları
+    </h2>
+    <p style="font-size:13px; color:#64748b; margin:0;">
+      Sektör/kurum tipine göre hazır stratejik plan iskeletleri. Tek tıkla aktif plan yılına uygulanır.
+    </p>
+  </div>
+
+  <div id="tpl-list" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px;"></div>
+
+  <!-- Modal -->
+  <div class="mc-modal-overlay" id="tpl-modal" style="display:none;">
+    <div class="mc-modal-lg">
+      <div class="mc-modal-header">
+        <h3 id="tpl-modal-title">Şablonu Uygula</h3>
+        <button class="mc-modal-close" type="button" id="tpl-close">✕</button>
+      </div>
+      <div class="mc-modal-body">
+        <p style="color:#64748b;font-size:13px;" id="tpl-modal-desc"></p>
+        <label style="display:block;margin-top:12px;">
+          Hedef Yıl
+          <input type="number" class="mc-input" id="tpl-target-year" value="2026" min="2024" max="2035">
+        </label>
+        <label style="display:block;margin-top:12px;">
+          <input type="checkbox" id="tpl-overwrite"> Mevcut misyon/vizyon/değerleri ÜZERİNE YAZ
+        </label>
+        <div class="mc-alert mc-alert-warning" style="margin-top:12px;font-size:12px;">
+          ⚠️ Şablon, mevcut plan yılına ek strateji & alt strateji ekler. Aynı kodlu kayıt varsa atlanır.
+        </div>
+      </div>
+      <div class="mc-modal-footer">
+        <button class="mc-btn mc-btn-secondary" id="tpl-cancel">İptal</button>
+        <button class="mc-btn mc-btn-primary" id="tpl-apply">Uygula</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const r = document.getElementById('tpl-root');
+  let currentCode = null;
+  const modal = document.getElementById('tpl-modal');
+
+  async function load() {
+    const res = await fetch(r.dataset.listUrl);
+    const j = await res.json();
+    const list = document.getElementById('tpl-list');
+    if (!j.items || !j.items.length) {
+      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Şablon yok.</div>';
+      return;
+    }
+    const sectorLabel = {public:'Kamu', private:'Özel', ngo:'STK'};
+    list.innerHTML = j.items.map(t => `
+      <div class="mc-card" style="padding:18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${sectorLabel[t.sector]||t.sector||''}</span>
+          <span style="color:#64748b;font-size:11px;">${t.period_years || '?'} yıllık</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 6px;">${t.name}</h3>
+        <p style="font-size:13px;color:#64748b;margin:0 0 12px;">${t.description || ''}</p>
+        <div style="display:flex;gap:12px;font-size:12px;color:#475569;margin-bottom:12px;">
+          <span>📋 ${t.strategy_count} strateji</span>
+          <span>📊 ${t.kpi_count} KPI</span>
+        </div>
+        <button class="mc-btn mc-btn-primary" style="width:100%;" data-code="${t.code}" data-name="${t.name}" data-desc="${t.description||''}">
+          <i class="fas fa-magic"></i> Bu Şablonu Uygula
+        </button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('button[data-code]').forEach(b => {
+      b.onclick = () => {
+        currentCode = b.dataset.code;
+        document.getElementById('tpl-modal-title').textContent = b.dataset.name;
+        document.getElementById('tpl-modal-desc').textContent = b.dataset.desc;
+        modal.style.display = 'flex';
+      };
+    });
+  }
+
+  document.getElementById('tpl-close').onclick = () => modal.style.display = 'none';
+  document.getElementById('tpl-cancel').onclick = () => modal.style.display = 'none';
+
+  document.getElementById('tpl-apply').onclick = async () => {
+    if (!currentCode) return;
+    const url = r.dataset.applyBase.replace('__CODE__', currentCode);
+    const data = {
+      target_year: parseInt(document.getElementById('tpl-target-year').value),
+      overwrite_identity: document.getElementById('tpl-overwrite').checked,
+    };
+    const btn = document.getElementById('tpl-apply');
+    btn.disabled = true; btn.textContent = 'Uygulanıyor...';
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+      });
+      const j = await res.json();
+      if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+      alert('Şablon uygulandı: PlanYear #' + j.plan_year.id);
+      modal.style.display = 'none';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Uygula';
+    }
+  };
+
+  load();
+})();
+</script>
+{% endblock %}

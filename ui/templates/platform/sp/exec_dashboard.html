@@ -1,0 +1,180 @@
+{% extends "platform/base.html" %}
+{% block title %}Exec Dashboard — Kokpitim{% endblock %}
+{% block page_title %}Strateji Sağlık Paneli (Exec){% endblock %}
+
+{% block content %}
+<div style="max-width:1300px; margin:0 auto;"
+     id="exec-root"
+     data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
+     data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
+
+  <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+        <i class="fas fa-tachometer-alt"></i> Stratejik Sağlık Paneli
+      </h2>
+      <p style="font-size:13px; color:#64748b; margin:0;">
+        KPI × Strateji × Initiative × Risk × Anomali × Trigger — tek bakışta.
+      </p>
+    </div>
+    <button class="mc-btn mc-btn-primary" id="exec-pivot-btn">
+      <i class="fas fa-brain"></i> AI Pivot Önerisi
+    </button>
+  </div>
+
+  <!-- Health hero -->
+  <div class="mc-card" style="padding:24px; margin-bottom:20px; background:linear-gradient(135deg,#1e293b 0%,#334155 100%); color:#fff;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <div>
+        <div style="font-size:12px; opacity:0.7; text-transform:uppercase;">Strateji Sağlık Skoru</div>
+        <div style="font-size:48px; font-weight:800;" id="exec-health">—</div>
+        <div style="font-size:12px; opacity:0.7;" id="exec-generated"></div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3, auto); gap:24px; font-size:13px;">
+        <div><div style="opacity:0.6;">Aktif KPI</div><div style="font-size:22px;font-weight:700;" id="exec-kpi-total">—</div></div>
+        <div><div style="opacity:0.6;">Strateji</div><div style="font-size:22px;font-weight:700;" id="exec-strat-total">—</div></div>
+        <div><div style="opacity:0.6;">Initiative</div><div style="font-size:22px;font-weight:700;" id="exec-init-total">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6-card grid -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:24px;">
+    <div class="mc-card" style="padding:16px;border-left:4px solid #0ea5e9;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">KPI Hedef Üstü</div>
+      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-kpi-pct">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-kpi-detail">—</div>
+    </div>
+    <div class="mc-card" style="padding:16px;border-left:4px solid #db2777;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Initiative Sağlığı</div>
+      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-init-avg">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-init-detail">—</div>
+    </div>
+    <div class="mc-card" style="padding:16px;border-left:4px solid #f59e0b;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Gecikmiş Faaliyet</div>
+      <div style="font-size:28px;font-weight:700;color:#dc2626;" id="exec-overdue">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-overdue-detail">—</div>
+    </div>
+    <div class="mc-card" style="padding:16px;border-left:4px solid #dc2626;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Kritik Risk</div>
+      <div style="font-size:28px;font-weight:700;color:#dc2626;" id="exec-risk">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-risk-detail">—</div>
+    </div>
+    <div class="mc-card" style="padding:16px;border-left:4px solid #8b5cf6;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Anomali (Yüksek)</div>
+      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-anomaly">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-anomaly-detail">—</div>
+    </div>
+    <div class="mc-card" style="padding:16px;border-left:4px solid #10b981;">
+      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Aktif Trigger</div>
+      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-trigger">—</div>
+      <div style="font-size:12px;color:#64748b;" id="exec-trigger-detail">—</div>
+    </div>
+  </div>
+
+  <!-- AI Pivot panel -->
+  <div class="mc-card" id="exec-pivot-panel" style="padding:20px; display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0;font-size:16px;color:#1e293b;">
+        <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> AI Pivot Önerileri
+        <span id="exec-pivot-source" style="font-size:11px;color:#64748b;font-weight:400;"></span>
+      </h3>
+    </div>
+    <div id="exec-pivot-list" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const r = document.getElementById('exec-root');
+
+  function healthColor(s) {
+    if (s === null || s === undefined) return '#94a3b8';
+    if (s >= 75) return '#10b981';
+    if (s >= 50) return '#f59e0b';
+    return '#ef4444';
+  }
+
+  function priorityBadge(p) {
+    const colors = {critical:'#dc2626', high:'#f59e0b', medium:'#0ea5e9', low:'#64748b'};
+    const labels = {critical:'Kritik', high:'Yüksek', medium:'Orta', low:'Düşük'};
+    return `<span style="background:${colors[p]||'#64748b'};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">${labels[p]||p}</span>`;
+  }
+
+  function pivotTypeLabel(t) {
+    return {
+      refocus: '🎯 Odak Daraltma',
+      sunset: '🌅 Sonlandırma',
+      accelerate: '⚡ Hızlandırma',
+      new_initiative: '🚀 Yeni Initiative',
+      risk_mitigation: '🛡️ Risk Mitigasyon',
+    }[t] || t;
+  }
+
+  async function loadSnapshot() {
+    const res = await fetch(r.dataset.snapshotUrl);
+    const j = await res.json();
+    if (!j.success) return;
+    const s = j.snapshot;
+
+    const hEl = document.getElementById('exec-health');
+    hEl.textContent = s.health_score != null ? s.health_score : '—';
+    hEl.style.color = healthColor(s.health_score);
+    document.getElementById('exec-generated').textContent = 'Üretildi: ' + new Date(s.generated_at).toLocaleString('tr-TR');
+    document.getElementById('exec-kpi-total').textContent = s.kpi.total;
+    document.getElementById('exec-strat-total').textContent = s.strategy.count + '+' + s.strategy.sub_count;
+    document.getElementById('exec-init-total').textContent = s.initiative.total;
+
+    document.getElementById('exec-kpi-pct').textContent = '%' + s.kpi.on_target_pct;
+    document.getElementById('exec-kpi-detail').textContent = s.kpi.with_data + ' / ' + s.kpi.total + " KPI'da veri var";
+
+    const inProg = (s.initiative.by_status.in_progress) || {avg_progress:0,count:0};
+    document.getElementById('exec-init-avg').textContent = '%' + Math.round(inProg.avg_progress);
+    document.getElementById('exec-init-detail').textContent = inProg.count + ' devam eden';
+
+    document.getElementById('exec-overdue').textContent = s.activity.overdue;
+    document.getElementById('exec-overdue-detail').textContent = s.activity.total + ' toplam faaliyet';
+
+    document.getElementById('exec-risk').textContent = s.risk.critical;
+    document.getElementById('exec-risk-detail').textContent = s.risk.open + ' açık risk';
+
+    document.getElementById('exec-anomaly').textContent = s.anomaly.high;
+    document.getElementById('exec-anomaly-detail').textContent = s.anomaly.medium + ' orta seviye';
+
+    document.getElementById('exec-trigger').textContent = s.trigger.active;
+    document.getElementById('exec-trigger-detail').textContent = s.trigger.fired_last_7d + ' son 7 günde ateşlendi';
+  }
+
+  document.getElementById('exec-pivot-btn').onclick = async () => {
+    const btn = document.getElementById('exec-pivot-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz ediliyor...';
+    try {
+      const res = await fetch(r.dataset.pivotUrl, {method: 'POST'});
+      const j = await res.json();
+      if (!j.success) { alert('Hata: ' + (j.error || '')); return; }
+      const panel = document.getElementById('exec-pivot-panel');
+      panel.style.display = 'block';
+      document.getElementById('exec-pivot-source').textContent =
+        ' (kaynak: ' + (j.source === 'llm' ? 'Gemini AI' : 'heuristic kural motoru') + ')';
+      document.getElementById('exec-pivot-list').innerHTML = j.recommendations.map(rec => `
+        <div style="border-left:3px solid #f59e0b;padding:12px;margin-bottom:10px;background:#fffbeb;border-radius:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="font-weight:600;color:#1e293b;">${pivotTypeLabel(rec.pivot_type)} — ${rec.title || ''}</div>
+            ${priorityBadge(rec.priority)}
+          </div>
+          <div style="font-size:13px;color:#475569;margin-bottom:6px;"><strong>Gerekçe:</strong> ${rec.rationale || ''}</div>
+          <div style="font-size:13px;color:#0f172a;"><strong>Aksiyon:</strong> ${rec.action || ''}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:4px;">⏱ ${rec.timeframe || ''}</div>
+        </div>
+      `).join('');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-brain"></i> AI Pivot Önerisi';
+    }
+  };
+
+  loadSnapshot();
+})();
+</script>
+{% endblock %}

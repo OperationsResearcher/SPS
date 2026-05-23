@@ -1,0 +1,444 @@
+{% extends "platform/base.html" %}
+{% block title %}Strateji Haritası — Kokpitim{% endblock %}
+{% block page_title %}Strateji Haritası{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp_strateji_harita.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block content %}
+<div class="sh-page">
+
+    <header class="sh-hero">
+        <div class="sh-hero-inner">
+            <div>
+                <div class="sh-hero-badge"><i class="fas fa-layer-group"></i> Canlı hiyerarşi</div>
+                <h1 class="sh-hero-title">
+                    <i class="fas fa-project-diagram" aria-hidden="true"></i>
+                    Strateji Haritası
+                </h1>
+                <p class="sh-hero-sub">
+                    Kurumsal hedeflerinizden süreçlere ve performans göstergelerine akan ilişki ağı.
+                    Aktif SP döneminde <strong>{{ strategy_count }}</strong> ana strateji görüntülenir.
+                </p>
+            </div>
+            <div class="sh-hero-actions">
+                <button type="button" id="harita-fit" class="sh-btn-light sh-btn-light--primary" title="Tüm grafiği sığdır">
+                    <i class="fas fa-compress-arrows-alt"></i> Tümünü Göster
+                </button>
+                <a href="{{ url_for('app_bp.sp') }}" class="sh-btn-light">
+                    <i class="fas fa-arrow-left"></i> SP Modülü
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="sh-stats">
+        <div class="sh-stat">
+            <div class="sh-stat-icon sh-stat-icon--strategy"><i class="fas fa-bullseye"></i></div>
+            <div>
+                <div class="sh-stat-val" id="stat-strategy">{{ strategy_count }}</div>
+                <div class="sh-stat-lbl">Ana Strateji</div>
+            </div>
+        </div>
+        <div class="sh-stat">
+            <div class="sh-stat-icon sh-stat-icon--sub"><i class="fas fa-sitemap"></i></div>
+            <div>
+                <div class="sh-stat-val" id="stat-sub">{{ sub_count }}</div>
+                <div class="sh-stat-lbl">Alt Strateji</div>
+            </div>
+        </div>
+        <div class="sh-stat">
+            <div class="sh-stat-icon sh-stat-icon--process"><i class="fas fa-diagram-project"></i></div>
+            <div>
+                <div class="sh-stat-val" id="stat-process">{{ process_count }}</div>
+                <div class="sh-stat-lbl">Süreç</div>
+            </div>
+        </div>
+        <div class="sh-stat">
+            <div class="sh-stat-icon sh-stat-icon--kpi"><i class="fas fa-chart-line"></i></div>
+            <div>
+                <div class="sh-stat-val" id="stat-kpi">{{ kpi_count }}</div>
+                <div class="sh-stat-lbl">KPI Grubu</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="strateji-harita-error" role="alert"></div>
+
+    <div class="sh-canvas-wrap">
+        <div class="sh-flow-strip" aria-hidden="true">
+            <span class="sh-flow-col sh-flow-col--s"><span class="sh-flow-dot"></span> Strateji</span>
+            <span class="sh-flow-col sh-flow-col--ss"><span class="sh-flow-dot"></span> Alt Strateji</span>
+            <span class="sh-flow-col sh-flow-col--p"><span class="sh-flow-dot"></span> Süreç</span>
+            <span class="sh-flow-col sh-flow-col--k"><span class="sh-flow-dot"></span> KPI</span>
+        </div>
+
+        <div class="sh-toolbar">
+            <div class="sh-toolbar-left">
+                <label class="sh-search">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="search" id="harita-search" placeholder="Düğüm ara…" autocomplete="off" aria-label="Haritada ara">
+                </label>
+                <div class="sh-legend">
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#4f46e5;"></span> Strateji</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#7c3aed;"></span> Alt</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#059669;"></span> Süreç</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#f59e0b;"></span> KPI</span>
+                </div>
+            </div>
+            <div class="sh-zoom-group">
+                <button type="button" class="sh-zoom-btn" id="harita-zoom-in" title="Yakınlaştır"><i class="fas fa-plus"></i></button>
+                <button type="button" class="sh-zoom-btn" id="harita-zoom-out" title="Uzaklaştır"><i class="fas fa-minus"></i></button>
+                <button type="button" class="sh-zoom-btn" id="harita-fit-2" title="Sığdır"><i class="fas fa-expand"></i></button>
+            </div>
+        </div>
+
+        <div id="strateji-harita-loading">
+            <div class="sh-loading-pulse" aria-hidden="true"></div>
+            <span class="sh-loading-text">Harita oluşturuluyor…</span>
+        </div>
+
+        <div id="strateji-harita-container" style="display:none;" aria-label="Strateji ilişki grafiği"></div>
+    </div>
+
+    <div id="strateji-harita-empty">
+        <div class="sh-empty-icon"><i class="fas fa-map"></i></div>
+        <p class="sh-empty-title">Henüz strateji tanımlanmamış</p>
+        <p class="sh-empty-desc">Stratejik Planlama modülünden ana ve alt strateji ekledikten sonra harita burada görünecek.</p>
+        <p class="sh-empty-cta">
+            <a href="{{ url_for('app_bp.sp') }}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-plus"></i> SP'ye Git</a>
+        </p>
+    </div>
+
+    <p class="sh-hint">
+        <i class="fas fa-mouse"></i>
+        Tekerlek ile yakınlaştırın · Sürükleyerek kaydırın · Düğüme tıklayınca bağlı yolu vurgulanır
+        <span style="margin-left:6px;"><kbd>+</kbd> <kbd>−</kbd> zoom</span>
+    </p>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script id="strateji-harita-data" type="application/json">{{ graph_data|tojson }}</script>
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js" crossorigin="anonymous"></script>
+<script>
+(function() {
+    var loading = document.getElementById("strateji-harita-loading");
+    var empty = document.getElementById("strateji-harita-empty");
+    var container = document.getElementById("strateji-harita-container");
+    var errBox = document.getElementById("strateji-harita-error");
+    var searchInput = document.getElementById("harita-search");
+    var network = null;
+    var nodesDs = null;
+    var allNodeIds = [];
+    var edgePairs = [];
+
+    var FONT = "Inter, system-ui, -apple-system, Segoe UI, sans-serif";
+
+    function isDark() {
+        return document.documentElement.classList.contains("dark");
+    }
+
+    function nodeThemes() {
+        var dk = isDark();
+        return {
+            strategy: {
+                shape: "box",
+                margin: 14,
+                widthConstraint: { minimum: 150, maximum: 260 },
+                heightConstraint: { minimum: 48 },
+                shapeProperties: { borderRadius: 14 },
+                color: {
+                    background: dk ? "#6366f1" : "#4f46e5",
+                    border: dk ? "#818cf8" : "#312e81",
+                    highlight: { background: "#818cf8", border: "#a5b4fc" },
+                    hover: { background: "#7c7ff7", border: "#4338ca" },
+                },
+                font: { color: "#ffffff", size: 13, face: FONT, bold: true, multi: true, align: "center" },
+                borderWidth: 2,
+                borderWidthSelected: 3,
+                shadow: { enabled: true, color: dk ? "rgba(99,102,241,0.5)" : "rgba(49,46,129,0.35)", size: 16, x: 0, y: 6 },
+            },
+            sub_strategy: {
+                shape: "box",
+                margin: 12,
+                widthConstraint: { minimum: 130, maximum: 220 },
+                heightConstraint: { minimum: 42 },
+                shapeProperties: { borderRadius: 12 },
+                color: {
+                    background: dk ? "#8b5cf6" : "#7c3aed",
+                    border: dk ? "#a78bfa" : "#5b21b6",
+                    highlight: { background: "#a78bfa", border: "#c4b5fd" },
+                    hover: { background: "#9f6ff9", border: "#6d28d9" },
+                },
+                font: { color: "#ffffff", size: 12, face: FONT, multi: true, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(91,33,182,0.32)", size: 12, x: 0, y: 4 },
+            },
+            process: {
+                shape: "box",
+                margin: 10,
+                widthConstraint: { minimum: 110, maximum: 190 },
+                heightConstraint: { minimum: 38 },
+                shapeProperties: { borderRadius: 10 },
+                color: {
+                    background: dk ? "#10b981" : "#059669",
+                    border: dk ? "#34d399" : "#047857",
+                    highlight: { background: "#34d399", border: "#6ee7b7" },
+                    hover: { background: "#2dd4a8", border: "#047857" },
+                },
+                font: { color: "#ffffff", size: 11, face: FONT, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(4,120,87,0.3)", size: 10, x: 0, y: 3 },
+            },
+            kpi: {
+                shape: "box",
+                margin: 8,
+                widthConstraint: { minimum: 80, maximum: 110 },
+                heightConstraint: { minimum: 34 },
+                shapeProperties: { borderRadius: 8 },
+                color: {
+                    background: dk ? "#fbbf24" : "#f59e0b",
+                    border: dk ? "#fcd34d" : "#b45309",
+                    highlight: { background: "#fcd34d", border: "#fde68a" },
+                    hover: { background: "#fde047", border: "#d97706" },
+                },
+                font: { color: dk ? "#0f172a" : "#1e293b", size: 11, face: FONT, bold: true, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(180,83,9,0.28)", size: 8, x: 0, y: 2 },
+            },
+            initiative: {
+                shape: "box",
+                margin: 10,
+                widthConstraint: { minimum: 110, maximum: 200 },
+                heightConstraint: { minimum: 36 },
+                shapeProperties: { borderRadius: 18 },
+                color: {
+                    background: dk ? "#ec4899" : "#db2777",
+                    border: dk ? "#f472b6" : "#9d174d",
+                    highlight: { background: "#f472b6", border: "#fbcfe8" },
+                    hover: { background: "#f0539a", border: "#be185d" },
+                },
+                font: { color: "#ffffff", size: 11, face: FONT, bold: true, align: "center" },
+                borderWidth: 2,
+                borderDashes: [4, 2],
+                shadow: { enabled: true, color: "rgba(157,23,77,0.32)", size: 10, x: 0, y: 3 },
+            },
+        };
+    }
+
+    function showError(msg) {
+        loading.style.display = "none";
+        errBox.textContent = msg;
+        errBox.style.display = "block";
+    }
+
+    function fitNetwork() {
+        if (network) {
+            network.fit({ animation: { duration: 500, easingFunction: "easeInOutQuad" } });
+        }
+    }
+
+    function layoutOpts(nodeCount) {
+        if (nodeCount > 90) {
+            return { levelSeparation: 200, nodeSpacing: 110, treeSpacing: 160 };
+        }
+        if (nodeCount > 45) {
+            return { levelSeparation: 250, nodeSpacing: 140, treeSpacing: 190 };
+        }
+        return { levelSeparation: 310, nodeSpacing: 170, treeSpacing: 230 };
+    }
+
+    function buildAdjacency(edges) {
+        var adj = {};
+        edges.forEach(function(e) {
+            if (!adj[e.from]) adj[e.from] = [];
+            if (!adj[e.to]) adj[e.to] = [];
+            adj[e.from].push(e.to);
+            adj[e.to].push(e.from);
+        });
+        return adj;
+    }
+
+    function collectConnected(startId, adj) {
+        var seen = {};
+        var stack = [startId];
+        seen[startId] = true;
+        while (stack.length) {
+            var id = stack.pop();
+            (adj[id] || []).forEach(function(nid) {
+                if (!seen[nid]) {
+                    seen[nid] = true;
+                    stack.push(nid);
+                }
+            });
+        }
+        return seen;
+    }
+
+    function applySearchFilter(q) {
+        if (!nodesDs || !network) return;
+        var term = (q || "").trim().toLowerCase();
+        if (!term) {
+            allNodeIds.forEach(function(id) {
+                nodesDs.update({ id: id, opacity: 1, hidden: false });
+            });
+            return;
+        }
+        allNodeIds.forEach(function(id) {
+            var n = nodesDs.get(id);
+            var hay = ((n.title || "") + " " + (n.label || "")).toLowerCase();
+            var match = hay.indexOf(term) >= 0;
+            nodesDs.update({ id: id, opacity: match ? 1 : 0.12, hidden: false });
+        });
+    }
+
+    function highlightPath(nodeId) {
+        if (!nodesDs || !network) return;
+        var adj = buildAdjacency(edgePairs);
+        var keep = collectConnected(nodeId, adj);
+        allNodeIds.forEach(function(id) {
+            nodesDs.update({ id: id, opacity: keep[id] ? 1 : 0.15 });
+        });
+        network.selectNodes([nodeId]);
+        network.focus(nodeId, {
+            scale: Math.min(network.getScale() * 1.05, 1.4),
+            animation: { duration: 400, easingFunction: "easeInOutQuad" },
+        });
+    }
+
+    function bindControls() {
+        document.getElementById("harita-fit").addEventListener("click", fitNetwork);
+        document.getElementById("harita-fit-2").addEventListener("click", fitNetwork);
+        document.getElementById("harita-zoom-in").addEventListener("click", function() {
+            if (network) network.moveTo({ scale: network.getScale() * 1.22, animation: { duration: 220 } });
+        });
+        document.getElementById("harita-zoom-out").addEventListener("click", function() {
+            if (network) network.moveTo({ scale: network.getScale() * 0.8, animation: { duration: 220 } });
+        });
+        document.addEventListener("keydown", function(e) {
+            if (!network || e.target.tagName === "INPUT") return;
+            if (e.key === "+" || e.key === "=") network.moveTo({ scale: network.getScale() * 1.15 });
+            if (e.key === "-") network.moveTo({ scale: network.getScale() * 0.86 });
+            if (e.key === "Escape" && nodesDs) applySearchFilter("");
+        });
+        if (searchInput) {
+            searchInput.addEventListener("input", function() { applySearchFilter(searchInput.value); });
+        }
+    }
+
+    function renderGraph(res) {
+        loading.style.display = "none";
+        var nodeList = Array.isArray(res.nodes) ? res.nodes : [];
+        if (!res.success || !nodeList.length) {
+            empty.style.display = "block";
+            return;
+        }
+        if (typeof vis === "undefined" || !vis.Network) {
+            showError("Grafik kütüphanesi yüklenemedi. Sayfayı yenileyin veya ağ bağlantınızı kontrol edin.");
+            return;
+        }
+
+        container.style.display = "block";
+        var themes = nodeThemes();
+        var lo = layoutOpts(nodeList.length);
+
+        nodesDs = new vis.DataSet(nodeList.map(function(n) {
+            var theme = themes[n.group] || themes.process;
+            return Object.assign({ id: n.id, label: n.label, title: n.title || n.label, group: n.group }, theme);
+        }));
+        allNodeIds = nodeList.map(function(n) { return n.id; });
+
+        edgePairs = (res.edges || []).map(function(e) { return { from: e.from, to: e.to }; });
+
+        var edges = new vis.DataSet(edgePairs.map(function(e) {
+            return {
+                from: e.from,
+                to: e.to,
+                arrows: { to: { enabled: true, scaleFactor: 0.5, type: "arrow" } },
+                color: {
+                    color: isDark() ? "#475569" : "#94a3b8",
+                    highlight: "#818cf8",
+                    hover: "#64748b",
+                    opacity: 0.9,
+                },
+                width: isDark() ? 1.5 : 2,
+                smooth: {
+                    enabled: true,
+                    type: "cubicBezier",
+                    forceDirection: "horizontal",
+                    roundness: 0.42,
+                },
+            };
+        }));
+
+        network = new vis.Network(container, { nodes: nodesDs, edges: edges }, {
+            layout: {
+                hierarchical: {
+                    enabled: true,
+                    direction: "LR",
+                    sortMethod: "directed",
+                    levelSeparation: lo.levelSeparation,
+                    nodeSpacing: lo.nodeSpacing,
+                    treeSpacing: lo.treeSpacing,
+                    blockShifting: true,
+                    edgeMinimization: true,
+                    parentCentralization: true,
+                },
+            },
+            physics: { enabled: false },
+            interaction: {
+                hover: true,
+                tooltipDelay: 60,
+                zoomView: true,
+                dragView: true,
+                navigationButtons: false,
+                keyboard: { enabled: false },
+                multiselect: false,
+                hideEdgesOnDrag: false,
+            },
+            nodes: { chosen: { label: false } },
+            edges: { chosen: { label: false } },
+        });
+
+        network.once("afterDrawing", function() {
+            setTimeout(fitNetwork, 150);
+        });
+
+        network.on("click", function(params) {
+            if (params.nodes.length) {
+                highlightPath(params.nodes[0]);
+            } else if (nodesDs) {
+                applySearchFilter(searchInput ? searchInput.value : "");
+            }
+        });
+
+        network.on("hoverNode", function() { container.style.cursor = "pointer"; });
+        network.on("blurNode", function() { container.style.cursor = "default"; });
+        network.on("doubleClick", function(params) {
+            if (params.nodes.length) fitNetwork();
+        });
+    }
+
+    var res;
+    try {
+        res = JSON.parse(document.getElementById("strateji-harita-data").textContent || "{}");
+    } catch (e) {
+        showError("Harita verisi okunamadı.");
+        return;
+    }
+
+    bindControls();
+
+    function start() { renderGraph(res); }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+    } else {
+        setTimeout(start, 50);
+    }
+})();
+</script>
+{% endblock %}

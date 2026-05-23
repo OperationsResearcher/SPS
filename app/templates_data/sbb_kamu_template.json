@@ -1,0 +1,74 @@
+{
+  "code": "sbb_kamu_2024_2028",
+  "name": "Cumhurbaşkanlığı SBB — Kamu Stratejik Plan 2024-2028",
+  "description": "Cumhurbaşkanlığı Strateji ve Bütçe Başkanlığı Stratejik Plan Hazırlama Kılavuzu (2024-2028 dönemi) uyumlu kamu kurumu şablonu.",
+  "sector": "public",
+  "period_years": 5,
+  "identity": {
+    "purpose": "Kurumun anayasal/yasal görevini yerine getirmek; vatandaş ve paydaş memnuniyetini en üst düzeye çıkarmak.",
+    "vision": "Bölgesinde/alanında öncü, dijital dönüşümünü tamamlamış, hesap verebilir bir kamu kurumu olmak.",
+    "core_values": "Hukuka uygunluk • Şeffaflık • Hesap verebilirlik • Tarafsızlık • Liyakat • Etik • Sürdürülebilirlik",
+    "code_of_ethics": "Kamu Görevlileri Etik Davranış İlkeleri (5176 sayılı Kanun) çerçevesinde."
+  },
+  "strategies": [
+    {
+      "code": "AS1",
+      "title": "Kurumsal Kapasitenin Güçlendirilmesi",
+      "description": "Beşeri kaynak, fiziki altyapı ve teknolojik kapasiteyi geliştirmek.",
+      "sub_strategies": [
+        {"code": "AS1.1", "title": "İnsan kaynakları yetkinliğinin artırılması"},
+        {"code": "AS1.2", "title": "Bilgi sistemleri ve dijital altyapının modernizasyonu"},
+        {"code": "AS1.3", "title": "Mali sürdürülebilirlik ve bütçe disiplininin sağlanması"}
+      ]
+    },
+    {
+      "code": "AS2",
+      "title": "Hizmet Kalitesi ve Vatandaş Memnuniyetinin Artırılması",
+      "description": "Hizmet sunumunda erişilebilirlik, hız ve memnuniyet odaklılık.",
+      "sub_strategies": [
+        {"code": "AS2.1", "title": "Hizmet standartlarının iyileştirilmesi"},
+        {"code": "AS2.2", "title": "E-Devlet entegrasyonu ve dijital hizmetler"},
+        {"code": "AS2.3", "title": "Vatandaş geri bildirim mekanizmalarının güçlendirilmesi"}
+      ]
+    },
+    {
+      "code": "AS3",
+      "title": "Kurumsal Yönetim ve Şeffaflık",
+      "description": "İç kontrol, denetim, risk yönetimi ve açık veri pratikleri.",
+      "sub_strategies": [
+        {"code": "AS3.1", "title": "İç kontrol ve risk yönetimi sisteminin etkinleştirilmesi"},
+        {"code": "AS3.2", "title": "Açık veri ve şeffaflık uygulamalarının yaygınlaştırılması"},
+        {"code": "AS3.3", "title": "Hesap verebilirlik raporlamalarının iyileştirilmesi"}
+      ]
+    },
+    {
+      "code": "AS4",
+      "title": "Sürdürülebilirlik ve Yeşil Dönüşüm",
+      "description": "Çevre, enerji verimliliği ve sosyal sorumluluk odaklı dönüşüm.",
+      "sub_strategies": [
+        {"code": "AS4.1", "title": "Enerji ve kaynak verimliliği"},
+        {"code": "AS4.2", "title": "Karbon ayak izi azaltma"},
+        {"code": "AS4.3", "title": "Sosyal sorumluluk projelerinin geliştirilmesi"}
+      ]
+    },
+    {
+      "code": "AS5",
+      "title": "Paydaş İşbirliği ve İletişim",
+      "description": "Diğer kamu kurumları, STK'lar ve özel sektörle koordinasyon.",
+      "sub_strategies": [
+        {"code": "AS5.1", "title": "Kurumlar arası işbirliği protokolleri"},
+        {"code": "AS5.2", "title": "Kurumsal iletişim ve marka yönetimi"}
+      ]
+    }
+  ],
+  "kpi_library": [
+    {"code": "K001", "name": "Vatandaş memnuniyet oranı", "unit": "%", "direction": "higher", "target_initial": 75, "target_yearly_delta": 2},
+    {"code": "K002", "name": "E-Devlet üzerinden sunulan hizmet sayısı", "unit": "adet", "direction": "higher", "target_initial": 20, "target_yearly_delta": 5},
+    {"code": "K003", "name": "Personel başına yıllık eğitim saati", "unit": "saat", "direction": "higher", "target_initial": 40, "target_yearly_delta": 5},
+    {"code": "K004", "name": "İç denetim önerilerinin uygulanma oranı", "unit": "%", "direction": "higher", "target_initial": 70, "target_yearly_delta": 5},
+    {"code": "K005", "name": "Birim enerji tüketimi (kişi başı)", "unit": "kWh", "direction": "lower", "target_initial": 1800, "target_yearly_delta": -50},
+    {"code": "K006", "name": "Şikayet kapatma süresi", "unit": "gün", "direction": "lower", "target_initial": 15, "target_yearly_delta": -2},
+    {"code": "K007", "name": "Bütçe gerçekleşme oranı", "unit": "%", "direction": "higher", "target_initial": 90, "target_yearly_delta": 1},
+    {"code": "K008", "name": "Açık veri seti sayısı", "unit": "adet", "direction": "higher", "target_initial": 5, "target_yearly_delta": 3}
+  ]
+}

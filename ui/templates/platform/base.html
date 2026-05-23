@@ -93,9 +93,45 @@
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
             <a href="{{ url_for('app_bp.sp') }}"
-                class="sidebar-item {% if 'sp' in ep and 'admin' not in ep %}active{% endif %}">
+                class="sidebar-item {% if 'sp' in ep and 'admin' not in ep and 'ceyreklik' not in ep and 'scenarios' not in ep and 'initiatives' not in ep and 'replan' not in ep and 'exec_dashboard' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
                 <span class="sidebar-item-text">Stratejik Planlama</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_exec_dashboard') }}"
+                class="sidebar-item sidebar-item-sub {% if 'exec_dashboard' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-tachometer-alt"></i></span>
+                <span class="sidebar-item-text">Exec Dashboard</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_quarterly_review_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'ceyreklik' in ep or 'quarterly' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-calendar-check"></i></span>
+                <span class="sidebar-item-text">Çeyreklik Review</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_initiatives_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'initiatives' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-rocket"></i></span>
+                <span class="sidebar-item-text">Initiative'ler</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_scenarios_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'scenarios' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-code-branch"></i></span>
+                <span class="sidebar-item-text">Senaryolar</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_replan_triggers_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'replan' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-bolt"></i></span>
+                <span class="sidebar-item-text">Replan Trigger</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_templates_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'templates' in ep and 'sp' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-store"></i></span>
+                <span class="sidebar-item-text">Plan Şablonları</span>
             </a>
 
 <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
