@@ -1408,6 +1408,85 @@ def k_rapor_api_export_excel():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# KPI ANOMALI TESPİT + SLACK BİLDİRİM (Sprint 14)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app_bp.route("/k-rapor/api/anomalies")
+@login_required
+def k_rapor_api_anomalies():
+    """Aktif tenant için KPI anomali listesi (Z-score tabanlı)."""
+    from app.services.kpi_anomaly_service import detect_anomalies_for_tenant
+
+    tid = current_user.tenant_id
+    threshold = request.args.get("threshold", 2.0, type=float)
+    limit = request.args.get("limit", 50, type=int)
+
+    try:
+        anomalies = detect_anomalies_for_tenant(tid, threshold=threshold, limit=limit)
+        return jsonify({
+            "success": True,
+            "threshold": threshold,
+            "count": len(anomalies),
+            "data": [a.to_dict() for a in anomalies],
+        })
+    except Exception as e:
+        current_app.logger.error(f"[k_rapor_api_anomalies] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Anomali tespiti başarısız."}), 500
+
+
+@app_bp.route("/k-rapor/api/anomalies/notify-slack", methods=["POST"])
+@login_required
+def k_rapor_api_anomalies_notify_slack():
+    """Tespit edilen anomalileri Slack'e gönder.
+
+    Body: {"webhook_url": "...", "severity_min": "medium", "limit": 5}
+    """
+    from app.services.kpi_anomaly_service import detect_anomalies_for_tenant
+    from app.services.slack_notification import send_slack_message, format_anomaly_blocks
+
+    tid = current_user.tenant_id
+    payload = request.get_json(silent=True) or {}
+    webhook = (payload.get("webhook_url") or "").strip() or None
+    severity_min = payload.get("severity_min", "medium").lower()
+    limit = int(payload.get("limit", 5))
+
+    severity_rank = {"low": 1, "medium": 2, "high": 3}
+    min_rank = severity_rank.get(severity_min, 2)
+
+    try:
+        anomalies = detect_anomalies_for_tenant(tid, threshold=2.0, limit=50)
+        filtered = [a for a in anomalies if severity_rank.get(a.severity, 0) >= min_rank][:limit]
+
+        if not filtered:
+            return jsonify({"success": True, "message": "Bildirilecek anomali yok.", "sent": 0})
+
+        # Header mesajı + her anomali için block
+        from app.models.core import Tenant
+        tenant = Tenant.query.get(tid)
+        header_msg = (
+            f":bar_chart: *Kokpitim Anomali Raporu* — {tenant.name if tenant else 'Kurum'}\n"
+            f"{len(filtered)} anomali tespit edildi (severity ≥ {severity_min})"
+        )
+        result = send_slack_message(header_msg, tenant_id=tid, webhook_url=webhook)
+        if not result["success"]:
+            return jsonify({"success": False, "message": f"Slack: {result['message']}"}), 400
+
+        # Her anomali için ayrı block message
+        sent = 1
+        for a in filtered:
+            blocks = format_anomaly_blocks(a.to_dict())
+            r = send_slack_message(f"Anomali: {a.kpi_name}", tenant_id=tid,
+                                    webhook_url=webhook, blocks=blocks)
+            if r["success"]:
+                sent += 1
+
+        return jsonify({"success": True, "sent": sent, "anomaly_count": len(filtered)})
+    except Exception as e:
+        current_app.logger.error(f"[anomalies_notify_slack] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Slack gönderimi başarısız."}), 500
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # PDF EXPORT (Sprint 11.3 — app/utils/pdf_export.py altyapısı)
 # ══════════════════════════════════════════════════════════════════════════════
 

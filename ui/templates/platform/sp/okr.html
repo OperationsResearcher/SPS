@@ -1,0 +1,369 @@
+{% extends "platform/base.html" %}
+
+{% block title %}OKR — Hedefler ve Anahtar Sonuçlar{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="bi bi-bullseye"></i>
+                OKR — Hedefler ve Anahtar Sonuçlar
+            </h2>
+            <p class="text-muted mb-0">
+                {% if active_year %}{{ active_year }} Plan Yılı{% else %}Plan yılı seçilmemiş{% endif %}
+            </p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="openObjectiveModal()">
+                <i class="bi bi-plus-circle"></i> Yeni Hedef Ekle
+            </button>
+        </div>
+    </div>
+
+    <div id="okr-summary" class="mb-4"></div>
+    <div id="okr-list" class="row g-3"></div>
+    <div id="okr-empty" class="text-center py-5 d-none">
+        <i class="bi bi-bullseye fs-1 text-muted"></i>
+        <h4 class="text-muted mt-3">Henüz hedef tanımlanmamış</h4>
+        <p class="text-muted">İlk hedefi eklemek için yukarıdaki butona tıklayın.</p>
+    </div>
+</div>
+
+<!-- Objective Modal -->
+<div class="mc-modal-overlay" id="modal-objective">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3 id="obj-modal-title">Yeni Hedef</h3>
+            <button class="mc-modal-close" onclick="closeObjectiveModal()">✕</button>
+        </div>
+        <div class="mc-modal-body">
+            <form id="form-objective">
+                <input type="hidden" id="obj-id" />
+                <div class="mb-3">
+                    <label class="form-label">Hedef Başlığı <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="obj-title" required maxlength="300" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" id="obj-description" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Çeyrek</label>
+                        <select class="form-select" id="obj-quarter">
+                            <option value="">Yıllık (çeyrek seçme)</option>
+                            <option value="1">Q1</option>
+                            <option value="2">Q2</option>
+                            <option value="3">Q3</option>
+                            <option value="4">Q4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Sorumlu / Ekip</label>
+                        <input type="text" class="form-control" id="obj-owner" maxlength="200" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="mc-modal-footer">
+            <button class="mc-btn mc-btn-secondary" onclick="closeObjectiveModal()">İptal</button>
+            <button class="mc-btn mc-btn-primary" onclick="saveObjective()">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<!-- Key Result Modal -->
+<div class="mc-modal-overlay" id="modal-kr">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3 id="kr-modal-title">Yeni Anahtar Sonuç</h3>
+            <button class="mc-modal-close" onclick="closeKrModal()">✕</button>
+        </div>
+        <div class="mc-modal-body">
+            <form id="form-kr">
+                <input type="hidden" id="kr-id" />
+                <input type="hidden" id="kr-objective-id" />
+                <div class="mb-3">
+                    <label class="form-label">KR Başlığı <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="kr-title" required maxlength="300" />
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Metrik</label>
+                        <input type="text" class="form-control" id="kr-metric" placeholder="%, adet, TL..." maxlength="100" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Başlangıç</label>
+                        <input type="number" step="0.01" class="form-control" id="kr-start-value" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Hedef</label>
+                        <input type="number" step="0.01" class="form-control" id="kr-target-value" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Güncel</label>
+                        <input type="number" step="0.01" class="form-control" id="kr-current-value" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="mc-modal-footer">
+            <button class="mc-btn mc-btn-secondary" onclick="closeKrModal()">İptal</button>
+            <button class="mc-btn mc-btn-primary" onclick="saveKr()">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const OKR_API = "/sp/api/okr";
+let allObjectives = [];
+
+async function loadOkrs() {
+    try {
+        const resp = await fetch(OKR_API);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.message || "OKR verisi alınamadı");
+        allObjectives = data.data || [];
+        renderOkrs();
+    } catch (e) {
+        console.error(e);
+        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+    }
+}
+
+function renderOkrs() {
+    const container = document.getElementById("okr-list");
+    const empty = document.getElementById("okr-empty");
+    const summary = document.getElementById("okr-summary");
+    container.innerHTML = "";
+
+    if (allObjectives.length === 0) {
+        empty.classList.remove("d-none");
+        summary.innerHTML = "";
+        return;
+    }
+    empty.classList.add("d-none");
+
+    const avgAll = allObjectives.filter(o => o.avg_progress !== null);
+    const grandAvg = avgAll.length ? (avgAll.reduce((s, o) => s + o.avg_progress, 0) / avgAll.length).toFixed(1) : "—";
+    summary.innerHTML = `
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex justify-content-around text-center">
+                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">Hedef</small></div>
+                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">Anahtar Sonuç</small></div>
+                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">Ortalama İlerleme</small></div>
+            </div>
+        </div>`;
+
+    allObjectives.forEach(obj => {
+        const krsHtml = (obj.key_results || []).map(kr => {
+            const pct = kr.progress_pct !== null && kr.progress_pct !== undefined ? kr.progress_pct : 0;
+            const cls = pct >= 70 ? "bg-success" : pct >= 40 ? "bg-warning" : "bg-danger";
+            return `
+                <div class="border-top pt-2 mt-2">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div class="fw-medium small">${escapeHtml(kr.title)}</div>
+                        <div class="text-end">
+                            <span class="badge ${cls}">${pct}%</span>
+                            <button class="btn btn-sm btn-link p-0 ms-2" onclick="editKr(${obj.id}, ${kr.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-link text-danger p-0 ms-1" onclick="deleteKr(${kr.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        ${kr.start_value ?? "—"} → ${kr.target_value ?? "—"}
+                        ${kr.metric ? `<span class="ms-1">${escapeHtml(kr.metric)}</span>` : ""}
+                        | Güncel: <strong>${kr.current_value ?? "—"}</strong>
+                    </small>
+                    <div class="progress mt-1" style="height:4px;">
+                        <div class="progress-bar ${cls}" style="width:${pct}%"></div>
+                    </div>
+                </div>`;
+        }).join("");
+
+        const card = document.createElement("div");
+        card.className = "col-md-6";
+        card.innerHTML = `
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : '<span class="badge bg-light text-dark me-2">Yıllık</span>'}
+                        <strong>${escapeHtml(obj.title)}</strong>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-link" onclick="editObjective(${obj.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-link text-danger" onclick="deleteObjective(${obj.id})"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    ${obj.description ? `<p class="text-muted small">${escapeHtml(obj.description)}</p>` : ""}
+                    ${obj.owner ? `<div class="small mb-2"><i class="bi bi-person"></i> ${escapeHtml(obj.owner)}</div>` : ""}
+                    ${krsHtml || '<p class="text-muted small mb-0">Henüz anahtar sonuç yok.</p>'}
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="addKr(${obj.id})">
+                        <i class="bi bi-plus"></i> Anahtar Sonuç Ekle
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function openObjectiveModal() {
+    document.getElementById("obj-modal-title").textContent = "Yeni Hedef";
+    document.getElementById("obj-id").value = "";
+    document.getElementById("form-objective").reset();
+    document.getElementById("modal-objective").classList.add("active");
+}
+
+function closeObjectiveModal() {
+    document.getElementById("modal-objective").classList.remove("active");
+}
+
+function editObjective(id) {
+    const o = allObjectives.find(x => x.id === id);
+    if (!o) return;
+    document.getElementById("obj-modal-title").textContent = "Hedef Düzenle";
+    document.getElementById("obj-id").value = id;
+    document.getElementById("obj-title").value = o.title || "";
+    document.getElementById("obj-description").value = o.description || "";
+    document.getElementById("obj-quarter").value = o.quarter || "";
+    document.getElementById("obj-owner").value = o.owner || "";
+    document.getElementById("modal-objective").classList.add("active");
+}
+
+async function saveObjective() {
+    const id = document.getElementById("obj-id").value;
+    const body = {
+        title: document.getElementById("obj-title").value.trim(),
+        description: document.getElementById("obj-description").value.trim(),
+        quarter: parseInt(document.getElementById("obj-quarter").value) || null,
+        owner: document.getElementById("obj-owner").value.trim(),
+    };
+    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    try {
+        const url = id ? `${OKR_API}/objective/${id}` : `${OKR_API}/objective`;
+        const resp = await fetch(url, {
+            method: id ? "PUT" : "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body),
+        });
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.message || "Kaydedilemedi");
+        closeObjectiveModal();
+        await loadOkrs();
+        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+    } catch (e) {
+        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+    }
+}
+
+async function deleteObjective(id) {
+    const r = await Swal.fire({ icon: "warning", title: "Silinsin mi?", showCancelButton: true, confirmButtonText: "Evet, sil" });
+    if (!r.isConfirmed) return;
+    try {
+        const resp = await fetch(`${OKR_API}/objective/${id}`, { method: "DELETE" });
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.message);
+        await loadOkrs();
+        Swal.fire({ icon: "success", title: "Silindi", timer: 1500, showConfirmButton: false });
+    } catch (e) {
+        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+    }
+}
+
+function addKr(objId) {
+    document.getElementById("kr-modal-title").textContent = "Yeni Anahtar Sonuç";
+    document.getElementById("kr-id").value = "";
+    document.getElementById("kr-objective-id").value = objId;
+    document.getElementById("form-kr").reset();
+    document.getElementById("kr-objective-id").value = objId;
+    document.getElementById("modal-kr").classList.add("active");
+}
+
+function editKr(objId, krId) {
+    const o = allObjectives.find(x => x.id === objId);
+    if (!o) return;
+    const kr = o.key_results.find(k => k.id === krId);
+    if (!kr) return;
+    document.getElementById("kr-modal-title").textContent = "KR Düzenle";
+    document.getElementById("kr-id").value = krId;
+    document.getElementById("kr-objective-id").value = objId;
+    document.getElementById("kr-title").value = kr.title || "";
+    document.getElementById("kr-metric").value = kr.metric || "";
+    document.getElementById("kr-start-value").value = kr.start_value ?? "";
+    document.getElementById("kr-target-value").value = kr.target_value ?? "";
+    document.getElementById("kr-current-value").value = kr.current_value ?? "";
+    document.getElementById("modal-kr").classList.add("active");
+}
+
+function closeKrModal() {
+    document.getElementById("modal-kr").classList.remove("active");
+}
+
+async function saveKr() {
+    const id = document.getElementById("kr-id").value;
+    const objId = document.getElementById("kr-objective-id").value;
+    const body = {
+        title: document.getElementById("kr-title").value.trim(),
+        metric: document.getElementById("kr-metric").value.trim(),
+        start_value: parseFloat(document.getElementById("kr-start-value").value) || null,
+        target_value: parseFloat(document.getElementById("kr-target-value").value) || null,
+        current_value: parseFloat(document.getElementById("kr-current-value").value) || null,
+    };
+    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    try {
+        const url = id ? `${OKR_API}/kr/${id}` : `${OKR_API}/objective/${objId}/kr`;
+        const resp = await fetch(url, {
+            method: id ? "PUT" : "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body),
+        });
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.message);
+        closeKrModal();
+        await loadOkrs();
+        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+    } catch (e) {
+        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+    }
+}
+
+async function deleteKr(krId) {
+    const r = await Swal.fire({ icon: "warning", title: "KR silinsin mi?", showCancelButton: true, confirmButtonText: "Evet" });
+    if (!r.isConfirmed) return;
+    try {
+        const resp = await fetch(`${OKR_API}/kr/${krId}`, { method: "DELETE" });
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.message);
+        await loadOkrs();
+    } catch (e) {
+        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", loadOkrs);
+</script>
+
+<style>
+.mc-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center; }
+.mc-modal-overlay.active { display: flex; }
+.mc-modal-lg { background: white; border-radius: 8px; width: 90%; max-width: 700px; max-height: 90vh; overflow: auto; }
+.mc-modal-header { padding: 1rem; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+.mc-modal-body { padding: 1rem; }
+.mc-modal-footer { padding: 1rem; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 0.5rem; }
+.mc-modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+.mc-btn { padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid transparent; cursor: pointer; }
+.mc-btn-primary { background: #0d6efd; color: white; }
+.mc-btn-secondary { background: #6c757d; color: white; }
+</style>
+{% endblock %}

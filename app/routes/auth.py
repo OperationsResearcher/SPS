@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from app.models import db
 from app.models.core import User
 from app.utils.audit_logger import AuditLogger
+from app.utils.security import limiter
 
 auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
 
@@ -29,6 +30,7 @@ def _write_auth_audit(action, user=None):
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit(lambda: current_app.config.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour") or "15 per minute", methods=["POST"])
 def login():
     """Handle login form - GET shows form, POST validates credentials."""
     if current_user.is_authenticated:
@@ -110,9 +112,22 @@ def profile():
         current_user.job_title = job_title
         current_user.department = department
         current_user.profile_picture = profile_picture
+        password_changed = False
         if new_password:
             current_user.password_hash = generate_password_hash(new_password)
+            password_changed = True
         db.session.commit()
+        # Sprint 12.3 — password change audit log
+        if password_changed:
+            try:
+                AuditLogger.log(
+                    action="PASSWORD_CHANGED",
+                    resource_type="GÜVENLİK",
+                    resource_id=current_user.id,
+                    description=f"User {current_user.email} kendi şifresini değiştirdi",
+                )
+            except Exception as e:
+                current_app.logger.error(f"[password_audit] {e}")
         flash("Profil başarıyla güncellendi.", "success")
         return redirect(url_for("auth_bp.profile"))
 
@@ -235,3 +250,155 @@ def settings():
         show_page_guides=getattr(current_user, "show_page_guides", True),
         guide_character_style=getattr(current_user, "guide_character_style", "professional"),
     )
+
+# ── KVKK / GDPR uyumu — Sprint 12 ─────────────────────────────────────────────
+
+@auth_bp.route("/api/user/export-my-data")
+@login_required
+def kvkk_user_data_export():
+    """KVKK Madde 11 (veri taşınabilirliği): kullanıcı kendi verisini JSON olarak alır.
+
+    Not: Sadece kullanıcının doğrudan sahip olduğu veri. Tenant-genelinde paylaşılan
+    veriler (process_kpi tanımları vb.) tenant_admin yetkisi gerektirir.
+    """
+    from flask import jsonify
+    import datetime as _dt
+
+    try:
+        # Bireysel veriler
+        from app.models.process import (
+            IndividualPerformanceIndicator, IndividualActivity,
+            IndividualKpiData, KpiData,
+        )
+        from app.models.audit import AuditLog
+
+        ipgs = IndividualPerformanceIndicator.query.filter_by(user_id=current_user.id).all()
+        iacts = IndividualActivity.query.filter_by(user_id=current_user.id).all()
+        ikpidata = IndividualKpiData.query.filter_by(user_id=current_user.id).all()
+
+        # Kullanıcının girdiği KpiData kayıtları
+        user_kpi_data = KpiData.query.filter_by(user_id=current_user.id).limit(1000).all()
+
+        # Audit log (son 100)
+        my_audits = (
+            AuditLog.query.filter_by(user_id=current_user.id)
+            .order_by(AuditLog.created_at.desc())
+            .limit(100).all()
+        )
+
+        data = {
+            "_kvkk_madde": "Veri Taşınabilirliği (Madde 11)",
+            "_export_date": _dt.datetime.utcnow().isoformat() + "Z",
+            "user": {
+                "id": current_user.id,
+                "email": current_user.email,
+                "first_name": current_user.first_name,
+                "last_name": current_user.last_name,
+                "phone_number": current_user.phone_number,
+                "job_title": current_user.job_title,
+                "department": current_user.department,
+                "tenant_id": current_user.tenant_id,
+                "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
+            },
+            "individual_performance_indicators": [
+                {"id": p.id, "code": p.code, "name": p.name, "target_value": p.target_value, "unit": p.unit, "weight": p.weight}
+                for p in ipgs
+            ],
+            "individual_activities": [
+                {"id": a.id, "name": getattr(a, "name", None), "status": getattr(a, "status", None)}
+                for a in iacts
+            ],
+            "individual_kpi_data_count": len(ikpidata),
+            "kpi_data_entries_count": len(user_kpi_data),
+            "audit_log_recent": [
+                {"id": a.id, "action": a.action, "resource_type": a.resource_type, "created_at": a.created_at.isoformat() if a.created_at else None}
+                for a in my_audits
+            ],
+        }
+
+        # Audit log: data exported
+        try:
+            AuditLogger.log(
+                action="KVKK_DATA_EXPORT",
+                resource_type="GÜVENLİK",
+                resource_id=current_user.id,
+                description="Kullanıcı kendi verisini export etti",
+            )
+        except Exception:
+            pass
+
+        return jsonify(data)
+    except Exception as e:
+        current_app.logger.error(f"[kvkk_export] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Veri export edilemedi."}), 500
+
+
+@auth_bp.route("/api/user/delete-my-account", methods=["POST"])
+@login_required
+def kvkk_user_delete():
+    """KVKK Madde 7 (silinme hakkı): kullanıcı kendi hesabını anonimleştirir.
+
+    Soft delete + PII anonymization (audit log için id kalıyor ama email/isim hashlenir).
+    Aktif tenant admin/sahibi kendini silemez (tenant bütünlüğü).
+    """
+    from flask import jsonify
+    from werkzeug.security import check_password_hash
+    import hashlib
+
+    try:
+        # Password confirmation
+        password = (request.form.get("password") or request.json.get("password", "") if request.is_json else request.form.get("password", "")) or ""
+        if not check_password_hash(current_user.password_hash, password):
+            return jsonify({"success": False, "message": "Şifre yanlış."}), 401
+
+        # Tenant admin koruması
+        if current_user.role and (current_user.role.name or "").lower() in ("admin", "tenant_admin"):
+            # Son tenant_admin mı?
+            from app.models.core import User, Role
+            ta_role = Role.query.filter(Role.name.ilike("tenant_admin")).first()
+            if ta_role:
+                other_admins = User.query.filter(
+                    User.tenant_id == current_user.tenant_id,
+                    User.id != current_user.id,
+                    User.role_id == ta_role.id,
+                    User.is_active == True,
+                ).count()
+                if other_admins == 0:
+                    return jsonify({
+                        "success": False,
+                        "message": "Son tenant yöneticisi silinemez. Önce başka bir yönetici atayın."
+                    }), 403
+
+        # Audit log (silinmeden önce)
+        original_email = current_user.email
+        try:
+            AuditLogger.log(
+                action="KVKK_USER_DELETE",
+                resource_type="GÜVENLİK",
+                resource_id=current_user.id,
+                description=f"User self-delete: {original_email}",
+            )
+        except Exception:
+            pass
+
+        # Anonymize (PII clear, id korunur)
+        h = hashlib.sha256(str(current_user.id).encode()).hexdigest()[:8]
+        current_user.email = f"deleted_{h}@anonim.local"
+        current_user.first_name = "Silindi"
+        current_user.last_name = "Kullanıcı"
+        current_user.phone_number = None
+        current_user.job_title = None
+        current_user.department = None
+        current_user.profile_picture = None
+        current_user.password_hash = "!"  # invalidate (login imkansız)
+        current_user.is_active = False
+        db.session.commit()
+
+        from flask_login import logout_user
+        logout_user()
+        return jsonify({"success": True, "message": "Hesabınız silindi. Veriler anonimleştirildi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[kvkk_delete] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Silme işlemi başarısız."}), 500
+
