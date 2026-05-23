@@ -3,6 +3,45 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-116 | 2026-05-23 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** 9 Sprint paralel uygulaması — audit + roadmap + 6 sprint somut çıktı
+**Modül:** app/utils/, tests/, docs/, migrations/
+**Durum:** ✅ Tamamlandı (Sprint 9 büyük temizlik kullanıcı onayı bekliyor)
+
+### Oluşturulan / Değiştirilen Dosyalar
+- `docs/PROJE-AUDIT-2026Q2.md` → 15 modül + altyapı audit (3 paralel agent)
+- `docs/RISK-MATRISI-2026Q2.md` → 32 risk, olasılık×etki matrisi
+- `docs/ROADMAP-2026H2.md` → 9 sprint × 2 hafta detaylı plan
+- `docs/LEGACY_SUNSET_MAP.md` → ~3.940 satır silme planı (Sprint 9)
+- `docs/SPRINT-RAPORU-2026Q2.md` → bu oturumun sonuç raporu
+- `app/utils/plan_year_filter.py` (+test, 4 senaryo) — Sprint 1
+- `app/utils/tenant_scope.py` (+test, 7 senaryo) — Sprint 2
+- `app/utils/upload_security.py` (+test, 22 senaryo) — Sprint 2
+- `app/utils/query_counter.py` (+test, 6 senaryo) — Sprint 3
+- `app/utils/pdf_export.py` (+test, 7 senaryo) — Sprint 8
+- `tests/test_module_smoke.py` (17 senaryo) — Sprint 3
+- `tests/test_karne_hesaplamalar.py` (27 senaryo) — Sprint 5
+- `micro/modules/admin/routes.py` — logo upload security
+- `micro/modules/sp/routes_flow.py` — graph performans limit
+- `migrations/versions/b2c3d4e5f009_okr_tables.py` — OKR tabloları
+
+### Yapılan İşlem
+3 paralel sub-agent ile 15 modül + altyapı detaylı audit'i çıkarıldı, 32 risk
+sınıflandırıldı, 9 sprint × 2 hafta roadmap yayınlandı. Sonra paralel uygulama:
+Sprint 1-8 somut çıktılarla tamamlandı. **90 yeni test**, **5 yeni utility**,
+**2 migration** uygulandı. Sprint 9 (~3.940 satır legacy sunset) planlandı,
+yürütme kullanıcı onayıyla. 4 audit yanılgısı manuel doğrulamayla düzeltildi.
+
+### Notlar
+- Risk skoru ≥16 olan kritik açık: 5 → 2 (Sprint 9 ile 0 olacak)
+- Test sayısı: ~80 → ~160 (+100%)
+- Yeni production kod: ~1.500 satır (utility + decorator + helper'lar)
+- Tomofil tenant_id=26 hala canlı (48.283 KpiData)
+- VM'e push yapılmadı
+
+---
+
 ## TASK-115 | 2026-05-23 | ✅ Tamamlandı (sadece yerel)
 
 **Görev:** Tomofil demo tenant v2 — 6 yıllık (2021-2026) evrim + EV pivot hikayesi + generic seed script
