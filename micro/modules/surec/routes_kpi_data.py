@@ -184,6 +184,45 @@ def surec_api_kpi_data_add():
         return jsonify({"success": False, "message": str(e)}), 400
 
 
+# Sprint 44 — Bulk Excel import
+@app_bp.route("/process/api/kpi-data/bulk-import", methods=["POST"])
+@login_required
+def surec_api_kpi_data_bulk_import():
+    """Excel'den KPI veri toplu import (dry-run + commit modu)."""
+    from app.services.bulk_import_service import import_kpi_data_from_excel
+    f = request.files.get("file")
+    if not f or not f.filename:
+        return jsonify({"success": False, "message": "Dosya seçilmedi"}), 400
+    dry_run = (request.form.get("dry_run", "true").lower() in ("true", "1", "on"))
+    blob = f.read()
+    if len(blob) > 5 * 1024 * 1024:
+        return jsonify({"success": False, "message": "Dosya en fazla 5 MB"}), 400
+    try:
+        result = import_kpi_data_from_excel(
+            blob, tenant_id=current_user.tenant_id,
+            user_id=current_user.id, dry_run=dry_run,
+        )
+        return jsonify(result)
+    except Exception as e:
+        current_app.logger.error(f"[bulk_import] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app_bp.route("/process/api/kpi-data/template.xlsx")
+@login_required
+def surec_api_kpi_data_template():
+    """Boş Excel şablonu indir."""
+    from app.services.bulk_import_service import make_kpi_template_excel
+    from flask import send_file
+    import io
+    blob = make_kpi_template_excel(current_user.tenant_id)
+    return send_file(
+        io.BytesIO(blob), as_attachment=True,
+        download_name="kpi-data-template.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+
 @app_bp.route("/process/api/kpi-data/list/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_data_list(kpi_id):

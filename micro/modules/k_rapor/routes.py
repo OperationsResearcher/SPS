@@ -10,6 +10,35 @@ from platform_core import app_bp
 from extensions import db
 
 
+# ── Sprint 46: KPI Forecasting ────────────────────────────────────────────────
+
+@app_bp.route("/k-rapor/api/forecast/<int:kpi_id>")
+@login_required
+def k_rapor_api_forecast(kpi_id):
+    """KPI trend forecasting — linear regression + güven aralığı."""
+    from app.services.forecast_service import forecast_kpi
+    from app.models.process import ProcessKpi, Process
+
+    kpi = (
+        ProcessKpi.query.join(Process)
+        .filter(ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id)
+        .first()
+    )
+    if not kpi:
+        return jsonify({"success": False, "message": "KPI bulunamadı"}), 404
+
+    periods = request.args.get("periods", 3, type=int)
+    periods = max(1, min(periods, 12))
+    try:
+        result = forecast_kpi(kpi_id, periods_ahead=periods)
+        result["kpi_name"] = kpi.name
+        result["kpi_code"] = kpi.code
+        return jsonify(result)
+    except Exception as e:
+        current_app.logger.error(f"[forecast] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 # ── Ana Sayfa ─────────────────────────────────────────────────────────────────
 
 @app_bp.route("/k-rapor")
@@ -1439,6 +1468,71 @@ def k_rapor_api_anomalies():
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_anomalies] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Anomali tespiti başarısız."}), 500
+
+
+@app_bp.route("/k-rapor/api/webhook/test", methods=["POST"])
+@login_required
+def k_rapor_webhook_test():
+    """Sprint 45: Test mesajı gönder (Slack/Teams/Discord).
+
+    Body: {"provider": "slack|teams|discord", "webhook_url": "...", "message": "Test"}
+    """
+    payload = request.get_json(silent=True) or {}
+    provider = (payload.get("provider") or "slack").lower()
+    url = (payload.get("webhook_url") or "").strip()
+    msg = payload.get("message") or f"🚀 Kokpitim test mesajı — {current_user.email}"
+
+    if not url:
+        return jsonify({"success": False, "message": "webhook_url gerekli"}), 400
+
+    from app.services.slack_notification import dispatch_webhook
+    result = dispatch_webhook(provider, msg, url)
+    return jsonify(result)
+
+
+@app_bp.route("/k-rapor/api/anomalies/notify-webhook", methods=["POST"])
+@login_required
+def k_rapor_anomalies_notify_webhook():
+    """Sprint 45: Anomalileri generic webhook ile gönder.
+
+    Body: {"provider": "slack|teams|discord", "webhook_url": "...",
+           "severity_min": "medium", "limit": 5}
+    """
+    from app.services.kpi_anomaly_service import detect_anomalies_for_tenant
+    from app.services.slack_notification import dispatch_webhook
+
+    tid = current_user.tenant_id
+    payload = request.get_json(silent=True) or {}
+    provider = (payload.get("provider") or "slack").lower()
+    webhook = (payload.get("webhook_url") or "").strip()
+    if not webhook:
+        return jsonify({"success": False, "message": "webhook_url gerekli"}), 400
+
+    sev_min = payload.get("severity_min", "medium").lower()
+    limit = int(payload.get("limit", 5))
+    rank = {"low": 1, "medium": 2, "high": 3}
+    min_r = rank.get(sev_min, 2)
+
+    try:
+        anomalies = detect_anomalies_for_tenant(tid, threshold=2.0, limit=50)
+        filtered = [a for a in anomalies if rank.get(a.severity, 0) >= min_r][:limit]
+        if not filtered:
+            return jsonify({"success": True, "message": "Bildirilecek anomali yok.", "sent": 0})
+
+        lines = [f"⚠️ *{len(filtered)} KPI anomalisi tespit edildi* (severity ≥ {sev_min})"]
+        for a in filtered:
+            arrow = "↓" if a.z_score < 0 else "↑"
+            lines.append(
+                f"• `{a.process_code}` {a.kpi_name}: {a.latest_value} {arrow} "
+                f"(ort: {a.mean}, z={a.z_score})"
+            )
+        msg = "\n".join(lines)
+
+        result = dispatch_webhook(provider, msg, webhook)
+        return jsonify({**result, "anomaly_count": len(filtered)})
+    except Exception as e:
+        current_app.logger.error(f"[notify_webhook] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 @app_bp.route("/k-rapor/api/anomalies/notify-slack", methods=["POST"])

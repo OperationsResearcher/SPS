@@ -86,6 +86,79 @@ def send_slack_message(
         return {"success": False, "message": str(e)}
 
 
+def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim") -> dict:
+    """Microsoft Teams incoming webhook'a mesaj gönder (MessageCard formatı).
+
+    Teams webhook URL formatı: https://*.webhook.office.com/...
+    """
+    if not webhook_url:
+        return {"success": False, "message": "Teams webhook URL boş."}
+
+    payload = {
+        "@type": "MessageCard",
+        "@context": "http://schema.org/extensions",
+        "themeColor": "1A4D80",
+        "summary": title,
+        "title": title,
+        "text": text_msg,
+    }
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        req = _urlreq.Request(
+            webhook_url, data=data,
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        with _urlreq.urlopen(req, timeout=5) as resp:
+            return {"success": resp.status == 200, "message": f"HTTP {resp.status}"}
+    except _urlerr.URLError as e:
+        try:
+            current_app.logger.error(f"[teams] {e}")
+        except Exception:
+            pass
+        return {"success": False, "message": str(e)}
+
+
+def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpitim") -> dict:
+    """Discord incoming webhook'a mesaj gönder."""
+    if not webhook_url:
+        return {"success": False, "message": "Discord webhook URL boş."}
+
+    payload = {
+        "content": text_msg[:2000],  # Discord limit
+        "username": username,
+    }
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        req = _urlreq.Request(
+            webhook_url, data=data,
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        with _urlreq.urlopen(req, timeout=5) as resp:
+            return {"success": resp.status in (200, 204), "message": f"HTTP {resp.status}"}
+    except _urlerr.URLError as e:
+        try:
+            current_app.logger.error(f"[discord] {e}")
+        except Exception:
+            pass
+        return {"success": False, "message": str(e)}
+
+
+def dispatch_webhook(provider: str, text_msg: str, webhook_url: str, **kwargs) -> dict:
+    """Provider'a göre webhook gönderim — slack/teams/discord seçimi.
+
+    Args:
+        provider: "slack" | "teams" | "discord"
+    """
+    provider = (provider or "").lower()
+    if provider == "slack":
+        return send_slack_message(text_msg, webhook_url=webhook_url, **kwargs)
+    if provider == "teams":
+        return send_teams_message(text_msg, webhook_url=webhook_url, **kwargs)
+    if provider == "discord":
+        return send_discord_message(text_msg, webhook_url=webhook_url, **kwargs)
+    return {"success": False, "message": f"Bilinmeyen provider: {provider}"}
+
+
 def format_anomaly_blocks(anomaly: dict) -> list:
     """KPI anomali sonucunu Slack block kit formatına çevir."""
     severity_emoji = {"high": ":rotating_light:", "medium": ":warning:", "low": ":information_source:"}.get(

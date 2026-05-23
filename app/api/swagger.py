@@ -52,7 +52,15 @@ openapi_spec = {
         {"name": "Processes", "description": "Süreç yönetimi"},
         {"name": "KPI Data", "description": "KPI veri girişi"},
         {"name": "Analytics", "description": "Analitik ve raporlama"},
-        {"name": "Reports", "description": "Rapor oluşturma"}
+        {"name": "Reports", "description": "Rapor oluşturma"},
+        # Sprint 43 — yeni tag'ler
+        {"name": "Anomalies", "description": "KPI anomali tespit (Z-score)"},
+        {"name": "OKR", "description": "Objectives + Key Results"},
+        {"name": "Risk", "description": "Risk yönetimi (RAID + heatmap)"},
+        {"name": "KVKK", "description": "Veri sahibi hakları (export/delete)"},
+        {"name": "Auth", "description": "Kimlik doğrulama + 2FA"},
+        {"name": "Webhooks", "description": "Slack/Teams/Discord bildirim"},
+        {"name": "Forecasting", "description": "KPI trend tahmini (Sprint 46)"},
     ],
     "paths": {
         "/processes": {
@@ -180,6 +188,130 @@ openapi_spec = {
                     "200": {"description": "Başarılı"}
                 }
             }
+        },
+        # Sprint 14 — Anomali endpoint'leri
+        "/k-rapor/api/anomalies": {
+            "get": {
+                "tags": ["Anomalies"],
+                "summary": "KPI anomali tespiti (Z-score)",
+                "parameters": [
+                    {"name": "threshold", "in": "query",
+                     "schema": {"type": "number", "default": 2.0}},
+                    {"name": "limit", "in": "query",
+                     "schema": {"type": "integer", "default": 50}},
+                ],
+                "responses": {"200": {"description": "Anomali listesi"}},
+            }
+        },
+        "/k-rapor/api/anomalies/notify-slack": {
+            "post": {
+                "tags": ["Anomalies", "Webhooks"],
+                "summary": "Anomalileri Slack'e gönder",
+                "requestBody": {
+                    "required": True,
+                    "content": {"application/json": {"schema": {"type": "object",
+                        "properties": {
+                            "webhook_url": {"type": "string"},
+                            "severity_min": {"type": "string", "enum": ["low", "medium", "high"]},
+                            "limit": {"type": "integer"},
+                        }
+                    }}}
+                },
+                "responses": {"200": {"description": "Gönderildi"}},
+            }
+        },
+        # Sprint 13 — OKR
+        "/sp/api/okr": {
+            "get": {"tags": ["OKR"], "summary": "Aktif plan year için OKR listesi",
+                    "responses": {"200": {"description": "Objective + KR'lar"}}}
+        },
+        "/sp/api/okr/objective": {
+            "post": {"tags": ["OKR"], "summary": "Yeni Objective oluştur",
+                     "requestBody": {"required": True, "content": {"application/json": {
+                         "schema": {"type": "object", "properties": {
+                             "title": {"type": "string"},
+                             "description": {"type": "string"},
+                             "quarter": {"type": "integer"},
+                             "owner": {"type": "string"},
+                             "linked_strategy_id": {"type": "integer"},
+                         }}}}},
+                     "responses": {"200": {"description": "OK"}}}
+        },
+        "/sp/api/okr/sync-kpis": {
+            "post": {"tags": ["OKR"], "summary": "Tüm bağlı KR'leri KPI'larından sync et (Sprint 33)",
+                     "responses": {"200": {"description": "synced + skipped sayıları"}}}
+        },
+        # Sprint 34 — Risk
+        "/k-radar/api/risk/list": {
+            "get": {"tags": ["Risk"], "summary": "Risk listesi + filter (severity/status/source)",
+                    "responses": {"200": {"description": "Risk satırları"}}}
+        },
+        "/k-radar/api/risk/matrix": {
+            "get": {"tags": ["Risk"], "summary": "5×5 probability×impact heatmap",
+                    "responses": {"200": {"description": "Grid matrisi"}}}
+        },
+        "/k-radar/api/risk/add": {
+            "post": {"tags": ["Risk"], "summary": "Yeni risk ekle",
+                     "responses": {"200": {"description": "OK"}}}
+        },
+        # Sprint 12 — KVKK
+        "/api/user/export-my-data": {
+            "get": {"tags": ["KVKK"], "summary": "Kullanıcı verisi JSON export (Madde 11)",
+                    "responses": {"200": {"description": "JSON dump"}}}
+        },
+        "/api/user/delete-my-account": {
+            "post": {"tags": ["KVKK"], "summary": "Hesap anonimize + sil (Madde 7)",
+                     "responses": {"200": {"description": "Silindi"}}}
+        },
+        # Sprint 26 — 2FA
+        "/2fa/setup": {
+            "get": {"tags": ["Auth"], "summary": "2FA setup başlat (QR + secret)",
+                    "responses": {"200": {"description": "HTML form"}}}
+        },
+        "/2fa/verify-setup": {
+            "post": {"tags": ["Auth"], "summary": "Setup doğrulama + backup codes",
+                     "responses": {"200": {"description": "OK + backup_codes"}}}
+        },
+        # Sprint 25 — SSO
+        "/sso/google": {
+            "get": {"tags": ["Auth"], "summary": "Google OAuth flow başlat",
+                    "responses": {"302": {"description": "Google'a redirect"}}}
+        },
+        # Sprint 18 — Email digest
+        "/k-rapor/api/digest/send": {
+            "post": {"tags": ["Reports"], "summary": "Haftalık digest mail tetikle",
+                     "responses": {"200": {"description": "Sent count"}}}
+        },
+        # Sprint 11 — PDF export
+        "/k-rapor/api/export-pdf": {
+            "get": {"tags": ["Reports"], "summary": "Kurumsal özet PDF",
+                    "responses": {"200": {"description": "PDF bytes"}}}
+        },
+        "/bireysel/api/karne/export-pdf": {
+            "get": {"tags": ["Reports"], "summary": "Bireysel karne PDF",
+                    "responses": {"200": {"description": "PDF bytes"}}}
+        },
+        # Sprint 24 — Admin paginated
+        "/admin/api/users": {
+            "get": {"tags": ["Processes"], "summary": "Paginated user list (search desteği)",
+                    "parameters": [
+                        {"name": "page", "in": "query", "schema": {"type": "integer"}},
+                        {"name": "page_size", "in": "query", "schema": {"type": "integer"}},
+                        {"name": "search", "in": "query", "schema": {"type": "string"}},
+                    ],
+                    "responses": {"200": {"description": "data + pagination"}}}
+        },
+        # Sprint 46 — Forecasting (eklenecek)
+        "/k-rapor/api/forecast/{kpi_id}": {
+            "get": {"tags": ["Forecasting"],
+                    "summary": "Linear regression trend forecast",
+                    "parameters": [
+                        {"name": "kpi_id", "in": "path", "required": True,
+                         "schema": {"type": "integer"}},
+                        {"name": "periods", "in": "query",
+                         "schema": {"type": "integer", "default": 3}},
+                    ],
+                    "responses": {"200": {"description": "tahmin + güven aralığı"}}}
         },
         "/analytics/health/{process_id}": {
             "get": {
