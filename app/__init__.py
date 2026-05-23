@@ -180,7 +180,7 @@ def create_app(config_class=None):
     from app.routes.sso import sso_bp
     # Sprint 26: 2FA TOTP blueprint
     from app.routes.totp import totp_bp
-    from app.routes.strategy import strategy_bp
+    # Sprint 52: strategy_bp silindi — micro/sp canonical (safe_urls.py mapping mevcut)
     # Sprint 29-30: process_bp lazy import — sadece LEGACY_PROCESS_BP_ENABLED ise yüklenir
     # (1.805 satır legacy kod; mikro/surec canonical)
     from app.routes.core import core_bp
@@ -197,6 +197,10 @@ def create_app(config_class=None):
     app.register_blueprint(sso_bp)
     # Sprint 26: 2FA TOTP blueprint kaydı
     app.register_blueprint(totp_bp)
+    # Sprint 48: Data connector (Power BI / Tableau JSON API)
+    from app.api.data_connector import dataconn_bp, register_token_endpoint
+    app.register_blueprint(dataconn_bp)
+    register_token_endpoint(app)
 
     # Sprint 28: i18n (Flask-Babel) — opsiyonel, kurulu değilse atlar
     try:
@@ -204,7 +208,7 @@ def create_app(config_class=None):
         init_babel(app)
     except Exception as _i18n_err:
         app.logger.warning(f"[i18n] Atlandı: {_i18n_err}")
-    app.register_blueprint(strategy_bp, url_prefix="")
+    # Sprint 52: strategy_bp register kaldırıldı (safe_url_for ile micro/sp'ye yönlendir)
     if app.config.get("LEGACY_PROCESS_BP_ENABLED"):
         # Sprint 29-30: legacy bp lazy load — sadece flag açıksa import edilir
         from app.routes.process import process_bp

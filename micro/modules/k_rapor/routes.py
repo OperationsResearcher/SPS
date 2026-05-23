@@ -10,6 +10,21 @@ from platform_core import app_bp
 from extensions import db
 
 
+# ── Sprint 50: Custom Dashboard Builder — Widget Registry ────────────────────
+
+@app_bp.route("/k-rapor/api/dashboard/widgets")
+@login_required
+def k_rapor_dashboard_widgets():
+    """Kullanılabilir widget'ları listele (kategori filtreli)."""
+    from app.services.dashboard_widgets import list_widgets, categories
+    category = request.args.get("category")
+    return jsonify({
+        "success": True,
+        "widgets": list_widgets(category),
+        "categories": categories(),
+    })
+
+
 # ── Sprint 46: KPI Forecasting ────────────────────────────────────────────────
 
 @app_bp.route("/k-rapor/api/forecast/<int:kpi_id>")
