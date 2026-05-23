@@ -176,8 +176,13 @@ def create_app(config_class=None):
     from app.routes.admin import admin_bp
     # Sprint 9: app.routes.dashboard kaldırıldı — fonksiyonlar micro/masaustu + micro/kurum'a taşındı
     from app.routes.hgs import hgs_bp
+    # Sprint 25: SSO blueprint
+    from app.routes.sso import sso_bp
+    # Sprint 26: 2FA TOTP blueprint
+    from app.routes.totp import totp_bp
     from app.routes.strategy import strategy_bp
-    from app.routes.process import process_bp
+    # Sprint 29-30: process_bp lazy import — sadece LEGACY_PROCESS_BP_ENABLED ise yüklenir
+    # (1.805 satır legacy kod; mikro/surec canonical)
     from app.routes.core import core_bp
 
     from app.api.routes import api_bp as app_api_v1_bp
@@ -188,8 +193,21 @@ def create_app(config_class=None):
     app.register_blueprint(hgs_bp, url_prefix="")
     # Sprint 9: LEGACY_DASHBOARD_BP_ENABLED kaldırıldı (dashboard.py silindi)
     app.register_blueprint(admin_bp, url_prefix="/admin")
+    # Sprint 25: SSO blueprint kaydı
+    app.register_blueprint(sso_bp)
+    # Sprint 26: 2FA TOTP blueprint kaydı
+    app.register_blueprint(totp_bp)
+
+    # Sprint 28: i18n (Flask-Babel) — opsiyonel, kurulu değilse atlar
+    try:
+        from app.i18n import init_babel
+        init_babel(app)
+    except Exception as _i18n_err:
+        app.logger.warning(f"[i18n] Atlandı: {_i18n_err}")
     app.register_blueprint(strategy_bp, url_prefix="")
     if app.config.get("LEGACY_PROCESS_BP_ENABLED"):
+        # Sprint 29-30: legacy bp lazy load — sadece flag açıksa import edilir
+        from app.routes.process import process_bp
         app.register_blueprint(process_bp, url_prefix="")
     app.register_blueprint(core_bp, url_prefix="")
 

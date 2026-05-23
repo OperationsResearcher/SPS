@@ -43,11 +43,12 @@ class Tenant(db.Model):
     logo_updated_at = db.Column(db.DateTime, nullable=True)
 
     k_vektor_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    k_radar_enabled = db.Column(db.Boolean, default=False, nullable=False)
     plan_year_enabled = db.Column(db.Boolean, default=False, nullable=False)
     plan_year_start = db.Column(db.Integer, nullable=True)  # Geçmiş yıl başlangıcı (ör. 2021)
 
-    package = db.relationship("SubscriptionPackage", back_populates="tenants")
-    users = db.relationship("User", back_populates="tenant")
+    package = db.relationship("SubscriptionPackage", back_populates="tenants", lazy="select")
+    users = db.relationship("User", back_populates="tenant", lazy="select")
 
 
 class Role(db.Model):
@@ -91,7 +92,12 @@ class User(UserMixin, db.Model):
     show_page_guides = db.Column(db.Boolean, default=True, nullable=False)
     guide_character_style = db.Column(db.String(50), default="professional", nullable=False)  # professional, friendly, minimal
 
-    tenant = db.relationship("Tenant", back_populates="users")
+    # Sprint 26: TOTP 2FA alanları
+    totp_secret = db.Column(db.String(64), nullable=True)  # base32 secret
+    totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    totp_backup_codes_json = db.Column(db.Text, nullable=True)  # JSON list
+
+    tenant = db.relationship("Tenant", back_populates="users", lazy="select")
     role = db.relationship("Role", back_populates="users")
 
     @property

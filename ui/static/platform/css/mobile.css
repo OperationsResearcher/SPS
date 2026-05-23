@@ -1,0 +1,194 @@
+/* ============================================================================
+   KOKPITIM — Mobile-first responsive overrides (Sprint 27)
+   ----------------------------------------------------------------------------
+   Tablet + telefon için temel UX iyileştirmeleri.
+   base.html'e link edilir; existing CSS'i bozmadan medya sorgularıyla genişletir.
+
+   Breakpoint stratejisi:
+     ≤576px → telefon (xs)
+     ≤768px → büyük telefon / küçük tablet (sm)
+     ≤992px → tablet (md)
+     ≥992px → desktop (varsayılan stil)
+============================================================================ */
+
+/* --- Genel touch dostu --- */
+@media (max-width: 768px) {
+    /* Tıklama hedefleri en az 44×44px (Apple HIG) */
+    .btn, .nav-link, .dropdown-item, .form-control {
+        min-height: 44px;
+    }
+    /* Form input'ları daha büyük (touch keyboard friendly) */
+    input.form-control, select.form-select, textarea.form-control {
+        font-size: 16px; /* iOS zoom önleme */
+    }
+    /* Tablar yatay scroll */
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+    }
+}
+
+/* --- Sidebar mobil --- */
+@media (max-width: 992px) {
+    .sidebar, .mc-sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1040;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    .sidebar.show, .mc-sidebar.show {
+        left: 0;
+    }
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+    }
+    .sidebar-overlay.show {
+        display: block;
+    }
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* --- Tablolar responsive --- */
+@media (max-width: 768px) {
+    /* Tabloyu yatay scroll'a sar */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    /* Boş kolonları gizleme stratejisi: küçük ekranda ikincil bilgileri gizle */
+    .table .hide-xs {
+        display: none !important;
+    }
+    .table th, .table td {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* --- Card grid telefon: tek kolon --- */
+@media (max-width: 576px) {
+    .row > [class*="col-"] {
+        margin-bottom: 0.75rem;
+    }
+    .card-body {
+        padding: 0.875rem;
+    }
+    .card-title {
+        font-size: 1.1rem;
+    }
+    h1, .h1 { font-size: 1.6rem; }
+    h2, .h2 { font-size: 1.4rem; }
+    h3, .h3 { font-size: 1.2rem; }
+    h4, .h4 { font-size: 1.1rem; }
+    .display-4 { font-size: 2rem; }
+}
+
+/* --- Modal mobil tam ekran --- */
+@media (max-width: 768px) {
+    .modal-dialog, .mc-modal-lg, .mc-modal-md {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0;
+        height: 100%;
+        max-height: 100%;
+    }
+    .modal-content, .mc-modal-lg, .mc-modal-md {
+        border-radius: 0 !important;
+        min-height: 100vh;
+    }
+}
+
+/* --- Dashboard widget'lar --- */
+@media (max-width: 768px) {
+    .dashboard-widget, .stat-card {
+        margin-bottom: 0.75rem;
+    }
+    .stat-card .display-5 {
+        font-size: 1.8rem;
+    }
+}
+
+/* --- Form satırları telefon --- */
+@media (max-width: 576px) {
+    .form-row > .col, .form-row > [class*="col-"] {
+        margin-bottom: 0.5rem;
+    }
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* --- Top navbar telefon hamburger açma --- */
+@media (max-width: 992px) {
+    .navbar-mobile-toggle {
+        display: inline-flex !important;
+    }
+}
+@media (min-width: 993px) {
+    .navbar-mobile-toggle {
+        display: none !important;
+    }
+}
+
+/* --- Chart container telefonda küçült --- */
+@media (max-width: 768px) {
+    .chart-container, canvas.chart {
+        max-height: 280px !important;
+    }
+}
+
+/* --- Print styles (rapor PDF gibi) --- */
+@media print {
+    .no-print, .sidebar, .navbar, .btn { display: none !important; }
+    .main-content { margin: 0 !important; }
+    .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd !important; }
+}
+
+/* --- Dark mode hazırlığı (CSS variable tabanlı, JS ile toggle) --- */
+:root {
+    --kk-bg: #ffffff;
+    --kk-fg: #212529;
+    --kk-card-bg: #ffffff;
+    --kk-border: #dee2e6;
+    --kk-muted: #6c757d;
+}
+[data-theme="dark"] {
+    --kk-bg: #1a1d20;
+    --kk-fg: #f8f9fa;
+    --kk-card-bg: #2a2d30;
+    --kk-border: #495057;
+    --kk-muted: #adb5bd;
+}
+/* Dark mode opt-in: body'ye data-theme="dark" eklenmeli (JS toggle) */
+body[data-theme="dark"] {
+    background: var(--kk-bg);
+    color: var(--kk-fg);
+}
+body[data-theme="dark"] .card {
+    background: var(--kk-card-bg);
+    border-color: var(--kk-border);
+    color: var(--kk-fg);
+}
+
+/* --- A11y: focus ring belirgin --- */
+.btn:focus-visible, .form-control:focus-visible, a:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}

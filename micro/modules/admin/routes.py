@@ -828,6 +828,52 @@ def admin_users():
     return render_template("platform/admin/users.html", users=users, roles=roles, tenants=tenants)
 
 
+@app_bp.route("/admin/api/users")
+@login_required
+def admin_api_users_paginated():
+    """Sprint 24: Paginated admin user list — Tomofil gibi 100+ user tenant'larda performans.
+
+    Query params: ?page=1&page_size=50&search=ahmet
+    """
+    if not _is_manager():
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
+
+    from app.utils.pagination import paginate_query
+    q = User.query
+    if not _is_admin():
+        q = q.filter_by(tenant_id=current_user.tenant_id)
+
+    search = (request.args.get("search") or "").strip()
+    if search:
+        like = f"%{search}%"
+        q = q.filter(
+            db.or_(
+                User.email.ilike(like),
+                User.first_name.ilike(like),
+                User.last_name.ilike(like),
+                User.job_title.ilike(like),
+            )
+        )
+
+    q = q.order_by(User.tenant_id, User.first_name)
+
+    def _ser(u):
+        return {
+            "id": u.id,
+            "email": u.email,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "is_active": u.is_active,
+            "tenant_id": u.tenant_id,
+            "role_id": u.role_id,
+            "role_name": u.role.name if u.role else None,
+            "job_title": u.job_title,
+            "department": u.department,
+        }
+
+    return jsonify(paginate_query(q, default_page_size=50, max_page_size=200, serializer=_ser))
+
+
 @app_bp.route("/admin/users/add", methods=["POST"])
 @login_required
 def admin_users_add():

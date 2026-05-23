@@ -72,8 +72,15 @@ def login():
                 )
             return render_template("auth/login.html")
 
+        clear_failures(email)  # başarılı password doğrulaması → sayaç sıfır
+
+        # Sprint 26: 2FA enabled ise challenge'a yönlendir
+        if user.totp_enabled and user.totp_secret:
+            from flask import session
+            session["_pending_2fa_user_id"] = user.id
+            return redirect(url_for("totp_bp.totp_challenge"))
+
         login_user(user)
-        clear_failures(email)  # başarılı login → sayaç sıfır
         _write_auth_audit("OTURUM AÇMA", user)
         flash("Giriş başarılı.", "success")
         next_url = request.args.get("next") or url_for("app_bp.launcher")
