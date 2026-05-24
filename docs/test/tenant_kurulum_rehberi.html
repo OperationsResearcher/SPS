@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kokpitim Tanıtım</title>
+<style>
+@page {
+    size: A4;
+    margin: 18mm 16mm;
+    @bottom-right {
+        content: "Sayfa " counter(page) " / " counter(pages);
+        font-size: 9pt;
+        color: #94a3b8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    @bottom-left {
+        content: "Kokpitim Tanıtım Belgesi — v1.0 — 2026-05-24";
+        font-size: 9pt;
+        color: #94a3b8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+}
+@page :first {
+    @bottom-left { content: ""; }
+    @bottom-right { content: ""; }
+}
+
+body {
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    color: #1e293b;
+    line-height: 1.55;
+    font-size: 10.5pt;
+}
+
+h1 {
+    color: #0f172a;
+    font-size: 24pt;
+    border-bottom: 3px solid #4f46e5;
+    padding-bottom: 8px;
+    page-break-after: avoid;
+    margin-top: 28pt;
+}
+h1:first-of-type {
+    margin-top: 0;
+    page-break-before: avoid;
+}
+h2 {
+    color: #1e293b;
+    font-size: 16pt;
+    margin-top: 18pt;
+    page-break-after: avoid;
+    border-left: 4px solid #4f46e5;
+    padding-left: 10px;
+}
+h3 {
+    color: #334155;
+    font-size: 13pt;
+    margin-top: 14pt;
+    page-break-after: avoid;
+}
+h4 {
+    color: #475569;
+    font-size: 11pt;
+    margin-top: 10pt;
+    page-break-after: avoid;
+}
+
+p { margin: 6pt 0; }
+ul, ol { margin: 6pt 0; padding-left: 22pt; }
+li { margin: 3pt 0; }
+
+code {
+    background: #f1f5f9;
+    padding: 1pt 5pt;
+    border-radius: 3pt;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    color: #4f46e5;
+}
+pre {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #4f46e5;
+    padding: 10pt;
+    border-radius: 4pt;
+    font-family: 'Consolas', monospace;
+    font-size: 9pt;
+    overflow-x: auto;
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
+pre code { background: transparent; color: #1e293b; padding: 0; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8pt 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+}
+th {
+    background: #4f46e5;
+    color: #ffffff;
+    padding: 6pt 8pt;
+    text-align: left;
+    font-weight: 600;
+}
+td {
+    padding: 5pt 8pt;
+    border-bottom: 1px solid #e2e8f0;
+}
+tr:nth-child(even) td { background: #f8fafc; }
+
+blockquote {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+    padding: 8pt 12pt;
+    margin: 8pt 0;
+    color: #78350f;
+    font-style: italic;
+    page-break-inside: avoid;
+}
+
+a { color: #4f46e5; text-decoration: none; }
+
+img.screenshot {
+    max-width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 4pt;
+    box-shadow: 0 2pt 4pt rgba(0,0,0,0.06);
+    margin: 10pt 0;
+    page-break-inside: avoid;
+}
+.screenshot-caption {
+    text-align: center;
+    color: #64748b;
+    font-size: 9pt;
+    font-style: italic;
+    margin-top: -4pt;
+    margin-bottom: 12pt;
+}
+
+.cover {
+    text-align: center;
+    padding-top: 60mm;
+    page-break-after: always;
+}
+.cover h1 {
+    border: none;
+    font-size: 40pt;
+    color: #4f46e5;
+    margin-bottom: 12pt;
+}
+.cover .subtitle {
+    font-size: 16pt;
+    color: #64748b;
+    margin-bottom: 60pt;
+}
+.cover .meta {
+    color: #94a3b8;
+    font-size: 11pt;
+    line-height: 1.8;
+}
+
+.toc-note {
+    background: #eef2ff;
+    border-left: 4px solid #4f46e5;
+    padding: 10pt 14pt;
+    margin: 12pt 0;
+    border-radius: 3pt;
+    font-size: 10pt;
+    color: #312e81;
+    page-break-inside: avoid;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 14pt 0;
+}
+
+.gallery {
+    page-break-before: always;
+}
+.gallery h2 { margin-top: 0; }
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10pt;
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>KOKPİTİM</h1>
+  <div class="subtitle">Tenant Admin için</div>
+  <div class="subtitle">Sıfırdan Sona Kurulum Rehberi</div>
+  <div class="meta">Versiyon 1.0<br>25 Mayıs 2026<br><br>17 Adım · Tahmini 4-6 Saat<br>Profil → Kurumsal Kimlik → Strateji → Süreç → KPI → Kullanıcılar</div>
+</div>
+
+<h1 id="tenant-kurulum-rehberi-sfrdan-sona">Tenant Kurulum Rehberi — Sıfırdan Sona</h1>
+<blockquote>
+<p><strong>Versiyon:</strong> 1.0<br />
+<strong>Tarih:</strong> 2026-05-25<br />
+<strong>Hedef:</strong> Yeni tenant admin'i, hiçbir şey kurulmamış boş bir kurumdan başlayıp ay sonunda işleyen bir stratejik planlama sistemine ulaşır.<br />
+<strong>Tahmini süre:</strong> İlk kurulum 4-6 saat (ekibinizle birlikte). Sonra haftalık 1-2 saat bakım.</p>
+</blockquote>
+<hr />
+<h2 id="bu-rehber-kimin-icin">Bu Rehber Kimin İçin?</h2>
+<ul>
+<li>Yeni Kokpitim aboneliği aldınız, ilk tenant'ı kuruyorsunuz</li>
+<li>Var olan bir tenant'ı sıfırdan yapılandırmaya başlıyorsunuz</li>
+<li>Önceki yöneticiden devraldınız, sistemi yeniden organize etmek istiyorsunuz</li>
+</ul>
+<p><strong>Bu rehberi okuyup uygulayan kişi:</strong><br />
+- Kurum profilinden bireysel hedeflere kadar <strong>17 adımlık tam akışı</strong> uygular<br />
+- Her ekranda hangi alanı dolduracağını, hangi butona basacağını bilir<br />
+- Sonunda <strong>kullanıcılar veri girmeye başlayabilir</strong> durumda olur</p>
+<hr />
+<h2 id="hzl-baks-17-adm">Hızlı Bakış — 17 Adım</h2>
+<table>
+<thead>
+<tr>
+<th>Aşama</th>
+<th>Adım</th>
+<th>Yapılan İş</th>
+<th>Süre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Temel</strong></td>
+<td>1</td>
+<td>Profil + güvenlik</td>
+<td>5 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>Kurum profili (logo, isim)</td>
+<td>10 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>Kurumsal kimlik (misyon/vizyon/değerler)</td>
+<td>30 dk</td>
+</tr>
+<tr>
+<td><strong>B. Yapı</strong></td>
+<td>4</td>
+<td>İlk plan yılı</td>
+<td>5 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>5</td>
+<td>Ana ve alt stratejiler</td>
+<td>60 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>6</td>
+<td>Süreçler</td>
+<td>60 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>7</td>
+<td>KPI tanımları</td>
+<td>60-120 dk</td>
+</tr>
+<tr>
+<td><strong>C. İnsan</strong></td>
+<td>8</td>
+<td>Kullanıcı davetleri</td>
+<td>20 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>9</td>
+<td>Süreç atamaları (lider/üye)</td>
+<td>15 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>10</td>
+<td>Bireysel PG atamaları</td>
+<td>30 dk</td>
+</tr>
+<tr>
+<td><strong>D. Operasyon</strong></td>
+<td>11</td>
+<td>Faaliyetler</td>
+<td>30 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>12</td>
+<td>Initiative'ler (opsiyonel)</td>
+<td>30 dk</td>
+</tr>
+<tr>
+<td><strong>E. Analiz</strong></td>
+<td>13</td>
+<td>SWOT / PESTLE / OKR</td>
+<td>45 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>14</td>
+<td>Hoshin / Blue Ocean / VRIO (opsiyonel)</td>
+<td>60 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>15</td>
+<td>Replan trigger'lar</td>
+<td>15 dk</td>
+</tr>
+<tr>
+<td><strong>F. Sistem</strong></td>
+<td>16</td>
+<td>AI yapılandırması</td>
+<td>10 dk</td>
+</tr>
+<tr>
+<td></td>
+<td>17</td>
+<td>Bildirim &amp; e-posta</td>
+<td>10 dk</td>
+</tr>
+<tr>
+<td><strong>Final</strong></td>
+<td>—</td>
+<td>İlk çeyreklik review</td>
+<td>30 dk</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <strong>Önemli:</strong> Sıralı yapmak şart. Sırayı bozarsanız (örn: önce KPI tanımlayıp sonra süreç açmak) bazı bağlantılar elle düzeltmek zorunda kalır.</p>
+<hr />
+<h2 id="on-hazrlk-bilgiler-toplama">Ön Hazırlık (Bilgiler Toplama)</h2>
+<p>Başlamadan önce şu bilgileri <strong>el altında bulundurun</strong>:</p>
+<h3 id="kurum-bilgileri">Kurum Bilgileri</h3>
+<ul>
+<li>[ ] Kurum tam adı</li>
+<li>[ ] Logo (PNG/JPG, max 5MB)</li>
+<li>[ ] İletişim e-posta, telefon, web sitesi</li>
+<li>[ ] Sektör</li>
+</ul>
+<h3 id="kurumsal-kimlik">Kurumsal Kimlik</h3>
+<ul>
+<li>[ ] Misyon metni (2-3 cümle)</li>
+<li>[ ] Vizyon metni (2-3 cümle)</li>
+<li>[ ] Değerler listesi (madde madde)</li>
+<li>[ ] Etik kurallar (varsa)</li>
+</ul>
+<h3 id="strateji">Strateji</h3>
+<ul>
+<li>[ ] 3-5 ana stratejik amaç</li>
+<li>[ ] Her ana stratejinin 2-4 alt stratejisi</li>
+<li>[ ] Hangi süreçler bu stratejilere katkı sağlıyor</li>
+</ul>
+<h3 id="surecler">Süreçler</h3>
+<ul>
+<li>[ ] Kurum süreç envanteri (örn: Satış, Üretim, İK, Finans...)</li>
+<li>[ ] Her süreç için sorumlu kişi</li>
+<li>[ ] Süreç → alt strateji bağlantıları</li>
+</ul>
+<h3 id="kpilar">KPI'lar</h3>
+<ul>
+<li>[ ] Her süreç için 3-7 KPI</li>
+<li>[ ] Hedef değerler (yıl/ay)</li>
+<li>[ ] Ölçüm birimleri</li>
+<li>[ ] Ölçüm sıklığı (aylık/çeyreklik/yıllık)</li>
+</ul>
+<h3 id="kullanclar">Kullanıcılar</h3>
+<ul>
+<li>[ ] Çalışan listesi (e-posta + ad + bölüm)</li>
+<li>[ ] Rollerini belirleme:</li>
+<li>tenant_admin (en üst yetki) — kendinden başka 1-2 kişi</li>
+<li>executive_manager (üst yönetim)</li>
+<li>surec_lideri (süreç lider)</li>
+<li>kurum_kullanici (standart çalışan)</li>
+</ul>
+<blockquote>
+<p>💡 Bu bilgiler tek seferde tam olarak hazır olmak zorunda değil — yapılırken eklenebilir. Ama en azından 1. ve 2. kategori başlangıçta olmalı.</p>
+</blockquote>
+<hr />
+<h1 id="asama-a-temel-kurulum">AŞAMA A — TEMEL KURULUM</h1>
+<h2 id="adim-1-profil-ve-guvenlik-5-dk">ADIM 1 — Profil ve Güvenlik (5 dk)</h2>
+<p>İlk giriş yaptıktan sonra <strong>kendi hesabınızı güvene alın</strong>.</p>
+<h3 id="11-sifrenizi-degistirin">1.1 Şifrenizi değiştirin</h3>
+<p><strong>Erişim:</strong> Sağ üst köşedeki avatar → "Profil"</p>
+<p><strong>Yapın:</strong><br />
+- Yeni şifre: en az 6 karakter, büyük/küçük harf + rakam<br />
+- Güçlü bir parola yöneticisi kullanın (1Password, Bitwarden, KeePass)</p>
+<p><strong>Kaydet</strong> butonuna bas.</p>
+<h3 id="12-2fa-iki-faktorlu-kimlik-dogrulama-acn">1.2 2FA (İki Faktörlü Kimlik Doğrulama) açın</h3>
+<p><strong>Erişim:</strong> Profil → "2FA'yı Etkinleştir"</p>
+<p><strong>Yapın:</strong><br />
+1. Telefonunuzdaki Authenticator app'i aç (Google Authenticator, Microsoft Authenticator, Authy)<br />
+2. QR kodu tara<br />
+3. App'in gösterdiği 6 haneli kodu Kokpitim'e gir<br />
+4. <strong>Yedek kodları kaydet</strong> (Word/Notion'da güvenli yer)</p>
+<p>✅ Bundan sonra giriş yaparken şifre + 6 haneli kod istenir.</p>
+<h3 id="13-profil-bilgileri">1.3 Profil bilgileri</h3>
+<p><strong>Yapın:</strong><br />
+- Ad, soyad<br />
+- Telefon<br />
+- Bölüm/unvan<br />
+- Profil fotoğrafı (opsiyonel ama önerilen)</p>
+<p><strong>Kaydet</strong>.</p>
+<hr />
+<h2 id="adim-2-kurum-profili-10-dk">ADIM 2 — Kurum Profili (10 dk)</h2>
+<p><img src="screenshots/01-masaustu.png" class="screenshot" alt="01-masaustu"></p>
+<div class="screenshot-caption">01-masaustu.png</div>
+
+<p>Kurumunuzun temel kimlik bilgilerini gir.</p>
+<h3 id="21-kurum-paneline-git">2.1 Kurum Paneli'ne git</h3>
+<p><strong>Erişim:</strong> Sol menü → <strong>Kurum Paneli</strong> → <strong>Ayarlar</strong> (<code>/kurum/ayarlar</code>)</p>
+<h3 id="22-doldurulacak-alanlar">2.2 Doldurulacak Alanlar</h3>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+<th>Notlar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kurum Adı</td>
+<td>"Tomofil Otomotiv A.Ş."</td>
+<td>Resmi isim</td>
+</tr>
+<tr>
+<td>Kısa Açıklama</td>
+<td>"EV parça üretimi"</td>
+<td>1-2 cümle</td>
+</tr>
+<tr>
+<td>Logo</td>
+<td>logo.png</td>
+<td>PNG/JPG, 200x200 px ideal, max 5MB</td>
+</tr>
+<tr>
+<td>İletişim E-postası</td>
+<td>info@tomofil.com</td>
+<td>Müşterilerin sizi bulduğu adres</td>
+</tr>
+<tr>
+<td>Telefon</td>
+<td>0212 555 0000</td>
+<td></td>
+</tr>
+<tr>
+<td>Web Sitesi</td>
+<td>https://tomofil.com</td>
+<td>https:// dahil</td>
+</tr>
+<tr>
+<td>Sektör</td>
+<td>"Otomotiv yan sanayi"</td>
+<td>Raporlama için</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-logo-yukleme">2.3 Logo Yükleme</h3>
+<p><strong>Yapın:</strong><br />
+1. "Logo Yükle" alanına tıkla veya sürükle-bırak<br />
+2. PNG/JPG seç<br />
+3. Önizleme görünür<br />
+4. <strong>Kaydet</strong></p>
+<p>⚠️ Eski logo otomatik silinir. Yeni logo sayfanın üst kısmında ve PDF raporlarında görünür.</p>
+<h3 id="24-kontrol">2.4 Kontrol</h3>
+<p>Sol üst köşedeki sidebar'da kurum adınızı + logonuzu görmelisiniz.</p>
+<hr />
+<h2 id="adim-3-kurumsal-kimlik-30-dk">ADIM 3 — Kurumsal Kimlik (30 dk)</h2>
+<p><img src="screenshots/02-sp-anasayfa.png" class="screenshot" alt="02-sp-anasayfa"></p>
+<div class="screenshot-caption">02-sp-anasayfa.png</div>
+
+<p>Kurumunuzun <strong>niçin var olduğu</strong> ve <strong>nereye gitmek istediğini</strong> sistemde tanımlayın.</p>
+<h3 id="31-stratejik-planlamaya-git">3.1 Stratejik Planlama'ya git</h3>
+<p><strong>Erişim:</strong> Sol menü → <strong>Stratejik Planlama</strong> (<code>/sp</code>)</p>
+<p>Üstteki <strong>akış olgunluk göstergesi</strong> (4 adım: Misyon, Vizyon, Değerler, Stratejiler) şu an %0. Bu sayfayı 4 adım tamamladığınızda %100 olacak.</p>
+<h3 id="32-misyon">3.2 Misyon</h3>
+<p><strong>Erişim:</strong> Sol menü → SP → <strong>Misyon</strong></p>
+<p><strong>Yapın:</strong><br />
+- "Misyon nedir?" 2-3 cümlelik bir açıklama yazın<br />
+- Kurumun <strong>şu an</strong> var olma sebebini anlatır</p>
+<p><strong>Örnek:</strong></p>
+<blockquote>
+<p>"Türk otomotiv sanayisine kaliteli, sürdürülebilir ve yerli üretilmiş EV bileşenleri sunmak; müşterilerimizin global pazarda rekabet gücünü artırmak."</p>
+</blockquote>
+<p><strong>Kaydet</strong>.</p>
+<h3 id="33-vizyon">3.3 Vizyon</h3>
+<p><strong>Erişim:</strong> Sol menü → SP → <strong>Vizyon</strong></p>
+<p><strong>Yapın:</strong><br />
+- 3-5 yıl içinde olmak istediğiniz yeri yazın<br />
+- Aspirasyonel, somut, ölçülebilir</p>
+<p><strong>Örnek:</strong></p>
+<blockquote>
+<p>"2030 yılına kadar Avrupa'nın en büyük 5 EV bileşen tedarikçisi arasına girmek ve ihracat oranımızı %60'a çıkarmak."</p>
+</blockquote>
+<p><strong>Kaydet</strong>.</p>
+<h3 id="34-degerler">3.4 Değerler</h3>
+<p><strong>Erişim:</strong> Sol menü → SP → <strong>Değerler</strong></p>
+<p><strong>Yapın:</strong><br />
+- 5-7 temel değer madde madde<br />
+- Her birinin altında 1 cümlelik açıklama olsun</p>
+<p><strong>Örnek:</strong></p>
+<blockquote>
+<ul>
+<li><strong>Müşteri Odaklılık</strong> — Her kararımızda müşterimizin uzun vadeli başarısını gözetiriz</li>
+<li><strong>Sürdürülebilirlik</strong> — Üretim ve operasyonlarımızda karbon ayak izini sürekli azaltırız</li>
+<li><strong>Yenilikçilik</strong> — Ar-Ge'ye gelirin %5'ini ayırıyoruz</li>
+<li><strong>Şeffaflık</strong> — Tüm paydaşlarla açık iletişim</li>
+<li><strong>Liyakat</strong> — İşe alım ve terfide sadece performans</li>
+<li><strong>Etik</strong> — Kısa vadeli kazanç için değerlerimizden ödün vermeyiz</li>
+</ul>
+</blockquote>
+<p><strong>Kaydet</strong>.</p>
+<h3 id="35-etik-kurallar-opsiyonel">3.5 Etik Kuralları (Opsiyonel)</h3>
+<p>Daha detaylı etik metin varsa "Etik Kuralları" alanına yapıştırın. Yoksa geç.</p>
+<h3 id="36-kontrol">3.6 Kontrol</h3>
+<p>SP ana sayfasına dön (<code>/sp</code>). Üstteki olgunluk göstergesi <strong>%75</strong> olmalı (sadece "Stratejiler" eksik, sıradaki adımda yapacağız).</p>
+<hr />
+<h1 id="asama-b-yapi-kurulumu">AŞAMA B — YAPI KURULUMU</h1>
+<h2 id="adim-4-ilk-plan-yl-5-dk">ADIM 4 — İlk Plan Yılı (5 dk)</h2>
+<p><img src="screenshots/03-plan-yillari.png" class="screenshot" alt="03-plan-yillari"></p>
+<div class="screenshot-caption">03-plan-yillari.png</div>
+
+<p>Tüm stratejik planlamanız <strong>bir plan yılına bağlı</strong> olur. Önce yıl açın.</p>
+<h3 id="41-plan-yllarna-git">4.1 Plan Yılları'na git</h3>
+<p><strong>Erişim:</strong> Sol menü → SP → <strong>Plan Yılları</strong> (<code>/sp/donemler</code>)</p>
+<p>İlk girişte boş bir liste görürsünüz.</p>
+<h3 id="42-yeni-plan-yl-olustur">4.2 Yeni Plan Yılı Oluştur</h3>
+<p><strong>Buton:</strong> "Yeni Plan Yılı"</p>
+<p><strong>İki seçenek var:</strong></p>
+<p><strong>A) Boş başla:</strong><br />
+- Yıl seç: örn. <strong>2026</strong><br />
+- Ad: "2026 Stratejik Planı"<br />
+- "Oluştur"</p>
+<p><strong>B) Şablondan başla (önerilen kamu kurumları için):</strong><br />
+- Yıl seç: 2026<br />
+- "Şablon Kullan" → seçenekler:<br />
+  - <strong>SBB Kamu</strong> (Cumhurbaşkanlığı Strateji Bütçe Başkanlığı uyumlu, 5 ana strateji + 17 alt strateji + 8 KPI)<br />
+  - (Gelecekte) Sektörel şablonlar (SaaS, Üretim, Sağlık)</p>
+<p>✅ <strong>Önerim:</strong> İlk kurulumda <strong>A) Boş başla</strong> seçin. Şablon hızlı ama her zaman tam uygun olmaz. Kendi yapınızı kurarsanız özelleştirme yapmazsınız.</p>
+<h3 id="43-aktif-yap">4.3 Aktif Yap</h3>
+<p><strong>Buton:</strong> Yeni oluşturulan yılın yanında "Aktif Yap"</p>
+<p>✅ Bundan sonra tüm strateji, KPI, süreç bu yıla bağlı olarak oluşturulacak.</p>
+<p>⚠️ Aynı yıla 2 normal plan açılamaz (sadece senaryolar açılabilir).</p>
+<hr />
+<h2 id="adim-5-ana-ve-alt-stratejiler-60-dk">ADIM 5 — Ana ve Alt Stratejiler (60 dk)</h2>
+<p><img src="screenshots/02-sp-anasayfa.png" class="screenshot" alt="02-sp-anasayfa"></p>
+<div class="screenshot-caption">02-sp-anasayfa.png</div>
+
+<p>Kurumunuzun <strong>stratejik amaçlarını</strong> sisteme girin.</p>
+<h3 id="51-sp-ana-sayfasna-geri-don">5.1 SP Ana Sayfasına Geri Dön</h3>
+<p><strong>Erişim:</strong> <code>/sp</code></p>
+<h3 id="52-ana-strateji-ekle">5.2 Ana Strateji Ekle</h3>
+<p><strong>Buton:</strong> "Strateji Ekle" → modal:</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Açıklama</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kod</td>
+<td>Tanımlayıcı</td>
+<td>AS1</td>
+</tr>
+<tr>
+<td>Başlık</td>
+<td>Kısa açıklama</td>
+<td>"Pazar Liderliği"</td>
+</tr>
+<tr>
+<td>Tanım</td>
+<td>2-3 cümle</td>
+<td>"Türkiye'nin en büyük EV parça üreticisi olmak"</td>
+</tr>
+<tr>
+<td>Vizyona Katkı</td>
+<td>1-5</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Önerim:</strong> <strong>3-5 ana strateji</strong> ile başlayın. Daha fazlası odaklanmayı zorlaştırır.</p>
+<p><strong>Standart 4-Perspektif Yaklaşımı (BSC):</strong><br />
+- AS1 — <strong>Finansal</strong> (büyüme, kârlılık)<br />
+- AS2 — <strong>Müşteri</strong> (memnuniyet, pazar payı)<br />
+- AS3 — <strong>İçsel Süreç</strong> (verimlilik, kalite)<br />
+- AS4 — <strong>Öğrenme &amp; Gelişim</strong> (insan kaynağı, teknoloji)</p>
+<h3 id="53-alt-strateji-ekle">5.3 Alt Strateji Ekle</h3>
+<p>Her ana strateji için 2-4 alt strateji ekleyin.</p>
+<p><strong>Buton:</strong> Ana strateji satırının yanındaki "+ Alt Strateji"</p>
+<p><strong>Örnek (AS1 — Pazar Liderliği için):</strong><br />
+- AS1.1 — Mevcut müşteri portföyünü %30 büyütmek<br />
+- AS1.2 — 3 yeni AB ülkesinde distribütör ağı kurmak<br />
+- AS1.3 — Yeni nesil EV bataryası ürün hattı geliştirmek</p>
+<h3 id="54-strateji-haritasn-kontrol-edin">5.4 Strateji Haritasını Kontrol Edin</h3>
+<p><strong>Erişim:</strong> SP → <strong>Strateji Haritası</strong> (<code>/sp/strateji-haritasi</code>)</p>
+<p>vis-network interaktif grafik açılır. Mor düğümler = ana stratejileriniz, açık mor = alt stratejileriniz. Yeşil/turuncu düğümler henüz boş (sürerçleri eklediğimizde dolacak).</p>
+<h3 id="55-k-vektor-agrlklar-opsiyonel-ama-onerilen">5.5 K-Vektor Ağırlıkları (Opsiyonel ama önerilen)</h3>
+<p><strong>Erişim:</strong> Kurum Paneli → "K-Vektor"</p>
+<p>BSC perspektiflerinin yüzdesini ayarla:<br />
+- Finansal: %25<br />
+- Müşteri: %30<br />
+- İçsel Süreç: %25<br />
+- Öğrenme: %20</p>
+<p>Toplam 100 olmalı. Bu ağırlıklar, <strong>vizyon skoru</strong> hesabında kullanılır.</p>
+<p>✅ <strong>Olgunluk göstergesi şimdi %100</strong> olmalı.</p>
+<hr />
+<h2 id="adim-6-surecler-60-dk">ADIM 6 — Süreçler (60 dk)</h2>
+<p><img src="screenshots/16-surec-listesi.png" class="screenshot" alt="16-surec-listesi"></p>
+<div class="screenshot-caption">16-surec-listesi.png</div>
+
+<p>Kurumunuzun günlük operasyonel <strong>süreçlerini</strong> tanımlayın ve stratejilere bağlayın.</p>
+<h3 id="61-surec-modulune-git">6.1 Süreç Modülüne git</h3>
+<p><strong>Erişim:</strong> Sol menü → <strong>Süreçler</strong> (<code>/process</code>)</p>
+<p>İlk girişte boş bir liste.</p>
+<h3 id="62-yeni-surec-ekle">6.2 Yeni Süreç Ekle</h3>
+<p><strong>Buton:</strong> "Yeni Süreç" → modal:</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kod</td>
+<td>P2M (Procure-to-Manage)</td>
+</tr>
+<tr>
+<td>Ad</td>
+<td>"Tedarikten Üretime"</td>
+</tr>
+<tr>
+<td>Açıklama</td>
+<td>"Hammadde tedariği, üretim hattı, son ürün stok"</td>
+</tr>
+<tr>
+<td>Lider</td>
+<td>(Bir kişi seç — geçici olarak siz olabilir)</td>
+</tr>
+<tr>
+<td>Üyeler</td>
+<td>(Boş bırak, ADIM 9'da ekleyeceğiz)</td>
+</tr>
+<tr>
+<td>Plan Yılı</td>
+<td>2026 (otomatik aktif yıl)</td>
+</tr>
+<tr>
+<td>Ağırlık</td>
+<td>25 (toplam 100 olacak şekilde)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Önerim — Tipik Bir Üretim Şirketi için 8-12 Süreç:</strong><br />
+1. Stratejik Planlama<br />
+2. Pazarlama &amp; Satış<br />
+3. Müşteri İlişkileri<br />
+4. Tedarik Zinciri<br />
+5. Üretim Planlama<br />
+6. Üretim Operasyonları<br />
+7. Kalite Yönetimi<br />
+8. AR-GE &amp; Ürün Geliştirme<br />
+9. İnsan Kaynakları<br />
+10. Finans &amp; Muhasebe<br />
+11. Bilgi Teknolojileri<br />
+12. İdari İşler &amp; Tesis</p>
+<h3 id="63-surece-alt-strateji-baglants">6.3 Sürece Alt Strateji Bağlantısı</h3>
+<p>Süreç detayına git → "Alt Stratejiler" sekmesi → ilgili alt stratejileri işaretle.</p>
+<p><strong>Her bağlantıda contribution_pct (katkı yüzdesi):</strong><br />
+- Süreç hangi alt stratejiye %kaç katkı sağlıyor<br />
+- Örn: "Tedarik Zinciri" sürecinin "Hammadde maliyetini %15 azalt" alt stratejisine katkısı %80</p>
+<h3 id="64-tum-surecleri-bitirin">6.4 Tüm Süreçleri Bitirin</h3>
+<p>Tüm süreçleri sırayla ekleyin. Her birini ilgili alt stratejilere bağlayın.</p>
+<p>⚠️ <strong>Bir süreç hiçbir alt stratejiye bağlı değilse</strong> strateji haritasında "boşta" görünür. Süreçlerinizin tümü stratejik bir amaca hizmet etmeli — etmiyorsa, o süreç gerçekten gerekli mi sorgulayın.</p>
+<h3 id="65-kontrol">6.5 Kontrol</h3>
+<p>Strateji haritasına geri dön (<code>/sp/strateji-haritasi</code>). Artık yeşil süreç düğümleri görünür, alt stratejilerle bağlanmıştır.</p>
+<hr />
+<h2 id="adim-7-kpi-tanmlar-60-120-dk">ADIM 7 — KPI Tanımları (60-120 dk)</h2>
+<p>Her süreç için <strong>performans göstergeleri</strong> (KPI) tanımlayın. Bu en zaman alan adım — özen gösterin.</p>
+<h3 id="71-surec-detayna-git">7.1 Süreç Detayına git</h3>
+<p>Süreç listesinde bir sürece tıkla.</p>
+<h3 id="72-kpi-ekle">7.2 KPI Ekle</h3>
+<p><strong>Buton:</strong> "KPI Ekle" → modal:</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Açıklama</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kod</td>
+<td>KPI tanımlayıcı</td>
+<td>K001</td>
+</tr>
+<tr>
+<td>Ad</td>
+<td>Ne ölçülüyor</td>
+<td>"Müşteri Memnuniyet Endeksi"</td>
+</tr>
+<tr>
+<td>Birim</td>
+<td>Ölçüm birimi</td>
+<td>"%" / "adet" / "gün" / "TL"</td>
+</tr>
+<tr>
+<td>Hedef Değer</td>
+<td>Yıllık hedef</td>
+<td>80</td>
+</tr>
+<tr>
+<td>Yön</td>
+<td>Yüksek/düşük iyi</td>
+<td>higher (yüksek iyi) / lower (düşük iyi)</td>
+</tr>
+<tr>
+<td>Dönem</td>
+<td>Ölçüm sıklığı</td>
+<td>Aylık / Çeyreklik / Yıllık</td>
+</tr>
+<tr>
+<td>Veri Toplama Yöntemi</td>
+<td>Nasıl ölçülecek</td>
+<td>RG (Rapor Gözlem) / HKY (Hesaplama) / SH (Sayım) vb.</td>
+</tr>
+<tr>
+<td>Ağırlık</td>
+<td>Süreç içinde</td>
+<td>20 (toplam 100 olacak)</td>
+</tr>
+<tr>
+<td>Önemli mi</td>
+<td>Stratejik önem</td>
+<td>✓ (kritikse işaretle)</td>
+</tr>
+<tr>
+<td>Başarı Aralıkları</td>
+<td>Yeşil/sarı/kırmızı sınırlar</td>
+<td>80+ yeşil, 60-80 sarı, &lt;60 kırmızı</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-kpi-tanmlama-ipuclar">7.3 KPI Tanımlama İpuçları</h3>
+<p>✅ <strong>İyi KPI:</strong><br />
+- Tek sayı, açık (sayısal)<br />
+- Ölçülebilir (veri kaynağı belli)<br />
+- Hedefe bağlanmış (sadece "iyileştir" değil, "%80'e çıkar")<br />
+- Sorumlusu belli<br />
+- Süresi belli</p>
+<p>❌ <strong>Kötü KPI:</strong><br />
+- "Çalışan motivasyonu iyi olsun" — ölçülmez<br />
+- "Verimlilik" — neyin verimliliği, hangi birim?<br />
+- "Daha iyi yap" — hedef yok</p>
+<h3 id="74-surec-basna-onerilen-kpi-says">7.4 Süreç Başına Önerilen KPI Sayısı</h3>
+<ul>
+<li><strong>3-7 KPI</strong> sürec başına</li>
+<li>Daha az = yetersiz görünürlük</li>
+<li>Daha çok = dikkat dağılır, veri toplama yorucu olur</li>
+</ul>
+<h3 id="75-tum-surecler-icin-kpi-tanmla">7.5 Tüm Süreçler için KPI Tanımla</h3>
+<p>Sırayla her süreç → 3-7 KPI ekle.</p>
+<p>✅ Bittiğinde <strong>strateji haritasında</strong> turuncu KPI düğümleri görünür.</p>
+<h3 id="76-yllk-hedef-konfigurasyonu-kpiyearconfig">7.6 Yıllık Hedef Konfigürasyonu (KpiYearConfig)</h3>
+<p>Eğer KPI'nın hedef değeri <strong>yıldan yıla değişiyorsa</strong> (örn: 2026 hedef 80, 2027 hedef 85):</p>
+<p><strong>Erişim:</strong> SP → Plan Yılları → 2026 → "KPI Hedef Yapılandırması"</p>
+<p>Her KPI için bu yıla özgü hedef değer + birim override edilebilir.</p>
+<hr />
+<h1 id="asama-c-insan-kaynagi">AŞAMA C — İNSAN KAYNAĞI</h1>
+<h2 id="adim-8-kullanc-davetleri-20-dk">ADIM 8 — Kullanıcı Davetleri (20 dk)</h2>
+<p>Sistemde kim olacak, hangi rolde olacak — şimdi belirleyin.</p>
+<h3 id="81-yonetim-paneline-git">8.1 Yönetim Paneli'ne git</h3>
+<p><strong>Erişim:</strong> Sol menü → <strong>Admin</strong> → <strong>Yönetim Paneli</strong> (<code>/admin/yonetim-paneli</code>)</p>
+<h3 id="82-yeni-kullanc-ekle">8.2 Yeni Kullanıcı Ekle</h3>
+<p><strong>Buton:</strong> "Yeni Kullanıcı" → modal:</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E-posta</td>
+<td>ahmet.yilmaz@tomofil.com</td>
+</tr>
+<tr>
+<td>Ad</td>
+<td>Ahmet</td>
+</tr>
+<tr>
+<td>Soyad</td>
+<td>Yılmaz</td>
+</tr>
+<tr>
+<td>Telefon</td>
+<td>0532 ...</td>
+</tr>
+<tr>
+<td>Bölüm</td>
+<td>"Üretim"</td>
+</tr>
+<tr>
+<td>Rol</td>
+<td>(aşağıdaki tabloya bak)</td>
+</tr>
+<tr>
+<td>Aktif</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-rol-atama-rehberi">8.3 Rol Atama Rehberi</h3>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Kime</th>
+<th>Yetki Düzeyi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>tenant_admin</strong></td>
+<td>Genel müdür, CFO, CEO yardımcısı</td>
+<td>Tam yönetim — sizin gibi</td>
+</tr>
+<tr>
+<td><strong>executive_manager</strong></td>
+<td>Genel müdür yardımcıları</td>
+<td>SP modülüne tam erişim</td>
+</tr>
+<tr>
+<td><strong>kurum_yoneticisi</strong></td>
+<td>Departman müdürleri</td>
+<td>Kurum ayarları + raporlama</td>
+</tr>
+<tr>
+<td><strong>surec_lideri</strong></td>
+<td>Süreç sahipleri (örn: Üretim Müdürü)</td>
+<td>Atandığı süreçler için tam yetki</td>
+</tr>
+<tr>
+<td><strong>manager</strong></td>
+<td>Takım liderleri</td>
+<td>Ekibinin performans raporu</td>
+</tr>
+<tr>
+<td><strong>kalite</strong></td>
+<td>Kalite departmanı</td>
+<td>Süreç kalite gözden geçirme</td>
+</tr>
+<tr>
+<td><strong>kurum_kullanici</strong></td>
+<td>Genel çalışanlar</td>
+<td>Kendi karnesi + atandığı KPI veri girişi</td>
+</tr>
+<tr>
+<td><strong>izleyici</strong></td>
+<td>Stajyerler, danışmanlar</td>
+<td>Sadece görüntüleme</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <strong>Önemli kural:</strong> <strong>En az 2 tenant_admin</strong> olmalı (siz + 1 kişi daha). Tek admin = tehlikeli (kaza, ayrılma, izin).</p>
+<h3 id="84-sifre">8.4 Şifre</h3>
+<p>İki seçenek:<br />
+- <strong>Otomatik üret:</strong> Sistem geçici şifre yapar, e-posta gönderilir<br />
+- <strong>Manuel gir:</strong> Siz belirlersiniz, kullanıcıya iletilir</p>
+<p>Kullanıcı ilk girişte değiştirmek zorundadır (önerilen).</p>
+<h3 id="85-tum-kullanclar-ekleyin">8.5 Tüm Kullanıcıları Ekleyin</h3>
+<p>Çalışan listenizi sırayla ekleyin. Tipik bir 100 kişilik kurum için <strong>30-50 kişi</strong> Kokpitim'e eklenir (her çalışan değil, sadece veri girecek/karne sahibi olacak).</p>
+<hr />
+<h2 id="adim-9-surec-atamalar-15-dk">ADIM 9 — Süreç Atamaları (15 dk)</h2>
+<p>Kullanıcılar eklendikten sonra süreçlere atayın.</p>
+<h3 id="91-her-surec-icin-lider-ve-uye-belirle">9.1 Her Sürec için Lider ve Üye Belirle</h3>
+<p><strong>Erişim:</strong> Süreçler → bir süreç seç → "Üyeler" sekmesi</p>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Sayı</th>
+<th>Görevi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Süreç Lideri</strong></td>
+<td>1 (mutlaka)</td>
+<td>Süreç performansından sorumlu, KPI hedefleri belirler</td>
+</tr>
+<tr>
+<td><strong>Süreç Üyesi</strong></td>
+<td>2-10</td>
+<td>Süreç KPI verilerini girer</td>
+</tr>
+<tr>
+<td><strong>Süreç Sahibi</strong> (opsiyonel)</td>
+<td>1</td>
+<td>Üst yönetim temsilcisi, sponsor</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-yetki-sonuclar">9.2 Yetki Sonuçları</h3>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Ne yapabilir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lider</td>
+<td>KPI ekle/güncelle/sil, hedef değiştir, üye ekle</td>
+</tr>
+<tr>
+<td>Üye</td>
+<td>Sadece KPI veri girişi</td>
+</tr>
+<tr>
+<td>Sahip</td>
+<td>Görüntüleme + üst yönetim onayı</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-kontrol">9.3 Kontrol</h3>
+<p>Süreç listesi sayfasında her sürecin yanında lider + üye sayısını görmelisiniz. Boş süreç kalmasın.</p>
+<hr />
+<h2 id="adim-10-bireysel-pg-performans-gostergesi-atamalar-30-dk">ADIM 10 — Bireysel PG (Performans Göstergesi) Atamaları (30 dk)</h2>
+<p><img src="screenshots/17-bireysel-karne.png" class="screenshot" alt="17-bireysel-karne"></p>
+<div class="screenshot-caption">17-bireysel-karne.png</div>
+
+<p>Her çalışanın kendi bireysel hedefleri olacak. Bu hedefler genelde <strong>süreç KPI'larından türetilir</strong>.</p>
+<h3 id="101-toplu-atama-surec-kpisndan">10.1 Toplu Atama (Süreç KPI'sından)</h3>
+<p><strong>Erişim:</strong> Bireysel modülü → "Süreç KPI'sından PG Türet"</p>
+<p><strong>Adımlar:</strong><br />
+1. Hangi süreç KPI'sından PG açılacak seç (örn: "Müşteri Memnuniyet Endeksi")<br />
+2. Hangi kullanıcıya atanacak seç (örn: "Pazarlama Müdürü")<br />
+3. Hedef değer (genelde süreç KPI'sı ile aynı, isteğe göre değiştir)<br />
+4. "Oluştur" → kullanıcının bireysel karnesinde PG görünür</p>
+<h3 id="102-manuel-bireysel-pg">10.2 Manuel Bireysel PG</h3>
+<p>Bazı PG'ler süreç KPI'sı değil, sadece kişiseldir (örn: "Yıllık eğitim saatim").</p>
+<p><strong>Erişim:</strong> Bireysel modülü → "PG Ekle"</p>
+<ul>
+<li>Ad, hedef, birim, dönem</li>
+<li>Sorumlu (genelde kendisi)</li>
+</ul>
+<h3 id="103-pg-says">10.3 PG Sayısı</h3>
+<p>Çalışan başına <strong>3-7 bireysel PG</strong> önerilir. Daha azı motivasyon eksikliği, daha çoğu dağılma getirir.</p>
+<h3 id="104-iletisim">10.4 İletişim</h3>
+<p>PG'leri atadıktan sonra <strong>her çalışana</strong> e-posta ile haber verin: "Kokpitim'de size atanmış X hedef var, lütfen bireysel karnenize bakın."</p>
+<hr />
+<h1 id="asama-d-operasyonel">AŞAMA D — OPERASYONEL</h1>
+<h2 id="adim-11-faaliyetler-30-dk">ADIM 11 — Faaliyetler (30 dk)</h2>
+<p>KPI'lar <strong>sonuçları ölçer</strong>, faaliyetler <strong>yapılacak işleri</strong> ifade eder. Her süreç için 5-10 faaliyet ekleyin.</p>
+<h3 id="111-faaliyet-ekle">11.1 Faaliyet Ekle</h3>
+<p><strong>Erişim:</strong> Süreç detayı → "Faaliyetler" sekmesi → "Yeni Faaliyet"</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ad</td>
+<td>"Aylık satış toplantısı"</td>
+</tr>
+<tr>
+<td>Açıklama</td>
+<td>"Tüm satış ekibinin katılımıyla aylık performans değerlendirme"</td>
+</tr>
+<tr>
+<td>Durum</td>
+<td>Planlandı</td>
+</tr>
+<tr>
+<td>Sorumlu</td>
+<td>Satış Müdürü</td>
+</tr>
+<tr>
+<td>Başlangıç</td>
+<td>2026-01-15</td>
+</tr>
+<tr>
+<td>Bitiş</td>
+<td>2026-12-15</td>
+</tr>
+<tr>
+<td>Tekrar</td>
+<td>Aylık (her ayın 15'i)</td>
+</tr>
+<tr>
+<td>Önem</td>
+<td>Yüksek</td>
+</tr>
+</tbody>
+</table>
+<h3 id="112-periyodik-faaliyetler">11.2 Periyodik Faaliyetler</h3>
+<p>Sürekli yapılan işler için tekrar (recurrence) tanımla:<br />
+- Günlük (örn: sabah huddle)<br />
+- Haftalık (örn: ekip toplantısı)<br />
+- Aylık (örn: rapor hazırlama)<br />
+- Çeyreklik (örn: review)</p>
+<p>Sistem her dönemde otomatik yeni faaliyet kaydı açar.</p>
+<h3 id="113-bireysel-faaliyetler">11.3 Bireysel Faaliyetler</h3>
+<p>Bireysel karne içinde de faaliyetler vardır. ADIM 10'da PG atadığınız her kişi için 2-3 bireysel faaliyet ekleyin (örn: "Her ay 1 müşteri ziyareti").</p>
+<hr />
+<h2 id="adim-12-initiativeler-opsiyonel-30-dk">ADIM 12 — Initiative'ler (Opsiyonel, 30 dk)</h2>
+<p><img src="screenshots/06-initiatives.png" class="screenshot" alt="06-initiatives"></p>
+<div class="screenshot-caption">06-initiatives.png</div>
+
+<p><strong>Initiative</strong> = bir veya daha çok yıllık stratejik girişim. Strateji ve günlük operasyondan farklı, <strong>belirli bir değişim için açılan proje</strong>.</p>
+<h3 id="121-initiative-ne-zaman-aclr">12.1 Initiative Ne Zaman Açılır?</h3>
+<ul>
+<li>"Dijital Dönüşüm Programı 2026-2028"</li>
+<li>"ESG Uyum Hazırlığı 2026"</li>
+<li>"Yeni Ürün Lansmanı"</li>
+<li>"ISO 27001 Sertifikasyonu"</li>
+</ul>
+<h3 id="122-initiative-ekle">12.2 Initiative Ekle</h3>
+<p><strong>Erişim:</strong> SP → <strong>Initiative'ler</strong> (<code>/sp/initiatives</code>) → "Yeni Initiative"</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ad</td>
+<td>"EV Bataryası ARGE Programı"</td>
+</tr>
+<tr>
+<td>Kod</td>
+<td>INIT-2026-01</td>
+</tr>
+<tr>
+<td>Açıklama</td>
+<td>"3 yıllık ARGE programı..."</td>
+</tr>
+<tr>
+<td>Bağlı Strateji</td>
+<td>AS1</td>
+</tr>
+<tr>
+<td>Bağlı Alt Strateji</td>
+<td>AS1.3</td>
+</tr>
+<tr>
+<td>Başlangıç Yılı</td>
+<td>2026</td>
+</tr>
+<tr>
+<td>Bitiş Yılı</td>
+<td>2028</td>
+</tr>
+<tr>
+<td>Durum</td>
+<td>Planlandı</td>
+</tr>
+<tr>
+<td>Öncelik</td>
+<td>Yüksek</td>
+</tr>
+<tr>
+<td>Toplam Bütçe</td>
+<td>5.000.000 TL</td>
+</tr>
+<tr>
+<td>Sahibi</td>
+<td>(Bir kullanıcı)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="123-milestone-ekle">12.3 Milestone Ekle</h3>
+<p>Initiative detayında "Milestone Ekle":<br />
+- M1 — Konsept tasarımı (2026 Q2)<br />
+- M2 — Prototip (2026 Q4)<br />
+- M3 — Pilot üretim (2027 Q2)<br />
+- M4 — Seri üretim (2028 Q1)</p>
+<h3 id="124-initiative-strateji-haritas">12.4 Initiative ↔ Strateji Haritası</h3>
+<p>Initiative tanımladıktan sonra <strong>strateji haritasında</strong> pembe düğümler olarak görünür, ana stratejiye bağlıdır.</p>
+<hr />
+<h1 id="asama-e-analiz-cerceveleri">AŞAMA E — ANALİZ ÇERÇEVELERİ</h1>
+<h2 id="adim-13-swot-pestle-okr-45-dk">ADIM 13 — SWOT / PESTLE / OKR (45 dk)</h2>
+<p>Akademik analiz çerçevelerini doldurun. Bunlar <strong>dönem başı toplantısında</strong> üst yönetimle birlikte yapılır.</p>
+<h3 id="131-swot-analizi">13.1 SWOT Analizi</h3>
+<p><strong>Erişim:</strong> SP → "SWOT" sekmesi veya <code>/sp/api/swot</code></p>
+<p>4 alan doldur:<br />
+- <strong>Strengths</strong> (Güçlü yönler) — örn: "Güçlü ARGE ekibi", "Geniş müşteri portföyü"<br />
+- <strong>Weaknesses</strong> (Zayıf yönler) — örn: "Yüksek personel devir hızı"<br />
+- <strong>Opportunities</strong> (Fırsatlar) — örn: "EV pazarındaki büyüme"<br />
+- <strong>Threats</strong> (Tehditler) — örn: "Çin üreticilerinin agresif fiyatlandırması"</p>
+<h3 id="132-pestle">13.2 PESTLE</h3>
+<p><strong>Erişim:</strong> SP → "PESTLE"</p>
+<p>6 alan:<br />
+- <strong>P</strong>olitical — yasal/politik<br />
+- <strong>E</strong>conomic — makroekonomi<br />
+- <strong>S</strong>ocial — sosyal/demografik<br />
+- <strong>T</strong>echnological — teknoloji<br />
+- <strong>L</strong>egal — düzenleyici<br />
+- <strong>E</strong>nvironmental — çevre</p>
+<h3 id="133-okr-objective-key-results">13.3 OKR (Objective + Key Results)</h3>
+<p><strong>Erişim:</strong> SP → <strong>OKR</strong> (<code>/sp/okr</code>) → "Yeni Objective"</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Başlık</td>
+<td>"EV pazarında lider olalım"</td>
+</tr>
+<tr>
+<td>Sahip</td>
+<td>Pazarlama Müdürü</td>
+</tr>
+<tr>
+<td>Hedef Tarih</td>
+<td>2026 Q4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Her objective için 2-5 Key Result:</strong><br />
+- KR1: "Pazar payımızı %15'ten %22'ye çıkar"<br />
+- KR2: "3 yeni stratejik müşteri kazan"<br />
+- KR3: "Marka bilinirlik anketinde %50+ rakam"</p>
+<p>Her KR bir süreç KPI'sına bağlanabilir → otomatik veri ile beslenir.</p>
+<h3 id="134-tows-analizi-opsiyonel">13.4 TOWS Analizi (Opsiyonel)</h3>
+<p>SWOT'tan <strong>strateji türetme</strong> matrisi:<br />
+- SO (Güç + Fırsat) → Saldırı stratejisi<br />
+- WO (Zayıf + Fırsat) → İyileştirme<br />
+- ST (Güç + Tehdit) → Savunma<br />
+- WT (Zayıf + Tehdit) → Sakınma</p>
+<hr />
+<h2 id="adim-14-hoshin-blue-ocean-vrio-opsiyonel-60-dk">ADIM 14 — Hoshin / Blue Ocean / VRIO (Opsiyonel, 60 dk)</h2>
+<p><img src="screenshots/08-hoshin-xmatrix.png" class="screenshot" alt="08-hoshin-xmatrix"></p>
+<div class="screenshot-caption">08-hoshin-xmatrix.png</div>
+
+<p>İleri düzey akademik çerçeveler. <strong>İlk kurulumda atlayabilirsiniz</strong>, 2-3 ay sonra eklersiniz.</p>
+<h3 id="141-hoshin-kanri-x-matrix">14.1 Hoshin Kanri X-Matrix</h3>
+<p><strong>Erişim:</strong> SP → <strong>Hoshin X-Matrix</strong> (<code>/sp/xmatrix</code>)</p>
+<p>Otomatik üretilir — kullandığınız stratejiler/initiative'lar/KPI'lar arasındaki korelasyon matrisi gösterilir. <strong>Veri girmenize gerek yok</strong>, sistem otomatik çıkarır.</p>
+<p>Üst yönetim toplantısında "hangi strateji hangi KPI ile ölçülüyor?" sorusunu görsel yanıtlar.</p>
+<h3 id="142-blue-ocean-strategy">14.2 Blue Ocean Strategy</h3>
+<p><strong>Erişim:</strong> SP → <strong>Blue Ocean</strong> → "Yeni Canvas"</p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ad</td>
+<td>"EV Pazar Stratejisi 2026"</td>
+</tr>
+<tr>
+<td>Sektör</td>
+<td>"EV bileşen üretimi"</td>
+</tr>
+<tr>
+<td>Rakipler</td>
+<td>"ChinaEV, GermanAuto, KoreanTech"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Faktör Ekle</strong> (sektörünüzdeki rekabet faktörleri):<br />
+- Fiyat: kendi 6, rakip 4<br />
+- Kalite: kendi 8, rakip 9<br />
+- Hız: kendi 7, rakip 6<br />
+- Dijital Entegrasyon: kendi 5, rakip 8</p>
+<p>Chart.js otomatik <strong>Value Curve</strong> çizer.</p>
+<p><strong>ERRC Grid:</strong><br />
+- ❌ <strong>Eliminate</strong> — "Geleneksel pazarlama bütçesi"<br />
+- ⬇️ <strong>Reduce</strong> — "Fizik satış ekibi"<br />
+- ⬆️ <strong>Raise</strong> — "Online destek"<br />
+- ⭐ <strong>Create</strong> — "Self-service portal"</p>
+<h3 id="143-vrio-analizi">14.3 VRIO Analizi</h3>
+<p><strong>Erişim:</strong> SP → <strong>VRIO</strong> → "Yeni Kaynak"</p>
+<p>Her kurumsal kaynak/yetenek için 4 işaret:<br />
+- <strong>V</strong>aluable — Değerli mi?<br />
+- <strong>R</strong>are — Nadir mi?<br />
+- <strong>I</strong>nimitable — Taklit zor mu?<br />
+- <strong>O</strong>rganized — Kurumsallaşmış mı?</p>
+<p>Sistem otomatik Barney karar ağacına göre etiket basar:<br />
+- V yoksa → "Rekabetçi Dezavantaj"<br />
+- V+R+I+O hepsi → "Sürdürülebilir Rekabet Avantajı" ⭐</p>
+<p><strong>Örnek girişler:</strong><br />
+- "ARGE patentlerimiz" → V+R+I+O = sürdürülebilir avantaj<br />
+- "Genel ofis binası" → V ama R değil = parite</p>
+<hr />
+<h2 id="adim-15-replan-triggerlar-15-dk">ADIM 15 — Replan Trigger'lar (15 dk)</h2>
+<p><img src="screenshots/11-replan-triggers.png" class="screenshot" alt="11-replan-triggers"></p>
+<div class="screenshot-caption">11-replan-triggers.png</div>
+
+<p>Otomatik strateji yeniden değerlendirme kuralları.</p>
+<h3 id="151-replan-trigger-ekle">15.1 Replan Trigger Ekle</h3>
+<p><strong>Erişim:</strong> SP → <strong>Replan Trigger</strong> (<code>/sp/replan-triggers</code>) → "Yeni Trigger"</p>
+<p><strong>Tipik Tetikleyiciler:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tip</th>
+<th>Örnek</th>
+<th>Aksiyon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kpi_below_target</code></td>
+<td>"Müşteri memnuniyeti 2 ay üst üste hedef altında"</td>
+<td>suggest_pivot</td>
+</tr>
+<tr>
+<td><code>overdue_activity_pct</code></td>
+<td>"Faaliyetlerin %30'u gecikti"</td>
+<td>create_review</td>
+</tr>
+<tr>
+<td><code>risk_score</code></td>
+<td>"Risk skoru threshold geçti"</td>
+<td>notify</td>
+</tr>
+<tr>
+<td><code>anomaly_high</code></td>
+<td>"Yüksek-severity anomali tespit"</td>
+<td>notify</td>
+</tr>
+</tbody>
+</table>
+<h3 id="152-yaplandrma-ornegi">15.2 Yapılandırma Örneği</h3>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Değer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ad</td>
+<td>"Müşteri memnuniyeti düşüyor uyarısı"</td>
+</tr>
+<tr>
+<td>Tip</td>
+<td>kpi_below_target</td>
+</tr>
+<tr>
+<td>Target KPI</td>
+<td>(Müşteri Memnuniyet Endeksi KPI'sı seç)</td>
+</tr>
+<tr>
+<td>Operatör</td>
+<td>&lt;</td>
+</tr>
+<tr>
+<td>Eşik</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Ardışık Dönem</td>
+<td>2 (üst üste 2 ay)</td>
+</tr>
+<tr>
+<td>Aksiyon</td>
+<td>suggest_pivot</td>
+</tr>
+<tr>
+<td>Önem</td>
+<td>Yüksek</td>
+</tr>
+</tbody>
+</table>
+<h3 id="153-simdi-degerlendir-butonu">15.3 "Şimdi Değerlendir" Butonu</h3>
+<p>Trigger'ları test etmek için bu butonu kullan. Tüm aktif trigger'lar koşulları kontrol eder, tetiklenenler için event açar.</p>
+<h3 id="154-tipik-trigger-says">15.4 Tipik Trigger Sayısı</h3>
+<p>İlk başlarken <strong>3-5 trigger</strong> yeter. Sonra ihtiyaç doğdukça eklersiniz.</p>
+<hr />
+<h1 id="asama-f-sistem-yapilandirmasi">AŞAMA F — SİSTEM YAPILANDIRMASI</h1>
+<h2 id="adim-16-ai-yaplandrmas-10-dk">ADIM 16 — AI Yapılandırması (10 dk)</h2>
+<p><img src="screenshots/13-ai-ayarlari.png" class="screenshot" alt="13-ai-ayarlari"></p>
+<div class="screenshot-caption">13-ai-ayarlari.png</div>
+
+<p>AI tabanlı öneri sistemini etkinleştirin.</p>
+<h3 id="161-ai-ayarlarna-git">16.1 AI Ayarları'na git</h3>
+<p><strong>Erişim:</strong> SP → <strong>AI Ayarları</strong> (<code>/sp/ayarlar/ai</code>)</p>
+<h3 id="162-mod-sec">16.2 Mod Seç</h3>
+<p><strong>Mod 1: Kokpitim Sistem AI'sı (Önerilen, başlangıç)</strong><br />
+- Ücretsiz<br />
+- Günlük 50 / aylık 500 çağrı<br />
+- Gemini 2.5 Flash Lite varsayılan<br />
+- Kotaları aşılırsa kural motoruna düşer (asla çökmez)</p>
+<p><strong>Mod 2: Kendi API Anahtarımı Kullan (BYOK)</strong><br />
+- Sağlayıcı seçin: Google Gemini / OpenAI / Anthropic / Groq / OpenRouter<br />
+- API Key girin (Fernet ile şifreli saklanır)<br />
+- "Anahtarı Test Et" butonu ile doğrulayın<br />
+- Avantaj: sistem kotanız harcanmaz, sınırsız kullanım</p>
+<p>✅ İlk kurulumda <strong>Mod 1</strong> seçin. Tenant büyüdükçe Mod 2'ye geçebilirsiniz.</p>
+<h3 id="163-kvkk-pii-maskeleme">16.3 KVKK PII Maskeleme</h3>
+<p>İşaretleyin (önerilen). TC kimlik, IBAN gibi hassas verilerin AI prompt'larına gönderilmesini engeller.</p>
+<h3 id="164-kullanm-takibi">16.4 Kullanım Takibi</h3>
+<p><strong>Erişim:</strong> SP → <strong>LLM Kullanım</strong> (<code>/sp/llm-usage</code>)</p>
+<ul>
+<li>Bugünkü çağrı sayısı</li>
+<li>Aylık çağrı</li>
+<li>Maliyet</li>
+<li>Son 50 çağrı detayı</li>
+</ul>
+<hr />
+<h2 id="adim-17-bildirim-ve-e-posta-10-dk">ADIM 17 — Bildirim ve E-posta (10 dk)</h2>
+<p><img src="screenshots/20-bildirim.png" class="screenshot" alt="20-bildirim"></p>
+<div class="screenshot-caption">20-bildirim.png</div>
+
+<p>Sistem kullanıcılara mail gönderebilmesi için SMTP'yi yapılandırın.</p>
+<h3 id="171-e-posta-ayarlar">17.1 E-posta Ayarları</h3>
+<p><strong>Erişim:</strong> Sol menü → <strong>Ayarlar</strong> → <strong>E-posta</strong> (<code>/ayarlar/eposta</code>)</p>
+<p><strong>Doldurulacak:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMTP Sunucusu</td>
+<td>smtp.gmail.com / smtp.office365.com</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>587 (TLS) veya 465 (SSL)</td>
+</tr>
+<tr>
+<td>Kullanıcı Adı</td>
+<td>bildirim@tomofil.com</td>
+</tr>
+<tr>
+<td>Şifre</td>
+<td>(uygulama şifresi — Gmail için 2FA gerek)</td>
+</tr>
+<tr>
+<td>Gönderici Adresi</td>
+<td>"Kokpitim - Tomofil" \&lt;bildirim@tomofil.com&gt;</td>
+</tr>
+<tr>
+<td>TLS/SSL</td>
+<td>TLS (önerilen)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="172-test-e-posta-gonder">17.2 Test E-posta Gönder</h3>
+<p><strong>Buton:</strong> "Test E-posta Gönder" — kendinize test maili gönderir.</p>
+<p>✅ Mail geldiyse SMTP doğru. Gelmiyorsa: spam klasörünüze bakın, ayar kontrolü.</p>
+<h3 id="173-bildirim-turleri-sistem-otomatik">17.3 Bildirim Türleri (Sistem Otomatik)</h3>
+<p>Sistem şu durumlarda otomatik e-posta gönderir:<br />
+- Yeni süreç ataması<br />
+- Yeni KPI eklemesi<br />
+- Faaliyet bitiş tarihi yaklaşıyor (3 gün kala)<br />
+- Yöneticiden yorum geldi<br />
+- Replan trigger ateşlendi</p>
+<p>Kullanıcı kendi profil ayarlarından bu mailleri kapatabilir.</p>
+<h3 id="174-webhook-opsiyonel">17.4 Webhook (Opsiyonel)</h3>
+<p>Slack/Teams/Discord entegrasyonu için:<br />
+- <strong>Erişim:</strong> K-Rapor → "Webhook Yönetimi"<br />
+- URL'i Slack webhook'unuzdan al<br />
+- Bağla → anomali tespit edildiğinde otomatik mesaj gider</p>
+<hr />
+<h1 id="final-kontrol-ve-ilk-review">FİNAL — KONTROL VE İLK REVİEW</h1>
+<h2 id="kurulum-kontrol-listesi">Kurulum Kontrol Listesi</h2>
+<p>Kurulum bittikten sonra şu kontrolleri yapın:</p>
+<h3 id="yapsal">Yapısal</h3>
+<ul>
+<li>[ ] Misyon, Vizyon, Değerler dolu</li>
+<li>[ ] En az 1 aktif plan yılı var</li>
+<li>[ ] 3-5 ana strateji</li>
+<li>[ ] Her ana stratejinin 2-4 alt stratejisi</li>
+<li>[ ] 8-12 süreç tanımlı</li>
+<li>[ ] Her süreç bir alt stratejiye bağlı</li>
+<li>[ ] Her süreçte 3-7 KPI</li>
+<li>[ ] Her KPI'nın hedef değeri ve birimi var</li>
+<li>[ ] Her süreçte 5-10 faaliyet</li>
+</ul>
+<h3 id="insan">İnsan</h3>
+<ul>
+<li>[ ] En az 2 tenant_admin</li>
+<li>[ ] Her sürecin bir lideri var</li>
+<li>[ ] Çalışanlar Kokpitim'e eklendi</li>
+<li>[ ] Bireysel PG'ler atandı</li>
+<li>[ ] Test maili gönderildi, geliyor</li>
+</ul>
+<h3 id="analiz">Analiz</h3>
+<ul>
+<li>[ ] SWOT dolu</li>
+<li>[ ] OKR'ler tanımlı (en az 3 objective)</li>
+<li>[ ] (Opsiyonel) Hoshin, Blue Ocean, VRIO</li>
+</ul>
+<h3 id="sistem">Sistem</h3>
+<ul>
+<li>[ ] SMTP yapılandırıldı</li>
+<li>[ ] AI ayarları kontrol edildi</li>
+<li>[ ] Replan trigger'lar tanımlı</li>
+<li>[ ] Logo yüklü</li>
+<li>[ ] Kullanıcılara haber verildi</li>
+</ul>
+<h2 id="ilk-ceyreklik-review-30-dk">İlk Çeyreklik Review (30 dk)</h2>
+<p><img src="screenshots/05-ceyreklik-review.png" class="screenshot" alt="05-ceyreklik-review"></p>
+<div class="screenshot-caption">05-ceyreklik-review.png</div>
+
+<p>Kurulum bittikten <strong>1 hafta sonra</strong> ilk çeyreklik review yapın.</p>
+<p><strong>Erişim:</strong> SP → <strong>Çeyreklik Review</strong> (<code>/sp/ceyreklik-review</code>)</p>
+<ol>
+<li>Yıl ve çeyrek seç (2026 Q1)</li>
+<li>"Review Oluştur"</li>
+<li>Otomatik gelen rapor:</li>
+<li>KPI durumu (kaç KPI'da veri var, % hedef üstü)</li>
+<li>Strateji + alt strateji sayısı</li>
+<li>OKR ortalama ilerleme</li>
+<li>Faaliyet (aktif, gecikmiş, kapanan)</li>
+<li>Risk durumu</li>
+<li>Anomali listesi</li>
+<li>
+<p>Sistem önerileri</p>
+</li>
+<li>
+<p>Üst yönetim toplantısında bu raporu paylaşın.</p>
+</li>
+</ol>
+<h2 id="ilk-exec-dashboard-goruntuleme">İlk Exec Dashboard Görüntüleme</h2>
+<p><img src="screenshots/04-exec-dashboard.png" class="screenshot" alt="04-exec-dashboard"></p>
+<div class="screenshot-caption">04-exec-dashboard.png</div>
+
+<p><strong>Erişim:</strong> SP → <strong>Exec Dashboard</strong> (<code>/sp/exec-dashboard</code>)</p>
+<p>İlk başta tüm rakamlar düşük olacak çünkü veri yeni girilmeye başlandı. <strong>1 ay sonra</strong> anlamlı rakamlar görmeye başlarsınız.</p>
+<p>"AI Pivot Önerisi" butonuna basın — Gemini'den (veya kural motorundan) 3-5 strateji önerisi gelir.</p>
+<hr />
+<h2 id="bakm-rutini">Bakım Rutini</h2>
+<p>Tenant kurulduktan sonra <strong>haftalık + aylık bakım</strong> önerilir.</p>
+<h3 id="haftalk-30-dk">Haftalık (30 dk)</h3>
+<ul>
+<li>Bildirimleri kontrol et</li>
+<li>Trigger event'lerine bak</li>
+<li>Gecikmiş faaliyetleri takip et</li>
+<li>Yeni kullanıcı talebi varsa ekle</li>
+</ul>
+<h3 id="aylk-2-saat">Aylık (2 saat)</h3>
+<ul>
+<li>Tüm KPI'larda veri girişi doğrulandı mı kontrol</li>
+<li>K-Rapor → "Veri Durumu" raporu indir</li>
+<li>Eksik KPI'lar için süreç liderine hatırlatma</li>
+<li>Replan trigger event'lerini değerlendir</li>
+</ul>
+<h3 id="ceyreklik-4-saat">Çeyreklik (4 saat)</h3>
+<ul>
+<li>Çeyreklik Review yap (<code>/sp/ceyreklik-review</code>)</li>
+<li>Üst yönetim toplantısı düzenle</li>
+<li>AI Pivot önerilerini değerlendir</li>
+<li>Gerekiyorsa senaryo dallandır (<code>/sp/scenarios</code>)</li>
+</ul>
+<h3 id="yllk-1-2-gun">Yıllık (1-2 gün)</h3>
+<ul>
+<li>Yeni plan yılı aç (<code>/sp/donemler</code>)</li>
+<li>Önceki yıldan <strong>Full Clone</strong></li>
+<li>Strateji/KPI/hedef güncellemeleri</li>
+<li>Kullanıcı rolleri gözden geçir</li>
+<li>Logo, e-posta gibi temel ayarları teyit et</li>
+</ul>
+<hr />
+<h2 id="sk-karslaslan-sorunlar-kurulum-sras">Sık Karşılaşılan Sorunlar (Kurulum Sırası)</h2>
+<h3 id="s1-yeni-plan-yl-olusturamyorum-hata-veriyor">S1: "Yeni plan yılı oluşturamıyorum, hata veriyor"</h3>
+<p><strong>Sebep:</strong> Aynı yıla zaten plan var.<br />
+<strong>Çözüm:</strong> Var olan planı kullan veya <strong>senaryo</strong> olarak dallandır.</p>
+<h3 id="s2-strateji-ekledigimde-plan-yl-yok-diyor">S2: "Strateji eklediğimde 'plan yılı yok' diyor"</h3>
+<p><strong>Çözüm:</strong> ADIM 4'ü atlamışsın. Önce plan yılı aç.</p>
+<h3 id="s3-surec-ekleyebiliyorum-ama-alt-stratejiye-baglayamyorum">S3: "Süreç ekleyebiliyorum ama alt stratejiye bağlayamıyorum"</h3>
+<p><strong>Sebep:</strong> Plan yılı kapatılmış (status=closed).<br />
+<strong>Çözüm:</strong> SP → Plan Yılları → ilgili yılı tekrar "Aktif Yap".</p>
+<h3 id="s4-kpi-veri-girisi-alanlar-kilitli">S4: "KPI veri girişi alanları kilitli"</h3>
+<p><strong>Sebep:</strong> KPI pasif (<code>is_active=False</code>).<br />
+<strong>Çözüm:</strong> Süreç detayı → KPI listesi → durumu "Aktif" yap.</p>
+<h3 id="s5-kullanc-davet-gonderdim-mail-gelmedi">S5: "Kullanıcı davet gönderdim, mail gelmedi"</h3>
+<p><strong>Sebep:</strong> SMTP yapılandırılmamış.<br />
+<strong>Çözüm:</strong> ADIM 17'yi yap, "Test E-posta Gönder" ile doğrula.</p>
+<h3 id="s6-ai-pivot-butonu-calsmyor">S6: "AI Pivot butonu çalışmıyor"</h3>
+<p><strong>Sebep:</strong> Mod 1 sistem AI key'i yok veya kota dolu.<br />
+<strong>Çözüm:</strong> <code>/sp/ayarlar/ai</code> → mod kontrol et. <code>/sp/llm-usage</code> → kotayı gör.</p>
+<h3 id="s7-strateji-haritas-bos">S7: "Strateji haritası boş"</h3>
+<p><strong>Sebep:</strong> Henüz strateji/süreç eklenmemiş.<br />
+<strong>Çözüm:</strong> ADIM 5, 6, 7'yi sırayla yap.</p>
+<h3 id="s8-calsan-kendi-karnesini-goremiyor">S8: "Çalışan kendi karnesini göremiyor"</h3>
+<p><strong>Sebep:</strong> Ona PG ataması yapılmamış.<br />
+<strong>Çözüm:</strong> ADIM 10'u yap (Bireysel PG Atamaları).</p>
+<h3 id="s9-logo-yuklemiyor-hata">S9: "Logo yüklemiyor, hata"</h3>
+<p><strong>Sebep:</strong> Dosya çok büyük veya yanlış format.<br />
+<strong>Çözüm:</strong> PNG/JPG, max 5MB. Tinify ile küçült.</p>
+<h3 id="s10-replan-trigger-simdi-degerlendir-tkladm-ama-bir-sey-olmad">S10: "Replan trigger 'şimdi değerlendir' tıkladım ama bir şey olmadı"</h3>
+<p><strong>Sebep:</strong> Henüz koşul tetiklenmedi (KPI verisi yeni, ardışık dönem dolmadı).<br />
+<strong>Çözüm:</strong> Veri girişleri biriktikten sonra (1-2 ay) tekrar dene.</p>
+<hr />
+<h2 id="tahmini-zaman-cizelgesi">Tahmini Zaman Çizelgesi</h2>
+<table>
+<thead>
+<tr>
+<th>Hafta</th>
+<th>Yapılacak</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hafta 1</strong></td>
+<td>ADIM 1-7 (yapısal) — siz tek başınıza</td>
+</tr>
+<tr>
+<td><strong>Hafta 2</strong></td>
+<td>ADIM 8-10 (kullanıcılar) — İK ile birlikte</td>
+</tr>
+<tr>
+<td><strong>Hafta 3</strong></td>
+<td>ADIM 11-12 (operasyon) — süreç liderleriyle</td>
+</tr>
+<tr>
+<td><strong>Hafta 4</strong></td>
+<td>ADIM 13-17 (analiz + sistem) — üst yönetim toplantısı</td>
+</tr>
+<tr>
+<td><strong>Ay 2</strong></td>
+<td>Veri girişleri başlar, ilk raporlar</td>
+</tr>
+<tr>
+<td><strong>Ay 3</strong></td>
+<td>İlk çeyreklik review + sistem optimizasyonu</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <strong>3 ay sonra:</strong> Sistem stabil, kullanıcılar alışmış, ilk anlamlı raporlar oluşmuş durumda.</p>
+<hr />
+<h2 id="baglantl-belgeler">Bağlantılı Belgeler</h2>
+<ul>
+<li><a href="kokpitimtanitim.md"><code>docs/test/kokpitimtanitim.md</code></a> — Sistemin genel tanıtımı</li>
+<li><a href="tenant_admin_kullanim_kilavuzu.md"><code>docs/test/tenant_admin_kullanim_kilavuzu.md</code></a> — Referans kitap (her ekran detaylı)</li>
+<li><a href="tenant_kullanici_kilavuzu.md"><code>docs/test/tenant_kullanici_kilavuzu.md</code></a> — Çalışanlar için (onlara dağıt)</li>
+<li><a href="../AI-POLITIKASI.md"><code>docs/AI-POLITIKASI.md</code></a> — AI sistem kuralları</li>
+<li><a href="../UI-KILAVUZU.md"><code>docs/UI-KILAVUZU.md</code></a> — Tasarım sistemi</li>
+</ul>
+<hr />
+<h2 id="yardm">Yardım</h2>
+<p><strong>Sorun çıktığında sırası:</strong></p>
+<ol>
+<li>Bu rehberin ilgili adımını yeniden oku</li>
+<li><code>docs/test/tenant_admin_kullanim_kilavuzu.md</code> → detaylı referans</li>
+<li>Platform Admin'inize başvur (Kokpitim sahibi)</li>
+<li>Hala çözülmediyse destek talebi aç</li>
+</ol>
+<p><strong>Başarılar! 🚀</strong> Kurulum bittiğinde siz tenant'ınızı <strong>dünya standartlarında bir kurumsal performans işletim sistemi</strong> olarak çalıştırıyor olacaksınız.</p>
+
+</body>
+</html>
