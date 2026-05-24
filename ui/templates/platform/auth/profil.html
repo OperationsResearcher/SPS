@@ -125,10 +125,165 @@
     </div>
   </div>
 
+  {# ─── İki Faktörlü Kimlik Doğrulama (2FA) ──────────────────────────── #}
+  <div class="mc-card" id="twofa-card" style="margin-top:16px;"
+       data-status-url="{{ url_for('totp_bp.totp_status') }}"
+       data-init-url="{{ url_for('totp_bp.totp_init') }}"
+       data-verify-url="{{ url_for('totp_bp.totp_verify_setup') }}"
+       data-disable-url="{{ url_for('totp_bp.totp_disable') }}">
+    <div class="mc-card-header">
+      <h3 style="margin:0;font-size:16px;color:#1e293b;">
+        <i class="fas fa-shield-alt" style="color:#4f46e5;margin-right:8px;"></i>
+        İki Faktörlü Kimlik Doğrulama (2FA)
+      </h3>
+    </div>
+    <div class="mc-card-body">
+      <p style="font-size:13px;color:#64748b;margin:0 0 16px;">
+        Hesabınıza ek güvenlik katmanı ekleyin. Etkinleştirildiğinde her girişte şifreye ek olarak
+        telefon uygulamanızdan (Google Authenticator, Microsoft Authenticator, Authy) 6 haneli kod istenir.
+        <strong>Tamamen isteğe bağlıdır.</strong>
+      </p>
+
+      {# Yükleniyor #}
+      <div id="twofa-loading" style="color:#94a3b8;font-size:13px;">
+        <i class="fas fa-spinner fa-spin"></i> Durum yükleniyor…
+      </div>
+
+      {# Durum: 2FA KAPALI #}
+      <div id="twofa-off" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;">
+          <i class="fas fa-shield-alt" style="font-size:24px;color:#94a3b8;"></i>
+          <div style="flex:1;">
+            <div style="font-weight:600;color:#1e293b;">2FA devre dışı</div>
+            <div style="font-size:12px;color:#64748b;">Hesabınız sadece şifre ile korunuyor.</div>
+          </div>
+          <button class="mc-btn mc-btn-primary" id="twofa-enable-btn">
+            <i class="fas fa-lock"></i> Etkinleştir
+          </button>
+        </div>
+      </div>
+
+      {# Durum: 2FA AÇIK #}
+      <div id="twofa-on" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#d1fae5;border-radius:6px;border-left:3px solid #10b981;">
+          <i class="fas fa-check-circle" style="font-size:24px;color:#10b981;"></i>
+          <div style="flex:1;">
+            <div style="font-weight:600;color:#065f46;">2FA etkin ✓</div>
+            <div style="font-size:12px;color:#065f46;">
+              Yedek kod kalan: <strong id="twofa-backup-count">—</strong>
+            </div>
+          </div>
+          <button class="mc-btn mc-btn-secondary" id="twofa-disable-btn" style="color:#dc2626;">
+            <i class="fas fa-unlock"></i> Devre Dışı Bırak
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+{# ─── Modal: 2FA Kurulum ─────────────────────────────────────────────── #}
+<div id="twofa-setup-modal" class="mc-modal-overlay" style="display:none;">
+  <div class="mc-modal mc-modal-md" style="background:white;border-radius:8px;max-width:560px;">
+    <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="margin:0;font-size:16px;">
+        <i class="fas fa-shield-alt" style="color:#4f46e5;"></i>
+        2FA Kurulum
+      </h3>
+      <button class="mc-modal-close" id="twofa-setup-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div class="mc-modal-body" style="padding:20px;">
+      <ol style="font-size:13px;color:#475569;padding-left:18px;line-height:1.7;">
+        <li>Telefonunuzda <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong> veya <strong>Authy</strong> uygulamasını açın</li>
+        <li>"+" → "Hesap ekle" → "QR kod tara" seçin</li>
+        <li>Aşağıdaki QR kodu telefonunuzla tarayın</li>
+        <li>Uygulamanın gösterdiği 6 haneli kodu aşağıya yazın</li>
+      </ol>
+
+      <div style="text-align:center;margin:16px 0;">
+        <img id="twofa-qr" alt="QR" style="max-width:200px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;background:#fff;">
+        <div style="font-size:12px;color:#64748b;margin-top:8px;">
+          QR taranamıyorsa kodu manuel girin:<br>
+          <code id="twofa-secret" style="background:#f1f5f9;padding:4px 10px;border-radius:4px;font-family:monospace;letter-spacing:1px;"></code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:4px;font-weight:500;">
+          Doğrulama Kodu (6 hane)
+        </label>
+        <input id="twofa-code-input" class="mc-form-input" maxlength="6" inputmode="numeric" pattern="[0-9]*"
+               placeholder="123456" style="width:100%;font-size:18px;letter-spacing:4px;text-align:center;">
+      </div>
+
+      <div id="twofa-setup-error" style="display:none;color:#dc2626;font-size:13px;margin-bottom:8px;"></div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="mc-btn mc-btn-secondary" id="twofa-setup-cancel">İptal</button>
+        <button class="mc-btn mc-btn-primary" id="twofa-setup-verify">
+          <i class="fas fa-check"></i> Doğrula ve Etkinleştir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ─── Modal: Backup Kodlar ────────────────────────────────────────────── #}
+<div id="twofa-backup-modal" class="mc-modal-overlay" style="display:none;">
+  <div class="mc-modal mc-modal-md" style="background:white;border-radius:8px;max-width:520px;">
+    <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;">
+      <h3 style="margin:0;font-size:16px;color:#10b981;">
+        <i class="fas fa-check-circle"></i>
+        2FA etkinleştirildi!
+      </h3>
+    </div>
+    <div class="mc-modal-body" style="padding:20px;">
+      <div class="mc-alert mc-alert-warning" style="padding:12px;margin-bottom:16px;background:#fef3c7;border-left:3px solid #f59e0b;border-radius:4px;">
+        <strong>⚠️ Önemli:</strong> Aşağıdaki yedek kodları güvenli bir yere kaydedin (parola yöneticisi veya yazdırın).
+        Telefonunuza erişiminizi kaybederseniz bu kodlarla giriş yapabilirsiniz.
+        Her kod <strong>yalnızca bir kez</strong> kullanılabilir.
+      </div>
+      <div id="twofa-backup-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:monospace;font-size:14px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="mc-btn mc-btn-secondary" id="twofa-backup-copy">
+          <i class="fas fa-copy"></i> Kopyala
+        </button>
+        <button class="mc-btn mc-btn-primary" id="twofa-backup-done">Anladım, kaydettim</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ─── Modal: 2FA Devre Dışı Bırak ─────────────────────────────────────── #}
+<div id="twofa-disable-modal" class="mc-modal-overlay" style="display:none;">
+  <div class="mc-modal mc-modal-md" style="background:white;border-radius:8px;max-width:440px;">
+    <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;">
+      <h3 style="margin:0;font-size:16px;color:#dc2626;">
+        <i class="fas fa-unlock"></i>
+        2FA Devre Dışı Bırak
+      </h3>
+    </div>
+    <div class="mc-modal-body" style="padding:20px;">
+      <p style="font-size:13px;color:#475569;margin:0 0 12px;">
+        Güvenlik için şifrenizi tekrar girmeniz gerekiyor. 2FA devre dışı bırakılırsa hesabınız yalnızca şifre ile korunur.
+      </p>
+      <input id="twofa-disable-password" type="password" class="mc-form-input" placeholder="Şifreniz" style="width:100%;margin-bottom:8px;">
+      <div id="twofa-disable-error" style="display:none;color:#dc2626;font-size:13px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="mc-btn mc-btn-secondary" id="twofa-disable-cancel">İptal</button>
+        <button class="mc-btn mc-btn-danger" id="twofa-disable-confirm">
+          <i class="fas fa-unlock"></i> Devre Dışı Bırak
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('app_bp.static', filename='platform/js/profil.js') }}?v={{ config['VERSION'] }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/twofa.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}
 
