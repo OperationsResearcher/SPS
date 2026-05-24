@@ -19,6 +19,41 @@ from app.services.totp_service import (
 totp_bp = Blueprint("totp_bp", __name__, url_prefix="/2fa")
 
 
+@totp_bp.route("/status", methods=["GET"])
+@login_required
+def totp_status():
+    """JSON: 2FA durumu — profil sayfasında kullanılır."""
+    backup_count = 0
+    if current_user.totp_backup_codes_json:
+        try:
+            backup_count = len(json.loads(current_user.totp_backup_codes_json) or [])
+        except Exception:
+            pass
+    return jsonify({
+        "success": True,
+        "enabled": bool(current_user.totp_enabled),
+        "backup_codes_remaining": backup_count,
+    })
+
+
+@totp_bp.route("/init", methods=["POST"])
+@login_required
+def totp_init():
+    """JSON: yeni secret + QR base64 üret (DB'ye yazma — kullanıcı verify edene kadar bekle)."""
+    if current_user.totp_enabled:
+        return jsonify({"success": False, "message": "2FA zaten etkin."}), 400
+    secret = generate_totp_secret()
+    session["_pending_totp_secret"] = secret
+    qr = get_qr_code_base64(secret, current_user.email)
+    return jsonify({
+        "success": True,
+        "secret": secret,            # base32 — kullanıcı manuel girebilsin
+        "qr_code": qr,               # data:image/png;base64,...
+        "issuer": "Kokpitim",
+        "account": current_user.email,
+    })
+
+
 @totp_bp.route("/setup", methods=["GET"])
 @login_required
 def totp_setup():
