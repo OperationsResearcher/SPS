@@ -5,6 +5,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from app.extensions import csrf
 from extensions import db
 from app.models.plan_year import PlanYear
 from app.services.plan_year_service import clone_full_plan_year
@@ -50,6 +51,7 @@ def sp_api_scenarios_list():
 
 
 @app_bp.route("/sp/api/scenarios", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_scenario_create():
     """Bir plan yılından senaryo dalı oluştur."""
@@ -98,6 +100,7 @@ def sp_api_scenario_create():
 
 
 @app_bp.route("/sp/api/scenarios/<int:py_id>", methods=["DELETE"])
+@csrf.exempt
 @login_required
 def sp_api_scenario_delete(py_id):
     if not _can():

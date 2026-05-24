@@ -2,6 +2,29 @@
    Micro Platform — Bileşen Kütüphanesi
    ═══════════════════════════════════════════════════════ */
 
+/* Font Awesome webfont — all.min.css içindeki ../webfonts yolu /m/ altında kırılıyor */
+@font-face {
+  font-family: "Font Awesome 6 Free";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../vendor/fontawesome/webfonts/fa-regular-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Font Awesome 6 Free";
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url("../vendor/fontawesome/webfonts/fa-solid-900.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Font Awesome 6 Brands";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../vendor/fontawesome/webfonts/fa-brands-400.woff2") format("woff2");
+}
+
 /* ── Tipografi Değişkenleri ── */
 :root {
   --font-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -14,6 +37,86 @@
   --text-xl:  1rem;       /* 16px */
   --text-2xl: 1.25rem;    /* 20px */
   --text-3xl: 1.75rem;    /* 28px */
+  --text-display: 3rem;   /* 48px — hero rakam (exec) */
+
+  /* Spacing — 8'in katları sistemi (UI-KILAVUZU §4) */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px;  --space-5: 20px;  --space-6: 24px;
+  --space-8: 32px;  --space-10: 40px;
+
+  /* Metin renk hiyerarşisi (§2) */
+  --text-strong:   #0f172a;
+  --text-default:  #1e293b;
+  --text-muted:    #475569;
+  --text-subtle:   #64748b;
+  --text-disabled: #94a3b8;
+
+  /* Marka rengi (§3) */
+  --color-primary:        #4f46e5;
+  --color-primary-hover:  #4338ca;
+  --color-primary-soft:   #eef2ff;
+  --color-accent:         #8b5cf6;
+
+  /* Anlam renkleri */
+  --color-success:      #10b981;  --color-success-soft: #d1fae5;
+  --color-warning:      #f59e0b;  --color-warning-soft: #fef3c7;
+  --color-danger:       #ef4444;  --color-danger-soft:  #fee2e2;
+  --color-info:         #0ea5e9;  --color-info-soft:    #e0f2fe;
+
+  /* Yüzeyler */
+  --surface-page:    #f8fafc;
+  --surface-card:    #ffffff;
+  --surface-hover:   #f1f5f9;
+  --border-default:  #e2e8f0;
+  --border-strong:   #cbd5e1;
+
+  /* Geçişler */
+  --transition-fast: 120ms ease-out;
+  --transition-base: 200ms ease-out;
+  --transition-slow: 320ms ease-out;
+
+  /* Gölgeler */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.1);
+}
+
+/* Skeleton loader (§7) */
+@keyframes mc-shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position:  1000px 0; }
+}
+.mc-skeleton {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 1000px 100%;
+  animation: mc-shimmer 1.5s linear infinite;
+  border-radius: 8px;
+  min-height: 16px;
+}
+
+/* Empty state (§7) */
+.mc-empty {
+  padding: 60px 20px;
+  text-align: center;
+}
+.mc-empty-icon  { font-size: 48px; color: var(--border-strong); }
+.mc-empty-title { margin: 16px 0 4px; color: var(--text-muted); font-size: 15px; font-weight: 600; }
+.mc-empty-text  { color: var(--text-disabled); font-size: 13px; margin: 0 0 20px; }
+
+/* Sayısal tablo hücresi — exec sayfaları için tabular-nums (§5) */
+.mc-num { font-variant-numeric: tabular-nums; text-align: right; }
+
+/* Karanlık mod desteği — değişkenler */
+html.dark {
+  --surface-page:  #0f172a;
+  --surface-card:  #1e293b;
+  --surface-hover: #334155;
+  --border-default: #334155;
+  --border-strong:  #475569;
+  --text-strong:   #f1f5f9;
+  --text-default:  #e2e8f0;
+  --text-muted:    #cbd5e1;
+  --text-subtle:   #94a3b8;
 }
 
 html {
@@ -152,6 +255,17 @@ body {
     font-size: var(--text-2xl);
     background: var(--stat-bg, #eef2ff);
     color: var(--stat-color, #6366f1);
+}
+
+/* Inter font ailesi ::before gliflerini ezmesin; FA webfont yüklü olmalı */
+.mc-stat-icon > i[class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free";
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Renk varyantları */

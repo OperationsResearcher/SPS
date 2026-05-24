@@ -5,6 +5,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from app.extensions import csrf
 from extensions import db
 from app.models.replan_trigger import ReplanTrigger, ReplanTriggerEvent
 from app.services.replan_trigger_service import evaluate_triggers
@@ -35,6 +36,7 @@ def sp_api_triggers_list():
 
 
 @app_bp.route("/sp/api/replan-triggers", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_triggers_create():
     if not _can():
@@ -67,6 +69,7 @@ def sp_api_triggers_create():
 
 
 @app_bp.route("/sp/api/replan-triggers/<int:tid>", methods=["DELETE"])
+@csrf.exempt
 @login_required
 def sp_api_triggers_delete(tid):
     if not _can():
@@ -82,6 +85,7 @@ def sp_api_triggers_delete(tid):
 
 
 @app_bp.route("/sp/api/replan-triggers/evaluate", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_triggers_evaluate():
     """Tüm trigger'ları şimdi değerlendir (dry_run opsiyonel)."""

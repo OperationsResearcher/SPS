@@ -8,6 +8,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from app.extensions import csrf
 from app.services.exec_dashboard_service import build_exec_snapshot
 from app.services.ai_pivot_advisor_service import generate_pivot_recommendations
 from app.services.plan_year_template_service import (
@@ -46,14 +47,19 @@ def sp_api_exec_snapshot():
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
 
 @app_bp.route("/sp/api/ai-pivot", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_ai_pivot():
     if not _can():
         return jsonify({"error": "yetki yok"}), 403
     use_llm = (request.args.get("use_llm", "1") in ("1", "true"))
     try:
-        result = generate_pivot_recommendations(current_user.tenant_id, use_llm=use_llm)
-        return jsonify({"success": True, **result})
+        result = generate_pivot_recommendations(
+            current_user.tenant_id, use_llm=use_llm, user_id=current_user.id,
+        )
+        # Kota aşıldı ise 429 (rate limit) status
+        status = 429 if result.get("source") == "heuristic_quota" else 200
+        return jsonify({"success": True, **result}), status
     except Exception as e:
         current_app.logger.error(f"ai_pivot error: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
@@ -89,6 +95,7 @@ def sp_api_template_get(code):
 
 
 @app_bp.route("/sp/api/templates/<code>/apply", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_template_apply(code):
     if not _can():

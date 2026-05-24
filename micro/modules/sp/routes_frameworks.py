@@ -7,6 +7,7 @@ from flask import render_template, jsonify, request, current_app, Response
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from app.extensions import csrf
 from extensions import db
 from app.models.strategy_frameworks import (
     BlueOceanCanvas, BlueOceanFactor, BlueOceanERRC, VRIOResource,
@@ -71,6 +72,7 @@ def sp_api_bo_canvases():
 
 
 @app_bp.route("/sp/api/blue-ocean/canvases", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_bo_canvas_create():
     if not _can():
@@ -110,6 +112,7 @@ def sp_api_bo_canvas_detail(cid):
 
 
 @app_bp.route("/sp/api/blue-ocean/canvases/<int:cid>/factors", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_bo_factor_add(cid):
     if not _can():
@@ -133,6 +136,7 @@ def sp_api_bo_factor_add(cid):
 
 
 @app_bp.route("/sp/api/blue-ocean/canvases/<int:cid>/errc", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_bo_errc_add(cid):
     if not _can():
@@ -181,6 +185,7 @@ def sp_api_vrio_list():
 
 
 @app_bp.route("/sp/api/vrio", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_vrio_create():
     if not _can():
@@ -206,6 +211,7 @@ def sp_api_vrio_create():
 
 
 @app_bp.route("/sp/api/vrio/<int:rid>", methods=["PATCH"])
+@csrf.exempt
 @login_required
 def sp_api_vrio_update(rid):
     if not _can():

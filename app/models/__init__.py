@@ -61,6 +61,8 @@ from app.models.replan_trigger import ReplanTrigger, ReplanTriggerEvent  # noqa:
 from app.models.strategy_frameworks import (  # noqa: E402
     BlueOceanCanvas, BlueOceanFactor, BlueOceanERRC, VRIOResource,
 )
+from app.models.llm_usage import LLMUsageLog, LLMQuotaOverride  # noqa: E402
+from app.models.tenant_llm_config import TenantLLMConfig  # noqa: E402
 from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis  # noqa: E402
 from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity  # noqa: E402
 from app.models.portfolio_project import (  # noqa: E402

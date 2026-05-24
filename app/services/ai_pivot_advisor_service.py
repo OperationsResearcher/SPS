@@ -1,38 +1,34 @@
-"""AI Strategy Pivot Advisor (Önerilen Hamle #2 — Ö7 muadili).
+"""AI Strategy Pivot Advisor — LLM Gateway'i kullanır.
 
-Tenant snapshot'ı + son trigger event'leri + senaryolar üzerinden Gemini'ye
-"strateji pivot" önerileri sordurur. API key yoksa heuristic fallback.
+Politika: docs/AI-POLITIKASI.md
 """
 from __future__ import annotations
 
-import os
 import json
 from typing import Optional
 
 from flask import current_app
 
 from app.services.exec_dashboard_service import build_exec_snapshot
+from app.services.llm_gateway import call_llm
 from app.models.replan_trigger import ReplanTriggerEvent
 
 
-def _build_prompt(snapshot: dict, recent_events: list) -> str:
-    return f"""Sen kıdemli bir strateji danışmanısın. Aşağıda bir kurumun GÜNCEL strateji yürütme verileri var.
-Görevin: 3-5 somut PIVOT ÖNERİSİ üret. Her öneri için:
-- pivot_type: (refocus / sunset / accelerate / new_initiative / risk_mitigation)
-- title: kısa Türkçe başlık
-- rationale: hangi metrikten kaynaklı (1-2 cümle)
-- action: somut aksiyon (1 cümle)
-- priority: critical / high / medium
-- timeframe: bu çeyrek / önümüzdeki çeyrek / yıl sonu
+SYSTEM_PROMPT = (
+    "Sen kıdemli bir strateji danışmanısın. "
+    "Aşağıdaki kurum verilerine bakarak 3-5 somut PIVOT ÖNERİSİ üret. "
+    "YALNIZCA geçerli JSON döndür, başka bir şey yazma. "
+    "Her öneri için: pivot_type (refocus/sunset/accelerate/new_initiative/risk_mitigation), "
+    "title, rationale, action, priority (critical/high/medium), timeframe."
+)
 
-YALNIZCA geçerli JSON döndür: {{"recommendations": [...]}}
 
---- KURUM VERİLERİ ---
-{json.dumps(snapshot, ensure_ascii=False, indent=2)}
-
---- SON 7 GÜN TRIGGER OLAYLARI ({len(recent_events)} adet) ---
-{json.dumps(recent_events[:10], ensure_ascii=False, indent=2)}
-"""
+def _build_user_prompt(snapshot: dict, events: list) -> str:
+    return (
+        f"## KURUM VERİLERİ\n```json\n{json.dumps(snapshot, ensure_ascii=False, indent=2)}\n```\n\n"
+        f"## SON {len(events)} TRIGGER OLAYI\n```json\n{json.dumps(events[:10], ensure_ascii=False, indent=2)}\n```\n\n"
+        'Format: {"recommendations": [{"pivot_type":"...","title":"...","rationale":"...","action":"...","priority":"...","timeframe":"..."}]}'
+    )
 
 
 def _heuristic_recommendations(snapshot: dict) -> list[dict]:
@@ -42,8 +38,8 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "refocus",
             "title": "Stratejik odak daraltma",
-            "rationale": f"KPI'ların yalnızca %{kpi.get('on_target_pct',0):.0f}'ı hedef üstünde — kaynaklar dağılmış olabilir.",
-            "action": "En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause veya sunset adayı yap.",
+            "rationale": f"KPI'ların yalnızca %{kpi.get('on_target_pct', 0):.0f}'ı hedef üstünde.",
+            "action": "En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause/sunset adayı yap.",
             "priority": "high",
             "timeframe": "bu çeyrek",
         })
@@ -52,8 +48,8 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "risk_mitigation",
             "title": "Faaliyet kapasite revizyonu",
-            "rationale": f"Faaliyetlerin %{(act['overdue']/max(act['total'],1))*100:.0f}'ı gecikmiş — yürütme darboğazı var.",
-            "action": "Kapasite planlaması ve sorumlu yeniden atama; gerçekçi end_date güncellemeleri.",
+            "rationale": f"Faaliyetlerin %{(act['overdue'] / max(act['total'], 1)) * 100:.0f}'ı gecikmiş.",
+            "action": "Kapasite planlaması + sorumlu yeniden atama.",
             "priority": "high",
             "timeframe": "önümüzdeki çeyrek",
         })
@@ -62,8 +58,8 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "risk_mitigation",
             "title": "Kritik risk mitigasyon planı",
-            "rationale": f"{risk['critical']} kritik risk açık — strateji çıktılarını tehdit ediyor.",
-            "action": "Her kritik risk için sahibi atanmış mitigation initiative oluştur.",
+            "rationale": f"{risk['critical']} kritik risk açık.",
+            "action": "Her kritik risk için sahipli mitigation initiative aç.",
             "priority": "critical",
             "timeframe": "bu çeyrek",
         })
@@ -71,20 +67,20 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if anom.get("high", 0) > 0:
         recs.append({
             "pivot_type": "new_initiative",
-            "title": "Anomali kök neden analizi başlatılmalı",
-            "rationale": f"{anom['high']} yüksek-severity KPI anomalisi tespit edildi.",
-            "action": "A3 raporu açıp 5-neden analizi yap; gerekirse hedef revizyonu öner.",
+            "title": "Anomali kök neden analizi",
+            "rationale": f"{anom['high']} yüksek-severity KPI anomalisi.",
+            "action": "A3 raporu + 5-neden analizi başlat.",
             "priority": "medium",
             "timeframe": "bu çeyrek",
         })
     init = snapshot.get("initiative", {})
     in_progress = init.get("by_status", {}).get("in_progress", {})
-    if in_progress and in_progress.get("avg_progress", 0) < 30 and snapshot.get("year", 0) > 0:
+    if in_progress and in_progress.get("avg_progress", 0) < 30:
         recs.append({
             "pivot_type": "accelerate",
             "title": "Devam eden initiative'lerde hız problemi",
-            "rationale": f"Devam eden {in_progress['count']} initiative'in ortalama ilerlemesi %{in_progress['avg_progress']:.0f}.",
-            "action": "Sponsor seviyesinde haftalık 30dk standup ve blocker eskalasyonu başlat.",
+            "rationale": f"{in_progress['count']} initiative ortalama %{in_progress['avg_progress']:.0f}.",
+            "action": "Haftalık 30dk sponsor standup + blocker eskalasyonu.",
             "priority": "high",
             "timeframe": "önümüzdeki çeyrek",
         })
@@ -92,40 +88,33 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "accelerate",
             "title": "Genel durum sağlıklı — momentum koru",
-            "rationale": "Kritik gösterge yeşil; bu fırsatı yeni bir stratejik bahis için değerlendir.",
-            "action": "Bir sonraki çeyreğe küçük bir 'innovation initiative' ekle.",
+            "rationale": "Kritik gösterge yeşil.",
+            "action": "Bir sonraki çeyreğe küçük 'innovation initiative' ekle.",
             "priority": "medium",
             "timeframe": "önümüzdeki çeyrek",
         })
     return recs
 
 
-def _call_gemini(prompt: str) -> Optional[str]:
-    api_key = (
-        (current_app.config.get("GEMINI_API_KEY") if current_app else None)
-        or os.environ.get("GEMINI_API_KEY")
-        or os.environ.get("GOOGLE_API_KEY")
-    )
-    if not api_key:
-        return None
+def _parse_llm_json(text: str) -> Optional[list]:
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("```")[1]
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:]
+    cleaned = cleaned.strip().rstrip("`").strip()
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        model_name = (
-            (current_app.config.get("GEMINI_MODEL") if current_app else None)
-            or os.environ.get("GEMINI_MODEL")
-            or "gemini-2.0-flash"
-        )
-        m = genai.GenerativeModel(model_name)
-        resp = m.generate_content(prompt)
-        return getattr(resp, "text", None)
+        parsed = json.loads(cleaned)
+        return parsed.get("recommendations")
     except Exception as e:
         if current_app:
-            current_app.logger.warning(f"ai_pivot gemini error: {e}")
+            current_app.logger.warning(f"[ai_pivot] parse error: {e}")
         return None
 
 
-def generate_pivot_recommendations(tenant_id: int, use_llm: bool = True) -> dict:
+def generate_pivot_recommendations(
+    tenant_id: int, use_llm: bool = True, user_id: Optional[int] = None,
+) -> dict:
     snapshot = build_exec_snapshot(tenant_id)
     events = (
         ReplanTriggerEvent.query
@@ -136,33 +125,40 @@ def generate_pivot_recommendations(tenant_id: int, use_llm: bool = True) -> dict
     )
     event_dicts = [e.to_dict() for e in events]
 
-    recommendations = []
-    source = "heuristic"
-
+    llm_result = {"text": None, "source": "no_provider"}
     if use_llm:
-        text_resp = _call_gemini(_build_prompt(snapshot, event_dicts))
-        if text_resp:
-            try:
-                cleaned = text_resp.strip()
-                if cleaned.startswith("```"):
-                    cleaned = cleaned.split("```")[1]
-                    if cleaned.startswith("json"):
-                        cleaned = cleaned[4:]
-                parsed = json.loads(cleaned.strip())
-                recs = parsed.get("recommendations") or []
-                if recs:
-                    recommendations = recs
-                    source = "llm"
-            except Exception as e:
-                if current_app:
-                    current_app.logger.warning(f"ai_pivot parse error: {e}")
+        llm_result = call_llm(
+            tenant_id=tenant_id,
+            endpoint="ai_pivot",
+            user_id=user_id,
+            system_prompt=SYSTEM_PROMPT,
+            prompt=_build_user_prompt(snapshot, event_dicts),
+            max_output_tokens=2000,
+        )
+
+    recommendations = []
+    final_source = "heuristic"
+
+    if llm_result.get("text"):
+        parsed = _parse_llm_json(llm_result["text"])
+        if parsed:
+            recommendations = parsed
+            final_source = "llm"
 
     if not recommendations:
         recommendations = _heuristic_recommendations(snapshot)
+        # llm_result.source: "no_provider" / "heuristic_quota" / "error"
+        final_source = llm_result.get("source") or "heuristic"
 
     return {
         "snapshot": snapshot,
         "recommendations": recommendations,
-        "source": source,
+        "source": final_source,
         "event_count": len(event_dicts),
+        "usage": llm_result.get("usage") or {},
+        "provider": llm_result.get("provider"),
+        "model": llm_result.get("model"),
+        "key_source": llm_result.get("key_source"),  # tenant_byok | system
+        "quota": llm_result.get("quota"),
+        "quota_summary": llm_result.get("quota_summary"),
     }
