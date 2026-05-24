@@ -3,6 +3,71 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-125 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
+
+**Görev:** Opsiyonel 2FA UI + challenge 500 hata fix
+**Modül:** app/routes/totp.py, ui/templates/platform/auth/, ui/static/platform/js/, requirements.txt
+**Durum:** ✅ Tamamlandı (`claude/2fa-profil-uygu` → main merge `1bd5b0f`)
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/routes/totp.py` → 2 yeni JSON endpoint (`/2fa/status`, `/2fa/init`) + template path fix
+- `ui/templates/platform/auth/profil.html` → "İki Faktörlü Kimlik Doğrulama" kartı + 3 modal (kurulum/backup/disable)
+- `ui/templates/platform/auth/totp_challenge.html` → **YENİ** standalone challenge sayfası (login.html kalıbı)
+- `ui/static/platform/js/twofa.js` → **YENİ** modal yönetimi + AJAX akışı
+- `requirements.txt` → `pyotp>=2.9`, `qrcode>=8.0` eklendi
+
+### Yapılan İşlem
+2FA backend tam hazırdı (model + 4 endpoint), eksik olan kullanıcının erişebileceği UI'ydı. Profil sayfasına "Tamamen isteğe bağlıdır" notlu kart eklendi. Akış: Etkinleştir → QR + 6 haneli kod modal'ı → doğrulama → backup kodlar modal'ı (kopyala butonu). Çalışan kullanıcı için "Devre Dışı Bırak" şifre confirm ile. Login sonrası `/2fa/challenge` sayfası 500 veriyordu çünkü template eksikti — eklendi (Authenticator kod veya yedek kod modu, autocomplete=one-time-code, 6 hane dolunca otomatik submit). qrcode + pyotp paketleri kuruldu.
+
+### Notlar
+Profil sayfası UI Kılavuzu §1 prensiplerine uyumlu (tek odak, semantic color, hover transition'ları). 2FA opsiyonel — kullanıcı istediği zaman kapat-aç yapabilir. Backup kodlar bir kez kullanılır, kayboldukları takdirde admin manuel devre dışı bırakabilir (DB üzerinden `totp_enabled=False`).
+
+---
+
+## TASK-124 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
+
+**Görev:** /admin/users sayfası iyileştirmesi — e-posta sığma + kurum filtresi + sütun sıralama
+**Modül:** ui/templates/platform/admin/users.html, ui/static/platform/js/admin.js
+**Durum:** ✅ Tamamlandı (`claude/fix-admin-users-layout` → main merge `948a2a0`)
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/admin/users.html` → `table-layout:fixed` + colgroup, ellipsis + title tooltip, kurum filtresi dropdown, butonlar icon-only, sortable th'ler, data-sort-* attribute'ları
+- `ui/static/platform/js/admin.js` → tenant filtresi + "Temizle" + sonuç sayacı + 5 sütunda toggle asc/desc sıralama (ikon göstergesi)
+
+### Yapılan İşlem
+3 sprint commit'i:
+1. **e-posta sığma + kurum filtresi** (`dc021be`) — uzun e-posta tabloyu taşırıyordu. table-layout:fixed + ellipsis; super-admin için ayrı "Kurum Filtresi" dropdown
+2. **butonlar icon-only** (`0e8c165`) — Düzenle/Pasife Al/Aktifleştir butonları icon-only oldu (sığma sorunu), title attribute ile tooltip
+3. **sütun başlığına sıralama** (`cc38ea0`) — 5 sütunda click → asc(▲) / desc(▼), aktif kolon indigo arka plan, anlamsal sıralama (rol/tenant null → 'zzz' en alta, durum 0_aktif → 1_pasif)
+
+### Notlar
+Tamamen client-side sıralama (sayfa yenilemez). Filtre + sıralama beraber çalışır. Tenant'a göre filtre eklenmesi ileride 1000+ kullanıcılı super-admin görünümünü kurtaracak. Sıralama state'i sayfa yenilenince sıfırlanır — kalıcı tutulması gerekirse localStorage'a eklenebilir.
+
+---
+
+## TASK-123 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
+
+**Görev:** Tenant kurulum rehberi + tanıtım PDF + Playwright screenshot altyapısı
+**Modül:** docs/test/, scripts/docs/, requirements-ai.txt
+**Durum:** ✅ Tamamlandı (`claude/tenant-kurulum-rehberi` → main merge `c5ef452`)
+
+### Eklenen Dosyalar
+- `docs/test/tenant_kurulum_rehberi.md` (~1000 satır) — 17 adımlık lineer kurulum: profil → kurum → strateji → süreç → KPI → kullanıcılar → AI + bildirim
+- `docs/test/tenant_kurulum_rehberi.pdf` (2.6 MB) — kapaklı, screenshot'lı, sayfa numaralı
+- `docs/test/kokpitimtanitim.pdf` (3.6 MB) — galeri + 8 başlık altı screenshot
+- `docs/test/screenshots/` — 19 PNG (tomofil tenant'tan otomatik)
+- `scripts/docs/take_screenshots.py` — Playwright + login + 20 sayfa
+- `scripts/docs/build_tanitim_pdf.py` — generic md→PDF, dosya adına göre kapak + screenshot eşlemesi
+- `requirements-ai.txt` → playwright, weasyprint, markdown, pygments
+
+### Yapılan İşlem
+Tomofil tenant'ında Playwright/headless Chromium ile 19 sayfa otomatik screenshot. WeasyPrint Windows'ta GTK3 lib gerektirdiği için PDF üretimi Playwright/Chromium'a fallback edildi (chromium pip-system-certs + NODE_OPTIONS=--use-system-ca ile Norton SSL aşıldı). Generic builder herhangi bir md'yi PDF'e çevirir.
+
+### Notlar
+İlk çalıştırmada ~150 MB chromium binary indi (~5 dk). Sonraki build'ler cache'ten anında. Yeni sayfa eklediğimizde scripts/docs/take_screenshots.py'in PAGES listesine eklenmeli.
+
+---
+
 ## TASK-122 | 2026-05-24 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
 
 **Görev:** UX test dokümantasyonu — 3 kapsamlı kılavuz belgesi
