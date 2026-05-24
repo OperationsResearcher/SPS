@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İki Faktörlü Doğrulama — Kokpitim</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sidebar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/app.css') }}">
+</head>
+<body style="min-height:100vh; background:linear-gradient(135deg,#eef2ff 0%,#f8fafc 60%,#ede9fe 100%); display:flex; align-items:center; justify-content:center; padding:16px;">
+
+  <div style="width:100%; max-width:420px; padding:32px; background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(15,23,42,0.1);">
+
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="width:64px; height:64px; margin:0 auto 12px; background:#eef2ff; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+        <i class="fas fa-shield-alt" style="font-size:28px; color:#4f46e5;"></i>
+      </div>
+      <h2 style="margin:0 0 4px; color:#0f172a; font-size:20px;">İki Faktörlü Doğrulama</h2>
+      <p style="margin:0; color:#64748b; font-size:13px;">
+        Telefonunuzdaki Authenticator uygulamasından 6 haneli kodu girin.
+      </p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+      <div style="padding:10px 12px; margin-bottom:12px; border-radius:6px; font-size:13px;
+                  background:{{ '#fee2e2' if category in ('danger','error') else '#dbeafe' }};
+                  color:{{ '#991b1b' if category in ('danger','error') else '#1e40af' }};
+                  border-left:3px solid {{ '#dc2626' if category in ('danger','error') else '#3b82f6' }};">
+        <i class="fas fa-exclamation-triangle"></i> {{ msg }}
+      </div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" id="totp-form" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div id="code-mode">
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:500;">
+          Doğrulama Kodu
+        </label>
+        <input type="text" name="code" id="code-input"
+               class="mc-form-input"
+               maxlength="6" inputmode="numeric" pattern="[0-9]*"
+               autocomplete="one-time-code" autofocus
+               placeholder="123456"
+               style="width:100%; font-size:22px; letter-spacing:6px; text-align:center; padding:12px;">
+      </div>
+
+      <div id="backup-mode" style="display:none;">
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:500;">
+          Yedek Kod
+        </label>
+        <input type="text" id="backup-input"
+               class="mc-form-input" autocomplete="off"
+               placeholder="örn: ABCD-EFGH"
+               style="width:100%; font-size:16px; text-align:center; padding:12px; font-family:monospace;">
+        <input type="hidden" name="is_backup" id="is-backup" value="0">
+      </div>
+
+      <button type="submit" class="mc-btn mc-btn-primary" style="width:100%; margin-top:16px; padding:12px; font-size:14px;">
+        <i class="fas fa-check"></i> Doğrula ve Giriş Yap
+      </button>
+    </form>
+
+    <div style="text-align:center; margin-top:16px; font-size:13px;">
+      <a href="#" id="toggle-mode" style="color:#4f46e5; text-decoration:none;">
+        <span id="toggle-to-backup">Telefonum yanımda yok — yedek kod kullan</span>
+        <span id="toggle-to-code" style="display:none;">← Doğrulama kodu kullan</span>
+      </a>
+    </div>
+
+    <div style="text-align:center; margin-top:12px; font-size:12px; color:#94a3b8;">
+      <a href="{{ url_for('public_login') }}" style="color:#94a3b8;">← Farklı bir hesapla giriş yap</a>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const form       = document.getElementById("totp-form");
+  const codeMode   = document.getElementById("code-mode");
+  const backupMode = document.getElementById("backup-mode");
+  const codeInput  = document.getElementById("code-input");
+  const backupInp  = document.getElementById("backup-input");
+  const isBackup   = document.getElementById("is-backup");
+  const toggleLink = document.getElementById("toggle-mode");
+  const toBackup   = document.getElementById("toggle-to-backup");
+  const toCode     = document.getElementById("toggle-to-code");
+
+  let useBackup = false;
+  toggleLink.addEventListener("click", function(e){
+    e.preventDefault();
+    useBackup = !useBackup;
+    if (useBackup) {
+      codeMode.style.display = "none";
+      backupMode.style.display = "block";
+      backupInp.focus();
+      toBackup.style.display = "none";
+      toCode.style.display = "";
+      codeInput.name = "";
+      backupInp.name = "code";
+      isBackup.value = "1";
+    } else {
+      codeMode.style.display = "block";
+      backupMode.style.display = "none";
+      codeInput.focus();
+      toBackup.style.display = "";
+      toCode.style.display = "none";
+      codeInput.name = "code";
+      backupInp.name = "";
+      isBackup.value = "0";
+    }
+  });
+
+  // 6 haneli kod tamamlanınca otomatik submit
+  codeInput.addEventListener("input", function(){
+    this.value = this.value.replace(/\D/g, "");
+    if (this.value.length === 6) form.submit();
+  });
+})();
+</script>
+</body>
+</html>

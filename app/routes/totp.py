@@ -162,7 +162,7 @@ def totp_challenge():
 
         if not ok:
             flash("Doğrulama kodu hatalı.", "danger")
-            return render_template("auth/totp_challenge.html")
+            return render_template("platform/auth/totp_challenge.html")
 
         # Login complete
         session.pop("_pending_2fa_user_id", None)
@@ -177,4 +177,4 @@ def totp_challenge():
             pass
         return redirect(url_for("app_bp.launcher"))
 
-    return render_template("auth/totp_challenge.html")
+    return render_template("platform/auth/totp_challenge.html")
