@@ -1,0 +1,231 @@
+{% extends "platform/base.html" %}
+{% block title %}AI Ayarları — Kokpitim{% endblock %}
+{% block page_title %}Yapay Zeka Yapılandırması{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;"
+     id="ai-cfg"
+     data-get-url="{{ url_for('app_bp.sp_api_ai_config_get') }}"
+     data-save-url="{{ url_for('app_bp.sp_api_ai_config_save') }}"
+     data-test-url="{{ url_for('app_bp.sp_api_ai_config_test') }}"
+     data-delete-url="{{ url_for('app_bp.sp_api_ai_config_delete') }}">
+
+  <div class="mc-page-header" style="margin-bottom: var(--space-6);">
+    <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1);">
+      <i class="fas fa-robot" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+      Yapay Zeka Yapılandırması
+    </h2>
+    <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;">
+      Kendi API anahtarınızı bağlayın (BYOK) veya Kokpitim'in ücretsiz sistem AI'sını kullanın.
+    </p>
+  </div>
+
+  {# ── Mod seçimi ────────────────────────────────────────────────────── #}
+  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4);">
+    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">AI Kaynak Modu</h3>
+
+    <label style="display:block; padding: var(--space-3); border:2px solid var(--border-default); border-radius:8px; margin-bottom:var(--space-2); cursor:pointer;" data-mode-label="system">
+      <input type="radio" name="ai-mode" value="system" id="mode-system">
+      <strong>Kokpitim sistem AI'sı (ücretsiz, kotalı)</strong>
+      <div style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-1); margin-left:22px;">
+        Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok.
+      </div>
+    </label>
+
+    <label style="display:block; padding: var(--space-3); border:2px solid var(--border-default); border-radius:8px; cursor:pointer;" data-mode-label="byok">
+      <input type="radio" name="ai-mode" value="byok" id="mode-byok">
+      <strong>Kendi API anahtarımı kullan (sınırsız, kendi faturam)</strong>
+      <div style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-1); margin-left:22px;">
+        Gemini, OpenAI, Anthropic, Groq veya OpenRouter — kendi sağlayıcınız, kendi faturanız.
+      </div>
+    </label>
+  </div>
+
+  {# ── BYOK alanları (sadece byok seçilince görünür) ─────────────────── #}
+  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4); display:none;" id="byok-fields">
+    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">API Anahtarı Bilgileri</h3>
+
+    <div style="display:grid; gap: var(--space-4);">
+      <div>
+        <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
+          Sağlayıcı
+        </label>
+        <select class="mc-input" id="byok-provider" style="width:100%;">
+          <option value="gemini">Google Gemini</option>
+          <option value="openai">OpenAI (ChatGPT)</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="groq">Groq (en hızlı, ücretsiz katman geniş)</option>
+          <option value="openrouter">OpenRouter (200+ model)</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
+          Model
+        </label>
+        <input type="text" class="mc-input" id="byok-model" placeholder="gemini-2.0-flash" style="width:100%;">
+        <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-1);">
+          Boş bırakırsan sağlayıcının varsayılan modeli kullanılır.
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
+          API Anahtarı
+        </label>
+        <input type="password" class="mc-input" id="byok-key" placeholder="••••••••" style="width:100%; font-family:monospace;">
+        <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-1);">
+          Şifreli saklanır (Fernet). Görüntülenmez. Değiştirmek için yeni anahtar gir.
+        </div>
+      </div>
+
+      <div id="base-url-row" style="display:none;">
+        <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
+          Base URL <span style="color: var(--text-disabled);">(opsiyonel)</span>
+        </label>
+        <input type="text" class="mc-input" id="byok-base-url" placeholder="https://openrouter.ai/api/v1" style="width:100%;">
+      </div>
+
+      <div style="border-top:1px solid var(--border-default); padding-top: var(--space-4);">
+        <label style="display:flex; align-items:center; gap: var(--space-2); cursor:pointer;">
+          <input type="checkbox" id="byok-pii" checked>
+          <span style="font-size: var(--text-md);">KVKK — Hassas veri otomatik maskelensin (TC kimlik, IBAN vb.)</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  {# ── Test sonucu ─────────────────────────────────────────────────────── #}
+  <div id="test-result" style="display:none; margin-bottom: var(--space-4);"></div>
+
+  {# ── Butonlar ────────────────────────────────────────────────────────── #}
+  <div style="display:flex; gap: var(--space-3); flex-wrap:wrap;">
+    <button class="mc-btn mc-btn-primary" id="btn-save">
+      <i class="fas fa-save"></i> Kaydet
+    </button>
+    <button class="mc-btn mc-btn-secondary" id="btn-test" style="display:none;">
+      <i class="fas fa-vial"></i> Anahtarı Test Et
+    </button>
+    <button class="mc-btn mc-btn-secondary" id="btn-delete" style="display:none; margin-left:auto; color: var(--color-danger);">
+      <i class="fas fa-trash"></i> BYOK Anahtarını Sil
+    </button>
+  </div>
+
+  {# ── Son test bilgisi ────────────────────────────────────────────────── #}
+  <div id="last-test" style="margin-top: var(--space-6); padding: var(--space-3); background: var(--surface-hover); border-radius: 6px; font-size: var(--text-sm); color: var(--text-muted); display:none;"></div>
+</div>
+
+<script>
+(function(){
+  const r = document.getElementById('ai-cfg');
+  let currentCfg = null;
+
+  function setMode(mode) {
+    document.getElementById('mode-system').checked = (mode === 'system');
+    document.getElementById('mode-byok').checked   = (mode === 'byok');
+    document.getElementById('byok-fields').style.display = (mode === 'byok') ? 'block' : 'none';
+    document.getElementById('btn-test').style.display    = (mode === 'byok') ? 'inline-flex' : 'none';
+    document.getElementById('btn-delete').style.display  = (mode === 'byok' && currentCfg && currentCfg.api_key_masked) ? 'inline-flex' : 'none';
+
+    document.querySelectorAll('[data-mode-label]').forEach(el => {
+      const active = el.dataset.modeLabel === mode;
+      el.style.borderColor = active ? 'var(--color-primary)' : 'var(--border-default)';
+      el.style.background = active ? 'var(--color-primary-soft)' : 'transparent';
+    });
+  }
+
+  function updateBaseUrl() {
+    const p = document.getElementById('byok-provider').value;
+    document.getElementById('base-url-row').style.display = (p === 'openrouter') ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('input[name="ai-mode"]').forEach(el =>
+    el.addEventListener('change', e => setMode(e.target.value))
+  );
+  document.getElementById('byok-provider').addEventListener('change', updateBaseUrl);
+
+  async function load() {
+    const res = await fetch(r.dataset.getUrl);
+    const j = await res.json();
+    currentCfg = j.config;
+    if (j.config && j.config.is_active) {
+      setMode('byok');
+      document.getElementById('byok-provider').value = j.config.provider;
+      document.getElementById('byok-model').value = j.config.model || '';
+      document.getElementById('byok-base-url').value = j.config.base_url || '';
+      document.getElementById('byok-pii').checked = j.config.pii_mask_enabled;
+      document.getElementById('byok-key').placeholder = j.config.api_key_masked
+        ? `Mevcut: ${j.config.api_key_masked} (yeni anahtar girin ya da boş bırakın)`
+        : 'API anahtarı';
+      if (j.config.last_test_at) {
+        const lt = document.getElementById('last-test');
+        const okIcon = j.config.last_test_status === 'ok'
+          ? '<i class="fas fa-check-circle" style="color: var(--color-success);"></i>'
+          : '<i class="fas fa-times-circle" style="color: var(--color-danger);"></i>';
+        lt.innerHTML = `Son test: ${new Date(j.config.last_test_at).toLocaleString('tr-TR')} ${okIcon} ${j.config.last_test_message || ''}`;
+        lt.style.display = 'block';
+      }
+    } else {
+      setMode('system');
+    }
+    updateBaseUrl();
+  }
+
+  document.getElementById('btn-save').onclick = async () => {
+    const mode = document.querySelector('input[name="ai-mode"]:checked').value;
+    const payload = {
+      is_active: mode === 'byok',
+      provider: document.getElementById('byok-provider').value,
+      model: document.getElementById('byok-model').value,
+      base_url: document.getElementById('byok-base-url').value,
+      api_key: document.getElementById('byok-key').value,
+      pii_mask_enabled: document.getElementById('byok-pii').checked,
+    };
+    const res = await fetch(r.dataset.saveUrl, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+    const j = await res.json();
+    if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+    Swal.fire({toast:true, position:'top-end', icon:'success',
+               title: 'Kaydedildi', showConfirmButton:false, timer: 2500});
+    document.getElementById('byok-key').value = '';
+    load();
+  };
+
+  document.getElementById('btn-test').onclick = async () => {
+    const btn = document.getElementById('btn-test');
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test ediliyor…';
+    const res = await fetch(r.dataset.testUrl, {method: 'POST'});
+    const j = await res.json();
+    btn.disabled = false; btn.innerHTML = orig;
+    const box = document.getElementById('test-result');
+    if (j.success) {
+      box.className = 'mc-alert mc-alert-success';
+      box.innerHTML = `<i class="fas fa-check-circle"></i> Bağlantı başarılı. Yanıt: <code>${j.message}</code> · ${j.tokens_used || 0} token kullanıldı.`;
+    } else {
+      box.className = 'mc-alert mc-alert-error';
+      box.innerHTML = `<i class="fas fa-times-circle"></i> Test başarısız: ${j.message}`;
+    }
+    box.style.padding = 'var(--space-3)';
+    box.style.display = 'block';
+  };
+
+  document.getElementById('btn-delete').onclick = async () => {
+    const ok = await Swal.fire({
+      title: 'BYOK anahtarını sil?', text: 'Tenant tekrar sistem AI\'sına döner.',
+      icon: 'warning', showCancelButton: true,
+      confirmButtonText: 'Sil', cancelButtonText: 'İptal',
+    }).then(r => r.isConfirmed);
+    if (!ok) return;
+    await fetch(r.dataset.deleteUrl, {method: 'DELETE'});
+    load();
+    Swal.fire({toast:true, position:'top-end', icon:'info',
+               title: 'BYOK anahtarı silindi', showConfirmButton:false, timer: 2500});
+  };
+
+  load();
+})();
+</script>
+{% endblock %}

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-AI Coach Servisi - Gemini API ile stratejik performans analizi.
-Skor motoru verilerini (vision_score, strateji/süreç/PG skorları ve ağırlıklar) analiz eder.
+"""AI Coach Servisi — LLM Gateway üzerinden çalışır.
+
+Politika: docs/AI-POLITIKASI.md
 """
 from typing import Dict, Any, Optional
 
@@ -15,136 +14,116 @@ Görevin:
 4. Önerileri numaralı (1., 2., 3.) ve uygulanabilir şekilde yaz."""
 
 
-def analyze_strategic_performance(data: Dict[str, Any]) -> Dict[str, Any]:
+def analyze_strategic_performance(
+    data: Dict[str, Any],
+    tenant_id: Optional[int] = None,
+    user_id: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Skor motoru çıktısını analiz eder.
+
+    tenant_id verilmezse heuristic mod (kota gerek yok, fallback metin).
+    Verilirse LLM Gateway üzerinden çağrılır (BYOK ya da sistem key).
     """
-    Skor motoru çıktısını Gemini ile analiz eder; strateji danışmanı rolünde
-    yüksek ağırlık / düşük puan alanları ve 3 aksiyon önerisi döner.
+    user_content = _build_user_prompt(data)
 
-    Args:
-        data: vision_score, ana_stratejiler (ad, score, agirlik, vizyona_katki),
-              surecler (ad, score, agirlik?), performans_gostergeleri (ad, score, surec_id, agirlik?),
-              as_of_date vb. içeren JSON.
-
-    Returns:
-        {
-            'success': bool,
-            'analysis_markdown': str,   # Gemini'nin Markdown yanıtı
-            'error': str | None
-        }
-    """
-    try:
-        from flask import current_app
-        api_key = current_app.config.get('GEMINI_API_KEY') if current_app else None
-        if not api_key:
-            import os
-            api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
-        if not api_key:
-            return {
-                'success': False,
-                'analysis_markdown': None,
-                'error': 'GEMINI_API_KEY veya GOOGLE_API_KEY .env dosyasında tanımlı değil.',
-                'usage': None,
-            }
-
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        # Model: .env'de GEMINI_MODEL varsa onu kullan; yoksa sirayla dene (gemini-1.5-flash v1beta'da 404 verebiliyor)
-        model_name = None
-        if current_app:
-            model_name = (current_app.config.get('GEMINI_MODEL') or '').strip() or None
-        if not model_name:
-            import os
-            model_name = (os.environ.get('GEMINI_MODEL') or '').strip() or None
-        candidates = [model_name] if model_name else ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-pro']
-        user_content = _build_user_prompt(data)
-        full_prompt = SYSTEM_PROMPT + '\n\n---\n\n' + user_content
-        response = None
-        last_error = None
-        for candidate in candidates:
-            if not candidate:
-                continue
-            try:
-                m = genai.GenerativeModel(candidate)
-                try:
-                    response = m.generate_content(
-                        full_prompt,
-                        generation_config=genai.types.GenerationConfig(
-                            temperature=0.3,
-                            max_output_tokens=8192,
-                        ),
-                    )
-                except (AttributeError, TypeError):
-                    response = m.generate_content(full_prompt)
-                if response and getattr(response, 'text', None):
-                    break
-            except Exception as e:
-                last_error = e
-                continue
-        text = response.text if response and getattr(response, 'text', None) else ''
-        if not text.strip():
-            err_msg = 'Gemini boş yanıt döndü.'
-            if last_error:
-                err_msg += ' Son hata: ' + str(last_error)
-            return {
-                'success': False,
-                'analysis_markdown': None,
-                'error': err_msg,
-                'usage': None,
-            }
-        usage = None
-        if response and hasattr(response, 'usage_metadata') and response.usage_metadata:
-            um = response.usage_metadata
-            usage = {
-                'prompt_token_count': getattr(um, 'prompt_token_count', None) or getattr(um, 'input_token_count', None),
-                'candidates_token_count': getattr(um, 'candidates_token_count', None) or getattr(um, 'output_token_count', None),
-                'total_token_count': getattr(um, 'total_token_count', None),
-            }
-            if usage['total_token_count'] is None and (usage['prompt_token_count'] or usage['candidates_token_count']):
-                p = usage['prompt_token_count'] or 0
-                c = usage['candidates_token_count'] or 0
-                usage['total_token_count'] = p + c
+    # tenant_id yoksa veya gateway yoksa — basit heuristic fallback
+    if not tenant_id:
         return {
-            'success': True,
-            'analysis_markdown': text.strip(),
-            'error': None,
-            'usage': usage,
+            "success": True,
+            "analysis_markdown": _heuristic_analysis(data),
+            "error": None,
+            "usage": None,
+            "source": "heuristic",
         }
-    except Exception as e:
+
+    from app.services.llm_gateway import call_llm
+    result = call_llm(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        endpoint="ai_coach",
+        system_prompt=SYSTEM_PROMPT,
+        prompt=user_content,
+        max_output_tokens=4000,
+    )
+
+    if result.get("text"):
         return {
-            'success': False,
-            'analysis_markdown': None,
-            'error': str(e),
-            'usage': None,
+            "success": True,
+            "analysis_markdown": result["text"].strip(),
+            "error": None,
+            "usage": result.get("usage"),
+            "source": "llm",
+            "provider": result.get("provider"),
+            "model": result.get("model"),
+            "key_source": result.get("key_source"),
+            "quota_summary": result.get("quota_summary"),
         }
+
+    # LLM yok / kota aşıldı / hata → heuristic
+    return {
+        "success": True,
+        "analysis_markdown": _heuristic_analysis(data),
+        "error": None,
+        "usage": result.get("usage"),
+        "source": result.get("source") or "heuristic",
+        "quota": result.get("quota"),
+        "quota_summary": result.get("quota_summary"),
+    }
+
+
+def _heuristic_analysis(data: Dict[str, Any]) -> str:
+    """LLM yokken döndürülecek basit Markdown rapor."""
+    vs = data.get("vision_score")
+    ana = sorted(
+        data.get("ana_stratejiler") or [],
+        key=lambda s: (s.get("agirlik", 0) * (100 - (s.get("score") or 100))),
+        reverse=True,
+    )[:3]
+    parts = [
+        "## Performans Analizi (Kural Motoru)",
+        f"**Vizyon puanı:** {vs}/100" if vs is not None else "",
+        "",
+        "### En yüksek ağırlık × düşük skor stratejiler",
+    ]
+    for i, s in enumerate(ana, 1):
+        parts.append(f"{i}. **{s.get('ad', f'Strateji {s.get(\"id\")}')}** — skor: {s.get('score', '-')}, ağırlık: {s.get('agirlik', '-')}")
+
+    parts += [
+        "",
+        "### Aksiyon Önerileri",
+        "1. Düşük skorlu yüksek ağırlık stratejilere bağlı süreçleri haftalık review'a al.",
+        "2. Bu stratejilerdeki KPI veri girişinin tamlığını kontrol et.",
+        "3. Sorumlu atanmamış faaliyetleri belirle ve sahip ata.",
+        "",
+        "_Not: LLM yapılandırılmamış. Detaylı analiz için tenant ayarlarından AI'yı etkinleştir._",
+    ]
+    return "\n".join(p for p in parts if p is not None)
 
 
 def _build_user_prompt(data: Dict[str, Any]) -> str:
-    """Skor motoru verisinden Gemini'ye gönderilecek metni oluşturur."""
     parts = []
-    parts.append('Aşağıdaki skor motoru çıktısını analiz et ve yukarıdaki görevi uygula.\n')
+    parts.append("Aşağıdaki skor motoru çıktısını analiz et ve yukarıdaki görevi uygula.\n")
     parts.append(f"**Vizyon puanı:** {data.get('vision_score')} / 100")
     parts.append(f"**Hesaplama tarihi:** {data.get('as_of_date', '-')}\n")
 
-    ana = data.get('ana_stratejiler') or []
+    ana = data.get("ana_stratejiler") or []
     if ana:
-        parts.append('### Ana stratejiler (ad, skor, ağırlık, vizyona katkı)')
-        for a in ana:
-            parts.append(f"- {a.get('ad')}: skor={a.get('score')}, ağırlık={a.get('agirlik')}, vizyona_katkı={a.get('vizyona_katki')}")
-        parts.append('')
+        parts.append("### Ana stratejiler (ad, skor, ağırlık, vizyona katkı)")
+        for s in ana:
+            parts.append(f"- {s.get('ad', '?')} | skor: {s.get('score', '-')} | ağırlık: {s.get('agirlik', '-')} | vizyon katkı: {s.get('vizyona_katki', '-')}")
+        parts.append("")
 
-    surecler = data.get('surecler') or []
-    if surecler:
-        parts.append('### Süreçler (ad, skor, ağırlık)')
-        for s in surecler:
-            parts.append(f"- {s.get('ad')}: skor={s.get('score')}, ağırlık={s.get('agirlik', '-')}")
-        parts.append('')
+    surec = data.get("surecler") or []
+    if surec:
+        parts.append("### Süreçler (ad, skor, ağırlık)")
+        for s in surec[:20]:
+            parts.append(f"- {s.get('ad', '?')} | skor: {s.get('score', '-')} | ağırlık: {s.get('agirlik', '-')}")
+        parts.append("")
 
-    pg_list = data.get('performans_gostergeleri') or []
-    if pg_list:
-        parts.append('### Performans göstergeleri (ad, skor, ağırlık)')
-        for p in pg_list:
-            parts.append(f"- {p.get('ad')}: skor={p.get('score')}, ağırlık={p.get('agirlik', '-')}")
-        parts.append('')
+    pg = data.get("performans_gostergeleri") or []
+    if pg:
+        parts.append("### Performans göstergeleri (ad, skor, süreç_id)")
+        for p in pg[:30]:
+            parts.append(f"- {p.get('ad', '?')} | skor: {p.get('score', '-')} | süreç: {p.get('surec_id', '-')}")
 
-    parts.append('Yukarıdaki verilere göre: (1) Ağırlığı yüksek ama puanı düşük süreç/PG\'leri tespit et, (2) En Düşük Efor / En Yüksek Etki ile 3 aksiyon öner. Yanıtını Türkçe Markdown ile yaz.')
-    return '\n'.join(parts)
+    return "\n".join(parts)

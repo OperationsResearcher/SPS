@@ -418,7 +418,12 @@ def api_ai_coach_analyze():
                 pass
         payload = _build_vision_score_payload_for_ai(kurum_id, as_of_date)
         from services.ai_coach_service import analyze_strategic_performance
-        result = analyze_strategic_performance(payload)
+        from flask_login import current_user
+        result = analyze_strategic_performance(
+            payload,
+            tenant_id=getattr(current_user, "tenant_id", kurum_id),
+            user_id=getattr(current_user, "id", None),
+        )
         if not result.get('success'):
             return jsonify({
                 'success': False,

@@ -7,6 +7,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from app.extensions import csrf
 from extensions import db
 from app.models.initiative import Initiative, InitiativeMilestone
 from micro.modules.sp.helpers import _check_sp_role
@@ -38,6 +39,7 @@ def sp_api_initiatives_list():
 
 
 @app_bp.route("/sp/api/initiatives", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_initiatives_create():
     if not _can_manage():
@@ -79,6 +81,7 @@ def sp_api_initiatives_create():
 
 
 @app_bp.route("/sp/api/initiatives/<int:iid>", methods=["PATCH"])
+@csrf.exempt
 @login_required
 def sp_api_initiatives_update(iid):
     if not _can_manage():
@@ -103,6 +106,7 @@ def sp_api_initiatives_update(iid):
 
 
 @app_bp.route("/sp/api/initiatives/<int:iid>", methods=["DELETE"])
+@csrf.exempt
 @login_required
 def sp_api_initiatives_delete(iid):
     if not _can_manage():
@@ -118,6 +122,7 @@ def sp_api_initiatives_delete(iid):
 
 
 @app_bp.route("/sp/api/initiatives/<int:iid>/milestones", methods=["POST"])
+@csrf.exempt
 @login_required
 def sp_api_milestone_create(iid):
     if not _can_manage():

@@ -309,6 +309,26 @@
     try {
       const res = await fetch(r.dataset.pivotUrl, { method: 'POST' });
       const j = await res.json();
+      console.log('[ai-pivot debug]', j);
+
+      // ── Kota uyarıları ──
+      if (res.status === 429 || j.source === 'heuristic_quota') {
+        const reason = j.quota && j.quota.reason;
+        const msgMap = {
+          cooldown:                  `Çok hızlı! ${j.quota.retry_after_sec} sn sonra tekrar dene.`,
+          tenant_daily_limit:        `Günlük AI çağrı limiti doldu (${j.quota.used}/${j.quota.limit}). Yarın tekrar dene.`,
+          tenant_monthly_call_limit: `Aylık AI çağrı limiti doldu (${j.quota.used}/${j.quota.limit}).`,
+          tenant_monthly_cost_limit: `Aylık AI maliyet limiti aşıldı ($${j.quota.used_usd}/$${j.quota.limit_usd}).`,
+          system_daily_limit:        `Sistem genel günlük limit doldu. Lütfen sonra tekrar dene.`,
+          tenant_paused:             `Tenant LLM çağrıları yönetici tarafından durduruldu.`,
+        };
+        Swal.fire({
+          toast: true, position: 'top-end', icon: 'warning',
+          title: msgMap[reason] || 'AI kotası aşıldı — kural motoru kullanıldı',
+          showConfirmButton: false, timer: 5000, timerProgressBar: true,
+        });
+      }
+
       if (!j.success) {
         Swal.fire({toast:true, position:'top-end', icon:'error',
                    title: j.error || 'Hata', showConfirmButton:false, timer: 3000});
@@ -316,8 +336,29 @@
       }
       const panel = document.getElementById('exec-pivot-panel');
       panel.style.display = 'block';
-      document.getElementById('exec-pivot-source').textContent =
-        'Kaynak: ' + (j.source === 'llm' ? 'Gemini AI' : 'kural motoru');
+      let srcText = 'Kaynak: ';
+      if (j.source === 'llm') srcText += 'Gemini AI';
+      else if (j.source === 'heuristic_quota') srcText += 'kural motoru (kota aşıldı)';
+      else srcText += 'kural motoru (LLM yapılandırılmadı)';
+
+      if (j.source === 'llm' && j.usage && j.usage.total_tokens) {
+        const u = j.usage;
+        const modelName = j.model || u.model || 'model?';
+        const keySrcLabel = j.key_source === 'tenant_byok' ? 'kendi key' : 'sistem key';
+        const tl = (u.est_cost_usd * 34).toFixed(4);
+        srcText += ` · ${modelName} (${keySrcLabel}) · ${u.total_tokens.toLocaleString('tr-TR')} token `
+                + `(~$${u.est_cost_usd.toFixed(6)} / ~${tl} TL)`;
+      }
+
+      // Kota özeti
+      if (j.quota_summary) {
+        const q = j.quota_summary;
+        srcText += ` · Bugün: ${q.today.used}/${q.today.limit} (%${q.today.pct})`
+                + ` · Bu ay: ${q.month_calls.used}/${q.month_calls.limit}`
+                + ` · Maliyet: $${q.month_cost.used_usd}/$${q.month_cost.limit_usd}`;
+      }
+
+      document.getElementById('exec-pivot-source').textContent = srcText;
 
       const list = document.getElementById('exec-pivot-list');
       if (!j.recommendations || j.recommendations.length === 0) {
