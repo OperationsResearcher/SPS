@@ -233,15 +233,42 @@
       }
     });
 
-    const userSearch = document.getElementById("user-search");
-    if (userSearch) {
-      userSearch.addEventListener("input", function () {
-        const q = this.value.toLowerCase().trim();
-        document.querySelectorAll("#users-table tbody tr[data-search]").forEach(row => {
-          row.style.display = !q || row.dataset.search.includes(q) ? "" : "none";
-        });
+    const userSearch   = document.getElementById("user-search");
+    const tenantFilter = document.getElementById("tenant-filter");
+    const filterClear  = document.getElementById("filter-clear");
+    const filterCount  = document.getElementById("filter-count");
+
+    function applyUserFilters() {
+      const q = (userSearch ? userSearch.value : "").toLowerCase().trim();
+      const tid = tenantFilter ? tenantFilter.value : "";
+      const rows = document.querySelectorAll("#users-table tbody tr[data-search]");
+      let shown = 0;
+      rows.forEach(row => {
+        const matchText   = !q || row.dataset.search.includes(q);
+        const matchTenant = !tid || row.dataset.tenantId === tid;
+        const visible     = matchText && matchTenant;
+        row.style.display = visible ? "" : "none";
+        if (visible) shown++;
+      });
+      if (filterCount) {
+        const total = rows.length;
+        filterCount.textContent = (shown === total)
+          ? `${total} kullanıcı`
+          : `${shown} / ${total} kullanıcı görüntüleniyor`;
+      }
+    }
+
+    if (userSearch)   userSearch.addEventListener("input", applyUserFilters);
+    if (tenantFilter) tenantFilter.addEventListener("change", applyUserFilters);
+    if (filterClear) {
+      filterClear.addEventListener("click", function () {
+        if (userSearch) userSearch.value = "";
+        if (tenantFilter) tenantFilter.value = "";
+        applyUserFilters();
       });
     }
+    // İlk yüklemede count'u göster
+    if (userSearch || tenantFilter) applyUserFilters();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
