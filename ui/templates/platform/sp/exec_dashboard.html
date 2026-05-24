@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
 {% block title %}Exec Dashboard — Kokpitim{% endblock %}
-{% block page_title %}Strateji Sağlık Paneli (Exec){% endblock %}
+{% block page_title %}Stratejik Sağlık Paneli{% endblock %}
 
 {% block content %}
 <div style="max-width:1300px; margin:0 auto;"
@@ -8,81 +8,180 @@
      data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
      data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
 
-  <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+  {# ─── Sayfa başlığı — UI Kılavuzu §5 ──────────────────────────────────── #}
+  <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-3);">
     <div>
-      <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
-        <i class="fas fa-tachometer-alt"></i> Stratejik Sağlık Paneli
+      <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em;">
+        <i class="fas fa-tachometer-alt" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+        Stratejik Sağlık Paneli
       </h2>
-      <p style="font-size:13px; color:#64748b; margin:0;">
-        KPI × Strateji × Initiative × Risk × Anomali × Trigger — tek bakışta.
+      <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0; line-height:1.5;">
+        KPI, strateji, initiative, risk ve anomalilerin 360° görünümü. Üst yönetim için optimize.
       </p>
     </div>
-    <button class="mc-btn mc-btn-primary" id="exec-pivot-btn">
-      <i class="fas fa-brain"></i> AI Pivot Önerisi
+    <button class="mc-btn mc-btn-primary" id="exec-pivot-btn"
+            style="display:inline-flex; align-items:center; gap:var(--space-2);">
+      <i class="fas fa-brain"></i> AI Pivot Önerisi Al
     </button>
   </div>
 
-  <!-- Health hero -->
-  <div class="mc-card" style="padding:24px; margin-bottom:20px; background:linear-gradient(135deg,#1e293b 0%,#334155 100%); color:#fff;">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-      <div>
-        <div style="font-size:12px; opacity:0.7; text-transform:uppercase;">Strateji Sağlık Skoru</div>
-        <div style="font-size:48px; font-weight:800;" id="exec-health">—</div>
-        <div style="font-size:12px; opacity:0.7;" id="exec-generated"></div>
+  {# ─── HERO — tek büyük rakam, sayfa başına 1 (UI Kılavuzu §5) ─────────── #}
+  <div class="mc-card" style="padding: var(--space-6); margin-bottom: var(--space-6);
+       background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%);
+       color:#fff; border:none; box-shadow: var(--shadow-lg); border-radius:12px;
+       position:relative; overflow:hidden;">
+
+    {# dekoratif arka — performans için pure CSS #}
+    <div style="position:absolute; right:-40px; top:-40px; width:240px; height:240px;
+         background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+         pointer-events:none;"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;
+         flex-wrap:wrap; gap: var(--space-6); position:relative;">
+
+      <div style="flex:1; min-width:240px;">
+        <div style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase;
+             letter-spacing:0.08em; font-weight:600;">
+          Strateji Sağlık Skoru
+        </div>
+        <div id="exec-health" class="mc-num"
+             style="font-size: var(--text-display); font-weight:800; line-height:1;
+                    margin: var(--space-2) 0; letter-spacing:-0.02em;">—</div>
+        <div id="exec-health-label" style="font-size: var(--text-md); opacity:0.85;">
+          <span id="exec-generated"></span>
+        </div>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(3, auto); gap:24px; font-size:13px;">
-        <div><div style="opacity:0.6;">Aktif KPI</div><div style="font-size:22px;font-weight:700;" id="exec-kpi-total">—</div></div>
-        <div><div style="opacity:0.6;">Strateji</div><div style="font-size:22px;font-weight:700;" id="exec-strat-total">—</div></div>
-        <div><div style="opacity:0.6;">Initiative</div><div style="font-size:22px;font-weight:700;" id="exec-init-total">—</div></div>
+
+      <div style="display:grid; grid-template-columns:repeat(3, auto); gap: var(--space-8);
+           font-size: var(--text-sm);">
+        <div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Aktif KPI</div>
+          <div id="exec-kpi-total" class="mc-num"
+               style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+        </div>
+        <div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Strateji</div>
+          <div id="exec-strat-total" class="mc-num"
+               style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+        </div>
+        <div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Initiative</div>
+          <div id="exec-init-total" class="mc-num"
+               style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 6-card grid -->
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:24px;">
-    <div class="mc-card" style="padding:16px;border-left:4px solid #0ea5e9;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">KPI Hedef Üstü</div>
-      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-kpi-pct">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-kpi-detail">—</div>
+  {# ─── 6 KPI tile — semantic color discipline (sadece anlam) ──────────── #}
+  <div id="exec-tiles"
+       style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+              gap: var(--space-4); margin-bottom: var(--space-6);">
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-info);
+         transition: var(--transition-base);" data-tile="kpi">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">KPI Hedef Üstü</div>
+      <div class="mc-skeleton" id="exec-kpi-pct-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-kpi-pct" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
-    <div class="mc-card" style="padding:16px;border-left:4px solid #db2777;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Initiative Sağlığı</div>
-      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-init-avg">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-init-detail">—</div>
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
+         transition: var(--transition-base);" data-tile="init">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">Initiative Sağlığı</div>
+      <div class="mc-skeleton" id="exec-init-avg-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-init-avg" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
-    <div class="mc-card" style="padding:16px;border-left:4px solid #f59e0b;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Gecikmiş Faaliyet</div>
-      <div style="font-size:28px;font-weight:700;color:#dc2626;" id="exec-overdue">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-overdue-detail">—</div>
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+         transition: var(--transition-base);" data-tile="overdue">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">Gecikmiş Faaliyet</div>
+      <div class="mc-skeleton" id="exec-overdue-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-overdue" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
-    <div class="mc-card" style="padding:16px;border-left:4px solid #dc2626;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Kritik Risk</div>
-      <div style="font-size:28px;font-weight:700;color:#dc2626;" id="exec-risk">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-risk-detail">—</div>
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
+         transition: var(--transition-base);" data-tile="risk">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">Kritik Risk</div>
+      <div class="mc-skeleton" id="exec-risk-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-risk" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-risk-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
-    <div class="mc-card" style="padding:16px;border-left:4px solid #8b5cf6;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Anomali (Yüksek)</div>
-      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-anomaly">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-anomaly-detail">—</div>
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+         transition: var(--transition-base);" data-tile="anomaly">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">Yüksek Anomali</div>
+      <div class="mc-skeleton" id="exec-anomaly-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-anomaly" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
-    <div class="mc-card" style="padding:16px;border-left:4px solid #10b981;">
-      <div style="font-size:12px;color:#64748b;text-transform:uppercase;">Aktif Trigger</div>
-      <div style="font-size:28px;font-weight:700;color:#0f172a;" id="exec-trigger">—</div>
-      <div style="font-size:12px;color:#64748b;" id="exec-trigger-detail">—</div>
+
+    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-success);
+         transition: var(--transition-base);" data-tile="trigger">
+      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+           letter-spacing:0.05em; font-weight:600;">Aktif Trigger</div>
+      <div class="mc-skeleton" id="exec-trigger-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
+      <div id="exec-trigger" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
+           color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
+      <div id="exec-trigger-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </div>
   </div>
 
-  <!-- AI Pivot panel -->
-  <div class="mc-card" id="exec-pivot-panel" style="padding:20px; display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="margin:0;font-size:16px;color:#1e293b;">
-        <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> AI Pivot Önerileri
-        <span id="exec-pivot-source" style="font-size:11px;color:#64748b;font-weight:400;"></span>
+  {# ─── AI Pivot panel ────────────────────────────────────────────────── #}
+  <div class="mc-card" id="exec-pivot-panel"
+       style="padding: var(--space-6); display:none; border-left:4px solid var(--color-warning);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-3);">
+      <h3 style="margin:0; font-size: var(--text-lg); font-weight:600; color: var(--text-strong);">
+        <i class="fas fa-lightbulb" style="color: var(--color-warning); margin-right: var(--space-2);"></i>
+        AI Pivot Önerileri
       </h3>
+      <span id="exec-pivot-source" style="font-size: var(--text-xs); color: var(--text-subtle);"></span>
     </div>
-    <div id="exec-pivot-list" style="margin-top:16px;"></div>
+    <div id="exec-pivot-list" style="margin-top: var(--space-4); display:grid; gap: var(--space-3);"></div>
+  </div>
+
+  {# ─── Empty / Error states (Kılavuz §7) ────────────────────────────── #}
+  <div id="exec-error" style="display:none;">
+    <div class="mc-alert mc-alert-error" style="padding: var(--space-4);">
+      <i class="fas fa-exclamation-triangle" style="margin-right: var(--space-2);"></i>
+      <span id="exec-error-msg">Veriler yüklenemedi.</span>
+      <button onclick="location.reload()" class="mc-btn mc-btn-secondary"
+              style="margin-left: var(--space-3); font-size: var(--text-sm); padding: 4px 10px;">
+        Tekrar dene
+      </button>
+    </div>
   </div>
 </div>
+
+<style>
+  /* Pilot sayfaya özel mikro etkileşim — Kılavuz §8 */
+  .exec-tile {
+    cursor: default;
+    border-radius: 10px;
+  }
+  .exec-tile:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+  /* Hero kart sayfa yüklenince zarif fade-in */
+  @keyframes mc-fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  #exec-root > .mc-card { animation: mc-fade-up var(--transition-slow); }
+</style>
 
 <script>
 (function(){
@@ -95,82 +194,166 @@
     return '#ef4444';
   }
 
+  function trendArrow(positive) {
+    return positive
+      ? '<i class="fas fa-arrow-up" style="color:#10b981; margin-right:4px;"></i>'
+      : '<i class="fas fa-arrow-down" style="color:#ef4444; margin-right:4px;"></i>';
+  }
+
   function priorityBadge(p) {
-    const colors = {critical:'#dc2626', high:'#f59e0b', medium:'#0ea5e9', low:'#64748b'};
-    const labels = {critical:'Kritik', high:'Yüksek', medium:'Orta', low:'Düşük'};
-    return `<span style="background:${colors[p]||'#64748b'};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">${labels[p]||p}</span>`;
+    const map = {
+      critical: {bg:'#fee2e2', fg:'#991b1b', label:'Kritik'},
+      high:     {bg:'#fed7aa', fg:'#9a3412', label:'Yüksek'},
+      medium:   {bg:'#dbeafe', fg:'#1e40af', label:'Orta'},
+      low:      {bg:'#f1f5f9', fg:'#475569', label:'Düşük'},
+    };
+    const m = map[p] || map.medium;
+    return `<span style="background:${m.bg};color:${m.fg};padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;">${m.label}</span>`;
   }
 
   function pivotTypeLabel(t) {
     return {
-      refocus: '🎯 Odak Daraltma',
-      sunset: '🌅 Sonlandırma',
-      accelerate: '⚡ Hızlandırma',
-      new_initiative: '🚀 Yeni Initiative',
+      refocus:         '🎯 Odak Daraltma',
+      sunset:          '🌅 Sonlandırma',
+      accelerate:      '⚡ Hızlandırma',
+      new_initiative:  '🚀 Yeni Initiative',
       risk_mitigation: '🛡️ Risk Mitigasyon',
     }[t] || t;
   }
 
-  async function loadSnapshot() {
-    const res = await fetch(r.dataset.snapshotUrl);
-    const j = await res.json();
-    if (!j.success) return;
-    const s = j.snapshot;
-
-    const hEl = document.getElementById('exec-health');
-    hEl.textContent = s.health_score != null ? s.health_score : '—';
-    hEl.style.color = healthColor(s.health_score);
-    document.getElementById('exec-generated').textContent = 'Üretildi: ' + new Date(s.generated_at).toLocaleString('tr-TR');
-    document.getElementById('exec-kpi-total').textContent = s.kpi.total;
-    document.getElementById('exec-strat-total').textContent = s.strategy.count + '+' + s.strategy.sub_count;
-    document.getElementById('exec-init-total').textContent = s.initiative.total;
-
-    document.getElementById('exec-kpi-pct').textContent = '%' + s.kpi.on_target_pct;
-    document.getElementById('exec-kpi-detail').textContent = s.kpi.with_data + ' / ' + s.kpi.total + " KPI'da veri var";
-
-    const inProg = (s.initiative.by_status.in_progress) || {avg_progress:0,count:0};
-    document.getElementById('exec-init-avg').textContent = '%' + Math.round(inProg.avg_progress);
-    document.getElementById('exec-init-detail').textContent = inProg.count + ' devam eden';
-
-    document.getElementById('exec-overdue').textContent = s.activity.overdue;
-    document.getElementById('exec-overdue-detail').textContent = s.activity.total + ' toplam faaliyet';
-
-    document.getElementById('exec-risk').textContent = s.risk.critical;
-    document.getElementById('exec-risk-detail').textContent = s.risk.open + ' açık risk';
-
-    document.getElementById('exec-anomaly').textContent = s.anomaly.high;
-    document.getElementById('exec-anomaly-detail').textContent = s.anomaly.medium + ' orta seviye';
-
-    document.getElementById('exec-trigger').textContent = s.trigger.active;
-    document.getElementById('exec-trigger-detail').textContent = s.trigger.fired_last_7d + ' son 7 günde ateşlendi';
+  function reveal(skelId, valEl) {
+    const skel = document.getElementById(skelId);
+    if (skel) skel.style.display = 'none';
+    if (valEl) valEl.style.display = 'block';
   }
 
-  document.getElementById('exec-pivot-btn').onclick = async () => {
-    const btn = document.getElementById('exec-pivot-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz ediliyor...';
+  function fmtDate(iso) {
+    if (!iso) return '';
     try {
-      const res = await fetch(r.dataset.pivotUrl, {method: 'POST'});
+      const d = new Date(iso);
+      return d.toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' });
+    } catch { return iso; }
+  }
+
+  async function loadSnapshot() {
+    try {
+      const res = await fetch(r.dataset.snapshotUrl);
       const j = await res.json();
-      if (!j.success) { alert('Hata: ' + (j.error || '')); return; }
+      if (!j.success) throw new Error(j.error || 'Snapshot alınamadı');
+      const s = j.snapshot;
+
+      // Hero
+      const hEl = document.getElementById('exec-health');
+      hEl.textContent = s.health_score != null ? s.health_score : '—';
+      hEl.style.color = healthColor(s.health_score);
+      document.getElementById('exec-generated').textContent =
+        'Üretildi: ' + fmtDate(s.generated_at);
+      document.getElementById('exec-kpi-total').textContent = s.kpi.total;
+      document.getElementById('exec-strat-total').textContent =
+        s.strategy.count + ' · ' + s.strategy.sub_count;
+      document.getElementById('exec-init-total').textContent = s.initiative.total;
+
+      // Tiles
+      const kpiPct = document.getElementById('exec-kpi-pct');
+      kpiPct.textContent = '%' + s.kpi.on_target_pct;
+      kpiPct.style.color = s.kpi.on_target_pct >= 70 ? '#059669'
+                         : s.kpi.on_target_pct >= 50 ? '#d97706' : '#dc2626';
+      reveal('exec-kpi-pct-skel', kpiPct);
+      document.getElementById('exec-kpi-detail').textContent =
+        s.kpi.with_data + ' / ' + s.kpi.total + " KPI'da veri var";
+
+      const inProg = (s.initiative.by_status.in_progress) || {avg_progress:0, count:0};
+      const initEl = document.getElementById('exec-init-avg');
+      initEl.textContent = '%' + Math.round(inProg.avg_progress);
+      reveal('exec-init-avg-skel', initEl);
+      document.getElementById('exec-init-detail').textContent =
+        inProg.count + ' devam eden initiative';
+
+      const odEl = document.getElementById('exec-overdue');
+      odEl.textContent = s.activity.overdue;
+      if (s.activity.overdue === 0) odEl.style.color = 'var(--text-strong)';
+      reveal('exec-overdue-skel', odEl);
+      document.getElementById('exec-overdue-detail').textContent =
+        s.activity.total + ' toplam faaliyet';
+
+      const riskEl = document.getElementById('exec-risk');
+      riskEl.textContent = s.risk.critical;
+      if (s.risk.critical === 0) riskEl.style.color = 'var(--text-strong)';
+      reveal('exec-risk-skel', riskEl);
+      document.getElementById('exec-risk-detail').textContent =
+        s.risk.open + ' açık risk';
+
+      const anEl = document.getElementById('exec-anomaly');
+      anEl.textContent = s.anomaly.high;
+      reveal('exec-anomaly-skel', anEl);
+      document.getElementById('exec-anomaly-detail').textContent =
+        s.anomaly.medium + ' orta seviye';
+
+      const trEl = document.getElementById('exec-trigger');
+      trEl.textContent = s.trigger.active;
+      reveal('exec-trigger-skel', trEl);
+      document.getElementById('exec-trigger-detail').textContent =
+        s.trigger.fired_last_7d + ' son 7 günde ateşlendi';
+
+    } catch (err) {
+      document.getElementById('exec-error-msg').textContent = 'Hata: ' + err.message;
+      document.getElementById('exec-error').style.display = 'block';
+    }
+  }
+
+  document.getElementById('exec-pivot-btn').onclick = async function() {
+    const btn = this;
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz ediliyor…';
+    try {
+      const res = await fetch(r.dataset.pivotUrl, { method: 'POST' });
+      const j = await res.json();
+      if (!j.success) {
+        Swal.fire({toast:true, position:'top-end', icon:'error',
+                   title: j.error || 'Hata', showConfirmButton:false, timer: 3000});
+        return;
+      }
       const panel = document.getElementById('exec-pivot-panel');
       panel.style.display = 'block';
       document.getElementById('exec-pivot-source').textContent =
-        ' (kaynak: ' + (j.source === 'llm' ? 'Gemini AI' : 'heuristic kural motoru') + ')';
-      document.getElementById('exec-pivot-list').innerHTML = j.recommendations.map(rec => `
-        <div style="border-left:3px solid #f59e0b;padding:12px;margin-bottom:10px;background:#fffbeb;border-radius:6px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <div style="font-weight:600;color:#1e293b;">${pivotTypeLabel(rec.pivot_type)} — ${rec.title || ''}</div>
-            ${priorityBadge(rec.priority)}
+        'Kaynak: ' + (j.source === 'llm' ? 'Gemini AI' : 'kural motoru');
+
+      const list = document.getElementById('exec-pivot-list');
+      if (!j.recommendations || j.recommendations.length === 0) {
+        list.innerHTML = `
+          <div class="mc-empty">
+            <i class="fas fa-check-circle mc-empty-icon" style="color:#10b981;"></i>
+            <div class="mc-empty-title">Şu an pivot önerisi yok</div>
+            <div class="mc-empty-text">Durum sağlıklı görünüyor.</div>
+          </div>`;
+      } else {
+        list.innerHTML = j.recommendations.map(rec => `
+          <div style="border-left:3px solid var(--color-warning); padding: var(--space-3) var(--space-4);
+               background: var(--color-warning-soft); border-radius: 6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;
+                 margin-bottom: var(--space-2); gap: var(--space-2); flex-wrap:wrap;">
+              <div style="font-weight:600; color: var(--text-strong); font-size: var(--text-base);">
+                ${pivotTypeLabel(rec.pivot_type)} — ${rec.title || ''}
+              </div>
+              ${priorityBadge(rec.priority)}
+            </div>
+            <div style="font-size: var(--text-md); color: var(--text-muted); margin-bottom: var(--space-1);">
+              <b>Gerekçe:</b> ${rec.rationale || ''}
+            </div>
+            <div style="font-size: var(--text-md); color: var(--text-default);">
+              <b>Aksiyon:</b> ${rec.action || ''}
+            </div>
+            <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-2);">
+              <i class="far fa-clock"></i> ${rec.timeframe || ''}
+            </div>
           </div>
-          <div style="font-size:13px;color:#475569;margin-bottom:6px;"><strong>Gerekçe:</strong> ${rec.rationale || ''}</div>
-          <div style="font-size:13px;color:#0f172a;"><strong>Aksiyon:</strong> ${rec.action || ''}</div>
-          <div style="font-size:11px;color:#64748b;margin-top:4px;">⏱ ${rec.timeframe || ''}</div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+      panel.scrollIntoView({behavior:'smooth', block:'nearest'});
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-brain"></i> AI Pivot Önerisi';
+      btn.innerHTML = orig;
     }
   };
 
