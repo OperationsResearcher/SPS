@@ -20,6 +20,14 @@ anthropic>=0.40.0                 # Claude
 # REST transport ve requests kütüphanesi için)
 pip-system-certs>=4.0
 
+# Dokümantasyon araçları (PDF üretim + screenshot)
+# Kullanım: scripts/docs/build_tanitim_pdf.py, scripts/docs/take_screenshots.py
+markdown>=3.5
+pygments>=2.17
+weasyprint>=60.0         # HTML→PDF (Windows'ta GTK3 runtime gerekebilir)
+playwright>=1.40         # Otomatik tarayıcı (screenshot için)
+# Not: pip install sonrası: playwright install chromium
+
 # Existing dependencies (reference)
 # Flask>=2.3.0
 # Flask-SQLAlchemy>=3.0.0

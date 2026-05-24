@@ -1,0 +1,1259 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kokpitim Tanıtım</title>
+<style>
+@page {
+    size: A4;
+    margin: 18mm 16mm;
+    @bottom-right {
+        content: "Sayfa " counter(page) " / " counter(pages);
+        font-size: 9pt;
+        color: #94a3b8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    @bottom-left {
+        content: "Kokpitim Tanıtım Belgesi — v1.0 — 2026-05-24";
+        font-size: 9pt;
+        color: #94a3b8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+}
+@page :first {
+    @bottom-left { content: ""; }
+    @bottom-right { content: ""; }
+}
+
+body {
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    color: #1e293b;
+    line-height: 1.55;
+    font-size: 10.5pt;
+}
+
+h1 {
+    color: #0f172a;
+    font-size: 24pt;
+    border-bottom: 3px solid #4f46e5;
+    padding-bottom: 8px;
+    page-break-after: avoid;
+    margin-top: 28pt;
+}
+h1:first-of-type {
+    margin-top: 0;
+    page-break-before: avoid;
+}
+h2 {
+    color: #1e293b;
+    font-size: 16pt;
+    margin-top: 18pt;
+    page-break-after: avoid;
+    border-left: 4px solid #4f46e5;
+    padding-left: 10px;
+}
+h3 {
+    color: #334155;
+    font-size: 13pt;
+    margin-top: 14pt;
+    page-break-after: avoid;
+}
+h4 {
+    color: #475569;
+    font-size: 11pt;
+    margin-top: 10pt;
+    page-break-after: avoid;
+}
+
+p { margin: 6pt 0; }
+ul, ol { margin: 6pt 0; padding-left: 22pt; }
+li { margin: 3pt 0; }
+
+code {
+    background: #f1f5f9;
+    padding: 1pt 5pt;
+    border-radius: 3pt;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    color: #4f46e5;
+}
+pre {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #4f46e5;
+    padding: 10pt;
+    border-radius: 4pt;
+    font-family: 'Consolas', monospace;
+    font-size: 9pt;
+    overflow-x: auto;
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
+pre code { background: transparent; color: #1e293b; padding: 0; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8pt 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+}
+th {
+    background: #4f46e5;
+    color: #ffffff;
+    padding: 6pt 8pt;
+    text-align: left;
+    font-weight: 600;
+}
+td {
+    padding: 5pt 8pt;
+    border-bottom: 1px solid #e2e8f0;
+}
+tr:nth-child(even) td { background: #f8fafc; }
+
+blockquote {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+    padding: 8pt 12pt;
+    margin: 8pt 0;
+    color: #78350f;
+    font-style: italic;
+    page-break-inside: avoid;
+}
+
+a { color: #4f46e5; text-decoration: none; }
+
+img.screenshot {
+    max-width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 4pt;
+    box-shadow: 0 2pt 4pt rgba(0,0,0,0.06);
+    margin: 10pt 0;
+    page-break-inside: avoid;
+}
+.screenshot-caption {
+    text-align: center;
+    color: #64748b;
+    font-size: 9pt;
+    font-style: italic;
+    margin-top: -4pt;
+    margin-bottom: 12pt;
+}
+
+.cover {
+    text-align: center;
+    padding-top: 60mm;
+    page-break-after: always;
+}
+.cover h1 {
+    border: none;
+    font-size: 40pt;
+    color: #4f46e5;
+    margin-bottom: 12pt;
+}
+.cover .subtitle {
+    font-size: 16pt;
+    color: #64748b;
+    margin-bottom: 60pt;
+}
+.cover .meta {
+    color: #94a3b8;
+    font-size: 11pt;
+    line-height: 1.8;
+}
+
+.toc-note {
+    background: #eef2ff;
+    border-left: 4px solid #4f46e5;
+    padding: 10pt 14pt;
+    margin: 12pt 0;
+    border-radius: 3pt;
+    font-size: 10pt;
+    color: #312e81;
+    page-break-inside: avoid;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 14pt 0;
+}
+
+.gallery {
+    page-break-before: always;
+}
+.gallery h2 { margin-top: 0; }
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10pt;
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>KOKPİTİM</h1>
+  <div class="subtitle">Kurumsal Performans İşletim Sistemi</div>
+  <div class="subtitle">Kapsamlı Tanıtım Belgesi</div>
+  <div class="meta">
+    Versiyon 1.0<br>
+    24 Mayıs 2026<br><br>
+    Stratejik Planlama · KPI Yönetimi · OKR · BSC · Hoshin Kanri<br>
+    Multi-tenant SaaS · KVKK Uyumlu · Türkçe-first
+  </div>
+</div>
+
+<h1 id="kokpitim-kapsaml-proje-tantm-belgesi">Kokpitim — Kapsamlı Proje Tanıtım Belgesi</h1>
+<blockquote>
+<p><strong>Versiyon:</strong> 1.0<br />
+<strong>Tarih:</strong> 2026-05-24<br />
+<strong>Hedef Kitle:</strong> Projeye yeni katılan geliştirici, yatırımcı, müşteri demosu, UX testçisi<br />
+<strong>Amaç:</strong> "Kokpitim nedir, ne yapar, hangi bileşenleri var, nasıl çalışır" sorularına eksiksiz cevap</p>
+</blockquote>
+<hr />
+<h2 id="icindekiler">İçindekiler</h2>
+<ol>
+<li><a href="#1-kokpitim-nedir">Kokpitim Nedir?</a></li>
+<li><a href="#2-kim-için">Kim İçin?</a></li>
+<li><a href="#3-hangi-sorunları-çözer">Hangi Sorunları Çözer?</a></li>
+<li><a href="#4-mimari-tasarım">Mimari Tasarım</a></li>
+<li><a href="#5-modül-haritası">Modül Haritası</a></li>
+<li><a href="#6-veri-modeli">Veri Modeli</a></li>
+<li><a href="#7-kullanıcı-tipleri-ve-yetkiler">Kullanıcı Tipleri ve Yetkiler</a></li>
+<li><a href="#8-sayfa-ve-bileşen-envanteri">Sayfa ve Bileşen Envanteri</a></li>
+<li><a href="#9-aillm-sistemi">AI/LLM Sistemi</a></li>
+<li><a href="#10-plan-year-sistemi">Plan Year Sistemi</a></li>
+<li><a href="#11-sık-sorulan-sorular">Sık Sorulan Sorular</a></li>
+<li><a href="#12-teknik-mimari">Teknik Mimari</a></li>
+</ol>
+<hr />
+<h2 id="1-kokpitim-nedir">1. Kokpitim Nedir?</h2>
+<p><img src="screenshots/01-masaustu.png" class="screenshot" alt="01-masaustu"></p>
+<div class="screenshot-caption">01-masaustu.png</div>
+
+<p><strong>Kokpitim</strong>, kurumların stratejik planlama, KPI takibi ve performans yönetimi süreçlerini tek bir platformda birleştiren <strong>çok kiracılı (multi-tenant) B2B SaaS</strong> uygulamasıdır.</p>
+<p>Akademik standartlar (BSC, OKR, Hoshin Kanri, Blue Ocean, VRIO, EFQM) ile pratik operasyonel ihtiyaçları (KPI veri girişi, faaliyet takibi, proje yönetimi) tek arayüzde birleştirir. Türkçe-first tasarımı, KVKK uyumu ve Türk pazarına özel düzenlemelere (5018, TSRS, SBB) yerel desteği ile global rakiplerden (Cascade, Quantive, ClearPoint) ayrışır.</p>
+<p><strong>Bir cümlede:</strong> "Stratejik vizyonu operasyonel KPI'lara, KPI'ları bireysel hedeflere bağlayan, kurumsal performans işletim sistemi."</p>
+<hr />
+<h2 id="2-kim-icin">2. Kim İçin?</h2>
+<table>
+<thead>
+<tr>
+<th>Hedef Kitle</th>
+<th>Tipik Kurum</th>
+<th>Asıl Faydası</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Orta-büyük özel sektör</strong></td>
+<td>100-500 kişilik üretim, hizmet, finans şirketleri</td>
+<td>BSC + OKR birarada, ESG raporlama hazır</td>
+</tr>
+<tr>
+<td><strong>Kamu kurumları</strong></td>
+<td>Belediyeler (50K+ nüfus), bakanlık genel müdürlükleri</td>
+<td>5018 sayılı Kanun + SBB Stratejik Plan Hazırlama Kılavuzu uyumlu şablon</td>
+</tr>
+<tr>
+<td><strong>BIST sürdürülebilirlik şirketleri</strong></td>
+<td>~100 BIST 25 + diğer ESG raporlayanları</td>
+<td>TSRS uyumlu native ESG modülü</td>
+</tr>
+<tr>
+<td><strong>KOBİ</strong></td>
+<td>25-100 kişilik dijitalleşen şirketler</td>
+<td>KOSGEB Dijital Dönüşüm Desteği uyumlu</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-hangi-sorunlar-cozer">3. Hangi Sorunları Çözer?</h2>
+<h3 id="31-strateji-yurutme-acg-strategy-execution-gap">3.1 Strateji Yürütme Açığı (Strategy Execution Gap)</h3>
+<p><strong>Sorun:</strong> Stratejik plan kâğıt üstünde kalır, günlük iş ona göre yürümez.<br />
+<strong>Kokpitim çözümü:</strong> Strateji → Alt Strateji → Süreç → KPI → Bireysel Hedef otomatik bağlantısı. Her gün veri girişinde stratejik etki anlık ölçülür.</p>
+<h3 id="32-cok-cerceveli-yonetim-bsc-okr-hoshin">3.2 Çok Çerçeveli Yönetim (BSC + OKR + Hoshin)</h3>
+<p><strong>Sorun:</strong> Bir kurum hem BSC perspektifleri hem OKR çeyrek hedefleri tutmak istiyorsa, ikisini Excel'de elle bağlamak zorunda.<br />
+<strong>Kokpitim çözümü:</strong> Üçü de native, aynı veri kaynağından beslenir. Tek tıkla aynı KPI hem BSC "Finansal Perspektif"e hem OKR Key Result'a hem Strategy Cascade'e bağlanır.</p>
+<h3 id="33-esgtsrs-raporlama-yuku">3.3 ESG/TSRS Raporlama Yükü</h3>
+<p><strong>Sorun:</strong> TSRS (Türkiye Sürdürülebilirlik Raporlama Standartları) 2026'da zorunlu hale geldi. KAP'a açıklama yapmayan şirketlere 70.920 TL/yıl ceza.<br />
+<strong>Kokpitim çözümü:</strong> Native ESG modülü (E/S/G kategorileri + Scope 1/2/3) + KAP uyumlu PDF çıktısı.</p>
+<h3 id="34-multi-year-initiative-takibi">3.4 Multi-Year Initiative Takibi</h3>
+<p><strong>Sorun:</strong> "Dijital Dönüşüm 2026-2028" gibi 3 yıllık programlar yıllık plan yıllarına sığmaz.<br />
+<strong>Kokpitim çözümü:</strong> Initiative modeli — start_year/end_year ile yıllık plandan bağımsız yaşam döngüsü.</p>
+<h3 id="35-scenario-planning-what-if-analizi">3.5 Scenario Planning (What-if Analizi)</h3>
+<p><strong>Sorun:</strong> "Optimist senaryoda bu yatırımı yaparsak; kötümser senaryoda bu pivot'a hazır mıyız?" sorusu için ayrı Excel'ler.<br />
+<strong>Kokpitim çözümü:</strong> PlanYear'dan dallandırılan scenario_of_id sistemi — baseline + optimistic + pessimistic paralel dallar.</p>
+<h3 id="36-erken-uyar-ve-otomatik-replan">3.6 Erken Uyarı ve Otomatik Replan</h3>
+<p><strong>Sorun:</strong> KPI'lar düşmeye başladığı an müdahale gecikir.<br />
+<strong>Kokpitim çözümü:</strong> ReplanTrigger motoru — "2 ardışık dönem hedef altı" gibi kurallar otomatik tetiklenir, AI Pivot Advisor öneri üretir.</p>
+<hr />
+<h2 id="4-mimari-tasarm">4. Mimari Tasarım</h2>
+<h3 id="41-multi-tenant-mantg">4.1 Multi-Tenant Mantığı</h3>
+<p>Her şirket bir <strong>tenant</strong>. Veri izolasyonu <strong>tüm tablolarda <code>tenant_id</code></strong> kolonu ile sağlanır. Her sorguya otomatik tenant filtresi uygulanır (decorator'lar + helper'lar).</p>
+<pre><code>tenants
+  ├── users (tenant_id)
+  ├── plan_years (tenant_id)
+  │   ├── strategies (tenant_id, plan_year_id)
+  │   ├── processes (tenant_id, plan_year_id)
+  │   ├── plan_projects (plan_year_id)
+  │   └── initiative_milestones (initiative_id → tenants)
+  ├── initiatives (tenant_id)
+  ├── replan_triggers (tenant_id)
+  ├── blue_ocean_canvases (tenant_id)
+  ├── vrio_resources (tenant_id)
+  ├── llm_usage_logs (tenant_id)
+  └── tenant_llm_configs (tenant_id, BYOK key)
+</code></pre>
+<p><strong>Sonuç:</strong> Tenant A'nın verisi Tenant B'ye <strong>hiçbir koşulda</strong> sızmaz. Veri izolasyonu DB seviyesinde garanti altında.</p>
+<h3 id="42-plan-year-sistemi-full-clone-scenario-branching">4.2 Plan Year Sistemi (Full Clone + Scenario Branching)</h3>
+<p>Stratejik planlama doğası gereği yıllıktır. Her yıl yeni bir <strong>PlanYear</strong> açılır. İki klonlama modeli:</p>
+<ul>
+<li><strong>Full Clone:</strong> Önceki yılın tüm stratejilerini, süreçlerini, KPI'larını yeni yıla kopyalar. <code>source_*_id</code> zinciri orjini takip eder.</li>
+<li><strong>Scenario Branching:</strong> Aynı yıl içinde paralel senaryolar (baseline/optimistic/pessimistic). Partial unique index sayesinde aynı yıla birden fazla scenario PlanYear yer alabilir.</li>
+</ul>
+<h3 id="43-blueprint-mimarisi-flask">4.3 Blueprint Mimarisi (Flask)</h3>
+<p>Tüm rotalar <strong>tek bir blueprint</strong> altında: <code>app_bp</code> (<code>/micro</code> prefix).<br />
+Modüller (<code>micro/modules/</code>) bu blueprint'e import edilerek registered olur.</p>
+<pre><code>micro_bp (app_bp)
+  ├── /sp/*              (Stratejik Planlama)
+  ├── /surec/*           (Süreç Yönetimi)
+  ├── /process/*         (Süreç — modern URL)
+  ├── /k_radar/*         (KPI Radar)
+  ├── /k_rapor/*         (KPI Rapor)
+  ├── /project/*         (Proje Yönetimi)
+  ├── /bireysel/*        (Bireysel Karne)
+  ├── /kurum/*           (Kurum Ayarları)
+  ├── /admin/*           (Sistem Yönetimi)
+  ├── /masaustu          (Dashboard)
+  ├── /bildirim/*        (Bildirimler)
+  ├── /ayarlar/*         (Kişisel Ayarlar)
+  └── /auth/*            (Login/Profil)
+</code></pre>
+<hr />
+<h2 id="5-modul-haritas">5. Modül Haritası</h2>
+<h3 id="51-stratejik-planlama-sp">5.1 Stratejik Planlama (<code>/sp</code>)</h3>
+<p><img src="screenshots/02-sp-anasayfa.png" class="screenshot" alt="02-sp-anasayfa"></p>
+<div class="screenshot-caption">02-sp-anasayfa.png</div>
+
+<p><strong>Sorumluluğu:</strong> Stratejik plan oluşturma, takip, senaryo yönetimi, akademik çerçeveler.</p>
+<p><strong>Alt sayfalar (kullanıcı için görünür):</strong><br />
+| URL | Sayfa | İşlev |<br />
+|---|---|---|<br />
+| <code>/sp</code> | Ana sayfa | Vizyon/Misyon/Değerler + strateji ağacı (akış olgunluk göstergesi) |<br />
+| <code>/sp/donemler</code> | Plan Yılları | Yıl oluşturma, klonlama, kapatma, aktifleştirme |<br />
+| <code>/sp/sihirbaz/yeni-yil</code> | Yeni Yıl Sihirbazı | Önceki yıldan klon önizleme + uygulama |<br />
+| <code>/sp/templates</code> | Şablon Marketplace | SBB Kamu, OKR vb. hazır şablonlar |<br />
+| <code>/sp/strateji-haritasi</code> | Strateji Haritası | vis-network grafik (Strategy↔SubStrategy↔Process↔KPI↔Initiative) |<br />
+| <code>/sp/xmatrix</code> | Hoshin X-Matrix | 4 çeyrek korelasyon matrisi |<br />
+| <code>/sp/blue-ocean</code> | Blue Ocean Canvas | Strategy Canvas (Chart.js) + ERRC Grid |<br />
+| <code>/sp/vrio</code> | VRIO Analizi | Kaynak/yetenek matrisi + Barney etiketi |<br />
+| <code>/sp/initiatives</code> | Initiative'ler | Çok yıllı stratejik girişimler |<br />
+| <code>/sp/scenarios</code> | Senaryolar | What-if dalları (baseline/optimistic/pessimistic) |<br />
+| <code>/sp/replan-triggers</code> | Replan Trigger | Otomatik replan kuralları |<br />
+| <code>/sp/ceyreklik-review</code> | Çeyreklik Review | Strateji sağlık skoru + AI özet |<br />
+| <code>/sp/exec-dashboard</code> | Exec Dashboard | Hero + 6 KPI tile + AI Pivot |<br />
+| <code>/sp/ayarlar/ai</code> | AI Ayarları | BYOK key + provider seçimi |<br />
+| <code>/sp/llm-usage</code> | LLM Kullanım | Token tüketim + maliyet özeti |<br />
+| <code>/sp/digest/weekly.pdf</code> | Haftalık Rapor | PDF özet |<br />
+| <code>/sp/okr</code> | OKR | Objective + Key Result yönetimi |<br />
+| <code>/sp/misyon</code>, <code>/sp/vizyon</code>, <code>/sp/degerler</code> | Kurumsal Kimlik | Yıla özgü metinler |</p>
+<p><strong>Veri modeli:</strong><br />
+- <code>Strategy</code>, <code>SubStrategy</code>, <code>PlanYear</code>, <code>KpiYearConfig</code>, <code>StrategyYearConfig</code><br />
+- <code>Initiative</code>, <code>InitiativeMilestone</code><br />
+- <code>ReplanTrigger</code>, <code>ReplanTriggerEvent</code><br />
+- <code>BlueOceanCanvas</code>, <code>BlueOceanFactor</code>, <code>BlueOceanERRC</code><br />
+- <code>VRIOResource</code><br />
+- <code>OkrObjective</code>, <code>OkrKeyResult</code></p>
+<h3 id="52-surec-yonetimi-surec-process">5.2 Süreç Yönetimi (<code>/surec</code>, <code>/process</code>)</h3>
+<p><img src="screenshots/16-surec-listesi.png" class="screenshot" alt="16-surec-listesi"></p>
+<div class="screenshot-caption">16-surec-listesi.png</div>
+
+<p><strong>Sorumluluğu:</strong> Süreç tanımlama, KPI yönetimi, periyodik veri girişi, faaliyet takibi.</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Sayfa</th>
+<th>İşlev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/process</code></td>
+<td>Süreç listesi</td>
+<td>Tüm süreçler + filtreleme</td>
+</tr>
+<tr>
+<td><code>/process/&lt;id&gt;/karne</code></td>
+<td>Süreç Karnesi</td>
+<td>KPI veri girişi (12 aylık matris)</td>
+</tr>
+<tr>
+<td><code>/process/&lt;id&gt;/faaliyetler</code></td>
+<td>Faaliyetler</td>
+<td>Operasyonel görev takibi</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Veri modeli:</strong><br />
+- <code>Process</code>, <code>ProcessKpi</code>, <code>KpiData</code>, <code>KpiDataAudit</code><br />
+- <code>ProcessActivity</code>, <code>ProcessActivityAssignee</code><br />
+- <code>ProcessSubStrategyLink</code> (contribution_pct ile)</p>
+<h3 id="53-k-radar-k_radar">5.3 K-Radar (<code>/k_radar</code>)</h3>
+<p><img src="screenshots/15-k-radar.png" class="screenshot" alt="15-k-radar"></p>
+<div class="screenshot-caption">15-k-radar.png</div>
+
+<p><strong>Sorumluluğu:</strong> KPI sağlık göstergeleri, risk, anomali, kalite parametreleri.</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>İşlev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/k_radar</code></td>
+<td>Hub — özet kartlar</td>
+</tr>
+<tr>
+<td><code>/k_radar/risk</code></td>
+<td>Risk register + heat map</td>
+</tr>
+<tr>
+<td><code>/k_radar/cross/paydas</code></td>
+<td>Paydaş analizi</td>
+</tr>
+<tr>
+<td><code>/k_radar/cross/a3</code></td>
+<td>A3 problem solving</td>
+</tr>
+<tr>
+<td><code>/k_radar/cross/rekabet</code></td>
+<td>Rekabet analizi</td>
+</tr>
+<tr>
+<td><code>/k_radar/kp/darbogaz</code>, <code>/k_radar/kp/oee</code>, <code>/k_radar/kp/vsm</code>, vb.</td>
+<td>KP modülleri</td>
+</tr>
+<tr>
+<td><code>/k_radar/kpr/cpm</code>, <code>/k_radar/kpr/evm</code></td>
+<td>Proje radar</td>
+</tr>
+<tr>
+<td><code>/k_radar/ks/swot-summary</code>, <code>/ks/bsc</code>, <code>/ks/hoshin</code></td>
+<td>Strateji analiz</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-k-rapor-k_rapor">5.4 K-Rapor (<code>/k_rapor</code>)</h3>
+<p><strong>Sorumluluğu:</strong> Raporlama, trend analizi, Excel/PDF export, anomali tespiti.</p>
+<p>30+ API endpoint: trend, forecast, kurumsal, uyum, faaliyet, risk, denetim, k-vektor, EVM, paydaş analizi, rekabet, PG dağılımı, vb.</p>
+<h3 id="55-proje-yonetimi-project">5.5 Proje Yönetimi (<code>/project</code>)</h3>
+<p><img src="screenshots/18-projeler.png" class="screenshot" alt="18-projeler"></p>
+<div class="screenshot-caption">18-projeler.png</div>
+
+<p><strong>Sorumluluğu:</strong> Proje portföyü, görev takibi, Gantt/Kanban, EVM.</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>İşlev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/project/list</code></td>
+<td>Proje listesi</td>
+</tr>
+<tr>
+<td><code>/project/&lt;id&gt;</code></td>
+<td>Proje detay</td>
+</tr>
+<tr>
+<td><code>/project/&lt;id&gt;/views/gantt</code></td>
+<td>Gantt görünümü</td>
+</tr>
+<tr>
+<td><code>/project/&lt;id&gt;/views/kanban</code></td>
+<td>Kanban board</td>
+</tr>
+<tr>
+<td><code>/project/&lt;id&gt;/views/raid</code></td>
+<td>RAID log (Risks/Assumptions/Issues/Dependencies)</td>
+</tr>
+<tr>
+<td><code>/project/&lt;id&gt;/views/calendar</code></td>
+<td>Takvim</td>
+</tr>
+<tr>
+<td><code>/sp/api/projects/&lt;id&gt;/evm</code></td>
+<td>EVM metrikleri (PV/EV/AC/CPI/SPI/EAC) + CPM kritik yol</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Veri modeli:</strong><br />
+- <code>PlanProject</code>, <code>PlanProjectTask</code>, <code>PlanProjectActivity</code><br />
+- <code>Project</code>, <code>Task</code>, <code>RaidItem</code> (modern portföy modeli)</p>
+<h3 id="56-bireysel-performans-bireysel">5.6 Bireysel Performans (<code>/bireysel</code>)</h3>
+<p><img src="screenshots/17-bireysel-karne.png" class="screenshot" alt="17-bireysel-karne"></p>
+<div class="screenshot-caption">17-bireysel-karne.png</div>
+
+<p><strong>Sorumluluğu:</strong> Kişisel KPI karnesi, bireysel hedefler, faaliyet takibi.</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>İşlev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/bireysel</code></td>
+<td>Ana sayfa</td>
+</tr>
+<tr>
+<td><code>/bireysel/karne</code></td>
+<td>12 aylık kişisel KPI tablosu</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Veri modeli:</strong><br />
+- <code>IndividualPerformanceIndicator</code><br />
+- <code>IndividualActivity</code>, <code>IndividualActivityTrack</code><br />
+- <code>IndividualKpiData</code>, <code>FavoriteKpi</code></p>
+<h3 id="57-kurum-kurum">5.7 Kurum (<code>/kurum</code>)</h3>
+<p><strong>Sorumluluğu:</strong> Kurum profili, logo, vizyon/misyon/değerler.</p>
+<h3 id="58-admin-admin">5.8 Admin (<code>/admin</code>)</h3>
+<p><strong>Sorumluluğu:</strong> Kullanıcı yönetimi, tenant yönetimi, paket, yedekleme, bakım modu.</p>
+<h3 id="59-masaustu-masaustu">5.9 Masaüstü (<code>/masaustu</code>)</h3>
+<p><strong>Sorumluluğu:</strong> Kişisel dashboard — bildirim, eksik veri, takvim, hızlı linkler.</p>
+<h3 id="510-digerleri">5.10 Diğerleri</h3>
+<ul>
+<li><strong><code>/bildirim</code></strong> — Bildirim merkezi</li>
+<li><strong><code>/ayarlar/eposta</code>, <code>/ayarlar/yedekleme</code></strong> — Kişisel ayarlar</li>
+<li><strong><code>/auth/login</code>, <code>/auth/profil</code></strong> — Kimlik</li>
+<li><strong><code>/api/v1/*</code></strong> — REST API (Swagger)</li>
+<li><strong><code>/api/v1/dataconn/*</code></strong> — Power BI / Tableau JSON connector</li>
+</ul>
+<hr />
+<h2 id="6-veri-modeli">6. Veri Modeli</h2>
+<h3 id="61-cekirdek-tablolar">6.1 Çekirdek Tablolar</h3>
+<pre><code>Tenant ─┬── User (n)
+        ├── PlanYear (n)
+        │   ├── Strategy (n)
+        │   │   └── SubStrategy (n)
+        │   │       └── ProcessSubStrategyLink (m:n with Process)
+        │   ├── Process (n)
+        │   │   ├── ProcessKpi (n)
+        │   │   │   └── KpiData (n) [aylık/dönemsel]
+        │   │   ├── ProcessActivity (n)
+        │   │   └── members/leaders/owners (m:n)
+        │   ├── PlanProject (n)
+        │   │   ├── PlanProjectTask (progress + budget)
+        │   │   └── PlanProjectActivity
+        │   └── TenantYearIdentity (1, mission/vision/values)
+        ├── Initiative (n) — start_year/end_year
+        │   └── InitiativeMilestone (n)
+        ├── ReplanTrigger (n)
+        │   └── ReplanTriggerEvent (n)
+        ├── BlueOceanCanvas (n)
+        │   ├── BlueOceanFactor (n)
+        │   └── BlueOceanERRC (n)
+        ├── VRIOResource (n)
+        ├── LLMUsageLog (n) [her AI çağrısı]
+        ├── LLMQuotaOverride (1)
+        ├── TenantLLMConfig (1, BYOK key)
+        └── SubscriptionPackage
+</code></pre>
+<h3 id="62-onemli-iliskiler">6.2 Önemli İlişkiler</h3>
+<ul>
+<li><strong><code>source_*_id</code> zinciri:</strong> PlanYear klonlandığında her kayıt önceki yıldaki aslına işaret eder. Lineage takibi için kritik.</li>
+<li><strong><code>scenario_of_id</code>:</strong> PlanYear başka bir PlanYear'ın senaryosu mu? NULL ise ana plan, dolu ise scenario branch.</li>
+<li><strong><code>plan_year_id</code> her veri tablosunda:</strong> Yıllar arasında veri karışmasın diye.</li>
+<li><strong><code>tenant_id</code> her temel tabloda:</strong> Multi-tenant izolasyon garantisi.</li>
+</ul>
+<h3 id="63-migration-gecmisi">6.3 Migration Geçmişi</h3>
+<p>Sprint bazlı önemli migration'lar:<br />
+- <code>y2z3a4b5c006</code> — Plan year tabloları<br />
+- <code>a4b5c6d7e008</code> — Initiative + Milestone<br />
+- <code>b5c6d7e8f009</code> — Scenario branching (partial unique index)<br />
+- <code>c6d7e8f9g010</code> — Replan triggers<br />
+- <code>d7e8f9g0h011</code> — Blue Ocean + VRIO<br />
+- <code>e8f9g0h1i012</code> — Task EVM alanları<br />
+- <code>f9g0h1i2j013</code> — LLM usage + quota<br />
+- <code>g0h1i2j3k014</code> — Tenant LLM config (BYOK)</p>
+<hr />
+<h2 id="7-kullanc-tipleri-ve-yetkiler">7. Kullanıcı Tipleri ve Yetkiler</h2>
+<h3 id="71-rol-hiyerarsisi">7.1 Rol Hiyerarşisi</h3>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Kapsam</th>
+<th>Yetki</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Admin</strong> (platform sahibi)</td>
+<td>Tüm tenant'lar</td>
+<td>Sistem yönetimi, bakım modu, paket yönetimi</td>
+</tr>
+<tr>
+<td><strong>tenant_admin</strong></td>
+<td>Tek tenant</td>
+<td>Tüm SP işlemleri, kullanıcı yönetimi, kurum ayarları</td>
+</tr>
+<tr>
+<td><strong>executive_manager</strong></td>
+<td>Tek tenant</td>
+<td>tenant_admin ile aynı SP yetkileri + üst yönetim raporları</td>
+</tr>
+<tr>
+<td><strong>ust_yonetim</strong></td>
+<td>Tek tenant</td>
+<td>SP modülüne yönetim erişimi</td>
+</tr>
+<tr>
+<td><strong>kurum_yoneticisi</strong></td>
+<td>Tek tenant</td>
+<td>Kurum ayarları</td>
+</tr>
+<tr>
+<td><strong>surec_lideri</strong></td>
+<td>Atandığı süreçler</td>
+<td>Süreç KPI yönetimi, veri giriş</td>
+</tr>
+<tr>
+<td><strong>kalite</strong></td>
+<td>Atandığı süreçler</td>
+<td>Süreç yönetimi</td>
+</tr>
+<tr>
+<td><strong>manager</strong></td>
+<td>Atandığı kullanıcılar</td>
+<td>Bireysel raporlama</td>
+</tr>
+<tr>
+<td><strong>kurum_kullanici</strong></td>
+<td>Kendi verileri</td>
+<td>Bireysel karne, atandığı süreç KPI veri girişi</td>
+</tr>
+<tr>
+<td><strong>izleyici</strong></td>
+<td>Görüntüleme</td>
+<td>Sadece read-only</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-yetki-kontrol-mekanizmalar">7.2 Yetki Kontrol Mekanizmaları</h3>
+<ul>
+<li><code>@login_required</code> — Her korunan rotada zorunlu</li>
+<li><code>_check_sp_role()</code> — SP modülü erişimi (<code>helpers.py:41-48</code>)</li>
+<li><code>@sp_manage_required</code> decorator — SP yazma yetkisi</li>
+<li><code>_admin_backup_guard()</code> — Admin-only yedekleme</li>
+<li><code>_is_admin_or_tenant_admin()</code> — Admin paneli erişimi</li>
+<li><code>PRIVILEGED_ROLES</code> — Proje modülü ({"Admin", "tenant_admin", "executive_manager"})</li>
+</ul>
+<hr />
+<h2 id="8-sayfa-ve-bilesen-envanteri">8. Sayfa ve Bileşen Envanteri</h2>
+<p>Toplam <strong>76 aktif sayfa</strong>, <strong>684 rota</strong>. Sayfa tipleri:</p>
+<h3 id="81-dashboard-sayfalar">8.1 Dashboard Sayfaları</h3>
+<ul>
+<li><code>/masaustu</code> — Kişisel dashboard (FullCalendar widget + 4 stat kartı + 13 alt bölüm)</li>
+<li><code>/sp/exec-dashboard</code> — Üst yönetim hero kart + 6 KPI tile + AI Pivot panel</li>
+<li><code>/k_radar</code> — KPI radar hub</li>
+<li><code>/k_rapor</code> — Raporlama dashboard</li>
+</ul>
+<h3 id="82-veri-giris-sayfalar">8.2 Veri Giriş Sayfaları</h3>
+<ul>
+<li><code>/bireysel/karne</code> — 12 aylık matris (kişisel)</li>
+<li><code>/process/&lt;id&gt;/karne</code> — 12 aylık matris (süreç)</li>
+<li><code>/sp/sihirbaz/yeni-yil</code> — Multi-step wizard</li>
+</ul>
+<h3 id="83-analiz-sayfalar">8.3 Analiz Sayfaları</h3>
+<ul>
+<li><code>/sp/xmatrix</code> — 4 çeyrek HTML tablosu (Strategy↔SubStrategy↔Initiative↔KPI)</li>
+<li><code>/sp/blue-ocean</code> — Chart.js Value Curve + ERRC 4-kadran grid</li>
+<li><code>/sp/vrio</code> — Canlı checkbox tablosu + Barney etiketi</li>
+<li><code>/sp/strateji-haritasi</code> — vis-network interaktif grafik</li>
+</ul>
+<h3 id="84-crud-sayfalar">8.4 CRUD Sayfaları</h3>
+<ul>
+<li><code>/sp/initiatives</code> — Liste + modal form</li>
+<li><code>/sp/scenarios</code> — Liste + dallandırma form</li>
+<li><code>/sp/replan-triggers</code> — CRUD + "Şimdi Değerlendir" butonu</li>
+<li><code>/project/list</code>, <code>/project/new</code>, <code>/project/&lt;id&gt;/edit</code> — Proje yaşam döngüsü</li>
+<li><code>/admin/yonetim-paneli/kullanici-detay</code> — Kullanıcı CRUD</li>
+</ul>
+<h3 id="85-gorsellestirme-bilesenleri">8.5 Görselleştirme Bileşenleri</h3>
+<table>
+<thead>
+<tr>
+<th>Bileşen</th>
+<th>Kütüphane</th>
+<th>Nerede</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Çizgi/Bar grafik</td>
+<td>Chart.js 4.4</td>
+<td>Exec dashboard, Blue Ocean, k_rapor trend</td>
+</tr>
+<tr>
+<td>Network/Graph</td>
+<td>vis-network</td>
+<td>Strateji haritası, dynamic flow</td>
+</tr>
+<tr>
+<td>Gantt</td>
+<td>Custom</td>
+<td>Proje gantt view</td>
+</tr>
+<tr>
+<td>Kanban</td>
+<td>Custom</td>
+<td>Proje kanban view</td>
+</tr>
+<tr>
+<td>FullCalendar</td>
+<td>FullCalendar.js</td>
+<td>Masaüstü takvim</td>
+</tr>
+<tr>
+<td>Modal</td>
+<td>mc-modal CSS</td>
+<td>Tüm CRUD işlemleri (KURALLAR §5)</td>
+</tr>
+<tr>
+<td>Toast</td>
+<td>SweetAlert2</td>
+<td>Bildirim, başarı/hata mesajı</td>
+</tr>
+<tr>
+<td>Skeleton loader</td>
+<td>CSS <code>@keyframes mc-shimmer</code></td>
+<td>Exec dashboard tile'lar</td>
+</tr>
+</tbody>
+</table>
+<h3 id="86-tasarm-sistemi">8.6 Tasarım Sistemi</h3>
+<ul>
+<li><strong>Renk paleti:</strong> Indigo (#4f46e5) + Slate gri + semantic (success/warning/danger)</li>
+<li><strong>Tipografi:</strong> Inter font, 10 boyut tokeni (text-2xs→text-display)</li>
+<li><strong>Spacing:</strong> 8'in katları (4/8/12/16/20/24/32/40)</li>
+<li><strong>Tema:</strong> Light + Dark (<code>html.dark</code> override)</li>
+<li><strong>CSS framework:</strong> Tailwind CDN + custom <code>mc-*</code> component library (components.css 1.3K satır)</li>
+<li><strong>Sayfa rehberi:</strong> Sidebar (240px sabit, koyu indigo) + topbar (beyaz)</li>
+</ul>
+<p>Detaylı kural seti: <a href="../UI-KILAVUZU.md"><code>docs/UI-KILAVUZU.md</code></a></p>
+<hr />
+<h2 id="9-aillm-sistemi">9. AI/LLM Sistemi</h2>
+<p><img src="screenshots/13-ai-ayarlari.png" class="screenshot" alt="13-ai-ayarlari"></p>
+<div class="screenshot-caption">13-ai-ayarlari.png</div>
+
+<h3 id="91-llm-gateway-provider-agnostic">9.1 LLM Gateway (Provider-Agnostic)</h3>
+<p>Tüm AI çağrıları tek geçitten geçer: <code>app/services/llm_gateway.py</code></p>
+<pre><code class="language-python">from app.services.llm_gateway import call_llm
+
+result = call_llm(
+    tenant_id=current_user.tenant_id,
+    endpoint=&quot;ai_pivot&quot;,
+    prompt=user_prompt,
+    system_prompt=&quot;Sen kıdemli strateji danışmanısın...&quot;,
+)
+# result = {text, source, provider, model, usage, quota_summary, ...}
+</code></pre>
+<h3 id="92-desteklenen-saglayclar">9.2 Desteklenen Sağlayıcılar</h3>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Default Model</th>
+<th>Maliyet (1M token)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gemini</strong></td>
+<td><code>gemini-2.5-flash-lite</code></td>
+<td>$0.10/$0.40 (giriş/çıkış)</td>
+</tr>
+<tr>
+<td><strong>OpenAI</strong></td>
+<td><code>gpt-4o-mini</code></td>
+<td>$0.15/$0.60</td>
+</tr>
+<tr>
+<td><strong>Anthropic</strong></td>
+<td><code>claude-haiku-4-5</code></td>
+<td>$1.00/$5.00</td>
+</tr>
+<tr>
+<td><strong>Groq</strong></td>
+<td><code>llama-3.3-70b-versatile</code></td>
+<td>$0.59/$0.79</td>
+</tr>
+<tr>
+<td><strong>OpenRouter</strong></td>
+<td><code>google/gemini-2.0-flash-exp:free</code></td>
+<td>0 (ücretsiz katman)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-anahtar-cozum-sras">9.3 Anahtar Çözüm Sırası</h3>
+<pre><code>1. Tenant BYOK key var mı + aktif mi?  → Tenant key kullan (kendi faturası)
+2. Sistem default key var mı (env)?    → Sistem key (kotalı)
+3. Hiçbiri yok                          → text=None, caller heuristic'e düşer
+</code></pre>
+<h3 id="94-kota-sistemi-4-katmanl">9.4 Kota Sistemi (4 Katmanlı)</h3>
+<table>
+<thead>
+<tr>
+<th>Katman</th>
+<th>Varsayılan</th>
+<th>Override</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cooldown (aynı tenant + endpoint)</td>
+<td>30 sn</td>
+<td>Tenant override tablosu</td>
+</tr>
+<tr>
+<td>Tenant günlük çağrı</td>
+<td>50</td>
+<td>Aynı</td>
+</tr>
+<tr>
+<td>Tenant aylık çağrı</td>
+<td>500</td>
+<td>Aynı</td>
+</tr>
+<tr>
+<td>Tenant aylık maliyet USD</td>
+<td>$2</td>
+<td>Aynı</td>
+</tr>
+<tr>
+<td>Sistem geneli günlük</td>
+<td>1.000</td>
+<td>env: <code>LLM_QUOTA_LIMITS</code></td>
+</tr>
+<tr>
+<td>Sistem aylık maliyet</td>
+<td>$50</td>
+<td>env</td>
+</tr>
+<tr>
+<td>Alarm eşiği</td>
+<td>%80</td>
+<td>env</td>
+</tr>
+</tbody>
+</table>
+<h3 id="95-endpoint-kategorileri">9.5 Endpoint Kategorileri</h3>
+<table>
+<thead>
+<tr>
+<th>Kod</th>
+<th>Hangi Servis</th>
+<th>Tipik Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai_pivot</code></td>
+<td>Strategy Pivot Advisor</td>
+<td>~2.000</td>
+</tr>
+<tr>
+<td><code>ai_coach</code></td>
+<td>Bireysel performans koçluğu</td>
+<td>~1.500</td>
+</tr>
+<tr>
+<td><code>ai_summary</code></td>
+<td>Yönetici özet</td>
+<td>~3.000</td>
+</tr>
+<tr>
+<td><code>ai_early_warning</code></td>
+<td>Erken uyarı</td>
+<td>~1.000</td>
+</tr>
+<tr>
+<td><code>ai_advisor</code></td>
+<td>Strateji danışmanı</td>
+<td>~2.500</td>
+</tr>
+</tbody>
+</table>
+<h3 id="96-byok-bring-your-own-key">9.6 BYOK (Bring Your Own Key)</h3>
+<p>Tenant kendi API anahtarını <code>/sp/ayarlar/ai</code> sayfasından girer. Fernet ile şifreli saklanır. Kullandığında <strong>sistem kotası harcanmaz</strong>, kendi sağlayıcı faturasından düşer.</p>
+<h3 id="97-politika-belgesi">9.7 Politika Belgesi</h3>
+<p>Tüm detay: <a href="../AI-POLITIKASI.md"><code>docs/AI-POLITIKASI.md</code></a> (13 bölüm, sözleşme niteliğinde).</p>
+<hr />
+<h2 id="10-plan-year-sistemi">10. Plan Year Sistemi</h2>
+<h3 id="101-yasam-dongusu">10.1 Yaşam Döngüsü</h3>
+<pre><code>draft → active → closed → archived
+</code></pre>
+<h3 id="102-klonlama-modlar">10.2 Klonlama Modları</h3>
+<p><strong>A) Overlay Clone (<code>clone_plan_year</code>)</strong>: Sadece YearConfig kayıtları açar, ana entity'ler yeniden kullanılır.</p>
+<p><strong>B) Full Clone (<code>clone_full_plan_year</code>)</strong>: Tüm strateji, alt strateji, süreç, KPI, faaliyet, proje yeniden yaratılır. <code>source_*_id</code> zinciri ile orijini takip eder.</p>
+<h3 id="103-scenario-branching">10.3 Scenario Branching</h3>
+<p>Aynı yıla birden fazla PlanYear (baseline + optimistic + pessimistic). Partial unique index: <code>WHERE scenario_of_id IS NULL</code>.</p>
+<pre><code class="language-sql">CREATE UNIQUE INDEX uq_plan_year_tenant_year_main
+ON plan_years (tenant_id, year)
+WHERE scenario_of_id IS NULL;
+</code></pre>
+<p>Senaryolar bu kısıtın dışında — istediğiniz kadar açılabilir.</p>
+<h3 id="104-year-config-override">10.4 Year Config Override</h3>
+<p>Klonlanmış kayıtlar üstüne yıllık config tabloları (KpiYearConfig, StrategyYearConfig, ProcessYearConfig) override edilebilir. Örnek: bir KPI'nın 2026 hedefi 100, 2027'de 120 olabilir — KPI'nın kendisi değişmez, sadece YearConfig.</p>
+<hr />
+<h2 id="11-sk-sorulan-sorular">11. Sık Sorulan Sorular</h2>
+<h3 id="s1-bir-kpi-nasl-izlenir">S1: "Bir KPI nasıl izlenir?"</h3>
+<ol>
+<li>Yönetici <strong>ProcessKpi</strong> tanımlar (hedef, ölçüm birimi, dönem)</li>
+<li>Atanan kullanıcı periyodik veri girer → <code>kpi_data</code> tablosu</li>
+<li>K-Radar/K-Rapor grafik + trend + uyarı gösterir</li>
+<li>Anomali (z-score ≥ 2.0) tespit edilirse Replan Trigger devreye girebilir</li>
+</ol>
+<h3 id="s2-yllk-plan-nasl-yenilenir">S2: "Yıllık plan nasıl yenilenir?"</h3>
+<ol>
+<li>Yönetici <code>/sp/sihirbaz/yeni-yil</code> açar</li>
+<li>Kaynak yılı seçer</li>
+<li>Önizleme: Hangi stratejiler/süreçler klonlanacak</li>
+<li>Uygula → tüm yapı yeni <code>PlanYear</code>'a kopyalanır (<code>source_*_id</code> zinciri ile)</li>
+<li>Yeni yıl <code>draft</code> status'ta açılır, üzerinde değişiklik yapılır</li>
+<li>Hazır olunca <code>active</code> yapılır, önceki yıl <code>closed</code> olur</li>
+</ol>
+<h3 id="s3-senaryo-planlama-ne-demek">S3: "Senaryo planlama ne demek?"</h3>
+<p>Tek bir plan yılından alternatif gelecek varyasyonları üretmek. Örnek: "2027 baseline" + "2027 optimistic (yatırım büyütülürse)" + "2027 pessimistic (kriz olursa)". Her senaryo bağımsız KPI hedefi, Initiative listesi, kaynak dağılımı tutar. Exec dashboard'da karşılaştırılır.</p>
+<h3 id="s4-initiative-nedir-strateji-ile-fark-ne">S4: "Initiative nedir, strateji ile farkı ne?"</h3>
+<ul>
+<li><strong>Strategy:</strong> Uzun vadeli kurumsal yön (3-5 yıl), göreceli sabit</li>
+<li><strong>Initiative:</strong> Belirli bir değişimi gerçekleştirmek için açılan, bütçeli, dönemli, sorumluluğa atanmış proje-benzeri girişim. <code>start_year</code> ve <code>end_year</code> olur, milestone'lara bölünür. Plan year'dan bağımsız yaşam döngüsü.</li>
+</ul>
+<h3 id="s5-ceyreklik-review-niye-var">S5: "Çeyreklik review niye var?"</h3>
+<p>Modern strateji cadence pattern'ı:<br />
+- <strong>Yıllık:</strong> Vizyon ve ana strateji (sabit)<br />
+- <strong>Çeyreklik:</strong> Strateji ayarlama, pivot kararı<br />
+- <strong>Aylık:</strong> Roadmap iyileştirme, operasyonel düzeltme</p>
+<p><code>/sp/ceyreklik-review</code> çeyrek özet üretir: KPI sağlığı, Initiative ilerleme, Risk değişimi, Anomali listesi, Trigger event'leri → karar tablosu.</p>
+<h3 id="s6-replan-trigger-nasl-calsr">S6: "Replan trigger nasıl çalışır?"</h3>
+<p>Admin trigger tanımlar (<code>/sp/replan-triggers</code>):<br />
+- Tip: <code>kpi_below_target</code>, <code>overdue_activity_pct</code>, <code>risk_score</code>, <code>anomaly_high</code><br />
+- Koşul: KPI ID + threshold + consecutive_periods<br />
+- Aksiyon: <code>notify</code> / <code>suggest_pivot</code> / <code>create_review</code></p>
+<p>"Şimdi Değerlendir" butonu (veya cron) çalışınca koşullar kontrol edilir, tetiklenen trigger'lar için <code>ReplanTriggerEvent</code> kaydı açılır, AI Pivot Advisor çağrılır.</p>
+<h3 id="s7-stratejik-saglk-skoru-nasl-hesaplanr">S7: "Stratejik sağlık skoru nasıl hesaplanır?"</h3>
+<p><code>build_exec_snapshot()</code> içinde ağırlıklı 4 boyut:</p>
+<table>
+<thead>
+<tr>
+<th>Boyut</th>
+<th style="text-align: right;">Ağırlık</th>
+<th>Formül</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KPI hedef üstü</td>
+<td style="text-align: right;">%40</td>
+<td><code>on_target_pct × 0.4</code></td>
+</tr>
+<tr>
+<td>KPI veri kapsama</td>
+<td style="text-align: right;">%20</td>
+<td><code>(with_data/total) × 100 × 0.2</code></td>
+</tr>
+<tr>
+<td>Faaliyet vaktinde</td>
+<td style="text-align: right;">%20</td>
+<td><code>(100 - overdue%) × 0.2</code></td>
+</tr>
+<tr>
+<td>Sıfır kritik risk</td>
+<td style="text-align: right;">%10</td>
+<td>varsa +10</td>
+</tr>
+<tr>
+<td>Sıfır yüksek anomali</td>
+<td style="text-align: right;">%10</td>
+<td>varsa +10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sonuç:</strong> 0-100 arası composite skor.</p>
+<p><strong>Bu basit bir heuristic.</strong> Sektör spesifik benchmark, geçmiş trend, vizyon ağırlığı yok. Olgunlaşma için: docs'taki ileri model önerileri.</p>
+<h3 id="s8-ai-onerileri-guvenilir-mi">S8: "AI önerileri güvenilir mi?"</h3>
+<ul>
+<li><strong>Sistem garantisi:</strong> LLM yoksa heuristic motor çalışır, sistem hiçbir zaman çökmez</li>
+<li><strong>Bağlam:</strong> Şu an sadece tenant'ın güncel snapshot'ı gönderiliyor — sektör/tarihçe/vizyon yok. Bu yüzden öneriler "genelci"</li>
+<li><strong>Karar mekanizması:</strong> Öneri ekrana basılıyor — otomatik aksiyon almıyor. Insan yöneticisi karar verir</li>
+<li><strong>Şeffaflık:</strong> Hangi LLM kullanıldı, kaç token harcandı, maliyet ne — UI'da görünür</li>
+</ul>
+<p><strong>Doğru kullanım:</strong> Öneriyi "akıllı görünen 1. seviye danışman" gibi alın. Stratejik kararı uygulamadan önce kendiniz değerlendirin.</p>
+<h3 id="s9-veri-guvenligi-nasl-saglanyor">S9: "Veri güvenliği nasıl sağlanıyor?"</h3>
+<ul>
+<li><strong>Multi-tenant izolasyon:</strong> Tüm sorgularda <code>tenant_id</code> filtresi zorunlu</li>
+<li><strong>CSRF koruması:</strong> Flask-WTF, JSON API'lerde <code>@csrf.exempt</code> ile bypass (login_required + tenant_id ile yeterli)</li>
+<li><strong>HTTPS:</strong> Production'da Talisman ile zorunlu</li>
+<li><strong>CSP:</strong> Content Security Policy headers</li>
+<li><strong>Şifre hash:</strong> Werkzeug PBKDF2</li>
+<li><strong>2FA:</strong> TOTP destekli</li>
+<li><strong>Audit log:</strong> AuditLog tablosu (login, kritik aksiyon)</li>
+<li><strong>LLM key:</strong> Fernet şifreli (<code>SECRET_KEY</code> türevi)</li>
+</ul>
+<h3 id="s10-mobil-cihazdan-kullanlabilir-mi">S10: "Mobil cihazdan kullanılabilir mi?"</h3>
+<ul>
+<li>Responsive design (Tailwind breakpoint'leri)</li>
+<li>Sidebar mobile'da hamburger menüye dönüşür</li>
+<li>Tabletler için optimal (CEO/CFO iPad senaryosu)</li>
+<li>Mobil özel app yok — web responsive</li>
+</ul>
+<hr />
+<h2 id="12-teknik-mimari">12. Teknik Mimari</h2>
+<h3 id="121-teknoloji-stack">12.1 Teknoloji Stack</h3>
+<table>
+<thead>
+<tr>
+<th>Katman</th>
+<th>Teknoloji</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Backend</strong></td>
+<td>Python 3.13, Flask 3.1, SQLAlchemy 2.0</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>PostgreSQL (production), SQLite (geliştirme yedek)</td>
+</tr>
+<tr>
+<td><strong>Migration</strong></td>
+<td>Alembic</td>
+</tr>
+<tr>
+<td><strong>Cache</strong></td>
+<td>Flask-Caching (Redis production)</td>
+</tr>
+<tr>
+<td><strong>Rate Limit</strong></td>
+<td>Flask-Limiter (Redis production)</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>Flask-Login + pyotp (TOTP) + Authlib (Google OAuth)</td>
+</tr>
+<tr>
+<td><strong>Frontend</strong></td>
+<td>Jinja2 templates + Tailwind CDN + Alpine.js</td>
+</tr>
+<tr>
+<td><strong>Chart</strong></td>
+<td>Chart.js 4.4, vis-network</td>
+</tr>
+<tr>
+<td><strong>Modal/Toast</strong></td>
+<td>SweetAlert2 11 + custom <code>mc-modal</code></td>
+</tr>
+<tr>
+<td><strong>PDF</strong></td>
+<td>WeasyPrint → reportlab fallback</td>
+</tr>
+<tr>
+<td><strong>WSGI Server</strong></td>
+<td>Waitress (production), Werkzeug (dev)</td>
+</tr>
+<tr>
+<td><strong>AI</strong></td>
+<td>google-generativeai, openai, anthropic SDKs</td>
+</tr>
+<tr>
+<td><strong>Container</strong></td>
+<td>Docker (Oracle VM production)</td>
+</tr>
+<tr>
+<td><strong>SSL</strong></td>
+<td>pip-system-certs (Windows uyumu için)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="122-dosya-yaps">12.2 Dosya Yapısı</h3>
+<pre><code>kokpitim/
+├── app/
+│   ├── models/              # Tüm SQLAlchemy modelleri
+│   ├── services/            # İş mantığı katmanı
+│   │   ├── llm_gateway.py
+│   │   ├── llm_quota_service.py
+│   │   ├── ai_pivot_advisor_service.py
+│   │   ├── exec_dashboard_service.py
+│   │   ├── hoshin_xmatrix_service.py
+│   │   ├── project_evm_service.py
+│   │   ├── weekly_digest_service.py
+│   │   ├── plan_year_service.py
+│   │   ├── plan_year_template_service.py
+│   │   └── ...
+│   ├── templates_data/      # JSON şablonlar (SBB Kamu vb.)
+│   └── utils/               # Yardımcılar (security, plan_year_filter, vb.)
+├── micro/modules/           # Blueprint modülleri
+│   ├── sp/                  # Stratejik Planlama
+│   ├── surec/               # Süreç Yönetimi
+│   ├── k_radar/             # KPI Radar
+│   ├── k_rapor/             # Raporlama
+│   ├── proje/               # Proje Yönetimi
+│   ├── bireysel/            # Bireysel Karne
+│   ├── kurum/               # Kurum Ayarları
+│   ├── admin/               # Sistem Yönetimi
+│   ├── shared/              # Auth, ayarlar, bildirim
+│   └── ...
+├── ui/templates/platform/   # Jinja2 templateler
+│   ├── base.html
+│   ├── sp/                  # 18 sayfa
+│   ├── surec/               # 3 sayfa
+│   ├── k_radar/             # 16 sayfa
+│   ├── proje/               # 9 sayfa
+│   └── ...
+├── ui/static/platform/      # CSS, JS, vendor
+│   ├── css/
+│   │   ├── components.css   # Tasarım sistemi (1.3K satır)
+│   │   ├── sidebar.css
+│   │   └── ...
+│   └── js/
+├── platform_core/           # Blueprint registry
+├── extensions.py            # Flask extensions
+├── config.py                # Konfigürasyon
+├── app.py                   # Entry point (port 5001)
+├── migrations/versions/     # Alembic
+├── docs/                    # Dokümantasyon
+│   ├── AI-POLITIKASI.md
+│   ├── UI-KILAVUZU.md
+│   ├── KURALLAR-MASTER.md
+│   └── test/                # Bu dosya + kılavuzlar
+├── scripts/ops/oracle/      # VM deploy script'leri
+└── requirements*.txt        # Bağımlılıklar
+</code></pre>
+<h3 id="123-gelistirme-aks">12.3 Geliştirme Akışı</h3>
+<ul>
+<li><strong>Branch disiplini:</strong> <code>claude/&lt;konu&gt;</code> veya <code>feature/&lt;konu&gt;</code> → main'e <code>--no-ff</code> merge</li>
+<li><strong>Commit kalıbı:</strong> Conventional Commits (<code>feat(sp): ...</code>, <code>fix(...)</code>, <code>docs(...)</code>)</li>
+<li><strong>Co-author:</strong> Claude tarafından yapılan değişikliklerde <code>Co-Authored-By: Claude Opus 4.7</code></li>
+<li><strong>Tag stratejisi:</strong> <code>baseline-YYYY-MM-DD</code> (stabil nokta), <code>deploy-YYYY-MM-DD</code> (VM'e gönderim)</li>
+<li><strong>TASKLOG:</strong> Her görev sonunda <code>docs/TASKLOG.md</code>'ye kayıt</li>
+</ul>
+<h3 id="124-deploy-aks">12.4 Deploy Akışı</h3>
+<ol>
+<li>Yerelde test edilmiş kod main'e merge edilir</li>
+<li><code>git push origin main</code></li>
+<li>VM'de <code>ssh ubuntu@129.159.30.175</code></li>
+<li><code>cd /opt/kokpitim/app &amp;&amp; sudo bash scripts/ops/oracle/oracle_safe_deploy.sh</code></li>
+<li>Script: PostgreSQL yedeği + git pull + Docker rebuild + Alembic upgrade + satır sayısı doğrulama</li>
+</ol>
+<h3 id="125-performans">12.5 Performans</h3>
+<ul>
+<li><strong>N+1 koruması:</strong> selectinload, joinedload her query'de</li>
+<li><strong>Index'ler:</strong> tenant_id, plan_year_id, process_id, created_at sık filtre kolonlarında</li>
+<li><strong>Cache:</strong> KPI trend (1 saat), tenant config (30 dk)</li>
+<li><strong>Connection pool:</strong> SQLAlchemy pool_size=20, max_overflow=40</li>
+</ul>
+<hr />
+<h2 id="belge-hakknda">Belge Hakkında</h2>
+<p>Bu belge yaşayan bir doküman. Yeni özellik eklendiğinde, yeni sayfa açıldığında bu belge güncellenir.</p>
+<p><strong>Bağlantılı belgeler:</strong><br />
+- <a href="../UI-KILAVUZU.md"><code>docs/UI-KILAVUZU.md</code></a> — Tasarım sistemi<br />
+- <a href="../AI-POLITIKASI.md"><code>docs/AI-POLITIKASI.md</code></a> — AI çağrı kuralları<br />
+- <a href="../KURALLAR-MASTER.md"><code>docs/KURALLAR-MASTER.md</code></a> — Kodlama disiplini<br />
+- <a href="tenant_admin_kullanim_kilavuzu.md"><code>docs/test/tenant_admin_kullanim_kilavuzu.md</code></a> — Admin kılavuzu<br />
+- <a href="tenant_kullanici_kilavuzu.md"><code>docs/test/tenant_kullanici_kilavuzu.md</code></a> — Standart kullanıcı kılavuzu</p>
+<p><strong>Sorular için:</strong> Bu belgede cevap bulamıyorsanız <code>docs/</code> klasörünü inceleyin veya proje ekibine sorun.</p>
+<div class="gallery">
+<h2>📸 Ekran Görüntüleri Galerisi</h2>
+<p style="color:#64748b;">Aşağıda Kokpitim platformunun ana ekranlarının tam görüntüleri yer almaktadır.</p>
+<div class="gallery-grid">
+<div>
+  <h3>Masaustu</h3>
+  <img src="screenshots/01-masaustu.png" class="screenshot" alt="01-masaustu">
+</div>
+<div>
+  <h3>Sp Anasayfa</h3>
+  <img src="screenshots/02-sp-anasayfa.png" class="screenshot" alt="02-sp-anasayfa">
+</div>
+<div>
+  <h3>Plan Yillari</h3>
+  <img src="screenshots/03-plan-yillari.png" class="screenshot" alt="03-plan-yillari">
+</div>
+<div>
+  <h3>Exec Dashboard</h3>
+  <img src="screenshots/04-exec-dashboard.png" class="screenshot" alt="04-exec-dashboard">
+</div>
+<div>
+  <h3>Ceyreklik Review</h3>
+  <img src="screenshots/05-ceyreklik-review.png" class="screenshot" alt="05-ceyreklik-review">
+</div>
+<div>
+  <h3>Initiatives</h3>
+  <img src="screenshots/06-initiatives.png" class="screenshot" alt="06-initiatives">
+</div>
+<div>
+  <h3>Senaryolar</h3>
+  <img src="screenshots/07-senaryolar.png" class="screenshot" alt="07-senaryolar">
+</div>
+<div>
+  <h3>Hoshin Xmatrix</h3>
+  <img src="screenshots/08-hoshin-xmatrix.png" class="screenshot" alt="08-hoshin-xmatrix">
+</div>
+<div>
+  <h3>Blue Ocean</h3>
+  <img src="screenshots/09-blue-ocean.png" class="screenshot" alt="09-blue-ocean">
+</div>
+<div>
+  <h3>Vrio</h3>
+  <img src="screenshots/10-vrio.png" class="screenshot" alt="10-vrio">
+</div>
+<div>
+  <h3>Replan Triggers</h3>
+  <img src="screenshots/11-replan-triggers.png" class="screenshot" alt="11-replan-triggers">
+</div>
+<div>
+  <h3>Strateji Haritasi</h3>
+  <img src="screenshots/12-strateji-haritasi.png" class="screenshot" alt="12-strateji-haritasi">
+</div>
+<div>
+  <h3>Ai Ayarlari</h3>
+  <img src="screenshots/13-ai-ayarlari.png" class="screenshot" alt="13-ai-ayarlari">
+</div>
+<div>
+  <h3>Llm Usage</h3>
+  <img src="screenshots/14-llm-usage.png" class="screenshot" alt="14-llm-usage">
+</div>
+<div>
+  <h3>K Radar</h3>
+  <img src="screenshots/15-k-radar.png" class="screenshot" alt="15-k-radar">
+</div>
+<div>
+  <h3>Surec Listesi</h3>
+  <img src="screenshots/16-surec-listesi.png" class="screenshot" alt="16-surec-listesi">
+</div>
+<div>
+  <h3>Bireysel Karne</h3>
+  <img src="screenshots/17-bireysel-karne.png" class="screenshot" alt="17-bireysel-karne">
+</div>
+<div>
+  <h3>Projeler</h3>
+  <img src="screenshots/18-projeler.png" class="screenshot" alt="18-projeler">
+</div>
+<div>
+  <h3>Bildirim</h3>
+  <img src="screenshots/20-bildirim.png" class="screenshot" alt="20-bildirim">
+</div>
+</div></div>
+</body>
+</html>
