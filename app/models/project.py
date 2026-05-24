@@ -79,6 +79,16 @@ class PlanProjectTask(db.Model):
     end_date = db.Column(db.Date, nullable=True)
 
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+
+    # S62: EVM alanları
+    progress_pct = db.Column(db.Float, nullable=False, default=0.0)
+    planned_budget = db.Column(db.Numeric(18, 2), nullable=True)
+    actual_cost = db.Column(db.Numeric(18, 2), nullable=True, default=0)
+    depends_on_task_id = db.Column(
+        db.Integer, db.ForeignKey("plan_project_tasks.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
         db.DateTime,

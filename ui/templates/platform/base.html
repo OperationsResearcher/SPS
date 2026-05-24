@@ -127,6 +127,30 @@
                 <span class="sidebar-item-icon"><i class="fas fa-bolt"></i></span>
                 <span class="sidebar-item-text">Replan Trigger</span>
             </a>
+            <a href="{{ url_for('app_bp.sp_xmatrix_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'xmatrix' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-th"></i></span>
+                <span class="sidebar-item-text">Hoshin X-Matrix</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_blue_ocean_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'blue_ocean' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-water"></i></span>
+                <span class="sidebar-item-text">Blue Ocean</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_vrio_page') }}"
+                class="sidebar-item sidebar-item-sub {% if 'vrio' in ep %}active{% endif %}"
+                style="padding-left:32px; font-size:13px;">
+                <span class="sidebar-item-icon"><i class="fas fa-gem"></i></span>
+                <span class="sidebar-item-text">VRIO Analizi</span>
+            </a>
+            <a href="{{ url_for('app_bp.sp_digest_pdf') }}"
+                class="sidebar-item sidebar-item-sub"
+                style="padding-left:32px; font-size:13px;" target="_blank">
+                <span class="sidebar-item-icon"><i class="fas fa-file-pdf"></i></span>
+                <span class="sidebar-item-text">Haftalık PDF</span>
+            </a>
             <a href="{{ url_for('app_bp.sp_templates_page') }}"
                 class="sidebar-item sidebar-item-sub {% if 'templates' in ep and 'sp' in ep %}active{% endif %}"
                 style="padding-left:32px; font-size:13px;">

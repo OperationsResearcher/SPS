@@ -1,0 +1,120 @@
+{% extends "platform/base.html" %}
+{% block title %}Hoshin X-Matrix — Kokpitim{% endblock %}
+{% block page_title %}Hoshin Kanri X-Matrix{% endblock %}
+
+{% block content %}
+<div style="max-width:1400px; margin:0 auto;"
+     id="xm-root"
+     data-url="{{ url_for('app_bp.sp_api_xmatrix') }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+      <i class="fas fa-th"></i> Hoshin Kanri X-Matrix
+    </h2>
+    <p style="font-size:13px; color:#64748b; margin:0;">
+      4 çeyrek: <b>Stratejiler ↔ Yıllık Hedefler ↔ Initiative'ler ↔ KPI'lar</b> — korelasyon dolu hücrelerle.
+    </p>
+  </div>
+
+  <div id="xm-loading" style="padding:30px;text-align:center;color:#64748b;">
+    <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+  </div>
+  <div id="xm-grid" style="display:none;"></div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById('xm-root');
+
+  function shortLabel(s, n=22) {
+    if (!s) return '';
+    return s.length > n ? s.slice(0, n-1) + '…' : s;
+  }
+
+  function buildGrid(d) {
+    const N = d.north, E = d.east, S = d.south, W = d.west;
+    const c = d.correlations;
+
+    // Lookup setleri (hızlı kesişim)
+    const NE = new Set(c.north_east.map(x => x.n + '_' + x.e));
+    const NW = new Set(c.north_west.map(x => x.n + '_' + x.w));
+    const ES = new Set(c.east_south.map(x => x.e + '_' + x.s));
+    const SW = new Set(c.south_west.map(x => x.s + '_' + x.w));
+
+    // Layout: ortada NW kare (E x N), üstte W ekseni (kpi), altta S ekseni (initiative)
+    //
+    //               [ KPI başlıkları (W) — sütun ]
+    //  [ Strateji (N) - satır ]   ●  ●          [ SubStr (E) — sütun ]
+    //                                            (yan sağda)
+    //               [ Initiative (S) — satır altta ]
+    //
+    // Sadeleştirme: 4 ayrı tablo yerine **tek HTML tablosu**:
+    //   sütunlar : (boş)   | KPI x len(W)               | SubStrategy x len(E)
+    //   satırlar :
+    //     1. başlıklar (KPI kodları üst)
+    //     2. tek tek N (Strategy)  — hücrelerde NW ve NE işaretlerini koyar
+    //     3. Initiative satırları — SW ve ES işaretleri
+    //     4. SubStrategy başlıkları en sağ sütun kodları zaten ilk satırda
+
+    const html = [];
+    html.push('<div style="overflow:auto;background:#fff;border-radius:8px;padding:12px;">');
+    html.push('<table style="border-collapse:collapse;font-size:11px;">');
+
+    // Header row 1 — boş köşe + KPI kodları + SubStrategy kodları
+    html.push('<tr><th style="padding:4px;background:#f1f5f9;border:1px solid #e2e8f0;width:200px;">↘</th>');
+    W.forEach(w => html.push(`<th title="${(w.code||'')+' '+w.name}" style="padding:4px;background:#fef3c7;border:1px solid #e2e8f0;writing-mode:vertical-rl;transform:rotate(180deg);min-width:24px;height:120px;font-size:10px;">${shortLabel(w.code||w.name, 18)}</th>`));
+    E.forEach(e => html.push(`<th title="${(e.code||'')+' '+e.title}" style="padding:4px;background:#dbeafe;border:1px solid #e2e8f0;writing-mode:vertical-rl;transform:rotate(180deg);min-width:24px;height:120px;font-size:10px;">${shortLabel(e.code||e.title, 18)}</th>`));
+    html.push('</tr>');
+
+    // Strategy (North) rows
+    N.forEach(n => {
+      html.push(`<tr><td title="${n.title}" style="padding:6px;background:#4f46e5;color:#fff;border:1px solid #312e81;font-weight:600;">${shortLabel((n.code||'')+' '+n.title, 30)}</td>`);
+      W.forEach(w => {
+        const hit = NW.has(n.id + '_' + w.id);
+        html.push(`<td style="text-align:center;border:1px solid #e2e8f0;background:${hit?'#fde68a':'#fff'};">${hit?'●':''}</td>`);
+      });
+      E.forEach(e => {
+        const hit = NE.has(n.id + '_' + e.id);
+        html.push(`<td style="text-align:center;border:1px solid #e2e8f0;background:${hit?'#bfdbfe':'#fff'};">${hit?'●':''}</td>`);
+      });
+      html.push('</tr>');
+    });
+
+    // Initiative (South) rows
+    S.forEach(s => {
+      const color = s.progress_pct >= 70 ? '#10b981' : s.progress_pct >= 30 ? '#f59e0b' : '#ef4444';
+      html.push(`<tr><td title="${s.name}" style="padding:6px;background:#db2777;color:#fff;border:1px solid #9d174d;font-size:10px;">🚀 ${shortLabel(s.name, 28)} <span style="background:rgba(0,0,0,0.2);padding:1px 4px;border-radius:3px;">%${Math.round(s.progress_pct)}</span></td>`);
+      W.forEach(w => {
+        const hit = SW.has(s.id + '_' + w.id);
+        html.push(`<td style="text-align:center;border:1px solid #e2e8f0;background:${hit?'#fbcfe8':'#fff'};">${hit?'●':''}</td>`);
+      });
+      E.forEach(e => {
+        const hit = ES.has(e.id + '_' + s.id);
+        html.push(`<td style="text-align:center;border:1px solid #e2e8f0;background:${hit?'#bfdbfe':'#fff'};">${hit?'●':''}</td>`);
+      });
+      html.push('</tr>');
+    });
+
+    html.push('</table>');
+    html.push('<div style="margin-top:12px;font-size:12px;color:#64748b;">');
+    html.push(`<b>Sayım:</b> ${N.length} strateji · ${E.length} alt strateji · ${S.length} initiative · ${W.length} KPI`);
+    html.push(' · <span style="color:#4f46e5;">■</span> Strateji <span style="color:#db2777;">■</span> Initiative <span style="background:#fef3c7;padding:0 4px;">KPI başlığı</span> <span style="background:#dbeafe;padding:0 4px;">Alt strateji başlığı</span>');
+    html.push('</div></div>');
+    return html.join('');
+  }
+
+  fetch(root.dataset.url)
+    .then(r => r.json())
+    .then(j => {
+      document.getElementById('xm-loading').style.display = 'none';
+      if (!j.success) { alert('Hata: ' + (j.error||'')); return; }
+      const g = document.getElementById('xm-grid');
+      g.innerHTML = buildGrid(j);
+      g.style.display = 'block';
+    })
+    .catch(err => {
+      document.getElementById('xm-loading').innerHTML = 'Hata: ' + err.message;
+    });
+})();
+</script>
+{% endblock %}

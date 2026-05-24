@@ -1,0 +1,104 @@
+{% extends "platform/base.html" %}
+{% block title %}VRIO Matrisi — Kokpitim{% endblock %}
+{% block page_title %}VRIO Analizi (Resource-Based View){% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;"
+     id="vrio-root"
+     data-url="{{ url_for('app_bp.sp_api_vrio_list') }}"
+     data-create-url="{{ url_for('app_bp.sp_api_vrio_create') }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-gem"></i> VRIO Analizi
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Barney çerçevesi: <b>V</b>aluable • <b>R</b>are • <b>I</b>nimitable • <b>O</b>rganized → rekabet avantajı sınıflandırması.
+      </p>
+    </div>
+    <button class="mc-btn mc-btn-primary" id="vrio-new"><i class="fas fa-plus"></i> Yeni Kaynak</button>
+  </div>
+
+  <div class="mc-card" style="padding:14px;overflow:auto;">
+    <table id="vrio-tbl" style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:#f1f5f9;">
+          <th style="padding:8px;text-align:left;">Kaynak</th>
+          <th style="padding:8px;text-align:left;">Kategori</th>
+          <th style="padding:8px;text-align:center;">V</th>
+          <th style="padding:8px;text-align:center;">R</th>
+          <th style="padding:8px;text-align:center;">I</th>
+          <th style="padding:8px;text-align:center;">O</th>
+          <th style="padding:8px;text-align:left;">Sonuç</th>
+        </tr>
+      </thead>
+      <tbody id="vrio-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById('vrio-root');
+
+  function labelColor(l) {
+    return {
+      'Rekabetçi Dezavantaj': '#dc2626',
+      'Rekabet Paritesi': '#94a3b8',
+      'Geçici Rekabet Avantajı': '#0ea5e9',
+      'Kullanılmayan Avantaj': '#f59e0b',
+      'Sürdürülebilir Rekabet Avantajı': '#059669',
+    }[l] || '#475569';
+  }
+
+  function check(b, rid, field) {
+    return `<input type="checkbox" ${b?'checked':''} onchange="vrio_update(${rid}, '${field}', this.checked)">`;
+  }
+
+  async function load() {
+    const r = await fetch(root.dataset.url);
+    const j = await r.json();
+    const tbody = document.getElementById('vrio-body');
+    if (!j.items || !j.items.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:#64748b;">Henüz kaynak yok.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = j.items.map(r => `
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:8px;"><b>${r.name}</b>${r.description?`<div style="font-size:11px;color:#64748b;">${r.description}</div>`:''}</td>
+        <td style="padding:8px;color:#64748b;">${r.category || '—'}</td>
+        <td style="padding:8px;text-align:center;">${check(r.is_valuable, r.id, 'is_valuable')}</td>
+        <td style="padding:8px;text-align:center;">${check(r.is_rare, r.id, 'is_rare')}</td>
+        <td style="padding:8px;text-align:center;">${check(r.is_inimitable, r.id, 'is_inimitable')}</td>
+        <td style="padding:8px;text-align:center;">${check(r.is_organized, r.id, 'is_organized')}</td>
+        <td style="padding:8px;"><span style="background:${labelColor(r.competitive_label)};color:#fff;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;">${r.competitive_label}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  window.vrio_update = async function(rid, field, value) {
+    const r = await fetch('/sp/api/vrio/' + rid, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({[field]: value}),
+    });
+    if (r.ok) load();
+  };
+
+  document.getElementById('vrio-new').onclick = async () => {
+    const name = prompt('Kaynak/yetenek adı:');
+    if (!name) return;
+    const category = prompt('Kategori (tangible/intangible/human/financial/organizational):', 'intangible');
+    const description = prompt('Açıklama:', '');
+    const r = await fetch(root.dataset.createUrl, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, category, description}),
+    });
+    if (r.ok) load();
+  };
+
+  load();
+})();
+</script>
+{% endblock %}

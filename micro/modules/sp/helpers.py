@@ -46,9 +46,10 @@ _SP_ROLES = (
     "kurum_yoneticisi",
     "ust_yonetim",
 )
-def _check_sp_role():
+def _check_sp_role(user=None):
     """SP sayfasında düzenleme / silme yetkisi olan roller."""
-    return current_user.role and current_user.role.name in _SP_ROLES
+    u = user or current_user
+    return u.role and u.role.name in _SP_ROLES
 
 
 def sp_manage_required(f):

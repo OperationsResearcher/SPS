@@ -1,7 +1,59 @@
-﻿# TASKLOG — Kokpitim Görev Takip Defteri
+# TASKLOG — Kokpitim Görev Takip Defteri
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
+
+## TASK-121 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Otonom iş mantığı testinin (`tests/otonom_is_mantigi_testi.py`) veritabanı kısıt hatası nedeniyle düzeltilmesi
+**Modül:** tests/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `tests/otonom_is_mantigi_testi.py` → `populate_base_data` aşamasında oluşturulan test kurumu için eksik olan `tenant_id=1` ataması eklendi.
+
+### Yapılan İşlem
+Yeni projede "tenant isolation" ve "NOT NULL tenant_id" veri kısıtlamaları getirildiğinden dolayı eski test veritabanında SQLite üzerinde hata fırlatan `IntegrityError` (NOT NULL constraint failed: kurum.tenant_id) sorunu giderilmiştir. Yapılan düzeltme sonrası tüm otonom iş mantığı testleri (`unittest`) başarıyla `OK` statüsünde tamamlanmıştır.
+
+### Notlar
+Test çıktılarında Windows terminal CP1254 encoding uyumsuzluğu nedeniyle emoji (`✓`) karakterlerinden kaynaklanan hata, `PYTHONIOENCODING=utf-8` parametresiyle çözümlenmektedir.
+
+---
+
+## TASK-120 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** EFQM Olgunluk Modülü için arayüze görsel sonuç kartı ve detay modalı entegre edilmesi
+**Modül:** ui/templates/platform/k_radar/, ui/static/platform/js/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `ui/templates/platform/k_radar/ks.html` → EFQM card, data-api-efqm niteliği ve EFQM sonuç modalı eklendi.
+- `ui/static/platform/js/k_radar_ks.js` → `API.efqm` adresi eşleştirildi, açılışta verileri fetch eden boot kodları eklendi ve `loadModal` switch-case yapısına `"efqm"` eklendi.
+
+### Yapılan İşlem
+Mevcut backend modelleri (`ProcessMaturity`), API rotaları (`/k-radar/api/ks/efqm`) ve hesaplama motoru tam hazır olan EFQM Olgunluk modülü için KS-Radar sayfasına görsel sonuç kartı eklendi. Kart tıklandığında açılan ve başarı aralıkları/puan bantlarını (KPI 327) listeleyen şık bir modal entegre edildi.
+
+### Notlar
+Herhangi bir şema veya backend değişikliği gerektirmeden, mevcut altyapı arayüze tam entegre edilmiştir.
+
+---
+
+## TASK-119 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Stratejik Planlama (/sp/) sayfalarındaki 500 hatalarının (TypeError: _check_sp_role() takes 0 positional arguments but 1 was given) düzeltilmesi
+**Modül:** micro/modules/sp/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `micro/modules/sp/helpers.py` → `_check_sp_role` fonksiyonu parametresiz çağrılara ve `current_user` ile yapılan parametreli çağrılara uyumlu hale getirildi (`def _check_sp_role(user=None):` yapıldı).
+
+### Yapılan İşlem
+Stratejik planlama rotalarındaki (örn. `/sp/ceyreklik-review`, `/sp/donemler` vb.) yetki denetimi sırasında fırlatılan `TypeError: _check_sp_role() takes 0 positional arguments but 1 was given` hatası, yardımcı fonksiyona `user` parametresi isteğe bağlı olarak eklenerek çözüldü. Flask dev server reloads başarılı.
+
+### Notlar
+Geriye dönük tüm `_check_sp_role` çağrıları ve parametreli kullanımlar sorunsuz çalışmaktadır.
+
+---
 
 ## TASK-118 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
 
@@ -27,6 +79,35 @@
 
 ### Notlar
 SBB şablonu MVP — sektör genişletme için private/ngo şablonları sonraki sprintte. AI Pivot'ın LLM modu için GEMINI_API_KEY/.env şart; yoksa heuristic mod ile silent fallback. Schema migration yok (mevcut tablolar yeterli).
+
+---
+
+## TASK-118 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
+
+**Görev:** Akademik strateji çerçeveleri paketi (S59-S63) — AG raporundan seçilen 5 öneri
+**Modül:** app/services/, app/models/, micro/modules/sp/, ui/templates/platform/sp/, migrations/
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/services/hoshin_xmatrix_service.py` → yeni; 4 çeyrek + 4 korelasyon matrisi (S59)
+- `app/models/strategy_frameworks.py` → yeni; BlueOceanCanvas/Factor/ERRC + VRIOResource (S60-S61)
+- `migrations/versions/d7e8f9g0h011_strategy_frameworks.py` → 4 yeni tablo
+- `app/models/project.py` → PlanProjectTask'a progress_pct + planned_budget + actual_cost + depends_on_task_id (S62)
+- `migrations/versions/e8f9g0h1i012_task_evm_fields.py` → 4 yeni kolon + index
+- `app/services/project_evm_service.py` → yeni; PV/EV/AC/CV/SV/CPI/SPI/EAC + CPM (S62)
+- `app/services/weekly_digest_service.py` → yeni; HTML→PDF (WeasyPrint → reportlab → HTML fallback) (S63)
+- `micro/modules/sp/routes_frameworks.py` → yeni; 8 sayfa + 14 API endpoint
+- `ui/templates/platform/sp/xmatrix.html` → Hoshin X-Matrix interaktif tablo
+- `ui/templates/platform/sp/blue_ocean.html` → Strategy Canvas (Chart.js Value Curve) + ERRC Grid
+- `ui/templates/platform/sp/vrio.html` → VRIO matrisi (canlı checkbox güncellemesi + Barney etiketi)
+- `ui/templates/platform/base.html` → sidebar'a 5 yeni link (X-Matrix, Blue Ocean, VRIO, Haftalık PDF)
+- `app/models/__init__.py` + `micro/modules/sp/routes.py` → modül kayıtları
+
+### Yapılan İşlem
+Antigravity raporunun beğenilen 5 önerisi uygulandı: (1) Hoshin Kanri X-Matrix — mevcut strateji/alt strateji/initiative/KPI verisinden korelasyon matrisi; (2) Blue Ocean Strategy Canvas + ERRC Grid — yeni tablolar, Chart.js value curve; (3) VRIO Resource matrisi — Barney karar ağacı ile otomatik rekabet avantajı etiketi; (4) PlanProjectTask EVM derinleştirme — bütçe + ilerleme alanları + 11 metrik servis + CPM kritik yol; (5) Haftalık digest — HTML/PDF render (3 katmanlı fallback). 2 yeni Alembic migration + 684 toplam route.
+
+### Notlar
+WeasyPrint sistem kütüphaneleri (cairo/pango) gerektirir; yoksa reportlab'a düşer, o da yoksa düz HTML döner — servis hiçbir zaman çökmez. Blue Ocean factor JSON şu an prompt() ile girilir (MVP) — sonraki sprintte modal form. Hoshin X-Matrix initiative↔KPI korelasyonu heuristic (aynı süreçten) — gelecekte initiative_kpi_links ara tablosu eklenebilir.
 
 ---
 
