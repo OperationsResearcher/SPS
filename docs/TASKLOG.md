@@ -3,6 +3,72 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-122 | 2026-05-24 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
+
+**Görev:** UX test dokümantasyonu — 3 kapsamlı kılavuz belgesi
+**Modül:** docs/test/
+**Durum:** ✅ Tamamlandı (`claude/dokumantasyon-ux-test` → main merge `54b246b`)
+
+### Eklenen Dosyalar
+- `docs/test/kokpitimtanitim.md` (687 satır) — Proje detaylı tanıtım, modül haritası, veri modeli, AI sistemi, 10 SSS
+- `docs/test/tenant_admin_kullanim_kilavuzu.md` (808 satır) — Admin için her şey: 7 adımlık ilk kurulum, 15 bölüm, hızlı aksiyon kartı
+- `docs/test/tenant_kullanici_kilavuzu.md` (641 satır) — Standart kullanıcı için kullanım, 15 SSS, günlük/haftalık/aylık öneri listesi
+
+### Yapılan İşlem
+UX testçileri ve yeni kullanıcılar için üç katmanlı dokümantasyon: (1) sistemi tanıtan genel belge, (2) admin'in hangi ekranda ne yapacağını detaylı anlatan kılavuz, (3) standart kullanıcının "ne yapabilirim" sorusuna eksiksiz cevap veren rehber. 3 paralel agent ile derinlemesine envanter çıkarıldı (sayfa, bileşen, yetki, sık karşılaşılan sorunlar), ben sentezleyip yazdım. Toplam 2.136 satır markdown.
+
+### Notlar
+3 belge `docs/test/` klasöründe yaşayan doküman olarak duracak — yeni özellik eklendiğinde güncellenecek. CLAUDE.md kuralları gereği branch akışı uygulandı (yeni branch + commit + merge). VM'e gönderilmedi (kullanıcı talebi: "vm'e gönderme").
+
+---
+
+## TASK-121-AI | 2026-05-24 | ✅ Tamamlandı (yerel + main)
+
+**Görev:** AI altyapı reformasyonu — LLM Gateway + BYOK + Kota Sistemi + Politika
+**Modül:** app/services/, app/models/, micro/modules/sp/, ui/templates/platform/sp/, migrations/, docs/
+**Durum:** ✅ Tamamlandı (commit `6c7016d`, merge `75d017b`)
+
+### Eklenen Dosyalar
+- `docs/AI-POLITIKASI.md` — 13 bölümlü AI çağrı kural kitabı
+- `app/services/llm_gateway.py` — Provider-agnostic geçit (Gemini/OpenAI/Anthropic/Groq/OpenRouter); REST transport (Windows AV SSL uyumu); fiyatlama tabloları
+- `app/services/llm_quota_service.py` — 4 katmanlı kota (cooldown + günlük/aylık + cost cap + sistem geneli); %80 alarm
+- `app/models/llm_usage.py` — `LLMUsageLog` + `LLMQuotaOverride` (migration `f9g0h1i2j013`)
+- `app/models/tenant_llm_config.py` — Fernet şifreli BYOK key (migration `g0h1i2j3k014`)
+- `micro/modules/sp/routes_tenant_ai.py` — `/sp/ayarlar/ai` BYOK config endpoint'leri
+- `micro/modules/sp/routes_llm_quota.py` — `/sp/llm-usage` kullanım panel API'ları
+- `ui/templates/platform/sp/ai_settings.html` — Sistem AI vs BYOK seçim UI, "Test Et" butonu, KVKK PII toggle
+
+### Değişen Dosyalar
+- `app/services/ai_pivot_advisor_service.py` → `call_llm()` kullanır, heuristic fallback korundu
+- `services/ai_coach_service.py` → `call_llm()` kullanır, tenant_id imzaya eklendi
+- `requirements-ai.txt` → `google-generativeai`, `openai`, `anthropic`, `pip-system-certs`
+- 14 POST/PATCH/DELETE endpoint'ine `@csrf.exempt` (CSRF JSON API blokajı düzeltildi)
+
+### Yapılan İşlem
+Tüm AI çağrıları artık tek geçitten geçer. Tenant kendi API anahtarını (`/sp/ayarlar/ai`) girerse sistem kotası harcanmaz. Sistem key ile çalışırken kotalar geçerli ($2/ay tenant başına, $50/ay toplam sistem). REST transport sayesinde Windows antivirus SSL inspection ile uyumlu. `gemini-2.5-flash-lite` default model (yeni proje free tier uyumlu).
+
+### Notlar
+SSL sorunu pip-system-certs + REST transport ile çözüldü. `google-generativeai` paketinin deprecated olduğu fark edildi — gelecekte `google-genai` paketine geçilebilir ama mevcut çalışır. Diğer 3 AI servisi (executive_summary, early_warning, advisor) zaten kural tabanlı, gateway entegrasyonu gerektirmedi.
+
+---
+
+## TASK-121-UI | 2026-05-24 | ✅ Tamamlandı (yerel + main)
+
+**Görev:** UI Faz 1 (tasarım token altyapısı) + Pilot (Exec Dashboard rafine)
+**Modül:** ui/static/platform/css/, ui/templates/platform/, docs/
+**Durum:** ✅ Tamamlandı (commit `46c1cab`)
+
+### Eklenen / Değişen Dosyalar
+- `docs/UI-KILAVUZU.md` — 14 bölümlü tasarım sistemi kılavuzu (exec odaklı, mc-* korunarak)
+- `ui/static/platform/css/components.css` → `:root` bloğuna 40+ token (spacing 8'in katı, color hiyerarşisi, semantic + soft renkler, transition, shadow); `.mc-skeleton` shimmer; `.mc-empty`; dark mode override
+- `ui/templates/platform/base.html` → Chart.js global defaults (Inter font, slate grid, indigo palette)
+- `ui/templates/platform/sp/exec_dashboard.html` → Kılavuza göre baştan tasarım: hero gradient + 48px display, KPI tile skeleton, semantic color, mikro-etkileşim
+
+### Yapılan İşlem
+Tüm sayfalarda kullanılacak tasarım sistemi altyapısı (Faz 1) + üst yönetim odaklı pilot uygulama (Exec Dashboard). Skeleton loader, empty state, tabular-nums, hover/transition standartları kılavuza bağlandı.
+
+---
+
 ## TASK-121 | 2026-05-24 | ✅ Tamamlandı (sadece yerel)
 
 **Görev:** Otonom iş mantığı testinin (`tests/otonom_is_mantigi_testi.py`) veritabanı kısıt hatası nedeniyle düzeltilmesi
