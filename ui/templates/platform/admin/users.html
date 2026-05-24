@@ -88,11 +88,11 @@
       </colgroup>
       <thead>
         <tr>
-          <th>Ad Soyad</th>
-          <th>E-posta</th>
-          <th>Rol</th>
-          {% if tenants %}<th>Kurum</th>{% endif %}
-          <th style="text-align:center;">Durum</th>
+          <th class="sortable" data-sort-key="name"   style="cursor:pointer; user-select:none;">Ad Soyad <span class="sort-ico">⇅</span></th>
+          <th class="sortable" data-sort-key="email"  style="cursor:pointer; user-select:none;">E-posta <span class="sort-ico">⇅</span></th>
+          <th class="sortable" data-sort-key="role"   style="cursor:pointer; user-select:none;">Rol <span class="sort-ico">⇅</span></th>
+          {% if tenants %}<th class="sortable" data-sort-key="tenant" style="cursor:pointer; user-select:none;">Kurum <span class="sort-ico">⇅</span></th>{% endif %}
+          <th class="sortable" data-sort-key="status" style="text-align:center; cursor:pointer; user-select:none;">Durum <span class="sort-ico">⇅</span></th>
           <th style="text-align:center;">İşlem</th>
         </tr>
       </thead>
@@ -106,7 +106,12 @@
         } %}
         {% for u in users %}
         <tr data-search="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email ~ ' ' ~ (u.role.name if u.role else '') ~ ' ' ~ (u.tenant.name if u.tenant else ''))|lower }}"
-            data-tenant-id="{{ u.tenant_id or '' }}">
+            data-tenant-id="{{ u.tenant_id or '' }}"
+            data-sort-name="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email)|lower }}"
+            data-sort-email="{{ (u.email or '')|lower }}"
+            data-sort-role="{{ (rol_etiket.get(u.role.name, u.role.name) if u.role else 'zzz')|lower }}"
+            data-sort-tenant="{{ (u.tenant.name if u.tenant else 'zzz')|lower }}"
+            data-sort-status="{{ '0_aktif' if u.is_active else '1_pasif' }}">
           <td>
             <div style="display:flex; align-items:center; gap:10px; min-width:0;">
               <div class="mc-avatar mc-avatar-sm" style="flex-shrink:0;">{{ (u.first_name or u.email)[0]|upper }}</div>

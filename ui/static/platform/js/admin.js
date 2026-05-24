@@ -269,6 +269,52 @@
     }
     // İlk yüklemede count'u göster
     if (userSearch || tenantFilter) applyUserFilters();
+
+    // ── Sütun başlığına tıklayınca sıralama ─────────────────────────────────
+    const usersTable = document.getElementById("users-table");
+    if (usersTable) {
+      const tbody = usersTable.querySelector("tbody");
+      let sortState = { key: null, dir: "asc" };  // dir: asc | desc
+
+      function updateSortIcons() {
+        usersTable.querySelectorAll("th.sortable").forEach(th => {
+          const ico = th.querySelector(".sort-ico");
+          if (!ico) return;
+          if (th.dataset.sortKey === sortState.key) {
+            ico.textContent = sortState.dir === "asc" ? "▲" : "▼";
+            ico.style.color = "#4f46e5";
+            th.style.background = "#eef2ff";
+          } else {
+            ico.textContent = "⇅";
+            ico.style.color = "#cbd5e1";
+            th.style.background = "";
+          }
+        });
+      }
+
+      function sortBy(key) {
+        if (sortState.key === key) {
+          sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+        } else {
+          sortState.key = key;
+          sortState.dir = "asc";
+        }
+        const rows = Array.from(tbody.querySelectorAll("tr[data-search]"));
+        rows.sort((a, b) => {
+          const av = (a.dataset["sort" + key.charAt(0).toUpperCase() + key.slice(1)] || "").toLowerCase();
+          const bv = (b.dataset["sort" + key.charAt(0).toUpperCase() + key.slice(1)] || "").toLowerCase();
+          if (av < bv) return sortState.dir === "asc" ? -1 : 1;
+          if (av > bv) return sortState.dir === "asc" ? 1 : -1;
+          return 0;
+        });
+        rows.forEach(r => tbody.appendChild(r));
+        updateSortIcons();
+      }
+
+      usersTable.querySelectorAll("th.sortable").forEach(th => {
+        th.addEventListener("click", () => sortBy(th.dataset.sortKey));
+      });
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
