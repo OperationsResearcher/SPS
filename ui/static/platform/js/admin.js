@@ -134,6 +134,25 @@
       document.getElementById("ue-email").value  = data.email      || "";
       document.getElementById("ue-pass").value   = "";
       fillUserSelects("ue-role", "ue-tenant", data.roleId, data.tenantId || "");
+
+      // 2FA durumu gösterim
+      const totpEnabled = data.totpEnabled === "true";
+      const icon   = document.getElementById("ue-2fa-icon");
+      const status = document.getElementById("ue-2fa-status");
+      const btnReset = document.getElementById("btn-edit-2fa-reset");
+      const hint   = document.getElementById("ue-2fa-hint");
+      if (totpEnabled) {
+        icon.style.color = "#10b981";
+        status.innerHTML = '<span style="color:#10b981;font-weight:600;">✓ Etkin</span> — kullanıcı her girişte 6 haneli kod kullanıyor';
+        btnReset.style.display = "inline-flex";
+        hint.style.display = "block";
+      } else {
+        icon.style.color = "#94a3b8";
+        status.innerHTML = '<span style="color:#64748b;">Devre dışı</span> — kullanıcı yalnızca şifre ile giriyor';
+        btnReset.style.display = "none";
+        hint.style.display = "none";
+      }
+
       editModal.classList.add("open");
       document.getElementById("ue-fname").focus();
     }
@@ -166,6 +185,36 @@
     document.getElementById("btn-edit-modal-close")?.addEventListener("click", closeEditModal);
     document.getElementById("btn-edit-modal-cancel")?.addEventListener("click", closeEditModal);
     editModal?.addEventListener("click", (e) => { if (e.target === editModal) closeEditModal(); });
+
+    // 2FA sıfırlama
+    document.getElementById("btn-edit-2fa-reset")?.addEventListener("click", async () => {
+      if (!_editUserId) return;
+      const email = document.getElementById("ue-email").value;
+      const ok = await confirmAction(
+        "2FA Sıfırlanacak",
+        `"${email}" kullanıcısının iki faktörlü doğrulaması kaldırılacak. Sonraki girişinde sadece şifre yeterli olacak. Kullanıcı isterse profilden yeniden etkinleştirebilir.`,
+        "Evet, sıfırla",
+        "#f59e0b"
+      );
+      if (!ok) return;
+      try {
+        const d = await postJson(`/admin/users/${_editUserId}/2fa-reset`, {});
+        if (d.success) {
+          toastSuccess(d.message);
+          // Modal'da durumu güncelle
+          const icon   = document.getElementById("ue-2fa-icon");
+          const status = document.getElementById("ue-2fa-status");
+          const btnReset = document.getElementById("btn-edit-2fa-reset");
+          const hint   = document.getElementById("ue-2fa-hint");
+          icon.style.color = "#94a3b8";
+          status.innerHTML = '<span style="color:#64748b;">Devre dışı</span> — sıfırlandı';
+          btnReset.style.display = "none";
+          hint.style.display = "none";
+        } else {
+          showError(d.message || "Sıfırlama başarısız.");
+        }
+      } catch (e) { showError("Sunucu hatası: " + e.message); }
+    });
 
     document.getElementById("btn-edit-modal-save")?.addEventListener("click", async () => {
       if (!_editUserId) return;

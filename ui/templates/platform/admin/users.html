@@ -144,7 +144,9 @@
                       data-job-title="{{ u.job_title or '' | e }}"
                       data-department="{{ u.department or '' | e }}"
                       data-role-id="{{ u.role_id or '' }}"
+                      data-tenant-id="{{ u.tenant_id or '' }}"
                       data-email="{{ u.email | e }}"
+                      data-totp-enabled="{{ 'true' if u.totp_enabled else 'false' }}"
                       style="padding:4px 8px;">
                 <i class="fas fa-edit"></i>
               </button>
@@ -260,6 +262,29 @@
             <select id="ue-tenant" class="mc-form-input">
               <option value="">— Kurum Seç —</option>
             </select>
+          </div>
+        </div>
+
+        {# ─── 2FA Güvenlik Paneli ─────────────────────────────────────── #}
+        <hr style="margin:20px 0 16px; border:none; border-top:1px solid #e2e8f0;">
+        <div style="background:#f8fafc; border-radius:6px; padding:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:240px;">
+              <i id="ue-2fa-icon" class="fas fa-shield-alt" style="font-size:20px; color:#94a3b8;"></i>
+              <div>
+                <div style="font-weight:600; color:#1e293b; font-size:13px;">
+                  İki Faktörlü Doğrulama (2FA)
+                </div>
+                <div id="ue-2fa-status" style="font-size:12px; color:#64748b; margin-top:2px;">—</div>
+              </div>
+            </div>
+            <button type="button" id="btn-edit-2fa-reset" class="mc-btn mc-btn-sm" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; display:none;">
+              <i class="fas fa-unlock-alt"></i> 2FA'yı Sıfırla
+            </button>
+          </div>
+          <div id="ue-2fa-hint" style="font-size:11px; color:#94a3b8; margin-top:8px; display:none;">
+            Kullanıcı telefonunu kaybettiyse veya yedek kodlara erişemiyorsa 2FA'yı sıfırlayın.
+            Sonraki girişinde profilinden tekrar etkinleştirebilir.
           </div>
         </div>
       </div>
