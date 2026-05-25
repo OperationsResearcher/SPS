@@ -1873,3 +1873,4 @@ def admin_modules_toggle(mod_id):
 # Sprint C — Bayi/Holding alt-tenant yönetim sayfası
 from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
 
+from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D

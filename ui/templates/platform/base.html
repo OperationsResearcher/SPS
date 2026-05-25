@@ -192,6 +192,16 @@
                 <span class="sidebar-item-text">Kurum Paneli</span>
             </a>
 
+            {# Holding admin → Konsolide Dashboard #}
+            {% if current_user.tenant and current_user.tenant.tenant_type == 'holding'
+                and current_user.role and current_user.role.name in ('tenant_admin', 'executive_manager', 'Admin') %}
+            <a href="{{ url_for('app_bp.holding_dashboard_page') }}"
+               class="sidebar-item {% if 'holding_dashboard' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-chart-network"></i></span>
+                <span class="sidebar-item-text">Holding Görünümü</span>
+            </a>
+            {% endif %}
+
             {# Bayi/Holding admin'leri için Alt Tenant Yönetimi #}
             {% if current_user.tenant and current_user.tenant.tenant_type in ('dealer', 'holding')
                 and current_user.role and current_user.role.name in ('tenant_admin', 'executive_manager', 'Admin') %}
@@ -200,7 +210,7 @@
                 <span class="sidebar-item-icon"><i class="fas fa-sitemap"></i></span>
                 <span class="sidebar-item-text">
                   {% if current_user.tenant.tenant_type == 'holding' %}
-                    Alt Şirketlerim
+                    Alt Şirket Yönetimi
                   {% else %}
                     Müşterilerim
                   {% endif %}
