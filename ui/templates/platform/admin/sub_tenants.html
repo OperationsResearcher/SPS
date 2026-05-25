@@ -18,9 +18,14 @@
       </h2>
       <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;" id="subtenants-subtitle">—</p>
     </div>
-    <button class="mc-btn mc-btn-primary" id="btn-new-sub" disabled>
-      <i class="fas fa-plus"></i> Yeni Alt Tenant Aç
-    </button>
+    <div style="display:flex; gap: var(--space-2);">
+      <a href="{{ url_for('app_bp.admin_sub_tenants_usage_page') }}" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-file-invoice-dollar"></i> Kullanım Raporu
+      </a>
+      <button class="mc-btn mc-btn-primary" id="btn-new-sub" disabled>
+        <i class="fas fa-plus"></i> Yeni Alt Tenant Aç
+      </button>
+    </div>
   </div>
 
   {# Hero özet kart #}
@@ -55,16 +60,18 @@
     <div class="mc-table-wrap">
       <table class="mc-table" id="sub-table" style="width:100%; table-layout:fixed;">
         <colgroup>
-          <col style="width:28%;">  {# Tenant #}
-          <col style="width:32%;">  {# Admin e-posta #}
-          <col style="width:12%;">  {# Kullanıcı #}
-          <col style="width:12%;">  {# Durum #}
+          <col style="width:24%;">  {# Tenant #}
+          <col style="width:26%;">  {# Admin e-posta #}
+          <col style="width:14%;">  {# Paket #}
+          <col style="width:10%;">  {# Kullanıcı #}
+          <col style="width:10%;">  {# Durum #}
           <col style="width:16%;">  {# İşlem #}
         </colgroup>
         <thead>
           <tr>
             <th>Alt Tenant</th>
             <th>İlk Admin</th>
+            <th>Paket</th>
             <th style="text-align:center;">Kullanıcı</th>
             <th style="text-align:center;">Durum</th>
             <th style="text-align:center;">İşlem</th>
@@ -109,9 +116,20 @@
           <label style="font-size:12px; color:#64748b; font-weight:500;">Kısa Ad</label>
           <input id="ns-short" class="mc-form-input" placeholder="Örn: ABCCam">
         </div>
-        <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
-          <input id="ns-maxu" type="number" class="mc-form-input" placeholder="5" value="5">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
+            <input id="ns-maxu" type="number" class="mc-form-input" placeholder="5" value="5">
+          </div>
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:500;">Abonelik Paketi</label>
+            <select id="ns-package" class="mc-form-input">
+              <option value="">— Paket seçilmedi —</option>
+              {% for p in packages %}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
         <hr style="margin:6px 0; border:none; border-top:1px solid #e2e8f0;">
         <div style="font-weight:600; color:#1e293b; font-size:13px;">İlk Admin Bilgileri</div>
@@ -211,6 +229,9 @@
       ? `<div style="font-weight:500;">${t.admin.email}</div>
          <div style="font-size:11px; color:#94a3b8;">${(t.admin.first_name || "") + " " + (t.admin.last_name || "")}</div>`
       : `<span style="color:#94a3b8; font-size:12px;">Admin yok</span>`;
+    const pkgBadge = t.package
+      ? `<span class="mc-badge mc-badge-indigo">${t.package.name}</span>`
+      : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
     return `
       <tr>
         <td style="font-weight:600; color:#1e293b;">
@@ -218,8 +239,9 @@
           ${t.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${t.short_name}</div>` : ""}
         </td>
         <td style="font-size:13px; color:#475569;">${adminInfo}</td>
+        <td>${pkgBadge}</td>
         <td style="text-align:center;">
-          <span class="mc-badge mc-badge-gray">${t.users_count}</span>
+          <span class="mc-badge mc-badge-gray">${t.users_count}${t.max_user_count ? ` / ${t.max_user_count}` : ""}</span>
         </td>
         <td style="text-align:center;">${statusBadge(t.is_active)}</td>
         <td style="text-align:center;">
@@ -290,6 +312,7 @@
       document.getElementById(id).value = "";
     });
     document.getElementById("ns-maxu").value = "5";
+    document.getElementById("ns-package").value = "";
     document.getElementById("modal-new-sub").style.display = "flex";
   });
   document.getElementById("btn-modal-close").addEventListener("click", () => {
@@ -306,6 +329,7 @@
       name: document.getElementById("ns-name").value.trim(),
       short_name: document.getElementById("ns-short").value.trim(),
       max_user_count: document.getElementById("ns-maxu").value || 5,
+      package_id: document.getElementById("ns-package").value || null,
       admin_email: document.getElementById("ns-admin-email").value.trim().toLowerCase(),
       admin_first_name: document.getElementById("ns-admin-fname").value.trim(),
       admin_last_name: document.getElementById("ns-admin-lname").value.trim(),

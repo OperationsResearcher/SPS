@@ -1,0 +1,222 @@
+{% extends "platform/base.html" %}
+{% block title %}Konsolide Kullanım Raporu — Kokpitim{% endblock %}
+{% block page_title %}Konsolide Kullanım Raporu{% endblock %}
+
+{% block content %}
+<div style="max-width:1400px; margin:0 auto;"
+     id="usage-root"
+     data-api-url="{{ url_for('app_bp.admin_api_sub_tenants_usage') }}"
+     data-export-url="{{ url_for('app_bp.admin_api_sub_tenants_usage_export') }}"
+     {% if parent and is_platform_admin %}data-parent-id="{{ parent.id }}"{% endif %}>
+
+  <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3);">
+    <div>
+      <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1);">
+        <i class="fas fa-file-invoice-dollar" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+        Konsolide Kullanım Raporu
+      </h2>
+      <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;" id="usage-subtitle">—</p>
+    </div>
+    <div style="display:flex; gap: var(--space-2);">
+      <a href="{{ url_for('app_bp.admin_sub_tenants_page') }}" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri
+      </a>
+      <button class="mc-btn mc-btn-primary" id="btn-export">
+        <i class="fas fa-file-excel"></i> Excel İndir
+      </button>
+    </div>
+  </div>
+
+  {# Hero — toplam özet #}
+  <div class="mc-card" id="hero-card" style="padding: var(--space-5); margin-bottom: var(--space-5);
+       background: linear-gradient(135deg, #1e293b, #312e81); color:#fff; border:none; display:none;">
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--space-6); align-items:center;">
+      <div>
+        <div style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:0.06em;" id="hero-period">Bu Ay</div>
+        <div id="hero-parent" style="font-size:22px; font-weight:700;">—</div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(5, auto); gap: var(--space-6); font-size:13px;">
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Şirket</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Kullanıcı</div><div id="h-users" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">KPI</div><div id="h-kpi" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">LLM Çağrı</div><div id="h-llm" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">LLM USD</div><div id="h-cost" style="font-size:22px; font-weight:700;">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  {# Paket dağılımı #}
+  <div class="mc-card" id="pkg-card" style="padding: var(--space-5); margin-bottom: var(--space-5); display:none;">
+    <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg);">
+      <i class="fas fa-box" style="color: var(--color-primary);"></i> Paket Dağılımı
+    </h3>
+    <div id="pkg-bars"></div>
+  </div>
+
+  {# Loading #}
+  <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
+    <i class="fas fa-spinner fa-spin"></i> Yükleniyor…
+  </div>
+
+  {# Detay tablo #}
+  <div class="mc-card" id="table-card" style="padding:0; display:none;">
+    <div class="mc-table-wrap" style="overflow-x:auto;">
+      <table class="mc-table" style="width:100%; font-size:12px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="text-align:left;">Tenant</th>
+            <th>Paket</th>
+            <th style="text-align:center;">Kullanıcı</th>
+            <th style="text-align:center;">Doluluk</th>
+            <th style="text-align:center;">KPI</th>
+            <th style="text-align:center;">Init</th>
+            <th style="text-align:center;">Plan Year</th>
+            <th style="text-align:right;">LLM Çağrı (ay)</th>
+            <th style="text-align:right;">LLM Token (ay)</th>
+            <th style="text-align:right;">USD</th>
+            <th style="text-align:center;">Durum</th>
+          </tr>
+        </thead>
+        <tbody id="usage-tbody"></tbody>
+        <tfoot id="usage-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div id="empty-state" style="display:none;">
+    <div class="mc-empty">
+      <i class="fas fa-inbox mc-empty-icon"></i>
+      <div class="mc-empty-title">Henüz alt tenant yok</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const root = document.getElementById("usage-root");
+  const API = root.dataset.apiUrl;
+  const EXPORT = root.dataset.exportUrl;
+  const PARENT_ID = root.dataset.parentId;
+
+  function fmtNum(n) { return (n || 0).toLocaleString("tr-TR"); }
+  function utilColor(p) {
+    if (p == null) return "#94a3b8";
+    if (p < 50) return "#10b981";
+    if (p < 80) return "#f59e0b";
+    return "#dc2626";
+  }
+
+  function renderRow(t) {
+    const pkgBadge = t.package
+      ? `<span class="mc-badge mc-badge-indigo">${t.package.name}</span>`
+      : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
+    const util = t.user_utilization_pct;
+    const utilCell = util != null
+      ? `<span style="color:${utilColor(util)}; font-weight:600;">%${util}</span>`
+      : "—";
+    const status = t.is_active
+      ? '<span class="mc-badge mc-badge-success">Aktif</span>'
+      : '<span class="mc-badge mc-badge-gray">Pasif</span>';
+    return `
+      <tr>
+        <td style="font-weight:600;">${t.name}${t.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${t.short_name}</div>` : ""}</td>
+        <td>${pkgBadge}</td>
+        <td style="text-align:center;" class="mc-num">${t.users_count}${t.max_user_count ? ` / ${t.max_user_count}` : ""}</td>
+        <td style="text-align:center;" class="mc-num">${utilCell}</td>
+        <td style="text-align:center;" class="mc-num">${t.kpi_count}</td>
+        <td style="text-align:center;" class="mc-num">${t.initiative_count}</td>
+        <td style="text-align:center;" class="mc-num">${t.plan_year_count}</td>
+        <td style="text-align:right;" class="mc-num">${fmtNum(t.llm_calls_this_month)}</td>
+        <td style="text-align:right;" class="mc-num">${fmtNum(t.llm_tokens_this_month)}</td>
+        <td style="text-align:right;" class="mc-num">$${(t.llm_cost_usd_this_month || 0).toFixed(4)}</td>
+        <td style="text-align:center;">${status}</td>
+      </tr>
+    `;
+  }
+
+  function renderTotals(tot) {
+    return `
+      <tr style="background:#eef2ff; font-weight:700;">
+        <td>TOPLAM</td>
+        <td></td>
+        <td style="text-align:center;" class="mc-num">${tot.users_total}${tot.max_users_total ? ` / ${tot.max_users_total}` : ""}</td>
+        <td></td>
+        <td style="text-align:center;" class="mc-num">${tot.kpi_total}</td>
+        <td style="text-align:center;" class="mc-num">${tot.initiative_total}</td>
+        <td></td>
+        <td style="text-align:right;" class="mc-num">${fmtNum(tot.llm_calls_month_total)}</td>
+        <td style="text-align:right;" class="mc-num">${fmtNum(tot.llm_tokens_month_total)}</td>
+        <td style="text-align:right;" class="mc-num">$${(tot.llm_cost_usd_month_total || 0).toFixed(4)}</td>
+        <td></td>
+      </tr>
+    `;
+  }
+
+  function renderPkgDist(dist) {
+    const total = Object.values(dist).reduce((a, b) => a + b, 0);
+    if (total === 0) return "<div style='color:#94a3b8;'>Veri yok.</div>";
+    return Object.entries(dist).map(([name, count]) => {
+      const pct = ((count / total) * 100).toFixed(1);
+      return `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+            <span><b>${name}</b></span>
+            <span style="color:#64748b;">${count} (${pct}%)</span>
+          </div>
+          <div style="background:#e2e8f0; border-radius:4px; height:8px; overflow:hidden;">
+            <div style="background:#4f46e5; height:100%; width:${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  async function load() {
+    const params = PARENT_ID ? `?parent_id=${PARENT_ID}` : "";
+    const res = await fetch(API + params, { credentials: "same-origin" });
+    const j = await res.json();
+    if (!j.success) {
+      document.getElementById("loading").innerHTML = `<div style="color:#dc2626;">${j.message || "Hata"}</div>`;
+      return;
+    }
+    document.getElementById("loading").style.display = "none";
+
+    // Hero
+    document.getElementById("hero-card").style.display = "block";
+    document.getElementById("hero-parent").textContent = j.parent.name + " — " +
+      (j.parent.tenant_type === "holding" ? "Holding" : "Bayi");
+    document.getElementById("hero-period").textContent =
+      "Dönem: " + j.period.month_start.substring(0, 7);
+    document.getElementById("h-tcount").textContent =
+      j.totals.tenant_count + (j.totals.active_count !== j.totals.tenant_count ? ` (${j.totals.active_count} aktif)` : "");
+    document.getElementById("h-users").textContent = j.totals.users_total;
+    document.getElementById("h-kpi").textContent = j.totals.kpi_total;
+    document.getElementById("h-llm").textContent = fmtNum(j.totals.llm_calls_month_total);
+    document.getElementById("h-cost").textContent = "$" + (j.totals.llm_cost_usd_month_total || 0).toFixed(2);
+
+    document.getElementById("usage-subtitle").textContent =
+      `${j.parent.name} ve alt-şirketlerinin paket + kullanım durumu`;
+
+    // Paket dağılımı
+    document.getElementById("pkg-card").style.display = "block";
+    document.getElementById("pkg-bars").innerHTML = renderPkgDist(j.package_distribution);
+
+    // Tablo
+    if (j.sub_tenants.length === 0) {
+      document.getElementById("empty-state").style.display = "block";
+    } else {
+      document.getElementById("usage-tbody").innerHTML = j.sub_tenants.map(renderRow).join("");
+      document.getElementById("usage-tfoot").innerHTML = renderTotals(j.totals);
+      document.getElementById("table-card").style.display = "block";
+    }
+  }
+
+  document.getElementById("btn-export").addEventListener("click", () => {
+    const params = PARENT_ID ? `?parent_id=${PARENT_ID}` : "";
+    window.location.href = EXPORT + params;
+  });
+
+  load();
+})();
+</script>
+{% endblock %}
