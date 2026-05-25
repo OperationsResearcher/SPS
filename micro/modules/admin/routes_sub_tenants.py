@@ -334,3 +334,152 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
         "is_active": sub.is_active,
         "message": f"{sub.name} {'aktifleştirildi' if sub.is_active else 'pasifleştirildi'}.",
     })
+
+
+# ─── Sprint K: Konsolide Kullanım Raporu ────────────────────────────────────
+
+@app_bp.route("/admin/sub-tenants/usage")
+@login_required
+def admin_sub_tenants_usage_page():
+    if not can_manage_sub_tenants(current_user):
+        return render_template("platform/errors/403.html"), 403
+    parent = None
+    if is_platform_admin(current_user):
+        parent_id = request.args.get("parent_id", type=int)
+        if parent_id:
+            parent = Tenant.query.get(parent_id)
+    else:
+        parent = current_user.tenant
+    return render_template(
+        "platform/admin/sub_tenants_usage.html",
+        parent=parent,
+        is_platform_admin=is_platform_admin(current_user),
+    )
+
+
+@app_bp.route("/admin/api/sub-tenants/usage")
+@login_required
+def admin_api_sub_tenants_usage():
+    if not can_manage_sub_tenants(current_user):
+        return _403()
+    if is_platform_admin(current_user):
+        parent_id = request.args.get("parent_id", type=int)
+        if not parent_id:
+            return jsonify({"success": False, "message": "Platform Admin için parent_id gerekli."}), 400
+        parent = Tenant.query.get_or_404(parent_id)
+    else:
+        parent = current_user.tenant
+    if parent.tenant_type not in ("dealer", "holding"):
+        return jsonify({"success": False, "message": "Bu kurum tipi alt-tenant'lara sahip değil."}), 400
+
+    from app.services.sub_tenant_billing_service import build_consolidated_usage
+    try:
+        data = build_consolidated_usage(parent.id)
+        if "error" in data:
+            return jsonify({"success": False, "message": data["error"]}), 400
+        return jsonify({"success": True, **data})
+    except Exception as e:
+        current_app.logger.error(f"[sub_tenants_usage] {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app_bp.route("/admin/api/sub-tenants/usage/export.xlsx")
+@login_required
+def admin_api_sub_tenants_usage_export():
+    """Excel dışa aktarma."""
+    if not can_manage_sub_tenants(current_user):
+        return _403()
+    if is_platform_admin(current_user):
+        parent_id = request.args.get("parent_id", type=int)
+        if not parent_id:
+            return jsonify({"success": False, "message": "parent_id gerekli."}), 400
+        parent = Tenant.query.get_or_404(parent_id)
+    else:
+        parent = current_user.tenant
+    if parent.tenant_type not in ("dealer", "holding"):
+        return jsonify({"success": False, "message": "Bu kurum tipi alt-tenant'lara sahip değil."}), 400
+
+    from app.services.sub_tenant_billing_service import build_consolidated_usage
+    data = build_consolidated_usage(parent.id)
+    if "error" in data:
+        return jsonify({"success": False, "message": data["error"]}), 400
+
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment
+        from io import BytesIO
+    except ImportError:
+        return jsonify({"success": False, "message": "openpyxl kütüphanesi kurulu değil."}), 500
+    from flask import send_file
+    import datetime as _dt
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Alt Tenant Kullanım"
+
+    # Başlık satırı
+    headers = [
+        "Tenant Adı", "Kısa Ad", "Durum", "Oluşturulma",
+        "Lisans Bitiş", "Paket",
+        "Kullanıcı", "Maks. Kullanıcı", "Doluluk %",
+        "KPI Sayısı", "Initiative Sayısı", "Plan Year Sayısı",
+        "LLM Çağrı (bu ay)", "LLM Token (bu ay)", "LLM Maliyet USD (bu ay)",
+    ]
+    bold = Font(bold=True, color="FFFFFF")
+    bg = PatternFill("solid", fgColor="4F46E5")
+    center = Alignment(horizontal="center")
+
+    for col_idx, h in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=h)
+        cell.font = bold
+        cell.fill = bg
+        cell.alignment = center
+
+    for row_idx, t in enumerate(data["sub_tenants"], 2):
+        ws.cell(row=row_idx, column=1, value=t["name"])
+        ws.cell(row=row_idx, column=2, value=t["short_name"] or "")
+        ws.cell(row=row_idx, column=3, value="Aktif" if t["is_active"] else "Pasif")
+        ws.cell(row=row_idx, column=4, value=t["created_at"][:10] if t["created_at"] else "")
+        ws.cell(row=row_idx, column=5, value=t["license_end_date"] or "")
+        ws.cell(row=row_idx, column=6, value=t["package"]["name"] if t["package"] else "—")
+        ws.cell(row=row_idx, column=7, value=t["users_count"])
+        ws.cell(row=row_idx, column=8, value=t["max_user_count"] or "—")
+        ws.cell(row=row_idx, column=9, value=f"%{t['user_utilization_pct']}" if t["user_utilization_pct"] is not None else "—")
+        ws.cell(row=row_idx, column=10, value=t["kpi_count"])
+        ws.cell(row=row_idx, column=11, value=t["initiative_count"])
+        ws.cell(row=row_idx, column=12, value=t["plan_year_count"])
+        ws.cell(row=row_idx, column=13, value=t["llm_calls_this_month"])
+        ws.cell(row=row_idx, column=14, value=t["llm_tokens_this_month"])
+        ws.cell(row=row_idx, column=15, value=t["llm_cost_usd_this_month"])
+
+    # Toplam satırı
+    last_row = len(data["sub_tenants"]) + 2
+    tot = data["totals"]
+    tot_bg = PatternFill("solid", fgColor="EEF2FF")
+    tot_font = Font(bold=True)
+    ws.cell(row=last_row, column=1, value="TOPLAM").font = tot_font
+    for c in range(1, 16):
+        ws.cell(row=last_row, column=c).fill = tot_bg
+    ws.cell(row=last_row, column=7, value=tot["users_total"]).font = tot_font
+    ws.cell(row=last_row, column=8, value=tot["max_users_total"] or "—").font = tot_font
+    ws.cell(row=last_row, column=10, value=tot["kpi_total"]).font = tot_font
+    ws.cell(row=last_row, column=11, value=tot["initiative_total"]).font = tot_font
+    ws.cell(row=last_row, column=13, value=tot["llm_calls_month_total"]).font = tot_font
+    ws.cell(row=last_row, column=14, value=tot["llm_tokens_month_total"]).font = tot_font
+    ws.cell(row=last_row, column=15, value=tot["llm_cost_usd_month_total"]).font = tot_font
+
+    # Sütun genişliği
+    widths = [28, 14, 10, 14, 14, 18, 10, 12, 12, 12, 16, 14, 16, 18, 18]
+    for i, w in enumerate(widths, 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = w
+
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+    fname = f"alt-tenant-kullanim-{parent.short_name or 'parent'}-{_dt.date.today().isoformat()}.xlsx"
+    return send_file(
+        bio,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name=fname,
+    )

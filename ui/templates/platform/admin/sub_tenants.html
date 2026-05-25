@@ -18,9 +18,14 @@
       </h2>
       <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;" id="subtenants-subtitle">—</p>
     </div>
-    <button class="mc-btn mc-btn-primary" id="btn-new-sub" disabled>
-      <i class="fas fa-plus"></i> Yeni Alt Tenant Aç
-    </button>
+    <div style="display:flex; gap: var(--space-2);">
+      <a href="{{ url_for('app_bp.admin_sub_tenants_usage_page') }}" class="mc-btn mc-btn-secondary">
+        <i class="fas fa-file-invoice-dollar"></i> Kullanım Raporu
+      </a>
+      <button class="mc-btn mc-btn-primary" id="btn-new-sub" disabled>
+        <i class="fas fa-plus"></i> Yeni Alt Tenant Aç
+      </button>
+    </div>
   </div>
 
   {# Hero özet kart #}
