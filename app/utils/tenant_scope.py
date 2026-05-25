@@ -229,6 +229,21 @@ def can_manage_sub_tenants(user=None) -> bool:
     return is_platform_admin(u) or is_dealer_admin(u) or is_holding_admin(u)
 
 
+def default_landing_endpoint(user=None) -> str:
+    """Login sonrası yönlendirilecek varsayılan endpoint.
+
+    - Holding admin       → app_bp.holding_dashboard_page
+    - Bayi admin          → app_bp.admin_sub_tenants_page
+    - Diğerleri (Platform Admin / normal kullanıcı) → app_bp.launcher
+    """
+    u = user or current_user
+    if is_holding_admin(u):
+        return "app_bp.holding_dashboard_page"
+    if is_dealer_admin(u):
+        return "app_bp.admin_sub_tenants_page"
+    return "app_bp.launcher"
+
+
 def is_readonly_for_tenant(tenant_id: int, user=None) -> bool:
     """Bu kullanıcı verilen tenant'a SALT-OKUR mu erişiyor?
 
