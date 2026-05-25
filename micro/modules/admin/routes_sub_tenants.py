@@ -51,9 +51,17 @@ def admin_sub_tenants_page():
     else:
         parent = current_user.tenant
 
+    # Aktif paketler — alt-tenant açarken seçilebilir
+    try:
+        from app.models.saas import SubscriptionPackage
+        packages = SubscriptionPackage.query.filter_by(is_active=True).order_by(SubscriptionPackage.name).all()
+    except Exception:
+        packages = []
+
     return render_template(
         "platform/admin/sub_tenants.html",
         parent=parent,
+        packages=packages,
         is_platform_admin=is_platform_admin(current_user),
     )
 
@@ -101,6 +109,10 @@ def admin_api_sub_tenants_list():
                 "first_name": admin.first_name, "last_name": admin.last_name,
             } if admin else None,
             "users_count": users_count,
+            "max_user_count": t.max_user_count,
+            "package": {
+                "id": t.package.id, "name": t.package.name,
+            } if t.package else None,
         }
 
     return jsonify({
@@ -171,6 +183,20 @@ def admin_api_sub_tenants_create():
     if not tenant_admin_role:
         return jsonify({"success": False, "message": "tenant_admin rolü tanımlı değil."}), 500
 
+    # Paket id (opsiyonel)
+    package_id = data.get("package_id")
+    if package_id:
+        try:
+            package_id = int(package_id)
+            from app.models.saas import SubscriptionPackage
+            pkg = SubscriptionPackage.query.get(package_id)
+            if not pkg or not pkg.is_active:
+                return jsonify({"success": False, "message": "Seçilen paket geçersiz veya pasif."}), 400
+        except (TypeError, ValueError):
+            return jsonify({"success": False, "message": "Paket ID geçersiz."}), 400
+    else:
+        package_id = None
+
     try:
         # Tenant oluştur
         t = Tenant(
@@ -180,6 +206,7 @@ def admin_api_sub_tenants_create():
             parent_tenant_id=parent.id,
             max_user_count=int(data["max_user_count"]) if data.get("max_user_count") else 5,
             contact_email=admin_email,
+            package_id=package_id,
         )
         db.session.add(t)
         db.session.flush()
