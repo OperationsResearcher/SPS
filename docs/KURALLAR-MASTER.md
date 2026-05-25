@@ -23,10 +23,14 @@ Oku → Plan göster → Onay al → Uygula → Test et → TASKLOG yaz → Dur
 | Katman | Dil |
 |--------|-----|
 | Backend (routes, models, servisler) | İngilizce / snake_case |
-| Frontend (kullanıcıya görünen her şey) | Türkçe |
+| Frontend (kullanıcıya görünen her şey) | Türkçe (terminoloji sözlüğüne bağlı) |
 | Bildirimler | SweetAlert2, Türkçe metin |
 | Log mesajları | İngilizce |
 | TASKLOG | Türkçe |
+
+📖 **UI terminoloji sözlüğü:** [`docs/UI-TERMINOLOJI.md`](UI-TERMINOLOJI.md)
+- "tenant" → **"Kurum"**, "user" → **"Kullanıcı"**, "sub_tenant" → **"Alt Kurum"** vb.
+- Yeni UI metni yazarken bu sözlüğü kontrol et. Yeni terim önerin varsa sözlüğe ekle.
 
 ---
 
@@ -141,26 +145,37 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 
 > Bunlara dokunmadan önce kullanıcıya danış.
 
-| Kod | Sorun | Dosya |
-|-----|-------|-------|
-| S1 | Rate Limiter devre dışı (FakeLimiter) | `extensions.py` |
-| S2 | Hardcoded SECRET_KEY fallback | `config.py` |
-| S3 | SESSION_COOKIE_SECURE eksik | `config.py` |
-| S4 | Talisman init_app yok → CSP pasif | `__init__.py` |
-| S5 | HGS login bypass riski | `micro/modules/hgs/` |
+| Kod | Sorun | Dosya | Not |
+|-----|-------|-------|-----|
+| S1 | Legacy route çift yüzey | `main/`, `app/routes/` | Yeni iş yalnızca `micro/` — `docs/LEGACY_ROUTE_INVENTORY.md` |
+| S2 | HGS hızlı giriş | `micro/modules/hgs/` | Prod: `ProductionConfig` bypass kapalı |
+| S3 | Rate limit storage | `config.py` | Prod’da `REDIS_URL` önerilir |
+| ~~S4~~ | ~~FakeLimiter~~ | — | Kaldırıldı (2026-05) |
+| ~~S5~~ | ~~CSP pasif~~ | — | Production’da aktif (2026-05) |
+
+**Geri dönüş noktası:** `19mayisyedek` → `docs/19MAYISYEDEK_RESTORE.md`
 
 ---
 
 ## 8. DEPLOY PROTOKOLÜ
 
-**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md`
+**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md`  
+**Terim:** **VM** = Oracle Cloud üretim (`docs/ORACLE-PROD-VM.md`). GCP (`sps-server-v2`) eski ortam — yeni deploy için kullanılmaz.
 
-Özet: yerelde `git push origin main` → VM’de `sudo bash scripts/vm_safe_deploy.sh` (PostgreSQL yedek, pull, Docker, Alembic, satır sayısı doğrulaması).
+Özet: yerelde `git push origin main` → **Oracle VM**’de `sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` (PostgreSQL yedek, pull, Docker, Alembic, satır sayısı doğrulaması).
 
-### GCP Bilgileri
+### Üretim (Oracle VM)
 | | |
 |-|-|
-| VM | `sps-server-v2` / zone: `europe-west3-c` |
-| IP | `34.89.231.89` |
-| Container | `sps-web` |
-| Canlı DB | PostgreSQL (`kokpitim_db`); SQLite tipik olarak yalnızca yerel geliştirme |
+| Sunucu | `kokpitim-v2` — `129.159.30.175` |
+| SSH | `ubuntu@129.159.30.175` |
+| Uygulama | `/opt/kokpitim/app` |
+| Container | `kokpitim-web` |
+| Canlı DB | PostgreSQL `kokpitim_db` @ `127.0.0.1:5432` |
+| Yerel DB | SQLite `instance/kokpitim.db` yalnızca geliştirme / yedek artefakt |
+
+### GCP (eski — arşiv)
+| | |
+|-|-|
+| Instance | `sps-server-v2` / `europe-west3-c` (STOP) |
+| Geçiş yedekleri | `backups/oracle_migration/`, `docs/gcp2oraclegecisplani.md` |
