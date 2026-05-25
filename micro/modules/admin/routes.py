@@ -1042,6 +1042,62 @@ def admin_users_toggle(user_id):
         return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
 
 
+# ── 2FA Sıfırlama (Admin) ────────────────────────────────────────────────────
+
+@app_bp.route("/admin/users/<int:user_id>/2fa-reset", methods=["POST"])
+@login_required
+def admin_users_2fa_reset(user_id):
+    """Bir kullanıcının 2FA'sını admin olarak sıfırla.
+
+    Senaryo: kullanıcı telefonunu kaybetti, backup kodlarını da bulamıyor.
+    Admin onun 2FA'sını sıfırlayarak hesabına erişimi geri kazandırır.
+    """
+    if not _is_manager():
+        return _403()
+
+    u = User.query.get_or_404(user_id)
+    # Tenant admin yalnızca kendi tenant'ında
+    if not _is_admin() and u.tenant_id != current_user.tenant_id:
+        return _403()
+    # Tenant admin başka bir tenant_admin'in 2FA'sını sıfırlayamaz
+    if (
+        not _is_admin()
+        and u.role
+        and u.role.name == "tenant_admin"
+        and u.id != current_user.id
+    ):
+        return jsonify({"success": False, "message": "Kurum Yöneticisi 2FA'sını sadece Admin sıfırlayabilir."}), 403
+
+    if not u.totp_enabled:
+        return jsonify({"success": False, "message": "Kullanıcının 2FA'sı zaten devre dışı."}), 400
+
+    try:
+        u.totp_enabled = False
+        u.totp_secret = None
+        u.totp_backup_codes_json = None
+        db.session.commit()
+
+        # Audit log
+        try:
+            from app.utils.audit_logger import AuditLogger
+            AuditLogger.log(
+                action="2FA_ADMIN_RESET", resource_type="GÜVENLİK",
+                resource_id=u.id,
+                description=f"Admin {current_user.email} tarafından {u.email} 2FA sıfırlandı",
+            )
+        except Exception:
+            pass
+
+        return jsonify({
+            "success": True,
+            "message": f"{u.email} kullanıcısının 2FA'sı sıfırlandı.",
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_users_2fa_reset] {e}")
+        return jsonify({"success": False, "message": "Sıfırlama sırasında hata oluştu."}), 500
+
+
 # ── Toplu Kullanıcı İçe Aktarma ───────────────────────────────────────────────
 
 @app_bp.route("/admin/users/bulk-import", methods=["POST"])
