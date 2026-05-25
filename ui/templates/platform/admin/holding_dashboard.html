@@ -15,11 +15,11 @@
         Holding Konsolide Görünüm
       </h2>
       <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;">
-        {{ holding.name }} ve tüm alt şirketlerinin özet performansı — <strong>salt okur</strong>.
+        {{ holding.name }} ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>.
       </p>
     </div>
     <a href="{{ url_for('app_bp.admin_sub_tenants_page') }}" class="mc-btn mc-btn-secondary">
-      <i class="fas fa-cog"></i> Alt Şirket Yönetimi
+      <i class="fas fa-cog"></i> Alt Kurum Yönetimi
     </a>
   </div>
 
@@ -40,7 +40,7 @@
       </div>
       <div style="display:grid; grid-template-columns:repeat(4, auto); gap: var(--space-8); font-size: var(--text-sm);">
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Toplam Şirket</div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Toplam Kurum</div>
           <div id="h-tenant-count" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
         <div>
@@ -64,7 +64,7 @@
     <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Toplam Kritik Risk</div>
       <div id="h-risk" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
-      <div style="font-size: var(--text-sm); color: var(--text-subtle);">Tüm şirketlerde</div>
+      <div style="font-size: var(--text-sm); color: var(--text-subtle);">Tüm kurumlarda</div>
     </div>
     <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Yüksek Anomali</div>
@@ -81,14 +81,14 @@
   {# ─── Karşılaştırma grafiği ──────────────────────────────────────── #}
   <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-6);">
     <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-      <i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> Şirket Karşılaştırma — Sağlık Skoru
+      <i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> Kurum Karşılaştırma — Sağlık Skoru
     </h3>
     <canvas id="health-chart" height="110"></canvas>
   </div>
 
-  {# ─── Alt şirket kartları ────────────────────────────────────────── #}
+  {# ─── Alt kurum kartları ─────────────────────────────────────────── #}
   <h3 style="margin: var(--space-6) 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-    Alt Şirketler <span id="sub-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;">—</span>
+    Alt Kurumlar <span id="sub-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;">—</span>
   </h3>
   <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
     <i class="fas fa-spinner fa-spin"></i> Yükleniyor…
@@ -97,8 +97,8 @@
   <div id="empty-state" style="display:none;">
     <div class="mc-empty">
       <i class="fas fa-inbox mc-empty-icon"></i>
-      <div class="mc-empty-title">Henüz alt şirket yok</div>
-      <div class="mc-empty-text">"Alt Şirket Yönetimi" sayfasından açabilirsiniz.</div>
+      <div class="mc-empty-title">Henüz alt kurum yok</div>
+      <div class="mc-empty-text">"Alt Kurum Yönetimi" sayfasından açabilirsiniz.</div>
     </div>
   </div>
 </div>
@@ -223,7 +223,7 @@
       document.getElementById("h-anomaly").textContent = t.anomaly_high_sum;
       document.getElementById("h-overdue").textContent = t.activity_overdue_sum;
 
-      document.getElementById("sub-count").textContent = `(${t.tenant_count} şirket)`;
+      document.getElementById("sub-count").textContent = `(${t.tenant_count} kurum)`;
 
       if (j.sub_tenants.length === 0) {
         document.getElementById("empty-state").style.display = "block";

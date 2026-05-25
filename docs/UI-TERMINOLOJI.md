@@ -197,17 +197,22 @@ Yeni terim eklerken:
 
 Bu liste mevcut UI'da kılavuza aykırı olan yerleri listeler. **Sırayla düzeltilecek** — yeni özellik eklerken o ekrana dokunulduğunda buradan da kontrol et:
 
-### Düzeltilmesi gereken — "tenant" / "user" tabanlı
+### ✅ Düzeltildi — 2026-05-25
 
-| Konum | Mevcut | Olması gereken |
-|---|---|---|
-| `/admin/tenants` sayfa başlığı, button'lar | "Kurum Yönetimi" / "Yeni Kurum" ✓ (bu zaten doğru) | — |
-| `/admin/users` sayfa başlığı, button'lar | "Kullanıcı Yönetimi" / "Yeni Kullanıcı" ✓ (zaten doğru) | — |
-| `/admin/sub-tenants` modalda "Alt Tenant" | "Alt Tenant Aç" → "Alt Kurum Aç" | "Yeni Alt Kurum" |
-| Sidebar: "Alt Şirket Yönetimi" (Holding) | OK ama "şirket" yerine "kurum" tutarlılığı | "Alt Kurum Yönetimi" |
-| Sidebar: "Müşterilerim" (Bayi) | OK — bayi bağlamında "müşteri" mantıklı | — |
-| `/holding/tenant/<id>/view` üst banner | "Holding görünümü: ..." OK | — |
-| Hata mesajları | "tenant_id" görünür — değiştir | "Kurum ID" / kullanıcıya gizle |
+- `/admin/sub-tenants` sayfası: "Alt Tenant" → "Alt Kurum" (tüm metinler)
+- `/admin/sub-tenants/usage` sayfası: "Tenant" / "Şirket" → "Kurum"
+- Sidebar (Holding): "Alt Şirket Yönetimi" → "Alt Kurum Yönetimi"
+- Sidebar (Bayi): "Müşterilerim" → "Müşteri Kurumlarım"
+- Holding dashboard: "Şirket" → "Kurum" (tüm metinler, hero etiketleri, başlıklar)
+- Holding drill-down: "alt-şirket" → "alt kurum"
+- Backend hata mesajları: "tenant" / "alt-tenant" → "kurum" / "alt kurum"
+
+### 🔲 Henüz düzeltilmemiş
+
+- `/admin/tenants` modal'ları içinde JS literal'larda "tenant" geçebilir — kontrol gerekli
+- Modal title'larda "Yeni Tenant" benzeri eski kalıntılar varsa
+- Audit log mesajları (Türkçe karışık var — politika belirsiz)
+- Eski sayfalar (legacy admin/ rotaları)
 
 ---
 

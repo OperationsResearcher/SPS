@@ -67,9 +67,9 @@ def _validate_holding_access(sub_tenant_id: int):
         return None, (_403(), 403)
     sub = Tenant.query.get(sub_tenant_id)
     if not sub:
-        return None, (jsonify({"success": False, "message": "Alt-tenant bulunamadı."}), 404)
+        return None, (jsonify({"success": False, "message": "Alt kurum bulunamadı."}), 404)
     if not sub.parent_tenant_id:
-        return None, (jsonify({"success": False, "message": "Bu kurum bir alt-tenant değil."}), 400)
+        return None, (jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400)
     # Platform Admin → tümüne erişebilir
     # Holding user → sadece kendi children'ı
     if is_holding_user(current_user) and sub.parent_tenant_id != current_user.tenant_id:

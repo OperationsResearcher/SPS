@@ -84,7 +84,7 @@ def admin_api_sub_tenants_list():
         parent = current_user.tenant
 
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt-tenant açamaz."}), 400
+        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum açamaz."}), 400
 
     rows = Tenant.query.filter_by(parent_tenant_id=parent.id).order_by(Tenant.created_at.desc()).all()
 
@@ -150,13 +150,13 @@ def admin_api_sub_tenants_create():
     if is_platform_admin(current_user):
         parent_id = data.get("parent_tenant_id")
         if not parent_id:
-            return jsonify({"success": False, "message": "Platform Admin için parent_tenant_id gerekli."}), 400
+            return jsonify({"success": False, "message": "Platform Admin için üst kurum ID gerekli."}), 400
         parent = Tenant.query.get(int(parent_id))
     else:
         parent = current_user.tenant
 
     if not parent or parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Geçersiz parent tenant."}), 400
+        return jsonify({"success": False, "message": "Geçersiz üst kurum."}), 400
 
     # Yetki: bayi/holding admin sadece kendi parent'ında işlem yapabilir
     if not is_platform_admin(current_user) and parent.id != current_user.tenant_id:
@@ -181,7 +181,7 @@ def admin_api_sub_tenants_create():
     # tenant_admin rolünü bul
     tenant_admin_role = Role.query.filter_by(name="tenant_admin").first()
     if not tenant_admin_role:
-        return jsonify({"success": False, "message": "tenant_admin rolü tanımlı değil."}), 500
+        return jsonify({"success": False, "message": "Kurum yöneticisi rolü tanımlı değil."}), 500
 
     # Paket id (opsiyonel)
     package_id = data.get("package_id")
@@ -237,7 +237,7 @@ def admin_api_sub_tenants_create():
 
         return jsonify({
             "success": True,
-            "message": f"Alt tenant '{t.name}' açıldı ve admin oluşturuldu.",
+            "message": f"Alt kurum '{t.name}' açıldı ve yönetici oluşturuldu.",
             "tenant_id": t.id,
             "admin_id": admin.id,
             "admin_email": admin.email,
@@ -261,7 +261,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     sub = Tenant.query.get_or_404(sub_tenant_id)
     parent = sub.parent_tenant
     if not parent:
-        return jsonify({"success": False, "message": "Bu kurum bir alt-tenant değil."}), 400
+        return jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400
 
     # Yetki
     if not is_platform_admin(current_user) and parent.id != current_user.tenant_id:
@@ -276,7 +276,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
         .first()
     )
     if not admin:
-        return jsonify({"success": False, "message": "Bu alt-tenant'ın aktif admin'i yok."}), 404
+        return jsonify({"success": False, "message": "Bu alt kurumun aktif yöneticisi yok."}), 404
 
     import secrets
     new_password = "Kp_" + secrets.token_urlsafe(8)
@@ -312,7 +312,7 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
 
     sub = Tenant.query.get_or_404(sub_tenant_id)
     if not sub.parent_tenant:
-        return jsonify({"success": False, "message": "Bu kurum bir alt-tenant değil."}), 400
+        return jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400
     if not is_platform_admin(current_user) and sub.parent_tenant_id != current_user.tenant_id:
         return _403()
 
@@ -370,7 +370,7 @@ def admin_api_sub_tenants_usage():
     else:
         parent = current_user.tenant
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt-tenant'lara sahip değil."}), 400
+        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum yönetimine sahip değil."}), 400
 
     from app.services.sub_tenant_billing_service import build_consolidated_usage
     try:
@@ -397,7 +397,7 @@ def admin_api_sub_tenants_usage_export():
     else:
         parent = current_user.tenant
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt-tenant'lara sahip değil."}), 400
+        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum yönetimine sahip değil."}), 400
 
     from app.services.sub_tenant_billing_service import build_consolidated_usage
     data = build_consolidated_usage(parent.id)
