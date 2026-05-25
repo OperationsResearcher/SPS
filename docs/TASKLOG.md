@@ -3,6 +3,92 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-128 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
+
+**Görev:** Bayi/Holding mimarisi — Sprint A-F (6 sprint)
+**Modül:** app/models/, app/utils/, app/services/, app/routes/, micro/modules/admin/, ui/templates/platform/admin/, migrations/, tests/
+**Durum:** ✅ Tamamlandı (`claude/bayi-holding-sprint-{a..f}` → main, 6 merge commit)
+
+### Sprint Listesi
+
+**Sprint A — Foundation** (merge `b6e8db1`)
+- Tenant tablosuna 3 kolon: `tenant_type`, `parent_tenant_id`, `sub_tenant_limit` (migration `h1i2j3k4l015`)
+- Self-ref relationship + property'ler (is_dealer/is_holding/is_parent_capable/is_sub_tenant)
+- `app/utils/tenant_scope.py` genişletildi — 12 yetki helper:
+  - `accessible_tenant_ids()`, `is_holding_user/admin()`, `is_dealer_user/admin()`,
+    `child_tenant_ids()`, `can_manage_sub_tenants()`, `is_readonly_for_tenant()`,
+    `scope_query()`, `validate_tenant_type()`, `can_be_parent()`, `check_sub_tenant_limit()`,
+    `@block_if_holding_readonly()` decorator
+- `tests/test_tenant_hierarchy.py` — 25 test (TÜMÜ PASSED), 4 spesifik saldırı senaryosu
+
+**Sprint B — Platform Admin tip atama** (merge `71879c0`)
+- `/admin/tenants` listesinde "Tip" sütunu + parent gösterimi
+- Yeni/Düzenle modal: "Hiyerarşi" bölümü (sadece Admin görür) — tip + parent + sub_tenant_limit
+- Backend `admin_tenants_add/edit`: tip validation, parent kontrolü, audit log `TENANT_TYPE_CHANGE`
+
+**Sprint C — Bayi/Holding alt-tenant CRUD** (merge `1c5f4f7`)
+- `micro/modules/admin/routes_sub_tenants.py` — yeni route modülü
+- 5 endpoint: `GET/POST /admin/sub-tenants`, `POST /api/.../reset-password`, `POST /api/.../toggle`
+- `/admin/sub-tenants` UI: hero kart + tablo + yeni alt-tenant modal + başarı modal'ı (geçici şifre kopyala)
+- Sidebar: Bayi → "Müşterilerim", Holding → "Alt Şirket Yönetimi"
+- Yeni alt-tenant otomatik `tenant_type='normal'` + ilk admin oluşturulur (Kp_<random> geçici şifre)
+
+**Sprint D — Holding konsolide dashboard** (merge `2176370`)
+- `app/services/holding_consolidated_service.py` — `build_holding_snapshot()`: tüm alt-tenant'ların aggregate snapshot'ı
+- `/holding/dashboard` + `/holding/api/snapshot`
+- UI: hero (avg sağlık 48px) + 4 toplam + 3 alarm tile + Chart.js karşılaştırma + tile grid
+- Sidebar: Holding admin için "Holding Görünümü" (ana sayfa)
+
+**Sprint E — Salt-okur drill-down** (merge `07eda2e`)
+- `build_sub_tenant_drilldown()` servisi
+- `/holding/tenant/<id>/view` + `/holding/api/tenant/<id>/drilldown`
+- `_validate_holding_access()` ile yetki kontrolü (holding user kendi children + Platform Admin tümü)
+- UI: salt-okur banner + hero + 6 KPI tile + initiative tablosu + risk tablosu
+- Audit log: `HOLDING_VIEW_TENANT` (her drill-down)
+
+**Sprint F — Login yönlendirme** (merge `38d527c`)
+- `default_landing_endpoint()` helper: Holding → /holding/dashboard, Bayi → /admin/sub-tenants, diğer → /launcher
+- 3 redirect noktası entegre: auth login (GET + POST), totp challenge success
+
+### Güvenlik Saldırı Test Sonuçları (25/25 PASSED)
+1. ✅ Bayi admin alt-tenant verisini sorgu ile çekemiyor (`accessible_tenant_ids` filtre)
+2. ✅ Alt-tenant kullanıcısı parent'ı/kardeşlerini göremiyor
+3. ✅ Holding admin sadece kendi alt-tenant'larını görüyor
+4. ✅ Normal `tenant_admin` platform-wide erişim sağlayamıyor
+
+### Notlar
+Mimari karar: tüm DB sorguları artık `tenant_id IN accessible_tenant_ids(user)` filtresine bağlanmalı. Şu an mevcut endpoint'ler `current_user.tenant_id` kullanıyor — Bayi/Holding senaryosunda bu yeterli (bayi alt-tenant'a sızamaz, holding sadece kendi tenant'ını edit eder). Drill-down salt-okur özet sayfasıyla yapıldı (tüm sayfa refactor yerine), daha az invaziv.
+
+İçi içe hiyerarşi yasak (bayi/holding altında bayi/holding açılamaz). Aktif alt-tenant varken parent'ı 'normal'a düşürme yasak.
+
+---
+
+## TASK-127 | 2026-05-25 | ✅ Tamamlandı (yerel + main)
+
+**Görev:** Sidebar kurum logosu beyaz çerçeve fix + admin 2FA reset + profil foto otomatik resize
+**Modül:** ui/static/platform/css/sidebar.css, micro/modules/admin/routes.py, micro/modules/shared/auth/routes.py
+**Durum:** ✅ Tamamlandı (3 ayrı commit + merge)
+
+### Değişiklikler
+- `sidebar-brand-logo`: zorunlu beyaz arka plan + padding + box-shadow kaldırıldı (şeffaf PNG sidebar koyu zemininde direkt görünür); helper `.has-bg` class korundu
+- `/admin/users/<id>/2fa-reset` endpoint: admin kullanıcının 2FA'sını sıfırlar (telefon kayıp + backup kod yok senaryosu); kullanıcı edit modal'a 2FA durum + sıfırla butonu
+- Profil foto yükleme: 5MB sınır 15MB'a çıkarıldı, Pillow ile otomatik 512×512 LANCZOS resize + JPEG q=85; EXIF orientation düzeltmesi; orijinal 5MB+ olsa bile çıktı ~50KB
+
+---
+
+## TASK-126 | 2026-05-25 | ✅ Tamamlandı (yerel + main)
+
+**Görev:** /admin/users sütun sıralama + adminin 2FA sıfırlaması
+**Modül:** ui/templates/platform/admin/users.html, ui/static/platform/js/admin.js
+**Durum:** ✅ Tamamlandı
+
+### Değişiklikler
+- Tablo başlığına tıklamalı sıralama (5 sütun: ad, e-posta, rol, kurum, durum)
+- Asc/desc toggle + aktif kolon indigo arka plan + anlamsal sıralama (null'lar en alta)
+- Tamamen client-side, filtre + sıralama birlikte çalışır
+
+---
+
 ## TASK-125 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
 
 **Görev:** Opsiyonel 2FA UI + challenge 500 hata fix
