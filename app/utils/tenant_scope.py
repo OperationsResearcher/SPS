@@ -164,11 +164,14 @@ def is_holding_user(user=None) -> bool:
 
 
 def is_dealer_admin(user=None) -> bool:
-    """Bayi admin mı (tenant_admin/Admin rol + bayi tenant)?"""
+    """Bayi admin mı (tenant_admin/executive_manager/Admin rol + bayi tenant)?
+
+    Not: executive_manager de kabul ediliyor — is_holding_admin ile tutarlılık.
+    """
     u = user or current_user
     if not is_dealer_user(u):
         return False
-    return bool(u.role and u.role.name in ("tenant_admin", "Admin"))
+    return bool(u.role and u.role.name in ("tenant_admin", "executive_manager", "Admin"))
 
 
 def is_holding_admin(user=None) -> bool:
