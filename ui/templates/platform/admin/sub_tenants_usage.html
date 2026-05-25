@@ -36,7 +36,7 @@
         <div id="hero-parent" style="font-size:22px; font-weight:700;">—</div>
       </div>
       <div style="display:grid; grid-template-columns:repeat(5, auto); gap: var(--space-6); font-size:13px;">
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Şirket</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Kurum</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
         <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Kullanıcı</div><div id="h-users" style="font-size:22px; font-weight:700;">—</div></div>
         <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">KPI</div><div id="h-kpi" style="font-size:22px; font-weight:700;">—</div></div>
         <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">LLM Çağrı</div><div id="h-llm" style="font-size:22px; font-weight:700;">—</div></div>
@@ -64,7 +64,7 @@
       <table class="mc-table" style="width:100%; font-size:12px;">
         <thead>
           <tr style="background:#f1f5f9;">
-            <th style="text-align:left;">Tenant</th>
+            <th style="text-align:left;">Kurum</th>
             <th>Paket</th>
             <th style="text-align:center;">Kullanıcı</th>
             <th style="text-align:center;">Doluluk</th>
@@ -86,7 +86,7 @@
   <div id="empty-state" style="display:none;">
     <div class="mc-empty">
       <i class="fas fa-inbox mc-empty-icon"></i>
-      <div class="mc-empty-title">Henüz alt tenant yok</div>
+      <div class="mc-empty-title">Henüz alt kurum yok</div>
     </div>
   </div>
 </div>
@@ -195,7 +195,7 @@
     document.getElementById("h-cost").textContent = "$" + (j.totals.llm_cost_usd_month_total || 0).toFixed(2);
 
     document.getElementById("usage-subtitle").textContent =
-      `${j.parent.name} ve alt-şirketlerinin paket + kullanım durumu`;
+      `${j.parent.name} ve alt kurumlarının paket + kullanım durumu`;
 
     // Paket dağılımı
     document.getElementById("pkg-card").style.display = "block";
