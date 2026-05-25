@@ -17,6 +17,96 @@ from app.models.core import Tenant, User
 from app.services.exec_dashboard_service import build_exec_snapshot
 
 
+def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> dict:
+    """Bir holding'in belirli alt-tenant'ı için detay drill-down.
+
+    Yetki: ÇAĞIRAN tarafından doğrulanmalı — bu fonksiyon sadece veri toplar.
+    Caller sub_tenant.parent_tenant_id == holding_tenant_id olduğunu kontrol etmeli.
+
+    Dönen:
+        {
+          "sub_tenant": {id, name, ...},
+          "snapshot": <exec_dashboard.build_exec_snapshot çıktısı>,
+          "initiatives": [...],
+          "risks": [...],
+          "scenarios_count": int,
+        }
+    """
+    sub = Tenant.query.get(sub_tenant_id)
+    if not sub:
+        return {"error": "Alt-tenant bulunamadı."}
+    if sub.parent_tenant_id != holding_tenant_id:
+        return {"error": "Bu alt-tenant başka bir holding'e ait."}
+
+    try:
+        snap = build_exec_snapshot(sub.id)
+    except Exception as e:
+        snap = {"error": str(e)}
+
+    # Initiative'ler
+    initiatives = []
+    try:
+        from app.models.initiative import Initiative
+        items = Initiative.query.filter_by(
+            tenant_id=sub.id, is_active=True
+        ).order_by(Initiative.priority.desc(), Initiative.id.desc()).limit(20).all()
+        initiatives = [i.to_dict() for i in items]
+    except Exception:
+        pass
+
+    # Risk listesi
+    risks = []
+    try:
+        from app.models.k_radar_domain import RiskHeatmapItem
+        items = RiskHeatmapItem.query.filter_by(
+            tenant_id=sub.id, is_active=True
+        ).order_by(
+            (RiskHeatmapItem.probability * RiskHeatmapItem.impact).desc()
+        ).limit(20).all()
+        risks = [{
+            "id": r.id,
+            "title": getattr(r, "title", None) or getattr(r, "name", "—"),
+            "probability": r.probability,
+            "impact": r.impact,
+            "score": (r.probability or 0) * (r.impact or 0),
+            "status": getattr(r, "status", "—"),
+            "owner": getattr(r, "owner_name", None) or getattr(r, "owner", None),
+        } for r in items]
+    except Exception:
+        pass
+
+    # Senaryo sayısı
+    scenarios_count = 0
+    try:
+        from app.models.plan_year import PlanYear
+        scenarios_count = PlanYear.query.filter(
+            PlanYear.tenant_id == sub.id,
+            PlanYear.scenario_of_id.isnot(None),
+        ).count()
+    except Exception:
+        pass
+
+    # Kullanıcı sayısı
+    users_count = User.query.filter_by(tenant_id=sub.id, is_active=True).count()
+
+    return {
+        "sub_tenant": {
+            "id": sub.id,
+            "name": sub.name,
+            "short_name": sub.short_name,
+            "sector": sub.sector,
+            "is_active": sub.is_active,
+            "created_at": sub.created_at.isoformat() if sub.created_at else None,
+            "users_count": users_count,
+        },
+        "snapshot": snap,
+        "initiatives": initiatives,
+        "risks": risks,
+        "scenarios_count": scenarios_count,
+        "generated_at": _dt.datetime.utcnow().isoformat(),
+    }
+
+
 def build_holding_snapshot(holding_tenant_id: int) -> dict:
     """Holding ve tüm alt-tenant'ları için konsolide snapshot.
 
