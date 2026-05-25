@@ -425,6 +425,32 @@
       document.getElementById("em-taxno").value    = (data && data.taxNumber)     || "";
       const pkgSel = document.getElementById("em-package");
       if (pkgSel) pkgSel.value = (data && data.packageId) || "";
+
+      // Bayi/Holding alanları (sadece Platform Admin için template'de render edilir)
+      const typeSel = document.getElementById("em-tenant-type");
+      const parentSel = document.getElementById("em-parent-tenant");
+      const subLimit = document.getElementById("em-sub-limit");
+      const typeWarn = document.getElementById("em-type-warn");
+      if (typeSel) {
+        typeSel.value = (data && data.tenantType) || "normal";
+        // Aktif alt-tenant varsa "normal'a düşürme" uyarısı
+        const subCount = parseInt(data?.subTenantCount || "0", 10);
+        if (typeWarn) {
+          if (subCount > 0 && (data.tenantType === "dealer" || data.tenantType === "holding")) {
+            typeWarn.textContent = `⚠️ ${subCount} aktif alt-tenant var. 'Normal'a düşürmek için önce hepsini transfer/pasifleştir.`;
+            typeWarn.style.display = "block";
+          } else {
+            typeWarn.style.display = "none";
+          }
+        }
+      }
+      if (parentSel) {
+        parentSel.value = (data && data.parentTenantId) || "";
+        // Eğer alt-tenant ise parent değişmesin (basit kural — istenirse açılır)
+        parentSel.disabled = isEdit && !!(data && data.parentTenantId);
+      }
+      if (subLimit) subLimit.value = (data && data.subTenantLimit) || "";
+
       editModal.classList.add("open");
       document.getElementById("em-name").focus();
     }
@@ -459,6 +485,10 @@
           tax_office:       document.getElementById("em-taxoff").value.trim()   || null,
           tax_number:       document.getElementById("em-taxno").value.trim()    || null,
           package_id:       document.getElementById("em-package")?.value        || null,
+          // Bayi/Holding (sadece Platform Admin için DOM'da olur)
+          tenant_type:      document.getElementById("em-tenant-type")?.value    || "normal",
+          parent_tenant_id: document.getElementById("em-parent-tenant")?.value  || null,
+          sub_tenant_limit: document.getElementById("em-sub-limit")?.value      || null,
         };
         const url = _editTenantId ? `${EDIT_BASE}${_editTenantId}` : ADD_URL;
         const msg = _editTenantId ? "Kurum güncellendi." : "Kurum oluşturuldu.";

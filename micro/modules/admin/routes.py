@@ -1203,7 +1203,7 @@ def admin_tenants():
         return render_template("platform/errors/403.html"), 403
 
     if _is_admin():
-        tenants = Tenant.query.order_by(Tenant.name).all()
+        tenants = Tenant.query.order_by(Tenant.tenant_type.desc(), Tenant.name).all()
     else:
         tenants = Tenant.query.filter_by(id=current_user.tenant_id).all()
 
@@ -1213,8 +1213,22 @@ def admin_tenants():
     except Exception:
         packages = []
 
+    # Bayi/Holding listesi — yeni tenant açarken parent seç için
+    parent_candidates = []
+    if _is_admin():
+        parent_candidates = Tenant.query.filter(
+            Tenant.tenant_type.in_(["dealer", "holding"]),
+            Tenant.is_active == True,
+            Tenant.parent_tenant_id.is_(None),  # iç içe yasak
+        ).order_by(Tenant.name).all()
+
     total_users = sum(len(t.users) for t in tenants)
-    return render_template("platform/admin/tenants.html", tenants=tenants, packages=packages, total_users=total_users)
+    return render_template(
+        "platform/admin/tenants.html",
+        tenants=tenants, packages=packages,
+        total_users=total_users,
+        parent_candidates=parent_candidates,
+    )
 
 
 @app_bp.route("/admin/tenants/add", methods=["POST"])
@@ -1227,6 +1241,34 @@ def admin_tenants_add():
     name = (data.get("name") or "").strip()
     if not name:
         return jsonify({"success": False, "message": "Kurum adı zorunludur."}), 400
+
+    # Bayi/Holding hiyerarşi: tip + parent doğrulama
+    from app.utils.tenant_scope import (
+        validate_tenant_type, can_be_parent, check_sub_tenant_limit,
+        TENANT_TYPE_NORMAL,
+    )
+    try:
+        tenant_type = validate_tenant_type(data.get("tenant_type"))
+    except ValueError as ve:
+        return jsonify({"success": False, "message": str(ve)}), 400
+
+    parent_id = data.get("parent_tenant_id")
+    parent_tenant = None
+    if parent_id:
+        try:
+            parent_id = int(parent_id)
+        except (TypeError, ValueError):
+            return jsonify({"success": False, "message": "Parent tenant ID geçersiz."}), 400
+        parent_tenant = Tenant.query.get(parent_id)
+        ok, err = can_be_parent(parent_tenant)
+        if not ok:
+            return jsonify({"success": False, "message": err}), 400
+        # Alt tenant her zaman 'normal' tipi olur (iç içe hiyerarşi yasak)
+        if tenant_type != TENANT_TYPE_NORMAL:
+            return jsonify({"success": False, "message": "Alt-tenant tipi 'normal' olmalı (iç içe hiyerarşi yok)."}), 400
+        ok, err = check_sub_tenant_limit(parent_tenant)
+        if not ok:
+            return jsonify({"success": False, "message": err}), 400
 
     try:
         t = Tenant(
@@ -1242,6 +1284,9 @@ def admin_tenants_add():
             tax_number=data.get("tax_number") or None,
             max_user_count=int(data["max_user_count"]) if data.get("max_user_count") else 5,
             package_id=int(data["package_id"]) if data.get("package_id") else None,
+            tenant_type=tenant_type,
+            parent_tenant_id=parent_tenant.id if parent_tenant else None,
+            sub_tenant_limit=int(data["sub_tenant_limit"]) if data.get("sub_tenant_limit") else None,
         )
         if data.get("license_end_date"):
             from datetime import date
@@ -1325,6 +1370,34 @@ def admin_tenants_edit(tenant_id):
             t.license_end_date = date.fromisoformat(data["license_end_date"])
         if data.get("package_id"):
             t.package_id = int(data["package_id"])
+
+        # ── Bayi/Holding tipi değişimi (sadece Platform Admin) ──
+        if "tenant_type" in data and _is_admin():
+            from app.utils.tenant_scope import validate_tenant_type, TENANT_TYPE_NORMAL
+            new_type = validate_tenant_type(data["tenant_type"])
+            # Bayi/Holding → normal'e döndürme: aktif alt-tenant varsa engelle
+            if t.tenant_type in ("dealer", "holding") and new_type == TENANT_TYPE_NORMAL:
+                active_subs = Tenant.query.filter_by(parent_tenant_id=t.id, is_active=True).count()
+                if active_subs > 0:
+                    return jsonify({
+                        "success": False,
+                        "message": f"Aktif alt-tenant'ı olan kurum 'normal'a düşürülemez ({active_subs} alt-tenant). Önce alt-tenantları transfer/pasifleştir.",
+                    }), 400
+            if new_type != t.tenant_type:
+                try:
+                    AuditLogger.log(
+                        action="TENANT_TYPE_CHANGE", resource_type="Kurum Yönetimi",
+                        resource_id=t.id,
+                        description=f"Tenant {t.name}: tip {t.tenant_type} → {new_type}",
+                    )
+                except Exception:
+                    pass
+                t.tenant_type = new_type
+
+        if "sub_tenant_limit" in data and _is_admin():
+            v = data["sub_tenant_limit"]
+            t.sub_tenant_limit = int(v) if v else None
+
         db.session.commit()
         try:
             AuditLogger.log_update(
