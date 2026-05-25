@@ -1868,3 +1868,8 @@ def admin_modules_toggle(mod_id):
         current_app.logger.error(f"[admin_modules_toggle] {e}")
         return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
 
+
+
+# Sprint C — Bayi/Holding alt-tenant yönetim sayfası
+from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
+
