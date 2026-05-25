@@ -175,6 +175,7 @@ def totp_challenge():
             )
         except Exception:
             pass
-        return redirect(url_for("app_bp.launcher"))
+        from app.utils.tenant_scope import default_landing_endpoint
+        return redirect(url_for(default_landing_endpoint(user)))
 
     return render_template("platform/auth/totp_challenge.html")

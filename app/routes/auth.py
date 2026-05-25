@@ -34,7 +34,8 @@ def _write_auth_audit(action, user=None):
 def login():
     """Handle login form - GET shows form, POST validates credentials."""
     if current_user.is_authenticated:
-        return redirect(url_for("app_bp.launcher"))
+        from app.utils.tenant_scope import default_landing_endpoint
+        return redirect(url_for(default_landing_endpoint(current_user)))
 
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
@@ -83,7 +84,8 @@ def login():
         login_user(user)
         _write_auth_audit("OTURUM AÇMA", user)
         flash("Giriş başarılı.", "success")
-        next_url = request.args.get("next") or url_for("app_bp.launcher")
+        from app.utils.tenant_scope import default_landing_endpoint
+        next_url = request.args.get("next") or url_for(default_landing_endpoint(user))
         return redirect(next_url)
 
     return render_template("auth/login.html")
