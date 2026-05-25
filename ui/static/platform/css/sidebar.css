@@ -56,16 +56,23 @@
 .sidebar-brand-logo {
     width: auto;
     max-width: 132px;
-    height: 36px;
+    height: 40px;
     object-fit: contain;
     object-position: center center;
     display: block;
     flex-shrink: 0;
-    border-radius: 10px;
-    padding: 6px 8px;
+    border-radius: 6px;
+    /* Arka plan + çerçeve kaldırıldı — şeffaf PNG'ler sidebar üzerinde direkt görünür.
+       Koyu renkli logosu olan tenant için fallback altında. */
+}
+
+/* Yardımcı: koyu logosu olan tenant beyaz arka plan ister
+   (template'de tenant.logo_needs_background varsa eklenebilir) */
+.sidebar-brand-logo.has-bg {
+    padding: 4px 6px;
     box-sizing: content-box;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-brand-name {

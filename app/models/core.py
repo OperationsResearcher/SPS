@@ -47,8 +47,47 @@ class Tenant(db.Model):
     plan_year_enabled = db.Column(db.Boolean, default=False, nullable=False)
     plan_year_start = db.Column(db.Integer, nullable=True)  # Geçmiş yıl başlangıcı (ör. 2021)
 
+    # ─── Bayi/Holding Hiyerarşisi (Sprint A) ──────────────────────────────────
+    # tenant_type: 'normal' (bağımsız) / 'dealer' (bayi) / 'holding' (grup şirketi)
+    # Sadece Platform Admin atayabilir. Karar: docs/AI-POLITIKASI değil — yeni bir kural seti.
+    tenant_type = db.Column(db.String(20), default="normal", nullable=False)
+
+    # Alt tenant ise parent buraya yazılır. NULL = bağımsız tenant.
+    parent_tenant_id = db.Column(
+        db.Integer, db.ForeignKey("tenants.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+
+    # Bayi/Holding kaç alt tenant açabilir? NULL = sınırsız (paket bazlı override edilir)
+    sub_tenant_limit = db.Column(db.Integer, nullable=True)
+
     package = db.relationship("SubscriptionPackage", back_populates="tenants", lazy="select")
     users = db.relationship("User", back_populates="tenant", lazy="select")
+
+    # Self-referencing: parent + children
+    parent_tenant = db.relationship(
+        "Tenant", remote_side="Tenant.id",
+        foreign_keys=[parent_tenant_id],
+        backref=db.backref("sub_tenants", lazy="dynamic"),
+    )
+
+    # Helper'lar
+    @property
+    def is_dealer(self) -> bool:
+        return self.tenant_type == "dealer"
+
+    @property
+    def is_holding(self) -> bool:
+        return self.tenant_type == "holding"
+
+    @property
+    def is_parent_capable(self) -> bool:
+        """Bu tenant alt-tenant açabilir mi?"""
+        return self.tenant_type in ("dealer", "holding")
+
+    @property
+    def is_sub_tenant(self) -> bool:
+        return self.parent_tenant_id is not None
 
 
 class Role(db.Model):
