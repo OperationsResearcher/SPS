@@ -85,25 +85,65 @@ def profil_foto_yukle():
     if file.mimetype and file.mimetype not in allowed_mime:
         return jsonify({"success": False, "message": "Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir."}), 400
 
-    # Dosya boyutu kontrolü — 5MB
+    # Dosya boyutu — 15MB üst sınır (büyükse de resize edeceğiz, bu sadece güvenlik)
     file_content = file.read()
     file_size = len(file_content)
     file.seek(0)
-    if file_size > 5 * 1024 * 1024:
-        return jsonify({"success": False, "message": "Dosya boyutu çok büyük. Maksimum 5MB yükleyebilirsiniz."}), 400
+    if file_size > 15 * 1024 * 1024:
+        return jsonify({"success": False, "message": "Dosya boyutu çok büyük (max 15 MB)."}), 400
 
     try:
-        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
         upload_folder = os.path.join(current_app.static_folder, "uploads", "profiles")
         os.makedirs(upload_folder, exist_ok=True)
-        file.save(os.path.join(upload_folder, filename))
 
-        current_user.profile_picture = f"/static/uploads/profiles/{filename}"
+        # ── Pillow ile resize + optimize ────────────────────────────────────
+        # Profil fotoğrafı için 512×512 yeter (retina ekranda bile kaliteli)
+        MAX_DIM = 512
+        JPEG_QUALITY = 85
+        out_filename = f"{uuid.uuid4().hex}.jpg"   # her zaman JPEG'e çevir
+        out_path = os.path.join(upload_folder, out_filename)
+
+        try:
+            from PIL import Image, ImageOps
+            import io as _io
+            img = Image.open(_io.BytesIO(file_content))
+            # EXIF orientation düzeltmesi (telefondan dik çekilen fotoğraflar)
+            img = ImageOps.exif_transpose(img)
+            # RGBA / palette → RGB (JPEG için)
+            if img.mode in ("RGBA", "LA", "P"):
+                bg = Image.new("RGB", img.size, (255, 255, 255))
+                if img.mode in ("RGBA", "LA"):
+                    bg.paste(img, mask=img.split()[-1])
+                else:
+                    bg.paste(img.convert("RGBA"), mask=img.convert("RGBA").split()[-1])
+                img = bg
+            elif img.mode != "RGB":
+                img = img.convert("RGB")
+            # Aspect-ratio koruyarak resize
+            img.thumbnail((MAX_DIM, MAX_DIM), Image.LANCZOS)
+            img.save(out_path, "JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
+            current_app.logger.info(
+                f"[profil_foto] {current_user.email}: "
+                f"orijinal {file_size//1024} KB → resize {os.path.getsize(out_path)//1024} KB "
+                f"({img.width}×{img.height})"
+            )
+        except ImportError:
+            # Pillow yoksa: orijinali kaydet (eski davranış)
+            current_app.logger.warning("[profil_foto] Pillow kurulu degil, resize yapilamadi")
+            out_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+            out_path = os.path.join(upload_folder, out_filename)
+            file.save(out_path)
+
+        current_user.profile_picture = f"/static/uploads/profiles/{out_filename}"
         db.session.commit()
-        return jsonify({"success": True, "message": "Fotoğraf yüklendi.", "photo_url": current_user.profile_picture})
+        return jsonify({
+            "success": True,
+            "message": "Fotoğraf yüklendi ve optimize edildi.",
+            "photo_url": current_user.profile_picture,
+        })
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"[profil_foto_yukle] {e}")
+        current_app.logger.error(f"[profil_foto_yukle] {e}", exc_info=True)
         return jsonify({"success": False, "message": f"Fotoğraf yüklenirken hata oluştu: {str(e)}"}), 500
 
 
