@@ -57,6 +57,7 @@
       <thead>
         <tr>
           <th>Kurum</th>
+          <th style="text-align:center;">Tip</th>
           <th>Sektör</th>
           <th>Paket</th>
           <th>Lisans Bitiş</th>
@@ -74,12 +75,32 @@
                 {{ (t.short_name or t.name)[0]|upper }}
               </div>
               <div>
-                <div style="font-weight:600; color:#1e293b; font-size:13.5px;">{{ t.name }}</div>
+                <div style="font-weight:600; color:#1e293b; font-size:13.5px;">
+                  {{ t.name }}
+                  {% if t.parent_tenant_id %}<i class="fas fa-arrow-right" style="font-size:9px; color:#cbd5e1; margin:0 4px;"></i><span style="font-size:11px; color:#94a3b8;">{{ t.parent_tenant.name if t.parent_tenant else '—' }}</span>{% endif %}
+                </div>
                 <div style="font-size:11px; color:#94a3b8;">
                   {{ t.short_name or '' }}{% if t.short_name and t.contact_email %} · {% endif %}{{ t.contact_email or '' }}
                 </div>
               </div>
             </div>
+          </td>
+          <td style="text-align:center;">
+            {% if t.tenant_type == 'holding' %}
+              <span class="mc-badge" style="background:#fce7f3; color:#9d174d;" title="Grup şirketi — alt-tenantları konsolide görür">
+                <i class="fas fa-sitemap"></i> Holding
+              </span>
+            {% elif t.tenant_type == 'dealer' %}
+              <span class="mc-badge" style="background:#fef3c7; color:#92400e;" title="Bayi — alt-tenant açabilir, içine girmez">
+                <i class="fas fa-store"></i> Bayi
+              </span>
+            {% elif t.parent_tenant_id %}
+              <span class="mc-badge" style="background:#e0e7ff; color:#3730a3;" title="Alt tenant">
+                <i class="fas fa-link"></i> Alt
+              </span>
+            {% else %}
+              <span style="color:#cbd5e1; font-size:11px;">—</span>
+            {% endif %}
           </td>
           <td style="color:#64748b; font-size:13px;">{{ t.sector or '—' }}</td>
           <td>
@@ -124,6 +145,10 @@
                       data-license-end-date="{{ t.license_end_date.strftime('%Y-%m-%d') if t.license_end_date else '' }}"
                       data-package-id="{{ t.package_id or '' }}"
                       data-package-name="{{ t.package.name if t.package else '' }}"
+                      data-tenant-type="{{ t.tenant_type }}"
+                      data-parent-tenant-id="{{ t.parent_tenant_id or '' }}"
+                      data-sub-tenant-limit="{{ t.sub_tenant_limit or '' }}"
+                      data-sub-tenant-count="{{ t.sub_tenants.filter_by(is_active=True).count() if t.is_parent_capable else 0 }}"
                       title="Düzenle">
                 <i class="fas fa-edit"></i> Düzenle
               </button>
@@ -141,7 +166,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">Kurum bulunamadı.</td>
+          <td colspan="8" style="text-align:center; padding:40px; color:#94a3b8;">Kurum bulunamadı.</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -252,6 +277,47 @@
             <input id="em-taxno" class="mc-form-input" placeholder="Vergi numarası">
           </div>
         </div>
+
+        {% if current_user.role and current_user.role.name == 'Admin' %}
+        <div class="tm-section-label" style="margin-top:18px;">
+          <i class="fas fa-sitemap" style="color:#9d174d;"></i> Hiyerarşi (Bayi / Holding)
+        </div>
+        <div style="background:#fef3c7; border-left:3px solid #f59e0b; padding:10px 12px; border-radius:6px; margin-bottom:12px; font-size:12px; color:#92400e;">
+          <strong>⚠️ Dikkat:</strong> Bu alanlar sadece Platform Admin tarafından değiştirilir.
+          "Bayi" → alt-tenant açar ama içine giremez. "Holding" → alt-tenantları konsolide salt-okur görür.
+          "Alt tenant" → bir bayi/holding'e bağlı normal tenant.
+        </div>
+        <div class="tm-grid-2">
+          <div class="tm-field">
+            <label class="mc-form-label">Tenant Tipi</label>
+            <select id="em-tenant-type" class="mc-form-input">
+              <option value="normal">Normal (bağımsız)</option>
+              <option value="dealer">Bayi — alt tenant açar, içine girmez</option>
+              <option value="holding">Holding — alt tenantları konsolide görür</option>
+            </select>
+            <p id="em-type-warn" style="font-size:11px; color:#dc2626; margin-top:4px; display:none;"></p>
+          </div>
+          <div class="tm-field">
+            <label class="mc-form-label">Alt Tenant Limiti <span style="font-size:11px;color:#94a3b8;">(boş = sınırsız)</span></label>
+            <input id="em-sub-limit" class="mc-form-input" type="number" min="0" placeholder="—">
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label">Parent (Üst) Tenant <span style="font-size:11px;color:#94a3b8;">(sadece alt-tenant için)</span></label>
+            <select id="em-parent-tenant" class="mc-form-input">
+              <option value="">— Bağımsız (parent yok) —</option>
+              {% for p in parent_candidates %}
+              <option value="{{ p.id }}" data-type="{{ p.tenant_type }}">
+                {{ p.name }} ({{ 'Holding' if p.tenant_type == 'holding' else 'Bayi' }})
+              </option>
+              {% endfor %}
+            </select>
+            <p style="font-size:11px; color:#94a3b8; margin-top:4px;">
+              Bağımsız bir kurum yerine bir Bayi/Holding'in alt-tenant'ı olarak açmak için seç.
+              Alt-tenant otomatik 'normal' tipi alır.
+            </p>
+          </div>
+        </div>
+        {% endif %}
 
       </div>
       <div class="mc-modal-footer">
