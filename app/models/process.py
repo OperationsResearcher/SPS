@@ -92,9 +92,9 @@ class Process(db.Model):
     parent = db.relationship('Process', remote_side=[id], foreign_keys='[Process.parent_id]', backref=db.backref('sub_processes', lazy='dynamic'))
     
     # Many-to-Many
-    leaders = db.relationship('User', secondary=process_leaders, backref='led_processes')
-    members = db.relationship('User', secondary=process_members, backref='member_processes')
-    owners = db.relationship('User', secondary=process_owners_table, backref='owned_processes')
+    leaders = db.relationship('User', secondary=process_leaders, backref='led_processes', lazy='select')
+    members = db.relationship('User', secondary=process_members, backref='member_processes', lazy='select')
+    owners = db.relationship('User', secondary=process_owners_table, backref='owned_processes', lazy='select')
 
     # Sub-strategies (via association object for contribution_pct)
     sub_strategies = association_proxy('process_sub_strategy_links', 'sub_strategy',
@@ -507,8 +507,8 @@ class IndividualPerformanceIndicator(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     user = db.relationship('User', backref=db.backref('individual_performance_indicators', lazy=True))
-    source_process = db.relationship('Process', foreign_keys=[source_process_id])
-    source_process_kpi = db.relationship('ProcessKpi', foreign_keys=[source_process_kpi_id])
+    source_process = db.relationship('Process', foreign_keys=[source_process_id], lazy='select')
+    source_process_kpi = db.relationship('ProcessKpi', foreign_keys=[source_process_kpi_id], lazy='select')
     
     def __repr__(self):
         return f'<IndividualPerformanceIndicator {self.name}>'
@@ -529,6 +529,8 @@ class IndividualPerformanceIndicator(db.Model):
     kaynak = synonym("source")
     surec_id = synonym("source_process_id")
     surec_pg_id = synonym("source_process_kpi_id")
+    kaynak_surec_id = synonym("source_process_id")
+    kaynak_surec_pg_id = synonym("source_process_kpi_id")
 
 
 class IndividualActivity(db.Model):
@@ -560,8 +562,8 @@ class IndividualActivity(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     user = db.relationship('User', backref=db.backref('individual_activities', lazy=True))
-    source_process = db.relationship('Process', foreign_keys=[source_process_id])
-    source_process_activity = db.relationship('ProcessActivity', foreign_keys=[source_process_activity_id])
+    source_process = db.relationship('Process', foreign_keys=[source_process_id], lazy='select')
+    source_process_activity = db.relationship('ProcessActivity', foreign_keys=[source_process_activity_id], lazy='select')
     
     def __repr__(self):
         return f'<IndividualActivity {self.name}>'
@@ -617,11 +619,17 @@ class IndividualKpiData(db.Model):
 
     # Legacy aliases
     bireysel_pg_id = synonym("individual_pg_id")
+    pg_id = synonym("individual_pg_id")
     yil = synonym("year")
     veri_tarihi = synonym("data_date")
     periyot_tipi = synonym("period_type")
     periyot = synonym("period_no")
     ay = synonym("period_month")
+    ceyrek = synonym("period_no")
+    giris_periyot_tipi = synonym("period_type")
+    giris_periyot_no = synonym("period_no")
+    giris_periyot_ay = synonym("period_month")
+    created_by = synonym("user_id")
     hedef_deger = synonym("target_value")
     gerceklesen_deger = synonym("actual_value")
     durum = synonym("status")
