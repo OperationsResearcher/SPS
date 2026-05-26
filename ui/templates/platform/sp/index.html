@@ -3,6 +3,7 @@
 {% block page_title %}Stratejik Planlama{% endblock %}
 
 {% block extra_css %}
+<meta name="kule-tour-key" content="sp_overview">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
@@ -100,9 +101,6 @@
       {% else %}
       <span class="mc-badge mc-badge-gray mc-sp-role-badge"><i class="fas fa-eye"></i> Görüntüleyici</span>
       {% endif %}
-      {% if role_name and role_name != 'tenant_admin' %}
-      <span class="mc-sp-role-name" title="Sistem rolü">{{ role_name }}</span>
-      {% endif %}
     </div>
   </div>
 
@@ -134,7 +132,7 @@
   </div>
 
   <div class="mc-sp-timeline">
-  <div class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card">
+  <div class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card" data-tour="sp-mission">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-1">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">01</span>
@@ -166,7 +164,7 @@
     </div>
   </div>
 
-  <div class="mc-card mc-card-lift mc-sp-flow-card">
+  <div class="mc-card mc-card-lift mc-sp-flow-card" data-tour="sp-vision">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-1">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">02</span>
@@ -190,16 +188,16 @@
     <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="vizyon" role="button" tabindex="0" aria-label="Vizyon metnini düzenle veya görüntüle">
       <div class="mc-card-body">
         {% if kv_vision_bar %}
-        <div class="mc-sp-kv-vision-section" role="img" aria-label="K-Vektör vizyon puanı {{ kv_vision_bar.score_1000 }} üzerinden 1000">
+        <div class="mc-sp-kv-vision-section" role="img" aria-label="K-Vektör vizyon puanı {{ kv_vision_bar.score }} üzerinden 100">
           <div class="mc-sp-kv-vision-bar-head">
             <span class="mc-sp-kv-vision-label"><i class="fas fa-vector-square" aria-hidden="true"></i> K-Vektör vizyon puanı</span>
-            <span class="mc-sp-kv-vision-value">{{ kv_vision_bar.score_1000 }} / 1000</span>
+            <span class="mc-sp-kv-vision-value">{{ kv_vision_bar.score }} / 100</span>
           </div>
           <div class="mc-sp-kv-vision-track">
             <div class="mc-sp-kv-vision-fill" style="width: {{ kv_vision_bar.pct }}%;"></div>
           </div>
           {% if kv_vision_bar.as_of %}
-          <p class="mc-sp-kv-vision-meta">Hesap tarihi: {{ kv_vision_bar.as_of }} · Hedef ölçek 1000</p>
+          <p class="mc-sp-kv-vision-meta">Hesap tarihi: {{ kv_vision_bar.as_of }} · Hedef ölçek 100</p>
           {% endif %}
         </div>
         {% endif %}
@@ -289,7 +287,7 @@
     </div>
   </div>
 
-  <div id="strategy-list" class="mc-card mc-sp-step-card">
+  <div id="strategy-list" class="mc-card mc-sp-step-card" data-tour="sp-strategies">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-2">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">04</span>
@@ -365,7 +363,7 @@
               <div class="mc-sp-kv-vision-fill" style="width: {{ pct_m }}%;"></div>
             </div>
             <p class="mc-sp-kv-vision-meta mc-sp-kv-strat-meta">
-              {% if qm > 0.000001 %}Kotaya göre doluluk · Vizyon 1000 içindeki pay{% else %}Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez.{% endif %}
+              {% if qm > 0.000001 %}Kotaya göre doluluk · Vizyon 100 içindeki pay{% else %}Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez.{% endif %}
             </p>
           </div>
           {% endif %}

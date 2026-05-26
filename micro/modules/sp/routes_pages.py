@@ -56,6 +56,13 @@ from micro.modules.sp.helpers import (
     build_strateji_harita_graph,
 )
 
+@app_bp.route("/sp/menu")
+@login_required
+def sp_menu():
+    """Stratejik Planlama hub — alt modüller kart görünümünde."""
+    return render_template("platform/sp/menu.html")
+
+
 @app_bp.route("/sp")
 @login_required
 def sp():
@@ -130,22 +137,25 @@ def sp():
                 plan_year=active_py,
             )
             if bundle.get("k_vektor") and bundle.get("vision_score_1000") is not None:
+                # 100 ölçeğine dönüştür (eski 1000 ölçeği / 10)
                 v1000 = float(bundle["vision_score_1000"])
-                v1000 = min(1000.0, max(0.0, v1000))
+                v100 = min(100.0, max(0.0, v1000 / 10.0))
                 as_of = bundle.get("as_of_date") or ""
                 kv_vision_bar = {
-                    "score_1000": round(v1000, 1),
-                    "pct": round((v1000 / 1000.0) * 100.0, 2),
+                    "score": round(v100, 1),
+                    "score_1000": round(v1000, 1),  # geriye dönük uyum
+                    "pct": round(v100, 2),
                     "as_of": as_of,
                 }
                 kv_strategy_scores = dict(bundle.get("strategy_scores") or {})
                 kv_sub_strategy_scores = dict(bundle.get("sub_strategy_scores") or {})
+                # Quotas ve katkılar 1000 ölçeğinde geliyor → 100 ölçeğine indir
                 kv_contrib_main = {
-                    int(k): float(v)
+                    int(k): float(v) / 10.0
                     for k, v in (bundle.get("k_vektor_contrib_main") or {}).items()
                 }
                 kv_quotas_main = {
-                    int(k): float(v)
+                    int(k): float(v) / 10.0
                     for k, v in (bundle.get("k_vektor_quotas_main") or {}).items()
                 }
         except Exception as e:

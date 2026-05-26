@@ -62,6 +62,12 @@
     <!-- Sprint 27: Mobile-first responsive + dark mode + a11y -->
     <link rel="stylesheet"
         href="{{ url_for('app_bp.static', filename='platform/css/mobile.css') }}?v={{ config['VERSION'] }}">
+
+    {# Kule yardımcı sistemi — ERTELENDİ (2026-05-26). docs/ERTELENEN-ISLER.md > E1 #}
+    {# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+    <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/kule.css') }}?v={{ config['VERSION'] }}">
+    <meta name="kule-svg-url" content="{{ url_for('app_bp.static', filename='platform/img/kule.svg') }}?v={{ config['VERSION'] }}"> #}
+
     {% block extra_css %}{% endblock %}
 
     <!-- Sprint 32: Dark mode early-load (FOUC önlemi) -->
@@ -115,76 +121,11 @@
             </a>
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
-            <a href="{{ url_for('app_bp.sp') }}"
-                class="sidebar-item {% if 'sp' in ep and 'admin' not in ep and 'ceyreklik' not in ep and 'scenarios' not in ep and 'initiatives' not in ep and 'replan' not in ep and 'exec_dashboard' not in ep %}active{% endif %}">
+            {% set sp_active = ('sp' in ep or 'ceyreklik' in ep or 'quarterly' in ep or 'scenarios' in ep or 'initiatives' in ep or 'replan' in ep or 'exec_dashboard' in ep or 'xmatrix' in ep or 'blue_ocean' in ep or 'vrio' in ep or 'ai_settings' in ep) and 'admin' not in ep %}
+            <a href="{{ url_for('app_bp.sp_menu') }}"
+                class="sidebar-item {% if sp_active %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
                 <span class="sidebar-item-text">Stratejik Planlama</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_exec_dashboard') }}"
-                class="sidebar-item sidebar-item-sub {% if 'exec_dashboard' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-tachometer-alt"></i></span>
-                <span class="sidebar-item-text">Exec Dashboard</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_quarterly_review_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'ceyreklik' in ep or 'quarterly' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-calendar-check"></i></span>
-                <span class="sidebar-item-text">Çeyreklik Review</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_initiatives_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'initiatives' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-rocket"></i></span>
-                <span class="sidebar-item-text">Initiative'ler</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_scenarios_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'scenarios' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-code-branch"></i></span>
-                <span class="sidebar-item-text">Senaryolar</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_replan_triggers_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'replan' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-bolt"></i></span>
-                <span class="sidebar-item-text">Replan Trigger</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_xmatrix_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'xmatrix' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-th"></i></span>
-                <span class="sidebar-item-text">Hoshin X-Matrix</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_blue_ocean_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'blue_ocean' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-water"></i></span>
-                <span class="sidebar-item-text">Blue Ocean</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_vrio_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'vrio' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-gem"></i></span>
-                <span class="sidebar-item-text">VRIO Analizi</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_digest_pdf') }}"
-                class="sidebar-item sidebar-item-sub"
-                style="padding-left:32px; font-size:13px;" target="_blank">
-                <span class="sidebar-item-icon"><i class="fas fa-file-pdf"></i></span>
-                <span class="sidebar-item-text">Haftalık PDF</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_ai_settings_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'ai_settings' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-robot"></i></span>
-                <span class="sidebar-item-text">AI Ayarları</span>
-            </a>
-            <a href="{{ url_for('app_bp.sp_templates_page') }}"
-                class="sidebar-item sidebar-item-sub {% if 'templates' in ep and 'sp' in ep %}active{% endif %}"
-                style="padding-left:32px; font-size:13px;">
-                <span class="sidebar-item-icon"><i class="fas fa-store"></i></span>
-                <span class="sidebar-item-text">Plan Şablonları</span>
             </a>
 
 <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
@@ -328,7 +269,17 @@
                 </div>
                 <div style="flex:1; min-width:0;">
                     <div class="sidebar-user-name">{{ current_user.first_name or current_user.email }}</div>
-                    <div class="sidebar-user-role">{{ current_user.role.name if current_user.role else 'Kullanıcı' }}
+                    {% set _role_tr = {
+                        'Admin': 'Platform Yöneticisi',
+                        'tenant_admin': 'Kurum Yöneticisi',
+                        'executive_manager': 'Üst Yönetim',
+                        'yonetici': 'Süreç Lideri',
+                        'surec_lideri': 'Süreç Lideri',
+                        'calisan': 'Çalışan',
+                        'kurum_kullanici': 'Kullanıcı',
+                        'izleyici': 'İzleyici',
+                    } %}
+                    <div class="sidebar-user-role">{{ _role_tr.get(current_user.role.name, current_user.role.name) if current_user.role else 'Kullanıcı' }}
                     </div>
                 </div>
                 <i class="fas fa-ellipsis-v" style="color:rgba(255,255,255,0.3); font-size:12px;"></i>
@@ -485,6 +436,22 @@
     <script src="{{ url_for('app_bp.static', filename='platform/js/app.js') }}?v={{ config['VERSION'] }}"></script>
     <!-- Sprint 32: Dark mode -->
     <script src="{{ url_for('app_bp.static', filename='platform/js/dark_mode.js') }}?v={{ config['VERSION'] }}"></script>
+
+    {# Kule yardımcı sistemi — ERTELENDİ (2026-05-26). docs/ERTELENEN-ISLER.md > E1
+       UI stabilleşince yeniden devreye alınacak. Tüm dosyalar korunuyor. #}
+    {# {% if current_user.is_authenticated %}
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <script src="{{ url_for('app_bp.static', filename='platform/js/kule.js') }}?v={{ config['VERSION'] }}"></script>
+    <script>
+      (function() {
+        const tourKey = (document.querySelector('meta[name="kule-tour-key"]') || {}).content || null;
+        if (window.Kule) {
+          window.Kule.init({ tourKey: tourKey });
+        }
+      })();
+    </script>
+    {% endif %} #}
+
     {% block extra_js %}{% endblock %}
 </body>
 

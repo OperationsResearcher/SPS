@@ -3,6 +3,53 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-133 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** Tomofil strateji ağacının markdown ile reconcile + K-Vektör 100 ölçeği
+**Modül:** app/services/k_vektor_engine.py (etkilenmedi), micro/modules/sp/, ui/templates/platform/sp/, scripts/, micro/modules/surec/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/tomofil_reconcile.py` → Tomofil strateji ağacını markdown'a göre yeniden yapılandıran orchestrator
+- `scripts/tomofil_backfill_process_substrategy.py` → ara çözüm (sonradan reconcile ile ezildi)
+- `backups/pre-tomofil-reconcile-20260526.dump` → 1 MB PG yedek
+- `data/tomofil_reconcile/snapshot_before.csv` + `snapshot_after.csv`
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_pages.py` → kv_vision_bar 100 ölçeğine indirildi (`score` alanı eklendi, `quotas`/`contrib` /10)
+- `ui/templates/platform/sp/index.html` → "/1000" → "/100", "Hedef ölçek 100"
+- `micro/modules/surec/routes_process.py` → /process sayfasına plan dönemi listesi + aktif yıl context
+- `ui/templates/platform/surec/index.html` → plan dönemi seçici (POST /sp/api/plan-years/set-active)
+- `ui/templates/platform/sp/index.html` → "Sistem rolü" badge satırı kaldırıldı (İngilizce role kod)
+- `ui/templates/platform/base.html` → sidebar role gösterimi Türkçe haritaya geçirildi
+
+### Yapılan İşlem
+**A. K-Vektör 100 ölçeği:** Engine 1000 ölçeğinde bırakıldı (backward-compat); UI ve katkı/kota tablosu 100 ölçeğine indirildi. "Vizyon 1000 içindeki pay" → "Vizyon 100 içindeki pay" vb.
+
+**B. Tomofil reconcile (7 fazlı orchestrator):**
+1. Snapshot before (CSV)
+2. Markdown parse (6 ana / 18 alt / 55 yaprak)
+3. Hard delete: 7 Strategy, 35 SubStrategy, 49 ProcessSubStrategyLink, 18 KVektorWeight
+4. Rebuild: 6 Strategy + 18 SubStrategy + 55 Initiative
+5. 4 eksik süreç eklendi (F2D, O2C, S2E, W2R)
+6. Process↔SubStrategy bağları markdown'a göre yeniden kuruldu (96 link)
+7. Doğrulama + K-Vektör recalc
+
+**C. /process sayfasına plan dönemi seçici** + UI tutarlılığı (Sistem rolü kodu Türkçeleştirme).
+
+### Sonuç
+- K-Vektör vizyon skoru: 0.00 → **59.21 / 100**
+- Yetim alt strateji: 0
+- Yetim süreç: 0
+- 6/6 stratejinin skoru üretiliyor
+- KpiData (48.283 satır) korundu
+
+### Notlar
+- K-Vektör ağırlıkları silindiği için sistem geçici olarak **eşit dağılım** kullanıyor; kullanıcı UI'dan ağırlıkları yeniden girecek.
+- ProcessKpi.sub_strategy_id alanları NULL'landı (eski yaprak-substrategy bağı geçersiz); ProcessSubStrategyLink ile yeni bağ kuruldu.
+
+---
+
 ## TASK-132 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
 
 **Görev:** Tomofil çalışanlarına gerçek cPanel e-posta hesabı + Tomofil için SMTP yapılandırma
