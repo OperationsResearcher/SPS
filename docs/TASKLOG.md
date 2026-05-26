@@ -3,6 +3,33 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-132 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** Tomofil çalışanlarına gerçek cPanel e-posta hesabı + Tomofil için SMTP yapılandırma
+**Modül:** scripts/, app/models/email_config.py (yalnızca okuma)
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/cpanel_email_bulk.py` → cPanel UAPI ile toplu e-posta açma scripti (idempotent, hata toleranslı, rate-limit'e dayanıklı)
+- `scripts/tomofil_photo_assign.py` → fotoğraf-kullanıcı cinsiyet bazlı eşleştirme (önceki adımda)
+- `scripts/tomofil_photo_upload.py` → profil fotoğrafı Pillow resize + DB güncelleme (önceki adımda)
+
+### Yapılan İşlem
+1. **cPanel hazırlık:** `kalites1` kullanıcısının API token'ı `.env`'e eklendi (gitignore'da)
+2. **96 e-posta hesabı** açıldı: `<isim.soyisim>@kokpitim.com` formatında, 250 MB kota, şifre `TmF_2626` (sistemdeki ile aynı)
+3. **Sistem DB email'leri** `@tomofil.test` → `@kokpitim.com` olarak güncellendi (96 kullanıcı)
+4. **`bildirim@kokpitim.com`** ayrı bot hesabı açıldı (500 MB, güvenli rastgele şifre)
+5. **`TenantEmailConfig`** Tomofil (id=27) için oluşturuldu: SMTP `mt-valve.guzelhosting.com:587` (STARTTLS), gönderici `Tomofil Bildirim <bildirim@kokpitim.com>`, 4 bildirim tipi aktif
+6. **96 profil fotoğrafı** kullanıcılara atandı (Pillow 512×512 JPEG q=85)
+
+### Notlar
+- cPanel rate-limit ilk denemede 21'de takıldı → script yenilendi (1s delay, try/except, flush, 30s timeout-recovery, append-mode log)
+- Tüm cPanel hesapları aynı şifrede; ileride bireysel şifre rotasyonu yapılırsa script güncellenir
+- `bildirim@kokpitim.com` şifresi konuşma log'unda görünür → kullanıcı not aldı, gerekirse rotate edilebilir
+- `.env` gitignore'da; cPanel token commit'e gitmiyor
+
+---
+
 ## TASK-131 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
 
 **Görev:** EMS (Eskişehir Makine Sanayii A.Ş.) verilerinin sisteme aktarılması
