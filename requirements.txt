@@ -35,3 +35,6 @@ numpy
 scikit-learn
 psycopg2-binary>=2.9.0
 APScheduler>=3.10.0
+
+# Kule yardımcı sistemi — YAML tur tanımları
+PyYAML>=6.0

@@ -157,24 +157,56 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 
 ---
 
-## 8. DEPLOY PROTOKOLÜ
+## 8. ORTAMLAR VE DEPLOY PROTOKOLÜ
 
-**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md`  
-**Terim:** **VM** = Oracle Cloud üretim (`docs/ORACLE-PROD-VM.md`). GCP (`sps-server-v2`) eski ortam — yeni deploy için kullanılmaz.
+### 8.1 Üç ortam — terminoloji zorunlu
 
-Özet: yerelde `git push origin main` → **Oracle VM**’de `sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` (PostgreSQL yedek, pull, Docker, Alembic, satır sayısı doğrulaması).
+> Bu kelimeler bağlayıcıdır. "Üretim VM", "production VM", "live" gibi belirsiz terimler **kullanılmaz**. Hangi ortamdan bahsedildiği her zaman net olmalı.
 
-### Üretim (Oracle VM)
-| | |
-|-|-|
-| Sunucu | `kokpitim-v2` — `129.159.30.175` |
-| SSH | `ubuntu@129.159.30.175` |
-| Uygulama | `/opt/kokpitim/app` |
-| Container | `kokpitim-web` |
-| Canlı DB | PostgreSQL `kokpitim_db` @ `127.0.0.1:5432` |
-| Yerel DB | SQLite `instance/kokpitim.db` yalnızca geliştirme / yedek artefakt |
+| # | İsim | URL | Lokasyon | Amaç |
+|---|---|---|---|---|
+| 1 | **Yerel** | `http://127.0.0.1:5001` | Geliştirici makinesi (`C:\kokpitim`) | Geliştirme, deneme, hızlı iterasyon |
+| 2 | **Test** | `https://test.kokpitim.com` | Oracle VM `/opt/kokpitim-test/` · port 5050 · DB `kokpitim_test_db` | Yayına çıkmadan önce staging doğrulaması |
+| 3 | **Yayın** | `https://www.kokpitim.com` | Oracle VM `/opt/kokpitim/` · port 5000 · DB `kokpitim_db` | Müşterilere açık canlı sistem |
 
-### GCP (eski — arşiv)
+**Yerelde çalışan değişikliği hiçbir zaman doğrudan yayına atma.** Akış: **Yerel → Test → Yayın**.
+
+İki ortam aynı fiziksel sunucudadır (`129.159.30.175`), izolasyon dizin/port/DB seviyesinde.
+
+### 8.2 SSH ve dizinler (yalnızca operatör)
+
+```powershell
+# Yerel Windows
+ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
+```
+
+| | **Test** | **Yayın** |
+|--|----------|-----------|
+| Dizin | `/opt/kokpitim-test/app` | `/opt/kokpitim/app` |
+| `.env` | `/opt/kokpitim-test/.env` (+ `app/.env`) | `/opt/kokpitim/.env` |
+| Container | `kokpitim-test-web` | `kokpitim-web` |
+| Port | 5050 | 5000 |
+| Nginx | `/etc/nginx/sites-enabled/test.kokpitim.com.conf` | `/etc/nginx/sites-enabled/www.kokpitim.com` |
+| PG DB | `kokpitim_test_db` (`kokpitim_test_user`) | `kokpitim_db` (`kokpitim_user`) |
+| Backups | `/opt/kokpitim-test/backups` | `/opt/kokpitim/backups` |
+
+### 8.3 Deploy akışı
+
+**Yerel → Test:**
+1. `git push origin main`
+2. Test VM'de kodu güncelle (rsync veya tarball; mevcut tooling: `scripts/ops/oracle/setup_test_env.sh` + manuel `docker restart kokpitim-test-web`)
+3. `https://test.kokpitim.com/` smoke test
+
+**Test → Yayın:**
+1. Test'te doğrulama bitince yerelden: `git push origin main`
+2. SSH yayın VM'i: `cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` (PG yedek, pull, Docker rebuild, Alembic, satır sayısı doğrulaması)
+3. `https://www.kokpitim.com/health` ile smoke test
+
+**Push kullanıcı istediğinde yapılır.** Yayın deploy kullanıcı **"yayına çıkalım"** dediğinde yapılır — otomatik değil.
+
+**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md` · `docs/ORACLE-PROD-VM.md`
+
+### 8.4 GCP (eski — arşiv)
 | | |
 |-|-|
 | Instance | `sps-server-v2` / `europe-west3-c` (STOP) |

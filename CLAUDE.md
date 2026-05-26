@@ -1,6 +1,8 @@
 # KOKPİTİM — Claude Code Çalışma Dosyası
 # Tek gerçek kaynak: docs/KURALLAR-MASTER.md
 # Mimari detaylar burada — kurallar MASTER'da
+# Üç ortam (KURALLAR-MASTER §8): Yerel (127.0.0.1) → Test (test.kokpitim.com) → Yayın (www.kokpitim.com)
+# "VM", "production", "üretim VM" gibi belirsiz terim KULLANMA — Yerel / Test / Yayın de.
 
 ---
 
@@ -38,6 +40,44 @@ Ne yapıyoruz?
 ## 📋 KURALLAR
 
 @docs/KURALLAR-MASTER.md
+
+---
+
+## 🌿 BRANCH DİSİPLİNİ — ZORUNLU AKIŞ
+
+> Bu kural 2026-05-24'te kullanıcı onayıyla kondu. Baseline: `baseline-2026-05-24`.
+
+### Altın kural
+**`main`'e doğrudan commit YOK.** Her yeni iş kendi dalında doğar, test edilir, sonra main'e merge edilir.
+
+### Yeni iş başlangıcında (Claude otomatik yapar)
+Kullanıcı "şu işi yapalım" dediğinde, kod yazmaya başlamadan önce:
+```bash
+git checkout main
+git pull origin main 2>/dev/null || true     # bağlantı yoksa atla
+git checkout -b claude/<konu-kebab-case>
+```
+Konu adı: `claude/sp-yeni-modul`, `claude/fix-karne-n1`, `claude/refactor-auth` gibi.
+
+### İş bitince — Claude şunu yapmaz, kullanıcıya sorar:
+- `git checkout main && git merge --no-ff claude/<dal>`
+- `git tag -a deploy-YYYY-MM-DD -m "..."`
+- `git push origin main` veya `git push origin claude/<dal>`
+- VM deploy
+
+Bu 4 adım kullanıcı **"merge edelim"** / **"push'la"** / **"deploy"** dediğinde yapılır. Otomatik değil.
+
+### Dal hayatı
+- Maksimum 3 gün. Uzarsa `git rebase origin/main` ile main'i yakala.
+- İş kabul edildikten sonra dal yerelden silinir: `git branch -d claude/<dal>`
+
+### Tag stratejisi
+- `baseline-<tarih>` = stabil dönüm noktası (yılda birkaç kez)
+- `deploy-<tarih>` = VM'e gönderilmiş sürüm (her deploy'da)
+- Sorun çıkarsa: `git reset --hard <tag>` ile o noktaya dön
+
+### Mevcut tag'ler
+- `baseline-2026-05-24` — S59-S63 sonrası stabil
 
 ---
 

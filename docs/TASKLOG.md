@@ -3,6 +3,34 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-134 | 2026-05-26 | ✅ Tamamlandı (yerel + push, test ortamı aktif)
+
+**Görev:** Test ortamı kurulumu (test.kokpitim.com) + üç-ortam terminolojisi + CSP fix
+**Modül:** Oracle VM, docs/KURALLAR-MASTER.md, CLAUDE.md, app/__init__.py, requirements.txt, scripts/ops/oracle/
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+1. **Test ortamı kuruldu** — `https://test.kokpitim.com/` (Oracle VM `/opt/kokpitim-test/`, port 5050, DB `kokpitim_test_db`, Let's Encrypt SSL)
+2. **Üç-ortam terminolojisi** zorunlu kural olarak `KURALLAR-MASTER §8`'e yazıldı: Yerel → Test → Yayın. "VM/üretim VM" gibi belirsiz terimler yasak. `CLAUDE.md` üst yorumu da güncellendi.
+3. **CSP fix** `app/__init__.py`'da: `cdn.tailwindcss.com` script-src ve connect-src'a eklendi (yereldeki DEBUG=True bunu maskeliyordu, test'te kurum sayfası iconları görünmüyordu).
+4. **`PyYAML>=6.0`** requirements.txt'e eklendi (Kule sistemi için, test imajında build sırasında ortaya çıktı).
+
+### Yeni Dosyalar
+- `scripts/ops/oracle/setup_test_env.sh` → test ortamı orchestrator
+
+### Değiştirilen Dosyalar
+- `docs/KURALLAR-MASTER.md` §8 yeniden yazıldı (üç ortam tablosu + deploy akışı)
+- `CLAUDE.md` üst yorum güncellendi
+- `app/__init__.py` CSP
+- `requirements.txt` PyYAML
+
+### Notlar
+- Test ortamı yereldeki .env'in **çoğunluğunu + test override'ları** (DB URI, PORT, SECRET_KEY) kullanır.
+- SMTP DB'de saklanıyor (`tenant_email_configs`), .env'de değil — test'e dump ile aktarıldı.
+- Çift tablo tanımı (`task_predecessors`: portfolio_project.py vs models/project.py) yerelde sessiz çalışıyor, test'in ilk clone'unda kırıldı; pragmatik çözüm: yereldeki kodu tarball ile direkt aktarmak.
+
+---
+
 ## TASK-133 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
 
 **Görev:** Tomofil strateji ağacının markdown ile reconcile + K-Vektör 100 ölçeği

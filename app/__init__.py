@@ -72,7 +72,8 @@ def create_app(config_class=None):
                 "default-src": "'self'",
                 "script-src": (
                     "'self' 'unsafe-inline' 'unsafe-eval' "
-                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
+                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com "
+                    "https://cdn.tailwindcss.com"
                 ),
                 "style-src": (
                     "'self' 'unsafe-inline' "
@@ -83,7 +84,8 @@ def create_app(config_class=None):
                 ),
                 "img-src": "'self' data: https: blob:",
                 "connect-src": (
-                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
+                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com "
+                    "https://cdn.tailwindcss.com"
                 ),
                 "frame-ancestors": "'none'",
                 "base-uri": "'self'",
