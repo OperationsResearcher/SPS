@@ -173,6 +173,16 @@ def surec():
         current_app.logger.error(f"[surec] process_scores hesaplanamadı: {_e}", exc_info=True)
         process_scores = {}
 
+    # Plan dönemi seçici için
+    from app.services.plan_year_service import list_plan_years
+    plan_years_list = list_plan_years(tid) if tid else []
+    _effective_year_val = None
+    if _proc_fallback_py_id:
+        _fb_py = next((py for py in plan_years_list if py.id == _proc_fallback_py_id), None)
+        _effective_year_val = _fb_py.year if _fb_py else None
+    elif active_py:
+        _effective_year_val = active_py.year
+
     return render_template(
         "platform/surec/index.html",
         processes=all_processes,
@@ -187,6 +197,8 @@ def surec():
         user_can_edit_process_record=user_can_edit_process_record,
         k_vektor_enabled=k_vektor_enabled,
         process_scores=process_scores,
+        plan_years=plan_years_list,
+        active_plan_year_val=_effective_year_val,
     )
 
 

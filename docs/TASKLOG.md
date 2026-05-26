@@ -3,6 +3,154 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-133 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** Tomofil strateji ağacının markdown ile reconcile + K-Vektör 100 ölçeği
+**Modül:** app/services/k_vektor_engine.py (etkilenmedi), micro/modules/sp/, ui/templates/platform/sp/, scripts/, micro/modules/surec/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/tomofil_reconcile.py` → Tomofil strateji ağacını markdown'a göre yeniden yapılandıran orchestrator
+- `scripts/tomofil_backfill_process_substrategy.py` → ara çözüm (sonradan reconcile ile ezildi)
+- `backups/pre-tomofil-reconcile-20260526.dump` → 1 MB PG yedek
+- `data/tomofil_reconcile/snapshot_before.csv` + `snapshot_after.csv`
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_pages.py` → kv_vision_bar 100 ölçeğine indirildi (`score` alanı eklendi, `quotas`/`contrib` /10)
+- `ui/templates/platform/sp/index.html` → "/1000" → "/100", "Hedef ölçek 100"
+- `micro/modules/surec/routes_process.py` → /process sayfasına plan dönemi listesi + aktif yıl context
+- `ui/templates/platform/surec/index.html` → plan dönemi seçici (POST /sp/api/plan-years/set-active)
+- `ui/templates/platform/sp/index.html` → "Sistem rolü" badge satırı kaldırıldı (İngilizce role kod)
+- `ui/templates/platform/base.html` → sidebar role gösterimi Türkçe haritaya geçirildi
+
+### Yapılan İşlem
+**A. K-Vektör 100 ölçeği:** Engine 1000 ölçeğinde bırakıldı (backward-compat); UI ve katkı/kota tablosu 100 ölçeğine indirildi. "Vizyon 1000 içindeki pay" → "Vizyon 100 içindeki pay" vb.
+
+**B. Tomofil reconcile (7 fazlı orchestrator):**
+1. Snapshot before (CSV)
+2. Markdown parse (6 ana / 18 alt / 55 yaprak)
+3. Hard delete: 7 Strategy, 35 SubStrategy, 49 ProcessSubStrategyLink, 18 KVektorWeight
+4. Rebuild: 6 Strategy + 18 SubStrategy + 55 Initiative
+5. 4 eksik süreç eklendi (F2D, O2C, S2E, W2R)
+6. Process↔SubStrategy bağları markdown'a göre yeniden kuruldu (96 link)
+7. Doğrulama + K-Vektör recalc
+
+**C. /process sayfasına plan dönemi seçici** + UI tutarlılığı (Sistem rolü kodu Türkçeleştirme).
+
+### Sonuç
+- K-Vektör vizyon skoru: 0.00 → **59.21 / 100**
+- Yetim alt strateji: 0
+- Yetim süreç: 0
+- 6/6 stratejinin skoru üretiliyor
+- KpiData (48.283 satır) korundu
+
+### Notlar
+- K-Vektör ağırlıkları silindiği için sistem geçici olarak **eşit dağılım** kullanıyor; kullanıcı UI'dan ağırlıkları yeniden girecek.
+- ProcessKpi.sub_strategy_id alanları NULL'landı (eski yaprak-substrategy bağı geçersiz); ProcessSubStrategyLink ile yeni bağ kuruldu.
+
+---
+
+## TASK-132 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** Tomofil çalışanlarına gerçek cPanel e-posta hesabı + Tomofil için SMTP yapılandırma
+**Modül:** scripts/, app/models/email_config.py (yalnızca okuma)
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/cpanel_email_bulk.py` → cPanel UAPI ile toplu e-posta açma scripti (idempotent, hata toleranslı, rate-limit'e dayanıklı)
+- `scripts/tomofil_photo_assign.py` → fotoğraf-kullanıcı cinsiyet bazlı eşleştirme (önceki adımda)
+- `scripts/tomofil_photo_upload.py` → profil fotoğrafı Pillow resize + DB güncelleme (önceki adımda)
+
+### Yapılan İşlem
+1. **cPanel hazırlık:** `kalites1` kullanıcısının API token'ı `.env`'e eklendi (gitignore'da)
+2. **96 e-posta hesabı** açıldı: `<isim.soyisim>@kokpitim.com` formatında, 250 MB kota, şifre `TmF_2626` (sistemdeki ile aynı)
+3. **Sistem DB email'leri** `@tomofil.test` → `@kokpitim.com` olarak güncellendi (96 kullanıcı)
+4. **`bildirim@kokpitim.com`** ayrı bot hesabı açıldı (500 MB, güvenli rastgele şifre)
+5. **`TenantEmailConfig`** Tomofil (id=27) için oluşturuldu: SMTP `mt-valve.guzelhosting.com:587` (STARTTLS), gönderici `Tomofil Bildirim <bildirim@kokpitim.com>`, 4 bildirim tipi aktif
+6. **96 profil fotoğrafı** kullanıcılara atandı (Pillow 512×512 JPEG q=85)
+
+### Notlar
+- cPanel rate-limit ilk denemede 21'de takıldı → script yenilendi (1s delay, try/except, flush, 30s timeout-recovery, append-mode log)
+- Tüm cPanel hesapları aynı şifrede; ileride bireysel şifre rotasyonu yapılırsa script güncellenir
+- `bildirim@kokpitim.com` şifresi konuşma log'unda görünür → kullanıcı not aldı, gerekirse rotate edilebilir
+- `.env` gitignore'da; cPanel token commit'e gitmiyor
+
+---
+
+## TASK-131 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** EMS (Eskişehir Makine Sanayii A.Ş.) verilerinin sisteme aktarılması
+**Modül:** scripts/ems_import/, backups/, instance/uploads/tenant_logos/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/ems_import/_common.py` → ortak yardımcılar, C-Suite/YK/tesis kayıtları, 12 süreç haritası, 10 risk
+- `scripts/ems_import/run_all.py` → 9 fazlı orchestrator (550 satır)
+- `backups/pre-ems-import-20260526.dump` → 1 MB PG yedek (custom format)
+- `data/ems_import_log/users_created.csv` → 20 yeni kullanıcı + geçici şifre
+- `instance/uploads/tenant_logos/28.svg` → EMS placeholder logo (#1B3F6E + "EMS" yazısı)
+
+### Yapılan İşlem
+Tenant id=28 (EMS) için 9 fazlı veri yükleme: tenant profili (sektor, vergi, vizyon/misyon), 20 kullanıcı (9 C-Suite, 5 YK, 6 tesis müdürü), plan dönemi 2026, 12 süreç (P2M/A2R/C2L/O2C/S2P/H2R/I2R/F2D/R2R/Q2C/G2N/K2K), 6 ana + 16 alt strateji + 41 girişim (markdown'dan parse), 6 OKR Objective + 24 Key Result, 84 süreç KPI'sı, 10 risk (manuel C-Suite sahip ataması). 22.800 atomik kayıt 7 modülden aylık aggregate edilerek 289 KpiData satırına dönüştürüldü; 18 OKR snapshot KR.current_value olarak yansıtıldı.
+
+### Sonuç İstatistikleri
+- 21 kullanıcı | 12 süreç | 6/16 strateji | 41 girişim
+- 6 Objective + 24 KR | 101 ProcessKpi | 289 KpiData | 10 risk
+
+### Notlar
+- Atomik veri "elle girilseydi nereye gider" mantığıyla aylık aggregate olarak KpiData'ya yazıldı; ham atomik tablo açılmadı.
+- Risk modülünden gelen olasılık/etki güncellemeleri başlık farklılığı nedeniyle eşleşmedi; manuel atanan değerler korundu (sonradan eşleştirme yapılabilir).
+- Yedek `backups/pre-ems-import-20260526.dump` ile geri dönüş mümkün.
+
+---
+
+## TASK-130 | 2026-05-26 | ⏸ Ertelendi
+
+**Görev:** Kule yardımcı sistemi geçici olarak devre dışı bırakıldı
+**Modül:** ui/templates/platform/base.html, docs/
+**Durum:** ⏸ Ertelendi — UI stabilleşince devam
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → Kule CSS/JS yüklemeleri yorum içine alındı
+- `docs/ERTELENEN-ISLER.md` → yeni dosya, E1 girdisi (Kule durumu, dosyalar, devam talimatı)
+
+### Yapılan İşlem
+Kule altyapısı tamamlandı ama UI'da hala yoğun değişiklik var; her UI revizyonunda Kule'yi de güncellemek/test etmek zaman maliyetli. Kullanıcı kararıyla şimdilik askıya alındı. Tüm kod, YAML, SVG, model, migration ve API endpoint'leri korundu — sadece base template'teki include'lar kapatıldı. Branch `claude/kule-yardimci-sistemi` silinmedi, aynen duruyor.
+
+### Notlar
+Devam için: `docs/ERTELENEN-ISLER.md` E1 bölümünü oku, base.html'deki yorum satırlarını aç.
+
+---
+
+## TASK-129 | 2026-05-25 | ✅ Tamamlandı (yerel, claude/kule-yardimci-sistemi dalında)
+
+**Görev:** Kule — kullanıcı yardımcı sistemi (Sprint 1-5 altyapı + içerik)
+**Modül:** app/models/, app/services/, micro/modules/shared/kule/, ui/static/platform/, ui/templates/platform/, migrations/, docs/tours/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `docs/KULE-TANIM.md` → karakter, ton, mimari spec (tek gerçek kaynak)
+- `docs/tours/*.yaml` → 17 tur içeriği (masaustu, sp_*, surec, k_radar, bireysel, admin_*)
+- `app/models/tour.py` → UserTourProgress modeli
+- `app/services/kule_service.py` → YAML loader + progress yönetimi
+- `micro/modules/shared/kule/routes.py` → 5 API endpoint
+- `ui/static/platform/img/kule.svg` → hava kontrol kulesi karakter
+- `ui/static/platform/css/kule.css` → FAB + welcome + driver.js teması
+- `ui/static/platform/js/kule.js` → runtime (init, start, restart)
+- `migrations/versions/i2j3k4l5m016_user_tour_progress.py`
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → driver.js + kule.css/js + meta tag pickup
+- 13 sayfa template'ine `<meta name="kule-tour-key">` + `data-tour` attribute'ları
+
+### Yapılan İşlem
+Tanım dosyası (KULE-TANIM.md) tek referans olarak yazıldı. Driver.js (CDN) tabanlı tur runtime'ı, YAML-driven içerik sistemi, sayfa başına `meta` etiketi ile otomatik başlatma. Sağ alt sabit FAB (kule SVG) ile manuel yeniden başlatma. Persona: Talat Konuk / Eskişehir Motor Sanayi. 17 tur YAML hatasız yükleniyor; migration uygulandı.
+
+### Notlar
+İçerik AI taslağıyla üretildi; kullanıcı geri bildirimine açık. Faz 2 (AI soru-cevap köprüsü) bilinçli olarak atlandı — ayrı proje.
+
+---
+
 ## TASK-128 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
 
 **Görev:** Bayi/Holding mimarisi — Sprint A-F (6 sprint)
