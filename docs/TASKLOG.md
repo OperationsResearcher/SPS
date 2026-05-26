@@ -3,6 +3,80 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-131 | 2026-05-26 | ✅ Tamamlandı (yerel, claude/ems-data-import)
+
+**Görev:** EMS (Eskişehir Makine Sanayii A.Ş.) verilerinin sisteme aktarılması
+**Modül:** scripts/ems_import/, backups/, instance/uploads/tenant_logos/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `scripts/ems_import/_common.py` → ortak yardımcılar, C-Suite/YK/tesis kayıtları, 12 süreç haritası, 10 risk
+- `scripts/ems_import/run_all.py` → 9 fazlı orchestrator (550 satır)
+- `backups/pre-ems-import-20260526.dump` → 1 MB PG yedek (custom format)
+- `data/ems_import_log/users_created.csv` → 20 yeni kullanıcı + geçici şifre
+- `instance/uploads/tenant_logos/28.svg` → EMS placeholder logo (#1B3F6E + "EMS" yazısı)
+
+### Yapılan İşlem
+Tenant id=28 (EMS) için 9 fazlı veri yükleme: tenant profili (sektor, vergi, vizyon/misyon), 20 kullanıcı (9 C-Suite, 5 YK, 6 tesis müdürü), plan dönemi 2026, 12 süreç (P2M/A2R/C2L/O2C/S2P/H2R/I2R/F2D/R2R/Q2C/G2N/K2K), 6 ana + 16 alt strateji + 41 girişim (markdown'dan parse), 6 OKR Objective + 24 Key Result, 84 süreç KPI'sı, 10 risk (manuel C-Suite sahip ataması). 22.800 atomik kayıt 7 modülden aylık aggregate edilerek 289 KpiData satırına dönüştürüldü; 18 OKR snapshot KR.current_value olarak yansıtıldı.
+
+### Sonuç İstatistikleri
+- 21 kullanıcı | 12 süreç | 6/16 strateji | 41 girişim
+- 6 Objective + 24 KR | 101 ProcessKpi | 289 KpiData | 10 risk
+
+### Notlar
+- Atomik veri "elle girilseydi nereye gider" mantığıyla aylık aggregate olarak KpiData'ya yazıldı; ham atomik tablo açılmadı.
+- Risk modülünden gelen olasılık/etki güncellemeleri başlık farklılığı nedeniyle eşleşmedi; manuel atanan değerler korundu (sonradan eşleştirme yapılabilir).
+- Yedek `backups/pre-ems-import-20260526.dump` ile geri dönüş mümkün.
+
+---
+
+## TASK-130 | 2026-05-26 | ⏸ Ertelendi
+
+**Görev:** Kule yardımcı sistemi geçici olarak devre dışı bırakıldı
+**Modül:** ui/templates/platform/base.html, docs/
+**Durum:** ⏸ Ertelendi — UI stabilleşince devam
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → Kule CSS/JS yüklemeleri yorum içine alındı
+- `docs/ERTELENEN-ISLER.md` → yeni dosya, E1 girdisi (Kule durumu, dosyalar, devam talimatı)
+
+### Yapılan İşlem
+Kule altyapısı tamamlandı ama UI'da hala yoğun değişiklik var; her UI revizyonunda Kule'yi de güncellemek/test etmek zaman maliyetli. Kullanıcı kararıyla şimdilik askıya alındı. Tüm kod, YAML, SVG, model, migration ve API endpoint'leri korundu — sadece base template'teki include'lar kapatıldı. Branch `claude/kule-yardimci-sistemi` silinmedi, aynen duruyor.
+
+### Notlar
+Devam için: `docs/ERTELENEN-ISLER.md` E1 bölümünü oku, base.html'deki yorum satırlarını aç.
+
+---
+
+## TASK-129 | 2026-05-25 | ✅ Tamamlandı (yerel, claude/kule-yardimci-sistemi dalında)
+
+**Görev:** Kule — kullanıcı yardımcı sistemi (Sprint 1-5 altyapı + içerik)
+**Modül:** app/models/, app/services/, micro/modules/shared/kule/, ui/static/platform/, ui/templates/platform/, migrations/, docs/tours/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `docs/KULE-TANIM.md` → karakter, ton, mimari spec (tek gerçek kaynak)
+- `docs/tours/*.yaml` → 17 tur içeriği (masaustu, sp_*, surec, k_radar, bireysel, admin_*)
+- `app/models/tour.py` → UserTourProgress modeli
+- `app/services/kule_service.py` → YAML loader + progress yönetimi
+- `micro/modules/shared/kule/routes.py` → 5 API endpoint
+- `ui/static/platform/img/kule.svg` → hava kontrol kulesi karakter
+- `ui/static/platform/css/kule.css` → FAB + welcome + driver.js teması
+- `ui/static/platform/js/kule.js` → runtime (init, start, restart)
+- `migrations/versions/i2j3k4l5m016_user_tour_progress.py`
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → driver.js + kule.css/js + meta tag pickup
+- 13 sayfa template'ine `<meta name="kule-tour-key">` + `data-tour` attribute'ları
+
+### Yapılan İşlem
+Tanım dosyası (KULE-TANIM.md) tek referans olarak yazıldı. Driver.js (CDN) tabanlı tur runtime'ı, YAML-driven içerik sistemi, sayfa başına `meta` etiketi ile otomatik başlatma. Sağ alt sabit FAB (kule SVG) ile manuel yeniden başlatma. Persona: Talat Konuk / Eskişehir Motor Sanayi. 17 tur YAML hatasız yükleniyor; migration uygulandı.
+
+### Notlar
+İçerik AI taslağıyla üretildi; kullanıcı geri bildirimine açık. Faz 2 (AI soru-cevap köprüsü) bilinçli olarak atlandı — ayrı proje.
+
+---
+
 ## TASK-128 | 2026-05-25 | ✅ Tamamlandı (yerel + main'e merge, push/VM beklemede)
 
 **Görev:** Bayi/Holding mimarisi — Sprint A-F (6 sprint)
