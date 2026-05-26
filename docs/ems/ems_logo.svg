@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" role="img" aria-label="EMS — Eskişehir Makine Sanayii">
+  <defs>
+    <linearGradient id="ems-blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#234D82"/>
+      <stop offset="100%" stop-color="#1B3F6E"/>
+    </linearGradient>
+    <linearGradient id="ems-steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B97A8"/>
+      <stop offset="100%" stop-color="#6B7A8D"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sol amblem: stilize dişli + motor şaftı -->
+  <g transform="translate(20,20)">
+    <!-- Dişli dış halka -->
+    <g fill="url(#ems-blue)">
+      <circle cx="40" cy="40" r="38"/>
+    </g>
+    <!-- Dişli dişleri -->
+    <g fill="url(#ems-blue)">
+      <rect x="36" y="0" width="8" height="10" rx="1"/>
+      <rect x="36" y="70" width="8" height="10" rx="1"/>
+      <rect x="0" y="36" width="10" height="8" rx="1"/>
+      <rect x="70" y="36" width="10" height="8" rx="1"/>
+      <rect x="11" y="11" width="9" height="9" rx="1" transform="rotate(-45 15.5 15.5)"/>
+      <rect x="60" y="11" width="9" height="9" rx="1" transform="rotate(45 64.5 15.5)"/>
+      <rect x="11" y="60" width="9" height="9" rx="1" transform="rotate(45 15.5 64.5)"/>
+      <rect x="60" y="60" width="9" height="9" rx="1" transform="rotate(-45 64.5 64.5)"/>
+    </g>
+    <!-- İç çelik halkası -->
+    <circle cx="40" cy="40" r="28" fill="url(#ems-steel)"/>
+    <!-- Merkez motor şaftı -->
+    <circle cx="40" cy="40" r="14" fill="#F8F9FA"/>
+    <circle cx="40" cy="40" r="6" fill="#1B3F6E"/>
+    <!-- ESG yeşil aksanı (sürdürülebilirlik dokunuşu) -->
+    <path d="M 40 12 a 28 28 0 0 1 24 16" stroke="#2E8B57" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Sağ wordmark -->
+  <g transform="translate(125,0)">
+    <text x="0" y="62"
+          font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+          font-size="52" font-weight="800" fill="#1B3F6E" letter-spacing="2">
+      EMS
+    </text>
+    <!-- Alt slogan -->
+    <text x="2" y="88"
+          font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+          font-size="11" font-weight="600" fill="#6B7A8D" letter-spacing="3">
+      ESKİŞEHİR MAKİNE SANAYİİ
+    </text>
+    <!-- Ayırıcı çizgi + tagline -->
+    <line x1="2" y1="96" x2="60" y2="96" stroke="#2E8B57" stroke-width="2"/>
+    <text x="68" y="100"
+          font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+          font-size="9" font-weight="500" fill="#6B7A8D" letter-spacing="1.5">
+      Komponent Üretiminde Mükemmellik
+    </text>
+  </g>
+</svg>

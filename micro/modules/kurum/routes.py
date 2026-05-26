@@ -34,16 +34,12 @@ def kurum_ayarlar():
         abort(404)
 
     if request.method == "GET":
-        import os
+        from flask import url_for
 
         logo_url = None
-        upload_folder = os.path.join(current_app.static_folder, "uploads", "logos")
-        base = f"tenant_{tenant.id}_logo"
-        for ext in ("png", "jpg", "jpeg", "gif", "webp"):
-            candidate = os.path.join(upload_folder, f"{base}.{ext}")
-            if os.path.exists(candidate):
-                logo_url = f"/static/uploads/logos/{base}.{ext}"
-                break
+        if tenant.logo_path:
+            v = int(tenant.logo_updated_at.timestamp()) if tenant.logo_updated_at else 0
+            logo_url = url_for("app_bp.tenant_logo", tenant_id=tenant.id, v=v)
 
         return render_template("platform/kurum/ayarlar.html", tenant=tenant, logo_url=logo_url)
 
@@ -117,33 +113,47 @@ def kurum_ayarlar():
                 initialize_plan_years(tenant.id, pys)
             tenant.plan_year_start = pys
 
-        # Logo yükleme (multipart/form-data)
+        # Logo yükleme (multipart/form-data) — instance/uploads/tenant_logos/{tenant_id}.{ext}
         logo_file = request.files.get("logo")
         if logo_file and logo_file.filename:
-            allowed_ext = {"png", "jpg", "jpeg", "gif", "webp"}
-            allowed_mime = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
-            max_size = 2 * 1024 * 1024  # 2MB
+            import os
+            import datetime as _dt
+            from app.utils.upload_security import validate_uploaded_image, safe_filename
 
-            ext = logo_file.filename.rsplit(".", 1)[-1].lower() if "." in logo_file.filename else ""
-            if ext not in allowed_ext:
-                return jsonify({"success": False, "message": "Geçersiz logo dosya uzantısı."}), 400
+            allowed_ext = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+            max_size = 2 * 1024 * 1024
 
-            if logo_file.mimetype and logo_file.mimetype not in allowed_mime:
-                return jsonify({"success": False, "message": "Geçersiz logo MIME tipi."}), 400
-
-            logo_file.seek(0, 2)
-            size = logo_file.tell()
-            logo_file.seek(0)
-            if size > max_size:
+            blob = logo_file.read()
+            if len(blob) > max_size:
                 return jsonify({"success": False, "message": "Logo dosyası 2MB'dan büyük olamaz."}), 400
 
-            import os
-            upload_folder = os.path.join(current_app.static_folder, "uploads", "logos")
-            os.makedirs(upload_folder, exist_ok=True)
-            base = f"tenant_{tenant.id}_logo"
-            filename = f"{base}.{ext}"
-            file_path = os.path.join(upload_folder, filename)
-            logo_file.save(file_path)
+            ok, msg, detected_ext = validate_uploaded_image(blob, allowed_ext, accept_svg=True)
+            if not ok:
+                current_app.logger.warning(
+                    f"[kurum_ayarlar logo] reject tenant={tenant.id} user={current_user.id}: {msg}"
+                )
+                return jsonify({"success": False, "message": msg}), 400
+
+            folder = os.path.join(current_app.instance_path, "uploads", "tenant_logos")
+            os.makedirs(folder, exist_ok=True)
+            fname = safe_filename(f"{tenant.id}.{detected_ext}", fallback=f"{tenant.id}.png")
+            dest = os.path.join(folder, fname)
+            if not os.path.abspath(dest).startswith(os.path.abspath(folder)):
+                current_app.logger.error(f"[kurum_ayarlar logo] path traversal blocked: {dest}")
+                return jsonify({"success": False, "message": "Geçersiz dosya yolu."}), 400
+
+            # Eski uzantılı dosyaları temizle
+            for old in os.listdir(folder):
+                if old.startswith(f"{tenant.id}.") and old != fname:
+                    try:
+                        os.remove(os.path.join(folder, old))
+                    except OSError:
+                        pass
+
+            with open(dest, "wb") as out:
+                out.write(blob)
+            tenant.logo_path = fname
+            tenant.logo_updated_at = _dt.datetime.now(_dt.timezone.utc)
 
         db.session.commit()
         return jsonify({"success": True, "message": "Kurum ayarları kaydedildi."}), 200
