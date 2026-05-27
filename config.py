@@ -34,6 +34,15 @@ class Config:
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY environment variable is not set!")
 
+    # ── Demo Ortamı ─────────────────────────────────────────────────────────
+    # KOKPITIM_DEMO_MODE=1 ise demo akışı (landing, rol-bazlı auto-login, banner)
+    # aktiftir. PRODUCTION'da kapalı tutulmalıdır.
+    KOKPITIM_DEMO_MODE = os.environ.get("KOKPITIM_DEMO_MODE", "0") == "1"
+    # Demo session süresi (dk)
+    DEMO_SESSION_MINUTES = int(os.environ.get("DEMO_SESSION_MINUTES", "60"))
+    # Demo verisinin bulunduğu tenant adı (Tomofil)
+    DEMO_TENANT_ID = int(os.environ.get("DEMO_TENANT_ID", "27"))
+
     # Araç/script geriye dönük uyumu: asıl uygulama get_config() ile doldurur.
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI") or ""
 

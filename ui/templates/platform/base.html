@@ -82,8 +82,13 @@
     </script>
 </head>
 
-<body class="{% if not request.endpoint or request.endpoint != 'app_bp.login' %}micro-layout{% endif %}"
+<body class="{% if not request.endpoint or request.endpoint != 'app_bp.login' %}micro-layout{% endif %} {% if session.get('demo_session_active') %}demo-mode{% endif %}"
     :class="darkMode ? 'dark' : ''">
+
+    {# ═════════ Demo banner (KOKPITIM_DEMO_MODE + aktif session) ═════════ #}
+    {% if session.get('demo_session_active') %}
+    {% include 'platform/demo/_banner.html' %}
+    {% endif %}
 
     {% if current_user.is_authenticated %}
     <!-- ═══════════════ SIDEBAR ═══════════════ -->

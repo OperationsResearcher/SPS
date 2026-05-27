@@ -3,6 +3,53 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-137 | 2026-05-27 | ✅ Tamamlandı (yerel, claude/demo-ortami) — v1: landing + bypass-login + banner
+
+**Görev:** Kokpitim demo ortamı v1 — landing sayfası, rol-bazlı bypass-login, demo banner + 60dk countdown + çıkış akışı
+**Modül:** config.py, micro/modules/demo/, ui/templates/platform/demo/, platform_core/__init__.py, ui/templates/platform/base.html
+**Durum:** ✅ Tamamlandı (v1 kapsamı — schema isolation v2'ye ertelendi)
+**Plan:** docs/DEMO-ORTAMI-PLAN.md (S3 yaklaşımı — v2'de full inşa)
+
+### Yeni Dosyalar
+- `micro/modules/demo/__init__.py`, `routes.py` → demo blueprint (4 endpoint: landing, start/<role>, end, heartbeat)
+- `ui/templates/platform/demo/landing.html` → standalone şık landing (gradient bg, 3 rol kartı, davranış açıklaması, footer)
+- `ui/templates/platform/demo/_banner.html` → app içinde demo modunda görünen üst banner (countdown, çıkış, hesap-aç linki)
+
+### Değiştirilen Dosyalar
+- `config.py` → `KOKPITIM_DEMO_MODE`, `DEMO_SESSION_MINUTES`, `DEMO_TENANT_ID` yapılandırma alanları
+- `platform_core/__init__.py` → demo routes import
+- `ui/templates/platform/base.html` → demo banner koşullu include (`session.get('demo_session_active')`)
+
+### Yapılan İşlem
+**A. Landing (`/demo/`):** Standalone marketing-kalitesinde sayfa. Gradient arka plan, hero ("Kokpitim'i gerçek veriyle deneyin"), 3 bilgi şeridi (kayıt yok / 60dk / izole), 3 büyük rol kartı (Kurum Yöneticisi / Süreç Lideri / Süreç Üyesi — her birinde 4-bullet özelliği, kendi rengi, kendi ikonu), "Demo nasıl davranır?" 6 madde açıklama paneli, footer.
+
+**B. Rol-bypass login (`/demo/start/<role>`):** Seçilen role karşılık gelen Tomofil tenant'ı (id=27) kullanıcısını bul → mevcut session'ı temizle → `login_user()` ile auto-login → session'a demo işaretleri yaz (`demo_session_active`, `demo_role`, `demo_role_label`, `demo_started_at`, `demo_expires_at`) → `/launcher`'a redirect. Yönetici → `admin@tomofil.com`, Lider/Üye → tenant içindeki ilk uygun rol-kullanıcısı.
+
+**C. Banner (`base.html`):** `session.get('demo_session_active')` doğruysa üstte sticky gradient banner: rol etiketi + canlı kalan-süre countdown + "Hesap Aç" linki + "Çıkış" butonu. Her saniye JS countdown, her 30sn `/demo/heartbeat` ile sunucudan senkronize. Süre dolarsa SweetAlert ile uyarı + landing'e yönlendirme.
+
+**D. Çıkış akışı:** Banner'daki "Çıkış" → SweetAlert onay modal'ı ("verilerin silinecek + hesap açmak için link") → `/demo/end` → `logout_user()` + session clear → landing'e döner.
+
+**E. Güvenlik:** `KOKPITIM_DEMO_MODE=0` (veya değişken yok) olduğunda tüm 4 endpoint 404 döner. Prod'da yanlışlıkla deploy edilse bile demo'ya erişim mümkün değil. Test edildi.
+
+### Test (yerel)
+- `GET /demo/` → 200, 15kB sayfa, 3 rol kartı render
+- `GET /demo/start/yonetici` → 302 /masaustu-launcher, session aktif, banner render
+- `GET /demo/heartbeat` (session aktif) → `{"active":true,"remaining_seconds":3599,...}`
+- `GET /demo/end` → 302 /demo, session clear, banner kaybolur
+- `KOKPITIM_DEMO_MODE` kapalıyken tüm 4 endpoint → 404 ✓
+
+### v1 Kapsamı Dışı (v2'de yapılacak)
+- **Schema isolation (S3 per-session clone)** — eşzamanlı kullanıcılar şu an aynı Tomofil verisi üzerinde, birbirini görür. v2: PostgreSQL schema clone + havuz.
+- **Demo DB ortamı kurulumu** — `setup_demo_env.sh` + `demo.kokpitim.com` Nginx/SSL + Docker container.
+- **E-posta/LLM mock** — KOKPITIM_DEMO_MODE açıkken otomatik mock.
+- **Beacon API + inaktivite timeout**.
+
+### Notlar
+- DNS `demo.kokpitim.com` Cloudflare'de açık.
+- Test ortamına deploy: bir sonraki adımda, kullanıcı onayıyla. Demo container `KOKPITIM_DEMO_MODE=1` env ile.
+
+---
+
 ## TASK-136 | 2026-05-27 | ✅ Tamamlandı (yerel, claude/tarih-egemen-plan-year)
 
 **Görev:** "Tarih egemen" plan year doktrini — 3 fazlı SP veri yazımı yeniden mimarisi + yıllar arası diff + snapshot rolleri
