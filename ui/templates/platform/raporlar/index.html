@@ -1,0 +1,61 @@
+{% extends "platform/base.html" %}
+{% block title %}Raporlar — Kokpitim{% endblock %}
+{% block page_title %}Raporlar{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;">
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:22px; font-weight:700; color:#1e293b; margin:0 0 4px;" class="dark:text-white">
+      <i class="fas fa-chart-pie" style="color:#0ea5e9;"></i> Raporlar
+    </h1>
+    <p style="font-size:13.5px; color:#64748b; margin:0;">
+      Yeni rapor önerileri ve analiz panelleri. (Bu bölüm staging — raporlar zamanla ilgili modüllere taşınacak.)
+    </p>
+  </div>
+
+  {% set items = [
+    {'url': url_for('app_bp.raporlar_veri_kalitesi'),       'icon': 'fa-database',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': 'Veri Kalitesi',                 'desc': 'PG doluluk, eksik alan ve son giriş tarihleri', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_kv_carpiklik'),        'icon': 'fa-balance-scale',    'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': 'K-Vektör Çarpıklık',            'desc': 'Strateji ağırlığı × gerçek skor uyumsuzluğu', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_hizalama_sankey'),     'icon': 'fa-project-diagram',  'color': '#4f46e5', 'bg': '#eef2ff', 'name': 'Stratejik Hizalama Sankey',     'desc': 'Vizyon → strateji → süreç → PG akış görseli', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_hedef_revizyon'),      'icon': 'fa-history',          'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'PG Hedef Revizyon Sıklığı',     'desc': 'Yıl içinde hedef değişen PG\'ler', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_departman_performans'),'icon': 'fa-users-cog',        'color': '#db2777', 'bg': '#fdf2f8', 'name': 'Departman Performans Skoru',    'desc': 'Departman bazlı bireysel PG ortalaması', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_yonetici_liderlik'),   'icon': 'fa-user-tie',         'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'Yönetici Liderlik Skoru',       'desc': 'Süreç liderlerinin etkinlik puanı', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_initiative_bubble'),   'icon': 'fa-rocket',           'color': '#ef4444', 'bg': '#fef2f2', 'name': 'Initiative Portföy Bubble',     'desc': 'Bütçe × ilerleme × öncelik balon grafik', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_sabah_ozeti'),         'icon': 'fa-sun',              'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Operasyonel Sabah Özeti+',      'desc': 'Bugün biten/bekleyen faaliyet & kritik PG', 'status': 'hazır'},
+    {'url': '#',                                            'icon': 'fa-film',             'color': '#9333ea', 'bg': '#faf5ff', 'name': 'Yıllar Arası Evrim Filmi',      'desc': 'Strateji ağacının yıllık animasyonu', 'status': 'yakında'},
+    {'url': '#',                                            'icon': 'fa-magic',            'color': '#dc2626', 'bg': '#fff7ed', 'name': 'AI Yıl Sonu Sunum Üretici',     'desc': 'Yönetim kurulu için 40-slayt PPT', 'status': 'planlanmış'},
+  ] %}
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">
+    {% for it in items %}
+    {% set is_ready = it.status == 'hazır' %}
+    <a href="{{ it.url }}"
+       class="mc-card mc-card-lift"
+       style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-decoration:none; text-align:center; cursor:{{ 'pointer' if is_ready else 'not-allowed' }}; position:relative; {% if not is_ready %}opacity:0.5;{% endif %}"
+       {% if not is_ready %}onclick="event.preventDefault(); Swal && Swal.fire({icon:'info',title:'Yakında',text:'Bu rapor henüz yayında değil — yol haritasında planlandı.',timer:2500,showConfirmButton:false});"{% endif %}>
+      {% if is_ready %}
+      <span style="position:absolute;top:8px;right:8px;background:#10b981;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">HAZIR</span>
+      {% elif it.status == 'planlanmış' %}
+      <span style="position:absolute;top:8px;right:8px;background:#94a3b8;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">YOL HARİTASI</span>
+      {% else %}
+      <span style="position:absolute;top:8px;right:8px;background:#f59e0b;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">YAKINDA</span>
+      {% endif %}
+      <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:{{ it.bg }};">
+        <i class="fas {{ it.icon }}" style="color:{{ it.color }};"></i>
+      </div>
+      <span style="font-size:13.5px; font-weight:600; color:#1e293b; margin-bottom:6px; display:block;" class="dark:text-white">
+        {{ it.name }}
+      </span>
+      <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">
+        {{ it.desc }}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:32px; padding:16px 20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:12.5px; color:#64748b;">
+    <i class="fas fa-info-circle" style="color:#0ea5e9;"></i>
+    <b>Not:</b> Bu bölüm <a href="/docs/rapor/27mayisraporu.md" style="color:#0ea5e9; text-decoration:underline;">27 Mayıs Rapor Önerileri</a> dokümanından seçilen 10 rapor için staging alanıdır. Hazır raporlar zamanla ilgili modüllere (SP, Süreç, Bireysel, K-Radar) taşınacak.
+  </div>
+</div>
+{% endblock %}

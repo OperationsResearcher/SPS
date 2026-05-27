@@ -1,0 +1,93 @@
+{% extends "platform/base.html" %}
+{% block title %}Operasyonel Sabah Özeti — Kokpitim{% endblock %}
+{% block page_title %}Operasyonel Sabah Özeti+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px; margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-sun" style="color:#0d9488;"></i> Operasyonel Sabah Özeti
+      </h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son veri girişleri.
+      </p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary">
+      <i class="fas fa-arrow-left"></i> Raporlara Dön
+    </a>
+  </div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+  <div id="content" style="display:none;">
+    <div id="today-banner" style="background:linear-gradient(135deg,#0d9488,#0891b2);color:#fff;border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:14px;margin-bottom:24px;" id="metrics"></div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+        <i class="fas fa-stream" style="color:#0ea5e9;"></i> Son Veri Girişleri
+      </h3>
+      <div id="recent"></div>
+    </div>
+  </div>
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const metric = (label, value, color, icon) => `
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;">
+      <div style="width:38px;height:38px;border-radius:10px;background:${color}22;display:flex;align-items:center;justify-content:center;color:${color};font-size:16px;">
+        <i class="fas ${icon}"></i>
+      </div>
+      <div>
+        <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">${esc(label)}</div>
+        <div style="font-size:22px;font-weight:700;color:#0f172a;line-height:1.1;">${esc(value)}</div>
+      </div>
+    </div>`;
+
+  function fmtDt(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleString('tr-TR', {dateStyle: 'short', timeStyle: 'short'});
+  }
+
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/sabah-ozeti',{credentials:'same-origin'})).json();
+      if (!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const today = new Date(j.today).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+      document.getElementById('today-banner').innerHTML = `
+        <div><i class="fas fa-calendar-day" style="margin-right:8px;"></i><b>${today}</b></div>
+        <div>Tomofil günaydın · ${j.metrics.measurements_today} ölçüm bugün</div>`;
+      const m = j.metrics;
+      document.getElementById('metrics').innerHTML = [
+        metric('Geciken Faaliyet', m.overdue_activities, '#dc2626', 'fa-exclamation-circle'),
+        metric('Bugün Bitiş', m.today_due_activities, '#f59e0b', 'fa-flag-checkered'),
+        metric('Önümüzdeki 7 Gün', m.upcoming_7d_activities, '#0ea5e9', 'fa-calendar-week'),
+        metric('Son 7 Gün Tamamlanan', m.completed_7d_activities, '#10b981', 'fa-check-circle'),
+        metric('Bugün Ölçüm', m.measurements_today, '#8b5cf6', 'fa-chart-line'),
+        metric('Son 7 Gün Ölçüm', m.measurements_7d, '#6366f1', 'fa-database'),
+      ].join('');
+
+      document.getElementById('recent').innerHTML = (j.recent_entries || []).length === 0
+        ? '<div style="color:#94a3b8;font-style:italic;font-size:13px;padding:8px;">Henüz veri girişi yok.</div>'
+        : '<div style="display:grid;gap:8px;">'+j.recent_entries.map(r => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;font-size:12.5px;gap:10px;flex-wrap:wrap;">
+              <div style="min-width:0;flex:1;">
+                <div style="font-weight:600;color:#0f172a;">${esc(r.kpi_code||'')} · ${esc(r.kpi_name||'')}</div>
+                <div style="font-size:11px;color:#64748b;">Giren: ${esc(r.who)} · ${esc(fmtDt(r.when))}</div>
+              </div>
+              <div style="font-weight:700;color:#0d9488;font-size:14px;">${esc(r.value)}</div>
+            </div>`).join('')+'</div>';
+    } catch(e){
+      document.getElementById('loading').style.display='none';
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}
