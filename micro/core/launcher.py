@@ -2,7 +2,7 @@
 
 import datetime
 
-from flask import render_template, session as flask_session
+from flask import redirect, render_template, session as flask_session, url_for
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
@@ -65,13 +65,22 @@ def launcher():
 
 @app_bp.route("/")
 def platform_root():
-    """Kök URL — giriş yapmışsa launcher, yapmamışsa marketing."""
+    """Kök URL — giriş yapmışsa launcher, yapmamışsa marketing.
+
+    Demo modu (KOKPITIM_DEMO_MODE=1):
+    - Aktif demo session varsa → launcher
+    - Yoksa → demo landing (/demo/) (login ekranı YOK — demo subdomain'in
+      tek giriş kapısı demo akışıdır)
+    """
     from flask_login import current_user as _cu
+    from flask import current_app, session as _sess
+
+    if current_app.config.get("KOKPITIM_DEMO_MODE"):
+        if _cu.is_authenticated and _sess.get("demo_session_active"):
+            return redirect(url_for("app_bp.launcher"))
+        return redirect(url_for("app_bp.demo_landing"))
+
     if _cu.is_authenticated:
         return redirect(url_for("app_bp.launcher"))
-    # Marketing tanıtım sayfası
-    return render_template(
-        "marketing/index.html",
-        page_title="Kokpitim — Stratejik Yönetim Platformu",
-        page_description="Strateji, süreç, KPI ve bireysel performansı tek platformda yönetin.",
-    )
+    # Tanıtım modülü yoksa kökte klasik giriş ekranı (login.html)
+    return render_template("auth/login.html")

@@ -85,6 +85,13 @@ def _is_spam(form_data: dict) -> bool:
 @marketing_bp.route("/")
 @marketing_bp.route("/home")
 def index():
+    # Demo subdomain — root daima demo'ya yönlenir
+    if current_app.config.get("KOKPITIM_DEMO_MODE"):
+        from flask import session as _sess
+        from flask_login import current_user as _cu
+        if _cu.is_authenticated and _sess.get("demo_session_active"):
+            return redirect(url_for("app_bp.launcher"))
+        return redirect(url_for("app_bp.demo_landing"))
     return render_template(
         "index.html",
         page_title="Kokpitim — Stratejik Yönetim Platformu",

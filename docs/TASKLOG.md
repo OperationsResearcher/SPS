@@ -3,6 +3,37 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-140 | 2026-05-27 | ✅ Tamamlandı (canlı) — demo.kokpitim.com kök URL doğrudan demo landing'e yönlendir
+
+**Görev:** demo.kokpitim.com / kök adresinden marketing/login sayfası yerine doğrudan demo landing (/demo) açılsın — demo subdomain'in tek giriş kapısı demo akışı olmalı
+**Modül:** micro/core/launcher.py, micro/modules/marketing/routes.py
+**Durum:** ✅ Canlı
+
+### Değiştirilen Dosyalar
+- `micro/core/launcher.py::platform_root` → demo mode aktifse: aktif session varsa launcher, yoksa /demo'ya redirect
+- `micro/modules/marketing/routes.py::index` → aynı mantık (marketing_bp `/` route'unu da kapatıyor)
+
+### Yapılan İşlem
+İki ayrı blueprint aynı `/` path'ini kayıt ediyordu (app_bp + marketing_bp). marketing_bp önce yüklendiği için marketing landing dönüyordu. Her ikisinde de KOKPITIM_DEMO_MODE flag kontrolü eklendi.
+
+### Davranış matrisi (demo modu)
+| Durum | / cevabı |
+|---|---|
+| Demo session aktif | 302 → /masaustu-launcher (kullanıcı çalışmaya devam eder) |
+| Demo session yok | 302 → /demo (landing — rol seçici) |
+
+Production'da (KOKPITIM_DEMO_MODE=0) davranış değişmez.
+
+### Canlı doğrulama
+- `GET https://demo.kokpitim.com/` → HTTP 302 → `/demo`
+- Landing render edilir (demo-role-card 24 kez, 3 rol kartı × 8 stil)
+
+### Notlar
+- Test ortamına da deploy edildi (tutarlılık)
+- Login ekranı demo subdomain'de hiçbir zaman gösterilmez — kullanıcı yanlışlıkla `/auth/login` GET ederse de demo akışına dönmeli (sonraki iyileştirme)
+
+---
+
 ## TASK-139 | 2026-05-27 | ✅ Tamamlandı (canlı) — demo modu üst-bar dönüşümü
 
 **Görev:** Demo modunda yan-bar (240px) yerine yatay üst-bar göster — daha şık ve demo deneyimine uygun
