@@ -46,6 +46,14 @@
 - UserYearAssignment UI tarafı (kullanıcı düzenleme ekranı) yapılmadı — backend hazır, ihtiyaç çıkınca eklenir.
 - Tüm değişiklikler `claude/tarih-egemen-plan-year` dalında. Push/merge kullanıcı talebine bağlı.
 
+### Düzeltme (Faz 3 duplikasyon temizliği)
+İlk geçişte mevcut `/sp/donemler` sayfasındaki karşılaştırma özelliği görülmeden yeni `/sp/karsilastirma` sayfası + `plan_year_diff_service.py` yazılmıştı. Kullanıcı uyarısıyla geri alındı:
+- `app/services/plan_year_diff_service.py` ve `ui/templates/platform/sp/karsilastirma.html` silindi
+- `routes_plan_year.py`'den yeni endpoint'ler kaldırıldı
+- Eksik 3 kategori (Initiative span, OKR sayım, links sayım) mevcut `sp_api_donem_karsilastir` endpoint'ine eklendi
+- `donemler.html`'de bu üç kategori için yeni "Çok Yıllık Initiative / OKR / Bağlar" details bölümü eklendi
+- Test (Tomofil 2025↔2026): 3 initiative `y2`'de başlamış, 3 `y2`'den önce bitmiş, 6 devam ediyor; OKR 3↔3; bağlar 13→15
+
 ---
 
 ## TASK-135 | 2026-05-27 | ✅ Tamamlandı (yerel)

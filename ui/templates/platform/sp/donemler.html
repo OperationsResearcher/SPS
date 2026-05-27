@@ -3,6 +3,7 @@
 {% block page_title %}Stratejik Plan Dönemleri{% endblock %}
 
 {% block extra_css %}
+<meta name="kule-tour-key" content="sp_plan_years">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
@@ -20,7 +21,7 @@
       <p style="font-size:13px; color:#64748b; margin:0;">Dönem seçimi, yeni dönem oluşturma ve kapatma işlemleri</p>
     </div>
     {% if sp_can_manage %}
-    <button type="button" class="mc-btn mc-btn-primary" id="dpy-btn-new">
+    <button type="button" class="mc-btn mc-btn-primary" id="dpy-btn-new" data-tour="py-create">
       <i class="fas fa-plus"></i> Yeni Dönem
     </button>
     {% endif %}
@@ -73,7 +74,7 @@
   {% endif %}
 
   {# Tüm dönemler tablosu #}
-  <div class="mc-card">
+  <div class="mc-card" data-tour="py-list">
     <div class="mc-card-header">
       <span class="mc-card-title"><i class="fas fa-list" style="color:#6366f1; margin-right:6px;"></i>Tüm Dönemler</span>
     </div>
@@ -83,7 +84,7 @@
           <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
             <th style="padding:10px 16px; text-align:left; font-weight:600; color:#475569;">Yıl</th>
             <th style="padding:10px 16px; text-align:left; font-weight:600; color:#475569;">Ad</th>
-            <th style="padding:10px 16px; text-align:center; font-weight:600; color:#475569;">Durum</th>
+            <th style="padding:10px 16px; text-align:center; font-weight:600; color:#475569;" data-tour="py-status">Durum</th>
             <th style="padding:10px 16px; text-align:center; font-weight:600; color:#475569;">İşlem</th>
           </tr>
         </thead>
@@ -644,10 +645,49 @@
         </div>
       </details>`;
 
+    // ── Initiative / OKR / Bağlar özet bölümü (yıllar arası snapshot) ──
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
+      c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    const ini = diff.initiatives || {};
+    const okr = diff.okr || {};
+    const lnk = diff.links || {};
+    const iniNewCount = (ini.started_in_y2 || []).length;
+    const iniEndCount = (ini.ended_before_y2 || []).length;
+    const extraChanged = iniNewCount + iniEndCount;
+    const extraBadge = extraChanged > 0
+      ? `<span style="margin-left:8px;background:#0ea5e9;color:#fff;border-radius:12px;font-size:11px;padding:1px 8px;">${extraChanged} fark</span>`
+      : `<span style="margin-left:8px;background:#e2e8f0;color:#64748b;border-radius:12px;font-size:11px;padding:1px 8px;">Fark yok</span>`;
+    const _list = (arr) => (arr && arr.length)
+      ? `<ul style="margin:4px 0 0 18px;padding:0;font-size:12.5px;color:#475569;">${arr.map(i => `<li>${esc(i.label)}</li>`).join("")}</ul>`
+      : `<span style="font-size:12px;color:#94a3b8;font-style:italic;">—</span>`;
+    const extraSection = `
+      <details ${extraChanged > 0 ? "open" : ""} style="margin-bottom:12px;">
+        <summary style="cursor:pointer;padding:10px 12px;background:#f8fafc;border-radius:6px;font-size:13px;font-weight:600;color:#1e293b;list-style:none;display:flex;align-items:center;gap:6px;border:1px solid #e2e8f0;">
+          <i class="fas fa-rocket" style="color:#0ea5e9;"></i> Çok Yıllık Initiative / OKR / Bağlar ${extraBadge}
+        </summary>
+        <div style="padding:12px;background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;">
+            <div>
+              <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">🚀 Çok yıllık Initiative'ler</div>
+              <div style="color:#64748b;font-size:12px;margin-bottom:8px;">${y1.year}: <b style="color:#0f172a;">${ini.y1_total || 0}</b> · ${y2.year}: <b style="color:#0f172a;">${ini.y2_total || 0}</b> · devam eden: <b>${ini.continuing || 0}</b></div>
+              <div style="margin-top:8px;"><b style="color:#065f46;font-size:12px;">${y2.year}'de başlayan:</b> ${_list(ini.started_in_y2)}</div>
+              <div style="margin-top:8px;"><b style="color:#991b1b;font-size:12px;">${y2.year}'den önce biten:</b> ${_list(ini.ended_before_y2)}</div>
+            </div>
+            <div>
+              <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">🎯 OKR Hedefleri</div>
+              <div style="color:#64748b;font-size:12px;">${y1.year}: <b style="color:#0f172a;">${okr.y1_count || 0}</b> hedef → ${y2.year}: <b style="color:#0f172a;">${okr.y2_count || 0}</b> hedef</div>
+              <div style="font-weight:600;color:#0f172a;margin:14px 0 6px;">🔗 Süreç ↔ Alt-Strateji Bağları</div>
+              <div style="color:#64748b;font-size:12px;">${y1.year}: <b style="color:#0f172a;">${lnk.y1_count || 0}</b> bağ → ${y2.year}: <b style="color:#0f172a;">${lnk.y2_count || 0}</b> bağ</div>
+            </div>
+          </div>
+        </div>
+      </details>`;
+
     const html = header + metaSection + identitySection
       + genericSection("Stratejiler", "fas fa-bullseye", diff.strategies, strategyRowFn, "Bu yıllar için strateji konfigürasyonu yok.")
       + genericSection("Alt Stratejiler", "fas fa-sitemap", diff.sub_strategies, ssRowFn, "Bu yıllar için alt strateji konfigürasyonu yok.")
-      + processSectionHtml(diff.processes);
+      + processSectionHtml(diff.processes)
+      + extraSection;
 
     resultBox.innerHTML = html;
     resultBox.style.display = "block";
