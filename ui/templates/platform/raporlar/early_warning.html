@@ -1,0 +1,65 @@
+{% extends "platform/base.html" %}
+{% block title %}Erken Uyarı — Kokpitim{% endblock %}
+{% block page_title %}AI Erken Uyarı Dashboard{% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-bell" style="color:#f59e0b;"></i> AI Erken Uyarı</h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">Son 3+ dönem hedef altında olan PG'ler — proaktif müdahale gerektiren göstergeler.</p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+  </div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+  <div id="content" style="display:none;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Uyarılar</h3>
+      <div id="warnings"></div>
+    </div>
+  </div>
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/early-warning',{credentials:'same-origin'})).json();
+      if(!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const s=j.summary;
+      document.getElementById('summary').innerHTML=[
+        stat('Kontrol Edilen PG',s.total_kpis_checked,'#0f172a'),
+        stat('Uyarı Sayısı',s.warnings_count,s.warnings_count>0?'#dc2626':'#10b981'),
+        stat('Yüksek Öncelik',s.high_severity,'#dc2626'),
+      ].join('');
+      const warnings = j.warnings;
+      if(warnings.length===0){
+        document.getElementById('warnings').innerHTML = '<div style="color:#10b981;font-size:13px;padding:12px;background:#ecfdf5;border-radius:6px;"><i class="fas fa-check-circle"></i> Şu an erken uyarı yok — tüm PG\'ler kabul edilebilir performansta.</div>';
+        return;
+      }
+      document.getElementById('warnings').innerHTML = '<div style="display:grid;gap:8px;">' + warnings.map(w => {
+        const c = w.severity==='high'?'#dc2626':'#f59e0b';
+        return `<div style="border-left:4px solid ${c};background:#fef2f2;padding:12px 14px;border-radius:0 6px 6px 0;font-size:12.5px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div style="font-weight:600;color:#0f172a;">${esc(w.kpi_code||'')} ${esc(w.kpi_name||'')}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;">${esc(w.process_name||'?')}</div>
+            </div>
+            <span style="background:${c};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:8px;">${w.severity==='high'?'YÜKSEK':'ORTA'}</span>
+          </div>
+          <div style="font-size:11px;color:#475569;margin-top:6px;">Son 3 başarı puanı: <b>${w.last_scores.map(s=>'%'+s).join(' → ')}</b></div>
+        </div>`;
+      }).join('') + '</div>';
+    } catch(e){
+      document.getElementById('loading').style.display='none';
+      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "platform/base.html" %}
+{% block title %}Risk Heatmap — Kokpitim{% endblock %}
+{% block page_title %}Risk Heatmap (5×5){% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-shield-alt" style="color:#dc2626;"></i> Risk Heatmap</h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">5×5 Olasılık × Etki matrisi. RPN = Probability × Impact.</p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+  </div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+  <div id="content" style="display:none;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">5×5 Risk Matrisi</h3>
+        <div id="grid" style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:3px;font-size:11px;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:8px;">
+          <span>← Düşük Etki</span><span>Yüksek Etki →</span>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">En Yüksek RPN — Top 10</h3>
+        <div id="top10"></div>
+      </div>
+    </div>
+  </div>
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  function cellColor(p, i) {
+    const rpn = p * i;
+    if(rpn>=15) return '#dc2626';
+    if(rpn>=8) return '#f59e0b';
+    if(rpn>=4) return '#fef3c7';
+    return '#dcfce7';
+  }
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/risk-heatmap',{credentials:'same-origin'})).json();
+      if(!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const s=j.summary;
+      document.getElementById('summary').innerHTML=[
+        stat('Toplam Risk',s.total,'#0f172a'),
+        stat('Açık',s.open,'#dc2626'),
+        stat('Çözülmüş',s.mitigated,'#10b981'),
+        stat('Yüksek RPN',s.high_rpn,'#f59e0b'),
+      ].join('');
+      // 5×5 grid (probability 5→1 üstten alta, impact 1→5 soldan sağa)
+      let html = '<div></div>';
+      for(let i=1;i<=5;i++) html += `<div style="text-align:center;font-weight:600;color:#64748b;">${i}</div>`;
+      for(let p=5;p>=1;p--){
+        html += `<div style="text-align:right;font-weight:600;color:#64748b;padding-right:6px;line-height:60px;">${p}</div>`;
+        for(let imp=1;imp<=5;imp++){
+          const items = j.grid[p-1][imp-1];
+          html += `<div style="background:${cellColor(p,imp)};min-height:60px;border-radius:4px;padding:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0f172a;cursor:default;" title="${items.length} risk: ${items.map(r=>r.title).join(', ').substring(0,100)}">${items.length || ''}</div>`;
+        }
+      }
+      document.getElementById('grid').innerHTML = html;
+      document.getElementById('top10').innerHTML = j.top_risks.length===0?'<div style="color:#94a3b8;font-style:italic;">Risk yok.</div>':
+        '<div style="display:grid;gap:6px;">' + j.top_risks.map(r => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;">
+            <div style="width:40px;height:30px;background:${cellColor(r.probability||1,r.impact||1)};color:#0f172a;font-weight:700;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">${r.rpn||0}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;color:#0f172a;">${esc(r.title)}</div>
+              <div style="font-size:10.5px;color:#64748b;">P=${r.probability} · I=${r.impact} · ${esc(r.status||'Open')}</div>
+            </div>
+          </div>`).join('') + '</div>';
+    } catch(e){
+      document.getElementById('loading').style.display='none';
+      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}
