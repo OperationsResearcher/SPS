@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "code": "otomotiv",
+    "name": "Otomotiv / Yan Sanayi",
+    "icon": "fa-car",
+    "color": "#4f46e5",
+    "description": "Otomotiv ana sanayi ve yan sanayi için hazır stratejik plan şablonu — Tomofil benzeri yapı.",
+    "version": "1.0",
+    "compliance": ["IATF 16949", "ISO 9001", "ISO 14001"],
+    "estimated_setup_hours": 8
+  },
+  "strategies": [
+    {"code": "ST1", "title": "Pazar Liderliği ve Büyüme", "weight": 15,
+     "sub_strategies": [
+       {"code": "ST1.1", "title": "OEM Pazar Payı"},
+       {"code": "ST1.2", "title": "İhracat Genişleme"},
+       {"code": "ST1.3", "title": "Yeni Pazar Açılımı"}
+     ]},
+    {"code": "ST2", "title": "Teknoloji ve İnovasyon", "weight": 18,
+     "sub_strategies": [
+       {"code": "ST2.1", "title": "Ar-Ge Yatırımı"},
+       {"code": "ST2.2", "title": "Patent Portföyü"},
+       {"code": "ST2.3", "title": "Elektrifikasyon / Yeni Nesil Teknoloji"}
+     ]},
+    {"code": "ST3", "title": "Operasyonel Mükemmellik", "weight": 17,
+     "sub_strategies": [
+       {"code": "ST3.1", "title": "Üretim OEE Artışı"},
+       {"code": "ST3.2", "title": "Tedarik Zinciri Dayanıklılığı"},
+       {"code": "ST3.3", "title": "Birim Maliyet Düşürme"}
+     ]},
+    {"code": "ST4", "title": "Sürdürülebilirlik ve ESG", "weight": 14,
+     "sub_strategies": [
+       {"code": "ST4.1", "title": "Karbon Azaltımı (Scope 1+2+3)"},
+       {"code": "ST4.2", "title": "Tedarikçi Sürdürülebilirliği"}
+     ]},
+    {"code": "ST5", "title": "Kalite ve Müşteri Deneyimi", "weight": 14,
+     "sub_strategies": [
+       {"code": "ST5.1", "title": "PPM Sıfırlama"},
+       {"code": "ST5.2", "title": "Müşteri Memnuniyeti"}
+     ]},
+    {"code": "ST6", "title": "Yetenek ve Kültür", "weight": 12,
+     "sub_strategies": [
+       {"code": "ST6.1", "title": "Yetenek Geliştirme"},
+       {"code": "ST6.2", "title": "Çalışan Bağlılığı"}
+     ]}
+  ],
+  "processes": [
+    {"code": "SR1", "name": "Araştırma ve Geliştirme", "weight": 15},
+    {"code": "SR2", "name": "Üretim Planlama", "weight": 18},
+    {"code": "SR3", "name": "Kalite Yönetim", "weight": 14},
+    {"code": "SR4", "name": "Tedarik Zinciri", "weight": 12},
+    {"code": "SR5", "name": "Satış ve Pazarlama", "weight": 12},
+    {"code": "SR6", "name": "Müşteri Hizmetleri", "weight": 8},
+    {"code": "SR7", "name": "İnsan Kaynakları", "weight": 7},
+    {"code": "SR8", "name": "Finans ve Muhasebe", "weight": 10},
+    {"code": "SR9", "name": "ESG ve Sürdürülebilirlik", "weight": 10},
+    {"code": "SR10", "name": "Dijital Dönüşüm", "weight": 8}
+  ],
+  "kpis": [
+    {"code": "PG-UP01", "name": "OEE (Genel Ekipman Etkinliği)", "unit": "%", "target": "75", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-UP03", "name": "Birim Üretim Maliyeti", "unit": "₺/birim", "target": "100", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KY01", "name": "PPM Defect Rate", "unit": "ppm", "target": "50", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KY02", "name": "First Pass Yield", "unit": "%", "target": "98", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-TZ01", "name": "OTIF Teslimat Oranı", "unit": "%", "target": "95", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-TZ03", "name": "Stok Devir Hızı", "unit": "kez/yıl", "target": "12", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-AR01", "name": "Yıllık Patent Başvurusu", "unit": "adet", "target": "8", "period": "Yıllık", "direction": "Increasing"},
+    {"code": "PG-AR03", "name": "Prototip-Üretim Geçiş Süresi", "unit": "ay", "target": "10", "period": "Çeyreklik", "direction": "Decreasing"},
+    {"code": "PG-MH01", "name": "Net Promoter Score (NPS)", "unit": "puan", "target": "60", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-MH03", "name": "Müşteri Memnuniyet Skoru (CSAT)", "unit": "%", "target": "85", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-SM03", "name": "Lead Dönüşüm Oranı", "unit": "%", "target": "12", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-IK01", "name": "Çalışan eNPS", "unit": "puan", "target": "40", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-IK02", "name": "Çalışan Devir Hızı", "unit": "%", "target": "10", "period": "Çeyreklik", "direction": "Decreasing"},
+    {"code": "PG-ES01", "name": "CO₂ Emisyonu (Scope 1+2)", "unit": "tCO₂e", "target": "12000", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-FN01", "name": "EBITDA Marjı", "unit": "%", "target": "16", "period": "Aylık", "direction": "Increasing"}
+  ],
+  "risks": [
+    {"title": "Kur Riski", "category": "Finansal", "probability": 4, "impact": 4},
+    {"title": "Çip Krizi / Tedarik Zinciri Aksaması", "category": "Operasyonel", "probability": 3, "impact": 5},
+    {"title": "Hammadde Fiyat Oynaklığı", "category": "Finansal", "probability": 4, "impact": 3},
+    {"title": "Anahtar Yetenek Kaybı", "category": "İK", "probability": 3, "impact": 4},
+    {"title": "OEM Müşteri Kaybı", "category": "Stratejik", "probability": 2, "impact": 5},
+    {"title": "Regülasyon Değişikliği (Emisyon)", "category": "Uyum", "probability": 3, "impact": 4},
+    {"title": "Siber Güvenlik", "category": "BT", "probability": 3, "impact": 4}
+  ],
+  "esg_metrics": [
+    {"code": "ESG-E1", "name": "Scope 1 Emisyon", "category": "E", "scope": "scope1", "unit": "tCO₂e"},
+    {"code": "ESG-E2", "name": "Scope 2 Emisyon", "category": "E", "scope": "scope2", "unit": "tCO₂e"},
+    {"code": "ESG-E3", "name": "Yenilenebilir Enerji Oranı", "category": "E", "scope": "scope2", "unit": "%"},
+    {"code": "ESG-S1", "name": "LTIFR (İş Kazası)", "category": "S", "unit": "oran"},
+    {"code": "ESG-G1", "name": "Cinsiyet Çeşitliliği Üst Yönetim", "category": "G", "unit": "%"}
+  ]
+}

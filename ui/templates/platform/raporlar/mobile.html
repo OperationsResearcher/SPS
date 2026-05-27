@@ -1,0 +1,92 @@
+{% extends "platform/base.html" %}
+{% block title %}Mobile Hub — Kokpitim{% endblock %}
+{% block page_title %}Mobile Hub (PWA Önizleme){% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:0 auto;">
+  <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div>
+      <h1 style="font-size:18px;font-weight:700;color:#1e293b;margin:0;"><i class="fas fa-mobile-alt" style="color:#0ea5e9;"></i> Mobile Hub</h1>
+      <p style="font-size:12px;color:#64748b;margin:2px 0 0;">Cep telefonu için kompakt arayüz — PWA önizleme.</p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary" style="font-size:11px;padding:6px 10px;"><i class="fas fa-arrow-left"></i></a>
+  </div>
+
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+  <div id="content" style="display:none;">
+    <!-- Phone frame -->
+    <div style="background:#0f172a;border-radius:32px;padding:8px;box-shadow:0 20px 60px rgba(15,23,42,0.35);">
+      <div style="background:#fff;border-radius:24px;overflow:hidden;min-height:600px;">
+
+        <!-- Header bar -->
+        <div style="background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;padding:18px;">
+          <div style="font-size:10.5px;opacity:0.85;text-transform:uppercase;letter-spacing:0.05em;" id="hdr-tenant">—</div>
+          <div style="font-size:16px;font-weight:700;margin-top:2px;" id="hdr-user">Merhaba</div>
+        </div>
+
+        <!-- Vision skor -->
+        <div id="vision-card" style="padding:20px;text-align:center;border-bottom:1px solid #f1f5f9;"></div>
+
+        <!-- Metric tiles -->
+        <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="metrics"></div>
+
+        <!-- Bottom tabs -->
+        <div style="position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e2e8f0;padding:8px 4px;">
+          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#0ea5e9;font-weight:700;padding:6px;">
+            <i class="fas fa-home" style="font-size:18px;display:block;margin-bottom:4px;"></i>Anasayfa
+          </button>
+          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'Görev modülü',timer:1500,showConfirmButton:false});">
+            <i class="fas fa-tasks" style="font-size:18px;display:block;margin-bottom:4px;"></i>Görevler
+          </button>
+          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'KPI ekranı',timer:1500,showConfirmButton:false});">
+            <i class="fas fa-chart-line" style="font-size:18px;display:block;margin-bottom:4px;"></i>KPI
+          </button>
+          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'Profil ekranı',timer:1500,showConfirmButton:false});">
+            <i class="fas fa-user" style="font-size:18px;display:block;margin-bottom:4px;"></i>Profil
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding:14px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:8px;font-size:12px;">
+      <i class="fas fa-info-circle"></i>
+      <b>MVP:</b> Bu sayfa mobile arayüz önizlemesi. Full native app (React Native, iOS+Android) yaklaşık 6-8 hafta geliştirme gerektirir.
+    </div>
+  </div>
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/mobile/snapshot',{credentials:'same-origin'})).json();
+      if(!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const d=j.data;
+      document.getElementById('hdr-tenant').textContent = d.tenant;
+      document.getElementById('hdr-user').textContent = 'Merhaba ' + d.user.split(' ')[0];
+      const vColor = d.vision_score>=70?'#10b981':d.vision_score>=50?'#f59e0b':d.vision_score==null?'#94a3b8':'#dc2626';
+      document.getElementById('vision-card').innerHTML = `
+        <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">VİZYON SKORU</div>
+        <div style="font-size:42px;font-weight:800;color:${vColor};line-height:1.1;margin:8px 0;">${d.vision_score==null?'—':d.vision_score}</div>
+        <div style="font-size:11px;color:#94a3b8;">${d.plan_year?'Plan yılı '+d.plan_year:''}</div>`;
+      const m=d.metrics;
+      const tile = (label, val, c, ico) => `
+        <div style="background:${c}11;border:1px solid ${c}33;border-radius:10px;padding:14px;text-align:center;">
+          <i class="fas ${ico}" style="color:${c};font-size:18px;margin-bottom:6px;"></i>
+          <div style="font-size:22px;font-weight:800;color:${c};line-height:1.1;">${val}</div>
+          <div style="font-size:10.5px;color:#64748b;margin-top:2px;">${esc(label)}</div>
+        </div>`;
+      document.getElementById('metrics').innerHTML = [
+        tile('Bugün Bitiş', m.today_due, '#f59e0b', 'fa-flag-checkered'),
+        tile('Geciken', m.overdue, '#dc2626', 'fa-exclamation-circle'),
+        tile('7 Gün İçinde', m.upcoming_7d, '#0ea5e9', 'fa-calendar-week'),
+        tile('Hedeflerim', m.my_pgs, '#8b5cf6', 'fa-bullseye'),
+      ].join('');
+    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent='Hata: '+e.message; }
+  }
+  load();
+})();
+</script>
+{% endblock %}

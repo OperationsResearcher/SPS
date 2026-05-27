@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "code": "finans",
+    "name": "Finans / Banka",
+    "icon": "fa-university",
+    "color": "#0ea5e9",
+    "description": "Banka, finansal kurum ve sigorta için stratejik plan şablonu.",
+    "version": "1.0",
+    "compliance": ["BDDK", "Basel III", "KVKK", "AML/KYC", "MASAK"],
+    "estimated_setup_hours": 12
+  },
+  "strategies": [
+    {"code": "ST1", "title": "Mevduat ve Müşteri Büyümesi", "weight": 18,
+     "sub_strategies": [
+       {"code": "ST1.1", "title": "Mevduat Tabanı Genişletme"},
+       {"code": "ST1.2", "title": "Yeni Müşteri Edinme"},
+       {"code": "ST1.3", "title": "Cross-sell Oranı"}
+     ]},
+    {"code": "ST2", "title": "Kredi Portföy Kalitesi", "weight": 20,
+     "sub_strategies": [
+       {"code": "ST2.1", "title": "NPL Oranı Düşürme"},
+       {"code": "ST2.2", "title": "Tahsisat Disiplini"},
+       {"code": "ST2.3", "title": "Sektörel Risk Çeşitlendirme"}
+     ]},
+    {"code": "ST3", "title": "Dijital Bankacılık", "weight": 17,
+     "sub_strategies": [
+       {"code": "ST3.1", "title": "Mobil Bankacılık Adopsyonu"},
+       {"code": "ST3.2", "title": "AI/Chatbot Müşteri Hizmetleri"},
+       {"code": "ST3.3", "title": "API Bankacılığı (Açık Bankacılık)"}
+     ]},
+    {"code": "ST4", "title": "Karlılık ve Verimlilik", "weight": 15,
+     "sub_strategies": [
+       {"code": "ST4.1", "title": "Net Faiz Marjı"},
+       {"code": "ST4.2", "title": "Cost-Income Ratio"},
+       {"code": "ST4.3", "title": "ROE / ROA"}
+     ]},
+    {"code": "ST5", "title": "Regülasyon ve Uyum", "weight": 18,
+     "sub_strategies": [
+       {"code": "ST5.1", "title": "Basel III Sermaye Yeterliliği"},
+       {"code": "ST5.2", "title": "AML/KYC Süreçleri"},
+       {"code": "ST5.3", "title": "BDDK Denetim Hazırlık"}
+     ]},
+    {"code": "ST6", "title": "Yetenek ve Risk Kültürü", "weight": 12,
+     "sub_strategies": [
+       {"code": "ST6.1", "title": "Risk Kültürü Geliştirme"},
+       {"code": "ST6.2", "title": "Dijital Yetenek Edinimi"}
+     ]}
+  ],
+  "processes": [
+    {"code": "SR1", "name": "Müşteri Kabul ve KYC", "weight": 12},
+    {"code": "SR2", "name": "Kredi Tahsisi ve İzleme", "weight": 22},
+    {"code": "SR3", "name": "Operasyon ve Ödeme", "weight": 12},
+    {"code": "SR4", "name": "Risk Yönetimi", "weight": 15},
+    {"code": "SR5", "name": "Hazine ve Likidite", "weight": 10},
+    {"code": "SR6", "name": "Dijital Bankacılık", "weight": 10},
+    {"code": "SR7", "name": "Şube Operasyonları", "weight": 8},
+    {"code": "SR8", "name": "Uyum ve Hukuk", "weight": 7},
+    {"code": "SR9", "name": "BT ve Siber Güvenlik", "weight": 8},
+    {"code": "SR10", "name": "İK", "weight": 6}
+  ],
+  "kpis": [
+    {"code": "PG-FN01", "name": "Net Faiz Marjı (NIM)", "unit": "%", "target": "4.5", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-FN02", "name": "Cost-Income Ratio", "unit": "%", "target": "45", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-FN03", "name": "ROE (Özsermaye Karlılığı)", "unit": "%", "target": "18", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-FN04", "name": "Sermaye Yeterlilik Oranı (CAR)", "unit": "%", "target": "14", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-KR01", "name": "NPL (Takipteki Kredi) Oranı", "unit": "%", "target": "3", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KR02", "name": "Tahsilat Oranı", "unit": "%", "target": "92", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-KR03", "name": "Provizyon Karşılama Oranı", "unit": "%", "target": "75", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-MS01", "name": "Aktif Müşteri Sayısı", "unit": "adet", "target": "500000", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-MS02", "name": "Müşteri Yaşam Değeri (LTV)", "unit": "₺", "target": "15000", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-MS03", "name": "Net Promoter Score", "unit": "puan", "target": "55", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-DG01", "name": "Mobil Bankacılık Aktif Kullanıcı", "unit": "%", "target": "75", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-DG02", "name": "Şubesiz İşlem Oranı", "unit": "%", "target": "85", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-UY01", "name": "AML Şüpheli İşlem Bildirim Süresi", "unit": "saat", "target": "24", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-UY02", "name": "Regülatör Cezası", "unit": "₺", "target": "0", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-IK01", "name": "Çalışan Devir Hızı", "unit": "%", "target": "12", "period": "Çeyreklik", "direction": "Decreasing"}
+  ],
+  "risks": [
+    {"title": "Kredi Riski (Konsantrasyon)", "category": "Kredi", "probability": 3, "impact": 5},
+    {"title": "Piyasa Riski (Faiz/Kur)", "category": "Piyasa", "probability": 4, "impact": 4},
+    {"title": "Operasyonel Risk (İç Suç/Hata)", "category": "Operasyonel", "probability": 3, "impact": 4},
+    {"title": "Likidite Riski", "category": "Finansal", "probability": 2, "impact": 5},
+    {"title": "Siber Saldırı", "category": "BT", "probability": 4, "impact": 5},
+    {"title": "Regülatör Cezası (BDDK)", "category": "Uyum", "probability": 2, "impact": 5},
+    {"title": "AML/MASAK İhlali", "category": "Uyum", "probability": 2, "impact": 5},
+    {"title": "Reputasyon (Negatif Basın)", "category": "İtibar", "probability": 3, "impact": 4}
+  ],
+  "esg_metrics": [
+    {"code": "ESG-E1", "name": "Yeşil Kredi Portföyü", "category": "E", "unit": "₺/yıl"},
+    {"code": "ESG-E2", "name": "Sürdürülebilir Finansman Oranı", "category": "E", "unit": "%"},
+    {"code": "ESG-S1", "name": "Finansal Tabana Yayılma", "category": "S", "unit": "%"},
+    {"code": "ESG-S2", "name": "Çalışan Çeşitliliği", "category": "S", "unit": "%"},
+    {"code": "ESG-G1", "name": "Yönetim Kurulu Bağımsız Üye Oranı", "category": "G", "unit": "%"},
+    {"code": "ESG-G2", "name": "Etik İhbar Sistemi Kullanımı", "category": "G", "unit": "adet/yıl"}
+  ]
+}

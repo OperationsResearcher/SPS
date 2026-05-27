@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "code": "saglik",
+    "name": "Sağlık / Hastane",
+    "icon": "fa-hospital",
+    "color": "#dc2626",
+    "description": "Hastane, klinik ve sağlık hizmetleri için stratejik plan şablonu.",
+    "version": "1.0",
+    "compliance": ["JCI", "HIMSS", "ISO 9001", "KVKK Sağlık Verisi"],
+    "estimated_setup_hours": 12
+  },
+  "strategies": [
+    {"code": "ST1", "title": "Hasta Deneyimi Mükemmelliği", "weight": 22,
+     "sub_strategies": [
+       {"code": "ST1.1", "title": "Bekleme Süresi Azaltma"},
+       {"code": "ST1.2", "title": "Hasta İletişimi"},
+       {"code": "ST1.3", "title": "Memnuniyet ve Geri Bildirim"}
+     ]},
+    {"code": "ST2", "title": "Klinik Mükemmellik", "weight": 25,
+     "sub_strategies": [
+       {"code": "ST2.1", "title": "Tedavi Sonuç Kalitesi"},
+       {"code": "ST2.2", "title": "Hasta Güvenliği"},
+       {"code": "ST2.3", "title": "Enfeksiyon Kontrolü"}
+     ]},
+    {"code": "ST3", "title": "Operasyonel Verimlilik", "weight": 18,
+     "sub_strategies": [
+       {"code": "ST3.1", "title": "Yatak Doluluk Optimizasyonu"},
+       {"code": "ST3.2", "title": "Maliyet Kontrolü"}
+     ]},
+    {"code": "ST4", "title": "Dijital Sağlık ve Teknoloji", "weight": 12,
+     "sub_strategies": [
+       {"code": "ST4.1", "title": "Elektronik Sağlık Kaydı"},
+       {"code": "ST4.2", "title": "Telemedisin"}
+     ]},
+    {"code": "ST5", "title": "Yetenek ve Sürekli Eğitim", "weight": 13,
+     "sub_strategies": [
+       {"code": "ST5.1", "title": "Hekim ve Hemşire Eğitimi"},
+       {"code": "ST5.2", "title": "Akreditasyon Sürekliliği"}
+     ]},
+    {"code": "ST6", "title": "Akreditasyon ve Uyum", "weight": 10,
+     "sub_strategies": [
+       {"code": "ST6.1", "title": "JCI Akreditasyon"},
+       {"code": "ST6.2", "title": "KVKK Sağlık Verisi"}
+     ]}
+  ],
+  "processes": [
+    {"code": "SR1", "name": "Hasta Kayıt", "weight": 8},
+    {"code": "SR2", "name": "Triaj ve Değerlendirme", "weight": 12},
+    {"code": "SR3", "name": "Tedavi ve Bakım", "weight": 22},
+    {"code": "SR4", "name": "Ameliyat ve Yoğun Bakım", "weight": 15},
+    {"code": "SR5", "name": "Laboratuvar ve Görüntüleme", "weight": 10},
+    {"code": "SR6", "name": "Eczane ve İlaç Yönetimi", "weight": 8},
+    {"code": "SR7", "name": "Faturalama ve SGK", "weight": 7},
+    {"code": "SR8", "name": "Hasta Taburcu ve Takip", "weight": 6},
+    {"code": "SR9", "name": "İK ve Eğitim", "weight": 6},
+    {"code": "SR10", "name": "Enfeksiyon Kontrol", "weight": 6}
+  ],
+  "kpis": [
+    {"code": "PG-HS01", "name": "Ortalama Bekleme Süresi (Acil)", "unit": "dakika", "target": "15", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-HS02", "name": "Hasta Memnuniyet Skoru", "unit": "%", "target": "90", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-HS03", "name": "Net Promoter Score", "unit": "puan", "target": "65", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-KL01", "name": "30 Gün İçinde Yeniden Yatış Oranı", "unit": "%", "target": "8", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KL02", "name": "Hastane İçi Enfeksiyon Oranı", "unit": "‰", "target": "2", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KL03", "name": "Mortalite Oranı (ameliyat sonrası 30 gün)", "unit": "%", "target": "1.5", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-KL04", "name": "Hasta Düşme Olayı", "unit": "olay/1000 yatak günü", "target": "2", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-OP01", "name": "Yatak Doluluk Oranı", "unit": "%", "target": "75", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-OP02", "name": "Ameliyathane Kullanım Oranı", "unit": "%", "target": "80", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-OP03", "name": "Hasta Başı Maliyet", "unit": "₺", "target": "3500", "period": "Aylık", "direction": "Decreasing"},
+    {"code": "PG-DG01", "name": "Elektronik Hasta Kayıt Tamlığı", "unit": "%", "target": "95", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-DG02", "name": "Telemedisin Konsültasyon Sayısı", "unit": "adet/ay", "target": "200", "period": "Aylık", "direction": "Increasing"},
+    {"code": "PG-IK01", "name": "Hekim/Hasta Oranı", "unit": "oran", "target": "1/8", "period": "Çeyreklik", "direction": "Increasing"},
+    {"code": "PG-IK02", "name": "Hemşire Devir Hızı", "unit": "%", "target": "12", "period": "Çeyreklik", "direction": "Decreasing"},
+    {"code": "PG-IK03", "name": "Eğitim Saati / Çalışan", "unit": "saat/yıl", "target": "40", "period": "Yıllık", "direction": "Increasing"}
+  ],
+  "risks": [
+    {"title": "Malpractice Davası", "category": "Hukuki", "probability": 2, "impact": 5},
+    {"title": "Hastane Enfeksiyonu", "category": "Klinik", "probability": 3, "impact": 5},
+    {"title": "JCI Akreditasyon Kaybı", "category": "Uyum", "probability": 2, "impact": 5},
+    {"title": "Hekim/Hemşire Kaybı", "category": "İK", "probability": 4, "impact": 4},
+    {"title": "Cyber Saldırı (Hasta Verisi)", "category": "BT", "probability": 3, "impact": 5},
+    {"title": "SGK Geri Ödeme Kesintisi", "category": "Finansal", "probability": 3, "impact": 4},
+    {"title": "Salgın Hastalık", "category": "Kriz", "probability": 2, "impact": 5}
+  ],
+  "esg_metrics": [
+    {"code": "ESG-E1", "name": "Tıbbi Atık Yönetimi", "category": "E", "unit": "kg/ay"},
+    {"code": "ESG-E2", "name": "Enerji Kullanımı", "category": "E", "scope": "scope2", "unit": "kWh"},
+    {"code": "ESG-S1", "name": "Hekim/Hemşire Çeşitliliği", "category": "S", "unit": "%"},
+    {"code": "ESG-S2", "name": "Hasta Memnuniyeti", "category": "S", "unit": "%"},
+    {"code": "ESG-G1", "name": "Etik Komite Toplantı Sıklığı", "category": "G", "unit": "adet/yıl"}
+  ]
+}

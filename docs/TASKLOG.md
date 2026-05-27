@@ -3,6 +3,54 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-141 | 2026-05-27 | 🚧 Devam ediyor — Yeni Raporlar Bölümü (10-task yol haritası)
+
+**Bağlam:** [docs/rapor/27mayisraporu.md](docs/rapor/27mayisraporu.md) (3.500 satır) içindeki rapor önerilerinden 10 tanesi seçildi. Hepsi sol menüde yeni "Raporlar" bölümünde başlatılacak — kullanıcı sonra hangisi hangi modüle gidecek diye karar verecek.
+
+**Branch:** `claude/raporlar-yeni`
+
+### Mimari karar
+- Yeni sidebar entry: **Raporlar** (📊)
+- Route: `/raporlar` (kart-grid landing — `/sp/menu` benzeri)
+- Her rapor: `/raporlar/<slug>` ayrı sayfa
+- Tasarım sistemi: mevcut `mc-card mc-card-lift` pattern
+- Şimdilik STAGING bölümü, taksonomi sonra
+
+### 10 Task Yol Haritası
+
+| # | Rapor | Etki | Çaba | Veri kaynağı |
+|---|---|---|---|---|
+| 1 | **Veri Kalitesi Raporu** | Yüksek | ★★ | PG doluluk, eksik alan, son giriş tarihi |
+| 2 | **K-Vektör Çarpıklık** (ağırlık vs skor) | Yüksek | ★★ | k_vektor_strategy_weights × strateji skoru |
+| 3 | **Stratejik Hizalama Sankey** | Yüksek | ★★★ | strategies → sub → process → process_kpis (akış) |
+| 4 | **PG Hedef Revizyon Sıklığı** | Orta | ★★ | kpi_year_configs vs ProcessKpi diff |
+| 5 | **Departman Performans Skoru** | Yüksek | ★★ | users.department × bireysel PG ortalama |
+| 6 | **Yönetici Liderlik Skoru** | Yüksek | ★★ | process_leaders × süreç skoru ortalaması |
+| 7 | **Initiative Portföy Bubble** | Yüksek | ★★ | initiatives (bütçe × progress × priority) |
+| 8 | **Operasyonel Sabah Özeti+** | Orta | ★★ | bugün biten faaliyet/task + kritik PG |
+| 9 | **Yıllar Arası Evrim Filmi** | Çok Yüksek | ★★★★ | timeline scrubber + plan_year ağacı |
+| 10 | **AI Yıl Sonu Sunum Üretici** | Çok Yüksek | ★★★★★ | python-pptx + LLM (büyük iş, en sona) |
+
+### Tahmini saat
+- Faz 0 (iskelet): 2h
+- Task 1-2 (basit raporlar): 3h × 2 = 6h
+- Task 3 (Sankey): 5h
+- Task 4-8 (orta zorlukta): ~4h × 5 = 20h
+- Task 9 (animasyon): 12h
+- Task 10 (AI sunum): 35h
+- **Toplam: ~80h ≈ 2 hafta**
+
+### İlk teslimat (bu commit)
+- Raporlar bp iskeleti (`/raporlar` landing + sidebar entry)
+- Task 1: Veri Kalitesi Raporu
+- Task 2: K-Vektör Çarpıklık Raporu
+- demo.kokpitim.com'a deploy
+
+### Kalan 8 task
+Sonraki commit'lerde teker teker.
+
+---
+
 ## TASK-140 | 2026-05-27 | ✅ Tamamlandı (canlı) — demo.kokpitim.com kök URL doğrudan demo landing'e yönlendir
 
 **Görev:** demo.kokpitim.com / kök adresinden marketing/login sayfası yerine doğrudan demo landing (/demo) açılsın — demo subdomain'in tek giriş kapısı demo akışı olmalı

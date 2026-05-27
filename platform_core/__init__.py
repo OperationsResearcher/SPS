@@ -32,4 +32,5 @@ from app_platform.modules.hgs import routes as hgs_routes  # noqa: E402, F401
 from app_platform.modules.api import routes as api_routes  # noqa: E402, F401
 from app_platform.modules.k_rapor import routes as k_rapor_routes  # noqa: E402, F401
 from app_platform.modules.demo import routes as demo_routes  # noqa: E402, F401
+from app_platform.modules.raporlar import routes as raporlar_routes  # noqa: E402, F401
 
