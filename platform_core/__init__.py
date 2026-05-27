@@ -24,10 +24,12 @@ from app_platform.modules.analiz import routes as analiz_routes  # noqa: E402, F
 from app_platform.modules.k_radar import routes as k_radar_routes  # noqa: E402, F401
 from app_platform.modules.shared.ayarlar import routes as ayarlar_routes  # noqa: E402, F401
 from app_platform.modules.shared.bildirim import routes as bildirim_routes  # noqa: E402, F401
+from app_platform.modules.shared.kule import routes as kule_routes  # noqa: E402, F401
 from app_platform.modules.kurum import routes as kurum_routes  # noqa: E402, F401
 from app_platform.modules.bireysel import routes as bireysel_routes  # noqa: E402, F401
 from app_platform.modules.admin import routes as admin_routes  # noqa: E402, F401
 from app_platform.modules.hgs import routes as hgs_routes  # noqa: E402, F401
 from app_platform.modules.api import routes as api_routes  # noqa: E402, F401
 from app_platform.modules.k_rapor import routes as k_rapor_routes  # noqa: E402, F401
+from app_platform.modules.demo import routes as demo_routes  # noqa: E402, F401
 

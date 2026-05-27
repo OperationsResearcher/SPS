@@ -1,0 +1,123 @@
+{# Demo banner — base.html'in başında render edilir, demo_session_active ise #}
+<div id="kk-demo-banner" style="
+    position: sticky; top: 0; z-index: 9999;
+    width: 100%; padding: 9px 20px;
+    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff; font-family: 'Inter', system-ui, sans-serif;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.18);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+">
+  <div style="display:flex; align-items:center; gap:14px; min-width:0;">
+    <span style="
+      display:inline-flex; align-items:center; gap:6px;
+      padding:3px 10px; border-radius:6px;
+      background:rgba(255,255,255,0.18);
+      font-size:11px; font-weight:700; letter-spacing:0.04em;
+    ">
+      <i class="fas fa-flask" style="font-size:10px;"></i>
+      DEMO MODU
+    </span>
+    <span style="font-size:13px; font-weight:500; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+      Rol: <b>{{ session.get('demo_role_label', '-') }}</b>
+      &nbsp;·&nbsp;
+      Kalan süre: <b id="kk-demo-countdown">--</b>
+    </span>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <a href="https://kokpitim.com" target="_blank" rel="noopener" style="
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:6px;
+      background:rgba(255,255,255,0.16);
+      color:#fff; font-size:12px; font-weight:600;
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,0.22);
+      transition: background .15s ease;
+    " onmouseover="this.style.background='rgba(255,255,255,0.26)'"
+       onmouseout="this.style.background='rgba(255,255,255,0.16)'">
+      <i class="fas fa-rocket" style="font-size:11px;"></i>
+      Hesap Aç
+    </a>
+    <button type="button" id="kk-demo-exit-btn" style="
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:6px;
+      background:rgba(255,255,255,0.95);
+      color:#4338ca; font-size:12px; font-weight:600;
+      border:none; cursor:pointer;
+      transition: background .15s ease;
+    " onmouseover="this.style.background='#fff'"
+       onmouseout="this.style.background='rgba(255,255,255,0.95)'">
+      <i class="fas fa-arrow-right-from-bracket" style="font-size:11px;"></i>
+      Çıkış
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const COUNT_EL = document.getElementById('kk-demo-countdown');
+  const EXIT_BTN = document.getElementById('kk-demo-exit-btn');
+
+  function fmt(sec) {
+    if (sec <= 0) return "0:00";
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ':' + (s < 10 ? '0' + s : s);
+  }
+
+  let remaining = null;
+
+  async function poll() {
+    try {
+      const r = await fetch('/demo/heartbeat', { credentials: 'same-origin' });
+      const j = await r.json();
+      if (!j.active) {
+        if (j.expired) {
+          Swal.fire({
+            icon: 'info',
+            title: 'Demo süreniz doldu',
+            text: 'Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz.',
+            timer: 2500, showConfirmButton: false,
+          });
+          setTimeout(() => { window.location.href = '/demo/'; }, 2400);
+        }
+        return;
+      }
+      remaining = j.remaining_seconds;
+      if (COUNT_EL) COUNT_EL.textContent = fmt(remaining);
+    } catch (e) { /* sessizce yut */ }
+  }
+
+  // İlk poll
+  poll();
+  // Her saniye countdown azalt, her 30sn server-sync
+  setInterval(() => {
+    if (remaining !== null && remaining > 0) {
+      remaining -= 1;
+      if (COUNT_EL) COUNT_EL.textContent = fmt(remaining);
+      if (remaining === 0) poll();
+    }
+  }, 1000);
+  setInterval(poll, 30000);
+
+  // Çıkış
+  if (EXIT_BTN) {
+    EXIT_BTN.addEventListener('click', () => {
+      Swal.fire({
+        title: 'Demo\'yu sonlandır?',
+        html: 'Yaptığınız tüm değişiklikler silinecek.<br><br>'
+            + '<small style="color:#64748b;">Beğendiyseniz <a href="https://kokpitim.com" target="_blank" style="color:#4f46e5;">hesap açarak</a> Kokpitim\'i kuruma getirebilirsiniz.</small>',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, çık',
+        cancelButtonText: 'Vazgeç',
+        confirmButtonColor: '#4f46e5',
+      }).then(res => {
+        if (res.isConfirmed) {
+          window.location.href = '/demo/end';
+        }
+      });
+    });
+  }
+})();
+</script>
