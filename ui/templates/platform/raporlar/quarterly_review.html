@@ -1,0 +1,69 @@
+{% extends "platform/base.html" %}
+{% block title %}Çeyreklik Review Hazırlayıcısı — Kokpitim{% endblock %}
+{% block page_title %}AI Çeyreklik Review Hazırlayıcısı{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-calendar-check" style="color:#16a34a;"></i> Çeyreklik Review Hazırlayıcısı</h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">Çeyrek değerlendirme toplantısı için AI özet + agenda + ön çalışma soruları.</p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+  </div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+  <div id="content" style="display:none;">
+    <div id="header" style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:20px;margin-bottom:20px;"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;" id="metrics"></div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;">
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-robot" style="color:#16a34a;"></i> AI Yönetici Özeti</h3>
+      <div id="ai-text" style="font-size:14px;color:#0f172a;line-height:1.7;background:#f8fafc;padding:14px;border-radius:6px;border-left:4px solid #16a34a;"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📋 Önerilen Agenda</h3>
+        <div id="agenda"></div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">❓ Ön Çalışma Soruları</h3>
+        <div id="prep"></div>
+      </div>
+    </div>
+  </div>
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/quarterly-review',{credentials:'same-origin'})).json();
+      if(!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const d=j.data;
+      document.getElementById('header').innerHTML = `
+        <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${d.year} ÇEYREK ${d.quarter}</div>
+        <div style="font-size:20px;font-weight:800;color:#0f172a;">Çeyreklik Review Toplantısı</div>
+        <div style="font-size:12.5px;color:#64748b;margin-top:4px;">${esc(d.period_start)} – ${esc(d.period_end)}${d.plan_year?' · Plan yılı '+d.plan_year:''}</div>`;
+      document.getElementById('metrics').innerHTML = [
+        stat('Ölçüm Hacmi (Q)', d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a'),
+        stat('Yeni Initiative', d.metrics.new_initiatives, '#0ea5e9'),
+        stat('Tamamlanan Initiative', d.metrics.completed_initiatives, '#10b981'),
+      ].join('');
+      document.getElementById('ai-text').textContent = d.ai_summary;
+      document.getElementById('agenda').innerHTML = '<ol style="margin:0;padding-left:20px;font-size:12.5px;color:#0f172a;line-height:1.7;">' +
+        d.agenda.map(a => '<li style="margin-bottom:6px;">' + esc(a.replace(/^\d+\.\s*/,'')) + '</li>').join('') + '</ol>';
+      document.getElementById('prep').innerHTML = '<ul style="margin:0;padding-left:20px;font-size:12.5px;color:#475569;line-height:1.7;">' +
+        d.prep_questions.map(q => '<li style="margin-bottom:6px;">' + esc(q) + '</li>').join('') + '</ul>';
+    } catch(e){
+      document.getElementById('loading').style.display='none';
+      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}
