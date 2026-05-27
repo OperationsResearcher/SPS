@@ -3,6 +3,45 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-138 | 2026-05-27 | ✅ Tamamlandı (canlı: demo.kokpitim.com) — demo ortamı VM deploy
+
+**Görev:** Demo v1'i Oracle VM'e demo.kokpitim.com olarak yayınla (4. ortam)
+**Modül:** Oracle VM (/opt/kokpitim-demo/), scripts/ops/oracle/
+**Durum:** ✅ Canlı
+
+### Yeni Dosyalar
+- `scripts/ops/oracle/setup_demo_env.sh` → idempotent demo ortamı kurulum scripti (DB + dump + .env + docker + nginx + SSL)
+
+### Canlı Sonuç
+- **URL:** https://demo.kokpitim.com/demo/
+- **VM:** /opt/kokpitim-demo/ (port 5080, container kokpitim-demo-web)
+- **DB:** kokpitim_demo_db (Tomofil verisi test DB'den klonlandı, 99k satır)
+- **SSL:** Let's Encrypt cert (expires 2026-08-25, otomatik renew)
+- **Container:** --network host, KOKPITIM_DEMO_MODE=1, volume mount /opt/kokpitim-demo/app → /app
+
+### Yapılan İşlem
+1. `git merge --no-ff claude/demo-ortami → main`, push (32af5c1..975b442)
+2. DNS doğrulama: demo.kokpitim.com → 129.159.30.175 ✓
+3. Yeni demo dosyaları tarball ile test ortamına aktarıldı (test bonus güncellendi)
+4. `setup_demo_env.sh` VM'de çalıştırıldı: dizin + DB + dump + .env + nginx + cert
+5. Container ayarlamaları (script'in yetersiz kaldığı 3 nokta):
+   - **Hata 1:** `-p 127.0.0.1:5080:5080` port mapping → test container `--network host` → düzeltildi
+   - **Hata 2:** image default CMD `gunicorn --bind 0.0.0.0:5000` → custom CMD ile `--bind 0.0.0.0:5080`
+   - **Hata 3:** image içindeki config.py eski (KOKPITIM_DEMO_MODE yoktu) → volume mount `-v /opt/kokpitim-demo/app:/app`
+
+### Canlı Doğrulama
+- `GET https://demo.kokpitim.com/` → HTTP 200
+- `GET /demo/` → 200, landing render (3 rol kartı, "99.000 satır", "gerçek veriyle")
+- `GET /demo/start/yonetici` → 302 → launcher, banner aktif
+- `GET /demo/heartbeat` (session aktif) → `{"active":true,"remaining_seconds":3599,"role":"yonetici"}`
+
+### Notlar
+- **Eşzamanlı kullanıcı:** v1 schema isolation içermez. v2 schema clone gerekli.
+- **setup_demo_env.sh** ideal kurulumu yazıyor ama bu çalışmada 3 küçük manuel düzeltme gerekti (network host, CMD override, volume mount). Sonraki sefer script güncellenmeli.
+- **Demo veri tazeliği:** Tomofil + güncel test kullanıcı verisi. Periyodik master refresh ayrı plan.
+
+---
+
 ## TASK-137 | 2026-05-27 | ✅ Tamamlandı (yerel, claude/demo-ortami) — v1: landing + bypass-login + banner
 
 **Görev:** Kokpitim demo ortamı v1 — landing sayfası, rol-bazlı bypass-login, demo banner + 60dk countdown + çıkış akışı
