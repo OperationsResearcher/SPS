@@ -1,0 +1,183 @@
+{% extends "platform/base.html" %}
+{% block title %}Yıllar Arası Karşılaştırma — Kokpitim{% endblock %}
+{% block page_title %}Yıllar Arası Karşılaştırma{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
+<style>
+  .py-diff-card { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px 20px; margin-bottom:16px; }
+  .py-diff-card h3 { font-size:14px; font-weight:700; color:#0f172a; margin:0 0 12px; display:flex; align-items:center; gap:8px; }
+  .py-diff-card h3 .badge { font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .py-diff-card h3 .badge.added { background:#d1fae5; color:#065f46; }
+  .py-diff-card h3 .badge.removed { background:#fee2e2; color:#991b1b; }
+  .py-diff-card h3 .badge.changed { background:#fef3c7; color:#92400e; }
+  .py-diff-list { font-size:13px; color:#475569; margin:0; padding-left:18px; }
+  .py-diff-list li { margin:4px 0; }
+  .py-diff-list li .from { color:#64748b; text-decoration:line-through; }
+  .py-diff-list li .to { color:#0f172a; font-weight:600; }
+  .py-diff-empty { font-size:12px; color:#94a3b8; font-style:italic; }
+  .py-summary-pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; background:#f1f5f9; color:#475569; font-size:12px; margin-right:6px; }
+  .py-summary-pill b { color:#0f172a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="sp-diff-root" style="max-width:1100px; margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">Yıllar Arası Karşılaştırma</h2>
+    <p style="font-size:13px; color:#64748b; margin:0;">İki plan yılını seç, neyin değiştiğini gör (vizyon, strateji, süreç, PG).</p>
+  </div>
+
+  <div class="mc-card" style="padding:16px 20px; margin-bottom:24px; display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+    <div>
+      <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">A yılı</label>
+      <select id="diff-year-a" class="mc-input" style="min-width:140px;">
+        {% for py in plan_years %}
+        <option value="{{ py.year }}">{{ py.year }}{% if py.status == 'active' %} (aktif){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="font-size:20px; color:#94a3b8; padding:0 4px 6px;">→</div>
+    <div>
+      <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">B yılı</label>
+      <select id="diff-year-b" class="mc-input" style="min-width:140px;">
+        {% for py in plan_years %}
+        <option value="{{ py.year }}">{{ py.year }}{% if py.status == 'active' %} (aktif){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="button" class="mc-btn mc-btn-primary" id="diff-run-btn">
+      <i class="fas fa-exchange-alt"></i> Karşılaştır
+    </button>
+  </div>
+
+  <div id="diff-summary" style="margin-bottom:16px;"></div>
+  <div id="diff-body"></div>
+
+</div>
+
+<script>
+(function(){
+  const $A = document.getElementById('diff-year-a');
+  const $B = document.getElementById('diff-year-b');
+  const $btn = document.getElementById('diff-run-btn');
+  const $sum = document.getElementById('diff-summary');
+  const $body = document.getElementById('diff-body');
+
+  // Varsayılan: en eski A, en yeni B
+  const opts = Array.from($A.options).map(o => parseInt(o.value)).sort((a,b)=>a-b);
+  if (opts.length >= 2) {
+    $A.value = opts[opts.length - 2];
+    $B.value = opts[opts.length - 1];
+  }
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  function renderList(items, kind) {
+    if (!items || !items.length) return '<div class="py-diff-empty">Yok</div>';
+    return '<ul class="py-diff-list">' + items.map(it => {
+      if (kind === 'changed') {
+        const chg = Object.entries(it.changes || {}).map(([f, v]) =>
+          `<div style="margin-left:8px;font-size:12px;color:#64748b;"><b>${esc(f)}</b>: <span class="from">${esc(v.from)}</span> → <span class="to">${esc(v.to)}</span></div>`
+        ).join('');
+        return `<li><b>${esc(it.label_to || it.label_from)}</b>${chg}</li>`;
+      }
+      return `<li>${esc(it.label)}</li>`;
+    }).join('') + '</ul>';
+  }
+
+  function renderCategory(title, data) {
+    if (!data) return '';
+    const a = data.added || [], r = data.removed || [], c = data.changed || [];
+    return `
+      <div class="py-diff-card">
+        <h3>${esc(title)}
+          <span class="badge added">+${a.length} yeni</span>
+          <span class="badge removed">−${r.length} kaldırılan</span>
+          <span class="badge changed">~${c.length} değişen</span>
+        </h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;">
+          <div><div style="font-size:11px;color:#065f46;font-weight:600;margin-bottom:4px;">YENİ</div>${renderList(a, 'added')}</div>
+          <div><div style="font-size:11px;color:#991b1b;font-weight:600;margin-bottom:4px;">KALDIRILAN</div>${renderList(r, 'removed')}</div>
+          <div><div style="font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px;">DEĞİŞEN</div>${renderList(c, 'changed')}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderSummary(d) {
+    const s = d.summary || {};
+    const pills = [
+      `Vizyon/kimlik: <b>${s.identity_changed_fields || 0}</b> alan değişti`,
+      `Stratejiler: <b>+${s.strategies?.added||0} / −${s.strategies?.removed||0} / ~${s.strategies?.changed||0}</b>`,
+      `Alt stratejiler: <b>+${s.sub_strategies?.added||0} / −${s.sub_strategies?.removed||0} / ~${s.sub_strategies?.changed||0}</b>`,
+      `Süreçler: <b>+${s.processes?.added||0} / −${s.processes?.removed||0} / ~${s.processes?.changed||0}</b>`,
+      `PG'ler: <b>+${s.kpis?.added||0} / −${s.kpis?.removed||0} / ~${s.kpis?.changed||0}</b>`,
+    ];
+    return `<div class="py-diff-card" style="background:#f8fafc;">
+      <h3 style="margin-bottom:8px;">📊 ${d.year_a} → ${d.year_b} Değişim Özeti</h3>
+      <div>${pills.map(p => `<span class="py-summary-pill">${p}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  function renderIdentity(d) {
+    const ids = d.identity || {};
+    const keys = Object.keys(ids);
+    if (!keys.length) return '';
+    const labels = {
+      purpose:'Amaç', vision:'Vizyon', core_values:'Değerler',
+      code_of_ethics:'Etik Kurallar', quality_policy:'Kalite Politikası'
+    };
+    const rows = keys.map(k => `
+      <div style="margin:8px 0;">
+        <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">${labels[k] || k}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+          <div style="padding:8px;background:#fef2f2;border-radius:4px;color:#7f1d1d;">${esc(ids[k].from) || '<span style="color:#94a3b8;">(boş)</span>'}</div>
+          <div style="padding:8px;background:#ecfdf5;border-radius:4px;color:#14532d;">${esc(ids[k].to) || '<span style="color:#94a3b8;">(boş)</span>'}</div>
+        </div>
+      </div>`).join('');
+    return `<div class="py-diff-card"><h3>🎯 Vizyon / Kimlik <span class="badge changed">${keys.length} alan</span></h3>${rows}</div>`;
+  }
+
+  async function run() {
+    const a = $A.value, b = $B.value;
+    if (a === b) { $body.innerHTML = '<div class="py-diff-empty">Aynı yıl seçildi.</div>'; $sum.innerHTML=''; return; }
+    $body.innerHTML = '<div style="color:#64748b;padding:16px;">Yükleniyor…</div>';
+    try {
+      const res = await fetch(`/sp/api/plan-years/diff?year_a=${a}&year_b=${b}`, {credentials:'same-origin'});
+      const j = await res.json();
+      if (!j.success) throw new Error(j.message || 'Hata');
+      const d = j.data;
+      $sum.innerHTML = renderSummary(d);
+      let html = '';
+      html += renderIdentity(d);
+      html += renderCategory('🎯 Ana Stratejiler', d.strategies);
+      html += renderCategory('📑 Alt Stratejiler', d.sub_strategies);
+      html += renderCategory('🔧 Süreçler', d.processes);
+      html += renderCategory('📊 Performans Göstergeleri (PG)', d.kpis);
+      if (d.initiatives) {
+        html += `<div class="py-diff-card"><h3>🚀 Çok Yıllık Initiative'ler</h3>
+          <div style="font-size:13px;color:#475569;">
+            <b>${d.year_b}'de başlayan</b>: ${(d.initiatives.started_in_b||[]).map(i=>esc(i.label)).join(', ') || '—'}<br>
+            <b>${d.year_a} sonrası biten</b>: ${(d.initiatives.ended_after_a||[]).map(i=>esc(i.label)).join(', ') || '—'}<br>
+            <b>Devam eden</b>: ${d.initiatives.continuing}
+          </div></div>`;
+      }
+      html += `<div class="py-diff-card"><h3>📈 Diğer</h3>
+        <div style="font-size:13px;color:#475569;">
+          OKR sayısı: <b>${d.okr?.count_a || 0}</b> → <b>${d.okr?.count_b || 0}</b><br>
+          Süreç↔Alt-Strateji bağ sayısı: <b>${d.links?.a_count || 0}</b> → <b>${d.links?.b_count || 0}</b><br>
+          SWOT/PESTEL/Porter: A=${['swot','pestel','porter'].filter(k=>d.analyses?.[k]?.a).join(', ')||'yok'} | B=${['swot','pestel','porter'].filter(k=>d.analyses?.[k]?.b).join(', ')||'yok'}
+        </div></div>`;
+      $body.innerHTML = html;
+    } catch (e) {
+      $body.innerHTML = `<div style="color:#991b1b;padding:16px;">Hata: ${esc(e.message)}</div>`;
+    }
+  }
+
+  $btn.addEventListener('click', run);
+  // İlk yüklemede de çalıştır
+  run();
+})();
+</script>
+{% endblock %}

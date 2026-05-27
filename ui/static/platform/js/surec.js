@@ -672,7 +672,9 @@
     try {
       const data = await postJson("/process/api/activity/add", payload);
       if (!data.success) throw new Error(data.message || "Faaliyet kaydedilemedi.");
-      toastSuccess(data.message || "Faaliyet eklendi.");
+      const successMsg = data.message || "Faaliyet eklendi.";
+      const noticeLbl = data.notice && data.notice.label;
+      toastSuccess(noticeLbl ? `${successMsg} (${noticeLbl})` : successMsg);
       await loadKarne();
     } catch (err) {
       showError(err.message || "Faaliyet eklenemedi.");

@@ -30,6 +30,13 @@ from app.services.plan_year_service import (
     get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years,
     upsert_kpi_year_config,
 )
+from app.services.date_sovereign import (
+    resolve_plan_year_for_date,
+    entity_exists_in_year,
+    build_existence_error,
+    build_cross_year_notice,
+    get_view_year,
+)
 from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences, sync_pg_sequence_if_needed
@@ -82,23 +89,8 @@ def surec_api_kpi_data_add():
     if not proc or not user_can_enter_pgv(current_user, proc):
         return jsonify({"success": False, "message": "PG verisi girme yetkiniz yok."}), 403
 
-    # Plan year kontrolü: girilen verinin yılı aktif dönem yılıyla eşleşmeli
-    active_py = get_active_plan_year_for_user(current_user)
-    if active_py:
-        requested_year = int(data.get("year", datetime.now().year))
-        requested_date = data.get("data_date", "")
-        date_year = int(requested_date[:4]) if requested_date and len(requested_date) >= 4 else requested_year
-        if requested_year != active_py.year or date_year != active_py.year:
-            return jsonify({
-                "success": False,
-                "message": (
-                    f"Aktif dönem {active_py.year} seçili. "
-                    f"Bu döneme ait olmayan bir tarihe ({requested_date or requested_year}) veri girilemez. "
-                    f"Farklı bir döneme veri girmek için önce o dönemi seçin."
-                ),
-                "plan_year_mismatch": True,
-                "active_year": active_py.year,
-            }), 409
+    # ─── Tarih egemen plan year kontrolü (Faz 1) ──────────────────────────
+    # Önce data_date_val'i belirle, sonra ondan plan_year resolve et.
     try:
         year_val = int(data.get("year", datetime.now().year))
         pt = (data.get("period_type") or "yillik").lower().strip()
@@ -106,7 +98,6 @@ def surec_api_kpi_data_add():
         pm = data.get("period_month")
         period_month = int(pm) if pm is not None and str(pm).strip() else None
 
-        # Açık data_date verilmişse öncelikli (VGS / özel dönem); yoksa periyot son günü
         data_date_val = None
         if data.get("data_date"):
             data_date_val = datetime.strptime(data["data_date"], "%Y-%m-%d").date()
@@ -116,6 +107,35 @@ def surec_api_kpi_data_add():
                 data_date_val = last_day
         if data_date_val is None:
             data_date_val = date.today()
+        # year_val tarihten türesin — kullanıcı manuel year göndermişse bile data_date öncelikli
+        year_val = data_date_val.year
+
+        # Plan year toggle açıksa kontrolleri yap (yoksa eski davranış)
+        tenant_obj = db.session.get(Tenant, current_user.tenant_id)
+        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+            target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
+            if not entity_exists_in_year(kpi, target_py):
+                return jsonify(build_existence_error(
+                    entity=kpi,
+                    entity_label=f"{kpi.code or ''} {kpi.name}".strip(),
+                    data_date=data_date_val,
+                    target_plan_year=target_py,
+                    entity_kind="PG",
+                )), 409
+            if not entity_exists_in_year(proc, target_py):
+                return jsonify(build_existence_error(
+                    entity=proc,
+                    entity_label=f"{proc.code or ''} {proc.name}".strip(),
+                    data_date=data_date_val,
+                    target_plan_year=target_py,
+                    entity_kind="süreç",
+                )), 409
+            cross_year_notice = build_cross_year_notice(
+                view_year=get_view_year(current_user),
+                target_year=data_date_val.year,
+            )
+        else:
+            cross_year_notice = None
 
         entry = None
         for attempt in (1, 2):
@@ -177,7 +197,10 @@ def surec_api_kpi_data_add():
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Veri kaydedildi."})
+        resp = {"success": True, "message": "Veri kaydedildi."}
+        if cross_year_notice:
+            resp["notice"] = cross_year_notice
+        return jsonify(resp)
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_add] {e}")
