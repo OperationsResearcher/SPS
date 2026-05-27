@@ -1,22 +1,28 @@
 /* ═══════════════════════════════════════════════════════
    Demo Modu Override'ları
-   body.demo-mode aktif olduğunda — sadece demo banner üstte,
-   sidebar normal yan-bar olarak kalır.
+   Demo banner: position:fixed üstte (40px), sidebar + main onun altında.
+   Sidebar normal yan-bar (solda, 240px).
    ═══════════════════════════════════════════════════════ */
 
-/* Sidebar normal kalsın — sadece demo banner için ek yer ayır */
-body.demo-mode .micro-sidebar {
-    top: 40px;                /* Demo banner yüksekliği kadar aşağı kay */
-    height: calc(100vh - 40px);
+/* Demo banner yüksekliği değişkeni */
+:root {
+    --demo-banner-h: 40px;
 }
 
-/* Ana içerik sidebar normal margin'i korur (240px) */
-/* margin-left zaten 240px (sidebar.css), demoda dokunmuyoruz */
+/* Sidebar — banner yüksekliği kadar aşağı kay */
+body.demo-mode .micro-sidebar {
+    top: var(--demo-banner-h);
+    height: calc(100vh - var(--demo-banner-h));
+}
 
-/* Mobil — demo banner küçülür */
+/* Ana içerik — sidebar normal margin-left:240px, ek olarak üstten padding */
+body.demo-mode .micro-main {
+    padding-top: var(--demo-banner-h);
+}
+
+/* Mobil — banner biraz büyür */
 @media (max-width: 768px) {
-    body.demo-mode .micro-sidebar {
-        top: 50px;
-        height: calc(100vh - 50px);
+    :root {
+        --demo-banner-h: 50px;
     }
 }
