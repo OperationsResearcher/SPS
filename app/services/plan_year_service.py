@@ -873,11 +873,17 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
     """
     Kullanıcının aktif SPDönemini döner.
 
-    - Tenant'ta plan_year_enabled=False ise None döner (overlay sistemi devreye girmez).
-    - Session'da sp_active_year varsa o yılın PlanYear'ını döner.
-    - Yoksa tenant'ın aktif (status='active') PlanYear'ını döner.
-    - Hiç PlanYear yoksa None döner.
+    Tarih egemen doktrin (Faz 1):
+    - Tenant'ta plan_year_enabled=False ise None döner.
+    - Session'da sp_active_year varsa o yılın PlanYear'ı (kullanıcı seçimi).
+    - Yoksa **bugünün takvim yılı** için PlanYear (UI default'ları ile tutarlı).
+    - O da yoksa tenant'ın status='active' PlanYear'ı (legacy fallback).
+    - Hiç PlanYear yoksa None.
+
+    Not: Bu fonksiyon "GÖRÜNTÜ" bağlamıdır. Veri yazımı için
+    `app.services.date_sovereign.resolve_plan_year_for_date()` kullanın.
     """
+    from datetime import date as _date
     from app.models.core import Tenant
     tenant = Tenant.query.get(user.tenant_id)
     if tenant is None:
@@ -890,5 +896,10 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
         py = get_plan_year(user.tenant_id, int(year))
         if py:
             return py
+
+    # Bugünün takvim yılı için PlanYear varsa öncelikli (UI default'larıyla tutarlı)
+    today_py = get_plan_year(user.tenant_id, _date.today().year)
+    if today_py:
+        return today_py
 
     return get_active_plan_year(user.tenant_id)

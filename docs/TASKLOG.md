@@ -3,6 +3,92 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-136 | 2026-05-27 | ✅ Tamamlandı (yerel, claude/tarih-egemen-plan-year)
+
+**Görev:** "Tarih egemen" plan year doktrini — 3 fazlı SP veri yazımı yeniden mimarisi + yıllar arası diff + snapshot rolleri
+**Modül:** app/services/, app/models/, micro/modules/surec/, micro/modules/bireysel/, micro/modules/sp/, ui/templates/platform/sp/, migrations/
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `app/services/date_sovereign.py` → tarih egemen doktrini yardımcı modülü (view_year / resolve_plan_year_for_date / entity_exists_in_year / build_existence_error / build_cross_year_notice)
+- `app/services/plan_year_diff_service.py` → iki plan yılı arası diff hesaplayıcı (kimlik, strateji, alt strateji, süreç, PG, initiative, OKR, bağlar)
+- `app/models/user_year_assignment.py` → UserYearAssignment modeli (yıllık snapshot rolü/departman) + resolve_user_assignment helper
+- `migrations/versions/j3k4l5m6n017_user_year_assignments.py` → migration
+- `ui/templates/platform/sp/karsilastirma.html` → yıllar arası karşılaştırma sayfası
+
+### Değiştirilen Dosyalar
+- `app/services/plan_year_service.py` → `get_active_plan_year_for_user` session yoksa bugünün takvim yılı PlanYear'ına düşer (UI default'larıyla tutarlı)
+- `micro/modules/surec/routes_kpi_data.py` → KPI veri eklemede sert "aktif dönem yıl uyumu" engeli kaldırıldı; tarih → plan_year resolve + süreç/PG var mı kontrolü + cross-year rozeti
+- `micro/modules/surec/routes_activity.py` → aynı doktrin faaliyet eklemede (start_at → plan_year)
+- `micro/modules/bireysel/routes.py` → bireysel KPI veri eklemede aynı doktrin
+- `micro/modules/sp/routes_plan_year.py` → `/sp/api/plan-years/diff` ve `/sp/karsilastirma` route'ları
+- `static/js/process_karne.js`, `ui/static/platform/js/surec.js` → response.notice'ı yakalayıp toast'a ekler
+- `app/models/__init__.py` → UserYearAssignment kaydı
+
+### Yapılan İşlem
+**Faz 0 — Doktrin:** "Clone birincil" kararı netleşti — bir varlığın o yılda olup olmadığı sorusu `entity.plan_year_id` ile cevaplanır (overlay tablolar sadece metadata override). Üç kavram ayrıştırıldı: VIEW context (UI filtresi, default current cal year), RECORD routing (tarih → plan year), EXISTENCE check (clone var mı).
+
+**Faz 1 — KPI veri girişi ve faaliyet:** Eski "tarih == aktif dönem" sert engeli kaldırıldı. Yeni akış: data_date'in yılından plan_year resolve edilir; süreç/PG o yılda yoksa bağlamlı engel ("SR1A süreci 2026 planında yok, yalnızca 2025 verisi girilebilir"). Görüntü yılı ≠ kayıt yılı ise yumuşak rozet ("↩️ 2025 dönemine yazıldı") — kullanıcı dönem değiştirmek zorunda değil. Tomofil SR1A senaryosu doğru çalışır.
+
+**Faz 2 — Yayılım:** Aynı doktrin bireysel KPI veri girişine (`bireysel/api/veri/add`) uygulandı. SWOT/PESTEL/Porter/OKR/SP-proje gibi tarihten bağımsız (yıl-snapshot) varlıklar zaten plan_year_id ile oluşturulduğundan değişiklik gerektirmedi.
+
+**Faz 3 — Diff + Snapshot:**
+- `plan_year_diff_service.diff_plan_years(tenant, year_a, year_b)` → identity / strategies / sub_strategies / processes / kpis / initiatives / okr / links kategorilerinde added/removed/changed listeleri. Eşleştirme `source_*_id` lineage + kod fallback ile.
+- `/sp/karsilastirma` sayfasında interaktif yıl seçici + karşılaştırma tablosu (vizyon farkları yan-yana, kategoriler için yeni/kaldırılan/değişen kolonları).
+- `user_year_assignments` tablosu: `(user_id, plan_year_id, tenant_id, job_title, department, role_label, note)` — kullanıcının yıllık snapshot rolü. `resolve_user_assignment()` helper: snapshot varsa onu döner, yoksa user.job_title/department fallback. Migration manuel SQL ile uygulandı (alembic flask cli `__init__.py` shadowing yüzünden çalışmıyor).
+
+### Test sonuçları (Tomofil canlı veri)
+- `diff_plan_years(27, 2025, 2026)` → SR1A + SR1B "removed", SR1 "added", vizyon 3 alan değişti, alt strateji +1/-1, PG +31/-32. Meta'daki `override_ozet` ile tutarlı.
+- `user_year_assignments` tablosu yaratıldı (0 satır — kullanıcı UI'sı yok henüz).
+
+### Notlar
+- BSC perspectives tablosu DB'de yok (migration eksik) — diff serviste şu an dahil değil.
+- UserYearAssignment UI tarafı (kullanıcı düzenleme ekranı) yapılmadı — backend hazır, ihtiyaç çıkınca eklenir.
+- Tüm değişiklikler `claude/tarih-egemen-plan-year` dalında. Push/merge kullanıcı talebine bağlı.
+
+### Düzeltme (Faz 3 duplikasyon temizliği)
+İlk geçişte mevcut `/sp/donemler` sayfasındaki karşılaştırma özelliği görülmeden yeni `/sp/karsilastirma` sayfası + `plan_year_diff_service.py` yazılmıştı. Kullanıcı uyarısıyla geri alındı:
+- `app/services/plan_year_diff_service.py` ve `ui/templates/platform/sp/karsilastirma.html` silindi
+- `routes_plan_year.py`'den yeni endpoint'ler kaldırıldı
+- Eksik 3 kategori (Initiative span, OKR sayım, links sayım) mevcut `sp_api_donem_karsilastir` endpoint'ine eklendi
+- `donemler.html`'de bu üç kategori için yeni "Çok Yıllık Initiative / OKR / Bağlar" details bölümü eklendi
+- Test (Tomofil 2025↔2026): 3 initiative `y2`'de başlamış, 3 `y2`'den önce bitmiş, 6 devam ediyor; OKR 3↔3; bağlar 13→15
+
+---
+
+## TASK-135 | 2026-05-27 | ✅ Tamamlandı (yerel)
+
+**Görev:** Tomofil tam veri reset — hard wipe + 2020-2026 SP veri seti import
+**Modül:** scripts/, docs/, app/models (envanter)
+**Durum:** ✅ Tamamlandı
+
+### Yeni Dosyalar
+- `docs/TENANT-VERI-ENVANTERI.md` → 96 tablo, 15 modül, tam şema (kolon+FK+index+unique) dökümü
+- `scripts/tomofil_hard_wipe.py` → tenant_id=27 için SP + portföy + bildirim hard delete (savepoint-li tek transaction)
+- `scripts/tomofil_sp_import.py` → `TomofılSP_2020_2026_v2.json`'dan PG'ye bulk import (2-pass self-ref, +1M ID offset, user_id→admin remap)
+
+### Yapılan İşlem
+**A. Hard wipe (tenant_id=27):** Tomofil'in tüm SP ağacı + 48.283 KPI ölçümü + portföy projeleri + bildirimler hard delete edildi. Kullanıcılar (97) + tenant + roller + audit_logs + e-posta/LLM konfigleri korundu. Yedek alınmadı (kullanıcı talebi: yeni veri seti hazırdı).
+
+**B. Cross-tenant FK temizliği:** Wipe sırasında ortaya çıkan `bottleneck_log.kpi_id`, `process_maturity.process_id`, `value_chain_items.linked_process_id`, `individual_activities/IPI.source_process_id` ve `processes.parent_id/source_process_id` referansları açıkça null'landı/silindi.
+
+**C. SP 2020-2026 import (99.238 satır):** 7 plan yılı, 36 strateji, 93 alt strateji, 71 süreç, 221 PG, **91.408 KPI ölçüm**, 524 bireysel PG + 6.288 ölçümü, SWOT/PESTEL/Porter (7+7+7), 21 OKR + 63 KR, 5 ESG metrik + 35 ölçüm, 68 olgunluk, 35 risk, 21 initiative + 84 kilometre taşı, 21 SP projesi + 63 görev, 36 K-Vektör ağırlık, 7 tenant yıl kimliği, 7 KPI yıl override.
+
+**D. Import mimarisi:**
+- JSON `tenant_id` (her değer) → DB 27 remap
+- JSON `user_id` ref'leri → Tomofil admin (id=8173) remap
+- Tüm ID ve FK'lere +1.000.000 offset (diğer tenant ID'leriyle çakışma yok)
+- Self-ref FK'ler (`source_*_id`, `parent_id`, `template_source_id`, `scenario_of_id`, `depends_on_task_id`) 2. pass'te `EXISTS` filtreli UPDATE ile bağlandı
+- 27 sequence MAX(id)+1'e reset edildi
+
+### Notlar
+- JSON'da BSC perspectives (84 satır) var ama `bsc_kpi_perspectives` tablosu canlı DB'de yok → atlandı (migration eksik).
+- JSON'daki bazı `source_process_id` ref'leri var olmayan eski yıl ID'lerine bakıyordu — kırık ref'ler (3 process source, 42 plan task depends) NULL bırakıldı.
+- Wipe ve import'un ikisi de tek transaction, savepoint-li hata toleransıyla; başarısızlık halinde rollback.
+- Gözle doğrulama yerel + test ortamında kullanıcı tarafından yapılacak.
+
+---
+
 ## TASK-134 | 2026-05-26 | ✅ Tamamlandı (yerel + push, test ortamı aktif)
 
 **Görev:** Test ortamı kurulumu (test.kokpitim.com) + üç-ortam terminolojisi + CSP fix

@@ -56,6 +56,7 @@ from app.models.plan_year import (  # noqa: E402
     IndividualKpiYearConfig,
 )
 from app.models.tenant_year import TenantYearIdentity  # noqa: E402
+from app.models.user_year_assignment import UserYearAssignment  # noqa: E402
 from app.models.initiative import Initiative, InitiativeMilestone  # noqa: E402
 from app.models.replan_trigger import ReplanTrigger, ReplanTriggerEvent  # noqa: E402
 from app.models.strategy_frameworks import (  # noqa: E402

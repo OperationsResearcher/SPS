@@ -435,6 +435,39 @@ def sp_api_donem_karsilastir():
     def _count_changed(lst):
         return sum(1 for x in lst if x["changed"])
 
+    # ── Initiative (çok yıllık, span tabanlı) ────────────────────────────────
+    from app.models.initiative import Initiative as _Initiative
+    inits1 = _Initiative.query.filter(
+        _Initiative.tenant_id == tid,
+        _Initiative.is_active.is_(True),
+        _Initiative.start_year <= y1, _Initiative.end_year >= y1,
+    ).all()
+    inits2 = _Initiative.query.filter(
+        _Initiative.tenant_id == tid,
+        _Initiative.is_active.is_(True),
+        _Initiative.start_year <= y2, _Initiative.end_year >= y2,
+    ).all()
+    ids1 = {i.id for i in inits1}
+    ids2 = {i.id for i in inits2}
+    initiatives_block = {
+        "y1_total": len(inits1), "y2_total": len(inits2),
+        "started_in_y2": [{"id": i.id, "label": f"{i.code or ''} {i.name}".strip()}
+                          for i in inits2 if i.id not in ids1],
+        "ended_before_y2": [{"id": i.id, "label": f"{i.code or ''} {i.name}".strip()}
+                            for i in inits1 if i.id not in ids2],
+        "continuing": len(ids1 & ids2),
+    }
+
+    # ── OKR & Süreç-Alt Strateji bağ sayımı ──────────────────────────────────
+    from app.models.okr import OkrObjective as _OkrObjective
+    from app.models.process import ProcessSubStrategyLink as _PSSLink
+    okr1 = _OkrObjective.query.filter_by(tenant_id=tid, plan_year_id=py1.id, is_active=True).count()
+    okr2 = _OkrObjective.query.filter_by(tenant_id=tid, plan_year_id=py2.id, is_active=True).count()
+    p1_ids = [p.id for p in procs1] or [0]
+    p2_ids = [p.id for p in procs2] or [0]
+    links1 = _PSSLink.query.filter(_PSSLink.process_id.in_(p1_ids)).count()
+    links2 = _PSSLink.query.filter(_PSSLink.process_id.in_(p2_ids)).count()
+
     return jsonify({
         "success": True,
         "y1": _plan_year_to_dict(py1),
@@ -446,6 +479,10 @@ def sp_api_donem_karsilastir():
             "sub_strategies_changed": _count_changed(ss_diffs),
             "processes_changed": sum(1 for p in process_diffs if p["changed"]),
             "kpis_changed": sum(1 for p in process_diffs for k in p["kpis"] if k["changed"]),
+            "initiatives_new_in_y2": len(initiatives_block["started_in_y2"]),
+            "initiatives_ended_before_y2": len(initiatives_block["ended_before_y2"]),
+            "okr_y1": okr1, "okr_y2": okr2,
+            "links_y1": links1, "links_y2": links2,
         },
         "diff": {
             "identity": identity_diffs,
@@ -453,6 +490,9 @@ def sp_api_donem_karsilastir():
             "strategies": strategy_diffs,
             "sub_strategies": ss_diffs,
             "processes": process_diffs,
+            "initiatives": initiatives_block,
+            "okr": {"y1_count": okr1, "y2_count": okr2},
+            "links": {"y1_count": links1, "y2_count": links2},
         },
     })
 

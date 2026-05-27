@@ -339,7 +339,12 @@ function saveWizardData() {
 
     postJSON('/process/api/kpi-data/add', data).then(res => {
         if (res.success) {
-            Swal.fire({ icon: 'success', title: 'Kaydedildi!', timer: 1500, showConfirmButton: false });
+            const sw = { icon: 'success', title: 'Kaydedildi!', timer: 1800, showConfirmButton: false };
+            if (res.notice && res.notice.label) {
+                sw.text = res.notice.label;
+                sw.timer = 2600;
+            }
+            Swal.fire(sw);
             bootstrap.Modal.getInstance(document.getElementById('dataEntryWizardModal'))?.hide();
             if (data.year !== currentYear) {
                 currentYear = data.year;

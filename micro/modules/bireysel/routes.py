@@ -20,6 +20,14 @@ from app.models.process import (
 )
 from app.utils.process_utils import last_day_of_period, data_date_to_period_keys
 from app.services.plan_year_service import get_active_plan_year_for_user
+from app.services.date_sovereign import (
+    resolve_plan_year_for_date,
+    entity_exists_in_year,
+    build_existence_error,
+    build_cross_year_notice,
+    get_view_year,
+)
+from app.models.core import Tenant as _Tenant
 
 
 def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
@@ -224,6 +232,26 @@ def bireysel_api_veri_add():
         else:
             last_day = last_day_of_period(year_val, pt, pn, period_month)
             data_date_val = last_day or date.today()
+        # Tarih egemen: year_val data_date'ten türesin
+        year_val = data_date_val.year
+
+        # Tarih egemen plan year kontrolü (Faz 2)
+        cross_year_notice = None
+        tenant_obj = db.session.get(_Tenant, current_user.tenant_id)
+        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+            target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
+            if not entity_exists_in_year(pg, target_py):
+                return jsonify(build_existence_error(
+                    entity=pg,
+                    entity_label=f"{pg.code or ''} {pg.name}".strip(),
+                    data_date=data_date_val,
+                    target_plan_year=target_py,
+                    entity_kind="bireysel PG",
+                )), 409
+            cross_year_notice = build_cross_year_notice(
+                view_year=get_view_year(current_user),
+                target_year=data_date_val.year,
+            )
 
         entry = IndividualKpiData(
             individual_pg_id=pg.id,
@@ -239,7 +267,10 @@ def bireysel_api_veri_add():
         )
         db.session.add(entry)
         db.session.commit()
-        return jsonify({"success": True, "message": "Veri kaydedildi."})
+        resp = {"success": True, "message": "Veri kaydedildi."}
+        if cross_year_notice:
+            resp["notice"] = cross_year_notice
+        return jsonify(resp)
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_veri_add] {e}")
