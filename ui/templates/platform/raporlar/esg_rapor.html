@@ -1,0 +1,47 @@
+{% extends "platform/base.html" %}
+{% block title %}ESG Rapor (GRI/CDP/TCFD) — Kokpitim{% endblock %}
+{% block page_title %}ESG Yıllık Rapor (GRI/CDP/TCFD){% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-globe" style="color:#16a34a;"></i> ESG Yıllık Rapor</h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">GRI 102/305/403 + TCFD iklim risk standartlarına uygun PDF rapor.</p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+  </div>
+  <div style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div>
+      <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">YATIRIMCI / DENETÇI HAZIR · PDF</div>
+      <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;">GRI · CDP · TCFD Uyumlu</div>
+      <div style="font-size:12.5px;color:#64748b;margin-top:4px;">Tüm Tomofil ESG metriklerinden otomatik üretim</div>
+    </div>
+    <button id="dl" class="mc-btn mc-btn-primary" style="background:#16a34a;font-size:14px;padding:12px 24px;">
+      <i class="fas fa-download"></i> PDF İndir
+    </button>
+  </div>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+    <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📋 Rapor İçeriği</h3>
+    <ul style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
+      <li><b>GRI 102</b> — Organizasyonel profil (kurum, sektör, çalışan)</li>
+      <li><b>GRI 305</b> — Emisyonlar (Scope 1+2+3, yıllık toplam tablo)</li>
+      <li><b>GRI 403</b> — Sosyal göstergeler (LTIFR, iş güvenliği)</li>
+      <li><b>GRI 102-22</b> — Yönetişim (çeşitlilik, etik)</li>
+      <li><b>TCFD</b> — İklim risk açıklaması (4 boyut)</li>
+    </ul>
+  </div>
+</div>
+<script>
+document.getElementById('dl').addEventListener('click', async()=>{
+  const b=document.getElementById('dl'); const o=b.innerHTML; b.disabled=true; b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Üretiliyor…';
+  try {
+    const r=await fetch('/raporlar/api/esg-rapor/generate',{credentials:'same-origin'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const blob=await r.blob(); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;
+    const cd=r.headers.get('Content-Disposition')||''; const m=cd.match(/filename="?([^";]+)"?/);
+    a.download = m ? m[1] : 'ESG_Raporu.pdf'; a.click(); URL.revokeObjectURL(url);
+    b.innerHTML='<i class="fas fa-check"></i> İndirildi'; setTimeout(()=>{b.innerHTML=o; b.disabled=false;}, 2500);
+  } catch(e){ Swal.fire({icon:'error',title:'Hata',text:e.message}); b.innerHTML=o; b.disabled=false; }
+});
+</script>
+{% endblock %}
