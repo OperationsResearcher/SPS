@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════════════════
+   Demo Modu Override'ları
+   body.demo-mode aktif olduğunda yan-bar yerine üst-bar
+   ═══════════════════════════════════════════════════════ */
+
+/* Layout: dikey değil, akış normal (flex satır yerine block) */
+body.demo-mode.micro-layout {
+    display: block;
+}
+
+/* Sidebar → üst-bar dönüşümü */
+body.demo-mode .micro-sidebar {
+    position: sticky;
+    top: 40px;                    /* demo banner yüksekliği */
+    left: 0;
+    width: 100%;
+    height: 58px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 90;
+}
+
+/* Brand kısmı: kompakt, soldakini koru */
+body.demo-mode .sidebar-brand {
+    padding: 0 14px 0 4px;
+    border-bottom: none;
+    border-right: 1px solid rgba(255,255,255,0.10);
+    margin-right: 8px;
+    height: 100%;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+body.demo-mode .sidebar-brand-logo {
+    height: 30px;
+    max-width: 96px;
+    border-radius: 4px;
+}
+
+body.demo-mode .sidebar-brand-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+body.demo-mode .sidebar-brand-sub {
+    display: none;
+}
+
+/* Nav: yatay flex */
+body.demo-mode .sidebar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+}
+
+body.demo-mode .sidebar-nav::-webkit-scrollbar { height: 0; }
+body.demo-mode .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+
+/* Bölüm etiketleri (Ana Modüller / Yönetim) demoda gizli — yatayda anlamsız */
+body.demo-mode .sidebar-section-label {
+    display: none;
+}
+
+/* Nav öğesi: yatay pill */
+body.demo-mode .sidebar-item {
+    padding: 8px 14px;
+    margin: 0;
+    border-radius: 7px;
+    font-size: 12.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    gap: 7px;
+}
+
+body.demo-mode .sidebar-item-icon {
+    width: 14px;
+    font-size: 12.5px;
+}
+
+body.demo-mode .sidebar-item-text {
+    flex: 0 1 auto;
+}
+
+/* Aktif durum: solda gösterge yerine altta çizgi */
+body.demo-mode .sidebar-item.active::before {
+    left: 14px;
+    right: 14px;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 2px;
+    background: #a78bfa;
+    border-radius: 1px 1px 0 0;
+    transform: none;
+}
+
+body.demo-mode .sidebar-item.active {
+    background: rgba(255,255,255,0.08);
+}
+
+/* Footer (kullanıcı kartı vb.) yatay barda görünmesin — banner zaten kullanıcıyı belirtiyor */
+body.demo-mode .sidebar-footer {
+    display: none;
+}
+
+/* Ana içerik: left margin'ı kaldır */
+body.demo-mode .micro-main {
+    margin-left: 0;
+}
+
+/* Mobil hamburger menü demo modunda gerekmiyor */
+body.demo-mode #sidebar-toggle,
+body.demo-mode .sidebar-toggle,
+body.demo-mode .sidebar-backdrop {
+    display: none !important;
+}
+
+/* Mobil — daha kompakt */
+@media (max-width: 768px) {
+    body.demo-mode .micro-sidebar {
+        height: 50px;
+        padding: 0 8px;
+    }
+    body.demo-mode .sidebar-brand {
+        padding: 0 8px 0 2px;
+        margin-right: 4px;
+    }
+    body.demo-mode .sidebar-brand-logo { height: 26px; max-width: 80px; }
+    body.demo-mode .sidebar-brand-name { font-size: 13px; }
+    body.demo-mode .sidebar-item { padding: 6px 10px; font-size: 12px; }
+}

@@ -63,6 +63,12 @@
     <link rel="stylesheet"
         href="{{ url_for('app_bp.static', filename='platform/css/mobile.css') }}?v={{ config['VERSION'] }}">
 
+    {% if session.get('demo_session_active') %}
+    {# Demo modu — yatay top-bar dönüşümü #}
+    <link rel="stylesheet"
+        href="{{ url_for('app_bp.static', filename='platform/css/demo.css') }}?v={{ config['VERSION'] }}">
+    {% endif %}
+
     {# Kule yardımcı sistemi — ERTELENDİ (2026-05-26). docs/ERTELENEN-ISLER.md > E1 #}
     {# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
     <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/kule.css') }}?v={{ config['VERSION'] }}">

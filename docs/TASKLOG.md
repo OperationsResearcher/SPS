@@ -3,6 +3,34 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-139 | 2026-05-27 | ✅ Tamamlandı (canlı) — demo modu üst-bar dönüşümü
+
+**Görev:** Demo modunda yan-bar (240px) yerine yatay üst-bar göster — daha şık ve demo deneyimine uygun
+**Modül:** ui/static/platform/css/, ui/templates/platform/base.html
+**Durum:** ✅ Canlı (https://demo.kokpitim.com/)
+
+### Yeni Dosyalar
+- `ui/static/platform/css/demo.css` → body.demo-mode aktifken sidebar→topbar dönüşüm override'ları
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → demo session'ı varsa demo.css koşullu link
+
+### Yapılan İşlem
+Pure CSS override; HTML yapısı değişmiyor:
+- `.micro-sidebar` → `position: sticky; top: 40px; flex-direction: row; height: 58px; width: 100%`
+- Sidebar brand kompakt (logo + ad), bölüm etiketleri (`Ana Modüller` vb.) gizlendi
+- Nav item'ları yatay pill, aktif item alta çizgi
+- `.micro-main` → margin-left: 0
+- Footer (kullanıcı kartı) gizli — banner zaten rol/durum gösteriyor
+- Mobil için kompakt versiyon
+
+### Deploy
+- Tarball ile /opt/kokpitim-demo/app/ ve /opt/kokpitim-test/app/ güncellendi
+- docker restart kokpitim-demo-web
+- Canlı doğrulama: demo.css yüklü, demo-mode body class aktif
+
+---
+
 ## TASK-138 | 2026-05-27 | ✅ Tamamlandı (canlı: demo.kokpitim.com) — demo ortamı VM deploy
 
 **Görev:** Demo v1'i Oracle VM'e demo.kokpitim.com olarak yayınla (4. ortam)
