@@ -22,8 +22,8 @@
     {'url': url_for('app_bp.raporlar_yonetici_liderlik'),   'icon': 'fa-user-tie',         'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'Yönetici Liderlik Skoru',       'desc': 'Süreç liderlerinin etkinlik puanı', 'status': 'hazır'},
     {'url': url_for('app_bp.raporlar_initiative_bubble'),   'icon': 'fa-rocket',           'color': '#ef4444', 'bg': '#fef2f2', 'name': 'Initiative Portföy Bubble',     'desc': 'Bütçe × ilerleme × öncelik balon grafik', 'status': 'hazır'},
     {'url': url_for('app_bp.raporlar_sabah_ozeti'),         'icon': 'fa-sun',              'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Operasyonel Sabah Özeti+',      'desc': 'Bugün biten/bekleyen faaliyet & kritik PG', 'status': 'hazır'},
-    {'url': '#',                                            'icon': 'fa-film',             'color': '#9333ea', 'bg': '#faf5ff', 'name': 'Yıllar Arası Evrim Filmi',      'desc': 'Strateji ağacının yıllık animasyonu', 'status': 'yakında'},
-    {'url': '#',                                            'icon': 'fa-magic',            'color': '#dc2626', 'bg': '#fff7ed', 'name': 'AI Yıl Sonu Sunum Üretici',     'desc': 'Yönetim kurulu için 40-slayt PPT', 'status': 'planlanmış'},
+    {'url': url_for('app_bp.raporlar_evrim_filmi'),         'icon': 'fa-film',             'color': '#9333ea', 'bg': '#faf5ff', 'name': 'Yıllar Arası Evrim Filmi',      'desc': 'Strateji ağacının yıldan yıla animasyonu', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_ai_sunum'),            'icon': 'fa-magic',            'color': '#dc2626', 'bg': '#fff7ed', 'name': 'AI Yıl Sonu Sunum Üretici',     'desc': 'Yönetim kurulu için indirilebilir PPTX', 'status': 'hazır'},
   ] %}
 
   <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">

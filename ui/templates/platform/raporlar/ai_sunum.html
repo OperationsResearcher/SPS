@@ -1,0 +1,139 @@
+{% extends "platform/base.html" %}
+{% block title %}AI Yıl Sonu Sunum Üretici — Kokpitim{% endblock %}
+{% block page_title %}AI Yıl Sonu Sunum Üretici{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px; margin:0 auto;">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-magic" style="color:#dc2626;"></i> AI Yıl Sonu Sunum Üretici
+      </h1>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Yönetim kurulu için PowerPoint sunumu. Yapay zeka kurum verisini özetler, slaytları sizin için hazırlar.
+      </p>
+    </div>
+    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary">
+      <i class="fas fa-arrow-left"></i> Raporlara Dön
+    </a>
+  </div>
+
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
+
+  <div id="content" style="display:none;">
+
+    <!-- Üst özet kart -->
+    <div style="background:linear-gradient(135deg,#fff,#fef2f2);border:1px solid #fecaca;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div style="font-size:11px;color:#991b1b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">SUNUM HAZIR</div>
+        <div style="font-size:22px;font-weight:800;color:#0f172a;" id="header-title">—</div>
+        <div style="font-size:12.5px;color:#64748b;margin-top:4px;" id="header-meta">—</div>
+      </div>
+      <button id="dl-btn" class="mc-btn mc-btn-primary" style="background:#dc2626;border-color:#dc2626;font-size:14px;padding:12px 24px;">
+        <i class="fas fa-download"></i> PPTX İndir
+      </button>
+    </div>
+
+    <!-- Veri snapshot -->
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;">
+      <h3 style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">
+        <i class="fas fa-database" style="color:#0ea5e9;"></i> Sunumda Kullanılacak Veriler
+      </h3>
+      <div id="data-points" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:12px;"></div>
+    </div>
+
+    <!-- Slayt listesi -->
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+      <h3 style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">
+        <i class="fas fa-list-ol" style="color:#8b5cf6;"></i> Slayt Yapısı
+      </h3>
+      <div id="slides" style="display:grid;gap:8px;"></div>
+      <div style="margin-top:16px;padding:12px 14px;background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:8px;font-size:12px;display:flex;align-items:flex-start;gap:8px;">
+        <i class="fas fa-info-circle" style="margin-top:2px;"></i>
+        <div>
+          <b>İlk versiyon notu:</b> Bu sunum şu an 8 ana slayt + kapak + kapanış formatında.
+          Görsel grafikler (chart) henüz dahil değil — sadece metin + veri tabloları.
+          Sonraki versiyonda matplotlib görselleri ve daha fazla AI narratif eklenecek.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+</div>
+
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const dpItem = (lab, val) => `
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px;">${esc(lab)}</div>
+      <div style="font-size:18px;font-weight:700;color:#0f172a;">${esc(val)}</div>
+    </div>`;
+
+  async function load(){
+    try {
+      const j = await (await fetch('/raporlar/api/ai-sunum/preview',{credentials:'same-origin'})).json();
+      if (!j.success) throw new Error(j.message);
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      const p = j.preview;
+      document.getElementById('header-title').textContent = `${p.tenant_name} — ${p.plan_year || 'Yıllık'} Sunumu`;
+      document.getElementById('header-meta').textContent = `${p.slides.length} slayt · ~${p.estimated_size_kb} KB · AI özet (Gemini varsa LLM, yoksa şablon)`;
+
+      const d = p.data_points;
+      document.getElementById('data-points').innerHTML = [
+        dpItem('Strateji', d.strategies),
+        dpItem('Süreç', d.processes),
+        dpItem('Initiative', d.initiatives),
+        dpItem('Çalışan', d.users),
+        dpItem('KPI Ölçüm', d.kpi_measurements.toLocaleString('tr-TR')),
+      ].join('');
+
+      document.getElementById('slides').innerHTML = p.slides.map(s => `
+        <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#dc2626;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">${s.no}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;color:#0f172a;font-size:13px;">${esc(s.title)}</div>
+            <div style="font-size:11.5px;color:#64748b;margin-top:2px;">${esc(s.content)}</div>
+          </div>
+        </div>`).join('');
+    } catch(e){
+      document.getElementById('loading').style.display='none';
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+    }
+  }
+
+  document.getElementById('dl-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('dl-btn');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Üretiliyor… (10-30sn)';
+    try {
+      const r = await fetch('/raporlar/api/ai-sunum/generate', {method:'GET', credentials:'same-origin'});
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({message:'Üretim başarısız'}));
+        throw new Error(j.message || ('HTTP ' + r.status));
+      }
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const cd = r.headers.get('Content-Disposition') || '';
+      const m = cd.match(/filename="?([^";]+)"?/);
+      a.download = m ? m[1] : 'yil_sonu_sunum.pptx';
+      a.click();
+      URL.revokeObjectURL(url);
+      btn.innerHTML = '<i class="fas fa-check"></i> İndirildi';
+      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
+    } catch (e) {
+      Swal.fire({icon:'error', title:'Hata', text:e.message});
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  });
+
+  load();
+})();
+</script>
+{% endblock %}

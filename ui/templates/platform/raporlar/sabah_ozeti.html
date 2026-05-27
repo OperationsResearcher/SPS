@@ -61,7 +61,7 @@
       const today = new Date(j.today).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
       document.getElementById('today-banner').innerHTML = `
         <div><i class="fas fa-calendar-day" style="margin-right:8px;"></i><b>${today}</b></div>
-        <div>Tomofil günaydın · ${j.metrics.measurements_today} ölçüm bugün</div>`;
+        <div>Günaydın · ${j.metrics.measurements_today} ölçüm bugün girildi</div>`;
       const m = j.metrics;
       document.getElementById('metrics').innerHTML = [
         metric('Geciken Faaliyet', m.overdue_activities, '#dc2626', 'fa-exclamation-circle'),
