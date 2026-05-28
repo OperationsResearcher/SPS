@@ -12,6 +12,7 @@ python-socketio==5.10.0
 python-dotenv
 pandas
 openpyxl
+python-pptx>=1.0.0
 bleach
 sentry-sdk[flask]
 redis

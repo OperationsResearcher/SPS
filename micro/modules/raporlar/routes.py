@@ -10,7 +10,9 @@ from datetime import datetime, timedelta, date as _date
 
 from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
-from sqlalchemy import func, and_, or_, text
+from sqlalchemy import func, and_, or_, text, select
+import os as _os
+import json as _json
 
 from platform_core import app_bp
 from app.models import db
@@ -41,7 +43,15 @@ def raporlar_index():
 @login_required
 def raporlar_veri_kalitesi():
     """Veri Kalitesi Raporu — PG doluluk, eksik alanlar, son giriş tarihleri."""
-    return render_template("platform/raporlar/veri_kalitesi.html")
+    from app.services.plan_year_service import list_plan_years
+    years = []
+    active_year = None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/veri_kalitesi.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/veri-kalitesi")
@@ -52,7 +62,12 @@ def raporlar_api_veri_kalitesi():
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    active_py = get_active_plan_year_for_user(current_user)
+    year_param = request.args.get("year", type=int)
+    if year_param:
+        from app.services.plan_year_service import get_plan_year as _gpy
+        active_py = _gpy(tid, year_param)
+    else:
+        active_py = get_active_plan_year_for_user(current_user)
     py_filter = (Process.plan_year_id == active_py.id) if active_py else True
 
     # Tüm aktif PG'ler (aktif plan yılındaki süreçlere bağlı)
@@ -82,7 +97,7 @@ def raporlar_api_veri_kalitesi():
         func.max(KpiData.data_date),
         func.count(KpiData.id),
     ).filter(
-        KpiData.process_kpi_id.in_([k.id for k in all_kpis]),
+        KpiData.process_kpi_id.in_(select(ProcessKpi.id).where(ProcessKpi.id.in_([k.id for k in all_kpis]))),
         KpiData.is_active.is_(True),
     ).group_by(KpiData.process_kpi_id).all()
     for kid, last_date, cnt in rows:
@@ -110,6 +125,7 @@ def raporlar_api_veri_kalitesi():
 
         item = {
             "id": k.id,
+            "process_id": k.process_id,
             "code": k.code or f"PG-{k.id}",
             "name": k.name,
             "process_name": k.process.name if k.process else "?",
@@ -825,13 +841,14 @@ def raporlar_api_evrim_filmi():
             ProcessKpi.is_active.is_(True),
             Process.is_active.is_(True),
         ).count()
+        _pk_subq = (
+            select(ProcessKpi.id)
+            .join(Process, ProcessKpi.process_id == Process.id)
+            .where(Process.tenant_id == tid, Process.plan_year_id == py.id)
+        )
         meas_count = db.session.query(func.count(KpiData.id)).filter(
             KpiData.year == py.year,
-            KpiData.process_kpi_id.in_(
-                db.session.query(ProcessKpi.id).join(Process).filter(
-                    Process.tenant_id == tid, Process.plan_year_id == py.id
-                )
-            ),
+            KpiData.process_kpi_id.in_(_pk_subq),
         ).scalar() or 0
 
         snapshots.append({
@@ -1377,7 +1394,8 @@ def raporlar_api_muda_analizi():
                     "findings_count": len(findings),
                     "findings": findings[:5],
                 })
-        except Exception:
+        except Exception as e:
+            current_app.logger.warning(f"[muda] proses {p.id} analiz hatası: {e}")
             continue
 
     # 7 muda tipinin Türkçe etiketleri
@@ -3296,14 +3314,19 @@ def raporlar_api_bireysel_karne_batch_generate():
 # FAZ 4 — SEKTÖREL PAKETLER + AI DERİNLEŞME
 # ═══════════════════════════════════════════════════════════════════════════
 
-import os as _os
-import json as _json
-
-_SEKTOREL_DIR = _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "sektorel")
+_SEKTOREL_DIR = _os.path.realpath(
+    _os.path.join(_os.path.dirname(__file__), "..", "..", "..", "data", "sektorel")
+)
 
 
 def _load_sektor(code):
-    path = _os.path.join(_SEKTOREL_DIR, f"{code}.json")
+    # Whitelist: kod yalnızca alfanumerik + alt çizgi olabilir (path traversal koruması)
+    if not code or not isinstance(code, str) or not code.replace("_", "").isalnum():
+        return None
+    path = _os.path.realpath(_os.path.join(_SEKTOREL_DIR, f"{code}.json"))
+    # Realpath sektor klasörünün dışına çıkarsa reddet
+    if not path.startswith(_SEKTOREL_DIR + _os.sep):
+        return None
     if not _os.path.isfile(path):
         return None
     try:
@@ -3683,7 +3706,8 @@ def raporlar_api_mobile_snapshot():
         v = compute_vision_score(tid, active_py.year if active_py else today.year,
                                        today, plan_year=active_py)
         vision = v.get('vision_score') if isinstance(v, dict) else v
-    except Exception:
+    except Exception as e:
+        current_app.logger.warning(f"[mobile-snapshot] vision_score hesaplanamadı: {e}")
         vision = None
 
     # Bugün metrikleri
@@ -3859,7 +3883,8 @@ def raporlar_api_ml_anomaly():
                         "value": v,
                         "anomaly_score": round(float(scores[i]), 3),
                     })
-        except Exception:
+        except Exception as e:
+            current_app.logger.warning(f"[ml-anomaly] PG analiz hatası: {e}")
             continue
 
     # En düşük score (en anormal) ilk

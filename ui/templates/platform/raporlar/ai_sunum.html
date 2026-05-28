@@ -122,8 +122,9 @@
       const cd = r.headers.get('Content-Disposition') || '';
       const m = cd.match(/filename="?([^";]+)"?/);
       a.download = m ? m[1] : 'yil_sonu_sunum.pptx';
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
       btn.innerHTML = '<i class="fas fa-check"></i> İndirildi';
       setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
     } catch (e) {

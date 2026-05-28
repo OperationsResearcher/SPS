@@ -15,14 +15,28 @@ limiter = None
 def init_limiter(app):
     """Initialize rate limiter with app"""
     global limiter
+    if not app.config.get("RATELIMIT_ENABLED", True):
+        limiter = Limiter(app=app, key_func=get_remote_address, default_limits=[])
+        return limiter
     limits = app.config.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
     limit_list = [s.strip() for s in str(limits).split(";") if s.strip()]
+    storage_uri = app.config.get("RATELIMIT_STORAGE_URL", "memory://")
+    is_prod = (app.config.get("FLASK_ENV") or "").lower() == "production"
+    if storage_uri == "memory://" and is_prod:
+        redis_url = app.config.get("CACHE_REDIS_URL") or app.config.get("REDIS_URL")
+        if redis_url and str(redis_url).startswith("redis"):
+            storage_uri = redis_url
+        else:
+            app.logger.warning(
+                "[rate-limit] RATELIMIT_STORAGE_URL=memory:// kullanılıyor (REDIS_URL tanımsız). "
+                "Çoklu worker'da limit izolasyonu KIRIK — production'da Redis tanımlanmalı."
+            )
     limiter = Limiter(
         app=app,
         key_func=get_remote_address,
         default_limits=limit_list if limit_list else ["50000 per hour", "1000000 per day"],
-        storage_uri=app.config.get('RATELIMIT_STORAGE_URL', 'memory://'),
-        strategy="fixed-window"
+        storage_uri=storage_uri,
+        strategy="fixed-window",
     )
     return limiter
 
