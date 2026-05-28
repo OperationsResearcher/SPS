@@ -37,37 +37,5 @@
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script>
-(function(){
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
-  const fmt = n => new Intl.NumberFormat('tr-TR').format(Math.round(n||0));
-  async function load(){
-    try {
-      const j = await (await fetch('/raporlar/api/onay-zinciri',{credentials:'same-origin'})).json();
-      if(!j.success) throw new Error(j.message);
-      document.getElementById('loading').style.display='none';
-      document.getElementById('content').style.display='block';
-      const s=j.summary;
-      document.getElementById('summary').innerHTML=[
-        stat('Toplam',s.total,'#0f172a'),
-        stat('Onay Bekliyor',s.pending,s.pending>0?'#f59e0b':'#94a3b8'),
-        stat('Onaylanmış',s.approved,'#10b981'),
-        stat('Reddedilen',s.rejected,s.rejected>0?'#dc2626':'#94a3b8'),
-      ].join('');
-      document.getElementById('tbl').innerHTML = j.items.map(i => `
-        <tr style="border-bottom:1px solid #f1f5f9;">
-          <td style="padding:10px;color:#0f172a;font-weight:600;">${esc(i.code||'')}</td>
-          <td style="padding:10px;color:#475569;">${esc(i.name)}</td>
-          <td style="padding:10px;"><span style="background:${i.approval_color};color:#fff;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;">${esc(i.approval)}</span></td>
-          <td style="padding:10px;color:#475569;font-size:11px;font-weight:600;">${esc(i.priority||'—')}</td>
-          <td style="padding:10px;color:#475569;font-size:11.5px;">${esc(i.owner||'—')}</td>
-          <td style="padding:10px;text-align:right;color:#475569;">₺${fmt(i.budget)}</td>
-          <td style="padding:10px;text-align:right;color:#10b981;font-weight:600;">%${i.progress}</td>
-        </tr>`).join('');
-    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent='Hata: '+e.message; }
-  }
-  load();
-})();
-</script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/onay_zinciri.js') }}" defer></script>
 {% endblock %}
