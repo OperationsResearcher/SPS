@@ -14,6 +14,9 @@ from sqlalchemy import func, and_, or_, text, select
 import os as _os
 import json as _json
 
+# Performans guard'ları
+MUDA_MAX_PROCESSES = 50  # MUDA analizinde tek istekte taranacak max süreç sayısı
+
 from platform_core import app_bp
 from app.models import db
 from app.models.core import User, Strategy, SubStrategy, Tenant
@@ -1383,7 +1386,7 @@ def raporlar_api_muda_analizi():
     procs = Process.query.filter_by(tenant_id=tid, is_active=True).all()
     process_findings = []
     muda_counter = defaultdict(int)
-    for p in procs[:50]:  # ilk 50 süreçle sınırla
+    for p in procs[:MUDA_MAX_PROCESSES]:
         try:
             findings = MudaAnalyzerService.analyze_process_inefficiency(p.id, tid)
             if findings:
