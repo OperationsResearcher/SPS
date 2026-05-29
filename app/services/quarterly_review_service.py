@@ -248,7 +248,7 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
     # Heuristik öneriler
     if data.kpi_on_target_pct < 50:
         data.recommendations.append(
-            f"⚠️ KPI'ların yalnızca %{data.kpi_on_target_pct:.0f}'ı hedef üstünde — "
+            f"⚠️ Performans göstergelerinin yalnızca %{data.kpi_on_target_pct:.0f}'ı hedef üstünde — "
             "stratejik öncelikleri gözden geçirmeyi düşünün."
         )
     if data.overdue_activities > 5:
@@ -257,15 +257,15 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         )
     if data.critical_risks > 0:
         data.recommendations.append(
-            f"🛡️ {data.critical_risks} kritik risk var — mitigasyon planları aktif mi?"
+            f"🛡️ {data.critical_risks} kritik risk var — risk azaltma planları aktif mi?"
         )
     if data.anomaly_high > 0:
         data.recommendations.append(
-            f"📊 {data.anomaly_high} yüksek-severity KPI anomalisi — kök neden analizi başlat."
+            f"📊 {data.anomaly_high} yüksek öncelikli PG anomalisi — kök neden analizi başlat."
         )
     if data.kpi_with_data < data.kpi_total * 0.6:
         data.recommendations.append(
-            f"📥 Bu çeyrekte KPI'ların yalnızca %{(data.kpi_with_data/max(data.kpi_total,1))*100:.0f}'ı için "
+            f"📥 Bu çeyrekte PG'lerin yalnızca %{(data.kpi_with_data/max(data.kpi_total,1))*100:.0f}'ı için "
             "veri girilmiş — veri girişi disiplinini güçlendirin."
         )
     if not data.recommendations:

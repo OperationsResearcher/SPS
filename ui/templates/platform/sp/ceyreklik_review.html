@@ -1,6 +1,10 @@
 {% extends "platform/base.html" %}
-{% block title %}Çeyreklik Review — Kokpitim{% endblock %}
-{% block page_title %}Çeyreklik Strateji Review{% endblock %}
+{% block title %}Çeyreklik Değerlendirme — Kokpitim{% endblock %}
+{% block page_title %}Çeyreklik Strateji Değerlendirme{% endblock %}
+
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_quarterly">
+{% endblock %}
 
 {% block content %}
 <div style="max-width:1100px; margin:0 auto;"
@@ -11,10 +15,10 @@
 
   <div class="mc-page-header" style="margin-bottom:24px;">
     <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
-      <i class="fas fa-calendar-check"></i> Çeyreklik Review
+      <i class="fas fa-calendar-check"></i> Çeyreklik Değerlendirme
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">
-      Modern strateji cadence pattern'ı: yıllık vizyon — çeyreklik ayarlama — aylık check-in.
+      Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip.
     </p>
   </div>
 
@@ -35,7 +39,7 @@
         </select>
       </div>
       <button type="submit" class="mc-btn mc-btn-primary">
-        <i class="fas fa-sync"></i> Review Oluştur
+        <i class="fas fa-sync"></i> Değerlendirme Oluştur
       </button>
     </form>
   </div>
@@ -48,37 +52,41 @@
     <h3 id="qr-period" style="font-size:18px; color:#1e293b; margin:0 0 16px;"></h3>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:24px;">
-      <div class="mc-card" style="padding:16px;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">KPI Durumu</div>
+      <a href="/raporlar/veri-kalitesi" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">PG Durumu</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-kpi-ontarget">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">— / — KPI'da veri</div>
-      </div>
-      <div class="mc-card" style="padding:16px;">
+        <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">— / — PG'de veri</div>
+      </a>
+      <a href="/sp/donemler" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
         <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Strateji</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-strategy">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-strategy-detail">— alt strateji</div>
-      </div>
-      <div class="mc-card" style="padding:16px;">
+      </a>
+      <a href="/sp/okr" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
         <div style="font-size:12px; color:#64748b; text-transform:uppercase;">OKR İlerleme</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-okr">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-okr-detail">— objektif</div>
-      </div>
-      <div class="mc-card" style="padding:16px;">
+      </a>
+      <a href="/surec" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
         <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Faaliyet</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-activity">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-activity-detail">— gecikmiş</div>
-      </div>
-      <div class="mc-card" style="padding:16px;">
+      </a>
+      <a href="/raporlar/risk-heatmap" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
         <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Risk</div>
         <div style="font-size:24px; font-weight:700; color:#dc2626;" id="qr-risk">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-risk-detail">— kritik</div>
-      </div>
-      <div class="mc-card" style="padding:16px;">
+      </a>
+      <a href="/raporlar/ml-anomaly" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
         <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Anomali</div>
         <div style="font-size:24px; font-weight:700; color:#f59e0b;" id="qr-anomaly">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-anomaly-detail">— orta</div>
-      </div>
+      </a>
     </div>
+    <style>
+      .qr-card { cursor: pointer; display:block; }
+      .qr-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+    </style>
 
     <div class="mc-card" style="padding:20px;">
       <h4 style="margin:0 0 12px; font-size:15px; color:#1e293b;">
@@ -103,7 +111,7 @@
   function render(d){
     document.getElementById('qr-period').textContent = d.period_label;
     document.getElementById('qr-kpi-ontarget').textContent = '%' + (d.kpi.on_target_pct||0);
-    document.getElementById('qr-kpi-detail').textContent = d.kpi.with_data + ' / ' + d.kpi.total + " KPI'da veri";
+    document.getElementById('qr-kpi-detail').textContent = d.kpi.with_data + ' / ' + d.kpi.total + " PG'de veri";
     document.getElementById('qr-strategy').textContent = d.strategy.count;
     document.getElementById('qr-strategy-detail').textContent = d.strategy.sub_count + ' alt strateji • +' + d.strategy.new_this_quarter + ' yeni';
     document.getElementById('qr-okr').textContent = d.okr.avg_progress_pct != null ? '%' + d.okr.avg_progress_pct : '—';
