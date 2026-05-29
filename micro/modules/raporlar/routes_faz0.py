@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text, select
+from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
 from app.models import db
@@ -56,8 +57,9 @@ def raporlar_api_veri_kalitesi():
         active_py = get_active_plan_year_for_user(current_user)
     py_filter = (Process.plan_year_id == active_py.id) if active_py else True
 
-    # Tüm aktif PG'ler (aktif plan yılındaki süreçlere bağlı)
-    kpis_q = ProcessKpi.query.join(Process).filter(
+    # Tüm aktif PG'ler (aktif plan yılındaki süreçlere bağlı) — N+1 önlemek için
+    # process'i eager yükle (sonradan k.process.name erişiliyor)
+    kpis_q = ProcessKpi.query.options(joinedload(ProcessKpi.process)).join(Process).filter(
         Process.tenant_id == tid,
         Process.is_active.is_(True),
         ProcessKpi.is_active.is_(True),
