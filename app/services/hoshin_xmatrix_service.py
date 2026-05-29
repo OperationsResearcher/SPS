@@ -66,15 +66,16 @@ def build_xmatrix(tenant_id: int, plan_year_id: int | None = None) -> dict:
         for r in inits
     ]
 
-    # West — KPI'lar (önemli olanları öncele)
-    kpis = db.session.execute(text("""
+    # West — PG'ler (önemli olanları öncele); plan_year varsa o yıla filtre
+    west_py = "AND p.plan_year_id = :py" if plan_year_id else ""
+    kpis = db.session.execute(text(f"""
         SELECT k.id, k.code, k.name, p.id as process_id, p.code as proc_code
         FROM process_kpis k
         JOIN processes p ON k.process_id=p.id
-        WHERE p.tenant_id=:t AND k.is_active=true
+        WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true {west_py}
         ORDER BY k.is_important DESC NULLS LAST, k.id
         LIMIT 60
-    """), {"t": tenant_id}).fetchall()
+    """), params).fetchall()
     west = [
         {"id": r.id, "code": r.code or "", "name": r.name,
          "process_id": r.process_id, "proc_code": r.proc_code or ""}
@@ -93,9 +94,18 @@ def build_xmatrix(tenant_id: int, plan_year_id: int | None = None) -> dict:
     for ss in east:
         correlations["north_east"].append({"n": ss["strategy_id"], "e": ss["id"]})
 
+    # Strateji → tüm alt strateji ID listesi (initiative'ın strategy_id'si ile fallback)
+    _subs_by_strat = {}
+    for ss in east:
+        _subs_by_strat.setdefault(ss["strategy_id"], []).append(ss["id"])
+
     for ini in south:
         if ini["sub_strategy_id"]:
             correlations["east_south"].append({"e": ini["sub_strategy_id"], "s": ini["id"]})
+        elif ini.get("strategy_id"):
+            # Fallback: initiative sadece stratejiye bağlıysa, stratejinin tüm alt stratejileriyle eşleştir
+            for ss_id in _subs_by_strat.get(ini["strategy_id"], []):
+                correlations["east_south"].append({"e": ss_id, "s": ini["id"]})
 
     # north_west — Strategy → SubStrategy → ProcessSubStrategyLink → Process → KPI
     if strat_ids and kpi_ids:
@@ -110,21 +120,35 @@ def build_xmatrix(tenant_id: int, plan_year_id: int | None = None) -> dict:
         """), {"sids": strat_ids, "kids": kpi_ids}).fetchall()
         correlations["north_west"] = [{"n": r.n, "w": r.w} for r in rows]
 
-    # south_west — heuristic: initiative ile aynı sub_strategy'ye bağlı process'lerin KPI'ları
+    # south_west — heuristic: initiative ile aynı sub_strategy'ye bağlı process'lerin PG'leri
+    # Fallback: initiative.sub_strategy_id yoksa initiative.strategy_id'nin tüm alt stratejilerini kullan
     if south and west:
         kpi_by_process = {}
         for k in west:
             kpi_by_process.setdefault(k["process_id"], []).append(k["id"])
+        # Tüm sub_strategy_id'leri tek IN sorguda topla (N+1 önlemi)
+        _needed_ss_ids = set()
+        _ini_sub_ids = {}
         for ini in south:
-            if not ini["sub_strategy_id"]:
-                continue
-            rows = db.session.execute(text("""
-                SELECT DISTINCT process_id FROM process_sub_strategy_links
-                WHERE sub_strategy_id=:ssid
-            """), {"ssid": ini["sub_strategy_id"]}).fetchall()
-            for r in rows:
-                for kid in kpi_by_process.get(r.process_id, []):
-                    correlations["south_west"].append({"s": ini["id"], "w": kid})
+            ss_ids = []
+            if ini["sub_strategy_id"]:
+                ss_ids = [ini["sub_strategy_id"]]
+            elif ini.get("strategy_id"):
+                ss_ids = _subs_by_strat.get(ini["strategy_id"], [])
+            _ini_sub_ids[ini["id"]] = ss_ids
+            _needed_ss_ids.update(ss_ids)
+        _procs_by_ss = {}
+        if _needed_ss_ids:
+            for r in db.session.execute(text("""
+                SELECT DISTINCT sub_strategy_id, process_id FROM process_sub_strategy_links
+                WHERE sub_strategy_id = ANY(:sids)
+            """), {"sids": list(_needed_ss_ids)}).fetchall():
+                _procs_by_ss.setdefault(r.sub_strategy_id, []).append(r.process_id)
+        for ini in south:
+            for ss_id in _ini_sub_ids.get(ini["id"], []):
+                for pid in _procs_by_ss.get(ss_id, []):
+                    for kid in kpi_by_process.get(pid, []):
+                        correlations["south_west"].append({"s": ini["id"], "w": kid})
 
     return {
         "tenant_id": tenant_id,

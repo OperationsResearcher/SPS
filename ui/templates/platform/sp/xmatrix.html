@@ -1,6 +1,10 @@
 {% extends "platform/base.html" %}
-{% block title %}Hoshin X-Matrix — Kokpitim{% endblock %}
-{% block page_title %}Hoshin Kanri X-Matrix{% endblock %}
+{% block title %}Hoshin X-Matrisi — Kokpitim{% endblock %}
+{% block page_title %}Hoshin Kanri X-Matrisi{% endblock %}
+
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_xmatrix">
+{% endblock %}
 
 {% block content %}
 <div style="max-width:1400px; margin:0 auto;"
@@ -9,10 +13,10 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;">
     <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
-      <i class="fas fa-th"></i> Hoshin Kanri X-Matrix
+      <i class="fas fa-th"></i> Hoshin Kanri X-Matrisi
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">
-      4 çeyrek: <b>Stratejiler ↔ Yıllık Hedefler ↔ Initiative'ler ↔ KPI'lar</b> — korelasyon dolu hücrelerle.
+      4 çeyrek: <b>Stratejiler ↔ Yıllık Hedefler ↔ Girişimler ↔ Performans Göstergeleri</b> — korelasyon dolu hücrelerle.
     </p>
   </div>
 
@@ -97,8 +101,8 @@
 
     html.push('</table>');
     html.push('<div style="margin-top:12px;font-size:12px;color:#64748b;">');
-    html.push(`<b>Sayım:</b> ${N.length} strateji · ${E.length} alt strateji · ${S.length} initiative · ${W.length} KPI`);
-    html.push(' · <span style="color:#4f46e5;">■</span> Strateji <span style="color:#db2777;">■</span> Initiative <span style="background:#fef3c7;padding:0 4px;">KPI başlığı</span> <span style="background:#dbeafe;padding:0 4px;">Alt strateji başlığı</span>');
+    html.push(`<b>Sayım:</b> ${N.length} strateji · ${E.length} alt strateji · ${S.length} girişim · ${W.length} PG`);
+    html.push(' · <span style="color:#4f46e5;">■</span> Strateji <span style="color:#db2777;">■</span> Girişim <span style="background:#fef3c7;padding:0 4px;">PG başlığı</span> <span style="background:#dbeafe;padding:0 4px;">Alt strateji başlığı</span>');
     html.push('</div></div>');
     return html.join('');
   }
@@ -107,7 +111,7 @@
     .then(r => r.json())
     .then(j => {
       document.getElementById('xm-loading').style.display = 'none';
-      if (!j.success) { alert('Hata: ' + (j.error||'')); return; }
+      if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.error||''}); return; }
       const g = document.getElementById('xm-grid');
       g.innerHTML = buildGrid(j);
       g.style.display = 'block';
