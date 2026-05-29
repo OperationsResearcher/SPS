@@ -197,12 +197,22 @@ def raporlar_api_ml_anomaly():
     if py_id: kpis_q = kpis_q.filter(Process.plan_year_id == py_id)
     kpis = kpis_q.all()
 
+    # İlk 200 PG için son 24 ölçümü tek sorguda topla (N+1 önlemi: 200 → 1)
+    _kpi_subset = kpis[:200]
+    _kpi_ids = [k.id for k in _kpi_subset]
+    _data_by_kid = defaultdict(list)
+    if _kpi_ids:
+        for d in KpiData.query.filter(
+            KpiData.process_kpi_id.in_(_kpi_ids),
+            KpiData.is_active.is_(True),
+        ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+            if len(_data_by_kid[d.process_kpi_id]) < 24:
+                _data_by_kid[d.process_kpi_id].append(d)
+
     anomalies = []
     analyzed = 0
-    for k in kpis[:200]:  # ilk 200 PG ile sınırla
-        recent = KpiData.query.filter_by(
-            process_kpi_id=k.id, is_active=True
-        ).order_by(KpiData.data_date.desc()).limit(24).all()
+    for k in _kpi_subset:
+        recent = _data_by_kid.get(k.id, [])
         # Sayısal değerleri çek
         values = []
         for r in recent:

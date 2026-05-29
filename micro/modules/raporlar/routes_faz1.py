@@ -758,12 +758,21 @@ def raporlar_api_early_warning():
         kpi_q = kpi_q.filter(Process.plan_year_id == py_id)
     all_kpis = kpi_q.all()
 
+    # İlk 100 PG için son 6 ölçümleri tek sorguda topla (N+1 önlemi)
+    _kpi_subset = all_kpis[:100]
+    _kpi_ids = [k.id for k in _kpi_subset]
+    _data_by_kid = defaultdict(list)
+    if _kpi_ids:
+        for d in KpiData.query.filter(
+            KpiData.process_kpi_id.in_(_kpi_ids),
+            KpiData.is_active.is_(True),
+        ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+            if len(_data_by_kid[d.process_kpi_id]) < 6:
+                _data_by_kid[d.process_kpi_id].append(d)
+
     warnings = []
-    for k in all_kpis[:100]:
-        # Son 6 ölçüm
-        recent = KpiData.query.filter_by(
-            process_kpi_id=k.id, is_active=True,
-        ).order_by(KpiData.data_date.desc()).limit(6).all()
+    for k in _kpi_subset:
+        recent = _data_by_kid.get(k.id, [])
         if len(recent) < 3:
             continue
         # Status_percentage düşüş trendi
