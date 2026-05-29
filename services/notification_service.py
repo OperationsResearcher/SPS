@@ -5,7 +5,7 @@ Görev ve proje bildirimleri için servis fonksiyonları
 """
 from datetime import datetime, timedelta, date
 from flask import current_app, url_for
-from models import db, Notification, Task, Project, User
+from app.models.legacy_bridge import db, Notification, Task, Project, User
 from utils.task_status import COMPLETED_STATUSES, normalize_task_status
 
 
@@ -299,12 +299,26 @@ def check_and_send_deadline_reminders():
             Task.assigned_to_id.isnot(None)
         ).all()
         
+        # Tüm projeleri batch'le çek (N+1 önlemi)
+        _pids = list({t.project_id for t in tasks if t.project_id})
+        _projects = {p.id: p for p in Project.query.filter(Project.id.in_(_pids)).all()} if _pids else {}
+
+        # Mevcut bildirimleri tek sorguda batch'le (deduplication için)
+        _today_start = datetime.combine(today, datetime.min.time())
+        _existing_keys = set()
+        if tasks:
+            for n in Notification.query.filter(
+                Notification.task_id.in_([t.id for t in tasks]),
+                Notification.tip == 'task_deadline_reminder',
+                Notification.created_at >= _today_start,
+            ).all():
+                _existing_keys.add((n.task_id, n.user_id))
+
         notifications_created = 0
         for task in tasks:
-            # Proje ayarlarından reminder_days oku
             reminder_days = [1]
             try:
-                project = Project.query.get(task.project_id)
+                project = _projects.get(task.project_id)
                 settings = project.get_notification_settings() if project else {}
                 if isinstance(settings, dict) and isinstance(settings.get('reminder_days'), list):
                     reminder_days = [int(d) for d in settings.get('reminder_days') if isinstance(d, int) or str(d).isdigit()]
@@ -316,16 +330,10 @@ def check_and_send_deadline_reminders():
             if days_until_due not in reminder_days:
                 continue
 
-            # Bugün zaten bildirim üretildiyse tekrar üretme (okundu olsa bile)
-            existing_notification = Notification.query.filter_by(
-                task_id=task.id,
-                tip='task_deadline_reminder',
-                user_id=task.assigned_to_id,
-            ).filter(
-                Notification.created_at >= datetime.combine(today, datetime.min.time())
-            ).first()
-            if existing_notification:
+            # Bugün zaten bildirim üretildiyse tekrar üretme (batch lookup)
+            if (task.id, task.assigned_to_id) in _existing_keys:
                 continue
+            _existing_keys.add((task.id, task.assigned_to_id))
 
             # Dinamik mesaj
             try:
@@ -392,7 +400,7 @@ def create_task_overdue_notification(task_id):
         task_id: Görev ID
     """
     try:
-        from models import ProjectRisk
+        from app.models.legacy_bridge import ProjectRisk
         task = Task.query.get(task_id)
         if not task or not task.due_date:
             return None
@@ -526,7 +534,7 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
         created_by_user_id: Risk oluşturan kullanıcı ID
     """
     try:
-        from models import ProjectRisk
+        from app.models.legacy_bridge import ProjectRisk
         risk = ProjectRisk.query.get(risk_id)
         if not risk or risk.risk_score < 20:  # Sadece kritik riskler için
             return None
@@ -555,7 +563,7 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
             notifications.append(notification)
         
         # Proje üyelerine bildirim
-        from models import project_members
+        from app.models.legacy_bridge import project_members
         member_ids = db.session.query(project_members.c.user_id).filter(
             project_members.c.project_id == risk.project_id
         ).all()
@@ -627,7 +635,7 @@ def create_feedback_status_notification(feedback_id, old_status, new_status, upd
         updated_by_user_id: Durumu güncelleyen kullanıcı ID
     """
     try:
-        from models import Feedback
+        from app.models.legacy_bridge import Feedback
         feedback = Feedback.query.get(feedback_id)
         if not feedback:
             return None
@@ -686,7 +694,7 @@ def check_pg_performance_deviation(pg_veri_id):
         pg_veri_id: PerformansGostergeVeri ID
     """
     try:
-        from models import PerformansGostergeVeri, BireyselPerformansGostergesi
+        from app.models.legacy_bridge import PerformansGostergeVeri, BireyselPerformansGostergesi
         
         pg_veri = PerformansGostergeVeri.query.get(pg_veri_id)
         if not pg_veri:
@@ -728,7 +736,7 @@ def check_pg_performance_deviation(pg_veri_id):
             
             # Süreç liderine de bildirim gönder (eğer süreçten geliyorsa)
             if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
-                from models import surec_liderleri
+                from app.models.legacy_bridge import surec_liderleri
                 lider_ids = db.session.query(surec_liderleri.c.user_id).filter(
                     surec_liderleri.c.surec_id == bireysel_pg.kaynak_surec_id
                 ).all()
@@ -751,7 +759,7 @@ def check_pg_performance_deviation(pg_veri_id):
             # Webhook tetikle (V2.0.0)
             try:
                 from services.webhook_service import trigger_pg_deviation_webhook
-                from models import User
+                from app.models.legacy_bridge import User
                 user = User.query.get(pg_veri.user_id)
                 if user and user.kurum_id:
                     trigger_pg_deviation_webhook(
