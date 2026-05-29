@@ -430,22 +430,32 @@ def raporlar_api_strateji_hikayesi():
         return jsonify({"success": True, "data": {"narrative": "Henüz plan yılı yok.", "highlights": []}})
 
     py_sorted = sorted(py_list, key=lambda x: x.year)
-    # Her yıl için snapshot özet
+    # Tüm yıllar için sayımları 4 sorguda topla (N+1 önlemi: yıl başına 4 query patlatıyordu)
+    _py_ids = [py.id for py in py_sorted]
+    _years = [py.year for py in py_sorted]
+    _s_counts = dict(db.session.query(Strategy.plan_year_id, func.count(Strategy.id)).filter(
+        Strategy.tenant_id == tid, Strategy.is_active.is_(True), Strategy.plan_year_id.in_(_py_ids)
+    ).group_by(Strategy.plan_year_id).all())
+    _p_counts = dict(db.session.query(Process.plan_year_id, func.count(Process.id)).filter(
+        Process.tenant_id == tid, Process.is_active.is_(True), Process.plan_year_id.in_(_py_ids)
+    ).group_by(Process.plan_year_id).all())
+    _k_counts = dict(db.session.query(Process.plan_year_id, func.count(ProcessKpi.id))
+        .join(ProcessKpi, ProcessKpi.process_id == Process.id)
+        .filter(Process.tenant_id == tid, Process.plan_year_id.in_(_py_ids),
+                ProcessKpi.is_active.is_(True))
+        .group_by(Process.plan_year_id).all())
+    _m_counts = dict(db.session.query(KpiData.year, func.count(KpiData.id)).filter(
+        KpiData.year.in_(_years)
+    ).group_by(KpiData.year).all())
+
     snapshots = []
     for py in py_sorted:
-        s_count = Strategy.query.filter_by(tenant_id=tid, plan_year_id=py.id, is_active=True).count()
-        p_count = Process.query.filter_by(tenant_id=tid, plan_year_id=py.id, is_active=True).count()
-        k_count = ProcessKpi.query.join(Process).filter(
-            Process.tenant_id == tid, Process.plan_year_id == py.id,
-            ProcessKpi.is_active.is_(True),
-        ).count()
-        m_count = db.session.query(func.count(KpiData.id)).filter(
-            KpiData.year == py.year,
-        ).scalar() or 0
         snapshots.append({
             "year": py.year, "status": py.status,
-            "strategy_count": s_count, "process_count": p_count,
-            "kpi_count": k_count, "measurement_count": m_count,
+            "strategy_count": _s_counts.get(py.id, 0),
+            "process_count": _p_counts.get(py.id, 0),
+            "kpi_count": _k_counts.get(py.id, 0),
+            "measurement_count": _m_counts.get(py.year, 0),
         })
 
     # Kırılım noktaları (yıl yıl yapısal değişim)

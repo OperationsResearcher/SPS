@@ -388,8 +388,17 @@ def raporlar_api_hedef_revizyon():
     py_data = []
     revised_kpis = []  # tek tek revize edilen PG detayı
 
+    # Tüm yılların KpiYearConfig + process_kpi'larını tek sorguda topla (N+1 önlemi)
+    _all_py_ids = [py.id for py in py_list]
+    _cfg_by_py = defaultdict(list)
+    if _all_py_ids:
+        for cfg in KpiYearConfig.query.options(joinedload(KpiYearConfig.process_kpi)).filter(
+            KpiYearConfig.plan_year_id.in_(_all_py_ids)
+        ).all():
+            _cfg_by_py[cfg.plan_year_id].append(cfg)
+
     for py in py_list:
-        configs = KpiYearConfig.query.filter_by(plan_year_id=py.id).all()
+        configs = _cfg_by_py.get(py.id, [])
         revised_count = 0
         for cfg in configs:
             kpi = cfg.process_kpi
@@ -792,28 +801,52 @@ def raporlar_api_evrim_filmi():
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    py_list = list_plan_years(tid)
+    py_list = sorted(list_plan_years(tid), key=lambda x: x.year)
     if not py_list:
         return jsonify({"success": True, "years": [], "summary": {"total_years": 0}})
 
-    snapshots = []
-    for py in sorted(py_list, key=lambda x: x.year):
-        # Bu plan yılındaki tüm strateji-alt-süreç-PG
-        strategies = Strategy.query.options(
-            selectinload(Strategy.sub_strategies)
-                .selectinload(SubStrategy.process_sub_strategy_links)
-                .joinedload(ProcessSubStrategyLink.process)
-        ).filter_by(
-            tenant_id=tid, plan_year_id=py.id, is_active=True
-        ).order_by(Strategy.code).all()
+    # Tüm yılların verisini batch'le çek (yıl başına 4 query → toplam 4 query)
+    _py_ids = [py.id for py in py_list]
+    _years = [py.year for py in py_list]
 
+    _all_strats = Strategy.query.options(
+        selectinload(Strategy.sub_strategies)
+            .selectinload(SubStrategy.process_sub_strategy_links)
+            .joinedload(ProcessSubStrategyLink.process)
+    ).filter(
+        Strategy.tenant_id == tid, Strategy.is_active.is_(True),
+        Strategy.plan_year_id.in_(_py_ids),
+    ).order_by(Strategy.code).all()
+    _strats_by_py = defaultdict(list)
+    for s in _all_strats:
+        _strats_by_py[s.plan_year_id].append(s)
+
+    _proc_counts = dict(db.session.query(Process.plan_year_id, func.count(Process.id)).filter(
+        Process.tenant_id == tid, Process.is_active.is_(True),
+        Process.plan_year_id.in_(_py_ids),
+    ).group_by(Process.plan_year_id).all())
+
+    _kpi_counts = dict(db.session.query(Process.plan_year_id, func.count(ProcessKpi.id))
+        .join(ProcessKpi, ProcessKpi.process_id == Process.id)
+        .filter(Process.tenant_id == tid, Process.plan_year_id.in_(_py_ids),
+                Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
+        .group_by(Process.plan_year_id).all())
+
+    _meas_counts = dict(db.session.query(KpiData.year, func.count(KpiData.id))
+        .join(ProcessKpi, ProcessKpi.id == KpiData.process_kpi_id)
+        .join(Process, Process.id == ProcessKpi.process_id)
+        .filter(Process.tenant_id == tid, KpiData.year.in_(_years))
+        .group_by(KpiData.year).all())
+
+    snapshots = []
+    for py in py_list:
+        strategies = _strats_by_py.get(py.id, [])
         nodes = []
         for s in strategies:
             sub_list = []
             for ss in s.sub_strategies:
                 if not getattr(ss, "is_active", True):
                     continue
-                # Bu alt-stratejiye bağlı süreçler (process_sub_strategy_links üzerinden)
                 proc_codes = []
                 for pssl in ss.process_sub_strategy_links:
                     p = pssl.process
@@ -831,25 +864,9 @@ def raporlar_api_evrim_filmi():
                 "sub_strategies": sub_list,
             })
 
-        # Yılın özet sayıları
-        proc_count = Process.query.filter_by(
-            tenant_id=tid, plan_year_id=py.id, is_active=True
-        ).count()
-        kpi_count = ProcessKpi.query.join(Process).filter(
-            Process.tenant_id == tid,
-            Process.plan_year_id == py.id,
-            ProcessKpi.is_active.is_(True),
-            Process.is_active.is_(True),
-        ).count()
-        _pk_subq = (
-            select(ProcessKpi.id)
-            .join(Process, ProcessKpi.process_id == Process.id)
-            .where(Process.tenant_id == tid, Process.plan_year_id == py.id)
-        )
-        meas_count = db.session.query(func.count(KpiData.id)).filter(
-            KpiData.year == py.year,
-            KpiData.process_kpi_id.in_(_pk_subq),
-        ).scalar() or 0
+        proc_count = _proc_counts.get(py.id, 0)
+        kpi_count = _kpi_counts.get(py.id, 0)
+        meas_count = _meas_counts.get(py.year, 0)
 
         snapshots.append({
             "year": py.year,

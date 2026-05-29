@@ -879,15 +879,26 @@ def raporlar_api_bireysel_karne_batch_generate():
     body = h["ParagraphStyle"]("Body", parent=styles["BodyText"], fontSize=10.5,
         leading=14, textColor=h["colors"].HexColor("#0f172a"), spaceAfter=4)
 
+    # Toplu olarak tüm kullanıcı + PG'leri tek sorguda topla (N+1 önlemi)
+    _uids = user_ids_with_pg[:100]
+    _users_map = {u.id: u for u in User.query.filter(User.id.in_(_uids)).all()} if _uids else {}
+    _pgs_by_uid = defaultdict(list)
+    if _uids:
+        for p in IndividualPerformanceIndicator.query.filter(
+            IndividualPerformanceIndicator.user_id.in_(_uids),
+            IndividualPerformanceIndicator.is_active.is_(True),
+        ).all():
+            _pgs_by_uid[p.user_id].append(p)
+
     # ZIP container
     zip_buf = io.BytesIO()
     with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
-        for uid in user_ids_with_pg[:100]:  # max 100 user (güvenlik)
-            u = db.session.get(User, uid)
+        for uid in _uids:
+            u = _users_map.get(uid)
             if not u:
                 continue
             uname = f"{u.first_name or ''} {u.last_name or ''}".strip() or u.email
-            pgs = IndividualPerformanceIndicator.query.filter_by(user_id=uid, is_active=True).all()
+            pgs = _pgs_by_uid.get(uid, [])
             aligned = sum(1 for p in pgs if p.source_process_id or p.source_process_kpi_id)
             alignment_pct = round(aligned / max(len(pgs), 1) * 100, 1)
 

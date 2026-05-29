@@ -467,11 +467,20 @@ def raporlar_api_bireysel_hizalama():
 
     # Her aktif kullanıcı için: kaç bireysel PG'si var, kaçı bir sürece bağlı
     users = User.query.filter_by(tenant_id=tid, is_active=True).all()
+
+    # Tüm PG'leri tek sorguda topla, user_id'ye göre grupla (N+1 önlemi)
+    _uids = [u.id for u in users]
+    _pgs_by_uid = defaultdict(list)
+    if _uids:
+        for p in IndividualPerformanceIndicator.query.filter(
+            IndividualPerformanceIndicator.user_id.in_(_uids),
+            IndividualPerformanceIndicator.is_active.is_(True),
+        ).all():
+            _pgs_by_uid[p.user_id].append(p)
+
     rows = []
     for u in users:
-        pgs = IndividualPerformanceIndicator.query.filter_by(
-            user_id=u.id, is_active=True
-        ).all()
+        pgs = _pgs_by_uid.get(u.id, [])
         if not pgs:
             continue
         total = len(pgs)
