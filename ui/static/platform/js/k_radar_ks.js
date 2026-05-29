@@ -1220,7 +1220,7 @@
           if (!ok.isConfirmed) return;
           const r = await fetch('/sp/api/bsc/auto-assign', {
             method: 'POST',
-            headers: {'Content-Type':'application/json'},
+            headers: {'Content-Type':'application/json', 'X-CSRFToken': CSRF},
             body: JSON.stringify({ min_confidence: 30 }),
           });
           const j = await r.json();
