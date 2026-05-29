@@ -2,6 +2,10 @@
 {% block title %}K-Radar{% endblock %}
 {% block page_title %}K-Radar Hub{% endblock %}
 
+{% block extra_css %}
+<meta name="kule-tour-key" content="k_radar">
+{% endblock %}
+
 {% block content %}
 <div id="k-radar-root"
      data-hub-url="{{ url_for('app_bp.k_radar_api_hub_summary') }}"
@@ -11,11 +15,13 @@
      data-rec-history-csv-url="{{ url_for('app_bp.k_radar_api_recommendation_history_csv') }}"
      data-can-manage="{{ '1' if can_manage_k_radar else '0' }}"
      style="max-width:1100px; margin:0 auto;">
-  <div class="mc-card" style="margin-bottom:16px;">
-    <div class="mc-card-body">
-      <h3 style="margin:0 0 8px 0;">Kurum Capi K-Radar</h3>
-      <p style="margin:0; color:#64748b;">KS + KP + KPR + Bireysel bilesenlerinden olusan hibrit skor panosu.</p>
-    </div>
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <i class="fas fa-satellite-dish" style="color:#4f46e5;"></i> K-Radar Hub
+    </h2>
+    <p style="font-size:13px;color:#64748b;margin:0;">
+      Kurumsal stratejik sağlık çapı: <b>KS</b> (Strateji) + <b>KP</b> (Süreç) + <b>KPR</b> (Proje) + <b>Bireysel</b> bileşenlerinden oluşan hibrit skor panosu.
+    </p>
   </div>
 
   <div class="mc-grid-4" style="margin-bottom:16px;">
@@ -43,65 +49,65 @@
 
   <div class="mc-card">
     <div class="mc-card-body" style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks') }}">KS-Radar</a>
-      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp') }}">KP-Radar</a>
-      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr') }}">KPR-Radar</a>
-      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_cross') }}">Cross</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_ks') }}" title="Strateji Skoru"><i class="fas fa-bullseye"></i> KS-Radar (Strateji)</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp') }}" title="Süreç Skoru"><i class="fas fa-cogs"></i> KP-Radar (Süreç)</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_kpr') }}" title="Proje Skoru"><i class="fas fa-project-diagram"></i> KPR-Radar (Proje)</a>
+      <a class="mc-btn mc-btn-sm" href="{{ url_for('app_bp.k_radar_cross') }}" title="Çapraz Karşılaştırma"><i class="fas fa-network-wired"></i> Çapraz Analiz</a>
     </div>
   </div>
 
   <div class="mc-card" style="margin-top:16px;">
     <div class="mc-card-header">
-      <span class="mc-card-title">Onerilen Aksiyonlar</span>
+      <span class="mc-card-title"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> Önerilen Aksiyonlar</span>
       {% if not can_manage_k_radar %}
       <span class="mc-badge">Salt Okunur</span>
       {% endif %}
     </div>
-    <div class="mc-card-body" id="kr-recommendations">Yukleniyor...</div>
+    <div class="mc-card-body" id="kr-recommendations">Yükleniyor...</div>
   </div>
 
   <div class="mc-card" style="margin-top:16px;">
     <div class="mc-card-header">
-      <span class="mc-card-title">Kural Tetikleyiciler (Faz E)</span>
+      <span class="mc-card-title"><i class="fas fa-bolt" style="color:#0ea5e9;"></i> Kural Tetikleyiciler</span>
     </div>
-    <div class="mc-card-body" id="kr-triggers">Yukleniyor...</div>
+    <div class="mc-card-body" id="kr-triggers">Yükleniyor...</div>
   </div>
 
   <div class="mc-card" style="margin-top:16px;">
     <div class="mc-card-header">
-      <span class="mc-card-title">K-Radar Takvim</span>
+      <span class="mc-card-title"><i class="fas fa-calendar-alt" style="color:#10b981;"></i> Günlük Özet Takvimi</span>
     </div>
     <div class="mc-card-body">
       {% if can_manage_k_radar %}
       <form method="post" action="{{ url_for('app_bp.k_radar_schedule_save') }}" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label><input type="checkbox" name="enabled" {% if schedule.enabled %}checked{% endif %}> Gunluk ozet aktif</label>
+        <label><input type="checkbox" name="enabled" {% if schedule.enabled %}checked{% endif %}> Günlük özet aktif</label>
         <label>Saat: <input type="time" name="time" value="{{ schedule.time or '08:30' }}"></label>
         <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">Kaydet</button>
       </form>
       {% else %}
-      <div style="color:#64748b;">Takvim ayarlarini yalnizca yonetici roller guncelleyebilir.</div>
+      <div style="color:#64748b;">Takvim ayarlarını yalnızca yönetici roller güncelleyebilir.</div>
       {% endif %}
     </div>
   </div>
 
   <div class="mc-card" style="margin-top:16px;">
     <div class="mc-card-header">
-      <span class="mc-card-title">Aksiyon Gecmisi</span>
+      <span class="mc-card-title"><i class="fas fa-history" style="color:#64748b;"></i> Aksiyon Geçmişi</span>
     </div>
     <div class="mc-card-body">
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
         <label>Durum:
           <select id="kr-history-state" class="mc-select" style="min-width:160px;">
-            <option value="">Tum</option>
-            <option value="approved">approved</option>
-            <option value="rejected">rejected</option>
-            <option value="pending">pending</option>
+            <option value="">Tümü</option>
+            <option value="approved">Onaylandı</option>
+            <option value="rejected">Reddedildi</option>
+            <option value="pending">Beklemede</option>
           </select>
         </label>
         {% if can_manage_k_radar %}
-        <label>Kullanici ID:
-          <input id="kr-history-user-id" class="mc-input" type="number" min="1" placeholder="orn: 12" style="width:140px;">
+        <label>Kullanıcı ID:
+          <input id="kr-history-user-id" class="mc-input" type="number" min="1" placeholder="örn: 12" style="width:140px;">
         </label>
         {% endif %}
         <label>Sayfa Boyutu:
@@ -112,13 +118,13 @@
           </select>
         </label>
         <button id="kr-history-apply" class="mc-btn mc-btn-sm">Filtrele</button>
-        <a id="kr-history-csv" class="mc-btn mc-btn-sm" href="#">CSV Indir</a>
+        <a id="kr-history-csv" class="mc-btn mc-btn-sm" href="#"><i class="fas fa-download"></i> CSV İndir</a>
       </div>
-      <div id="kr-history">Yukleniyor...</div>
+      <div id="kr-history">Yükleniyor...</div>
       <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
-        <button id="kr-history-prev" class="mc-btn mc-btn-sm">Onceki</button>
+        <button id="kr-history-prev" class="mc-btn mc-btn-sm">← Önceki</button>
         <span id="kr-history-page-info" style="color:#64748b;">-</span>
-        <button id="kr-history-next" class="mc-btn mc-btn-sm">Sonraki</button>
+        <button id="kr-history-next" class="mc-btn mc-btn-sm">Sonraki →</button>
       </div>
     </div>
   </div>
