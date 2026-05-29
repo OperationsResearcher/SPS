@@ -12,7 +12,108 @@ import io
 
 from flask import render_template_string
 
+from sqlalchemy import text
+
+from extensions import db
 from app.services.exec_dashboard_service import build_exec_snapshot
+
+
+_INI_STATUS_TR = {
+    "planned": "Planlandı",
+    "in_progress": "Devam Ediyor",
+    "completed": "Tamamlandı",
+    "on_hold": "Beklemede",
+    "cancelled": "İptal",
+    "delayed": "Gecikmiş",
+    "active": "Aktif",
+}
+
+
+def _fetch_digest_extras(tenant_id: int) -> dict:
+    """Haftalık rapor için ekstra veriler: top initiative, gecikmiş faaliyet, strateji-bazlı PG."""
+    out = {"top_initiatives": [], "overdue_activities": [], "strategy_perf": []}
+
+    # Top 5 girişim — ilerleme yüksekten düşüğe (planned/in_progress'leri öncele)
+    try:
+        rows = db.session.execute(text("""
+            SELECT name, status, COALESCE(progress_pct, 0) as p
+            FROM initiatives
+            WHERE tenant_id=:t AND is_active=true AND COALESCE(status,'') != 'cancelled'
+            ORDER BY (CASE status WHEN 'in_progress' THEN 0 WHEN 'planned' THEN 1 ELSE 2 END),
+                     COALESCE(progress_pct, 0) DESC, id DESC
+            LIMIT 5
+        """), {"t": tenant_id}).fetchall()
+        out["top_initiatives"] = [{"name": r.name, "status": r.status, "progress_pct": float(r.p or 0)} for r in rows]
+    except Exception:
+        pass
+
+    # Top 5 gecikmiş faaliyet
+    try:
+        rows = db.session.execute(text("""
+            SELECT a.name, a.end_date,
+                   (CURRENT_DATE - a.end_date) as days_overdue,
+                   p.name as process_name
+            FROM process_activities a
+            JOIN processes p ON p.id = a.process_id
+            WHERE p.tenant_id=:t AND a.is_active=true
+              AND a.status != 'Tamamlandı'
+              AND a.end_date < CURRENT_DATE
+            ORDER BY a.end_date ASC
+            LIMIT 5
+        """), {"t": tenant_id}).fetchall()
+        out["overdue_activities"] = [
+            {"name": r.name, "process_name": r.process_name,
+             "end_date": r.end_date, "days_overdue": r.days_overdue}
+            for r in rows
+        ]
+    except Exception:
+        pass
+
+    # Strateji bazlı PG performansı (aktif plan yıl)
+    try:
+        rows = db.session.execute(text("""
+            WITH pgdata AS (
+              SELECT s.id as strategy_id, s.code, s.title,
+                     k.id as kid,
+                     (SELECT actual_value FROM kpi_data kd
+                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                      ORDER BY kd.data_date DESC LIMIT 1) as last_actual,
+                     (SELECT target_value FROM kpi_data kd
+                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                      ORDER BY kd.data_date DESC LIMIT 1) as last_target
+              FROM strategies s
+              JOIN sub_strategies ss ON ss.strategy_id = s.id AND ss.is_active=true
+              JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
+              JOIN processes p ON p.id = psl.process_id AND p.is_active=true
+              JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+              WHERE s.tenant_id=:t AND s.is_active=true
+            )
+            SELECT strategy_id, code, title,
+                   count(DISTINCT kid) as total,
+                   count(DISTINCT kid) FILTER (WHERE last_actual IS NOT NULL) as with_data,
+                   sum(CASE WHEN last_actual ~ '^-?[0-9]+\\.?[0-9]*$'
+                              AND last_target ~ '^-?[0-9]+\\.?[0-9]*$'
+                              AND last_actual::float >= last_target::float
+                            THEN 1 ELSE 0 END) as on_target,
+                   sum(CASE WHEN last_actual ~ '^-?[0-9]+\\.?[0-9]*$'
+                              AND last_target ~ '^-?[0-9]+\\.?[0-9]*$'
+                            THEN 1 ELSE 0 END) as comparable
+            FROM pgdata
+            GROUP BY strategy_id, code, title
+            ORDER BY code NULLS LAST, strategy_id
+            LIMIT 10
+        """), {"t": tenant_id}).fetchall()
+        for r in rows:
+            on_target_pct = (float(r.on_target) / r.comparable * 100) if r.comparable else None
+            out["strategy_perf"].append({
+                "code": r.code, "title": r.title,
+                "total": int(r.total), "with_data": int(r.with_data),
+                "on_target_pct": on_target_pct,
+            })
+    except Exception:
+        pass
+
+    return out
 
 
 DIGEST_HTML = """
@@ -67,7 +168,7 @@ DIGEST_HTML = """
   <table>
     <tr><th>Durum</th><th>Adet</th><th>Ortalama İlerleme</th></tr>
     {% for st, info in snap.initiative.by_status.items() %}
-    <tr><td>{{ st }}</td><td>{{ info.count }}</td><td>%{{ info.avg_progress|round(0)|int }}</td></tr>
+    <tr><td>{{ status_tr.get(st, st) }}</td><td>{{ info.count }}</td><td>%{{ info.avg_progress|round(0)|int }}</td></tr>
     {% endfor %}
   </table>
 
@@ -86,6 +187,7 @@ def render_digest_html(tenant_id: int, tenant_name: str = "Kurumunuz") -> str:
         snap=snap,
         tenant_name=tenant_name,
         generated_at=_dt.datetime.now().strftime("%d.%m.%Y %H:%M"),
+        status_tr=_INI_STATUS_TR,
     )
 
 
@@ -101,6 +203,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
     )
 
     snap = build_exec_snapshot(tenant_id)
+    extras = _fetch_digest_extras(tenant_id)
     now = _dt.datetime.now()
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -215,7 +318,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
         ini_data = [["Durum", "Adet", "Ortalama İlerleme"]]
         for st_key, info in by_status.items():
             avg = info.get("avg_progress", 0)
-            ini_data.append([st_key, str(info.get("count", 0)), f"%{int(round(avg))}"])
+            ini_data.append([_INI_STATUS_TR.get(st_key, st_key), str(info.get("count", 0)), f"%{int(round(avg))}"])
         it = Table(ini_data, colWidths=[doc.width*0.5, doc.width*0.25, doc.width*0.25])
         it.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f1f5f9")),
@@ -230,6 +333,87 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
             ("BOTTOMPADDING", (0,0), (-1,-1), 6),
         ]))
         story.append(it)
+
+    # ── Top 5 Girişim (ilerlemeye göre) ──────────────────────────────────────
+    if extras.get("top_initiatives"):
+        story.append(Paragraph("🏆 Öncelikli Girişimler (Top 5)", h2))
+        rows = [["#", "Girişim", "Durum", "İlerleme"]]
+        for i, it_ in enumerate(extras["top_initiatives"], 1):
+            rows.append([
+                str(i),
+                it_["name"][:50] + ("…" if len(it_["name"]) > 50 else ""),
+                _INI_STATUS_TR.get(it_["status"], it_["status"] or "—"),
+                f"%{int(round(it_.get('progress_pct') or 0))}",
+            ])
+        tt = Table(rows, colWidths=[doc.width*0.06, doc.width*0.54, doc.width*0.22, doc.width*0.18])
+        tt.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f1f5f9")),
+            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTSIZE", (0,0), (-1,-1), 9),
+            ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
+            ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#e2e8f0")),
+            ("ALIGN", (0,0), (0,-1), "CENTER"),
+            ("ALIGN", (3,0), (3,-1), "CENTER"),
+            ("LEFTPADDING", (0,0), (-1,-1), 6),
+            ("RIGHTPADDING", (0,0), (-1,-1), 6),
+            ("TOPPADDING", (0,0), (-1,-1), 5),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ]))
+        story.append(tt)
+
+    # ── Top 5 Gecikmiş Faaliyetler ────────────────────────────────────────────
+    if extras.get("overdue_activities"):
+        story.append(Paragraph("⏱ En Çok Gecikmiş Faaliyetler (Top 5)", h2))
+        rows = [["Faaliyet", "Süreç", "Bitiş Tarihi", "Gecikme"]]
+        for act in extras["overdue_activities"]:
+            rows.append([
+                (act["name"] or "—")[:40] + ("…" if act["name"] and len(act["name"]) > 40 else ""),
+                (act["process_name"] or "—")[:25] + ("…" if act["process_name"] and len(act["process_name"]) > 25 else ""),
+                act["end_date"].strftime("%d.%m.%Y") if act.get("end_date") else "—",
+                f"{act['days_overdue']} gün",
+            ])
+        ot = Table(rows, colWidths=[doc.width*0.40, doc.width*0.28, doc.width*0.16, doc.width*0.16])
+        ot.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#fef2f2")),
+            ("TEXTCOLOR", (0,0), (-1,0), colors.HexColor("#991b1b")),
+            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTSIZE", (0,0), (-1,-1), 9),
+            ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
+            ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#fecaca")),
+            ("ALIGN", (2,0), (3,-1), "CENTER"),
+            ("LEFTPADDING", (0,0), (-1,-1), 6),
+            ("RIGHTPADDING", (0,0), (-1,-1), 6),
+            ("TOPPADDING", (0,0), (-1,-1), 5),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ]))
+        story.append(ot)
+
+    # ── Strateji Bazında PG Performansı ──────────────────────────────────────
+    if extras.get("strategy_perf"):
+        story.append(Paragraph("📈 Strateji Bazında PG Performansı", h2))
+        rows = [["Strateji", "Toplam PG", "Veri Var", "Hedef Üstü"]]
+        for s_ in extras["strategy_perf"]:
+            rows.append([
+                (s_["code"] or "")[:10] + " " + (s_["title"] or "")[:35],
+                str(s_["total"]),
+                str(s_["with_data"]),
+                f"%{int(round(s_['on_target_pct']))}" if s_.get("on_target_pct") is not None else "—",
+            ])
+        st_ = Table(rows, colWidths=[doc.width*0.50, doc.width*0.18, doc.width*0.16, doc.width*0.16])
+        st_.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eef2ff")),
+            ("TEXTCOLOR", (0,0), (-1,0), colors.HexColor("#4338ca")),
+            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTSIZE", (0,0), (-1,-1), 9),
+            ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
+            ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#c7d2fe")),
+            ("ALIGN", (1,0), (-1,-1), "CENTER"),
+            ("LEFTPADDING", (0,0), (-1,-1), 6),
+            ("RIGHTPADDING", (0,0), (-1,-1), 6),
+            ("TOPPADDING", (0,0), (-1,-1), 5),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ]))
+        story.append(st_)
 
     # ── Heuristik aksiyon önerileri ──────────────────────────────────────────
     actions = []
