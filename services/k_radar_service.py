@@ -8,6 +8,7 @@ from hashlib import sha1
 from datetime import date, timedelta
 
 from sqlalchemy import func, or_
+from sqlalchemy.orm import selectinload
 from app.extensions import cache
 
 from app.models import db
@@ -1208,17 +1209,26 @@ def get_ks_strateji_real(tenant_id: int) -> dict:
     from app.models.core import Strategy, SubStrategy
     from app.models.process import Process
 
-    strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(Strategy.code).all()
+    from app.models.process import ProcessSubStrategyLink
+    strategies = (
+        Strategy.query.options(
+            selectinload(Strategy.sub_strategies)
+                .selectinload(SubStrategy.process_sub_strategy_links)
+                .joinedload(ProcessSubStrategyLink.process)
+        )
+        .filter_by(tenant_id=tenant_id, is_active=True).order_by(Strategy.code).all()
+    )
     all_processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     proc_map = {p.id: p for p in all_processes}
 
     linked_proc_ids = set()
     strat_list = []
     for s in strategies:
-        subs = SubStrategy.query.filter_by(strategy_id=s.id, is_active=True).all()
+        subs = [ss for ss in s.sub_strategies if getattr(ss, "is_active", True)]
         sub_list = []
         for ss in subs:
-            linked = [p for p in (ss.processes or []) if p.is_active and p.tenant_id == tenant_id]
+            linked = [pssl.process for pssl in ss.process_sub_strategy_links
+                      if pssl.process and pssl.process.is_active and pssl.process.tenant_id == tenant_id]
             for p in linked:
                 linked_proc_ids.add(p.id)
             sub_list.append({

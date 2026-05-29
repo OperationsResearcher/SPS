@@ -210,30 +210,40 @@ class RecommendationService:
                 'summary': {}
             }
             
-            # Tüm aktif süreçler
+            # Tüm aktif süreçler + KPI'lar + son veri batch (N+1 önlemi)
             processes = Process.query.filter_by(
                 tenant_id=tenant_id,
                 is_active=True
             ).all()
-            
+            _proc_ids = [p.id for p in processes]
+            _all_kpis = ProcessKpi.query.filter(
+                ProcessKpi.process_id.in_(_proc_ids),
+                ProcessKpi.is_active.is_(True),
+            ).all() if _proc_ids else []
+            from collections import defaultdict as _dd
+            _kpis_by_pid = _dd(list)
+            for k in _all_kpis:
+                _kpis_by_pid[k.process_id].append(k)
+            _kpi_ids = [k.id for k in _all_kpis]
+            _latest_by_kid = {}
+            if _kpi_ids:
+                for d in KpiData.query.filter(
+                    KpiData.process_kpi_id.in_(_kpi_ids),
+                    KpiData.is_active.is_(True),
+                ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                    if d.process_kpi_id not in _latest_by_kid:
+                        _latest_by_kid[d.process_kpi_id] = d
+
             total_kpis = 0
             on_target = 0
             below_target = 0
-            
+
             for process in processes:
-                kpis = ProcessKpi.query.filter_by(
-                    process_id=process.id,
-                    is_active=True
-                ).all()
-                
+                kpis = _kpis_by_pid.get(process.id, [])
+
                 for kpi in kpis:
                     total_kpis += 1
-                    
-                    # Son veri
-                    latest = KpiData.query.filter_by(
-                        process_kpi_id=kpi.id,
-                        is_active=True
-                    ).order_by(KpiData.data_date.desc()).first()
+                    latest = _latest_by_kid.get(kpi.id)
                     
                     if not latest:
                         continue

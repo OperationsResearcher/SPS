@@ -9,7 +9,8 @@ from typing import Any
 from sqlalchemy import func, or_
 from sqlalchemy.exc import ProgrammingError
 
-from models import Project, RaidItem, Task, db
+from extensions import db
+from app.models.portfolio_project import Project, RaidItem, Task
 from app_platform.modules.proje.project_list_query import ProjectListFilters, filtered_project_ids
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
@@ -68,6 +69,27 @@ def build_project_list_overview(
     # — Son 4 Pazartesi haftası etiketleri + heatmap (7 gün) —
     week_starts = [_week_start(today - timedelta(weeks=k)) for k in range(3, -1, -1)]
     weekly_labels = [ws.strftime("%d.%m") for ws in week_starts]
+
+    # 28 günün tamamlanmış görev sayısını tek GROUP BY ile çek (N+1 önlemi: 28 → 1)
+    _heatmap_start = datetime.combine(week_starts[0], datetime.min.time())
+    _heatmap_end = datetime.combine(week_starts[-1] + timedelta(days=7), datetime.min.time())
+    _by_day = dict(db.session.query(
+        func.date(Task.completed_at),
+        func.count(Task.id),
+    ).filter(
+        Task.project_id.in_(pids),
+        Task.is_archived.is_(False),
+        Task.status.in_(("Tamamlandı", "Done", "Completed")),
+        Task.completed_at.isnot(None),
+        Task.completed_at >= _heatmap_start,
+        Task.completed_at < _heatmap_end,
+    ).group_by(func.date(Task.completed_at)).all())
+
+    def _day_count(day):
+        # SQLAlchemy date() bazen str bazen date döner; her ikisi de eşle
+        c = _by_day.get(day) or _by_day.get(day.isoformat())
+        return int(c) if c else 0
+
     heatmap_weeks: list[list[int | None]] = []
     for ws in week_starts:
         row: list[int | None] = []
@@ -76,22 +98,7 @@ def build_project_list_overview(
             if day > today:
                 row.append(None)
                 continue
-            d0 = datetime.combine(day, datetime.min.time())
-            d1 = datetime.combine(day + timedelta(days=1), datetime.min.time())
-            cnt = (
-                db.session.query(func.count(Task.id))
-                .filter(
-                    Task.project_id.in_(pids),
-                    Task.is_archived.is_(False),
-                    Task.status.in_(("Tamamlandı", "Done", "Completed")),
-                    Task.completed_at.isnot(None),
-                    Task.completed_at >= d0,
-                    Task.completed_at < d1,
-                )
-                .scalar()
-                or 0
-            )
-            row.append(int(cnt))
+            row.append(_day_count(day))
         heatmap_weeks.append(row)
     weekly_completed = [sum(x for x in r if x is not None) for r in heatmap_weeks]
 
