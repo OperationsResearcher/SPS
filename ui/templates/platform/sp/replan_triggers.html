@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <div class="mc-modal-overlay" id="rt-modal" style="display:none;">
+  <div class="mc-modal-overlay" id="rt-modal">
     <div class="mc-modal-lg">
       <div class="mc-modal-header">
         <h3>Yeni Tetikleyici</h3>
@@ -56,14 +56,14 @@
           <label>Açıklama<textarea class="mc-input" name="description" rows="2"></textarea></label>
           <label>Tetikleyici Tipi
             <select class="mc-input" name="trigger_type">
-              <option value="kpi_below_target">KPI Hedef Altında</option>
+              <option value="kpi_below_target">PG Hedef Altında</option>
               <option value="overdue_activity_pct">Gecikmiş Faaliyet Oranı</option>
               <option value="risk_score">Risk Skoru</option>
               <option value="anomaly_high">Anomali (Yüksek)</option>
             </select>
           </label>
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-            <label>Target KPI ID<input class="mc-input" type="number" name="target_kpi_id"></label>
+            <label>Hedef PG ID<input class="mc-input" type="number" name="target_kpi_id"></label>
             <label>Operatör
               <select class="mc-input" name="threshold_operator">
                 <option value="<">&lt;</option>
@@ -146,9 +146,10 @@
     }
   }
 
-  document.getElementById('rt-new').onclick = () => modal.style.display = 'flex';
-  document.getElementById('rt-modal-close').onclick = () => modal.style.display = 'none';
-  document.getElementById('rt-cancel').onclick = () => modal.style.display = 'none';
+  document.getElementById('rt-new').onclick = () => modal.classList.add('open');
+  document.getElementById('rt-modal-close').onclick = () => modal.classList.remove('open');
+  document.getElementById('rt-cancel').onclick = () => modal.classList.remove('open');
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
 
   document.getElementById('rt-save').onclick = async () => {
     const f = document.getElementById('rt-form');
@@ -160,8 +161,8 @@
       body: JSON.stringify(d),
     });
     const j = await res.json();
-    if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
-    modal.style.display = 'none';
+    if (!res.ok) { Swal.fire({icon:'error',title:'Hata',text:j.error||''}); return; }
+    modal.classList.remove('open');
     f.reset();
     load();
   };
@@ -169,7 +170,7 @@
   document.getElementById('rt-eval').onclick = async () => {
     const res = await fetch(r.dataset.evaluateUrl, {method: 'POST'});
     const j = await res.json();
-    alert(j.fired_count + ' trigger ateşlendi');
+    Swal.fire({icon:'success',title:'Değerlendirildi',text:j.fired_count + ' tetikleyici ateşlendi'});
     load();
   };
 
