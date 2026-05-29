@@ -5,7 +5,7 @@ Tüm sistem verilerini sentezleyerek stratejik tavsiyeler üretir
 """
 from datetime import date, datetime, timedelta
 from flask import current_app
-from models import (
+from app.models.legacy_bridge import (
     db, Project, Task, ProjectRisk, Surec, User,
     PerformansGostergeVeri, BireyselPerformansGostergesi, Notification
 )
@@ -525,54 +525,66 @@ def _analyze_project_process_relationships(kurum_id):
     try:
         # Tüm süreçleri getir
         surecler = Surec.query.filter_by(kurum_id=kurum_id).all()
-        
+
+        # Düşük skorlu süreçleri tespit et (skor hesabı her süreç için ayrı — burada batch yok)
+        _low_score_surecs = []
         for surec in surecler:
-            # Süreç sağlık skorunu hesapla
             skor_sonucu = calculate_surec_saglik_skoru(surec.id)
             if not skor_sonucu or 'skor' not in skor_sonucu:
                 continue
-            
-            surec_skoru = skor_sonucu['skor']
-            
-            # Süreç skoru düşükse ve bağlı projeler varsa
-            if surec_skoru < 60:
-                from models import project_related_processes
-                bagli_proje_ids = db.session.query(project_related_processes.c.project_id).filter(
-                    project_related_processes.c.surec_id == surec.id
-                ).all()
-                bagli_proje_ids = [row[0] for row in bagli_proje_ids]
-                
-                if bagli_proje_ids:
-                    # Bağlı projelerin durumunu kontrol et
-                    bagli_projeler = Project.query.filter(
-                        Project.id.in_(bagli_proje_ids),
-                        Project.is_archived == False
-                    ).all()
-                    
-                    for proje in bagli_projeler:
-                        # Proje görevlerini kontrol et
-                        proje_gorevleri = Task.query.filter_by(
-                            project_id=proje.id,
-                            is_archived=False
-                        ).all()
-                        
-                        geciken_gorevler = [t for t in proje_gorevleri 
-                                          if t.status != 'Tamamlandı' and t.due_date and t.due_date < date.today()]
-                        
-                        if len(geciken_gorevler) > 2:
-                            recommendations.append({
-                                'id': f'rec_process_{surec.id}_{proje.id}',
-                                'type': 'warning',
-                                'title': f'{surec.name} Sürecindeki Performans Düşüşü',
-                                'description': f'"{surec.name}" sürecindeki performans düşüşü ({surec_skoru:.1f} skor) "{proje.name}" projesindeki {len(geciken_gorevler)} gecikmiş görevden kaynaklanıyor olabilir. Kaynak aktarımı önerilir.',
-                                'action': 'review_project',
-                                'action_label': 'Projeyi İncele',
-                                'action_url': f'/projeler/{proje.id}',
-                                'priority': 'medium',
-                                'related_process_id': surec.id,
-                                'related_project_id': proje.id
-                            })
-                            break  # Her süreç için bir tavsiye yeter
+            if skor_sonucu['skor'] < 60:
+                _low_score_surecs.append((surec, skor_sonucu['skor']))
+
+        if not _low_score_surecs:
+            return recommendations
+
+        # Tüm düşük-skorlu süreçlerin bağlı projelerini ve görevlerini batch'le çek (N+1 önlemi)
+        from app.models.legacy_bridge import project_related_processes
+        from collections import defaultdict as _dd
+        _surec_ids = [s.id for s, _ in _low_score_surecs]
+        _proj_by_surec = _dd(list)
+        for surec_id, proj_id in db.session.query(
+            project_related_processes.c.surec_id,
+            project_related_processes.c.project_id,
+        ).filter(project_related_processes.c.surec_id.in_(_surec_ids)).all():
+            _proj_by_surec[surec_id].append(proj_id)
+
+        _all_proj_ids = list({pid for lst in _proj_by_surec.values() for pid in lst})
+        _projects = {p.id: p for p in Project.query.filter(
+            Project.id.in_(_all_proj_ids), Project.is_archived == False
+        ).all()} if _all_proj_ids else {}
+
+        _tasks_by_proj = _dd(list)
+        if _all_proj_ids:
+            for t in Task.query.filter(
+                Task.project_id.in_(_all_proj_ids), Task.is_archived == False
+            ).all():
+                _tasks_by_proj[t.project_id].append(t)
+
+        today = date.today()
+        for surec, surec_skoru in _low_score_surecs:
+            bagli_proje_ids = _proj_by_surec.get(surec.id, [])
+            for pid in bagli_proje_ids:
+                proje = _projects.get(pid)
+                if not proje:
+                    continue
+                proje_gorevleri = _tasks_by_proj.get(proje.id, [])
+                geciken_gorevler = [t for t in proje_gorevleri
+                                    if t.status != 'Tamamlandı' and t.due_date and t.due_date < today]
+                if len(geciken_gorevler) > 2:
+                    recommendations.append({
+                        'id': f'rec_process_{surec.id}_{proje.id}',
+                        'type': 'warning',
+                        'title': f'{surec.name} Sürecindeki Performans Düşüşü',
+                        'description': f'"{surec.name}" sürecindeki performans düşüşü ({surec_skoru:.1f} skor) "{proje.name}" projesindeki {len(geciken_gorevler)} gecikmiş görevden kaynaklanıyor olabilir. Kaynak aktarımı önerilir.',
+                        'action': 'review_project',
+                        'action_label': 'Projeyi İncele',
+                        'action_url': f'/projeler/{proje.id}',
+                        'priority': 'medium',
+                        'related_process_id': surec.id,
+                        'related_project_id': proje.id
+                    })
+                    break  # Her süreç için bir tavsiye yeter
     
     except Exception as e:
         if current_app:
