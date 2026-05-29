@@ -54,6 +54,7 @@
     pestle:   hub.dataset.apiPestle,
     gap:      hub.dataset.apiGap,
     strateji: hub.dataset.apiStrateji,
+    efqm:     hub.dataset.apiEfqm,
   };
 
   // Kart tıklama → modal aç + yükle
@@ -77,6 +78,7 @@
       case "gap":    loadGapModal();    break;
       case "okr":    loadOkrModal();    break;
       case "bsc":    loadBscModal();    break;
+      case "efqm":   /* Static modal */ break;
     }
   }
 
@@ -615,6 +617,28 @@
     }).catch(() => {});
   }
 
+  // ── EFQM Mini (hub kartı) ─────────────────────────────────────────────────────
+  if (API.efqm) {
+    fetchJson(API.efqm).then(res => {
+      if (!res.success) return;
+      const d = res.data || {};
+      const criteriaEl = document.getElementById("ks-efqm-criteria");
+      if (criteriaEl) criteriaEl.textContent = d.criterion_coverage ?? "—";
+      const readinessEl = document.getElementById("ks-efqm-readiness");
+      if (readinessEl) {
+        const val = d.readiness_score != null ? d.readiness_score + "%" : "—";
+        readinessEl.textContent = val;
+        readinessEl.style.color = scoreColor(d.readiness_score);
+      }
+      const badge = document.getElementById("ks-efqm-badge");
+      if (badge) {
+        badge.textContent = d.readiness_score != null ? d.readiness_score + "%" : "—";
+        badge.style.background = d.readiness_score >= 80 ? "#d1fae5" : d.readiness_score >= 50 ? "#fef3c7" : "#fef2f2";
+        badge.style.color = d.readiness_score >= 80 ? "#065f46" : d.readiness_score >= 50 ? "#92400e" : "#991b1b";
+      }
+    }).catch(() => {});
+  }
+
   // ── OKR Modal ─────────────────────────────────────────────────────────────────
   function loadOkrModal() {
     const canManage = hub.dataset.canManage === "true";
@@ -1105,16 +1129,22 @@
       }).join("") || `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">KPI bulunamadı.</td></tr>`;
 
       // ── Tümünü birleştir ──────────────────────────────────────────────────
+      const autoBtn = canManage ? `<button id="bsc-auto-assign" class="mc-btn mc-btn-primary mc-btn-sm" style="margin-left:8px;"><i class="fas fa-wand-magic-sparkles"></i> Otomatik Atama</button>` : "";
       setHtml("ks-modal-bsc-body", `
         <div style="padding:16px 20px 0;">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <div id="bsc-balance-banner" style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:linear-gradient(90deg,#eef2ff,#fdf4ff);border-radius:8px;margin-bottom:12px;font-size:12.5px;">
+            <i class="fas fa-balance-scale" style="color:#6366f1;font-size:18px;"></i>
+            <span><b>Denge skoru hesaplanıyor…</b></span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
             ${PERSPECTIVES.map(p => {
               const pd = persp[p.key] || {};
               return `<span class="mc-badge" style="background:${p.color}20;color:${p.color};">
-                <i class="fas ${p.icon}"></i> ${p.label}: ${pd.kpi_count || 0} KPI ${pd.score != null ? "· " + pd.score + "%" : ""}
+                <i class="fas ${p.icon}"></i> ${p.label}: ${pd.kpi_count || 0} PG ${pd.score != null ? "· " + pd.score + "%" : ""}
               </span>`;
             }).join("")}
             <span class="mc-badge mc-badge-gray">${unassigned.length} atanmamış</span>
+            ${autoBtn}
             <span style="font-size:12px;color:#94a3b8;margin-left:auto;">${year} yılı</span>
           </div>
           <div class="bsc-tabs">${tabHtml}</div>
@@ -1152,6 +1182,64 @@
           openAssignModal(btn.dataset.kpiId, btn.dataset.kpiName, btn.dataset.current);
         });
       });
+
+      // ── Denge skoru bantı (asenkron yükle) ───────────────────────────────
+      fetchJson('/sp/api/bsc/balance').then(b => {
+        if (!b || !b.success) return;
+        const banner = document.getElementById('bsc-balance-banner');
+        if (!banner) return;
+        const score = b.balance_score;
+        const scoreColor = score >= 75 ? '#059669' : score >= 50 ? '#f59e0b' : '#dc2626';
+        const sharesStr = `Fin %${b.shares.finansal} · Müş %${b.shares.musteri} · İç Süreç %${b.shares.ic_surec} · Öğr %${b.shares.ogrenme}`;
+        const recoStr = (b.recommendations || []).slice(0,1).map(r=>`<div style="font-size:11.5px;color:#475569;margin-top:4px;">${r}</div>`).join('');
+        banner.innerHTML = `
+          <i class="fas fa-balance-scale" style="color:${scoreColor};font-size:18px;"></i>
+          <div style="flex:1;">
+            <div><b>Denge Skoru: <span style="color:${scoreColor};">${score}/100</span></b> · ${b.total_assigned} atanmış</div>
+            <div style="font-size:11.5px;color:#64748b;margin-top:2px;">${sharesStr}</div>
+            ${recoStr}
+          </div>
+          <span style="font-size:11px;color:#94a3b8;">Kaplan-Norton ideal: %25 her perspektif</span>
+        `;
+      });
+
+      // ── Otomatik atama butonu ───────────────────────────────────────────
+      const autoBtnEl = document.getElementById('bsc-auto-assign');
+      if (autoBtnEl) {
+        autoBtnEl.addEventListener('click', async () => {
+          const ok = await Swal.fire({
+            icon: 'question',
+            title: 'Otomatik Atama',
+            html: `Atanmamış PG'lerin adı/açıklamasından <b>kural-tabanlı sınıflandırıcı</b> ile uygun BSC perspektifi önerilir.<br><br>
+                   <small style="color:#64748b;">Yalnız <b>%30 ve üzeri güvende</b> olan öneriler uygulanır. Her zaman manuel düzenleyebilirsin.</small>`,
+            showCancelButton: true,
+            confirmButtonText: 'Otomatik Ata',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#6366f1',
+          });
+          if (!ok.isConfirmed) return;
+          const r = await fetch('/sp/api/bsc/auto-assign', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ min_confidence: 30 }),
+          });
+          const j = await r.json();
+          if (!j.success) {
+            Swal.fire({icon:'error', title:'Hata', text:j.message || 'Atama yapılamadı'});
+            return;
+          }
+          await Swal.fire({
+            icon: 'success',
+            title: 'Atama Tamamlandı',
+            html: `<b>${j.applied}</b> PG otomatik atandı.<br>
+                   ${j.skipped_low_confidence} düşük güvenli atlanan, ${j.skipped_unclassified} sınıflandırılamayan.`,
+            confirmButtonText: 'Tamam',
+          });
+          // Modal'ı yeniden yükle
+          delete loaded['bsc'];
+          loadBscModal();
+        });
+      }
     }
 
     setHtml("ks-modal-bsc-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');

@@ -755,3 +755,179 @@ def sp_api_bsc_assign_bulk():
         db.session.rollback()
         current_app.logger.error(f"[sp_api_bsc_assign_bulk] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Toplu atama kaydedilemedi."}), 500
+
+
+@app_bp.route("/sp/api/bsc/auto-suggest", methods=["GET"])
+@login_required
+def sp_api_bsc_auto_suggest():
+    """Atanmamış PG'ler için BSC perspektif önerileri (keyword tabanlı sınıflandırıcı)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.bsc import BscKpiPerspective
+        from app.models.process import ProcessKpi, Process
+        from app.services.bsc_auto_classifier import classify
+
+        active_py = get_active_plan_year_for_user(current_user)
+        py_id = active_py.id if active_py else None
+
+        # Atanmış kpi_id seti
+        assigned_ids = set()
+        if py_id:
+            assigned_ids = {r.process_kpi_id for r in BscKpiPerspective.query.filter_by(
+                tenant_id=tid, plan_year_id=py_id
+            ).all()}
+
+        kpis = (
+            ProcessKpi.query.join(Process)
+            .filter(Process.tenant_id == tid, Process.is_active == True,
+                    ProcessKpi.is_active == True)
+            .all()
+        )
+        proc_map = {p.id: p for p in Process.query.filter_by(tenant_id=tid, is_active=True).all()}
+
+        suggestions = []
+        for k in kpis:
+            if k.id in assigned_ids:
+                continue
+            proc = proc_map.get(k.process_id)
+            persp, conf, matched = classify(
+                name=k.name or "", code=k.code or "",
+                description=k.description or "",
+                process_name=proc.name if proc else "",
+                process_code=proc.code if proc else "",
+            )
+            suggestions.append({
+                "kpi_id": k.id,
+                "kpi_code": k.code or "",
+                "kpi_name": k.name or "",
+                "process_code": proc.code if proc else "",
+                "process_name": proc.name if proc else "",
+                "suggested_perspective": persp,
+                "confidence": conf,
+                "matched_keywords": matched,
+            })
+
+        # Güvene göre sırala (yüksek önce)
+        suggestions.sort(key=lambda x: -x["confidence"])
+        return jsonify({"success": True, "items": suggestions,
+                        "total_unassigned": len(suggestions)})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_bsc_auto_suggest] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Öneri üretilemedi."}), 500
+
+
+@app_bp.route("/sp/api/bsc/auto-assign", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_bsc_auto_assign():
+    """Yüksek güvenli önerileri toplu uygular (min_confidence parametresi ile)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.bsc import BscKpiPerspective
+        from app.models.process import ProcessKpi, Process
+        from app.services.bsc_auto_classifier import classify
+
+        payload = request.get_json(silent=True) or {}
+        min_conf = int(payload.get("min_confidence", 30))
+
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        assigned_ids = {r.process_kpi_id for r in BscKpiPerspective.query.filter_by(
+            tenant_id=tid, plan_year_id=active_py.id
+        ).all()}
+
+        kpis = (
+            ProcessKpi.query.join(Process)
+            .filter(Process.tenant_id == tid, Process.is_active == True,
+                    ProcessKpi.is_active == True)
+            .all()
+        )
+        proc_map = {p.id: p for p in Process.query.filter_by(tenant_id=tid, is_active=True).all()}
+
+        applied = 0
+        skipped_low_conf = 0
+        skipped_unclassified = 0
+        for k in kpis:
+            if k.id in assigned_ids:
+                continue
+            proc = proc_map.get(k.process_id)
+            persp, conf, _ = classify(
+                name=k.name or "", code=k.code or "",
+                description=k.description or "",
+                process_name=proc.name if proc else "",
+                process_code=proc.code if proc else "",
+            )
+            if not persp:
+                skipped_unclassified += 1
+                continue
+            if conf < min_conf:
+                skipped_low_conf += 1
+                continue
+            db.session.add(BscKpiPerspective(
+                tenant_id=tid, plan_year_id=active_py.id,
+                process_kpi_id=k.id, perspective=persp,
+            ))
+            applied += 1
+
+        db.session.commit()
+        return jsonify({"success": True, "applied": applied,
+                        "skipped_low_confidence": skipped_low_conf,
+                        "skipped_unclassified": skipped_unclassified})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_bsc_auto_assign] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Otomatik atama yapılamadı."}), 500
+
+
+@app_bp.route("/sp/api/bsc/balance", methods=["GET"])
+@login_required
+def sp_api_bsc_balance():
+    """Tenant için BSC denge skoru (Kaplan-Norton ideal %25-%25-%25-%25)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.bsc import BscKpiPerspective
+        from app.services.bsc_auto_classifier import balance_score
+
+        active_py = get_active_plan_year_for_user(current_user)
+        py_id = active_py.id if active_py else None
+
+        counts = {"finansal": 0, "musteri": 0, "ic_surec": 0, "ogrenme": 0}
+        if py_id:
+            for row in BscKpiPerspective.query.filter_by(
+                tenant_id=tid, plan_year_id=py_id
+            ).all():
+                if row.perspective in counts:
+                    counts[row.perspective] += 1
+
+        balance_pct, shares = balance_score(counts)
+        total = sum(counts.values())
+
+        recommendations = []
+        if total == 0:
+            recommendations.append("Hiçbir PG perspektife atanmamış. 'Otomatik Atama' ile başlayın.")
+        else:
+            ideal = 25.0
+            for persp_key, persp_lbl in [("finansal","Finansal"), ("musteri","Müşteri"),
+                                          ("ic_surec","İç Süreç"), ("ogrenme","Öğrenme")]:
+                share = shares[persp_key]
+                if share < ideal - 10:
+                    recommendations.append(
+                        f"⚠️ {persp_lbl} perspektifi düşük (%{share}, ideal %25). "
+                        f"Daha fazla PG'yi bu perspektife atamayı düşünün."
+                    )
+                elif share > ideal + 15:
+                    recommendations.append(
+                        f"⚖️ {persp_lbl} perspektifi yoğun (%{share}, ideal %25). "
+                        f"Diğer perspektiflere kaydırma değerlendirilebilir."
+                    )
+
+        return jsonify({"success": True,
+                        "balance_score": balance_pct,
+                        "counts": counts, "shares": shares,
+                        "total_assigned": total,
+                        "recommendations": recommendations})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_bsc_balance] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Denge skoru hesaplanamadı."}), 500
