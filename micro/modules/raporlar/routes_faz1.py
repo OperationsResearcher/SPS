@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text, select
+from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from app.models import db
@@ -48,7 +49,7 @@ def raporlar_api_sunburst():
     active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -386,7 +387,7 @@ def raporlar_api_roi_strategy():
     active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -655,7 +656,7 @@ def raporlar_api_ai_coach():
     except Exception:
         proc_scores = {}
 
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if active_py:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.all()
@@ -725,7 +726,7 @@ def raporlar_api_early_warning():
     active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
-    kpi_q = ProcessKpi.query.join(Process).filter(
+    kpi_q = ProcessKpi.query.options(joinedload(ProcessKpi.process)).join(Process).filter(
         Process.tenant_id == tid, Process.is_active.is_(True),
         ProcessKpi.is_active.is_(True),
     )

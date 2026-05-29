@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text, select
+from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
 from app.models import db
@@ -248,7 +249,7 @@ def raporlar_api_nlp_query():
                         "summary": f"{len(inits)} aktif/planlanan initiative"})
 
     if pattern_id == "overdue_activities":
-        overdue = ProcessActivity.query.join(Process).filter(
+        overdue = ProcessActivity.query.options(joinedload(ProcessActivity.process)).join(Process).filter(
             Process.tenant_id == tid, ProcessActivity.is_active.is_(True),
             ProcessActivity.end_at < datetime.utcnow(),
             ProcessActivity.status != "Tamamlandı",

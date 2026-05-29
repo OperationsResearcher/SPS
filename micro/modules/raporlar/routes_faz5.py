@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text, select
+from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from app.models import db
@@ -150,7 +151,7 @@ def raporlar_api_bi_strategies_json():
     active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if py_id: strat_q = strat_q.filter_by(plan_year_id=py_id)
 
     out = []
@@ -189,7 +190,7 @@ def raporlar_api_ml_anomaly():
     py_id = active_py.id if active_py else None
 
     # PG'leri çek, her PG için son 24 ölçüm sayısal değer
-    kpis_q = ProcessKpi.query.join(Process).filter(
+    kpis_q = ProcessKpi.query.options(joinedload(ProcessKpi.process)).join(Process).filter(
         Process.tenant_id == tid, Process.is_active.is_(True),
         ProcessKpi.is_active.is_(True),
     )

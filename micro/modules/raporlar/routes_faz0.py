@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text, select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from app.models import db
@@ -187,7 +187,7 @@ def raporlar_api_kv_carpiklik():
     py_id = active_py.id if active_py else None
 
     # Stratejiler + ağırlık
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -288,7 +288,7 @@ def raporlar_api_hizalama_sankey():
                KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}
     total_w = sum(weights.values()) or 1
 
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -791,7 +791,7 @@ def raporlar_api_evrim_filmi():
     snapshots = []
     for py in sorted(py_list, key=lambda x: x.year):
         # Bu plan yılındaki tüm strateji-alt-süreç-PG
-        strategies = Strategy.query.filter_by(
+        strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
             tenant_id=tid, plan_year_id=py.id, is_active=True
         ).order_by(Strategy.code).all()
 
