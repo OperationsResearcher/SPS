@@ -24,6 +24,7 @@
      data-api-okr-kr-base="{{ url_for('app_bp.sp_api_okr_kr_update', kr_id=0)[:-1] }}"
      data-api-bsc="{{ url_for('app_bp.sp_api_bsc_get') }}"
      data-api-bsc-assign="{{ url_for('app_bp.sp_api_bsc_assign') }}"
+     data-api-efqm="{{ url_for('app_bp.k_radar_api_ks_efqm') }}"
      data-can-manage="{{ 'true' if can_manage_k_radar else 'false' }}">
 
   <!-- Başlık -->
@@ -159,6 +160,21 @@
           <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-bsc-mus">—</div><div style="font-size:10px;color:#64748b;">Müşteri</div></div>
           <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-bsc-sur">—</div><div style="font-size:10px;color:#64748b;">İç Süreç</div></div>
           <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#3b82f6;" id="ks-bsc-ogr">—</div><div style="font-size:10px;color:#64748b;">Öğrenme</div></div>
+        </div>
+        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+
+    <!-- EFQM -->
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="efqm" style="cursor:pointer;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-medal" style="color:#f59e0b;"></i> EFQM</span>
+        <span class="mc-badge mc-badge-warning" id="ks-efqm-badge">—</span>
+      </div>
+      <div class="mc-card-body">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-efqm-criteria">—</div><div style="font-size:10px;color:#64748b;">Kriter Kapsamı</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-efqm-readiness">—</div><div style="font-size:10px;color:#64748b;">Hazırlık Skoru</div></div>
         </div>
         <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
       </div>
@@ -336,6 +352,19 @@
     </div>
     <div class="mc-modal-body" style="padding:0;">
       <div id="ks-modal-bsc-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EFQM Modal — EFQM 2025 zengin türev değerlendirme -->
+<div id="ks-modal-efqm" class="mc-modal-overlay">
+  <div class="mc-modal mc-modal-xl">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title"><i class="fas fa-medal"></i> EFQM Modeli 2025 — Olgunluk Değerlendirmesi</div>
+      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mc-modal-body" style="padding:0;">
+      <div id="ks-modal-efqm-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
     </div>
   </div>
 </div>

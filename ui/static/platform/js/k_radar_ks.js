@@ -78,7 +78,7 @@
       case "gap":    loadGapModal();    break;
       case "okr":    loadOkrModal();    break;
       case "bsc":    loadBscModal();    break;
-      case "efqm":   /* Static modal */ break;
+      case "efqm":   loadEfqmModal();   break;
     }
   }
 
@@ -1247,6 +1247,159 @@
       if (!res.success) { setHtml("ks-modal-bsc-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
       renderBsc(res);
     }).catch(() => setHtml("ks-modal-bsc-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+  }
+
+  // ── EFQM Modal — EFQM 2025 zengin türev değerlendirme ──────────────────────
+  function loadEfqmModal() {
+    setHtml("ks-modal-efqm-body", '<div class="kr-loading" style="padding:32px;">EFQM 2025 değerlendirmesi hesaplanıyor…</div>');
+    fetchJson('/k-radar/api/ks/efqm-detail').then(res => {
+      if (!res.success) {
+        setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>');
+        return;
+      }
+      const d = res.data;
+      const lvl = d.level;
+      const pct = Math.round(d.total_points / 10);
+      const starsHtml = Array.from({length: 7}, (_, i) =>
+        `<i class="fas fa-star" style="color:${i < lvl.stars ? lvl.color : '#e2e8f0'};font-size:14px;"></i>`
+      ).join('');
+
+      // Boyut başına render
+      const dims = {
+        yon: {label:'Yön', color:'#3b82f6', icon:'fa-compass',
+              desc:'Kuruluş "neden" var ve "nasıl" yön belirliyor.'},
+        uygulama: {label:'Uygulama', color:'#1e40af', icon:'fa-cogs',
+                   desc:'Amaç, vizyon ve stratejiyi "nasıl" hayata geçiriyor.'},
+        sonuclar: {label:'Sonuçlar', color:'#10b981', icon:'fa-chart-line',
+                   desc:'Bugüne kadar "ne" gerçekleştirildi.'}
+      };
+
+      function critCard(c) {
+        const scoreColor = c.score_pct >= 75 ? '#059669' :
+                           c.score_pct >= 50 ? '#f59e0b' : '#dc2626';
+        return `
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:6px;">
+              <div style="font-weight:600;color:#0f172a;font-size:13px;flex:1;">${esc(c.label)}</div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:18px;font-weight:800;color:${scoreColor};line-height:1;">${c.points}<span style="font-size:11px;color:#64748b;font-weight:500;">/${c.weight}</span></div>
+                <div style="font-size:10.5px;color:#64748b;margin-top:2px;">%${c.score_pct.toFixed(1)}</div>
+              </div>
+            </div>
+            <div style="background:#f1f5f9;height:6px;border-radius:3px;overflow:hidden;margin-bottom:6px;">
+              <div style="height:100%;width:${c.score_pct}%;background:${scoreColor};"></div>
+            </div>
+            <div style="font-size:11px;color:#64748b;line-height:1.4;">${esc(c.note)}</div>
+          </div>`;
+      }
+
+      function dimSection(dimKey) {
+        const info = dims[dimKey];
+        const dimTot = d.dimensions[dimKey];
+        const dimCrits = d.criteria.filter(c => c.dimension === dimKey);
+        const dimPct = dimTot.max ? Math.round(dimTot.pts / dimTot.max * 100) : 0;
+        return `
+          <div style="margin-bottom:18px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:${info.color}15;border-left:4px solid ${info.color};border-radius:0 6px 6px 0;">
+              <i class="fas ${info.icon}" style="color:${info.color};font-size:18px;"></i>
+              <div style="flex:1;">
+                <div style="font-weight:700;color:${info.color};font-size:14px;">${info.label}</div>
+                <div style="font-size:11.5px;color:#64748b;">${info.desc}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:18px;font-weight:800;color:${info.color};">${dimTot.pts}<span style="font-size:11px;color:#64748b;font-weight:500;">/${dimTot.max}</span></div>
+                <div style="font-size:10.5px;color:#64748b;">%${dimPct}</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;">
+              ${dimCrits.map(critCard).join('')}
+            </div>
+          </div>`;
+      }
+
+      const narrative = (d.narrative || []).map(n => `
+        <div style="background:#fff;border-left:3px solid ${lvl.color};padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:6px;">
+          <div style="font-weight:600;font-size:12.5px;color:#0f172a;">${esc(n.title)}</div>
+          <div style="font-size:11.5px;color:#475569;margin-top:2px;line-height:1.5;">${n.text}</div>
+        </div>
+      `).join('');
+
+      const kpi327 = d.kpi_327;
+      const kpi327Html = kpi327 ? `
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-weight:600;color:#9a3412;font-size:13px;"><i class="fas fa-stamp"></i> Kurumsal Manuel EFQM Puanı (KPI-327)</div>
+              <div style="font-size:11.5px;color:#64748b;margin-top:2px;">${esc(kpi327.note)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:22px;font-weight:800;color:#9a3412;">${kpi327.manual_score}<span style="font-size:12px;color:#64748b;font-weight:500;">/${kpi327.manual_target}</span></div>
+              <div style="font-size:10.5px;color:${(kpi327.manual_gap||0) >= 0 ? '#059669' : '#dc2626'};">
+                ${(kpi327.manual_gap||0) >= 0 ? '+' : ''}${(kpi327.manual_gap||0).toFixed(1)} sapma
+              </div>
+            </div>
+          </div>
+        </div>` : '';
+
+      const radar = d.radar || {};
+      const radarItems = [
+        ['R', 'Results — Sonuçlar', radar.results],
+        ['A', 'Approach — Yaklaşım', radar.approach],
+        ['D', 'Deployment — Yayılım', radar.deployment],
+        ['A', 'Assessment — Değerlendirme', radar.assessment],
+        ['R', 'Refinement — İyileştirme', radar.refinement],
+      ];
+
+      setHtml("ks-modal-efqm-body", `
+        <div style="padding:18px 20px;">
+          <!-- Hero: Toplam skor + seviye -->
+          <div style="background:linear-gradient(135deg,${lvl.color}15,${lvl.color}05);border:1px solid ${lvl.color}30;border-radius:10px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:11px;color:${lvl.color};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">EFQM ${esc(d.model_version)} — Olgunluk Seviyesi</div>
+              <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:4px;">${esc(lvl.label)}</div>
+              <div style="font-size:12.5px;color:#64748b;margin-top:2px;">${esc(lvl.tagline)}</div>
+              <div style="margin-top:8px;">${starsHtml}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:36px;font-weight:800;color:${lvl.color};line-height:1;">${d.total_points}</div>
+              <div style="font-size:13px;color:#64748b;margin-top:2px;">/ ${d.max_points} puan (%${pct})</div>
+            </div>
+          </div>
+
+          ${kpi327Html}
+
+          <!-- 3 boyut × 7 kriter -->
+          ${dimSection('yon')}
+          ${dimSection('uygulama')}
+          ${dimSection('sonuclar')}
+
+          <!-- Yorum + Öneriler -->
+          <div style="background:#f8fafc;border-radius:8px;padding:14px;margin-top:8px;">
+            <h4 style="margin:0 0 10px;font-size:13px;color:#0f172a;"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> Değerlendirme ve Öneriler</h4>
+            ${narrative}
+          </div>
+
+          <!-- RADAR mantığı açıklama -->
+          <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:14px;margin-top:12px;">
+            <h4 style="margin:0 0 8px;font-size:13px;color:#4338ca;"><i class="fas fa-bullseye"></i> RADAR Tanı Aracı (EFQM 2025)</h4>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
+              ${radarItems.map(([letter, label, desc]) => `
+                <div style="background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #c7d2fe;">
+                  <div style="font-weight:700;color:#4338ca;font-size:11.5px;">${esc(letter)}</div>
+                  <div style="font-size:11px;color:#0f172a;font-weight:600;margin-top:2px;">${esc(label)}</div>
+                  <div style="font-size:10.5px;color:#64748b;margin-top:2px;line-height:1.4;">${esc(desc||'')}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="font-size:10.5px;color:#6b7280;margin-top:8px;font-style:italic;">
+              Not: Bu modüldeki puanlar Kokpitim verisinden türev <b>olgunluk göstergesidir</b>. Resmi EFQM Tanınma puanlaması için eğitimli Değerlendiricilerden oluşan ekip tarafından RADAR Tabloları kullanılarak değerlendirme yapılmalıdır.
+            </div>
+          </div>
+        </div>
+      `);
+    }).catch(err => {
+      setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">Hata: ' + err.message + '</div>');
+    });
   }
 
   // ── GAP Modal ─────────────────────────────────────────────────────────────────
