@@ -8,6 +8,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from flask import current_app
 
+from sqlalchemy.orm import selectinload
+
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.k_vektor import (
@@ -43,13 +45,15 @@ def k_vektor_weights_get_dict(tenant_id: int, plan_year=None) -> Dict[str, Any]:
 
     if plan_year is not None:
         strategies = (
-            Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True)
+            Strategy.query.options(selectinload(Strategy.sub_strategies))
+            .filter_by(plan_year_id=plan_year.id, is_active=True)
             .order_by(Strategy.code)
             .all()
         )
     else:
         strategies = (
-            Strategy.query.filter_by(tenant_id=tid, is_active=True)
+            Strategy.query.options(selectinload(Strategy.sub_strategies))
+            .filter_by(tenant_id=tid, is_active=True)
             .order_by(Strategy.code)
             .all()
         )
@@ -189,9 +193,13 @@ def save_k_vektor_weights(
         return False, "Önce K-Vektörü kurum ayarlarından açın."
 
     if plan_year is not None:
-        base_strats = Strategy.query.filter_by(plan_year_id=plan_year.id, is_active=True).all()
+        base_strats = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
+            plan_year_id=plan_year.id, is_active=True
+        ).all()
     else:
-        base_strats = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+        base_strats = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
+            tenant_id=tenant_id, is_active=True
+        ).all()
 
     allowed_strat = {s.id for s in base_strats}
     allowed_sub: set[int] = set()

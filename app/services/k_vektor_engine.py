@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from flask import current_app
 
 from sqlalchemy import or_, and_
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.models import db
 from app.models.core import Strategy, SubStrategy
@@ -141,9 +141,11 @@ def compute_k_vektor_bundle(
     )
     raw_sub: Dict[int, Optional[float]] = {r.sub_strategy_id: r.weight_raw for r in sub_w_rows}
 
+    # N+1 önlemi: aşağıda st.sub_strategies iterate ediliyor
     if plan_year is not None:
         strategies = (
-            Strategy.query.filter(
+            Strategy.query.options(selectinload(Strategy.sub_strategies))
+            .filter(
                 Strategy.is_active == True,
                 or_(
                     Strategy.plan_year_id == plan_year.id,
@@ -155,7 +157,8 @@ def compute_k_vektor_bundle(
         )
     else:
         strategies = (
-            Strategy.query.filter_by(tenant_id=tenant_id, is_active=True)
+            Strategy.query.options(selectinload(Strategy.sub_strategies))
+            .filter_by(tenant_id=tenant_id, is_active=True)
             .order_by(Strategy.code)
             .all()
         )

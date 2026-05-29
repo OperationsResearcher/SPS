@@ -14,7 +14,8 @@ from calendar import monthrange
 from typing import List, Dict, Optional, Tuple, Any
 from flask import current_app
 from sqlalchemy import or_, and_
-from models import BireyselPerformansGostergesi, PerformansGostergeVeri
+from sqlalchemy.orm import joinedload
+from app.models.legacy_bridge import BireyselPerformansGostergesi, PerformansGostergeVeri
 
 
 # ============================================================================
@@ -538,7 +539,7 @@ def get_verileri_topla(
                         # Son Değer için: O periyodun sonuna kadar (periyot_son_cuma_tarihi) girilen en son değeri al
                         # ÖNEMLİ: Tarih aralığı filtresini IGNORE et, sadece periyodun sonuna kadar olan tüm verileri kontrol et
                         # Bu sayede o periyodun sonuna kadar girilen en son değer gösterilir
-                        veri_kayitlari = PerformansGostergeVeri.query.filter(
+                        veri_kayitlari = PerformansGostergeVeri.query.options(joinedload(PerformansGostergeVeri.user)).filter(
                             PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
                             PerformansGostergeVeri.yil == yil,
                             PerformansGostergeVeri.veri_tarihi <= periyot_son_cuma_tarihi  # Periyodun sonuna kadar
@@ -554,7 +555,7 @@ def get_verileri_topla(
                     else:
                         # Toplam ve Ortalama için: Tüm verileri al
                         # Sıralama: En yeni veriler önce (created_at desc) - modal'da en son veriyi göstermek için
-                        veri_kayitlari = PerformansGostergeVeri.query.filter(
+                        veri_kayitlari = PerformansGostergeVeri.query.options(joinedload(PerformansGostergeVeri.user)).filter(
                             PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
                             PerformansGostergeVeri.yil == yil,
                             PerformansGostergeVeri.veri_tarihi >= baslangic,
@@ -569,7 +570,7 @@ def get_verileri_topla(
                 if hesaplama_yontemi == 'Son Değer':
                     # Son Değer için: O periyodun sonuna kadar girilen en son değeri al
                     # En son oluşturulan (girilen) veriyi al
-                    veri_kayitlari = PerformansGostergeVeri.query.filter(
+                    veri_kayitlari = PerformansGostergeVeri.query.options(joinedload(PerformansGostergeVeri.user)).filter(
                         PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
                         PerformansGostergeVeri.yil == yil,
                         PerformansGostergeVeri.veri_tarihi <= periyot_son_cuma_tarihi  # Periyodun sonuna kadar
@@ -579,7 +580,7 @@ def get_verileri_topla(
                 else:
                     # Toplam ve Ortalama için: Tüm verileri al
                     # Sıralama: En yeni veriler önce (created_at desc) - modal'da en son veriyi göstermek için
-                    veri_kayitlari = PerformansGostergeVeri.query.filter(
+                    veri_kayitlari = PerformansGostergeVeri.query.options(joinedload(PerformansGostergeVeri.user)).filter(
                         PerformansGostergeVeri.bireysel_pg_id == bireysel_pg.id,
                         PerformansGostergeVeri.yil == yil,
                         PerformansGostergeVeri.veri_tarihi <= periyot_son_cuma_tarihi  # İlgili tarihe kadar
