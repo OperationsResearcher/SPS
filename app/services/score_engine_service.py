@@ -14,6 +14,7 @@ from typing import Optional, Dict, Any
 
 from flask import current_app
 from sqlalchemy import or_, and_
+from sqlalchemy.orm import selectinload
 
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData
@@ -345,8 +346,9 @@ def compute_vision_score(
             n_linked = len(linked_processes)
             sub_strategy_scores[ss.id] = round(total / n_linked, 2) if n_linked > 0 else 0.0
 
+        # N+1 önlemi: st.sub_strategies aşağıda iterate edildiği için selectinload
         if plan_year is not None:
-            strategies = Strategy.query.filter(
+            strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter(
                 Strategy.is_active == True,
                 or_(
                     Strategy.plan_year_id == plan_year.id,
@@ -354,7 +356,9 @@ def compute_vision_score(
                 ),
             ).all()
         else:
-            strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+            strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
+                tenant_id=tenant_id, is_active=True
+            ).all()
         strategy_scores = {}
         for st in strategies:
             alts = [a for a in st.sub_strategies if a.is_active]
