@@ -123,11 +123,22 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         period_label=f"{year} Q{quarter}",
     )
 
-    # KPI
-    kpi_total = db.session.execute(text("""
+    # İlgili plan_year'ı çöz — yoksa tüm verilere düş
+    py_id = None
+    try:
+        from app.services.plan_year_service import get_plan_year
+        py = get_plan_year(tenant_id, year)
+        py_id = py.id if py else None
+    except Exception:
+        py_id = None
+
+    # KPI (plan_year_id varsa o yıla ait süreçlerin KPI'larını say)
+    py_clause = "AND p.plan_year_id = :py" if py_id else ""
+    py_params = {"py": py_id} if py_id else {}
+    kpi_total = db.session.execute(text(f"""
         SELECT count(*) FROM process_kpis k JOIN processes p ON k.process_id=p.id
-        WHERE p.tenant_id=:t AND k.is_active=true
-    """), {"t": tenant_id}).scalar() or 0
+        WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true {py_clause}
+    """), {"t": tenant_id, **py_params}).scalar() or 0
     data.kpi_total = kpi_total
 
     kpi_with_data = db.session.execute(text("""
@@ -157,25 +168,27 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
     if on_target_rows and on_target_rows.total:
         data.kpi_on_target_pct = (on_target_rows.on_target / on_target_rows.total) * 100
 
-    # Strateji
+    # Strateji (plan_year filtre)
+    strat_py_clause = "AND plan_year_id = :py" if py_id else ""
     data.strategy_count = db.session.execute(text(
-        "SELECT count(*) FROM strategies WHERE tenant_id=:t AND is_active=true"
-    ), {"t": tenant_id}).scalar() or 0
+        f"SELECT count(*) FROM strategies WHERE tenant_id=:t AND is_active=true {strat_py_clause}"
+    ), {"t": tenant_id, **py_params}).scalar() or 0
     data.sub_strategy_count = db.session.execute(text(
-        "SELECT count(*) FROM sub_strategies WHERE strategy_id IN "
-        "(SELECT id FROM strategies WHERE tenant_id=:t) AND is_active=true"
-    ), {"t": tenant_id}).scalar() or 0
+        f"SELECT count(*) FROM sub_strategies WHERE strategy_id IN "
+        f"(SELECT id FROM strategies WHERE tenant_id=:t {strat_py_clause}) AND is_active=true"
+    ), {"t": tenant_id, **py_params}).scalar() or 0
     data.new_strategies_this_quarter = db.session.execute(text(
         "SELECT count(*) FROM strategies WHERE tenant_id=:t "
         "AND created_at BETWEEN :s AND :e"
     ), {"t": tenant_id, "s": q_start, "e": q_end}).scalar() or 0
 
-    # OKR
+    # OKR (plan_year filtre)
     try:
         from app.models.okr import OkrObjective
-        objectives = OkrObjective.query.filter_by(
-            tenant_id=tenant_id, is_active=True
-        ).all()
+        _okr_q = OkrObjective.query.filter_by(tenant_id=tenant_id, is_active=True)
+        if py_id and hasattr(OkrObjective, 'plan_year_id'):
+            _okr_q = _okr_q.filter(OkrObjective.plan_year_id == py_id)
+        objectives = _okr_q.all()
         data.okr_objective_count = len(objectives)
         progresses = []
         for o in objectives:
@@ -188,14 +201,16 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
     except Exception:
         pass
 
-    # Süreç + Faaliyet
+    # Süreç + Faaliyet (plan_year filtre)
+    proc_py_clause = "AND plan_year_id = :py" if py_id else ""
     data.process_count = db.session.execute(text(
-        "SELECT count(*) FROM processes WHERE tenant_id=:t AND is_active=true"
-    ), {"t": tenant_id}).scalar() or 0
+        f"SELECT count(*) FROM processes WHERE tenant_id=:t AND is_active=true {proc_py_clause}"
+    ), {"t": tenant_id, **py_params}).scalar() or 0
+    act_py_clause = "AND p.plan_year_id = :py" if py_id else ""
     data.active_activities = db.session.execute(text(
-        "SELECT count(*) FROM process_activities a JOIN processes p ON a.process_id=p.id "
-        "WHERE p.tenant_id=:t AND a.is_active=true AND a.status IN ('Planlandı', 'Devam Ediyor')"
-    ), {"t": tenant_id}).scalar() or 0
+        f"SELECT count(*) FROM process_activities a JOIN processes p ON a.process_id=p.id "
+        f"WHERE p.tenant_id=:t AND a.is_active=true AND a.status IN ('Planlandı', 'Devam Ediyor') {act_py_clause}"
+    ), {"t": tenant_id, **py_params}).scalar() or 0
     data.overdue_activities = db.session.execute(text(
         "SELECT count(*) FROM process_activities a JOIN processes p ON a.process_id=p.id "
         "WHERE p.tenant_id=:t AND a.is_active=true "
