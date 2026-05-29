@@ -76,7 +76,7 @@
         ${j.canvas.description ? `<p style="margin-top:8px;color:#475569;">${j.canvas.description}</p>` : ''}
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
           <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> Faktör Ekle</button>
-          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ERRC Öğesi</button>
+          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ERRC Öğesi Ekle</button>
         </div>
       </div>
 
@@ -91,10 +91,14 @@
           ${['eliminate','reduce','raise','create'].map(a => {
             const colors = {eliminate:'#fecaca', reduce:'#fed7aa', raise:'#bbf7d0', create:'#bfdbfe'};
             const titles = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
+            const impactLabels = {high:'Yüksek', medium:'Orta', low:'Düşük'};
             return `
-              <div style="background:${colors[a]};padding:12px;border-radius:8px;min-height:120px;">
-                <div style="font-weight:600;margin-bottom:8px;">${titles[a]}</div>
-                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;">${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${e.impact}]</span>`:''}</div>`).join('') || '<div style="color:#64748b;font-size:12px;">— Boş</div>'}
+              <div style="background:${colors[a]};padding:12px;border-radius:8px;min-height:140px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="font-weight:600;">${titles[a]}</div>
+                  <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> Ekle</button>
+                </div>
+                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || '<div style="color:#64748b;font-size:12px;">— Boş</div>'}
               </div>
             `;
           }).join('')}
@@ -163,16 +167,15 @@
     else Swal.fire({icon:'error',title:'Hata',text:'Faktör eklenemedi'});
   };
 
-  window.bo_add_errc = async function(cid) {
+  window.bo_add_errc = async function(cid, preAction) {
+    const actionLabels = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
+    const selOptions = ['eliminate','reduce','raise','create'].map(a =>
+      `<option value="${a}"${a===preAction?' selected':''}>${actionLabels[a]}</option>`
+    ).join('');
     const { value: form } = await Swal.fire({
-      title: 'ERRC Öğesi Ekle',
+      title: preAction ? `ERRC: ${actionLabels[preAction]}` : 'ERRC Öğesi Ekle',
       html: `
-        <select id="bo-e-action" class="swal2-input">
-          <option value="eliminate">❌ Kaldır</option>
-          <option value="reduce">⬇️ Azalt</option>
-          <option value="raise">⬆️ Yükselt</option>
-          <option value="create">⭐ Yarat</option>
-        </select>
+        <select id="bo-e-action" class="swal2-input">${selOptions}</select>
         <input id="bo-e-text" class="swal2-input" placeholder="Açıklama">
         <select id="bo-e-impact" class="swal2-input">
           <option value="high">Yüksek etki</option>
