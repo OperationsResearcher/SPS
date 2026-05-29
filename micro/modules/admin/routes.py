@@ -1130,15 +1130,26 @@ def admin_users_bulk_import():
             stream = io.StringIO(file.stream.read().decode("utf-8-sig"), newline=None)
             rows = list(csv.DictReader(stream))
 
+        # Mevcut e-postaları tek sorguda topla (N+1 önlemi)
+        _candidate_emails = [
+            (r.get("E-posta") or r.get("email") or "").strip().lower()
+            for r in rows
+        ]
+        _candidate_emails = [e for e in _candidate_emails if e]
+        _existing = set(e[0] for e in db.session.query(User.email).filter(
+            User.email.in_(_candidate_emails)
+        ).all()) if _candidate_emails else set()
+
         created, skipped = 0, 0
         for row in rows:
             email = (row.get("E-posta") or row.get("email") or "").strip().lower()
             if not email:
                 skipped += 1
                 continue
-            if User.query.filter_by(email=email).first():
+            if email in _existing:
                 skipped += 1
                 continue
+            _existing.add(email)  # aynı dosyada tekrarı engelle
             raw_pass = (row.get("Sifre") or row.get("Şifre") or row.get("password") or "").strip()
             password = raw_pass if raw_pass else "Changeme123!"
             u = User(
@@ -1528,15 +1539,18 @@ def admin_components_sync():
         from app.models.saas import RouteRegistry
         from flask import current_app as app
 
+        # Mevcut endpoint'leri tek sorguda topla (N+1 önlemi: 500+ route × 1 query)
+        _existing_endpoints = {r[0] for r in db.session.query(RouteRegistry.endpoint).all()}
         synced = 0
         for rule in app.url_map.iter_rules():
             slug = rule.endpoint
-            if not RouteRegistry.query.filter_by(endpoint=slug).first():
+            if slug not in _existing_endpoints:
                 db.session.add(RouteRegistry(
                     endpoint=slug,
                     url_pattern=str(rule),
                     methods=",".join(sorted(rule.methods or [])),
                 ))
+                _existing_endpoints.add(slug)
                 synced += 1
         db.session.commit()
         return jsonify({"success": True, "message": f"{synced} yeni bileşen kaydedildi."})
@@ -1555,8 +1569,13 @@ def admin_components_update():
     data = request.get_json() or {}
     try:
         from app.models.saas import RouteRegistry
+        # Tüm endpoint'leri tek sorguda topla (N+1 önlemi)
+        _endpoints = [item.get("endpoint") for item in data.get("items", []) if item.get("endpoint")]
+        _recs = {r.endpoint: r for r in RouteRegistry.query.filter(
+            RouteRegistry.endpoint.in_(_endpoints)
+        ).all()} if _endpoints else {}
         for item in data.get("items", []):
-            rec = RouteRegistry.query.filter_by(endpoint=item.get("endpoint")).first()
+            rec = _recs.get(item.get("endpoint"))
             if rec and item.get("component_slug"):
                 rec.component_slug = item["component_slug"]
         db.session.commit()
