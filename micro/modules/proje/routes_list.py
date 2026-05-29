@@ -15,7 +15,9 @@ from sqlalchemy import func
 from sqlalchemy.exc import ProgrammingError
 
 from platform_core import app_bp
-from models import Project, Surec, Task, db
+from extensions import db
+from app.models.process import Process as Surec
+from app.models.portfolio_project import Project, Task
 from app.models.process import Process as AppProcess
 from app_platform.modules.proje.display import build_user_labels_map, collect_projects_user_ids, user_display
 from app_platform.modules.proje.helpers import kurum_id, tenant_core_users
@@ -273,13 +275,15 @@ def project_bulk_notifications():
         return redirect(url_for("app_bp.project_list"))
 
     q = accessible_projects_query(Project.query.filter(Project.id.in_(ids)), current_user, kid)
-    allowed = {p.id for p in q.all()}
+    _projects = q.all()
+    _proj_by_id = {p.id: p for p in _projects}
+    allowed = set(_proj_by_id.keys())
     email_on = action == "email_on"
     updated = 0
     for pid in ids:
         if pid not in allowed:
             continue
-        proj = Project.query.get(pid)
+        proj = _proj_by_id.get(pid)
         if not proj or proj.kurum_id != kid:
             continue
         try:

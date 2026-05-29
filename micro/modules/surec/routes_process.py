@@ -338,17 +338,23 @@ def surec_api_add():
             links_in = [{"sub_strategy_id": int(x)} for x in data["sub_strategy_ids"]]
         _apply_sub_strategy_links(p, links_in, current_user.tenant_id)
 
+        # Lider+üye kullanıcılarını tek sorguda topla (N+1 önlemi)
+        _all_uids = [int(x) for x in (data.get("leader_ids") or [])] + [int(x) for x in (data.get("member_ids") or [])]
+        _users_map = {u.id: u for u in User.query.filter(
+            User.id.in_(_all_uids), User.tenant_id == current_user.tenant_id
+        ).all()} if _all_uids else {}
+
         new_leaders = []
         for uid in (data.get("leader_ids") or []):
-            u = User.query.get(int(uid))
-            if u and u.tenant_id == current_user.tenant_id:
+            u = _users_map.get(int(uid))
+            if u:
                 p.leaders.append(u)
                 new_leaders.append(u)
 
         new_members = []
         for uid in (data.get("member_ids") or []):
-            u = User.query.get(int(uid))
-            if u and u.tenant_id == current_user.tenant_id:
+            u = _users_map.get(int(uid))
+            if u:
                 p.members.append(u)
                 new_members.append(u)
 
