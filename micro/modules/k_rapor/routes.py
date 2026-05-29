@@ -5,6 +5,7 @@ import datetime as _dt
 from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
 from extensions import db
@@ -887,7 +888,8 @@ def k_rapor_api_uyari():
         # ── Geciken faaliyetler ─────────────────────────────────────────────────
         geciken_faal = []
         acts = (
-            ProcessActivity.query.join(Process)
+            ProcessActivity.query.options(joinedload(ProcessActivity.process))
+            .join(Process)
             .filter(
                 Process.tenant_id == tid, Process.is_active == True,
                 ProcessActivity.is_active == True,
@@ -1394,7 +1396,8 @@ def k_rapor_api_export_excel():
             ws.title = "Faaliyetler"
             from app.models.process import Process, ProcessActivity
             today      = _dt.date.today()
-            activities = (ProcessActivity.query.join(Process)
+            activities = (ProcessActivity.query.options(joinedload(ProcessActivity.process))
+                          .join(Process)
                           .filter(Process.tenant_id == tid, Process.is_active == True,
                                   ProcessActivity.is_active == True).all())
             _hdr(ws, ["Faaliyet", "Süreç", "Durum", "Başlangıç", "Bitiş", "İlerleme %", "Gecikme (gün)"])
