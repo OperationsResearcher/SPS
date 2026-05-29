@@ -988,26 +988,81 @@ class ProcessPerformanceService:
             missing_ids = [vid for vid in veri_idleri if vid not in pg_veri_by_id]
             if missing_ids:
                 return dict({'success': False, 'message': 'Bazı veriler bulunamadı'}), 404
-        
+
+            # ── BATCH PRE-FETCH: yetki + detay sorgularını N+1'den toplu IN-sorgulara çevir ──
+            _bireysel_pg_ids = list({v.bireysel_pg_id for v in pg_veriler if v.bireysel_pg_id})
+            _bireysel_map = {bp.id: bp for bp in BireyselPerformansGostergesi.query.filter(
+                BireyselPerformansGostergesi.id.in_(_bireysel_pg_ids)
+            ).all()} if _bireysel_pg_ids else {}
+
+            _kaynak_spg_ids = list({bp.kaynak_surec_pg_id for bp in _bireysel_map.values()
+                                    if getattr(bp, 'kaynak_surec_pg_id', None)})
+            _kaynak_spg_map = {sp.id: sp for sp in SurecPerformansGostergesi.query.filter(
+                SurecPerformansGostergesi.id.in_(_kaynak_spg_ids)
+            ).all()} if _kaynak_spg_ids else {}
+
+            _all_surec_ids = set()
+            for bp in _bireysel_map.values():
+                if bp.kaynak == 'Süreç' and bp.kaynak_surec_id:
+                    _all_surec_ids.add(bp.kaynak_surec_id)
+                elif getattr(bp, 'kaynak_surec_pg_id', None):
+                    sp = _kaynak_spg_map.get(bp.kaynak_surec_pg_id)
+                    if sp and sp.surec_id:
+                        _all_surec_ids.add(sp.surec_id)
+            _surec_map = {s.id: s for s in Surec.query.filter(Surec.id.in_(_all_surec_ids)).all()} if _all_surec_ids else {}
+
+            # Süreç lider/üye üyelikleri (tek sorgu set olarak)
+            _user_surec_lider = set()
+            _user_surec_uye = set()
+            if _all_surec_ids:
+                _user_surec_lider = {row[0] for row in db.session.query(surec_liderleri.c.surec_id).filter(
+                    surec_liderleri.c.surec_id.in_(_all_surec_ids),
+                    surec_liderleri.c.user_id == user.id,
+                ).all()}
+                _user_surec_uye = {row[0] for row in db.session.query(surec_uyeleri.c.surec_id).filter(
+                    surec_uyeleri.c.surec_id.in_(_all_surec_ids),
+                    surec_uyeleri.c.user_id == user.id,
+                ).all()}
+
+            # Audit log'ları tek sorguda topla, pg_veri_id'ye göre grupla
+            _audit_by_vid = {}
+            _audit_logs_all = PerformansGostergeVeriAudit.query.filter(
+                PerformansGostergeVeriAudit.pg_veri_id.in_(veri_idleri)
+            ).order_by(PerformansGostergeVeriAudit.islem_tarihi.desc()).all() if veri_idleri else []
+            for a in _audit_logs_all:
+                _audit_by_vid.setdefault(a.pg_veri_id, []).append(a)
+
+            # Tüm User lookups (veri sahibi + audit işlem yapanlar) tek sorguda
+            _all_uids = {v.user_id for v in pg_veriler if v.user_id}
+            _all_uids.update(a.islem_yapan_user_id for a in _audit_logs_all if a.islem_yapan_user_id)
+            _users_map = {u.id: u for u in User.query.filter(User.id.in_(_all_uids)).all()} if _all_uids else {}
+
+            def _uname(u):
+                if not u:
+                    return ''
+                if u.first_name and u.last_name:
+                    return f"{u.first_name} {u.last_name}"
+                return u.username or ''
+
             # Her veri için yetki kontrolü ve detayları topla (kısmi sızıntıyı engellemek için strict)
             veriler_listesi = []
             for veri_id in veri_idleri:
                 pg_veri = pg_veri_by_id[veri_id]
                 # Yetki kontrolü
-                bireysel_pg = BireyselPerformansGostergesi.query.get(pg_veri.bireysel_pg_id)
+                bireysel_pg = _bireysel_map.get(pg_veri.bireysel_pg_id)
                 if not bireysel_pg:
                     return dict({'success': False, 'message': 'Performans göstergesi bulunamadı'}), 404
-            
+
                 # Süreç bazlı PG ise süreç yetkisi kontrol et
                 surec_id = None
                 if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
                     surec_id = bireysel_pg.kaynak_surec_id
                 elif bireysel_pg.kaynak_surec_pg_id:
-                    kaynak_surec_pg = SurecPerformansGostergesi.query.get(bireysel_pg.kaynak_surec_pg_id)
+                    kaynak_surec_pg = _kaynak_spg_map.get(bireysel_pg.kaynak_surec_pg_id)
                     surec_id = kaynak_surec_pg.surec_id if kaynak_surec_pg else None
 
                 if surec_id is not None:
-                    surec = Surec.query.get(surec_id)
+                    surec = _surec_map.get(surec_id)
                     if not surec:
                         return dict({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
 
@@ -1019,53 +1074,32 @@ class ProcessPerformanceService:
                     else:
                         if surec.kurum_id != user.kurum_id:
                             return dict({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
-
-                        lider_mi = db.session.query(surec_liderleri).filter(
-                            surec_liderleri.c.surec_id == surec_id,
-                            surec_liderleri.c.user_id == user.id
-                        ).first() is not None
-
-                        uye_mi = db.session.query(surec_uyeleri).filter(
-                            surec_uyeleri.c.surec_id == surec_id,
-                            surec_uyeleri.c.user_id == user.id
-                        ).first() is not None
-
+                        lider_mi = surec_id in _user_surec_lider
+                        uye_mi = surec_id in _user_surec_uye
                         if not (lider_mi or uye_mi):
                             return dict({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
                 else:
                     # Süreç dışı (bireysel) KPI verisi
                     if user.sistem_rol in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
                         if user.sistem_rol != 'admin':
-                            veri_sahibi = User.query.get(pg_veri.user_id)
+                            veri_sahibi = _users_map.get(pg_veri.user_id)
                             if veri_sahibi and veri_sahibi.kurum_id != user.kurum_id:
                                 return dict({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
                     else:
                         if pg_veri.user_id != user.id:
                             return dict({'success': False, 'message': 'Bu veriye erişim yetkiniz yok'}), 403
-            
+
                 # Kullanıcı bilgilerini al
-                veri_sahibi = User.query.get(pg_veri.user_id)
-                veri_sahibi_adi = ''
-                if veri_sahibi:
-                    if veri_sahibi.first_name and veri_sahibi.last_name:
-                        veri_sahibi_adi = f"{veri_sahibi.first_name} {veri_sahibi.last_name}"
-                    else:
-                        veri_sahibi_adi = veri_sahibi.username
-            
-                # Audit log'ları getir (tüm geçmişi göster)
-                audit_logs = PerformansGostergeVeriAudit.query.filter_by(
-                    pg_veri_id=pg_veri.id
-                ).order_by(PerformansGostergeVeriAudit.islem_tarihi.desc()).all()
-            
+                veri_sahibi = _users_map.get(pg_veri.user_id)
+                veri_sahibi_adi = _uname(veri_sahibi)
+
+                # Audit log'ları
+                audit_logs = _audit_by_vid.get(pg_veri.id, [])
+
                 audit_list = []
                 for audit in audit_logs:
-                    islem_yapan = User.query.get(audit.islem_yapan_user_id)
-                    islem_yapan_adi = ''
-                    if islem_yapan:
-                        if islem_yapan.first_name and islem_yapan.last_name:
-                            islem_yapan_adi = f"{islem_yapan.first_name} {islem_yapan.last_name}"
-                        else:
-                            islem_yapan_adi = islem_yapan.username
+                    islem_yapan = _users_map.get(audit.islem_yapan_user_id)
+                    islem_yapan_adi = _uname(islem_yapan)
                 
                     audit_list.append({
                         'id': audit.id,
