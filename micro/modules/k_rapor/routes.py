@@ -1970,13 +1970,33 @@ def k_rapor_api_kurum_karsilastirma():
         else:
             tenants = Tenant.query.filter_by(id=current_user.tenant_id, is_active=True).all()
 
+        # Tüm tenant'ların KPI'larını ve data'larını batch'le (N+1 önlemi)
+        from collections import defaultdict as _dd
+        _tenant_ids = [t.id for t in tenants]
+        _all_kpis = (
+            ProcessKpi.query.options(joinedload(ProcessKpi.process))
+            .join(Process)
+            .filter(Process.tenant_id.in_(_tenant_ids), Process.is_active == True, ProcessKpi.is_active == True)
+            .all()
+        ) if _tenant_ids else []
+        _kpis_by_tenant = _dd(list)
+        for k in _all_kpis:
+            _kpis_by_tenant[k.process.tenant_id].append(k)
+
+        _all_kpi_ids = [k.id for k in _all_kpis]
+        _data_by_kpi = {}
+        if _all_kpi_ids:
+            for d in KpiData.query.filter(
+                KpiData.process_kpi_id.in_(_all_kpi_ids),
+                KpiData.year == year,
+                KpiData.is_active == True,
+            ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                if d.process_kpi_id not in _data_by_kpi:
+                    _data_by_kpi[d.process_kpi_id] = d
+
         results = []
         for tenant in tenants:
-            kpis = (
-                ProcessKpi.query.join(Process)
-                .filter(Process.tenant_id == tenant.id, Process.is_active == True, ProcessKpi.is_active == True)
-                .all()
-            )
+            kpis = _kpis_by_tenant.get(tenant.id, [])
             kpi_ids = [k.id for k in kpis]
             if not kpi_ids:
                 results.append({
@@ -1989,12 +2009,7 @@ def k_rapor_api_kurum_karsilastirma():
                 })
                 continue
 
-            latest_data = (
-                KpiData.query
-                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active == True)
-                .order_by(KpiData.data_date.desc())
-                .all()
-            )
+            latest_data = [_data_by_kpi[kid] for kid in kpi_ids if kid in _data_by_kpi]
             latest_by_kpi = {}
             for d in latest_data:
                 if d.process_kpi_id not in latest_by_kpi:

@@ -848,10 +848,14 @@ class ProcessPerformanceService:
                 else:
                     veri_sahibi_adi = veri_sahibi.username
         
+            # Audit kullanıcılarını batch'le (N+1 önlemi)
+            _audit_uids = list({a.islem_yapan_user_id for a in audit_logs if a.islem_yapan_user_id})
+            _audit_users = {u.id: u for u in User.query.filter(User.id.in_(_audit_uids)).all()} if _audit_uids else {}
+
             # Audit log'ları formatla
             audit_list = []
             for audit in audit_logs:
-                islem_yapan = User.query.get(audit.islem_yapan_user_id)
+                islem_yapan = _audit_users.get(audit.islem_yapan_user_id)
                 islem_yapan_adi = ''
                 if islem_yapan:
                     if islem_yapan.first_name and islem_yapan.last_name:
