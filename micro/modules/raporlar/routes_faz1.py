@@ -49,7 +49,12 @@ def raporlar_api_sunburst():
     active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
-    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
+    # Nested chain: strategy → sub_strategies → process_sub_strategy_links → process
+    strat_q = Strategy.query.options(
+        selectinload(Strategy.sub_strategies)
+            .selectinload(SubStrategy.process_sub_strategy_links)
+            .joinedload(ProcessSubStrategyLink.process)
+    ).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -400,17 +405,20 @@ def raporlar_api_roi_strategy():
     except Exception:
         proc_scores = {}
 
+    # Initiative bütçeleri stratejilere göre tek sorguda gruplanır (N+1 önlemi)
+    _init_rows = db.session.query(
+        Initiative.strategy_id,
+        func.coalesce(func.sum(Initiative.budget_total), 0).label('bt'),
+        func.coalesce(func.sum(Initiative.budget_spent), 0).label('bs'),
+    ).filter(
+        Initiative.tenant_id == tid, Initiative.is_active.is_(True),
+        Initiative.strategy_id.isnot(None),
+    ).group_by(Initiative.strategy_id).all()
+    _init_by_sid = {sid: (bt, bs) for sid, bt, bs in _init_rows}
+
     rows = []
     for s in strategies:
-        # Bu stratejiye bağlı initiative bütçesi (manual or implicit by year matching)
-        budget = db.session.query(func.coalesce(func.sum(Initiative.budget_total), 0)).filter(
-            Initiative.tenant_id == tid, Initiative.is_active.is_(True),
-            Initiative.strategy_id == s.id,
-        ).scalar() or 0
-        spent = db.session.query(func.coalesce(func.sum(Initiative.budget_spent), 0)).filter(
-            Initiative.tenant_id == tid, Initiative.is_active.is_(True),
-            Initiative.strategy_id == s.id,
-        ).scalar() or 0
+        budget, spent = _init_by_sid.get(s.id, (0, 0))
 
         # Strateji skoru: bağlı süreçlerin ortalaması
         sub_ids = [ss.id for ss in s.sub_strategies if getattr(ss, "is_active", True)]
@@ -661,14 +669,21 @@ def raporlar_api_ai_coach():
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.all()
 
+    # Tüm sub_strategy → process_id eşlemesini tek sorguda topla (N+1 önlemi)
+    _all_sub_ids = [ss.id for s in strategies for ss in s.sub_strategies if getattr(ss, "is_active", True)]
+    _proc_by_sub = defaultdict(set)
+    if _all_sub_ids:
+        for sub_id, proc_id in db.session.query(ProcessKpi.sub_strategy_id, ProcessKpi.process_id).filter(
+            ProcessKpi.sub_strategy_id.in_(_all_sub_ids)
+        ).all():
+            _proc_by_sub[sub_id].add(proc_id)
+
     strat_scores = []
     for s in strategies:
         sub_ids = [ss.id for ss in s.sub_strategies if getattr(ss, "is_active", True)]
         if not sub_ids:
             continue
-        related = set(r[0] for r in db.session.query(ProcessKpi.process_id).filter(
-            ProcessKpi.sub_strategy_id.in_(sub_ids)
-        ).all())
+        related = set().union(*(_proc_by_sub[sid] for sid in sub_ids))
         sc = [proc_scores.get(pid) for pid in related if proc_scores.get(pid) is not None]
         if sc:
             strat_scores.append({

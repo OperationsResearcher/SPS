@@ -206,18 +206,22 @@ def raporlar_api_kv_carpiklik():
         current_app.logger.warning(f"[raporlar/kv-carpiklik] skor hesaplanamadı: {e}")
         proc_scores = {}
 
+    # Tüm sub_strategy → process_id eşlemesini tek sorguda topla (N+1 önlemi)
+    _all_sub_ids = [ss.id for s in strategies for ss in s.sub_strategies if getattr(ss, "is_active", True)]
+    _proc_by_sub = defaultdict(set)
+    if _all_sub_ids:
+        for sub_id, proc_id in db.session.query(ProcessKpi.sub_strategy_id, ProcessKpi.process_id).filter(
+            ProcessKpi.sub_strategy_id.in_(_all_sub_ids),
+            ProcessKpi.is_active.is_(True),
+        ).all():
+            _proc_by_sub[sub_id].add(proc_id)
+
     # Her strateji için: alt-strateji aracılığıyla bağlı süreçlerin ortalama skoru
     rows = []
     total_weight = sum(weights.values()) if weights else 0
     for s in strategies:
         sub_ids = [ss.id for ss in s.sub_strategies if getattr(ss, "is_active", True)]
-        # bu alt-stratejilere bağlı PG'ler -> hangi süreçlerden
-        related_proc_ids = set()
-        if sub_ids:
-            related_proc_ids = set(r[0] for r in db.session.query(ProcessKpi.process_id).filter(
-                ProcessKpi.sub_strategy_id.in_(sub_ids),
-                ProcessKpi.is_active.is_(True),
-            ).all())
+        related_proc_ids = set().union(*(_proc_by_sub[sid] for sid in sub_ids)) if sub_ids else set()
         # bu süreçlerin skor ortalaması
         proc_score_vals = [proc_scores.get(pid) for pid in related_proc_ids
                            if proc_scores.get(pid) is not None]
@@ -288,7 +292,11 @@ def raporlar_api_hizalama_sankey():
                KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}
     total_w = sum(weights.values()) or 1
 
-    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
+    strat_q = Strategy.query.options(
+        selectinload(Strategy.sub_strategies)
+            .selectinload(SubStrategy.process_sub_strategy_links)
+            .joinedload(ProcessSubStrategyLink.process)
+    ).filter_by(tenant_id=tid, is_active=True)
     if py_id:
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
@@ -791,7 +799,11 @@ def raporlar_api_evrim_filmi():
     snapshots = []
     for py in sorted(py_list, key=lambda x: x.year):
         # Bu plan yılındaki tüm strateji-alt-süreç-PG
-        strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
+        strategies = Strategy.query.options(
+            selectinload(Strategy.sub_strategies)
+                .selectinload(SubStrategy.process_sub_strategy_links)
+                .joinedload(ProcessSubStrategyLink.process)
+        ).filter_by(
             tenant_id=tid, plan_year_id=py.id, is_active=True
         ).order_by(Strategy.code).all()
 
