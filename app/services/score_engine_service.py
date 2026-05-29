@@ -144,14 +144,26 @@ def get_pg_scores_from_kpi_data(
         except Exception as e:
             current_app.logger.warning(f"[score_engine] plan_year config çekilemedi: {e}")
 
+    # Tüm PG'lerin KpiData'sını batch'le çek (N+1 önlemi: 221 PG → 1 sorgu)
+    _pg_ids = [pg.id for pg in pgs]
+    _entries_by_pg: Dict[int, list] = {}
+    if _pg_ids:
+        from collections import defaultdict as _dd
+        _entries_by_pg = _dd(list)
+        for d in (
+            KpiData.query.filter(
+                KpiData.process_kpi_id.in_(_pg_ids),
+                KpiData.year == year,
+                KpiData.is_active == True,
+                KpiData.data_date <= as_of,
+            ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all()
+        ):
+            if len(_entries_by_pg[d.process_kpi_id]) < 100:
+                _entries_by_pg[d.process_kpi_id].append(d)
+
     out = {}
     for pg in pgs:
-        entries = (
-            KpiData.query.filter_by(process_kpi_id=pg.id, year=year, is_active=True)
-            .filter(KpiData.data_date <= as_of)
-            .order_by(KpiData.data_date.desc())
-            .limit(100)
-        ).all()
+        entries = _entries_by_pg.get(pg.id, [])
         if not entries and plan_year is not None:
             # Clone KPI'da veri yoksa source_kpi_id zincirini tara (max 8 adım)
             ancestor_id = getattr(pg, 'source_kpi_id', None)

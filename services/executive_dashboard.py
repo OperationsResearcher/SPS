@@ -3,7 +3,7 @@
 Executive Dashboard Servisi
 Üst yönetim için kurumsal genel bakış ve analitik veriler
 """
-from models import db, Project, Task, ProjectRisk, Surec, User, project_leaders
+from app.models.legacy_bridge import db, Project, Task, ProjectRisk, Surec, User, project_leaders
 from services.project_analytics import calculate_surec_saglik_skoru
 from sqlalchemy import func, and_, or_
 from datetime import datetime, date
@@ -272,21 +272,27 @@ def get_planning_efficiency(kurum_id):
     """
     try:
         projects = Project.query.filter_by(kurum_id=kurum_id, is_archived=False).all()
-        project_data = []
-        
-        for project in projects:
-            # Tamamlanan görevleri getir
-            completed_tasks = Task.query.filter_by(
-                project_id=project.id,
-                status='Tamamlandı'
-            ).filter(
+
+        # Tüm projelerin tamamlanmış görevlerini batch'le (N+1 önlemi)
+        from collections import defaultdict as _dd
+        _pids = [p.id for p in projects]
+        _tasks_by_pid = _dd(list)
+        if _pids:
+            for t in Task.query.filter(
+                Task.project_id.in_(_pids),
+                Task.status == 'Tamamlandı',
                 and_(
                     Task.estimated_time.isnot(None),
                     Task.actual_time.isnot(None),
-                    Task.estimated_time > 0
-                )
-            ).all()
-            
+                    Task.estimated_time > 0,
+                ),
+            ).all():
+                _tasks_by_pid[t.project_id].append(t)
+
+        project_data = []
+
+        for project in projects:
+            completed_tasks = _tasks_by_pid.get(project.id, [])
             if not completed_tasks:
                 continue
             

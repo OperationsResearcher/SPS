@@ -8,6 +8,7 @@ from hashlib import sha1
 from datetime import date, timedelta
 
 from sqlalchemy import func, or_
+from app.extensions import cache
 
 from app.models import db
 from app.models.core import Strategy, User
@@ -28,7 +29,7 @@ from app.models.k_radar_domain import (
     StakeholderSurvey,
     ValueChainItem,
 )
-from models.project import Project, Task
+from app.models.portfolio_project import Project, Task
 from app.models.k_radar import KRadarRecommendationAction
 
 logger = logging.getLogger(__name__)
@@ -78,14 +79,22 @@ def _process_component(tenant_id: int) -> dict[str, Any]:
         )
         .all()
     )
+    # Her KPI'nın son verisini batch'le çek (N+1 önlemi)
+    from collections import defaultdict as _dd
+    _kpi_ids = [k.id for k in kpis]
+    _latest_by_kid: dict = {}
+    if _kpi_ids:
+        for d in KpiData.query.filter(
+            KpiData.process_kpi_id.in_(_kpi_ids),
+            KpiData.is_active == True,
+        ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+            if d.process_kpi_id not in _latest_by_kid:
+                _latest_by_kid[d.process_kpi_id] = d
+
     rows: list[tuple[float, float]] = []
     critical_count = 0
     for kpi in kpis:
-        latest = (
-            KpiData.query.filter_by(process_kpi_id=kpi.id, is_active=True)
-            .order_by(KpiData.data_date.desc())
-            .first()
-        )
+        latest = _latest_by_kid.get(kpi.id)
         if not latest:
             continue
         actual = _to_float(latest.actual_value)
@@ -115,17 +124,24 @@ def _project_component(tenant_id: int) -> dict[str, Any]:
     )
     if not active_projects:
         return {"score": 0.0, "band": "red", "critical_count": 0, "project_count": 0}
+    # Tüm projelerin geciken görev sayısını batch'le (N+1 önlemi)
+    _pids = [p.id for p in active_projects]
+    _delayed_by_pid: dict = {}
+    if _pids:
+        _delayed_rows = db.session.query(Task.project_id, func.count(Task.id)).filter(
+            Task.project_id.in_(_pids),
+            Task.is_archived == False,
+            Task.due_date.isnot(None),
+            Task.status != "Tamamlandı",
+            Task.due_date < func.current_date(),
+        ).group_by(Task.project_id).all()
+        _delayed_by_pid = {pid: cnt for pid, cnt in _delayed_rows}
+
     rows: list[tuple[float, float]] = []
     critical_count = 0
     for project in active_projects:
         health = float(project.health_score or 0.0)
-        delayed_tasks = (
-            Task.query.filter_by(project_id=project.id, is_archived=False)
-            .filter(Task.due_date.isnot(None))
-            .filter(Task.status != "Tamamlandı")
-            .filter(Task.due_date < func.current_date())
-            .count()
-        )
+        delayed_tasks = _delayed_by_pid.get(project.id, 0)
         penalty = min(delayed_tasks * 5.0, 35.0)
         proj_score = max(health - penalty, 0.0)
         rows.append((proj_score, 1.0))
@@ -161,14 +177,20 @@ def _individual_component(tenant_id: int) -> dict[str, Any]:
         )
         .all()
     )
+    # Tüm indikatörler için en son IndividualKpiData'yı batch'le (N+1 önlemi)
+    _ind_ids = [i.id for i in indicators]
+    _latest_by_ind: dict = {}
+    if _ind_ids:
+        for d in IndividualKpiData.query.filter(
+            IndividualKpiData.individual_pg_id.in_(_ind_ids),
+        ).order_by(IndividualKpiData.individual_pg_id, IndividualKpiData.data_date.desc()).all():
+            if d.individual_pg_id not in _latest_by_ind:
+                _latest_by_ind[d.individual_pg_id] = d
+
     rows: list[tuple[float, float]] = []
     critical_count = 0
     for indicator in indicators:
-        latest = (
-            IndividualKpiData.query.filter_by(individual_pg_id=indicator.id)
-            .order_by(IndividualKpiData.data_date.desc())
-            .first()
-        )
+        latest = _latest_by_ind.get(indicator.id)
         if not latest:
             continue
         actual = _to_float(latest.actual_value)
@@ -207,18 +229,40 @@ def _ks_component(tenant_id: int) -> dict[str, Any]:
     }
 
 
+def _get_radar_weights(tenant_id: int) -> tuple[float, float, float, float]:
+    """Tenant'a özgü K-Radar ağırlıklarını döner (ks, kp, kpr, bireysel)."""
+    try:
+        from app.models.system_setting import SystemSetting
+        import json
+        key = f"k_radar_weights_{tenant_id}"
+        row = SystemSetting.query.filter_by(key=key).first()
+        if row:
+            w = json.loads(row.value)
+            return (
+                float(w.get("ks", 2.0)),
+                float(w.get("kp", 3.0)),
+                float(w.get("kpr", 3.0)),
+                float(w.get("bireysel", 2.0)),
+            )
+    except Exception:
+        pass
+    return 2.0, 3.0, 3.0, 2.0
+
+
+@cache.memoize(timeout=300)
 def get_hub_summary(tenant_id: int) -> dict[str, Any]:
     ks = _ks_component(tenant_id)
     kp = _process_component(tenant_id)
     kpr = _project_component(tenant_id)
     ind = _individual_component(tenant_id)
+    w_ks, w_kp, w_kpr, w_ind = _get_radar_weights(tenant_id)
 
     total = _weighted_score(
         [
-            (ks["score"], 2.0),
-            (kp["score"], 3.0),
-            (kpr["score"], 3.0),
-            (ind["score"], 2.0),
+            (ks["score"], w_ks),
+            (kp["score"], w_kp),
+            (kpr["score"], w_kpr),
+            (ind["score"], w_ind),
         ]
     )
     band = _score_to_band(total)
@@ -245,10 +289,12 @@ def get_hub_summary(tenant_id: int) -> dict[str, Any]:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_data(tenant_id: int) -> dict[str, Any]:
     return _ks_component(tenant_id)
 
 
+@cache.memoize(timeout=300)
 def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
     base = _ks_component(tenant_id)
     strategy_count = int(base.get("strategy_count") or 0)
@@ -306,10 +352,12 @@ def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
     }
 
 
+@cache.memoize(timeout=300)
 def get_kp_data(tenant_id: int) -> dict[str, Any]:
     return _process_component(tenant_id)
 
 
+@cache.memoize(timeout=300)
 def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
     base = _process_component(tenant_id)
     process_count = Process.query.filter_by(tenant_id=tenant_id, is_active=True).count()
@@ -509,10 +557,12 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
     }
 
 
+@cache.memoize(timeout=300)
 def get_kpr_data(tenant_id: int) -> dict[str, Any]:
     return _project_component(tenant_id)
 
 
+@cache.memoize(timeout=300)
 def get_kpr_extended_data(tenant_id: int) -> dict[str, Any]:
     base = _project_component(tenant_id)
     projects = Project.query.filter_by(tenant_id=tenant_id, is_archived=False).all()
@@ -565,6 +615,7 @@ def get_kpr_extended_data(tenant_id: int) -> dict[str, Any]:
     }
 
 
+@cache.memoize(timeout=300)
 def get_cross_heatmap_data(tenant_id: int) -> dict[str, Any]:
     hub = get_hub_summary(tenant_id)
     recommendations = get_recommendations_from_summary(hub)
@@ -607,6 +658,7 @@ def get_cross_heatmap_data(tenant_id: int) -> dict[str, Any]:
     return {"points": points}
 
 
+@cache.memoize(timeout=300)
 def get_cross_extended_data(tenant_id: int) -> dict[str, Any]:
     comp_rows = CompetitorAnalysis.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     gaps = [float((r.their_score or 0) - (r.our_score or 0)) for r in comp_rows]
@@ -851,6 +903,7 @@ def _get_plan_year_for_tenant(tenant_id: int, year: int | None = None):
     return PlanYear.query.filter_by(tenant_id=tenant_id).order_by(PlanYear.year.desc()).first()
 
 
+@cache.memoize(timeout=300)
 def get_ks_swot_real(tenant_id: int, year: int | None = None) -> dict:
     """Gerçek SWOT verisi — swot_analyses tablosundan."""
     from app.models.swot import SwotAnalysis
@@ -905,6 +958,7 @@ def get_ks_swot_real(tenant_id: int, year: int | None = None) -> dict:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_tows_real(tenant_id: int, year: int | None = None) -> dict:
     """Gerçek TOWS verisi — tows_analyses tablosundan."""
     from app.models.swot import TowsAnalysis
@@ -953,6 +1007,7 @@ def get_ks_tows_real(tenant_id: int, year: int | None = None) -> dict:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_pestel_real(tenant_id: int, year: int | None = None) -> dict:
     """Gerçek PESTEL verisi — pestel_analyses tablosundan."""
     from app.models.swot import PestelAnalysis
@@ -1006,6 +1061,7 @@ def get_ks_pestel_real(tenant_id: int, year: int | None = None) -> dict:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_porter_real(tenant_id: int, year: int | None = None) -> dict:
     """Gerçek Porter 5 Kuvvet verisi."""
     from app.models.swot import PorterFiveForcesAnalysis
@@ -1057,6 +1113,7 @@ def get_ks_porter_real(tenant_id: int, year: int | None = None) -> dict:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
     """GAP analizi — hedef vs gerçekleşen, süreç bazlı."""
     from app.models.process import Process, ProcessKpi, KpiData
@@ -1145,6 +1202,7 @@ def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
     }
 
 
+@cache.memoize(timeout=300)
 def get_ks_strateji_real(tenant_id: int) -> dict:
     """Strateji hiyerarşisi + süreç bağlantıları + skor."""
     from app.models.core import Strategy, SubStrategy
