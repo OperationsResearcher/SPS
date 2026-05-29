@@ -230,6 +230,22 @@ def sp_api_vrio_update(rid):
     return jsonify({"success": True, "item": r.to_dict()})
 
 
+@app_bp.route("/sp/api/vrio/<int:rid>", methods=["DELETE"])
+@csrf.exempt
+@login_required
+def sp_api_vrio_delete(rid):
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    r = VRIOResource.query.filter_by(
+        id=rid, tenant_id=current_user.tenant_id
+    ).first()
+    if not r:
+        return jsonify({"error": "not found"}), 404
+    db.session.delete(r)
+    db.session.commit()
+    return jsonify({"success": True})
+
+
 # ─── S62: Project EVM ────────────────────────────────────────────────────────
 
 @app_bp.route("/sp/api/projects/<int:pid>/evm")
