@@ -208,6 +208,13 @@ def save_k_vektor_weights(
             if getattr(ss, "is_active", True):
                 allowed_sub.add(ss.id)
 
+    # Mevcut ağırlık satırlarını batch'le çek (N+1 önlemi: kaydetme başına satır × 2 query)
+    _all_sids = list({int(it["strategy_id"]) for it in (data.get("strategy_weights") or []) if it.get("strategy_id") is not None})
+    _strat_rows = {r.strategy_id: r for r in KVektorStrategyWeight.query.filter(
+        KVektorStrategyWeight.tenant_id == tenant_id,
+        KVektorStrategyWeight.strategy_id.in_(_all_sids),
+    ).all()} if _all_sids else {}
+
     for it in data.get("strategy_weights") or []:
         sid_raw = it.get("strategy_id")
         if sid_raw is None:
@@ -216,7 +223,7 @@ def save_k_vektor_weights(
         if sid not in allowed_strat:
             continue
         raw = _parse_weight_raw(it.get("weight_raw"))
-        row = KVektorStrategyWeight.query.filter_by(tenant_id=tenant_id, strategy_id=sid).first()
+        row = _strat_rows.get(sid)
         if raw is None:
             if row:
                 db.session.delete(row)
@@ -227,6 +234,12 @@ def save_k_vektor_weights(
             else:
                 row.weight_raw = raw
 
+    _all_ssids = list({int(it["sub_strategy_id"]) for it in (data.get("sub_strategy_weights") or []) if it.get("sub_strategy_id") is not None})
+    _sub_rows = {r.sub_strategy_id: r for r in KVektorSubStrategyWeight.query.filter(
+        KVektorSubStrategyWeight.tenant_id == tenant_id,
+        KVektorSubStrategyWeight.sub_strategy_id.in_(_all_ssids),
+    ).all()} if _all_ssids else {}
+
     for it in data.get("sub_strategy_weights") or []:
         ssid_raw = it.get("sub_strategy_id")
         if ssid_raw is None:
@@ -235,7 +248,7 @@ def save_k_vektor_weights(
         if ssid not in allowed_sub:
             continue
         raw = _parse_weight_raw(it.get("weight_raw"))
-        row = KVektorSubStrategyWeight.query.filter_by(tenant_id=tenant_id, sub_strategy_id=ssid).first()
+        row = _sub_rows.get(ssid)
         if raw is None:
             if row:
                 db.session.delete(row)
