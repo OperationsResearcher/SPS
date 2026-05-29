@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 
 from flask import current_app
-from models import db, Surec, SurecPerformansGostergesi, AltStrateji, surec_liderleri, surec_uyeleri
+from app.models.legacy_bridge import db, Surec, SurecPerformansGostergesi, AltStrateji, surec_liderleri, surec_uyeleri
 from services.performance_service import generatePeriyotVerileri, calculateHedefDeger
 from utils.karne_hesaplamalar import (
     hesapla_basari_puani, hesapla_agirlikli_basari_puani, parse_basari_puani_araliklari
@@ -169,7 +169,7 @@ class ProcessPerformanceService:
 
     @staticmethod
     def get_process_activities(user, surec_id: int, yil: int) -> Tuple[Dict[str, Any], int]:
-        from models import db, SurecFaaliyet, BireyselFaaliyet, FaaliyetTakip
+        from app.models.legacy_bridge import db, SurecFaaliyet, BireyselFaaliyet, FaaliyetTakip
         
         surec_faaliyetler = SurecFaaliyet.query.filter_by(surec_id=surec_id).all()
         surec_faaliyet_ids = [f.id for f in surec_faaliyetler]
@@ -214,7 +214,7 @@ class ProcessPerformanceService:
 
     @staticmethod
     def create_bireysel_faaliyet_from_surec(user, surec_id: int, surec_faaliyet_id: int) -> Tuple[Dict[str, Any], int]:
-        from models import db, SurecFaaliyet, BireyselFaaliyet
+        from app.models.legacy_bridge import db, SurecFaaliyet, BireyselFaaliyet
         from app.utils.errors import ResourceNotFoundError
         
         surec_faaliyet = SurecFaaliyet.query.filter_by(id=surec_faaliyet_id, surec_id=surec_id).first()
@@ -254,7 +254,7 @@ class ProcessPerformanceService:
 
     @staticmethod
     def save_activity_tracking(user, faaliyet_id: int, data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
-        from models import db, BireyselFaaliyet, FaaliyetTakip
+        from app.models.legacy_bridge import db, BireyselFaaliyet, FaaliyetTakip
         from datetime import datetime, date
         from app.utils.errors import ResourceNotFoundError, AuthorizationError
 
@@ -298,7 +298,7 @@ class ProcessPerformanceService:
 
     @staticmethod
     def save_performance_data(user, surec_id: int, data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
-        from models import (
+        from app.models.legacy_bridge import (
             db, Surec, User, BireyselPerformansGostergesi,
             PerformansGostergeVeri, SurecPerformansGostergesi
         )
@@ -614,9 +614,13 @@ class ProcessPerformanceService:
                         ).order_by(PerformansGostergeVeri.veri_tarihi.desc()).all()
             
                 current_app.logger.info(f"Bireysel PG {bireysel_pg.id} için {len(veri_girisleri)} veri bulundu (Periyot: {ceyrek})")
-            
+
+                # Kullanıcı sorgularını batch'le (N+1 önlemi)
+                _uids = list({v.user_id for v in veri_girisleri if v.user_id})
+                _users_map = {u.id: u for u in User.query.filter(User.id.in_(_uids)).all()} if _uids else {}
+
                 for veri in veri_girisleri:
-                    kullanici = User.query.get(veri.user_id)
+                    kullanici = _users_map.get(veri.user_id)
                     if kullanici:
                         if kullanici.first_name and kullanici.last_name:
                             kullanici_adi = f"{kullanici.first_name} {kullanici.last_name}"

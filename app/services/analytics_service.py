@@ -4,12 +4,13 @@ Sprint 10-12: Analytics ve Raporlama
 Gelişmiş analitik ve raporlama servisi
 """
 
-from app.extensions import db
+from extensions import db
 from app.models.process import Process, ProcessKpi, KpiData
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import pandas as pd
 from sqlalchemy import func, and_, or_
+from collections import defaultdict
 
 class AnalyticsService:
     """Analytics ve raporlama servisi"""
@@ -125,17 +126,24 @@ class AnalyticsService:
                 'recommendations': ['KPI tanımlanmamış']
             }
         
+        # Tüm KPI'ların en son verisini tek sorguda topla (N+1 önlemi)
+        _kpi_ids = [k.id for k in kpis]
+        _latest_by_kid = {}
+        if _kpi_ids:
+            for d in KpiData.query.filter(
+                KpiData.process_kpi_id.in_(_kpi_ids),
+                KpiData.is_active.is_(True),
+            ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                if d.process_kpi_id not in _latest_by_kid:
+                    _latest_by_kid[d.process_kpi_id] = d
+
         kpi_scores = []
         total_weight = 0
         weighted_score = 0
-        
+
         for kpi in kpis:
-            # Son veriyi al
-            latest_data = KpiData.query.filter_by(
-                process_kpi_id=kpi.id,
-                is_active=True
-            ).order_by(KpiData.data_date.desc()).first()
-            
+            latest_data = _latest_by_kid.get(kpi.id)
+
             if latest_data and latest_data.target_value > 0:
                 performance = (latest_data.actual_value / latest_data.target_value) * 100
                 weight = kpi.weight or 1
@@ -216,13 +224,16 @@ class AnalyticsService:
                 'comparison_data': {...}
             }
         """
+        # Toplu süreç çekimi (N+1 önlemi)
+        _procs_by_id = {p.id: p for p in Process.query.filter(Process.id.in_(process_ids)).all()} if process_ids else {}
+
         comparison_data = []
-        
+
         for process_id in process_ids:
-            process = Process.query.get(process_id)
+            process = _procs_by_id.get(process_id)
             if not process:
                 continue
-            
+
             health = AnalyticsService.get_process_health_score(process_id)
             
             comparison_data.append({

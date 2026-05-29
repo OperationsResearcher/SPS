@@ -1,5 +1,6 @@
 """Bireysel Performans modülü."""
 
+from collections import defaultdict
 from datetime import datetime, timezone, date
 
 from flask import render_template, jsonify, request, current_app, redirect, url_for
@@ -425,11 +426,19 @@ def bireysel_api_karne():
         except (ValueError, TypeError):
             return None
 
+    # PG entries tek IN-sorguda topla (N+1 önlemi)
+    _pg_ids = [pg.id for pg in pgs]
+    _entries_by_pg = defaultdict(list)
+    if _pg_ids:
+        for e in IndividualKpiData.query.filter(
+            IndividualKpiData.individual_pg_id.in_(_pg_ids),
+            IndividualKpiData.year == year,
+        ).order_by(IndividualKpiData.data_date).all():
+            _entries_by_pg[e.individual_pg_id].append(e)
+
     pg_list = []
     for pg in pgs:
-        entries = IndividualKpiData.query.filter_by(
-            individual_pg_id=pg.id, year=year
-        ).order_by(IndividualKpiData.data_date).all()
+        entries = _entries_by_pg.get(pg.id, [])
 
         entries_by_period = {}
         for e in entries:
@@ -448,11 +457,20 @@ def bireysel_api_karne():
             "entries": entries_by_period,
         })
 
+    # Faaliyet track'leri tek IN-sorguda topla (N+1 önlemi)
+    _act_ids = [a.id for a in activities]
+    _tracks_by_act = defaultdict(list)
+    if _act_ids:
+        for t in IndividualActivityTrack.query.filter(
+            IndividualActivityTrack.individual_activity_id.in_(_act_ids),
+            IndividualActivityTrack.user_id == uid,
+            IndividualActivityTrack.year == year,
+        ).all():
+            _tracks_by_act[t.individual_activity_id].append(t)
+
     act_list = []
     for a in activities:
-        tracks = IndividualActivityTrack.query.filter_by(
-            individual_activity_id=a.id, user_id=uid, year=year
-        ).all()
+        tracks = _tracks_by_act.get(a.id, [])
         act_list.append({
             "id": a.id,
             "name": a.name,

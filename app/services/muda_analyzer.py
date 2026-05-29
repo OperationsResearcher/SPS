@@ -4,6 +4,7 @@ Muda Analyzer Service - Süreç Verimsizlik Analizi
 7 Muda tipi ile süreç verimsizlik analizi.
 Eski proje muda_analyzer adaptasyonu (tenant_id, Process, ProcessKpi, KpiData).
 """
+from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 
 from app.models import db
@@ -67,17 +68,19 @@ class MudaAnalyzerService:
         try:
             three_months_ago = datetime.now(timezone.utc).date() - timedelta(days=90)
             kpis = ProcessKpi.query.filter_by(process_id=process.id, is_active=True).all()
+            # Tüm kpi'ların 3 ay verisini batch'le çek (N+1 önlemi: top-3 per kpi)
+            _kpi_ids = [k.id for k in kpis]
+            _data_by_kid = defaultdict(list)
+            if _kpi_ids:
+                for d in KpiData.query.filter(
+                    KpiData.process_kpi_id.in_(_kpi_ids),
+                    KpiData.data_date >= three_months_ago,
+                    KpiData.is_active == True,
+                ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                    if len(_data_by_kid[d.process_kpi_id]) < 3:
+                        _data_by_kid[d.process_kpi_id].append(d)
             for kpi in kpis:
-                recent = (
-                    KpiData.query.filter(
-                        KpiData.process_kpi_id == kpi.id,
-                        KpiData.data_date >= three_months_ago,
-                        KpiData.is_active == True
-                    )
-                    .order_by(KpiData.data_date.desc())
-                    .limit(3)
-                    .all()
-                )
+                recent = _data_by_kid.get(kpi.id, [])
                 if len(recent) >= 2:
                     below_count = 0
                     total_gap_pct = 0.0
@@ -108,16 +111,18 @@ class MudaAnalyzerService:
         findings = []
         try:
             kpis = ProcessKpi.query.filter_by(process_id=process.id, is_active=True).all()
+            # Tüm kpi'ların son 6 ölçümünü batch'le (N+1 önlemi)
+            _kpi_ids = [k.id for k in kpis]
+            _data_by_kid = defaultdict(list)
+            if _kpi_ids:
+                for d in KpiData.query.filter(
+                    KpiData.process_kpi_id.in_(_kpi_ids),
+                    KpiData.is_active == True,
+                ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                    if len(_data_by_kid[d.process_kpi_id]) < 6:
+                        _data_by_kid[d.process_kpi_id].append(d)
             for kpi in kpis:
-                recent = (
-                    KpiData.query.filter(
-                        KpiData.process_kpi_id == kpi.id,
-                        KpiData.is_active == True
-                    )
-                    .order_by(KpiData.data_date.desc())
-                    .limit(6)
-                    .all()
-                )
+                recent = _data_by_kid.get(kpi.id, [])
                 if len(recent) >= 4:
                     values = []
                     for d in recent:
