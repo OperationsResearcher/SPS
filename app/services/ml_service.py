@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from app.models.process import ProcessKpi, KpiData
-from app.extensions import db
+from extensions import db
 import logging
 
 logger = logging.getLogger(__name__)
@@ -191,7 +191,7 @@ class MLService:
             return {
                 'success': True,
                 'kpi_id': kpi_id,
-                'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                'kpi_name': kpi.name,
                 'target_value': target,
                 'probability': round(probability, 2),
                 'avg_achievement': round(avg_achievement, 2),

@@ -107,7 +107,7 @@ class RecommendationService:
         if avg_achievement < 70:
             recommendations.append({
                 'kpi_id': kpi.id,
-                'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                'kpi_name': kpi.name,
                 'priority': 'high',
                 'type': 'performance',
                 'title': 'Düşük Performans',
@@ -119,7 +119,7 @@ class RecommendationService:
         elif avg_achievement < 90:
             recommendations.append({
                 'kpi_id': kpi.id,
-                'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                'kpi_name': kpi.name,
                 'priority': 'medium',
                 'type': 'performance',
                 'title': 'İyileştirme Fırsatı',
@@ -144,7 +144,7 @@ class RecommendationService:
             if trend == 'decreasing' and strength > 0.5:
                 return {
                     'kpi_id': kpi.id,
-                    'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                    'kpi_name': kpi.name,
                     'type': 'trend',
                     'severity': 'warning',
                     'message': f'Negatif trend tespit edildi (güç: {strength:.2f})',
@@ -153,7 +153,7 @@ class RecommendationService:
             elif trend == 'increasing' and strength > 0.5:
                 return {
                     'kpi_id': kpi.id,
-                    'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                    'kpi_name': kpi.name,
                     'type': 'trend',
                     'severity': 'positive',
                     'message': f'Pozitif trend devam ediyor (güç: {strength:.2f})',
@@ -178,7 +178,7 @@ class RecommendationService:
                 
                 recommendations.append({
                     'kpi_id': kpi.id,
-                    'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                    'kpi_name': kpi.name,
                     'priority': 'high' if latest['severity'] == 'high' else 'medium',
                     'type': 'anomaly',
                     'title': 'Anormal Değer Tespit Edildi',
@@ -243,14 +243,14 @@ class RecommendationService:
                     if achievement >= 100:
                         on_target += 1
                         insights['top_performers'].append({
-                            'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                            'kpi_name': kpi.name,
                             'process_name': process.name,
                             'achievement': round(achievement, 1)
                         })
                     elif achievement < 80:
                         below_target += 1
                         insights['needs_attention'].append({
-                            'kpi_name': kpi.kpi.name if kpi.kpi else 'N/A',
+                            'kpi_name': kpi.name,
                             'process_name': process.name,
                             'achievement': round(achievement, 1)
                         })
