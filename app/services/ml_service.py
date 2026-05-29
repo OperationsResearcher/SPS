@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from app.models.process import ProcessKpi, KpiData
+from app.utils.numeric import safe_float
 from extensions import db
 import logging
 
@@ -46,12 +47,20 @@ class MLService:
                     'error': 'Yetersiz veri (minimum 3 dönem gerekli)'
                 }
             
-            # DataFrame'e dönüştür
-            df = pd.DataFrame([{
-                'date': d.data_date,
-                'actual': d.actual_value,
-                'target': d.target_value
-            } for d in historical_data])
+            # DataFrame'e dönüştür (actual/target String kolonu — safe_float'la)
+            rows = []
+            for d in historical_data:
+                a = safe_float(d.actual_value)
+                if a is None:
+                    continue
+                rows.append({
+                    'date': d.data_date,
+                    'actual': a,
+                    'target': safe_float(d.target_value),
+                })
+            if len(rows) < 3:
+                return {'success': False, 'error': 'Yetersiz sayısal veri (parse edilebilen <3)'}
+            df = pd.DataFrame(rows)
             
             # Zaman serisi özellikleri
             df['month'] = pd.to_datetime(df['date']).dt.month
@@ -153,14 +162,19 @@ class MLService:
                     'error': 'Yetersiz veri'
                 }
             
-            # Hedef değer
-            target = target_value or (recent_data[-1].target_value if recent_data else 0)
-            
-            # Performans analizi
-            achievements = [
-                (d.actual_value / d.target_value * 100) if d.target_value > 0 else 0
-                for d in recent_data
-            ]
+            # Hedef değer (target_value String — safe_float)
+            _last_target = safe_float(recent_data[-1].target_value) if recent_data else None
+            target = safe_float(target_value) if target_value is not None else _last_target
+
+            # Performans analizi (actual/target String — safe_float şart)
+            achievements = []
+            for d in recent_data:
+                t = safe_float(d.target_value)
+                a = safe_float(d.actual_value)
+                if t is not None and a is not None and t > 0:
+                    achievements.append(a / t * 100)
+            if not achievements:
+                return {'success': False, 'error': 'Sayısal veri parse edilemedi'}
             
             avg_achievement = np.mean(achievements)
             trend = np.polyfit(range(len(achievements)), achievements, 1)[0]
@@ -262,11 +276,15 @@ class MLService:
                     'error': 'Mevsimsellik analizi için minimum 12 ay veri gerekli'
                 }
             
-            # Aylık ortalamalar
-            df = pd.DataFrame([{
-                'month': d.data_date.month,
-                'value': d.actual_value
-            } for d in data])
+            # Aylık ortalamalar (actual_value String — safe_float)
+            rows = []
+            for d in data:
+                v = safe_float(d.actual_value)
+                if v is not None:
+                    rows.append({'month': d.data_date.month, 'value': v})
+            if len(rows) < 12:
+                return {'success': False, 'error': 'Yetersiz sayısal veri'}
+            df = pd.DataFrame(rows)
             
             monthly_avg = df.groupby('month')['value'].mean()
             overall_avg = df['value'].mean()

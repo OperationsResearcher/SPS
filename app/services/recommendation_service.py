@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from app.models.process import Process, ProcessKpi, KpiData
 from app.services.ml_service import MLService
 from app.services.anomaly_service import AnomalyService
+from app.utils.numeric import safe_float
 import logging
 
 logger = logging.getLogger(__name__)
@@ -96,11 +97,15 @@ class RecommendationService:
         if len(recent_data) < 2:
             return recommendations
         
-        # Ortalama başarı oranı
-        achievements = [
-            (d.actual_value / d.target_value * 100) if d.target_value > 0 else 0
-            for d in recent_data
-        ]
+        # Ortalama başarı oranı (target_value/actual_value String kolonu — safe_float şart)
+        achievements = []
+        for d in recent_data:
+            t = safe_float(d.target_value)
+            a = safe_float(d.actual_value)
+            if t is not None and a is not None and t > 0:
+                achievements.append(a / t * 100)
+        if not achievements:
+            return recommendations
         avg_achievement = sum(achievements) / len(achievements)
         
         # Düşük performans
@@ -247,8 +252,10 @@ class RecommendationService:
                     
                     if not latest:
                         continue
-                    
-                    achievement = (latest.actual_value / latest.target_value * 100) if latest.target_value > 0 else 0
+
+                    t = safe_float(latest.target_value)
+                    a = safe_float(latest.actual_value)
+                    achievement = (a / t * 100) if (t is not None and a is not None and t > 0) else 0
                     
                     if achievement >= 100:
                         on_target += 1

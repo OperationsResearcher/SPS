@@ -8,6 +8,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from app.models.process import ProcessKpi, KpiData
 from app.services.notification_service import NotificationService
+from app.utils.numeric import safe_float
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,8 +47,13 @@ class AnomalyService:
                     'error': 'Yetersiz veri (minimum 10 kayıt gerekli)'
                 }
             
-            values = np.array([d.actual_value for d in data])
-            dates = [d.data_date for d in data]
+            # actual_value String kolonu — safe_float ile sayısal listeye çevir
+            _pairs = [(safe_float(d.actual_value), d.data_date) for d in data]
+            _pairs = [(v, dt) for v, dt in _pairs if v is not None]
+            if len(_pairs) < 10:
+                return {'success': False, 'error': 'Yetersiz sayısal veri (parse edilebilen <10)'}
+            values = np.array([v for v, _ in _pairs])
+            dates = [dt for _, dt in _pairs]
             
             # Anomali tespiti
             if method == 'zscore':
