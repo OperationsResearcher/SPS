@@ -1,6 +1,10 @@
 {% extends "platform/base.html" %}
-{% block title %}Blue Ocean — Kokpitim{% endblock %}
-{% block page_title %}Blue Ocean Strategy — Canvas & ERRC{% endblock %}
+{% block title %}Mavi Okyanus — Kokpitim{% endblock %}
+{% block page_title %}Mavi Okyanus Stratejisi — Canvas & ERRC{% endblock %}
+
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_blue_ocean">
+{% endblock %}
 
 {% block content %}
 <div style="max-width:1200px;margin:0 auto;"
@@ -11,14 +15,14 @@
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
-        <i class="fas fa-water"></i> Blue Ocean Strategy
+        <i class="fas fa-water"></i> Mavi Okyanus Stratejisi
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Strategy Canvas (Value Curve) + ERRC Grid: rakipsiz pazar alanı tasarımı.
+        Strateji Tuvali (Değer Eğrisi) + ERRC Tablosu: rakipsiz pazar alanı tasarımı.
       </p>
     </div>
     <button class="mc-btn mc-btn-primary" id="bo-new">
-      <i class="fas fa-plus"></i> Yeni Canvas
+      <i class="fas fa-plus"></i> Yeni Tuval
     </button>
   </div>
 
@@ -38,7 +42,7 @@
     const j = await r.json();
     const list = document.getElementById('bo-list');
     if (!j.items || !j.items.length) {
-      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz canvas yok. "Yeni Canvas" ile başlayın.</div>';
+      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz tuval yok. "Yeni Tuval" ile başlayın.</div>';
       return;
     }
     list.innerHTML = j.items.map(c => `
@@ -77,16 +81,16 @@
       </div>
 
       <div class="mc-card" style="padding:20px;margin-bottom:16px;">
-        <h4 style="margin:0 0 12px;">📈 Value Curve (Strategy Canvas)</h4>
+        <h4 style="margin:0 0 12px;">📈 Değer Eğrisi (Strateji Tuvali)</h4>
         <canvas id="bo-chart" height="120"></canvas>
       </div>
 
       <div class="mc-card" style="padding:20px;">
-        <h4 style="margin:0 0 12px;">🎯 ERRC Grid (Eliminate / Reduce / Raise / Create)</h4>
+        <h4 style="margin:0 0 12px;">🎯 ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           ${['eliminate','reduce','raise','create'].map(a => {
             const colors = {eliminate:'#fecaca', reduce:'#fed7aa', raise:'#bbf7d0', create:'#bfdbfe'};
-            const titles = {eliminate:'❌ Eliminate (Kaldır)', reduce:'⬇️ Reduce (Azalt)', raise:'⬆️ Raise (Yükselt)', create:'⭐ Create (Yarat)'};
+            const titles = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
             return `
               <div style="background:${colors[a]};padding:12px;border-radius:8px;min-height:120px;">
                 <div style="font-weight:600;margin-bottom:8px;">${titles[a]}</div>
@@ -128,44 +132,107 @@
   };
 
   window.bo_add_factor = async function(cid) {
-    const name = prompt('Faktör adı (ör: Fiyat, Kalite, Hız):');
-    if (!name) return;
-    const self_score = parseFloat(prompt('Kendi kurum puanı (1-10):', '5'));
-    const compStr = prompt('Rakip puanları (JSON, ör: {"RakipA":7,"RakipB":4}):', '{}');
-    let comp = {};
-    try { comp = JSON.parse(compStr); } catch (e) { alert('JSON hatası'); return; }
+    const { value: form } = await Swal.fire({
+      title: 'Faktör Ekle',
+      html: `
+        <input id="bo-f-name" class="swal2-input" placeholder="Faktör adı (Fiyat, Kalite, Hız…)">
+        <input id="bo-f-self" type="number" min="1" max="10" step="0.5" class="swal2-input" placeholder="Kendi kurum puanı (1-10)" value="5">
+        <input id="bo-f-comp" class="swal2-input" placeholder='Rakip puanları (JSON: {"RakipA":7,"RakipB":4})' value="{}">
+      `,
+      confirmButtonText: 'Ekle',
+      cancelButtonText: 'İptal',
+      showCancelButton: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        const name = document.getElementById('bo-f-name').value.trim();
+        if (!name) { Swal.showValidationMessage('Faktör adı gerekli'); return false; }
+        const self_score = parseFloat(document.getElementById('bo-f-self').value);
+        let comp = {};
+        try { comp = JSON.parse(document.getElementById('bo-f-comp').value || '{}'); }
+        catch (e) { Swal.showValidationMessage('Rakip puanları geçerli JSON olmalı'); return false; }
+        return { name, self_score, competitor_scores: comp };
+      }
+    });
+    if (!form) return;
     const r = await fetch(`/sp/api/blue-ocean/canvases/${cid}/factors`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({name, self_score, competitor_scores: comp}),
+      body: JSON.stringify(form),
     });
     if (r.ok) bo_open(cid);
+    else Swal.fire({icon:'error',title:'Hata',text:'Faktör eklenemedi'});
   };
 
   window.bo_add_errc = async function(cid) {
-    const action = prompt('Aksiyon (eliminate/reduce/raise/create):');
-    if (!action) return;
-    const text = prompt('Açıklama:');
-    if (!text) return;
-    const impact = prompt('Etki (high/medium/low):', 'medium');
+    const { value: form } = await Swal.fire({
+      title: 'ERRC Öğesi Ekle',
+      html: `
+        <select id="bo-e-action" class="swal2-input">
+          <option value="eliminate">❌ Kaldır</option>
+          <option value="reduce">⬇️ Azalt</option>
+          <option value="raise">⬆️ Yükselt</option>
+          <option value="create">⭐ Yarat</option>
+        </select>
+        <input id="bo-e-text" class="swal2-input" placeholder="Açıklama">
+        <select id="bo-e-impact" class="swal2-input">
+          <option value="high">Yüksek etki</option>
+          <option value="medium" selected>Orta etki</option>
+          <option value="low">Düşük etki</option>
+        </select>
+      `,
+      confirmButtonText: 'Ekle',
+      cancelButtonText: 'İptal',
+      showCancelButton: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        const text = document.getElementById('bo-e-text').value.trim();
+        if (!text) { Swal.showValidationMessage('Açıklama gerekli'); return false; }
+        return {
+          action: document.getElementById('bo-e-action').value,
+          text: text,
+          impact: document.getElementById('bo-e-impact').value,
+        };
+      }
+    });
+    if (!form) return;
     const r = await fetch(`/sp/api/blue-ocean/canvases/${cid}/errc`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action, text, impact}),
+      body: JSON.stringify(form),
     });
     if (r.ok) bo_open(cid);
+    else Swal.fire({icon:'error',title:'Hata',text:'ERRC öğesi eklenemedi'});
   };
 
   document.getElementById('bo-new').onclick = async () => {
-    const name = prompt('Canvas adı:');
-    if (!name) return;
-    const industry = prompt('Sektör:', '');
-    const competitor_names = prompt('Rakipler (virgülle ayırın):', '');
+    const { value: form } = await Swal.fire({
+      title: 'Yeni Tuval',
+      html: `
+        <input id="bo-c-name" class="swal2-input" placeholder="Tuval adı">
+        <input id="bo-c-ind" class="swal2-input" placeholder="Sektör">
+        <input id="bo-c-comp" class="swal2-input" placeholder="Rakipler (virgülle ayırın)">
+      `,
+      confirmButtonText: 'Oluştur',
+      cancelButtonText: 'İptal',
+      showCancelButton: true,
+      focusConfirm: false,
+      preConfirm: () => {
+        const name = document.getElementById('bo-c-name').value.trim();
+        if (!name) { Swal.showValidationMessage('Tuval adı gerekli'); return false; }
+        return {
+          name,
+          industry: document.getElementById('bo-c-ind').value.trim(),
+          competitor_names: document.getElementById('bo-c-comp').value.trim(),
+        };
+      }
+    });
+    if (!form) return;
     const r = await fetch(root.dataset.createUrl, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({name, industry, competitor_names}),
+      body: JSON.stringify(form),
     });
     if (r.ok) load();
+    else Swal.fire({icon:'error',title:'Hata',text:'Tuval oluşturulamadı'});
   };
 
   load();
