@@ -21,7 +21,7 @@ from extensions import db
 
 def build_xmatrix(tenant_id: int, plan_year_id: int | None = None) -> dict:
     """X-Matrix için 4 ekseni ve korelasyonları döndürür."""
-    py_filter = "AND s.plan_year_id = :py" if plan_year_id else ""
+    py_filter = "AND plan_year_id = :py" if plan_year_id else ""
     params = {"t": tenant_id}
     if plan_year_id:
         params["py"] = plan_year_id
