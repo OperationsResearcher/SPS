@@ -16,7 +16,7 @@ from sqlalchemy import and_, or_, func
 from sqlalchemy.orm import joinedload
 
 from extensions import db
-from models import (
+from app.models.legacy_bridge import (
     AnaStrateji, AltStrateji, Surec, SurecPerformansGostergesi,
     BireyselPerformansGostergesi, PerformansGostergeVeri,
     StrategyProcessMatrix,
@@ -84,27 +84,34 @@ def get_pg_representative_data(
         .options(joinedload(SurecPerformansGostergesi.surec))
         .all()
     )
+    # Tüm PG'lerin son verisini tek sorguda topla (N+1 önlemi)
+    _pg_ids = [pg.id for pg in pgs]
+    _latest_by_pgid = {}
+    if _pg_ids:
+        for row in (
+            db.session.query(
+                BireyselPerformansGostergesi.kaynak_surec_pg_id,
+                PerformansGostergeVeri.hedef_deger,
+                PerformansGostergeVeri.gerceklesen_deger,
+            )
+            .join(BireyselPerformansGostergesi, BireyselPerformansGostergesi.id == PerformansGostergeVeri.bireysel_pg_id)
+            .filter(
+                BireyselPerformansGostergesi.kaynak_surec_pg_id.in_(_pg_ids),
+                PerformansGostergeVeri.veri_tarihi <= as_of,
+            )
+            .order_by(BireyselPerformansGostergesi.kaynak_surec_pg_id, PerformansGostergeVeri.veri_tarihi.desc())
+            .all()
+        ):
+            if row[0] not in _latest_by_pgid:
+                _latest_by_pgid[row[0]] = row
+
     out = {}
     for pg in pgs:
-        # Bu PG'ye bağlı bireysel PG'lerin verilerinden en son kaydı al (veri_tarihi <= as_of)
-        sub = (
-            db.session.query(
-                PerformansGostergeVeri.hedef_deger,
-                PerformansGostergeVeri.gerceklesen_deger
-            )
-            .join(BireyselPerformansGostergesi)
-            .filter(
-                BireyselPerformansGostergesi.kaynak_surec_pg_id == pg.id,
-                PerformansGostergeVeri.veri_tarihi <= as_of
-            )
-            .order_by(PerformansGostergeVeri.veri_tarihi.desc())
-            .limit(1)
-        )
-        row = sub.first()
-        hedef = _parse_float(row.hedef_deger) if row else _parse_float(pg.hedef_deger)
-        gercek = _parse_float(row.gerceklesen_deger) if row else None
+        row = _latest_by_pgid.get(pg.id)
+        hedef = _parse_float(row[1]) if row else _parse_float(pg.hedef_deger)
+        gercek = _parse_float(row[2]) if row else None
         if hedef is None and row:
-            hedef = _parse_float(row.hedef_deger)
+            hedef = _parse_float(row[1])
         direction = (pg.direction or 'Increasing').strip()
         score = compute_pg_score(hedef, gercek, direction) if (hedef is not None and gercek is not None) else None
         out[pg.id] = (hedef, gercek, score)
@@ -201,10 +208,21 @@ def compute_vision_score(
         if s.id not in surec_scores:
             process_score(s.id)
 
-    # Alt Strateji puanları: StrategyProcessMatrix ile süreç puanlarının ağırlıklı ortalaması
+    # Alt Strateji puanları (N+1 önlemi: alt başına matrix query → tek IN sorgu)
+    _alt_list = AltStrateji.query.join(AnaStrateji).filter(AnaStrateji.kurum_id == kurum_id).all()
+    _alt_ids = [a.id for a in _alt_list]
+    _matrix_by_alt = defaultdict(list) if False else {}
+    from collections import defaultdict as _dd2
+    _matrix_by_alt = _dd2(list)
+    if _alt_ids:
+        for r in StrategyProcessMatrix.query.filter(
+            StrategyProcessMatrix.sub_strategy_id.in_(_alt_ids)
+        ).all():
+            _matrix_by_alt[r.sub_strategy_id].append(r)
+
     alt_strateji_scores = {}
-    for alt in AltStrateji.query.join(AnaStrateji).filter(AnaStrateji.kurum_id == kurum_id).all():
-        rows = StrategyProcessMatrix.query.filter_by(sub_strategy_id=alt.id).all()
+    for alt in _alt_list:
+        rows = _matrix_by_alt.get(alt.id, [])
         if not rows:
             alt_strateji_scores[alt.id] = 0.0
             continue
