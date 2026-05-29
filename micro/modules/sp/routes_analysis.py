@@ -730,10 +730,15 @@ def sp_api_bsc_assign_bulk():
         if not active_py:
             return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
 
+        # Mevcut row'ları tek sorguda topla (N+1 önlemi)
+        _existing_rows = {r.process_kpi_id: r for r in BscKpiPerspective.query.filter(
+            BscKpiPerspective.tenant_id == tid,
+            BscKpiPerspective.plan_year_id == active_py.id,
+            BscKpiPerspective.process_kpi_id.in_(kpi_ids),
+        ).all()} if kpi_ids else {}
+
         for kpi_id in kpi_ids:
-            row = BscKpiPerspective.query.filter_by(
-                tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
-            ).first()
+            row = _existing_rows.get(kpi_id)
             if not perspective:
                 if row:
                     db.session.delete(row)
