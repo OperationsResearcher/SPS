@@ -4,9 +4,10 @@ Sprint 10-12: Analytics ve Raporlama
 Rapor oluşturma ve export servisi
 """
 
-from app.extensions import db
+from extensions import db
 from app.models.process import Process, ProcessKpi, KpiData
 from app.services.analytics_service import AnalyticsService
+from app.utils.numeric import safe_float
 from datetime import datetime
 from typing import Dict, List
 import io
@@ -71,18 +72,26 @@ class ReportService:
             is_active=True
         ).all()
         
+        # Tüm KPI'ların en son verisini batch'le (N+1 önlemi)
+        _kpi_ids = [k.id for k in kpis]
+        _latest_by_kid = {}
+        if _kpi_ids:
+            for d in KpiData.query.filter(
+                KpiData.process_kpi_id.in_(_kpi_ids),
+                KpiData.is_active.is_(True),
+            ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                if d.process_kpi_id not in _latest_by_kid:
+                    _latest_by_kid[d.process_kpi_id] = d
+
         for kpi in kpis:
-            # Trend verisi
             trend = AnalyticsService.get_performance_trend(
                 process_id, kpi.id, start_date, end_date, 'monthly'
             )
-            
-            # Son veri
-            latest_data = KpiData.query.filter_by(
-                process_kpi_id=kpi.id,
-                is_active=True
-            ).order_by(KpiData.data_date.desc()).first()
-            
+            latest_data = _latest_by_kid.get(kpi.id)
+
+            # String alanları safe_float ile
+            _t = safe_float(latest_data.target_value) if latest_data else None
+            _a = safe_float(latest_data.actual_value) if latest_data else None
             kpi_detail = {
                 'kpi_code': kpi.code,
                 'kpi_name': kpi.name,
@@ -91,10 +100,10 @@ class ReportService:
                 'weight': kpi.weight,
                 'latest_actual': latest_data.actual_value if latest_data else None,
                 'latest_target': latest_data.target_value if latest_data else None,
-                'latest_performance': round((latest_data.actual_value / latest_data.target_value * 100), 2) if latest_data and latest_data.target_value > 0 else None,
-                'trend': trend
+                'latest_performance': round((_a / _t * 100), 2) if (_t is not None and _a is not None and _t > 0) else None,
+                'trend': trend,
             }
-            
+
             report_data['kpi_details'].append(kpi_detail)
         
         # Öneriler
@@ -254,8 +263,10 @@ class ReportService:
                 'data': []
             }
             
-            for kpi_id in report_config.get('kpi_ids', []):
-                kpi = ProcessKpi.query.get(kpi_id)
+            _kpi_ids = report_config.get('kpi_ids', [])
+            _kpis_map = {k.id: k for k in ProcessKpi.query.filter(ProcessKpi.id.in_(_kpi_ids)).all()} if _kpi_ids else {}
+            for kpi_id in _kpi_ids:
+                kpi = _kpis_map.get(kpi_id)
                 if kpi:
                     trend = AnalyticsService.get_performance_trend(
                         kpi.process_id, kpi_id, start_date, end_date, 'monthly'
@@ -289,8 +300,10 @@ class ReportService:
                 'data': []
             }
             
-            for kpi_id in report_config.get('kpi_ids', []):
-                kpi = ProcessKpi.query.get(kpi_id)
+            _kpi_ids2 = report_config.get('kpi_ids', [])
+            _kpis_map2 = {k.id: k for k in ProcessKpi.query.filter(ProcessKpi.id.in_(_kpi_ids2)).all()} if _kpi_ids2 else {}
+            for kpi_id in _kpi_ids2:
+                kpi = _kpis_map2.get(kpi_id)
                 if kpi:
                     forecast = AnalyticsService.get_forecast(kpi_id, periods=3)
                     forecast_section['data'].append({
