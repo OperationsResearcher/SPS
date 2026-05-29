@@ -8,6 +8,7 @@ Gizli giriş yolu: yalnızca /MfG_hgs ve /MfG_hgs/login/<id>.
 
 from flask import render_template, redirect, url_for, current_app, request, flash, abort
 from flask_login import login_user
+from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
 from app.models.core import User
@@ -17,7 +18,8 @@ def _hgs_index():
     """Hızlı giriş kullanıcı listesi — tenant'a göre gruplu."""
     selected_user_id = request.args.get("selected", type=int)
     users = (
-        User.query.filter_by(is_active=True)
+        User.query.options(joinedload(User.tenant))
+        .filter_by(is_active=True)
         .order_by(User.tenant_id, User.first_name, User.last_name)
         .all()
     )
