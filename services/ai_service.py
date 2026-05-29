@@ -5,7 +5,7 @@ V51.0 - AI Karar Destek Asistanı
 """
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
-from models import db, User, Surec, SurecPerformansGostergesi, PerformansGostergeVeri, Project, Task
+from app.models.legacy_bridge import db, User, Surec, SurecPerformansGostergesi, PerformansGostergeVeri, Project, Task
 from sqlalchemy import func, and_
 
 
@@ -80,7 +80,7 @@ class AIService:
                 return insights
             
             # Süreç liderlerini kontrol et
-            from models import surec_liderleri
+            from app.models.legacy_bridge import surec_liderleri
             lider_surec_ids = db.session.query(surec_liderleri.c.surec_id).filter(
                 surec_liderleri.c.user_id == user_id
             ).all()
@@ -188,7 +188,7 @@ class AIService:
         
         try:
             # Kullanıcının üyesi olduğu projeler
-            from models import project_members
+            from app.models.legacy_bridge import project_members
             proje_ids = db.session.query(project_members.c.project_id).filter(
                 project_members.c.user_id == user_id
             ).all()
@@ -198,22 +198,25 @@ class AIService:
                 return insights
             
             projeler = Project.query.filter(Project.id.in_(proje_ids)).all()
-            
+
             # Risk altındaki projeler (ilerleme düşük, bitiş yakın)
             bugun = datetime.now().date()
+
+            # Görev sayılarını batch'le (N+1 önlemi)
+            from sqlalchemy import case
+            _pids = [p.id for p in projeler]
+            _task_rows = db.session.query(
+                Task.project_id,
+                func.count(Task.id).label('tot'),
+                func.sum(case((Task.status.in_(['Tamamlandı', 'completed']), 1), else_=0)).label('done'),
+            ).filter(Task.project_id.in_(_pids)).group_by(Task.project_id).all() if _pids else []
+            _counts_by_pid = {pid: (tot, done) for pid, tot, done in _task_rows}
+
             risk_projeler = []
-            
             for proje in projeler:
                 if proje.end_date and proje.end_date <= bugun + timedelta(days=30):
-                    # İlerleme hesapla
-                    toplam_gorev = Task.query.filter_by(project_id=proje.id).count()
-                    tamamlanan_gorev = Task.query.filter(
-                        Task.project_id == proje.id,
-                        Task.status.in_(['Tamamlandı', 'completed'])
-                    ).count()
-                    
-                    ilerleme = (tamamlanan_gorev / toplam_gorev * 100) if toplam_gorev > 0 else 0
-                    
+                    toplam_gorev, tamamlanan_gorev = _counts_by_pid.get(proje.id, (0, 0))
+                    ilerleme = (float(tamamlanan_gorev) / toplam_gorev * 100) if toplam_gorev > 0 else 0
                     if ilerleme < 50:
                         risk_projeler.append(proje)
             
