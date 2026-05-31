@@ -2,6 +2,10 @@
 {% block title %}Bildirim Merkezi Yönetimi{% endblock %}
 {% block page_title %}Bildirim Merkezi Yönetimi{% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Bildirim Logları', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div id="admin-notifications-root"
      data-broadcast-url="{{ url_for('app_bp.admin_notifications_broadcast') }}"

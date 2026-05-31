@@ -61,9 +61,19 @@
     }).join('');
   }
 
+  function currentYear() {
+    const sel = document.getElementById('kvc-year-select');
+    return sel?.value || '';
+  }
+
   async function load() {
     try {
-      const res = await fetch('/raporlar/api/k-vektor-carpiklik', {credentials:'same-origin'});
+      const y = currentYear();
+      const url = '/raporlar/api/k-vektor-carpiklik' + (y ? ('?year=' + encodeURIComponent(y)) : '');
+      // İçeriği yükleme moduna al
+      document.getElementById('loading').style.display = '';
+      document.getElementById('content').style.display = 'none';
+      const res = await fetch(url, {credentials:'same-origin'});
       const j = await res.json();
       if (!j.success) throw new Error(j.message || 'Hata');
 
@@ -87,5 +97,21 @@
       err.textContent = 'Hata: ' + e.message;
     }
   }
+  // Yıl seçici: değişince aktif SP yılını da güncelle ve veriyi yeniden yükle
+  document.getElementById('kvc-year-select')?.addEventListener('change', async (e) => {
+    const newYear = parseInt(e.target.value, 10);
+    if (!newYear) return;
+    try {
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      await fetch('/sp/api/plan-years/set-active', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+        body: JSON.stringify({ year: newYear })
+      });
+    } catch (_) {}
+    load();
+  });
+
   load();
 })();

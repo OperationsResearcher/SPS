@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from datetime import datetime, date
 from flask import Flask
-from models import (
+from app.models.legacy_bridge import (
     db, User, Kurum, Surec, SurecPerformansGostergesi, 
     BireyselPerformansGostergesi, PerformansGostergeVeri
 )
@@ -19,7 +19,8 @@ class OtonomIsMantigiTesti(unittest.TestCase):
     def setUp(self):
         """Test ortamını hazırla"""
         # Test konfigürasyonu
-        self.app = create_app(config_name='testing')
+        from config import TestingConfig
+        self.app = create_app(config_class=TestingConfig)
         self.app.config['TESTING'] = True
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         self.app.config['WTF_CSRF_ENABLED'] = False
@@ -42,7 +43,8 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         self.kurum = Kurum(
             kisa_ad="TEST_KURUM",
             ticari_unvan="Test Kurum A.Ş.",
-            email="info@testkurum.com"
+            email="info@testkurum.com",
+            tenant_id=1
         )
         db.session.add(self.kurum)
         db.session.commit()

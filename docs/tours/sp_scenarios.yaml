@@ -1,0 +1,37 @@
+key: sp_scenarios
+title: "Senaryolar"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Senaryo — 'ya öyle olursa?' hazırlığı"
+  body: |
+    Strateji yaparken hep bir varsayım kümesi vardır: "Faiz şöyle olacak, kur böyle, hammadde fiyatı..." Ama gerçek dünyada bu varsayımlar değişir. Senaryolar değişen koşullara karşı önceden hazırlanma aracıdır.
+
+    Klasik üçlü:
+    • **Temel senaryo** — beklenen koşullar (faiz %35, kur 35, talep normal)
+    • **İyimser senaryo** — en iyi durum (faiz %25, talep %20 yüksek, ihracat patlaması)
+    • **Kötümser senaryo** — en kötü durum (faiz %50, resesyon, ihracat çakılması)
+
+    Her senaryo aktif plan dönemini kopyalar — tüm stratejiler, KPI'lar, hedefler dahil. Senaryoda istediğin değişikliği yaparsın (ör. kötümser senaryoda hedefleri %20 düşürürsün), gerçeklik o yöne giderse senaryon hazır.
+  cta_primary: "Anladım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Senaryo dalları"
+    body: |
+      Sayfa şöyle çalışır:
+      1. **Kaynak Dönem seç** — örn: 2026 aktif plan döneminden başla
+      2. **Senaryo adı ver** — örn: "2026 Kötümser — Resesyon"
+      3. **Senaryo Türü** — iyimser / kötümser / temel
+      4. **Klonla** — tüm strateji, KPI, hedef ve süreç verisi kopyalanır
+      5. **Senaryoda düzenle** — örn: KPI hedeflerini %20 düşür
+
+      Senaryolar tamamen bağımsızdır. Üzerinde oynaman canlı plan dönemini etkilemez. Yıl içinde "kötümser senaryoya geçmeliyiz" dersen, o senaryoyu canlıya alabilirsin (mevcut planı kapatıp senaryoyu aktif yapma).
+    placement: "bottom"
+
+finale:
+  title: "Önce temel plan hazır olsun"
+  body: |
+    Senaryo, gerçek bir plan üzerinden anlam kazanır. Önce 2026 planını oluştur, KPI'larını ve hedeflerini gir. Sonra hassas dönemlerde (örn. seçim, kriz, sektör darbesi öncesi) senaryolar üretirsin.

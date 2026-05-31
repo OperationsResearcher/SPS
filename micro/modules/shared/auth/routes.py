@@ -190,3 +190,39 @@ def ayarlar_hesap():
         show_page_guides=getattr(current_user, "show_page_guides", True),
         guide_character_style=getattr(current_user, "guide_character_style", "professional"),
     )
+
+
+# ── Hızlı tema güncelleme (dark mode toggle) ─────────────────────────────────
+@app_bp.route("/api/profile/theme", methods=["GET", "POST"])
+@csrf.exempt
+@login_required
+def api_profile_theme():
+    """Kullanıcının tema tercihini sunucuya kaydeder/okur (çoklu cihaz senkronu)."""
+    raw = getattr(current_user, "theme_preferences", None) or "{}"
+    try:
+        prefs = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except Exception:
+        prefs = {}
+
+    if request.method == "GET":
+        return jsonify({
+            "success": True,
+            "theme": prefs.get("theme") or "light",
+            "color": prefs.get("color") or "primary",
+        })
+
+    data = request.get_json(silent=True) or {}
+    theme = (data.get("theme") or "").lower().strip()
+    if theme not in ("light", "dark"):
+        return jsonify({"success": False, "message": "theme alanı 'light' veya 'dark' olmalı."}), 400
+    prefs["theme"] = theme
+    if data.get("color"):
+        prefs["color"] = data.get("color")
+    try:
+        current_user.theme_preferences = json.dumps(prefs)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[api_profile_theme] {e}")
+        return jsonify({"success": False, "message": "Kaydedilemedi."}), 500
+    return jsonify({"success": True, "theme": prefs["theme"], "color": prefs.get("color", "primary")})

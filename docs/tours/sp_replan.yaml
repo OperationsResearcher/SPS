@@ -1,0 +1,41 @@
+key: sp_replan
+title: "Yeniden Planlama Tetikleyicileri"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Otomatik nöbetçiler — strateji uyarı sistemi"
+  body: |
+    Strateji bir kez yazılıp rafa kalkacak bir belge değil — yaşayan bir karardır. Ama günlük operasyon yoğunluğunda "stratejimizi gözden geçirmenin zamanı geldi" sinyalini zamanında yakalayamayız. İşte tetikleyiciler bunun için.
+
+    Tetikleyici = "Şu koşul olursa, beni uyar" kuralı. Belirlediğin koşullar gerçekleşince sistem otomatik olarak yöneticilere bildirim yollar ve strateji gözden geçirme önerisi üretir.
+
+    Örnek tetikleyiciler:
+    • "Herhangi bir kritik KPI 3 ay üst üste %70'in altındaysa"
+    • "Bir girişimin gerçek harcaması bütçesinin %120'sini aşarsa"
+    • "Yeni bir 'kritik risk' eklenir ve 1 hafta içinde aksiyon atanmazsa"
+    • "Vizyon puanı 2 çeyrek üst üste düşerse"
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Aktif tetikleyiciler"
+    body: |
+      Sayfada üç bölüm var:
+      1. **Aktif Tetikleyiciler** — şu an açık olan kurallar
+      2. **Tetiklenmiş Olaylar** — geçmişte tetiklenen ve aksiyona dönüşen veya dönüşmeyen olaylar
+      3. **Yeni Tetikleyici** — kural oluşturma formu
+
+      Tetikleyici oluştururken seçeceklerin:
+      • **Metrik türü** — KPI, Risk, Bütçe, Vizyon Puanı
+      • **Koşul** — eşik değeri, süre, karşılaştırma yönü
+      • **Aksiyon** — kime bildirim, hangi sıklıkta, otomatik mi manuel mi
+
+      Bir tetikleyici aktifleştiğinde sessiz değildir — bildirim gönderir, K-Radar'a düşer, yönetici panelinde uyarı olarak görünür.
+    placement: "bottom"
+
+finale:
+  title: "Veri biriktikten sonra anlamlı"
+  body: |
+    KPI'ların ve girişimlerin tanımlı olmadan tetikleyici kurmak mantıksız. Önce stratejilerini ve ölçümlerini netleştir, 1-2 ay veri biriksin, sonra dön burada "şu kritik 3 metriği takibe alalım" diye 3-5 tetikleyici kur.

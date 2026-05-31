@@ -23,7 +23,7 @@ def check_task_reminders(app=None):
     Hatırlatma zamanı gelen görevleri kontrol eder ve bildirim gönderir.
     Her 5 dakikada bir çalışır.
     """
-    from models.project import Task
+    from app.models.portfolio_project import Task
     from services.notification_service import create_task_reminder_notification
     from utils.task_status import COMPLETED_STATUSES
     from extensions import db

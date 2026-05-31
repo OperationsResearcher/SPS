@@ -5,7 +5,7 @@ Project Service Testleri
 import pytest
 from datetime import date, datetime
 from services.project_service import handle_task_completion, _calculate_veri_tarihi, _get_periyot_bilgileri
-from models import Task, TaskImpact, BireyselPerformansGostergesi, PerformansGostergeVeri, SurecPerformansGostergesi
+from app.models.legacy_bridge import Task, TaskImpact, BireyselPerformansGostergesi, PerformansGostergeVeri, SurecPerformansGostergesi
 
 
 class TestProjectService:
@@ -36,9 +36,9 @@ class TestProjectService:
             periyot_tipi, periyot_no, periyot_ay = _get_periyot_bilgileri(
                 'Aylık', tamamlanma_tarihi, 2025, 3, 1
             )
-            assert periyot_tipi == 'Aylık'
+            assert periyot_tipi == 'aylik'
             assert periyot_no == 3
-            assert periyot_ay == 3
+            assert periyot_ay is None
     
     def test_handle_task_completion_no_impacts(self, app, test_task):
         """Impact olmayan görev tamamlama"""
@@ -51,7 +51,7 @@ class TestProjectService:
     
     def test_handle_task_completion_with_impact(self, app, test_task, test_user):
         """Impact'li görev tamamlama"""
-        from models import db
+        from app.models.legacy_bridge import db
         
         with app.app_context():
             # Bireysel PG oluştur

@@ -1,0 +1,148 @@
+{% extends "platform/base.html" %}
+{% block title %}Yeni Yıla Geç — Kokpitim{% endblock %}
+{% block page_title %}Plan Yılı Geçiş Sihirbazı{% endblock %}
+
+{% block content %}
+<div style="max-width:680px; margin:0 auto; padding:0 8px;">
+
+    <!-- Adım göstergesi -->
+    <div style="display:flex; align-items:center; gap:0; margin-bottom:28px;">
+        {% for label in ['1. Yılı Seç', '2. Önizle', '3. Onayla'] %}
+        <div id="step-indicator-{{ loop.index }}" style="flex:1; text-align:center; padding:10px 0; font-size:13px; font-weight:600;
+             background:{% if loop.first %}#6366f1{% else %}#e2e8f0{% endif %};
+             color:{% if loop.first %}#fff{% else %}#94a3b8{% endif %};
+             border-radius:{% if loop.first %}8px 0 0 8px{% elif loop.last %}0 8px 8px 0{% else %}0{% endif %};">
+            {{ label }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Adım 1: Yıl Seç -->
+    <div id="step-1" class="mc-card" style="margin-bottom:16px;">
+        <div class="mc-card-header"><span class="mc-card-title">Kaynak ve Hedef Yıl</span></div>
+        <div class="mc-card-body">
+            <div style="margin-bottom:14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Kaynak Yıl (Taşınacak Veriler)</label>
+                <select id="source-year-select" class="mc-input" style="width:100%;">
+                    <option value="">— Seçiniz —</option>
+                    {% for py in plan_years %}
+                    <option value="{{ py.id }}" data-year="{{ py.year }}">{{ py.year }} — {{ py.name or py.year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Hedef Yıl (Yeni Dönem)</label>
+                <input type="number" id="new-year-input" class="mc-input" style="width:100%;"
+                       placeholder="{{ 'today'|default('2027') }}" min="2020" max="2040" value="{{ now.year + 1 if now is defined else '' }}">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Yeni Dönem Adı (isteğe bağlı)</label>
+                <input type="text" id="new-year-name" class="mc-input" style="width:100%;" placeholder="Plan 2027">
+            </div>
+            <button id="btn-preview" class="mc-btn mc-btn-primary" style="width:100%;">
+                <i class="fas fa-eye"></i> Önizlemeye Geç
+            </button>
+        </div>
+    </div>
+
+    <!-- Adım 2: Önizleme -->
+    <div id="step-2" class="mc-card" style="margin-bottom:16px; display:none;">
+        <div class="mc-card-header"><span class="mc-card-title">Önizleme</span></div>
+        <div class="mc-card-body" id="preview-body">
+            <div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
+        <div class="mc-card-footer" style="display:flex; gap:8px; justify-content:flex-end; padding:12px 18px;">
+            <button id="btn-back" class="mc-btn mc-btn-secondary">Geri</button>
+            <button id="btn-confirm" class="mc-btn mc-btn-primary">Onayla ve Uygula</button>
+        </div>
+    </div>
+
+    <!-- Adım 3: Sonuç -->
+    <div id="step-3" class="mc-card" style="margin-bottom:16px; display:none;">
+        <div class="mc-card-body" style="text-align:center; padding:40px 20px;">
+            <i class="fas fa-circle-check fa-3x" style="color:#10b981; margin-bottom:16px;"></i>
+            <h2 style="font-size:18px; font-weight:700; color:#1e293b; margin:0 0 8px;" id="result-title">Geçiş Tamamlandı!</h2>
+            <p style="color:#64748b; font-size:14px;" id="result-msg"></p>
+            <a href="{{ url_for('app_bp.sp_donemler') }}" class="mc-btn mc-btn-primary" style="margin-top:20px; display:inline-block;">
+                <i class="fas fa-calendar"></i> Dönemlere Git
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const previewUrl = "{{ url_for('app_bp.sp_api_sihirbaz_preview') }}";
+    const applyUrl  = "{{ url_for('app_bp.sp_api_sihirbaz_uygula') }}";
+    let previewData = null;
+
+    function setStep(n) {
+        [1,2,3].forEach(i => {
+            document.getElementById(`step-${i}`).style.display = i === n ? '' : 'none';
+            const ind = document.getElementById(`step-indicator-${i}`);
+            ind.style.background = i <= n ? '#6366f1' : '#e2e8f0';
+            ind.style.color = i <= n ? '#fff' : '#94a3b8';
+        });
+    }
+
+    document.getElementById("btn-preview").addEventListener("click", async () => {
+        const srcId = document.getElementById("source-year-select").value;
+        const newY  = parseInt(document.getElementById("new-year-input").value);
+        if (!srcId || !newY) { Swal.fire("Uyarı", "Kaynak yıl ve hedef yıl seçiniz.", "warning"); return; }
+        setStep(2);
+        document.getElementById("preview-body").innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i></div>';
+        const r = await fetch(previewUrl, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source_year_id:parseInt(srcId), new_year:newY})});
+        const res = await r.json();
+        if (!res.success) { Swal.fire("Hata", res.message, "error"); setStep(1); return; }
+        previewData = res.preview;
+        document.getElementById("preview-body").innerHTML = `
+            <div style="padding:8px 0;">
+                <p style="font-size:14px;color:#1e293b;margin:0 0 16px;">${previewData.message}</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="background:#f0fdf4;border-radius:8px;padding:14px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#10b981;">${previewData.process_count}</div>
+                        <div style="font-size:12px;color:#64748b;">Süreç taşınacak</div>
+                    </div>
+                    <div style="background:#eff6ff;border-radius:8px;padding:14px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#3b82f6;">${previewData.kpi_count}</div>
+                        <div style="font-size:12px;color:#64748b;">KPI taşınacak</div>
+                    </div>
+                </div>
+            </div>`;
+    });
+
+    document.getElementById("btn-back").addEventListener("click", () => setStep(1));
+
+    document.getElementById("btn-confirm").addEventListener("click", async () => {
+        if (!previewData) return;
+        const conf = await Swal.fire({
+            title: "Emin misiniz?",
+            text: `${previewData.source_year} → ${previewData.new_year} geçişi geri alınamaz.`,
+            icon: "warning", showCancelButton: true,
+            confirmButtonText: "Evet, geç!", cancelButtonText: "İptal",
+        });
+        if (!conf.isConfirmed) return;
+
+        const srcId = document.getElementById("source-year-select").value;
+        const newY  = parseInt(document.getElementById("new-year-input").value);
+        const name  = document.getElementById("new-year-name").value.trim();
+        document.getElementById("btn-confirm").disabled = true;
+        document.getElementById("btn-confirm").innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uygulanıyor…';
+
+        const r = await fetch(applyUrl, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source_year_id:parseInt(srcId), new_year:newY, name})});
+        const res = await r.json();
+        if (!res.success) {
+            Swal.fire("Hata", res.message, "error");
+            document.getElementById("btn-confirm").disabled = false;
+            document.getElementById("btn-confirm").innerHTML = 'Onayla ve Uygula';
+            return;
+        }
+        document.getElementById("result-msg").textContent = res.message;
+        setStep(3);
+    });
+})();
+</script>
+{% endblock %}

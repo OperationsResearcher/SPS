@@ -5,8 +5,15 @@ from __future__ import annotations
 
 from sqlalchemy import or_
 
+from extensions import db
 from app.models.core import User
-from models import Project, Task, db, project_members, project_observers, project_leaders
+from app.models.portfolio_project import (
+    Project,
+    Task,
+    project_members,
+    project_observers,
+    project_leaders,
+)
 
 
 # Kurum / platform yöneticileri (süreç modülüyle aynı)
@@ -140,7 +147,7 @@ def can_crud_project_portfolio(user) -> bool:
 
 def accessible_projects_query(base_query, user, kurum_id: int):
     """Tenant/kurum projeleri; ayrıcalıksız kullanıcıda yalnızca atananlar."""
-    q = base_query.filter(Project.kurum_id == kurum_id, Project.is_archived.is_(False))
+    q = base_query.filter(Project.kurum_id == kurum_id, Project.is_archived.is_(False), Project.is_active.is_(True))
     if is_privileged(user):
         return q
     uid = _uid(user)

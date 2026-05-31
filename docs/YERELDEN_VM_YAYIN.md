@@ -1,18 +1,22 @@
 # Yerelden VM’e yayın (Kokpitim / kokpitim.com)
 
-Bu dosya, **yerelde yapılan kod değişikliklerinin** üretim VM’ine güvenli şekilde alınması için **tek referans yordamdır**.  
+Bu dosya, **yerelde yapılan kod değişikliklerinin** üretim **VM**’ine güvenli şekilde alınması için **tek referans yordamdır**.
+
+> **VM = Oracle Cloud** (`kokpitim-v2`, `129.159.30.175`). Eski GCP (`sps-server-v2`) kullanılmaz.  
+> Özet tablo: `docs/ORACLE-PROD-VM.md`
+
 **Ters yön (VM → yerel):** `docs/VM_DEN_YERELE.md`  
-VM adı, zone ve proje özeti: `docs/PROJE-MASTER.md` → bölüm 12.
+Altyapı özeti: `docs/PROJE-MASTER.md` → bölüm 12.
 
 ---
 
 ## Özet akış
 
 1. Yerelde değişiklikleri **commit** edip **GitHub `main`** dalına **push** et.
-2. VM’de **`scripts/vm_safe_deploy.sh`** çalıştır (otomatik: PG yedek, `git pull`, Docker build, Alembic, satır sayısı kontrolü, health).
+2. **Oracle VM**’de **`scripts/ops/oracle/oracle_safe_deploy.sh`** çalıştır (PG yedek, `git pull`, Docker build, Alembic, satır sayısı, health).
 3. Gerekirse **sekans / bakım** adımlarını uygula (aşağıda).
 
-Canlı veritabanı **PostgreSQL** (`kokpitim_db`). Uygulama **Docker** içinde (`sps-web`), kod dizini: `/home/kokpitim.com/public_html`.
+Canlı veritabanı **PostgreSQL** (`kokpitim_db`). Uygulama **Docker** (`kokpitim-web`, `--network host`), kod: `/opt/kokpitim/app`, `.env`: `/opt/kokpitim/.env`.
 
 ---
 
@@ -20,10 +24,10 @@ Canlı veritabanı **PostgreSQL** (`kokpitim_db`). Uygulama **Docker** içinde (
 
 | Gereksinim | Açıklama |
 |------------|----------|
-| `gcloud` CLI | Giriş: `gcloud auth login` — VM SSH için yetkili hesap |
+| Oracle SSH anahtarı | `ubuntu@129.159.30.175` (ör. `C:\crt\ssh-key-2026-04-18_v4.key`) |
 | Git remote | `origin` → GitHub; yayın **`main`** ile yapılır |
-| VM’de `.env` | `SQLALCHEMY_DATABASE_URI=...postgresql...` (veya `.env.postgres`) — yoksa deploy betiği durur |
-| Dal | `vm_safe_deploy.sh` içinde **`git pull origin main` sabit**; başka dal yayınlanacaksa önce betik/VM’de dal stratejisi netleştirilmeli |
+| VM’de `.env` | `/opt/kokpitim/.env` — `SQLALCHEMY_DATABASE_URI=...postgresql...127.0.0.1...` |
+| Dal | `oracle_safe_deploy.sh` içinde **`git pull origin main` sabit** |
 
 ---
 
@@ -67,29 +71,28 @@ Push tamamlanmadan VM tarafında `git pull` anlamlı güncelleme getirmez.
 **Tek komut** (SSH oturumu açıp veya tek satırda):
 
 ```bash
-cd /home/kokpitim.com/public_html && sudo bash scripts/vm_safe_deploy.sh
+cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
 ```
 
 Betik sırasıyla:
 
-1. **PostgreSQL tam yedek** — `backups/pg_kokpitim_db_full_<timestamp>.sql.gz`
+1. **PostgreSQL tam yedek** — `/opt/kokpitim/backups/pg_kokpitim_db_full_<timestamp>.sql.gz`
 2. **Temel tablolar satır sayısı** (önce)
 3. **`git pull origin main`**
-4. **`docker build`** → `sps_web_final:latest`
-5. Konteyner **`sps-web`** yeniden oluşturulur: port **80→5000**, `--env-file .env` [+ `.env.postgres`], `--add-host=host.docker.internal:host-gateway`, `instance` volume
+4. **`docker build`** → `kokpitim_web:latest`
+5. Konteyner **`kokpitim-web`**: `--network host`, `--env-file /opt/kokpitim/.env`, `instance` → `/opt/kokpitim/instance`
 6. Konteyner içinde **`python3 scripts/run_db_upgrade.py`** (Alembic)
-7. **Satır sayıları** (sonra) — öncekiyle aynı değilse betik **çıkar** (veri kaybı şüphesi)
-8. **`curl http://127.0.0.1/health`**
+7. **Satır sayıları** (sonra) — öncekiyle aynı değilse betik **çıkar**
+8. **`curl http://127.0.0.1/health`** (nginx üzerinden)
 
-Başarı çıktısında yedek dosya yolu yazdırılır; bunu not edin.
-
-### Yerel Windows’tan tek seferde SSH ile çalıştırma
+### Yerel Windows’tan tek seferde SSH
 
 ```powershell
-gcloud compute ssh sps-server-v2 --zone=europe-west3-c --command="cd /home/kokpitim.com/public_html && sudo bash scripts/vm_safe_deploy.sh"
+ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175 `
+  "cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh"
 ```
 
-(Instance / zone farklıysa `docs/PROJE-MASTER.md` ile hizalayın.)
+> **Legacy:** GCP için `scripts/vm_safe_deploy.sh` ve `gcloud compute ssh sps-server-v2` — yalnızca arşiv.
 
 ---
 
@@ -98,7 +101,7 @@ gcloud compute ssh sps-server-v2 --zone=europe-west3-c --command="cd /home/kokpi
 | Kontrol | Komut / eylem |
 |--------|----------------|
 | Health | Tarayıcı veya VM’de: `curl -sS http://127.0.0.1/health` |
-| Log | `sudo docker logs sps-web --tail=100` |
+| Log | `docker logs kokpitim-web --tail=100` |
 | Site | https://kokpitim.com — login, kritik modül (ör. süreç karnesi, PGV) |
 
 ---
@@ -114,24 +117,24 @@ gcloud compute ssh sps-server-v2 --zone=europe-west3-c --command="cd /home/kokpi
 **Çözüm (VM, Postgres kullanıcısı):**
 
 - Tüm tablolar için (tercih): konteyner içinden  
-  `sudo docker exec sps-web bash -lc 'cd /app && python3 scripts/fix_postgres_sequences.py'`  
+  `docker exec kokpitim-web bash -lc 'cd /app && python3 scripts/fix_postgres_sequences.py'`  
   (Repo’da betik `PYTHONPATH=/app` ile uyumlu tutulmuştur.)
 - Sadece PGV tabloları için SQL dosyası: `scripts/sql/fix_kpi_data_sequences.sql` — `psql -f` ile.
 
 **Not:** Uygulama tarafında PGV ekleme uçlarında da sekans düzeltmesi + tek retry vardır; yine de sekansı bir kez hizalamak üretimde güvenlidir.
 
-### 2) PowerShell + `gcloud --command` içinde SQL
+### 2) PowerShell + uzak SQL
 
-`$(...)` veya karma `"` içinde `SELECT MAX(id)` yazmak PowerShell tarafından bozulabilir.  
-**Çözüm:** SQL’i dosyaya yazıp `gcloud compute scp` ile VM’e atın, VM’de `psql -f /tmp/....sql` çalıştırın; veya doğrudan VM’de `psql` oturumu açın.
+`$(...)` veya karma `"` içinde SQL yazmak PowerShell tarafından bozulabilir.  
+**Çözüm:** SQL’i dosyaya yazıp `scp` ile Oracle VM’e atın, VM’de `psql -f /tmp/....sql` çalıştırın; veya SSH oturumunda doğrudan `psql`.
 
 ### 3) Yerelde `pg_dump` ile sunucu sürümü uyumsuzluğu
 
-İstemci PostgreSQL sürümü sunucudan düşükse `pg_dump` bağlanamayabilir. **Tam yedek** için VM üzerinde `sudo -u postgres pg_dump ...` kullanın (`vm_safe_deploy.sh` bunu zaten yapar).
+İstemci PostgreSQL sürümü sunucudan düşükse `pg_dump` bağlanamayabilir. **Tam yedek** için Oracle VM üzerinde `sudo -u postgres pg_dump ...` kullanın (`oracle_safe_deploy.sh` bunu yapar).
 
-### 4) `docs/deploy_code_only.sh` ve eski PROJE-MASTER komutu
+### 4) Eski GCP deploy betikleri
 
-`deploy_code_only.sh` ve bazı eski tek satırlık `docker run` örnekleri **`.env` / `.env.postgres` ve `host.docker.internal`** kullanmıyor olabilir. Canlı ortamda **tercih her zaman `vm_safe_deploy.sh`** olmalı; aksi halde uygulama veritabanına bağlanamayabilir veya yanlış URI ile ayağa kalkabilir.
+`scripts/vm_safe_deploy.sh`, `deploy_code_only.sh` ve GCP yolları **legacy**. Canlı Oracle’da **`oracle_safe_deploy.sh`** kullanın.
 
 ### 5) Canlı DB SQLite değildir
 
@@ -141,7 +144,7 @@ Geliştirmede `instance/kokpitim.db` (SQLite) kullanılıyor olabilir; **kokpiti
 
 ## E — İsteğe bağlı: dal / acil yama
 
-- Şu an `vm_safe_deploy.sh` **`main` sabit** çeker. Hotfix dalı yayınlanacaksa: VM’de geçici olarak ilgili dalı checkout + pull + aynı Docker adımları veya betiğe `BRANCH` desteği eklenmesi gerekir (arada prosedür sapması).
+- Şu an `oracle_safe_deploy.sh` **`main` sabit** çeker. Hotfix dalı yayınlanacaksa: VM’de geçici olarak ilgili dalı checkout + pull + aynı Docker adımları veya betiğe `BRANCH` desteği eklenmesi gerekir (arada prosedür sapması).
 - **Öneri:** Acil düzeltmeyi `main`e merge edip standart akışı kullanın.
 
 ---
@@ -164,7 +167,7 @@ Geliştirmede `instance/kokpitim.db` (SQLite) kullanılıyor olabilir; **kokpiti
 ## F — Kontrol listesi (kopyala-yapıştır)
 
 - [ ] Yerelde `git push origin main` başarılı
-- [ ] VM’de `sudo bash scripts/vm_safe_deploy.sh` hatasız bitti
+- [ ] Oracle VM’de `sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` hatasız bitti
 - [ ] `pg_*_full_*.sql.gz` yedek yolu kayıtlı
 - [ ] `/health` `healthy`
 - [ ] Sitede duman testi (login + kritik işlem)
@@ -176,14 +179,14 @@ Geliştirmede `instance/kokpitim.db` (SQLite) kullanılıyor olabilir; **kokpiti
 
 Aşağıdakini aynen kullanabilirsiniz:
 
-> `docs/YERELDEN_VM_YAYIN.md` yordamını uygula: yerelde commit+push `main`, sonra VM’de `vm_safe_deploy.sh`, ardından health ve kısa duman testi; PGV hatası görülürse sekans bölümüne göre düzelt.
+> `docs/YERELDEN_VM_YAYIN.md` yordamını uygula: yerelde commit+push `main`, sonra **Oracle VM**’de `oracle_safe_deploy.sh`, ardından health ve duman testi. VM = Oracle (`docs/ORACLE-PROD-VM.md`).
 
 ---
 
 ## Sorular (netleştirme)
 
-Bu yordam **varsayılan olarak `main` ve `vm_safe_deploy.sh`** ile yazar. İleride sık **hotfix dalı** veya **staging VM** kullanımı planlanıyorsa, bunlar için ayrı alt başlık veya betik parametresi (`BRANCH`, ikinci `APP_DIR`) eklenmesi iyi olur; ihtiyaç varsa bir sonraki revizyonda genişletilir.
+Bu yordam **varsayılan olarak `main` ve `oracle_safe_deploy.sh`** ile yazar. İleride sık **hotfix dalı** veya **staging VM** kullanımı planlanıyorsa, bunlar için ayrı alt başlık veya betik parametresi (`BRANCH`, ikinci `APP_DIR`) eklenmesi iyi olur; ihtiyaç varsa bir sonraki revizyonda genişletilir.
 
 ---
 
-*Son güncelleme: 2026-04-03*
+*Son güncelleme: 2026-05-21 — VM = Oracle Cloud*

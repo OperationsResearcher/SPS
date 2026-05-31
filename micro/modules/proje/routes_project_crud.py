@@ -123,6 +123,8 @@ def project_new():
         sablon_projeler = (
             Project.query.filter_by(kurum_id=kid).order_by(Project.created_at.desc()).limit(20).all()
         )
+        from app.models.initiative import Initiative
+        initiatives = Initiative.query.filter_by(tenant_id=kid, is_active=True).order_by(Initiative.code, Initiative.name).all()
         clone_from_id = request.args.get("clone_from", type=int)
         clone_src = None
         if clone_from_id:
@@ -142,6 +144,7 @@ def project_new():
             form_users=form_users_payload(kullanicilar),
             form_init=project_form_init(clone_src) if clone_src else project_form_init(None),
             sablon_projeler=sablon_projeler,
+            initiatives=initiatives,
         )
 
     name = (request.form.get("name") or "").strip()
@@ -190,6 +193,16 @@ def project_new():
         except Exception:
             pass
 
+    # Stratejik girişim bağı (opsiyonel)
+    initiative_id = None
+    iid_raw = request.form.get("initiative_id")
+    if iid_raw and iid_raw.isdigit():
+        initiative_id = int(iid_raw)
+        # Tenant doğrulaması
+        from app.models.initiative import Initiative
+        if not Initiative.query.filter_by(id=initiative_id, tenant_id=kid).first():
+            initiative_id = None
+
     proj = Project(
         name=name,
         description=description,
@@ -199,6 +212,7 @@ def project_new():
         kurum_id=kid,
         manager_id=leader_ids[0],
         plan_year_id=plan_year_id,
+        initiative_id=initiative_id,
     )
     try:
         proj.notification_settings = json.dumps(notification_settings, ensure_ascii=False)
@@ -286,6 +300,8 @@ def project_edit(project_id: int):
         surecler = _load_project_form_surecler(kid)
         kullanicilar = tenant_core_users(kid)
         sablon_projeler = Project.query.filter_by(kurum_id=kid).order_by(Project.created_at.desc()).limit(20).all()
+        from app.models.initiative import Initiative
+        initiatives = Initiative.query.filter_by(tenant_id=kid, is_active=True).order_by(Initiative.code, Initiative.name).all()
         return render_template(
             "platform/project/form.html",
             project=proj,
@@ -295,6 +311,7 @@ def project_edit(project_id: int):
             form_users=form_users_payload(kullanicilar),
             form_init=project_form_init(proj),
             sablon_projeler=sablon_projeler,
+            initiatives=initiatives,
         )
 
     proj.name = (request.form.get("name") or "").strip() or proj.name
@@ -337,6 +354,16 @@ def project_edit(project_id: int):
         proj.notification_settings = json.dumps(settings, ensure_ascii=False)
     except Exception:
         pass
+
+    # Stratejik girişim bağı güncelleme
+    iid_raw = request.form.get("initiative_id")
+    if iid_raw == "" or iid_raw == "none":
+        proj.initiative_id = None
+    elif iid_raw and iid_raw.isdigit():
+        from app.models.initiative import Initiative
+        new_iid = int(iid_raw)
+        if Initiative.query.filter_by(id=new_iid, tenant_id=kid).first():
+            proj.initiative_id = new_iid
 
     _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
 

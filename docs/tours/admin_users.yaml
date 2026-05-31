@@ -1,0 +1,43 @@
+key: admin_users
+title: "Kullanıcı Yönetimi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Ekibini buradan büyüteceksin"
+  body: |
+    Şu an Eskişehir Motor Sanayi'nde tek kullanıcı sensin Talat. Burada ekibini davet edip rollerini atayacaksın. Doğru rol ataması güvenliğin de adaletin de temelidir.
+
+    Roller ve yapabilecekleri:
+    • **Kurum Yöneticisi** — her şeyi yapar (senin rolün). Strateji yazar, kullanıcı atar, paketi değiştirir.
+    • **Yönetici (Executive Manager)** — strateji görür, rapor çeker, ama kullanıcı yönetemez.
+    • **Süreç Sahibi** — sahibi olduğu süreçleri yönetir, KPI verisi girer.
+    • **Standart Kullanıcı** — kendi karnesini görür, atanan görevleri yapar.
+    • **Salt Okur** — yalnızca görür, hiçbir değişiklik yapamaz.
+
+    Genel kural: insanlara işleri için gereken en az yetkiyi ver. Bir muhasebeci stratejiyi düzenleyebilmemeli; bir mühendisin tüm KPI verisine erişim yetkisi olmamalı.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Kullanıcı tablosu"
+    body: |
+      Tabloda her satır bir kullanıcı. Görünen alanlar:
+      • **Ad Soyad + e-posta**
+      • **Rol** — atanmış rol
+      • **Durum** — aktif / pasif (pasif kullanıcı login olamaz)
+      • **2FA durumu** — iki adımlı doğrulama açık mı (önemli güvenlik göstergesi)
+      • **Son giriş** — kullanıcı kaç gündür aktif
+
+      Yeni kullanıcı eklemek için sağ üstte "Yeni Kullanıcı" butonu. E-posta, rol ve geçici şifre verirsin; sistem davet e-postası yollar. İlk girişte kullanıcı şifresini kendisi belirler.
+
+      Pasifleştirme = silmek değil. Ayrılan bir çalışanı pasif yaparsın; verisi durur, ama erişimi kapanır. Hard delete yok — denetim gereği veri silinmez.
+    placement: "bottom"
+
+finale:
+  title: "Kademeli davet"
+  body: |
+    İlk dalga için önerim: 2-3 üst yönetici davet et. Stratejiyi onlarla birlikte netleştir. Sonra süreç sahiplerini ekle (her kritik süreç için bir kişi). En son standart kullanıcıları davet et — onlar sisteme veri girecek kişiler.
+
+    Hepsini bir günde davet edersen kimse ne yapacağını bilmez. Aşamalı davet, eğitim sürecini de yönetmene yarar.

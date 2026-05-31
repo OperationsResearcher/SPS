@@ -5,7 +5,7 @@ Geciken öncül görevler için ardıl görev tarihlerini otomatik güncelleme
 """
 from datetime import date, timedelta
 from flask import current_app
-from models import db, Task, task_predecessors
+from app.models.legacy_bridge import db, Task, task_predecessors
 
 
 def update_dependent_tasks_due_dates(task_id, new_due_date, project_id, user_id):

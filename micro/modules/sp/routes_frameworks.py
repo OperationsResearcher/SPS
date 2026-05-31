@@ -266,8 +266,7 @@ def sp_api_project_evm(pid):
 @app_bp.route("/sp/digest/weekly.html")
 @login_required
 def sp_digest_html():
-    if not _can():
-        return render_template("errors/403.html"), 403
+    # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.
     tenant_name = getattr(getattr(current_user, "tenant", None), "name", "Kurumunuz")
     html = render_digest_html(current_user.tenant_id, tenant_name)
     return Response(html, mimetype="text/html")
@@ -276,11 +275,11 @@ def sp_digest_html():
 @app_bp.route("/sp/digest/weekly.pdf")
 @login_required
 def sp_digest_pdf():
-    if not _can():
-        return render_template("errors/403.html"), 403
+    # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.
     tenant_name = getattr(getattr(current_user, "tenant", None), "name", "Kurumunuz")
     content, mime = render_digest_pdf(current_user.tenant_id, tenant_name)
+    ext = "pdf" if mime == "application/pdf" else "html"
     headers = {
-        "Content-Disposition": f'attachment; filename="kokpitim_haftalik_rapor.{ "pdf" if mime=="application/pdf" else "html" }"'
+        "Content-Disposition": f'attachment; filename="kokpitim_haftalik_rapor.{ext}"'
     }
     return Response(content, mimetype=mime, headers=headers)

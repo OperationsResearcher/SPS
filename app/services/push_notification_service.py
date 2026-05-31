@@ -4,7 +4,7 @@ Handles web push notifications using pywebpush
 """
 
 from pywebpush import webpush, WebPushException
-from app.extensions import db
+from extensions import db
 from app.models.notification import PushSubscription
 import json
 import logging

@@ -1,0 +1,33 @@
+key: sp_quarterly
+title: "Çeyreklik Değerlendirme"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Strateji üç ayda bir nefes alır"
+  body: |
+    Eski strateji düşüncesi yıllıktı: yılbaşında plan yap, yıl sonunda bak. Sorun şu — 12 ay sonra "geç kaldık" demek çok pahalı. Modern strateji yaklaşımı çeyreklik kontrol noktaları koyar: her 3 ayda bir 30-60 dakikalık bir oturum, sapmaları erken yakalamak için.
+
+    Çeyreklik değerlendirme = "Geçen 3 ayda ne oldu, hedefe ne kadar yaklaştık, neyi ayarlamalıyız?" sorusunu disiplinli sorduğun yer. Cevaplar yazılı kayıt altına alınır; sonraki çeyrekte ne dediğini hatırlarsın.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Değerlendirme ritmi"
+    body: |
+      Sayfa şu yapıdadır:
+      • **Yıl + Çeyrek seçimi** — örn: 2026 Q1
+      • **KPI Özeti** — o çeyrekteki gerçekleşmeler, hedef sapması
+      • **Girişim İlerlemesi** — devam eden girişimlerin durumu
+      • **Risk Güncellemeleri** — yeni eklenen, kapatılan veya tırmanan riskler
+      • **Yönetim Notu** — yorum, karar, gözlem alanı
+      • **Aksiyon Listesi** — sonraki çeyreğe taşınacak işler
+
+      Disiplinli kullanırsan, 4. çeyrekte yıl sonu raporu hazır olur — her çeyreğin notları birikip yıllık özetin temelini oluşturur.
+    placement: "bottom"
+
+finale:
+  title: "Henüz çok erken"
+  body: |
+    İlk değerlendirmen, ilk çeyrek (Q1) bitiminde — yani 2026 Mart sonunda olur. O zamana kadar burada görünecek veri olmaz. Şimdilik mantığı anlaman yeterli.

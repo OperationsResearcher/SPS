@@ -3,6 +3,137 @@
 > Format: TASK-[numara] | Tarih | Durum
 > En yeni kayıt en üstte.
 
+## TASK-143 | 2026-05-31 | ✅ Tamamlandı — K-Radar toplu navigasyon + yıl filtresi + açıklama standardizasyonu
+
+**Görev:** K-Radar hub'daki tüm sayfalarda navigasyon, yıl filtresi tasarımı ve açıklama standardizasyonu
+**Modül:** k_rapor, raporlar (tüm gruplar)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/raporlar/vrio_portfoy.html` → breadcrumb + mc-page-header eklendi
+- `ui/templates/platform/raporlar/sektor_benchmark.html` → breadcrumb + mc-page-header
+- `ui/templates/platform/raporlar/sektorel.html` → breadcrumb + mc-page-header
+- `ui/templates/platform/raporlar/sunburst.html` → breadcrumb + mc-page-header
+- `ui/templates/platform/raporlar/evrim_filmi.html` → breadcrumb + mc-page-header
+- `ui/templates/platform/raporlar/strateji_hikayesi.html` → breadcrumb + mc-page-header
+- `ui/templates/platform/raporlar/cfo_dashboard.html` → breadcrumb + mc-page-header (ve 13 AI/üst yönetim sayfası)
+- `ui/templates/platform/raporlar/kv_carpiklik.html` → mc-page-header + mc-year-mini
+- `ui/templates/platform/raporlar/cmmi_heatmap.html` → mc-year-mini sınıfı
+- `ui/templates/platform/raporlar/hizalama_sankey.html` → mc-year-mini sınıfı
+- `ui/templates/platform/raporlar/muda_analizi.html` → mc-year-mini sınıfı
+- `ui/templates/platform/raporlar/op_istatistik.html` → mc-year-mini sınıfı
+- `ui/static/platform/css/components.css` → .mc-year-mini ve .mc-year-sel CSS eklendi
+- `ui/static/platform/css/k_rapor.css` → .kr-info-band CSS eklendi
+- `ui/templates/platform/k_rapor/index.html` → 18 tab'a kr-info-band açıklama bandı, yıl seçici mc-year-mini
+- `ui/static/platform/js/k_rapor.js` → k-vektor/evm/faaliyet-matris/sorumlu-analiz fetchJson'a {year} eklendi; TABS_NO_YEAR'a swot-trend eklendi
+- `micro/modules/k_rapor/routes.py` → evm/faaliyet-matris/sorumlu-analiz route'larına yıl filtresi eklendi
+
+### Yapılan İşlem
+4 paket halinde çalışıldı: (1) 20 raporlar sayfasına breadcrumb + mc-page-header; (2) CSS sınıfı mc-year-mini ile 6 sayfada yıl filtresi standardizasyonu; (3) 4 k_rapor tab'ına yıl parametresi + swot-trend TABS_NO_YEAR'a alındı; (4) 18 k_rapor tab'ına kr-info-band açıklama bandı.
+
+### Notlar
+swot-trend zaten tüm yılları trend olarak gösterdiğinden yıl filtresi eklenmedi, yıl seçici gizlendi.
+
+---
+
+## TASK-142 | 2026-05-30 / 2026-05-31 | ✅ Tamamlandı (yerel) — Büyük UX yenileme oturumu
+
+**Görev:** 4 sprint (16 özellik) + K-Radar birleşmesi + breadcrumb sistemi + 38+ rapor sayfası standardizasyonu + Initiative ↔ Proje stratejik bağ + Hiyerarşi Rehberi
+**Modül:** platform geneli (sp, k_radar, raporlar, proje, ayarlar, base, app/__init__)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen / Eklenen Dosyalar (özet — 90+ dosya)
+
+**Yeni endpoint dosyaları**
+- `micro/modules/shared/search/routes.py` → küresel arama API (Ctrl+K paleti)
+- `micro/modules/shared/my_tasks/routes.py` → "Benim Görevlerim" birleşik widget API
+- `micro/modules/shared/scheduled_reports/routes.py` → zamanlanmış raporlar abonelik API
+- `micro/modules/sp/routes_alignment.py` → Strateji × Proje matris API + sayfa
+- `app/services/efqm_assessment.py`, `app/services/bsc_auto_classifier.py` (önceki oturum)
+
+**Yeni şablonlar**
+- `ui/templates/platform/k_radar/hub.html` → 5 grupta 65+ kart birleşik K-Radar hub
+- `ui/templates/platform/sp/strategy_project_matrix.html` → strateji×proje ısı haritası
+- `ui/templates/platform/raporlar/pg_proje_etki.html` → PG×Proje çapraz etki
+- `ui/templates/platform/ayarlar/zamanlanmis_raporlar.html` → 4 rapor abonelik kartı
+- `ui/templates/platform/_hierarchy_help.html` → paylaşılabilir hiyerarşi rehberi popup
+
+**Backend değişikliği**
+- `app/__init__.py` → `current_section` + `current_subgroup` context processor (otomatik breadcrumb)
+- `app/services/exec_dashboard_service.py` → `?year=` parametresi + tüm sorgulara plan_year filtresi
+- `app/services/weekly_digest_service.py` → Arial TTF font (TR karakter) + DISTINCT ON ile 87x hızlanma
+- `app/services/analytics_service.py` → safe_float ile str/int karşılaştırma hatası
+- `app/services/report_service.py` → `kpi.frequency` AttributeError fallback
+- `app/models/portfolio_project.py` → `Project.initiative_id` FK + `initiative` ilişkisi
+- `micro/modules/analiz/routes.py` → 4 kırık endpoint düzeltildi (trend/health/anomalies/report)
+- `micro/modules/sp/routes_frameworks.py` → `_can()` çıkarıldı, digest tüm girişli kullanıcılara
+- `micro/modules/sp/routes_exec_advisor.py` → 3 yeni endpoint (strategy-scores, trend, kvektor-trend)
+- `micro/modules/sp/routes_initiative.py` → 2 bağlama endpoint (girişim↔proje)
+- `micro/modules/k_rapor/routes.py` → uyum/strateji-kapsama/surec-pg plan_year filtresi + aylık→çeyrek/yıllık aggregation
+- `micro/modules/raporlar/routes_faz0.py` → Sankey 5 katman + skor + drill-down
+- `micro/modules/raporlar/routes_faz1.py` → CMMI/Muda/Op-İstatistik yıl filtresi; ROI per Strategy KALDIRILDI
+- `micro/modules/k_radar/routes_common.py` → `/k-radar` redirect değil, merged hub
+- `micro/modules/k_rapor/routes.py` → `/k-rapor` (tab yok) `/k-radar`'a redirect
+- `micro/modules/proje/routes_project_crud.py` → form'da initiative_id yönetimi
+- `micro/modules/shared/auth/routes.py` → `/api/profile/theme` GET/POST endpoint
+
+**JS değişikliği**
+- `ui/static/platform/js/command_palette.js` (yeni) → Ctrl+K palet
+- `ui/static/platform/js/raporlar/{cmmi,muda,sankey,kv_carpiklik,initiative_bubble,op_istatistik,hedef_revizyon}.js` → tooltip, yıl seçici, drill-down, TR çeviriler
+- `ui/static/platform/js/k_rapor.js` → tab/yıl yönetimi + scroll
+- `ui/static/platform/js/dark_mode.js` → server senkronu
+- `ui/static/platform/js/surec.js` → set-active yıl + sparkline
+- `ui/static/platform/css/components.css` → `mc-breadcrumb` sınıfları
+
+**Veritabanı**
+- `project` tablosuna `initiative_id INTEGER REFERENCES initiatives(id) ON DELETE SET NULL` + index
+
+**Silinen**
+- `ui/templates/platform/raporlar/roi_strategy.html` (kapsam dışı)
+- `ui/static/platform/js/raporlar/roi_strategy.js`
+- `micro/modules/raporlar/routes_faz1.py` içinde 2 ROI route bloğu
+
+### Yapılan İşlem
+
+**Sprint 1** (UI hızlı kazanım): boş durumlar zenginleştirildi (SP/Bildirim/Süreç), Proje listesinde RAID donut, Bireysel karne SVG progress ring, dark mode server senkronu.
+
+**Sprint 2** (UX sıçraması): **Ctrl+K Komut Paleti** (statik + dinamik arama), Favoriler & Son Ziyaret Edilenler widget'ı, **"Benim Görevlerim"** union endpoint (proje görev + bireysel faaliyet + süreç aktivitesi), Proje listesinde toplu işlem sticky bar.
+
+**Sprint 3** (görselleştirme): Süreç listesi PG mini sparkline (3 ay trend), SP K-Vektör strateji bubble heatmap, **Strateji × Proje hizalama matrisi** (yeni sayfa), Süreç olgunluk radarı (5 boyut).
+
+**Sprint 4** (büyük yatırım): **PG × Proje Çapraz Etki Analizi**, topbar küresel arama, **Zamanlanmış Raporlar** (4 abonelik tipi).
+
+**K-Radar Birleşmesi**: `/k-rapor` + `/raporlar` + `/k-analiz` sidebar/menü olarak tek "**K-Radar**" hub'ı altında birleştirildi. `/k-radar` yeni merged hub (65 kart, 5 grup). Eski URL'ler redirect.
+
+**Breadcrumb Sistemi**: Tüm sayfalar için otomatik 3-4 katmanlı navigasyon (Home > Sidebar > Subgroup > Sayfa). `app/__init__.py`'de URL → bölüm/alt-grup haritası (65+ K-Radar URL'si eşlenmiş). 38 rapor sayfasından "Raporlara Dön" butonları topluca temizlendi.
+
+**Sayfa Standardizasyonu**: 30+ sayfa standart `mc-page-header` + 1240 px kapsayıcı + breadcrumb + `mc-page-header` pattern'ine getirildi (k-rapor, sp, sürec, project, ayarlar, k-radar, raporlar alt-sayfaları).
+
+**Initiative ↔ Proje Bağı**: UI'da "Initiative" → "**Stratejik Girişim**" (12 dosya). `Project.initiative_id` sütunu + DB migration. Initiative sayfasında "Altındaki Projeler" toggle widget'ı. Proje formuna stratejik girişim dropdown. Proje detayda rozet. Paylaşılabilir **Hiyerarşi Rehberi popup** (6 katman) `/sp`, `/sp/initiatives`, `/project` sayfalarına entegre.
+
+**Bug Düzeltmeleri**: 
+- Süreç karne sayfasında yıl değiştirince sonsuz reset döngüsü (process plan_year_id vs user active_year)
+- `/sp/digest/weekly.pdf` HTML yerine PDF dönmesi (yetki + reportlab venv'de kurulum + Arial TTF)
+- Tomofil 30s sorgu → 0.05s (DISTINCT ON ile N+1 önlemi)
+- K-Rapor 6+ sekmede yıl filtresi eksikliği nedeniyle süreçlerin 5-7 kez tekrarı
+- `/raporlar/op-istatistik` 404 (hub link URL uyumsuzluğu)
+- Sidebar "Bireysel Performans" ikonu görünmüyordu (`fa-user-chart` Font Awesome'da yok)
+- `/raporlar/roi-strategy` kapsamdan tamamen kaldırıldı (route + template + JS + URL mapping + hub kartı)
+- `/k-rapor?tab=surec-pg` aylık verisi varken çeyrek/yıllık boş — on-the-fly aggregation
+- Sankey görseli zenginleştirildi (5 katman, performans renkleri, hover vurgu, drill-down, yıl seçici, hizalanmamış uyarı) + "Stratejik Akış Haritası" olarak yeniden adlandırıldı
+- CMMI Olgunluk Isı Haritası tam Türkçeleştirildi (5 seviye detaylı tanım, yorum kutusu)
+- EVM panel açıklayıcı hale getirildi (PV/EV/AC tanımları + SPI/CPI eşikleri + 4 kombinasyon yorum tablosu)
+- 38 rapor sayfasından "Raporlara Dön" butonu kaldırıldı (script)
+
+### Notlar
+
+- Veritabanı değişikliği var: `project.initiative_id` sütunu — yerel ve test/yayın'a deploy ederken `ALTER TABLE project ADD COLUMN initiative_id INTEGER REFERENCES initiatives(id) ON DELETE SET NULL` + index gerekecek.
+- `requirements.txt`'ye `reportlab>=4.0` eklendi — yeni ortamlarda `pip install` zorunlu.
+- Tüm sayfalar smoke geçti (HTTP 200). Mevcut tenant verisi bozulmadı.
+- Breadcrumb sistemi `mc_breadcrumb` macro'su geriye dönük uyumlu (eski liste formatı hâlâ çalışır).
+- Test/Yayın deploy bekliyor — kullanıcı "deploy edelim" dediğinde tek tarball + DB migration ile gönderilebilir.
+
+
 ## TASK-141 | 2026-05-27 | 🚧 Devam ediyor — Yeni Raporlar Bölümü (10-task yol haritası)
 
 **Bağlam:** [docs/rapor/27mayisraporu.md](docs/rapor/27mayisraporu.md) (3.500 satır) içindeki rapor önerilerinden 10 tanesi seçildi. Hepsi sol menüde yeni "Raporlar" bölümünde başlatılacak — kullanıcı sonra hangisi hangi modüle gidecek diye karar verecek.

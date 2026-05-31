@@ -11,5 +11,6 @@ from platform_core import app_bp
 @app_bp.route("/raporlar")
 @login_required
 def raporlar_index():
-    """Yeni rapor önerileri için landing — kart grid."""
-    return render_template("platform/raporlar/index.html")
+    """Eski rapor merkezi — K-Radar hub'ı ile birleştirildi, yönlendirir."""
+    from flask import redirect, url_for
+    return redirect(url_for("app_bp.k_radar_hub"))

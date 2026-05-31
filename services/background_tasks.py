@@ -4,7 +4,7 @@ Background Task Servisleri
 PG hesaplamaları ve ağır işlemler için asenkron yapı hazırlığı
 """
 from flask import current_app
-from models import db
+from app.models.legacy_bridge import db
 import threading
 from queue import Queue
 import time
@@ -160,7 +160,7 @@ def calculate_pg_data_async(bireysel_pg_id, yil, task_id=None):
         from flask import current_app
         
         with current_app.app_context():
-            from models import BireyselPerformansGostergesi, PerformansGostergeVeri
+            from app.models.legacy_bridge import BireyselPerformansGostergesi, PerformansGostergeVeri
             
             bireysel_pg = BireyselPerformansGostergesi.query.get(bireysel_pg_id)
             if not bireysel_pg:

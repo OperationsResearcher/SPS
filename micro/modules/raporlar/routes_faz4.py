@@ -10,6 +10,7 @@ from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
+from app.extensions import csrf
 from app.models import db
 from app.models.core import User, Strategy, SubStrategy, Tenant
 from app.models.process import (
@@ -319,22 +320,95 @@ def raporlar_sektor_benchmark():
     return render_template("platform/raporlar/sektor_benchmark.html")
 
 
-# Mock sektör ortalamaları (gerçek müşteride dış API/manuel veri girişi olur)
+# ─── Mock sektör ortalamaları ───────────────────────────────────────────────
+
 _SEKTOR_BENCHMARKS = {
     "otomotiv": {
         "OEE": 65, "PPM Defect": 80, "OTIF": 88, "NPS": 45, "EBITDA": 12,
-        "Stok Devir": 8, "Patent (yıllık)": 4, "Çalışan Devir %": 14,
-        "CO₂ (tCO₂e)": 18000, "eNPS": 25,
+        "Stok Devir": 8, "Patent": 4, "Calisan Devir": 14,
+        "CO2": 18000, "eNPS": 25,
     },
     "saglik": {
-        "Bekleme Süresi (dk)": 25, "Memnuniyet %": 78, "Doluluk %": 68,
-        "Enfeksiyon ‰": 4, "Mortalite %": 2.3, "Hekim Devir %": 18,
+        "Bekleme Suresi": 25, "Memnuniyet": 78, "Doluluk": 68,
+        "Enfeksiyon": 4, "Mortalite": 2.3, "Hekim Devir": 18,
     },
     "finans": {
-        "NIM %": 3.8, "Cost-Income %": 55, "ROE %": 14, "NPL %": 4.5,
-        "CAR %": 12.5, "NPS": 42, "Mobil Adopsyon %": 65,
+        "NIM": 3.8, "Cost_Income": 55, "ROE": 14, "NPL": 4.5,
+        "CAR": 12.5, "NPS": 42, "Mobil_Adopsyon": 65,
     },
 }
+
+# Türkçe etiketler ve birimler
+_BENCHMARK_META = {
+    "OEE":           {"tr": "Ekipman Verimliliği (OEE)",       "birim": "%"},
+    "PPM Defect":    {"tr": "PPM Hata Oranı",                   "birim": "PPM"},
+    "OTIF":          {"tr": "Zamanında & Tam Teslimat",          "birim": "%"},
+    "NPS":           {"tr": "Net Tavsiye Skoru (NPS)",           "birim": "puan"},
+    "EBITDA":        {"tr": "FAVÖK Marjı",                       "birim": "%"},
+    "Stok Devir":    {"tr": "Stok Devir Hızı",                   "birim": "x/yıl"},
+    "Patent":        {"tr": "Yıllık Patent Sayısı",              "birim": "adet"},
+    "Calisan Devir": {"tr": "Çalışan Devir Oranı",               "birim": "%"},
+    "CO2":           {"tr": "Karbon Emisyonu",                   "birim": "tCO₂e"},
+    "eNPS":          {"tr": "Çalışan Memnuniyet Skoru (eNPS)",  "birim": "puan"},
+    "Bekleme Suresi":{"tr": "Ortalama Bekleme Süresi",           "birim": "dk"},
+    "Memnuniyet":    {"tr": "Hasta Memnuniyeti",                 "birim": "%"},
+    "Doluluk":       {"tr": "Yatak Doluluk Oranı",               "birim": "%"},
+    "Enfeksiyon":    {"tr": "Hastane Enfeksiyon Oranı",          "birim": "‰"},
+    "Mortalite":     {"tr": "Hastane İçi Mortalite",             "birim": "%"},
+    "Hekim Devir":   {"tr": "Hekim Devir Oranı",                 "birim": "%"},
+    "NIM":           {"tr": "Net Faiz Marjı (NIM)",              "birim": "%"},
+    "Cost_Income":   {"tr": "Maliyet / Gelir Oranı",             "birim": "%"},
+    "ROE":           {"tr": "Özkaynak Karlılığı (ROE)",          "birim": "%"},
+    "NPL":           {"tr": "Takipteki Kredi Oranı (NPL)",       "birim": "%"},
+    "CAR":           {"tr": "Sermaye Yeterlilik Oranı (CAR)",    "birim": "%"},
+    "Mobil_Adopsyon":{"tr": "Mobil Bankacılık Kullanımı",        "birim": "%"},
+}
+
+_SEKTOR_NAME_TR = {
+    "otomotiv": "Otomotiv / Yan Sanayi",
+    "saglik":   "Sağlık / Hastane",
+    "finans":   "Finans / Bankacılık",
+}
+
+
+def _sektor_context(tid, tenant, sektor_override: str | None = None):
+    """Ortak tenant + sektör bağlam hesabı.
+    sektor_override: istek parametresinden gelen kullanıcı seçimi (öncelikli).
+    """
+    sector_field = (tenant.sector or "").lower() if tenant else ""
+
+    # Öncelik: 1) kullanıcı seçimi, 2) tenant.sector eşleşmesi, 3) None (bilinmiyor)
+    if sektor_override and sektor_override in _SEKTOR_BENCHMARKS:
+        sektor_key = sektor_override
+    elif "sağlık" in sector_field or "hastane" in sector_field:
+        sektor_key = "saglik"
+    elif "finans" in sector_field or "banka" in sector_field:
+        sektor_key = "finans"
+    elif "otomotiv" in sector_field or "araç" in sector_field or "araç" in sector_field:
+        sektor_key = "otomotiv"
+    else:
+        sektor_key = None  # bilinmiyor — kullanıcı seçmeli
+    benchmark = []
+    if sektor_key:
+        benchmark_raw = _SEKTOR_BENCHMARKS.get(sektor_key, {})
+        for k, v in benchmark_raw.items():
+            meta = _BENCHMARK_META.get(k, {"tr": k, "birim": ""})
+            benchmark.append({"key": k, "tr": meta["tr"], "birim": meta["birim"], "deger": v})
+    proc_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
+    kpi_count = (ProcessKpi.query.join(Process)
+                 .filter(Process.tenant_id == tid, Process.is_active == True,
+                         ProcessKpi.is_active.is_(True)).count())
+    user_count = User.query.filter_by(tenant_id=tid, is_active=True).count()
+    return {
+        "sector_field": sector_field,
+        "sektor_key": sektor_key,
+        "sektor_adi": _SEKTOR_NAME_TR.get(sektor_key, "") if sektor_key else None,
+        "benchmark": benchmark,
+        "proc_count": proc_count,
+        "kpi_count": kpi_count,
+        "user_count": user_count,
+        "sektor_secilmedi": sektor_key is None,
+    }
 
 
 @app_bp.route("/raporlar/api/sektor-benchmark")
@@ -344,52 +418,107 @@ def raporlar_api_sektor_benchmark():
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
     tenant = db.session.get(Tenant, tid)
-
-    # Sektörü tenant.sector'dan tahmin et
-    sector_field = (tenant.sector or "").lower() if tenant else ""
-    sektor_key = "otomotiv"  # default
-    if "sağlık" in sector_field or "hastane" in sector_field:
-        sektor_key = "saglik"
-    elif "finans" in sector_field or "banka" in sector_field:
-        sektor_key = "finans"
-
-    benchmark = _SEKTOR_BENCHMARKS.get(sektor_key, _SEKTOR_BENCHMARKS["otomotiv"])
-
-    # Tomofil/tenant verisinden basit metrikler (özet)
-    active_py = get_active_plan_year_for_user(current_user)
-    py_id = active_py.id if active_py else None
-    proc_count = Process.query.filter_by(tenant_id=tid, is_active=True,
-        plan_year_id=py_id).count()
-    kpi_count = ProcessKpi.query.join(Process).filter(
-        Process.tenant_id == tid, Process.plan_year_id == py_id,
-        ProcessKpi.is_active.is_(True)).count()
-    user_count = User.query.filter_by(tenant_id=tid, is_active=True).count()
-
-    # AI yorumu
-    ai_comment = _ai_text(
-        prompt=(f"{tenant.name if tenant else 'Bir kurum'} ({sector_field}) için sektör benchmark analizi. "
-                f"Tenant'ta {proc_count} süreç, {kpi_count} PG, {user_count} çalışan var. "
-                f"Sektör ortalamaları: {benchmark}. "
-                "3-4 cümle ile değerlendirme yap: kurum sektör ortalamasının üstünde mi, altında mı, "
-                "hangi alanlarda iyileştirme önemli."),
-        fallback=(f"{tenant.name if tenant else 'Kurum'} {sektor_key} sektöründe faaliyet göstermektedir. "
-                  f"Tenant'ta {proc_count} süreç ve {kpi_count} performans göstergesi izlenmektedir. "
-                  "Sektör benchmarkları ile detaylı karşılaştırma için ilgili PG verilerinin "
-                  "güncel ve tam olması gerekmektedir."),
-        tid=tid, endpoint="ai_sektor_benchmark", max_tokens=350,
-    )
-
+    sektor_override = request.args.get("sektor") or None
+    ctx = _sektor_context(tid, tenant, sektor_override)
     return jsonify({"success": True, "data": {
-        "tenant_name": tenant.name if tenant else "—",
-        "sector": sector_field or "—",
-        "sektor_key": sektor_key,
-        "benchmark": benchmark,
+        "tenant_name":    tenant.name if tenant else "—",
+        "sektor_key":     ctx["sektor_key"],
+        "sektor_adi":     ctx["sektor_adi"],
+        "sector":         ctx["sector_field"] or "—",
+        "benchmark":      ctx["benchmark"],
+        "sektor_secilmedi": ctx["sektor_secilmedi"],
+        "sektor_listesi": [
+            {"key": k, "adi": v} for k, v in _SEKTOR_NAME_TR.items()
+        ],
         "tenant_summary": {
-            "process_count": proc_count,
-            "kpi_count": kpi_count,
-            "user_count": user_count,
+            "process_count": ctx["proc_count"],
+            "kpi_count":     ctx["kpi_count"],
+            "user_count":    ctx["user_count"],
         },
-        "ai_comment": ai_comment,
     }})
+
+
+@app_bp.route("/raporlar/api/sektor-benchmark/ai-yorum", methods=["POST"])
+@login_required
+@csrf.exempt
+def raporlar_api_sektor_benchmark_ai():
+    """AI yorumu isteğe bağlı — butona basılınca çağrılır."""
+    tid = _tid_or_none()
+    if not tid:
+        return jsonify({"success": False, "message": "Tenant yok"}), 400
+    tenant = db.session.get(Tenant, tid)
+    body = request.get_json(silent=True) or {}
+    sektor_override = body.get("sektor") or request.args.get("sektor") or None
+    ctx = _sektor_context(tid, tenant, sektor_override)
+    if ctx["sektor_secilmedi"]:
+        return jsonify({"success": False, "message": "Lütfen önce bir sektör seçin."}), 400
+    bench_str = "\n".join(f"  - {b['tr']}: {b['deger']} {b['birim']}" for b in ctx["benchmark"])
+    kurum_adi = tenant.name if tenant else "Kurum"
+    yorum = _ai_text(
+        prompt=(
+            f"Sen bir kurumsal performans danışmanısın.\n\n"
+            f"Kurum: {kurum_adi}\n"
+            f"Sektör: {ctx['sektor_adi']}\n"
+            f"Sistemde takip edilen: {ctx['proc_count']} süreç, {ctx['kpi_count']} PG, "
+            f"{ctx['user_count']} çalışan\n\n"
+            f"Aşağıdaki değerler bu sektörün GENEL ORTALAMALARIDIR. "
+            f"{kurum_adi}'nın bu metriklerdeki gerçek ölçüm değerleri henüz sisteme girilmemiştir.\n"
+            f"Sektör ortalamaları:\n{bench_str}\n\n"
+            f"YAPILMAMASI GEREKEN: Kurumun bu metriklerde nerede durduğunu varsayarak karşılaştırma yapmak.\n"
+            f"YAPILMASI GEREKEN: Türkçe 3-4 cümle ile şunları açıkla:\n"
+            f"1. Bu sektörde hangi metrikler en kritik ve neden?\n"
+            f"2. {ctx['proc_count']} süreç ve {ctx['kpi_count']} PG takip eden bir kurum "
+            f"benchmark karşılaştırması yapabilmek için hangi verileri sisteme girmeli?\n"
+            f"3. İlk odaklanılması önerilen 1-2 metrik."
+        ),
+        fallback=(
+            f"{kurum_adi}, {ctx['sektor_adi']} sektöründe {ctx['proc_count']} süreç ve "
+            f"{ctx['kpi_count']} PG ile faaliyet göstermektedir. "
+            f"Gerçek benchmark karşılaştırması yapabilmek için OEE, OTIF, PPM ve NPS gibi "
+            f"operasyonel metriklerin PG olarak sisteme eklenmesi ve düzenli ölçüm yapılması gerekmektedir. "
+            f"İlk adım olarak süreç bazlı OEE ve teslimat performansı takibinin kurulması önerilir."
+        ),
+        tid=tid, endpoint="ai_sektor_benchmark", max_tokens=450,
+    )
+    return jsonify({"success": True, "yorum": yorum})
+
+
+@app_bp.route("/raporlar/api/ai-status")
+@login_required
+def raporlar_api_ai_status():
+    """Kullanıcının AI kota durumu — BYOK vs sistem anahtarı."""
+    tid = _tid_or_none()
+    if not tid:
+        return jsonify({"success": False}), 400
+    byok = False
+    provider = None
+    try:
+        from app.models.tenant_llm_config import TenantLLMConfig
+        cfg = TenantLLMConfig.query.filter_by(tenant_id=tid, is_active=True).first()
+        if cfg and cfg.api_key_encrypted:
+            byok = True
+            provider = cfg.provider
+    except Exception:
+        pass
+    if byok:
+        return jsonify({"success": True, "byok": True, "provider": provider or "custom",
+                        "label": f"Kendi API anahtarınız ({(provider or 'AI').capitalize()}) — Sınırsız"})
+    # Sistem anahtarı — kota özeti
+    try:
+        from app.services.llm_quota_service import get_tenant_usage_summary, DEFAULT_LIMITS
+        s = get_tenant_usage_summary(tid)
+        today = s["today"]
+        remain = max(0, today["limit"] - today["used"])
+        return jsonify({
+            "success": True, "byok": False,
+            "paused": s["paused"],
+            "today_used": today["used"],
+            "today_limit": today["limit"],
+            "today_remain": remain,
+            "label": f"Sistem API · Bugün {remain}/{today['limit']} hak kaldı",
+        })
+    except Exception:
+        return jsonify({"success": True, "byok": False, "today_remain": None,
+                        "label": "Sistem API"})
 
 

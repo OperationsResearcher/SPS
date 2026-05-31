@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Haftalık e-posta/mesaj digest üretimi için özet veriler."""
 from datetime import datetime, timedelta
-from models import Task, Project
+from app.models.legacy_bridge import Task, Project
 
 
 def project_digest(project_id: int):

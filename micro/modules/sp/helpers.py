@@ -159,87 +159,132 @@ def _harita_short_label(text: str, max_len: int = 36) -> str:
 
 
 def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
-    """Strateji haritası vis-network düğüm/kenar listesi."""
-    import app.models.process  # noqa: F401 — SubStrategy.processes proxy
+    """Strateji haritası vis-network düğüm/kenar listesi.
+
+    Hiyerarşi (level):
+      0 — Vizyon
+      1 — Ana Strateji
+      2 — Alt Strateji
+      3 — Süreç  |  Stratejik Girişim
+      4 — PG     |  Proje
+    """
+    import app.models.process  # noqa: F401
     from app.models.process import ProcessSubStrategyLink
 
-    nodes, edges = [], []
-    seen_process_nodes: set[str] = set()
+    nodes: list[dict] = []
+    edges: list[dict] = []
+    seen_proc: set[str] = set()
+    seen_pg:   set[str] = set()
 
+    # ── 0. Vizyon düğümü ──────────────────────────────────────────────────────
+    vizyon_text = "Vizyon"
+    try:
+        py = PlanYear.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(PlanYear.id.desc()).first()
+        if py:
+            tyi = TenantYearIdentity.query.filter_by(plan_year_id=py.id, tenant_id=tenant_id).first()
+            if tyi and tyi.vision:
+                vizyon_text = tyi.vision
+    except Exception:
+        pass
+
+    nodes.append({
+        "id": "vizyon",
+        "label": _harita_short_label(vizyon_text, 44),
+        "group": "vizyon",
+        "level": 0,
+        "title": vizyon_text,
+    })
+
+    # ── 1-3. Strateji → Alt Strateji → Süreç → PG ────────────────────────────
     for s in strategies:
         s_id = f"s_{s.id}"
-        full = f"{s.code or ''} {s.title or ''}".strip() or (s.title or f"Strateji #{s.id}")
-        label = _harita_short_label(full, 40)
-        if s.code and s.title and len(f"{s.code}\n{s.title}") <= 48:
-            label = f"{s.code}\n{_harita_short_label(s.title, 32)}"
-        nodes.append({
-            "id": s_id,
-            "label": label,
-            "group": "strategy",
-            "title": full,
-        })
+        full = f"{s.code or ''} {s.title or ''}".strip() or f"Strateji #{s.id}"
+        label = _harita_short_label(full, 38)
+        if s.code and s.title:
+            label = f"{s.code}\n{_harita_short_label(s.title, 30)}"
+        nodes.append({"id": s_id, "label": label, "group": "strategy", "level": 1, "title": full})
+        edges.append({"from": "vizyon", "to": s_id})
+
         for ss in (s.sub_strategies or []):
             if not getattr(ss, "is_active", True):
                 continue
             ss_id = f"ss_{ss.id}"
-            ss_full = f"{ss.code or ''} {ss.title or ''}".strip() or (ss.title or f"Alt #{ss.id}")
-            ss_label = _harita_short_label(ss_full, 34)
+            ss_full = f"{ss.code or ''} {ss.title or ''}".strip() or f"Alt #{ss.id}"
             nodes.append({
                 "id": ss_id,
-                "label": ss_label,
+                "label": _harita_short_label(ss_full, 32),
                 "group": "sub_strategy",
+                "level": 2,
                 "title": ss_full,
             })
             edges.append({"from": s_id, "to": ss_id})
 
             processes = (
                 Process.query.filter_by(is_active=True, tenant_id=tenant_id)
-                .join(
-                    ProcessSubStrategyLink,
-                    ProcessSubStrategyLink.process_id == Process.id,
-                )
+                .join(ProcessSubStrategyLink, ProcessSubStrategyLink.process_id == Process.id)
                 .filter(ProcessSubStrategyLink.sub_strategy_id == ss.id)
-                .limit(15)
+                .limit(12)
                 .all()
             )
             for proc in processes:
                 p_id = f"p_{proc.id}"
-                if p_id not in seen_process_nodes:
-                    seen_process_nodes.add(p_id)
-                    proc_full = f"{proc.code or ''} {proc.name or ''}".strip() or proc.name
-                    proc_label = _harita_short_label(proc_full, 28)
-                    nodes.append({
-                        "id": p_id,
-                        "label": proc_label,
-                        "group": "process",
-                        "title": proc_full,
-                    })
                 edges.append({"from": ss_id, "to": p_id})
+                if p_id in seen_proc:
+                    continue  # süreç düğümü + PG'ler zaten eklendi
+                seen_proc.add(p_id)
+                proc_full = f"{proc.code or ''} {proc.name or ''}".strip() or proc.name
+                nodes.append({
+                    "id": p_id,
+                    "label": _harita_short_label(proc_full, 26),
+                    "group": "process",
+                    "level": 3,
+                    "title": proc_full,
+                })
 
-                kpi_count = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).count()
-                if kpi_count:
-                    k_id = f"kpi_{proc.id}"
-                    if not any(n["id"] == k_id for n in nodes):
+                # Bireysel PG'ler (max 7 adet, süreç başına bir kez)
+                pgs = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).limit(7).all()
+                for pg in pgs:
+                    pg_id = f"pg_{pg.id}"
+                    if pg_id not in seen_pg:
+                        seen_pg.add(pg_id)
+                        pg_label = pg.code or _harita_short_label(pg.name or "", 20)
                         nodes.append({
-                            "id": k_id,
-                            "label": f"{kpi_count} KPI",
-                            "group": "kpi",
-                            "title": f"{proc.name}: {kpi_count} gösterge",
+                            "id": pg_id,
+                            "label": pg_label,
+                            "group": "pg",
+                            "level": 4,
+                            "title": f"{pg.code or ''} {pg.name or ''}".strip(),
                         })
-                    edges.append({"from": p_id, "to": k_id})
+                    edges.append({"from": p_id, "to": pg_id})
 
-    # Initiative node'ları (Hamle #3): strategy_id veya sub_strategy_id ile bağlı initiative'leri ekle
+                # Fazla PG özet düğümü (süreç başına bir kez)
+                total_pg = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).count()
+                if total_pg > 7:
+                    more_id = f"pg_more_{proc.id}"
+                    nodes.append({
+                        "id": more_id,
+                        "label": f"+{total_pg - 7} PG",
+                        "group": "pg_more",
+                        "level": 4,
+                        "title": f"{proc.name}: toplam {total_pg} PG",
+                    })
+                    edges.append({"from": p_id, "to": more_id})
+
+    # ── Stratejik Girişimler (level 3) ────────────────────────────────────────
+    init_ids: list[int] = []
     try:
         from app.models.initiative import Initiative
         inits = Initiative.query.filter_by(tenant_id=tenant_id, is_active=True).all()
         for init in inits:
             i_id = f"init_{init.id}"
-            i_label = _harita_short_label(init.name or f"Init #{init.id}", 30)
+            init_ids.append(init.id)
+            i_label = _harita_short_label(init.name or f"Girişim #{init.id}", 28)
             nodes.append({
                 "id": i_id,
-                "label": f"🚀 {i_label}",
+                "label": f"⚡ {i_label}",
                 "group": "initiative",
-                "title": f"{init.name} ({init.start_year}-{init.end_year}) • %{int(init.progress_pct)}",
+                "level": 3,
+                "title": f"{init.name} ({init.start_year}–{init.end_year}) • %{int(init.progress_pct or 0)}",
             })
             if init.sub_strategy_id:
                 edges.append({"from": f"ss_{init.sub_strategy_id}", "to": i_id, "dashes": True})
@@ -248,10 +293,38 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
     except Exception:
         pass
 
+    # ── Projeler (level 4, Girişime bağlı) ───────────────────────────────────
+    if init_ids:
+        try:
+            from app.models.portfolio_project import Project as PortfolioProject
+            projs = (
+                PortfolioProject.query
+                .filter(
+                    PortfolioProject.tenant_id == tenant_id,
+                    PortfolioProject.is_active == True,
+                    PortfolioProject.initiative_id.in_(init_ids),
+                )
+                .limit(60)
+                .all()
+            )
+            for proj in projs:
+                pj_id = f"proj_{proj.id}"
+                nodes.append({
+                    "id": pj_id,
+                    "label": _harita_short_label(proj.name or f"Proje #{proj.id}", 26),
+                    "group": "proje",
+                    "level": 4,
+                    "title": proj.name or f"Proje #{proj.id}",
+                })
+                edges.append({"from": f"init_{proj.initiative_id}", "to": pj_id, "dashes": True})
+        except Exception:
+            pass
+
     meta = {
-        "sub": sum(1 for n in nodes if n["group"] == "sub_strategy"),
-        "process": sum(1 for n in nodes if n["group"] == "process"),
-        "kpi": sum(1 for n in nodes if n["group"] == "kpi"),
+        "sub":        sum(1 for n in nodes if n["group"] == "sub_strategy"),
+        "process":    sum(1 for n in nodes if n["group"] == "process"),
+        "pg":         sum(1 for n in nodes if n["group"] == "pg"),
         "initiative": sum(1 for n in nodes if n["group"] == "initiative"),
+        "proje":      sum(1 for n in nodes if n["group"] == "proje"),
     }
     return {"success": True, "nodes": nodes, "edges": edges, "meta": meta}

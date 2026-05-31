@@ -2,6 +2,10 @@
 {% block title %}Modüller — Kokpitim{% endblock %}
 {% block page_title %}Modüller{% endblock %}
 
+{% block extra_css %}
+<meta name="kule-tour-key" content="masaustu">
+{% endblock %}
+
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
     {% set role_code = current_user.role.name if current_user.role else '' %}
@@ -29,6 +33,7 @@
         {% for mod in modules %}
         <a href="{{ mod.url }}"
            class="mc-card mc-card-lift"
+           data-tour="masaustu-card-{{ mod.id }}"
            style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-decoration:none; text-align:center; cursor:pointer;">
             <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px;
                         background:{% if mod.id == 'masaustu' %}#eef2ff{% elif mod.id == 'sp' %}#fdf4ff{% elif mod.id == 'surec' %}#f0fdf4{% elif mod.id == 'kurum' %}#fff7ed{% elif mod.id == 'bireysel' %}#eff6ff{% elif mod.id == 'analiz' %}#fefce8{% elif mod.id == 'k_radar' %}#ecfeff{% elif mod.id == 'admin' %}#fef2f2{% elif mod.id == 'api' %}#f0fdfa{% elif mod.id == 'hgs' %}#fffbeb{% else %}#f8fafc{% endif %};">

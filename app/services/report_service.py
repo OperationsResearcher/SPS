@@ -96,7 +96,7 @@ class ReportService:
                 'kpi_code': kpi.code,
                 'kpi_name': kpi.name,
                 'unit': kpi.unit,
-                'frequency': kpi.frequency,
+                'frequency': getattr(kpi, 'period', None) or getattr(kpi, 'frequency', None),
                 'weight': kpi.weight,
                 'latest_actual': latest_data.actual_value if latest_data else None,
                 'latest_target': latest_data.target_value if latest_data else None,

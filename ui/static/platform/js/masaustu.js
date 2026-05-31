@@ -284,10 +284,114 @@
 
   applyHiddenWidgets();
   initMasamTabs();
+  initSocketRefresh();
   initMarkRead();
   initScratch();
   initCalendar();
   initSortable();
+  initMorningSummary();
 
   document.getElementById("masaustu-widget-manage")?.addEventListener("click", openWidgetManager);
+
+  function initSocketRefresh() {
+    if (typeof io === "undefined") return;
+    const socket = io({ transports: ["websocket", "polling"] });
+    socket.on("morning_summary_refresh", () => {
+      const widget = document.querySelector("[data-widget-id='morning-summary']");
+      if (!widget) return;
+      const url = widget.dataset.morningUrl;
+      const body = document.getElementById("morning-summary-body");
+      if (!url || !body) return;
+      fetch(url).then(r => r.json()).then(res => {
+        if (res.success) {
+          const badge = document.querySelector("[data-morning-badge]");
+          if (badge) badge.textContent = res.data.counts.kpis_critical + res.data.counts.activities_overdue;
+        }
+      }).catch(() => {});
+    });
+  }
+
+  function initMorningSummary() {
+    const widget = document.querySelector("[data-widget-id='morning-summary']");
+    if (!widget) return;
+    const url = widget.dataset.morningUrl;
+    const body = document.getElementById("morning-summary-body");
+    const dateEl = document.getElementById("morning-summary-date");
+    if (!url || !body) return;
+
+    fetch(url)
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) { body.innerHTML = '<p style="color:#ef4444">Özet yüklenemedi.</p>'; return; }
+        const d = res.data;
+        if (dateEl) dateEl.textContent = d.date || "";
+
+        const statusColor = d.counts.kpis_critical > 0 || d.counts.activities_overdue > 0 || d.counts.projects_overdue > 0
+          ? "#ef4444" : "#10b981";
+
+        let html = `<div style="padding:8px 0 14px;">
+          <p style="margin:0 0 14px; font-size:13px; font-weight:600; color:${statusColor};">
+            <i class="fas fa-${statusColor === '#ef4444' ? 'triangle-exclamation' : 'circle-check'}"></i>
+            ${d.summary_text}
+          </p>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:16px;">
+            <div style="background:#fef2f2; border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:22px; font-weight:700; color:#ef4444;">${d.counts.kpis_critical}</div>
+              <div style="font-size:11px; color:#64748b;">Kritik KPI</div>
+            </div>
+            <div style="background:#fff7ed; border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:22px; font-weight:700; color:#f59e0b;">${d.counts.activities_overdue}</div>
+              <div style="font-size:11px; color:#64748b;">Geciken Faaliyet</div>
+            </div>
+            <div style="background:#f0fdf4; border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:22px; font-weight:700; color:#10b981;">${d.counts.activities_upcoming}</div>
+              <div style="font-size:11px; color:#64748b;">Bu Hafta Faaliyet</div>
+            </div>
+            <div style="background:#eff6ff; border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:22px; font-weight:700; color:#3b82f6;">${d.counts.projects_overdue}</div>
+              <div style="font-size:11px; color:#64748b;">Geciken Proje</div>
+            </div>
+          </div>`;
+
+        if (d.kpis_below_target.length > 0) {
+          html += `<div style="margin-bottom:12px;">
+            <p style="font-size:12px; font-weight:600; color:#ef4444; margin:0 0 6px;">
+              <i class="fas fa-chart-line-down"></i> Hedef Altı KPI'lar
+            </p>
+            <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
+          d.kpis_below_target.forEach(k => {
+            html += `<li><strong>${k.kpi_name}</strong> (${k.process_name}) — Gerçekleşen: ${k.actual} / Hedef: ${k.target} <span style="color:#ef4444;">(${k.ratio_pct}%)</span></li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (d.overdue_activities.length > 0) {
+          html += `<div style="margin-bottom:12px;">
+            <p style="font-size:12px; font-weight:600; color:#f59e0b; margin:0 0 6px;">
+              <i class="fas fa-clock"></i> Geciken Faaliyetler
+            </p>
+            <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
+          d.overdue_activities.forEach(a => {
+            html += `<li>${a.name} — <span style="color:#ef4444;">${a.days_overdue} gün gecikti</span></li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (d.overdue_projects.length > 0) {
+          html += `<div>
+            <p style="font-size:12px; font-weight:600; color:#3b82f6; margin:0 0 6px;">
+              <i class="fas fa-diagram-project"></i> Geciken Projeler
+            </p>
+            <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
+          d.overdue_projects.forEach(p => {
+            html += `<li>${p.name} — <span style="color:#ef4444;">${p.days_overdue} gün gecikti</span></li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        html += `</div>`;
+        body.innerHTML = html;
+      })
+      .catch(() => { body.innerHTML = '<p style="color:#94a3b8; font-size:12px;">Özet yüklenemedi.</p>'; });
+  }
 })();

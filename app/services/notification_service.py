@@ -4,7 +4,7 @@ Sprint 7-9: Real-Time ve Bildirimler
 Akıllı bildirim sistemi
 """
 
-from app.extensions import db
+from extensions import db
 from app.models.core import User
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional

@@ -17,10 +17,25 @@
   const REPORT_BASE   = root.dataset.reportBase;
 
   const processSelect  = document.getElementById("analiz-process-select");
+  const processSearch  = document.getElementById("analiz-process-search");
+  const freqSelect     = document.getElementById("analiz-frequency");
+  const methodSelect   = document.getElementById("analiz-forecast-method");
   const resultsEl      = document.getElementById("analiz-results");
   const anomalySection = document.getElementById("anomaly-results");
   const emptyEl        = document.getElementById("analiz-empty");
   const exportBtn      = document.getElementById("btn-export-report");
+
+  // Süreç araması: select option'larını filtrele
+  const allOptions = processSelect ? Array.from(processSelect.options) : [];
+  processSearch?.addEventListener("input", () => {
+    const q = processSearch.value.trim().toLowerCase();
+    processSelect.innerHTML = "";
+    allOptions.forEach(o => {
+      if (!o.value || !q || o.text.toLowerCase().includes(q)) {
+        processSelect.appendChild(o.cloneNode(true));
+      }
+    });
+  });
 
   let trendChartInst    = null;
   let forecastChartInst = null;
@@ -160,25 +175,37 @@
     if (!listEl) return;
 
     const items = Array.isArray(data) ? data : (data?.anomalies || []);
+    const scanned = data?.kpis_scanned ?? null;
+    const total   = data?.kpis_total ?? null;
     if (countEl) countEl.textContent = items.length;
 
+    const summary = (scanned !== null)
+      ? `<div style="font-size:11.5px;color:#64748b;margin-bottom:10px;">
+           ${scanned}/${total} PG tarandı · yöntem: <b>${escHtml(data?.method || 'zscore')}</b>
+         </div>` : "";
+
     if (!items.length) {
-      listEl.innerHTML = `<div class="mc-empty" style="padding:30px;">
+      listEl.innerHTML = summary + `<div class="mc-empty" style="padding:30px;">
         <div class="mc-empty-icon"><i class="fas fa-check-circle" style="color:#10b981;"></i></div>
         <div class="mc-empty-title" style="color:#10b981;">Anomali tespit edilmedi</div>
       </div>`;
       return;
     }
 
-    listEl.innerHTML = items.map(item => `
+    listEl.innerHTML = summary + items.map(item => `
       <div style="display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid #f1f5f9;">
         <span class="mc-badge mc-badge-warning" style="flex-shrink:0; margin-top:2px;">
           <i class="fas fa-exclamation-triangle"></i>
         </span>
-        <div>
-          <div style="font-size:13.5px; font-weight:500; color:#1e293b;">${escHtml(item.kpi_name || item.name || 'Bilinmeyen PG')}</div>
-          <div style="font-size:12px; color:#64748b; margin-top:2px;">${escHtml(item.description || item.message || '')}</div>
-          ${item.value !== undefined ? `<div style="font-size:12px; color:#f59e0b; margin-top:2px;">Değer: <strong>${item.value}</strong></div>` : ''}
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:13.5px; font-weight:600; color:#1e293b;">${escHtml(item.kpi_name || item.name || 'Bilinmeyen PG')}</div>
+          ${item.description ? `<div style="font-size:12px; color:#64748b; margin-top:2px;">${escHtml(item.description)}</div>` : ''}
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; font-size:11.5px; color:#64748b;">
+            ${item.value !== undefined && item.value !== null ? `<span>Değer: <b style="color:#f59e0b;">${escHtml(String(item.value))}</b></span>` : ''}
+            ${item.date ? `<span>Tarih: <b>${escHtml(item.date)}</b></span>` : ''}
+            ${item.score !== undefined && item.score !== null ? `<span>Z-skor: <b>${escHtml(String(Number(item.score).toFixed(2)))}</b></span>` : ''}
+            ${item.process_id ? `<a href="/process/${item.process_id}/karne" style="color:#6366f1; text-decoration:underline;">Süreç karnesi →</a>` : ''}
+          </div>
         </div>
       </div>
     `).join("");
@@ -204,10 +231,12 @@
       if (el) el.textContent = "…";
     });
 
+    const freq = freqSelect?.value || "monthly";
+    const method = methodSelect?.value || "linear";
     const [healthRes, trendRes, forecastRes] = await Promise.allSettled([
       fetch(`${HEALTH_BASE}${pid}`).then(r => r.json()),
-      fetch(`${TREND_BASE}${pid}`).then(r => r.json()),
-      fetch(`${FORECAST_BASE}${pid}?periods=3`).then(r => r.json()),
+      fetch(`${TREND_BASE}${pid}?frequency=${encodeURIComponent(freq)}`).then(r => r.json()),
+      fetch(`${FORECAST_BASE}${pid}?periods=3&method=${encodeURIComponent(method)}`).then(r => r.json()),
     ]);
 
     // Sağlık skoru
@@ -229,12 +258,13 @@
     // Trend
     if (trendRes.status === "fulfilled" && trendRes.value.success) {
       const trendData = trendRes.value.data;
-      renderTrendChart(trendData);
+      // Yeni shape: { series: [...], direction, kpi_count }
+      renderTrendChart(trendData?.series ?? trendData);
 
       // Trend yönü
       const dirEl = document.getElementById("trend-direction");
       if (dirEl) {
-        const dir = trendData?.direction || trendData?.[0]?.direction;
+        const dir = trendData?.direction || trendData?.series?.[0]?.direction;
         dirEl.textContent = dir === "up" ? "↑ Artış" : dir === "down" ? "↓ Düşüş" : "→ Sabit";
         dirEl.style.color = dir === "up" ? "#10b981" : dir === "down" ? "#ef4444" : "#f59e0b";
       }
@@ -268,7 +298,9 @@
     if (listEl) listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Taranıyor…</div>`;
 
     try {
-      const res  = await fetch(ANOMALIES_URL);
+      const pid = processSelect?.value || "";
+      const url = pid ? `${ANOMALIES_URL}?process_id=${pid}` : ANOMALIES_URL;
+      const res  = await fetch(url);
       const data = await res.json();
       if (data.success) {
         renderAnomalies(data.data);

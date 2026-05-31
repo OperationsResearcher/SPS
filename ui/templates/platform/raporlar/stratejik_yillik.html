@@ -1,15 +1,15 @@
 {% extends "platform/base.html" %}
 {% block title %}Stratejik Yıllık Kitap — Kokpitim{% endblock %}
 {% block page_title %}Stratejik Yıllık Kitap{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('Stratejik Yıllık Kitap') }}{% endblock %}
 {% block content %}
-<div style="max-width:1100px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-book-open" style="color:#4f46e5;"></i> Stratejik Yıllık Kitap</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">Yıllık tam kitap formatında PDF — vizyon, strateji ağacı, initiative, risk, ESG, hepsi tek dosyada.</p>
-    </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+<div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-book" style="color:#dc2626;"></i> Stratejik Yıllık Kitap</h1>
+    <p class="mc-page-subtitle">Yıllık tam kitap formatında PDF — vizyon, strateji ağacı, girişimler, risk ve ESG tek dosyada.</p>
   </div>
+</div>
+<div style="max-width:1100px;margin:0 auto;">
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">
     <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:1px solid #c7d2fe;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">

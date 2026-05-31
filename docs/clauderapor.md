@@ -81,7 +81,7 @@ URL gizli tutulmuş (`/MfG_hgs`) ve `HGS_BYPASS_ENABLED` flag koruması var, anc
 DATABASE_URL: sqlite:////app/data/spsv2.db
 ```
 
-Production ortamı PostgreSQL kullanıyor (`GCP VM`), ancak `docker-compose.yml` hâlâ SQLite'a işaret ediyor. Bu dosyayla container başlatan biri yanlış DB ile çalışır. Veri kaybı ve tutarsızlık riski.
+Production ortamı PostgreSQL kullanıyor (Oracle VM), ancak `docker-compose.yml` hâlâ SQLite'a işaret ediyor. Bu dosyayla container başlatan biri yanlış DB ile çalışır. Veri kaybı ve tutarsızlık riski.
 
 **Düzeltme:** `docker-compose.yml`'de `DATABASE_URL` ortam değişkeninden okunacak şekilde ayarla.
 

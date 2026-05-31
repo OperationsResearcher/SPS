@@ -7,7 +7,7 @@ from flask_login import current_user, user_logged_in, user_logged_out
 from sqlalchemy import event, inspect
 from sqlalchemy.orm.attributes import get_history
 
-from models import (
+from app.models.legacy_bridge import (
     AuditLog,
     User,
     Project,

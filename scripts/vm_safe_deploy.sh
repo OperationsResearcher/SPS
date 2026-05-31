@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# LEGACY — GCP sps-server-v2 (/home/kokpitim.com/public_html, sps-web).
+# Canli Oracle VM: scripts/ops/oracle/oracle_safe_deploy.sh — docs/ORACLE-PROD-VM.md
 # VM: kod + Alembic (ekleme migration) — veri silmez.
 # Önkoşul: /home/kokpitim.com/public_html içinde kod güncel (git pull yapılmış olabilir).
 set -euo pipefail

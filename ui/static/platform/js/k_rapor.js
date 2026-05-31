@@ -71,29 +71,65 @@
   let denetimChart     = null;
   let kvektorChart     = null;
 
-  document.querySelectorAll(".kr-tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab;
-      document.querySelectorAll(".kr-tab").forEach(b => b.classList.toggle("active", b === btn));
-      document.querySelectorAll(".kr-panel").forEach(p => p.classList.toggle("active", p.id === "kr-panel-" + tab));
-      if (!loaded[tab]) { loaded[tab] = true; loadTab(tab); }
-    });
-  });
+  // Sekme kartı = anchor link (?tab=…). Tarayıcı navigation yapacak — JS müdahale etmez.
+  // URL'den ?tab okuyup uygun paneli aktive et, grid'i gizle, back-bar göster.
+  const urlTab = new URLSearchParams(window.location.search).get("tab");
+  const grid = document.getElementById("kr-tab-grid");
+  const backBar = document.getElementById("kr-back-bar");
+  const searchBar = document.getElementById("kr-search-bar");
+  const activeTitleEl = document.getElementById("kr-active-tab-title");
+
+  const TABS_NO_YEAR = new Set(["risk", "denetim", "bildirim-analiz", "swot-trend"]);
+  const yearLabel = document.getElementById("kr-year-label");
+
+  function activatePanel(tab) {
+    document.querySelectorAll(".kr-panel").forEach(p => p.classList.toggle("active", p.id === "kr-panel-" + tab));
+    if (yearLabel) yearLabel.style.display = TABS_NO_YEAR.has(tab) ? "none" : "";
+    if (!loaded[tab]) { loaded[tab] = true; loadTab(tab); }
+  }
 
   // ── Yıl Seçici ───────────────────────────────────────────────────────────────
+  // Yeni davranış: seçilen yıl tüm SP modüllerine yayılsın (set-active) ve
+  // server-render edilen üst KPI kartları + tüm sekmeler doğru yıl için
+  // gelsin diye sayfayı tek seferde yeniden yükle.
   const yearSel = document.getElementById("kr-year-select");
   if (yearSel) {
-    yearSel.addEventListener("change", () => {
-      year = parseInt(yearSel.value);
-      Object.keys(loaded).forEach(k => delete loaded[k]);
-      const activeTab = document.querySelector(".kr-tab.active");
-      if (activeTab) { loaded[activeTab.dataset.tab] = true; loadTab(activeTab.dataset.tab); }
+    yearSel.addEventListener("change", async () => {
+      const newYear = parseInt(yearSel.value);
+      if (!newYear) return;
+      yearSel.disabled = true;
+      try {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+        await fetch("/sp/api/plan-years/set-active", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+          body: JSON.stringify({ year: newYear })
+        });
+      } catch (e) { /* sessiz */ }
+      // Mevcut ?tab= parametresini koruyarak reload
+      const params = new URLSearchParams(window.location.search);
+      params.set("year", newYear);
+      window.location.href = window.location.pathname + "?" + params.toString();
     });
   }
 
-  // İlk yükleme
-  loaded["kurumsal"] = true;
-  loadTab("kurumsal");
+  // İlk yükleme — URL'den oku
+  if (urlTab) {
+    // Tek sekme görünümü: grid + arama bar gizle, back-bar göster
+    if (grid) grid.style.display = "none";
+    if (searchBar) searchBar.style.display = "none";
+    if (backBar) backBar.style.display = "";
+    const card = document.querySelector(`.kr-tab-card[data-tab="${urlTab}"]`);
+    if (card && activeTitleEl) {
+      const name = card.dataset.name || urlTab;
+      activeTitleEl.innerHTML = `<i class="fas fa-chevron-right" style="color:#cbd5e1; margin-right:6px; font-size:11px;"></i>${name}`;
+    }
+    activatePanel(urlTab);
+  } else {
+    // Grid görünümü — hiçbir panel aktif değil
+    document.querySelectorAll(".kr-panel").forEach(p => p.classList.remove("active"));
+  }
 
   function loadTab(tab) {
     switch (tab) {
@@ -621,7 +657,7 @@
     fetchJson(apiUrl("risk"))
       .then(res => {
         if (!res.success) {
-          setHtml("kr-risk-body", ERROR_ROW_1(5));
+          setHtml("kr-risk-body", ERROR_ROW_1(6));
           setHtml("kr-olgunluk-list", ERROR_HTML);
           setHtml("kr-bn-body", ERROR_ROW_1(5));
           return;
@@ -629,24 +665,30 @@
         const d = res.data;
 
         setHtml("kr-risk-body", (d.risk_listesi || []).map(r => {
-          const rpnColor = r.rpn >= 15 ? "#ef4444" : r.rpn >= 8 ? "#f59e0b" : "#10b981";
+          const rpn = r.rpn || 0;
+          const rpnColor = rpn >= 15 ? "#ef4444" : rpn >= 8 ? "#f59e0b" : "#10b981";
+          const rpnLabel = rpn >= 15 ? "Kritik" : rpn >= 8 ? "Yüksek" : rpn >= 4 ? "Orta" : "Düşük";
+          const statusClass = r.status === "Açık" ? "mc-badge-danger" : r.status === "Azaltıldı" ? "mc-badge-warning" : "mc-badge-success";
           return `<tr>
             <td>${esc(r.title)}</td>
-            <td style="text-align:center;">${r.probability}</td>
-            <td style="text-align:center;">${r.impact}</td>
-            <td style="text-align:center;font-weight:700;color:${rpnColor}">${r.rpn}</td>
-            <td><span class="mc-badge mc-badge-info">${esc(r.status)}</span></td>
+            <td style="text-align:center;">${r.probability} <span style="font-size:10px;color:#94a3b8;">/5</span></td>
+            <td style="text-align:center;">${r.impact} <span style="font-size:10px;color:#94a3b8;">/5</span></td>
+            <td style="text-align:center;"><span style="font-weight:700;color:${rpnColor}">${rpn}</span> <span style="font-size:10px;color:#94a3b8;">(${rpnLabel})</span></td>
+            <td><span class="mc-badge ${statusClass}">${esc(r.status)}</span></td>
+            <td style="font-size:11px;color:#64748b;">${esc(r.source_type)}</td>
           </tr>`;
-        }).join("") || EMPTY_ROW_1(5));
+        }).join("") || EMPTY_ROW_1(6));
 
-        setHtml("kr-bn-body", (d.darbogaz || []).map(b => `
-          <tr>
+        setHtml("kr-bn-body", (d.darbogaz || []).map(b => {
+          const sevClass = b.severity === "Yüksek" ? "mc-badge-danger" : b.severity === "Orta" ? "mc-badge-warning" : "mc-badge-info";
+          return `<tr>
             <td>${esc(b.surec)}</td>
-            <td><span class="mc-badge ${b.severity === 'high' ? 'mc-badge-danger' : 'mc-badge-warning'}">${esc(b.severity)}</span></td>
+            <td><span class="mc-badge ${sevClass}">${esc(b.severity)}</span></td>
             <td style="font-size:11px;">${esc(b.note)}</td>
             <td style="white-space:nowrap;font-size:11px;">${esc(b.triggered_at || "")}</td>
-            <td>${b.cozuldu ? esc(b.resolved_at || "") : '<span style="color:#f59e0b;">Açık</span>'}</td>
-          </tr>`).join("") || EMPTY_ROW_1(5));
+            <td>${b.cozuldu ? `<span style="color:#10b981;">${esc(b.resolved_at || "Çözüldü")}</span>` : '<span style="color:#f59e0b;">Açık</span>'}</td>
+          </tr>`;
+        }).join("") || EMPTY_ROW_1(5));
 
         const olgunlukEl = document.getElementById("kr-olgunluk-list");
         if (olgunlukEl) {
@@ -812,7 +854,7 @@
   // ── Rapor 11: K-Vektör ───────────────────────────────────────────────────────
   function loadKVektor() {
     setHtml("kr-kv-bars", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    fetchJson(apiUrl("k-vektor"))
+    fetchJson(apiUrl("k-vektor"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-kv-bars", ERROR_HTML); setHtml("kr-kv-sub-body", ERROR_ROW_1(3)); return; }
         const d = res.data;
@@ -858,7 +900,7 @@
 
   function loadEvm() {
     setHtml("kr-evm-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    fetchJson(apiUrl("evm"))
+    fetchJson(apiUrl("evm"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-evm-body", ERROR_ROW_1(8)); return; }
         const rows = res.data || [];
@@ -1153,7 +1195,7 @@
   function loadFaaliyetMatris() {
     setHtml("kr-fm-geciken-list", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
     setHtml("kr-fm-body", '<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
-    fetchJson(apiUrl("faaliyet-matris"))
+    fetchJson(apiUrl("faaliyet-matris"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-fm-geciken-list", ERROR_HTML); setHtml("kr-fm-body", ERROR_ROW_1(7)); return; }
         const rows = res.data || [];
@@ -1422,7 +1464,7 @@
   function loadSorumluAnaliz() {
     setHtml("kr-sa2-body", '<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
     setHtml("kr-sa2-geciken-list", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    fetchJson(apiUrl("sorumlu-analiz"))
+    fetchJson(apiUrl("sorumlu-analiz"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-sa2-body", ERROR_ROW_1(8)); setHtml("kr-sa2-geciken-list", ERROR_HTML); return; }
         const rows = res.data || [];
@@ -1553,6 +1595,7 @@
         if (!res.success) { setHtml("kr-ba-stats", ERROR_HTML); return; }
         const d = res.data;
 
+        const okunmaColor = d.okunma_orani >= 80 ? "#10b981" : d.okunma_orani >= 50 ? "#f59e0b" : "#ef4444";
         setHtml("kr-ba-stats", `
           <div class="mc-stat-card mc-stat-indigo">
             <div class="mc-stat-label">Toplam Bildirim</div>
@@ -1561,15 +1604,17 @@
           <div class="mc-stat-card mc-stat-emerald">
             <div class="mc-stat-label">Okunan</div>
             <div class="mc-stat-value">${d.okunan}</div>
-            <div class="mc-stat-sub">%${d.okunma_orani} okunma</div>
+            <div class="mc-stat-sub" style="color:${okunmaColor};">%${d.okunma_orani} okunma oranı</div>
           </div>
           <div class="mc-stat-card mc-stat-amber">
             <div class="mc-stat-label">Okunmayan</div>
             <div class="mc-stat-value">${d.okunmayan}</div>
+            <div class="mc-stat-sub">Son 30 günde: ${d.okunmayan_30_gun || 0}</div>
           </div>
           <div class="mc-stat-card mc-stat-purple">
             <div class="mc-stat-label">Son 7 Gün</div>
             <div class="mc-stat-value">${d.son_7_gun}</div>
+            <div class="mc-stat-sub">yeni bildirim</div>
           </div>`);
 
         const pieCanvas = document.getElementById("kr-ba-pie");
@@ -1597,6 +1642,44 @@
             },
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { maxTicksLimit: 10 } } } }
           });
+        }
+
+        // Yaşlanma
+        const yasEl = document.getElementById("kr-ba-yaslanma");
+        if (yasEl) {
+          if (!d.yaslanma || !d.yaslanma.length) {
+            yasEl.innerHTML = '<div style="color:#10b981;font-size:13px;">Tüm bildirimler okundu.</div>';
+          } else {
+            const maxYas = Math.max(...d.yaslanma.map(y => y.sayi));
+            const ageColors = {"0-3 gün": "#10b981", "4-7 gün": "#f59e0b", "8-30 gün": "#f97316", "30+ gün": "#ef4444"};
+            yasEl.innerHTML = d.yaslanma.map(y => {
+              const pct = Math.round(y.sayi / maxYas * 100);
+              const c = ageColors[y.aralik] || "#6366f1";
+              return `<div style="margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+                  <span style="font-weight:600;color:${c};">${esc(y.aralik)}</span>
+                  <span style="color:#64748b;">${y.sayi} bildirim</span>
+                </div>
+                <div style="background:#f1f5f9;border-radius:4px;height:8px;"><div style="background:${c};width:${pct}%;height:8px;border-radius:4px;transition:width 0.3s;"></div></div>
+              </div>`;
+            }).join('');
+          }
+        }
+
+        // Kullanıcı top 10
+        const kulEl = document.getElementById("kr-ba-kullanicilar");
+        if (kulEl) {
+          if (!d.kullanici_top || !d.kullanici_top.length) {
+            kulEl.innerHTML = '<div class="kr-loading" style="padding:16px;">Veri yok.</div>';
+          } else {
+            const maxKul = d.kullanici_top[0].sayi || 1;
+            kulEl.innerHTML = d.kullanici_top.map(u => `
+              <div class="kr-user-bar-row">
+                <div class="kr-user-name" title="${esc(u.kullanici)}">${esc(u.kullanici)}</div>
+                <div class="kr-user-track"><div class="kr-user-fill" style="width:${Math.round(u.sayi/maxKul*100)}%;background:#6366f1;"></div></div>
+                <div class="kr-user-cnt">${u.sayi}</div>
+              </div>`).join('');
+          }
         }
       })
       .catch(() => setHtml("kr-ba-stats", ERROR_HTML));

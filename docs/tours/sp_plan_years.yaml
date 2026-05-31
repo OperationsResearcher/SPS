@@ -1,0 +1,58 @@
+key: sp_plan_years
+title: "Plan Dönemleri"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Plan dönemi nedir?"
+  body: |
+    Plan dönemi (plan yılı), stratejilerinin ve hedeflerinin yaşadığı bir yıllık kap. Yeni yıl geldiğinde geçmiş dönem "kapatılır" — verisi durur ama dondurulur. Yenisi "aktif" yapılır.
+
+    Niye bu ayrım? Çünkü 2026 hedeflerinle 2027 hedeflerin farklı olacak. Her dönem kendi içinde tutarlı kalsın diye ayrı tutuyoruz. Hem geriye dönüp "geçen yıl ne hedeflemiştik, ne oldu?" diye karşılaştırabilirsin.
+
+    Şimdi sayfanın işlevini tanıtayım, sonra ilk plan dönemini birlikte açarız.
+  cta_primary: "Anladım, devam"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: '[data-tour="py-list"]'
+    title: "Mevcut dönemler — şu an boş"
+    body: |
+      Tüm plan dönemlerin burada listelenir. Aktif olan üstte, kapalı olanlar (geçmiş yıllar) altta. Yeni kurumda hiç dönem yoktur — bir tane açacağız.
+
+      İlerde bu liste şöyle görünür:
+      • 2026 — Aktif (üzerinde çalıştığın)
+      • 2025 — Kapalı (geçen yıl)
+      • 2027 — Taslak (gelecek için hazırlık)
+
+      Aynı anda yalnızca bir dönem "aktif" olur. Aktif dönem, KPI ölçümlerinin, raporların ve çoğu modülün otomatik referans aldığı dönemdir.
+    placement: "top"
+
+  - target: '[data-tour="py-create"]'
+    title: "Yeni dönem aç"
+    body: |
+      Tıkla, modal açılır. Üç şey gireceksin:
+      1. **Yıl** — örnek: 2026
+      2. **Ad** — örnek: "2026 Stratejik Planı" (boş bırakırsan otomatik üretir)
+      3. **Kaynak dönem** — boş başlat veya başka bir dönemi kopyala
+
+      İlk dönemde "boş başlat" seç çünkü kopyalanacak bir şey yok. İlerleyen yıllarda bu çok faydalı olur — 2026 planını kopyalayıp 2027 olarak yapıştırır, üstünde değişiklikler yaparsın. Sıfırdan yazmaktan çok hızlıdır.
+    placement: "bottom"
+
+  - target: '[data-tour="py-status"]'
+    title: "Durum etiketleri"
+    body: |
+      Her dönemin üç olası durumu var:
+      • **Aktif** — şu an üzerinde çalışılan, veri girilen dönem (yeşil)
+      • **Kapalı** — kapatılmış, dondurulmuş geçmiş yıllar (gri kilit ikonu)
+      • **Taslak** — henüz başlamamış, hazırlık aşamasındaki gelecek dönem (sarı)
+
+      Bir dönemi "kapalı" yaptığında verisi silinmez, sadece artık üzerine yeni veri eklenmez. Karşılaştırma ve geçmiş raporlar için her zaman erişilebilir kalır.
+    placement: "left"
+
+finale:
+  title: "Plan dönemi mantığını çözdün"
+  body: |
+    Şimdi sayfada "Yeni Dönem" butonuna basıp 2026 dönemini aç. Ad olarak "2026 Stratejik Planı" yaz, kaynak dönem boş kalsın, oluştur de. Otomatik aktif olarak işaretlenecek.
+
+    Sonra Stratejik Planlama merkezine dön; orada Girişimler'e geçeceğiz. İlk büyük iş paketlerini tanımlamaya başlayacağız.

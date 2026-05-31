@@ -22,13 +22,13 @@ def require_component(component_code):
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Tenant required"}), 403
                 flash("Kurum bilginiz bulunamadı.", "danger")
-                return redirect(url_for("dashboard_bp.index"))
+                return redirect(url_for("app_bp.masaustu"))
             pkg = current_user.tenant.package
             if not pkg:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Package required"}), 403
                 flash("Paket bilginiz bulunamadı.", "danger")
-                return redirect(url_for("dashboard_bp.index"))
+                return redirect(url_for("app_bp.masaustu"))
             has_access = False
             for mod in pkg.modules:
                 for comp in mod.component_slugs:
@@ -41,7 +41,7 @@ def require_component(component_code):
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Unauthorized"}), 403
                 flash("Bu bileşene erişim yetkiniz yok.", "danger")
-                return redirect(url_for("dashboard_bp.index"))
+                return redirect(url_for("app_bp.masaustu"))
             return f(*args, **kwargs)
 
         return wrapped

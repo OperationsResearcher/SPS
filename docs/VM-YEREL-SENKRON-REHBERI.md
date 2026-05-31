@@ -1,6 +1,9 @@
 # VM - Yerel Senkron Rehberi
 
-Son guncelleme: 2026-03-24 (durum degerlendirmesi)
+> **VM (2026-05-21):** Oracle Cloud `kokpitim-v2` (`129.159.30.175`, `/opt/kokpitim/`).  
+> Eski GCP yolları (`/home/kokpitim.com/public_html`, `gcloud`, `sps-web`) tarihsel — `docs/ORACLE-PROD-VM.md`
+
+Son guncelleme: 2026-05-21 (Oracle terimleri); 2026-03-24 (durum degerlendirmesi)
 
 ## 1) Mevcut Durum Ozeti
 
@@ -203,11 +206,14 @@ git commit -m "Tam teslim: yerel degisikliklerin tamami"
 git push origin main
 ```
 
-### 12.3 VM deploy (DB kayipsiz standart akis)
+### 12.3 VM deploy (Oracle — DB kayipsiz standart akis)
 
 ```powershell
-gcloud compute ssh sps-server-v2 --zone europe-west3-c --command "cd /home/kokpitim.com/public_html && sudo git fetch origin main && sudo git reset --hard origin/main && sudo bash scripts/vm_safe_deploy.sh"
+ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175 `
+  "cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh"
 ```
+
+(`scripts/vm_safe_deploy.sh` yalnizca eski GCP icin.)
 
 Bu script sunlari yapar:
 1. VM PostgreSQL tam yedek (`pg_dump`)
@@ -219,15 +225,17 @@ Bu script sunlari yapar:
 
 ### 12.4 VM DB'yi yerele cekme (deploy sonrasi senkron)
 
-1. VM'de yeni dump al:
+1. Oracle VM'de yeni dump al:
 ```powershell
 $ts = Get-Date -Format "yyyyMMdd_HHmmss"
-gcloud compute ssh sps-server-v2 --zone europe-west3-c --command "sudo -u postgres pg_dump -F c -d kokpitim_db -f /home/kokpitim.com/public_html/backups/vm_after_deploy_$ts.dump"
+ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175 `
+  "sudo -u postgres pg_dump -F c -d kokpitim_db -f /opt/kokpitim/backups/vm_after_deploy_$ts.dump"
 ```
 
 2. Dump'i yerel makineye kopyala:
 ```powershell
-gcloud compute scp sps-server-v2:/home/kokpitim.com/public_html/backups/vm_after_deploy_$ts.dump "c:\kokpitim\backups\" --zone europe-west3-c
+scp -i C:\crt\ssh-key-2026-04-18_v4.key `
+  ubuntu@129.159.30.175:/opt/kokpitim/backups/vm_after_deploy_$ts.dump c:\kokpitim\backups\
 ```
 
 3. Yerel DB'yi yedekten geri donulebilir sekilde temizleyip restore et:

@@ -10,11 +10,18 @@ from sqlalchemy import text
 from extensions import db
 
 
-def build_exec_snapshot(tenant_id: int) -> dict:
+def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
     today = _dt.date.today()
-    year = today.year
+    if year is None:
+        year = today.year
 
-    # KPI özet
+    # Verilen yıl için plan_year_id'yi çöz (varsa)
+    _py_row = db.session.execute(text(
+        "SELECT id FROM plan_years WHERE tenant_id=:t AND year=:y LIMIT 1"
+    ), {"t": tenant_id, "y": year}).fetchone()
+    plan_year_id = int(_py_row.id) if _py_row else None
+
+    # PG (yıla bağlı; plan_year_id eşleşen + legacy NULL'lar dahil)
     kpi_row = db.session.execute(text("""
         SELECT
             count(DISTINCT k.id) FILTER (WHERE k.is_active) as total,
@@ -27,7 +34,8 @@ def build_exec_snapshot(tenant_id: int) -> dict:
         FROM process_kpis k
         JOIN processes p ON k.process_id=p.id
         WHERE p.tenant_id=:t
-    """), {"t": tenant_id, "y": year}).fetchone()
+          AND (:py_id IS NULL OR k.plan_year_id = :py_id OR k.plan_year_id IS NULL)
+    """), {"t": tenant_id, "y": year, "py_id": plan_year_id}).fetchone()
 
     on_target_row = db.session.execute(text("""
         SELECT
@@ -39,31 +47,37 @@ def build_exec_snapshot(tenant_id: int) -> dict:
         WHERE p.tenant_id=:t AND kd.year=:y AND kd.is_active=true
           AND kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
           AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-    """), {"t": tenant_id, "y": year}).fetchone()
+          AND (:py_id IS NULL OR k.plan_year_id = :py_id OR k.plan_year_id IS NULL)
+    """), {"t": tenant_id, "y": year, "py_id": plan_year_id}).fetchone()
     on_target_pct = (
         (on_target_row.on_target / on_target_row.total) * 100
         if on_target_row and on_target_row.total else 0
     )
 
-    # Stratejiler + alt stratejiler
+    # Stratejiler + alt stratejiler (sadece seçili plan yılına ait)
     strat_row = db.session.execute(text("""
         SELECT
-            (SELECT count(*) FROM strategies WHERE tenant_id=:t AND is_active=true) as strat,
+            (SELECT count(*) FROM strategies
+                WHERE tenant_id=:t AND is_active=true
+                  AND (:py_id IS NULL OR plan_year_id = :py_id)) as strat,
             (SELECT count(*) FROM sub_strategies ss
                 JOIN strategies s ON ss.strategy_id=s.id
-                WHERE s.tenant_id=:t AND ss.is_active=true) as sub
-    """), {"t": tenant_id}).fetchone()
+                WHERE s.tenant_id=:t AND ss.is_active=true
+                  AND (:py_id IS NULL OR s.plan_year_id = :py_id)) as sub
+    """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
 
-    # Initiative'ler
+    # Girişimler (yıl aralığını kapsayanlar)
     init_rows = db.session.execute(text("""
         SELECT status, count(*) as c, avg(progress_pct) as avg_p
-        FROM initiatives WHERE tenant_id=:t AND is_active=true
+        FROM initiatives
+        WHERE tenant_id=:t AND is_active=true
+          AND (:y BETWEEN COALESCE(start_year, :y) AND COALESCE(end_year, :y))
         GROUP BY status
-    """), {"t": tenant_id}).fetchall()
+    """), {"t": tenant_id, "y": year}).fetchall()
     init_status = {r.status: {"count": r.c, "avg_progress": float(r.avg_p or 0)} for r in init_rows}
     init_total = sum(v["count"] for v in init_status.values())
 
-    # Süreç & faaliyetler
+    # Süreç faaliyetleri (plan_year filtresiyle)
     act_row = db.session.execute(text("""
         SELECT
             sum(CASE WHEN a.status IN ('Planlandı','Devam Ediyor') THEN 1 ELSE 0 END) as active,
@@ -72,17 +86,20 @@ def build_exec_snapshot(tenant_id: int) -> dict:
         FROM process_activities a
         JOIN processes p ON a.process_id=p.id
         WHERE p.tenant_id=:t AND a.is_active=true
-    """), {"t": tenant_id}).fetchone()
+          AND (:py_id IS NULL OR a.plan_year_id = :py_id OR a.plan_year_id IS NULL)
+    """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
 
-    # Risk
+    # Risk (plan_year filtresiyle)
     risk_data = {"open": 0, "critical": 0}
     try:
         risk_row = db.session.execute(text("""
             SELECT
                 sum(CASE WHEN status != 'Closed' THEN 1 ELSE 0 END) as open_c,
                 sum(CASE WHEN (probability*impact) >= 16 THEN 1 ELSE 0 END) as crit_c
-            FROM risk_heatmap_items WHERE tenant_id=:t AND is_active=true
-        """), {"t": tenant_id}).fetchone()
+            FROM risk_heatmap_items
+            WHERE tenant_id=:t AND is_active=true
+              AND (:py_id IS NULL OR plan_year_id = :py_id OR plan_year_id IS NULL)
+        """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
         if risk_row:
             risk_data = {"open": int(risk_row.open_c or 0), "critical": int(risk_row.crit_c or 0)}
     except Exception:

@@ -2,35 +2,31 @@
 {% block title %}Veri Kalitesi — Kokpitim{% endblock %}
 {% block page_title %}Veri Kalitesi Raporu{% endblock %}
 
+{% block breadcrumb %}{{ mc_breadcrumb('Veri Kalitesi Raporu') }}{% endblock %}
 {% block content %}
+
 <style>
   .vk-info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#e0f2fe;color:#0369a1;font-size:10.5px;font-weight:700;font-style:italic;font-family:Georgia,serif;cursor:pointer;border:1px solid #bae6fd;user-select:none;margin-left:6px;vertical-align:middle;}
   .vk-info:hover{background:#0369a1;color:#fff;}
 </style>
-<div style="max-width:1200px; margin:0 auto;">
 
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
-        <i class="fas fa-database" style="color:#0ea5e9;"></i> Veri Kalitesi
-      </h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">
-        Performans göstergesi doluluk, eksik alanlar ve son veri girişi tarihleri.
-      </p>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <label style="font-size:12px;color:#475569;font-weight:600;">Plan yılı:</label>
-      <select id="year-select" data-active="{{ active_year or '' }}" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff;">
-        <option value="">Aktif dönem</option>
-        {% for y in plan_years %}
-        <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
-        {% endfor %}
-      </select>
-      <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Raporlara Dön
-      </a>
-    </div>
+<div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-database" style="color:#0ea5e9;"></i> Veri Kalitesi Raporu</h1>
+    <p class="mc-page-subtitle">Performans göstergesi doluluk oranı, eksik alanlar ve son veri girişi tarihleri</p>
   </div>
+  <div class="mc-page-header-right" style="display:flex;align-items:center;gap:10px;">
+    <label style="font-size:12px;color:#475569;font-weight:600;">Plan yılı:</label>
+    <select id="year-select" data-active="{{ active_year or '' }}" class="mc-select" style="font-size:13px;padding:6px 12px;min-width:110px;">
+      <option value="">Aktif dönem</option>
+      {% for y in plan_years %}
+      <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<div style="max-width:1240px; margin:0 auto;">
 
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;">
     <i class="fas fa-spinner fa-spin" style="font-size:24px;"></i><br><span style="font-size:13px;margin-top:8px;display:block;">Yükleniyor…</span>

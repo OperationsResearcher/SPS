@@ -5,7 +5,7 @@ Kullanıcı kapasite analizi ve aşırı yükleme uyarıları
 """
 from datetime import datetime, date, timedelta
 from flask import current_app
-from models import (
+from app.models.legacy_bridge import (
     db, User, Project, Task, TimeEntry
 )
 from sqlalchemy import func, and_, or_

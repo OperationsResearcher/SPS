@@ -253,7 +253,15 @@ def surec_karne(process_id):
         label = f"{code} — {tit}".strip(" —") if tit else code
         substrategy_options.append({"id": ss.id, "label": label})
 
-    current_year = active_py.year if active_py else datetime.now().year
+    # Sürecin kendi plan yılı varsa onu kullan — kullanıcı session'ındaki aktif yıl
+    # farklı olsa bile (örn. user aktif=2025, sayfa=2026 SR10) sayfa kendi yılını
+    # gösterir. Aksi halde dropdown yıl değiştirildiğinde sonsuz reset döngüsüne girer.
+    process_py_year = None
+    if process.plan_year_id:
+        from app.models import PlanYear
+        _py = PlanYear.query.get(process.plan_year_id)
+        process_py_year = _py.year if _py else None
+    current_year = process_py_year or (active_py.year if active_py else datetime.now().year)
     initial_tab = (request.args.get("tab") or "kpi").strip().lower()
     if initial_tab not in {"kpi", "activities"}:
         initial_tab = "kpi"
@@ -529,3 +537,75 @@ def surec_api_delete(process_id):
         db.session.rollback()
         current_app.logger.error(f"[surec_api_delete] {e}")
         return jsonify({"success": False, "message": str(e)}), 400
+
+
+# ── PG Mini Sparkline (C2) — Süreç başına son 3 ay PG hedef üstü % ─────────
+@app_bp.route("/process/api/sparklines")
+@login_required
+def surec_api_sparklines():
+    """Tenant'ın tüm süreçleri için son 3 ay aylık PG hedef-üstü oranı.
+    Dönüş: {process_id: [v1, v2, v3]}  — None'lar veri yok demek.
+    """
+    from sqlalchemy import text as _t
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": True, "data": {}})
+    try:
+        rows = db.session.execute(_t("""
+            WITH months AS (
+              SELECT generate_series(
+                date_trunc('month', CURRENT_DATE) - INTERVAL '2 months',
+                date_trunc('month', CURRENT_DATE),
+                INTERVAL '1 month'
+              )::date AS m
+            ),
+            agg AS (
+              SELECT
+                p.id AS pid,
+                date_trunc('month', kd.data_date)::date AS m,
+                sum(CASE
+                     WHEN kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
+                      AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
+                      AND kd.actual_value::float >= kd.target_value::float
+                    THEN 1 ELSE 0 END) AS on_target,
+                sum(CASE
+                     WHEN kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
+                      AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
+                    THEN 1 ELSE 0 END) AS comparable
+              FROM processes p
+              JOIN process_kpis k ON k.process_id = p.id AND k.is_active = true
+              JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.is_active = true
+              WHERE p.tenant_id = :t AND p.is_active = true
+                AND kd.data_date >= (date_trunc('month', CURRENT_DATE) - INTERVAL '2 months')
+              GROUP BY p.id, date_trunc('month', kd.data_date)
+            )
+            SELECT pid, m, on_target, comparable FROM agg
+        """), {"t": tid}).fetchall()
+
+        # 3 ay etiket listesi (eski → yeni)
+        from datetime import date as _date
+        today = _date.today()
+        labels = []
+        cur_y, cur_m = today.year, today.month
+        for off in (2, 1, 0):
+            yr = cur_y; mo = cur_m - off
+            while mo <= 0: mo += 12; yr -= 1
+            labels.append(f"{yr:04d}-{mo:02d}")
+
+        data = {}
+        for r in rows:
+            mkey = r.m.strftime("%Y-%m")
+            data.setdefault(r.pid, {})
+            if r.comparable and r.comparable > 0:
+                data[r.pid][mkey] = round((r.on_target / r.comparable) * 100, 1)
+            else:
+                data[r.pid][mkey] = None
+
+        result = {}
+        for pid, mvals in data.items():
+            result[pid] = [mvals.get(lbl) for lbl in labels]
+
+        return jsonify({"success": True, "data": result, "labels": labels})
+    except Exception as e:
+        current_app.logger.error(f"[surec_api_sparklines] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Sparkline verisi alınamadı."}), 500

@@ -20,7 +20,7 @@ fake.add_provider(person)
 
 def seed_kurum(db):
     """Kurum verileri oluştur"""
-    from models import Kurum
+    from app.models.legacy_bridge import Kurum
     
     kurumlar = []
     for _ in range(5):
@@ -47,7 +47,7 @@ def seed_kurum(db):
 
 def seed_user(db, kurumlar):
     """Kullanıcı verileri oluştur"""
-    from models import User
+    from app.models.legacy_bridge import User
     
     if not kurumlar:
         return []
@@ -96,7 +96,7 @@ def seed_user(db, kurumlar):
 
 def seed_ana_strateji(db, kurumlar):
     """Ana Strateji verileri oluştur"""
-    from models import AnaStrateji
+    from app.models.legacy_bridge import AnaStrateji
     
     if not kurumlar:
         return []
@@ -140,7 +140,7 @@ def seed_ana_strateji(db, kurumlar):
 
 def seed_alt_strateji(db, ana_stratejiler):
     """Alt Strateji verileri oluştur"""
-    from models import AltStrateji
+    from app.models.legacy_bridge import AltStrateji
     
     if not ana_stratejiler:
         return []
@@ -168,7 +168,7 @@ def seed_alt_strateji(db, ana_stratejiler):
 
 def seed_surec(db, kurumlar, users):
     """Süreç verileri oluştur"""
-    from models import Surec
+    from app.models.legacy_bridge import Surec
     
     if not kurumlar or not users:
         return []
@@ -218,7 +218,7 @@ def seed_surec(db, kurumlar, users):
 
 def seed_project(db, kurumlar, users):
     """Proje verileri oluştur"""
-    from models import Project
+    from app.models.legacy_bridge import Project
     
     if not kurumlar or not users:
         return []

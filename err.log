@@ -1,0 +1,178 @@
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5001
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 362-035-500
+127.0.0.1 - - [22/Feb/2026 12:15:18] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:22] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/js/process_karne.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:23] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /static/js/process_karne.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:15:57] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /static/js/process_karne.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:16:28] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /static/js/process_karne.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:17:51] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:20:38] "POST /kule/send HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/css/dashboard_classic.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:49] "GET /static/js/dashboard_classic.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /admin/tenants HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/css/admin_tenants.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:50] "GET /static/js/admin_tenants.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /admin/kule-iletisim HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:20:52] "GET /static/js/admin_kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:23:04] "GET /static/js/process_karne.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:23:05] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:23:05] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+ * Detected change in 'C:\\kokpitim\\app\\models\\process.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 362-035-500
+ * Detected change in 'C:\\kokpitim\\app\\routes\\process.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 362-035-500
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /login HTTP/1.1" 302 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/css/dashboard_classic.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/js/dashboard_classic.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:42] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /process/ HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/css/process_panel.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:47] "GET /static/js/process_panel.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /static/js/process_karne.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:41:54] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /static/js/process_karne.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:14] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/css/custom.css HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/css/process_karne.css HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/css/layout.css HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/js/kule.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/js/layout.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /static/js/process_karne.js HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:22] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /process/ HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/css/process_panel.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:26] "GET /static/js/process_panel.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /process/1/karne HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/css/custom.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/css/process_karne.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/js/kule.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/css/layout.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/js/layout.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/uploads/profiles/5709330c8d054d7ebb18ff988111b85b_mfg2.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /static/js/process_karne.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /process/api/kpi/list/1 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:43:38] "GET /process/api/karne/1?year=2026 HTTP/1.1" 200 -
+127.0.0.1 - - [22/Feb/2026 12:44:50] "GET /process/api/kpi-data/detail?kpi_id=1&period_key=yillik_1&year=2026 HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 2213, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 2193, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\mfgul\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\kokpitim\app\routes\process.py", line 686, in kpi_data_detail
+    user_name = e.user.username if e.user else 'Bilinmiyor'
+                ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'username'

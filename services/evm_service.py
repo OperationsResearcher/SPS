@@ -7,7 +7,7 @@ AC: Gerçek maliyet (actual_time toplamı)
 SPI = EV / PV, CPI = EV / AC
 Not: Basitleştirilmiş; gerçek dünyada değerleme ve ağırlıklar değişebilir.
 """
-from models import Task
+from app.models.legacy_bridge import Task
 
 def compute_project_evm(project_id: int) -> dict:
     tasks = Task.query.filter_by(project_id=project_id).all()

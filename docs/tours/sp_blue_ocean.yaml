@@ -1,0 +1,37 @@
+key: sp_blue_ocean
+title: "Mavi Okyanus Stratejisi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Mavi Okyanus — rakipsiz pazar tasarımı"
+  body: |
+    W. Chan Kim ve Renée Mauborgne'nin 2005 kitabından çıkma metodoloji. Temel iddiası şu: Rakiplerle aynı pazarda boğuşmak "kızıl okyanus"tur — kar kanlı bir savaşa dönüşür. Onun yerine kimsenin olmadığı yeni bir pazar alanı tasarlamak "mavi okyanus"tur.
+
+    Klasik örnek: Cirque du Soleil. Geleneksel sirklerin (rakiplerle dolu kızıl okyanus) yerine, sirk + tiyatro arası yeni bir kategori yarattı. Müşterisi "sirk seyircisi" değildi; tiyatro seyircisi olabilen daha yüksek ödeme gücü olan kitle oldu.
+
+    Eskişehir Motor Sanayi için soru: "Türkiye'de endüstriyel motor pazarı kızıl. Acaba 'enerji verimli motor + uzaktan izleme + bakım abonelik servisi' diye bir mavi okyanus var mı?"
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Strateji Tuvali + ERRC"
+    body: |
+      Sayfa iki ana araç içerir:
+
+      **1. Strateji Tuvali (Değer Eğrisi):** Sektördeki rakipleri yan yana koyup, müşterinin değer verdiği 8-10 özelliği (fiyat, kalite, hız, servis...) bar grafikle gösterirsin. Tipik bir sektörde tüm rakipler benzer eğri çizer — bu kızıl okyanustur. Sen farklı bir eğri çizebilirsen mavi okyanusa yaklaşırsın.
+
+      **2. ERRC Tablosu — 4 soru:**
+      • **Eliminate (Yok et):** Sektörün doğal kabul ettiği ama gereksiz olan nedir?
+      • **Reduce (Azalt):** Sektörün abartılı yatırdığı, ama müşterinin değer vermediği nedir?
+      • **Raise (Artır):** Sektörün ihmal ettiği ama müşterinin istediği nedir?
+      • **Create (Yarat):** Sektörde olmayan, müşterinin daha bilmediği ne sunabilirsin?
+
+      Bu sayfa düşündürme aracıdır, kayıt aracı değil. Yılda 1-2 kez beyaz tahta toplantısı yapar gibi kullanırsın.
+    placement: "bottom"
+
+finale:
+  title: "Erken aşamada lazım değil"
+  body: |
+    İlk hedefini tutturmadan mavi okyanus aramak dağılma riski. Önce mevcut işini sağlamlaştır, sonra "büyüme nereden gelir?" sorusuna geldiğinde burası faydalı olur.

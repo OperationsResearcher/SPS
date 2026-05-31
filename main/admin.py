@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, abort
 from flask_login import login_required, current_user
-from models import AuditLog
+from app.models.audit import AuditLog
 from sqlalchemy import desc
 from datetime import datetime
 from extensions import db

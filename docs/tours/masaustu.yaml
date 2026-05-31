@@ -1,0 +1,77 @@
+key: masaustu
+title: "Masaüstü turu"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Hoş geldin {{ first_name }}"
+  body: |
+    Ben Kule — Kokpitim'in yardımcısı. Sen pilot, ben kuleden yön gösteren. Sana sayfa sayfa, kavram kavram eşlik edeceğim.
+
+    Şu an boş bir kurum karşımızda: Eskişehir Motor Sanayi. Önümüzdeki birkaç günde vizyon, strateji, KPI, süreç ve girişim diye duyacağın kavramlar tek tek netleşecek. Aceleye gerek yok — bugünkü turumuz sadece masaüstünü tanıtmak.
+
+    İlk turumuz yaklaşık 3 dakika sürecek. İstediğin an "Atla" deyip sonra sağ alttaki kuleden tekrar başlatabilirsin.
+  cta_primary: "Başlayalım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: '[data-tour="masaustu-card-sp"]'
+    title: "Stratejik Planlama — başlangıç noktan"
+    body: |
+      Burası ana karargâh. Eskişehir Motor Sanayi'nin vizyonu, misyonu, ana stratejileri, plan dönemleri ve büyük girişimleri buradan yönetilir.
+
+      Stratejik planlama = "5 yıl sonra nerede olmak istiyoruz, oraya nasıl gideceğiz?" sorusunun cevabı. Eğer bunu yazmazsan, günlük işler seni rastgele yönlere çeker. Yazılı strateji ise bir pusula gibi — her gün baktığında karar vermeni kolaylaştırır.
+
+      İlk işin burası olacak: önce vizyon, sonra plan yılı, sonra stratejiler.
+    placement: "bottom"
+
+  - target: '[data-tour="masaustu-card-surec"]'
+    title: "Süreç Yönetimi — stratejiyi günlük işe bağlama"
+    body: |
+      Strateji havalı bir cümleden ibaret kalmasın diye süreçler vardır. Süreç = "biz bu işi nasıl yapıyoruz" sorusunun yazılı hali. Üretim, satış, kalite, satın alma — hepsi birer süreç.
+
+      Her sürecin altında performans göstergeleri (KPI) yaşar. Örnek: "Aylık motor üretimi" KPI'sı, "Üretim Planlama" süreci altındadır. Stratejik hedef (yıl sonu 1200 motor) → süreç KPI'sı (aylık 100 motor) → aylık ölçüm = strateji ile sahanın bağlandığı yer.
+
+      Burada veriyi sen ve ekibin girer; sistem otomatik karne çıkarır.
+    placement: "bottom"
+
+  - target: '[data-tour="masaustu-card-kurum"]'
+    title: "Kurum Paneli — Eskişehir Motor Sanayi'nin kimliği"
+    body: |
+      Kurumunun genel görünümü, takvimi, organizasyon yapısı ve kurumsal kimlik bilgileri (logo, slogan, değerler) burada.
+
+      Yeni kurumda ilk önce buradan logoyu yükle ve adresleri gir. Sonra çalışan listesini ve organizasyon ağacını netleştirirsen, kullanıcı atamaları kolaylaşır. Yıllık kurumsal takvim de buradan girilir — toplantılar, yönetim kurulu, denetimler.
+    placement: "bottom"
+
+  - target: '[data-tour="masaustu-card-k-radar"]'
+    title: "K-Radar — risk ve fırsat tarayıcısı"
+    body: |
+      Strateji yaparken hep iyi senaryo varsayılır; ama gerçek dünyada beklenmedik şeyler olur. K-Radar bu sürprizleri erken yakalamak için.
+
+      Riskler (örnek: "hammadde fiyatları %30 artarsa kar marjı kaybederiz") ve fırsatlar (örnek: "elektrikli motor teşviki gelirse pazara öne çıkarız) olasılık × etki matrisinde görünür. Sağ üst köşedekilere acil aksiyon alırsın, sol alttakileri sadece izlersin.
+
+      Veri biriktikçe ben de buradan otomatik öneriler getireceğim.
+    placement: "bottom"
+
+  - target: '[data-tour="masaustu-card-bireysel"]'
+    title: "Bireysel Performans — çalışan karneleri"
+    body: |
+      Süreç KPI'ları kuruma aittir; bireysel KPI'lar kişiye. Mehmet'in aylık satış hedefi, Ayşe'nin proje teslim tarihi — bunlar bireyseldir.
+
+      İlk gün burası boş olacak. Kullanıcılarını davet edip rollerini atadıkça herkesin kendi karnesi otomatik oluşur. Yıl sonunda performans değerlendirmesinin temel girdisi bu karnelerdir — adil ve veriyle desteklenmiş.
+    placement: "bottom"
+
+  - target: '#micro-sidebar'
+    title: "Sol menü — pusulan"
+    body: |
+      Modüller arasında buradan geçeceksin. Stratejik Planlama, Süreç, Kurum, K-Radar, Bireysel, Analiz, K-Rapor — sırayla gözden geçirebilirsin.
+
+      Önemli: sağ alt köşedeki kuleyi unutma. Her sayfada beni göreceksin. Otomatik turu kaçırırsan veya "şimdi nasıl yapacağım?" diye takılırsan tıkla, devreye girerim.
+    placement: "right"
+
+finale:
+  title: "İlk durağa hazırsın Talat"
+  body: |
+    Buraya kadar geldin — masaüstü artık tanıdık. Sıradaki durağımız Stratejik Planlama.
+
+    Önerim: Şimdi sol menüden Stratejik Planlama'ya tıkla. Orada da seni karşılayacağım, 12 modülün ne işe yaradığını birlikte gezeceğiz. Yolculuğun başlıyor.

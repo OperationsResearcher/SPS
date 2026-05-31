@@ -1,0 +1,80 @@
+type,id,code,title,parent_id
+strategy,257,H1,'PAZAR LİDERLİĞİ VE BÜYÜME',
+strategy,258,H2,'TEKNOLOJİ VE İNOVASYON',
+strategy,259,H3,'OPERASYONEL MÜKEMMELLİK',
+strategy,260,H4,'SÜRDÜRÜLEBİLİRLİK VE ETKİ',
+strategy,261,H5,'MARKA VE MÜŞTERİ DENEYİMİ',
+strategy,262,H6,'YETENEK VE KÜLTÜR',
+substrategy,1132,1.A,'Çoklu-Bölge Yerel Derinleşme',257
+substrategy,1133,1.B,'Yazılım ve Abonelik Gelir Motoru',257
+substrategy,1134,1.C,'Stratejik M&A ve Ekosistem Ortaklıkları',257
+substrategy,1135,2.A,'İçsel Teknoloji Liderliği (Build)',258
+substrategy,1136,2.B,'Açık İnovasyon (Buy + Partner)',258
+substrategy,1137,2.C,'Patent ve IP Stratejisi',258
+substrategy,1138,3.A,'Esnek Küresel Üretim Ağı',259
+substrategy,1139,3.B,'Dikey Entegrasyon Hammadde',259
+substrategy,1140,3.C,'Süreç Dijitalleşme ve Yapay Zeka',259
+substrategy,1141,4.A,'Net-Zero Yolculuğu',260
+substrategy,1142,4.B,'Döngüsel Ekonomi (Circular)',260
+substrategy,1143,4.C,'Sosyal Etki ve Foundation',260
+substrategy,1144,5.A,'Premium Konumlandırma (Apple-vari)',261
+substrategy,1145,5.B,'Müşteri Yolculuğu Mükemmelliği',261
+substrategy,1146,5.C,'Marka İnşası (Storytelling)',261
+substrategy,1147,6.A,'Küresel Yetenek Mıknatısı',262
+substrategy,1148,6.B,'Çeşitlilik ve İçerme',262
+substrategy,1149,6.C,'Yetenek Geliştirme ve Kültür',262
+initiative,42,1.A.1,'AB Premium Derinleşme',1132
+initiative,43,1.A.2,'Hindistan Orta Segment + Anadolu Mobility Ortaklığı',1132
+initiative,44,1.A.3,'ABD Hibrit/EV İkili Strateji',1132
+initiative,45,1.A.4,'Çin "Yerli Ortak" Yaklaşımı',1132
+initiative,46,1.B.1,'BaaS — Battery-as-a-Service',1133
+initiative,47,1.B.2,'Tomofil OS App Store',1133
+initiative,48,1.B.3,'Premium Mobility Subscription',1133
+initiative,49,1.C.1,'Hedefli Premium M&A',1134
+initiative,50,1.C.2,'Robotaksi / MaaS Ortaklığı',1134
+initiative,51,1.C.3,'Kurumsal Filo Stratejik Anlaşmaları',1134
+initiative,52,2.A.1,'Solid-State Batarya — İlk Üreticiler Arasında',1135
+initiative,53,2.A.2,'Tomofil OS — Kendi Yazılım Çekirdek',1135
+initiative,54,2.A.3,'AI Sürüş Asistanı (L4 Hedefi)',1135
+initiative,55,2.B.1,'Üniversite Araştırma Ortaklıkları',1136
+initiative,56,2.B.2,'Tomofil Ventures (CVC Fonu)',1136
+initiative,57,2.B.3,"Stratejik Tedarikçi JV'leri",1136
+initiative,58,2.C.1,'Defansif Patent Havuzu',1137
+initiative,59,2.C.2,'Ofansif Lisanslama Geliri',1137
+initiative,60,2.C.3,'Açık Kaynak Katkı Stratejisi',1137
+initiative,61,3.A.1,'"China+1+1" Üçlü Çapa',1138
+initiative,62,3.A.2,'Modüler Platform Mimarisi',1138
+initiative,63,3.A.3,'Industry 4.0 + Otomasyon',1138
+initiative,64,3.B.1,'Atacama Lityum + Sulawesi Nikel',1139
+initiative,65,3.B.2,'Batarya Hücre Üretimi İçselleştirme',1139
+initiative,66,3.B.3,'Fair Trade Tedarik Premium Konumu',1139
+initiative,67,3.C.1,'14 Süreç CMMI Yükseltme',1140
+initiative,68,3.C.2,'RPA → AI → AI Agent Geçişi',1140
+initiative,69,3.C.3,'Process Mining (Celonis) Tüm Süreçler',1140
+initiative,70,4.A.1,'Scope 1+2 Net-Zero (2030)',1141
+initiative,71,4.A.2,'Scope 3 Net-Zero (2040)',1141
+initiative,72,4.A.3,'Karbon Ofset (Geçiş Yıllarında)',1141
+initiative,73,4.B.1,'Battery 2nd Life (Depolama)',1142
+initiative,74,4.B.2,'Closed-Loop Hammadde (%60 Hedef 2030)',1142
+initiative,75,4.B.3,'Modüler Tasarım = Onarılabilir Araç',1142
+initiative,76,4.C.1,'Tomofil Foundation (€15.6M/yıl)',1143
+initiative,77,4.C.2,'ESG Raporlama Şeffaflık Liderliği',1143
+initiative,78,4.C.3,'Adil İşgücü ve Tedarik (Fair Trade)',1143
+initiative,79,5.A.1,'Tasarım Odaklı (Lorenzo Bianchi Liderliği)',1144
+initiative,80,5.A.2,"Experience Center'lar (Apple Store Modeli)",1144
+initiative,81,5.A.3,'Premium Fiyatlama Disiplini',1144
+initiative,82,5.B.1,'Omnichannel (Dealer + Direct + Online Entegre)',1145
+initiative,83,5.B.2,'AI Concierge — Her Müşteriye',1145
+initiative,84,5.B.3,'Sadakat ve Topluluk (Tomofil Club)',1145
+initiative,85,5.C.1,'"Powering Tomorrow" Küresel Kampanyası',1146
+initiative,86,5.C.2,'Influencer ve PR Ekosistemi',1146
+initiative,87,5.C.3,'Spor / Kültür Sponsorluğu',1146
+initiative,88,6.A.1,"Tech Hub'larında Agresif İşe Alım",1147
+initiative,89,6.A.2,'Üniversite Partnerlik + Intern Programı',1147
+initiative,90,6.A.3,'Rotasyon ve Uluslararası Kariyer',1147
+initiative,91,6.B.1,'%50 Senior Female 2030 (Mevcut %44)',1148
+initiative,92,6.B.2,'32 Ülke, Çok-Kültürel Liderlik',1148
+initiative,93,6.B.3,'Eşit Ücret Denetimi (Pay Equity Audit)',1148
+initiative,94,6.C.1,'Tomofil Academy (Yıllık 60 Saat/Kişi)',1149
+initiative,95,6.C.2,'Halef Planı 2.0 (Top 200 Lider)',1149
+initiative,96,6.C.3,'Çalışan Deneyimi (eNPS +60 Hedef)',1149

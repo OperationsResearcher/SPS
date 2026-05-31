@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_form_transfer.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Yeni / Düzenle', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 {% set pref = project or clone_src %}
 <script type="application/json" id="micro-proj-form-users">{{ form_users|tojson }}</script>
@@ -39,6 +43,26 @@
             <option value="{{ o }}" {% if pr == o %}selected{% endif %}>{{ o }}</option>
             {% endfor %}
         </select>
+
+        <label class="mc-label mt-3">
+            Bağlı Olduğu Stratejik Girişim
+            <span style="font-size:11px; color:#94a3b8; font-weight:400;" title="Stratejik girişim = çok yıllık hamle. Bu proje hangi büyük hedefin altında? Opsiyonel.">
+              <i class="fas fa-circle-info"></i>
+            </span>
+        </label>
+        <select name="initiative_id" class="mc-select">
+            <option value="">— Hiçbiri (bağımsız proje) —</option>
+            {% for init in initiatives or [] %}
+            <option value="{{ init.id }}" {% if project and project.initiative_id == init.id %}selected{% endif %}>
+              {{ (init.code ~ ' · ') if init.code else '' }}{{ init.name }}
+              {% if init.start_year and init.end_year %} ({{ init.start_year }}-{{ init.end_year }}){% endif %}
+            </option>
+            {% endfor %}
+        </select>
+        <p style="font-size:11.5px; color:#94a3b8; margin:4px 0 0;">
+            <i class="fas fa-info-circle"></i>
+            Bu projeyi bir <a href="{{ url_for('app_bp.sp_initiatives_page') }}" target="_blank" style="color:#6366f1;">Stratejik Girişim</a>'in altında konumlandırır. "Almanya pazarına giriş" gibi 2-3 yıllık hamlenin somut çıktısı olarak işaretlenebilir.
+        </p>
 
         <div class="micro-proj-transfer-card mt-3">
             <div class="micro-proj-transfer-title">

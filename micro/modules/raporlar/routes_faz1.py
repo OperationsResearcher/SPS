@@ -237,12 +237,20 @@ def raporlar_api_initiative_roadmap():
 @app_bp.route("/raporlar/muda-analizi")
 @login_required
 def raporlar_muda_analizi():
-    return render_template("platform/raporlar/muda_analizi.html")
+    from app.services.plan_year_service import list_plan_years
+    years, active_year = [], None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/muda_analizi.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/muda-analizi")
 @login_required
 def raporlar_api_muda_analizi():
+    from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
@@ -251,7 +259,15 @@ def raporlar_api_muda_analizi():
     except Exception as e:
         return jsonify({"success": False, "message": f"Muda servisi yüklenemedi: {e}"}), 500
 
-    procs = Process.query.filter_by(tenant_id=tid, is_active=True).all()
+    # ?year= → o yıl; yoksa aktif yıl
+    year_q = request.args.get("year", type=int)
+    active_py = get_plan_year(tid, year_q) if year_q else get_active_plan_year_for_user(current_user)
+    py_id = active_py.id if active_py else None
+
+    proc_q = Process.query.filter_by(tenant_id=tid, is_active=True)
+    if py_id:
+        proc_q = proc_q.filter(or_(Process.plan_year_id == py_id, Process.plan_year_id.is_(None)))
+    procs = proc_q.all()
     process_findings = []
     muda_counter = defaultdict(int)
     for p in procs[:MUDA_MAX_PROCESSES]:
@@ -269,23 +285,30 @@ def raporlar_api_muda_analizi():
             current_app.logger.warning(f"[muda] proses {p.id} analiz hatası: {e}")
             continue
 
-    # 7 muda tipinin Türkçe etiketleri
-    labels = {
-        "overproduction": "Aşırı Üretim",
-        "waiting": "Bekleme",
-        "transport": "Taşıma/Nakliye",
-        "overprocessing": "Aşırı İşlem",
-        "inventory": "Stok",
-        "motion": "Hareket",
-        "defects": "Kusurlar",
+    # 7 muda tipinin Türkçe etiketleri + açıklamaları + örnekleri
+    muda_meta = {
+        "overproduction":  {"label": "Aşırı Üretim",      "color": "#dc2626", "desc": "İhtiyaçtan fazla üretim, ham veri/rapor hazırlama. Stoğa eklenir, çürür.",      "ex": "Talep edilmemiş raporlar; satılamayan ürün stoku"},
+        "waiting":         {"label": "Bekleme",            "color": "#f59e0b", "desc": "Onay, malzeme, makine veya bilgi beklemesi. Üretim akışını keser.",          "ex": "Onay zincirinde bekleyen evrak; teslimat geciken malzeme"},
+        "transport":       {"label": "Taşıma / Nakliye",   "color": "#0ea5e9", "desc": "Gereksiz malzeme/dosya/insan hareketi. Değer üretmez.",                    "ex": "Atölyeden depoya gereksiz gidip-gelme; çoklu dosya kopyaları"},
+        "overprocessing":  {"label": "Aşırı İşlem",        "color": "#8b5cf6", "desc": "Müşterinin değer vermediği fazladan adımlar/kontroller/standart fazlası.",   "ex": "Aynı veriye 3 farklı yerden imza; gereksiz detaylı paketleme"},
+        "inventory":       {"label": "Stok",               "color": "#0d9488", "desc": "Bilgi/malzeme/iş emrinin kuyrukta birikmesi. Para bağlar, kaliteyi gizler.",  "ex": "Yarı mamul yığını; iş listesi 100+ açık iş emri"},
+        "motion":          {"label": "Hareket",            "color": "#16a34a", "desc": "Çalışanın gereksiz fiziksel/dijital hareketi (arama, eğilme, yürüme).",       "ex": "Doğru klasörü bulmak için 10 ekran tıklama"},
+        "defects":         {"label": "Kusurlar / Hatalar", "color": "#ef4444", "desc": "Yeniden yapım, düzeltme, iade gerektiren hatalı çıktı.",                     "ex": "Hatalı veri girişi nedeniyle yeniden raporlama"},
     }
-    muda_summary = [{"key": k, "label": labels.get(k, k), "count": v}
-                    for k, v in sorted(muda_counter.items(), key=lambda x: -x[1])]
+    muda_summary = [{
+        "key": k, **muda_meta.get(k, {"label": k, "color": "#64748b", "desc": "", "ex": ""}),
+        "count": v
+    } for k, v in sorted(muda_counter.items(), key=lambda x: -x[1])]
+    # Hiç bulgu olmayan tipler için de meta gönder (UI tüm 7'yi göstersin)
+    for k, m in muda_meta.items():
+        if not any(it["key"] == k for it in muda_summary):
+            muda_summary.append({"key": k, **m, "count": 0})
 
     return jsonify({"success": True, "summary": {
         "total_processes_analyzed": len(procs),
         "processes_with_findings": len(process_findings),
         "total_findings": sum(muda_counter.values()),
+        "plan_year": active_py.year if active_py else None,
     }, "by_muda": muda_summary, "by_process": process_findings})
 
 
@@ -294,25 +317,44 @@ def raporlar_api_muda_analizi():
 @app_bp.route("/raporlar/cmmi-heatmap")
 @login_required
 def raporlar_cmmi_heatmap():
-    return render_template("platform/raporlar/cmmi_heatmap.html")
+    from app.services.plan_year_service import list_plan_years
+    years, active_year = [], None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/cmmi_heatmap.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/cmmi-heatmap")
 @login_required
 def raporlar_api_cmmi_heatmap():
     from app.models.k_radar_domain import ProcessMaturity
+    from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
+
+    # ?year= → o yıl; yoksa aktif yıl
+    year_q = request.args.get("year", type=int)
+    active_py = get_plan_year(tid, year_q) if year_q else get_active_plan_year_for_user(current_user)
+    py_id = active_py.id if active_py else None
+
+    # Süreçleri plan yılına göre filtrele
+    proc_q = Process.query.filter(Process.tenant_id == tid, Process.is_active.is_(True))
+    if py_id:
+        proc_q = proc_q.filter(or_(Process.plan_year_id == py_id, Process.plan_year_id.is_(None)))
+    process_ids = [p.id for p in proc_q.all()]
 
     # Her süreç için en son maturity kaydı
     rows = db.session.query(
         Process.id, Process.code, Process.name,
         func.max(ProcessMaturity.maturity_level).label("level"),
     ).join(ProcessMaturity, ProcessMaturity.process_id == Process.id).filter(
-        Process.tenant_id == tid, Process.is_active.is_(True),
+        Process.id.in_(process_ids) if process_ids else False,
         ProcessMaturity.is_active.is_(True),
-    ).group_by(Process.id, Process.code, Process.name).all()
+    ).group_by(Process.id, Process.code, Process.name).all() if process_ids else []
 
     processes = [{"id": r[0], "code": r[1], "name": r[2], "level": int(r[3])} for r in rows]
 
@@ -323,15 +365,59 @@ def raporlar_api_cmmi_heatmap():
 
     avg_level = round(sum(p["level"] for p in processes) / max(len(processes), 1), 2)
 
-    level_labels = {1: "Initial", 2: "Managed", 3: "Defined", 4: "Quantitatively Managed", 5: "Optimizing"}
-    distribution_list = [{"level": k, "label": level_labels[k], "count": distribution.get(k, 0)}
-                         for k in [1, 2, 3, 4, 5]]
+    # CMMI seviyeleri — Türkçe açıklamalar
+    level_meta = {
+        1: {"label": "1 — Başlangıç",        "en": "Initial",                  "color": "#dc2626", "desc": "Süreç ad-hoc/kaotik; kişiye bağımlı, tekrarlanabilirlik yok."},
+        2: {"label": "2 — Yönetilen",        "en": "Managed",                  "color": "#f59e0b", "desc": "Temel süreç disiplini var; planlama, izleme, kontrol uygulanıyor."},
+        3: {"label": "3 — Tanımlı",          "en": "Defined",                  "color": "#0ea5e9", "desc": "Süreç dokümante edilmiş, kurum standardı; iyileştirmeler proaktif."},
+        4: {"label": "4 — Sayısal Yönetilen","en": "Quantitatively Managed",   "color": "#6366f1", "desc": "Süreç istatistiksel teknikleriyle ölçülüyor; sapmalar sayısal kontrol altında."},
+        5: {"label": "5 — Optimize Eden",    "en": "Optimizing",               "color": "#10b981", "desc": "Sürekli iyileştirme döngüsü; inovasyon ve teknolojik yenilik kurumsallaşmış."},
+    }
+    distribution_list = [{
+        "level": k, "label": level_meta[k]["label"], "en": level_meta[k]["en"],
+        "color": level_meta[k]["color"], "desc": level_meta[k]["desc"],
+        "count": distribution.get(k, 0),
+        "pct": round((distribution.get(k, 0) / max(len(processes), 1)) * 100, 1) if processes else 0,
+    } for k in [1, 2, 3, 4, 5]]
+
+    # Genel olgunluk yorumu
+    if avg_level >= 4.5:
+        overall_label = "Mükemmel — Optimize Eden"
+        overall_color = "#10b981"
+        overall_advice = "Süreçleriniz sınıfın en iyisi seviyesinde. İnovasyonu kurumsallaştırma odaklı kalın."
+    elif avg_level >= 3.5:
+        overall_label = "Çok İyi — Sayısal Yönetim"
+        overall_color = "#6366f1"
+        overall_advice = "Sayısal teknik uygulanıyor; süreçleri optimize etmeye geçiş zamanı."
+    elif avg_level >= 2.5:
+        overall_label = "İyi — Tanımlı"
+        overall_color = "#0ea5e9"
+        overall_advice = "Standart süreçler var; ölçüm ve istatistik kontrol için yatırım yapın."
+    elif avg_level >= 1.5:
+        overall_label = "Orta — Yönetilen"
+        overall_color = "#f59e0b"
+        overall_advice = "Temel disiplin var; dokümantasyon ve kurum standardı için çalışın."
+    else:
+        overall_label = "Düşük — Başlangıç"
+        overall_color = "#dc2626"
+        overall_advice = "Süreçler ad-hoc; öncelik temel planlama ve izleme disiplinini kurmaktır."
+
+    # Olgunluk hesaplanmamış süreçler
+    measured_ids = {p["id"] for p in processes}
+    unmeasured = [{"id": p.id, "code": p.code or "", "name": p.name or ""} for p in proc_q.all() if p.id not in measured_ids]
 
     return jsonify({"success": True, "summary": {
         "total_processes": len(processes),
+        "unmeasured_count": len(unmeasured),
+        "tenant_process_count": len(process_ids),
         "avg_level": avg_level,
+        "overall_label": overall_label,
+        "overall_color": overall_color,
+        "overall_advice": overall_advice,
         "level_5_count": distribution.get(5, 0),
-    }, "distribution": distribution_list, "processes": processes})
+        "low_level_count": distribution.get(1, 0) + distribution.get(2, 0),
+        "plan_year": active_py.year if active_py else None,
+    }, "distribution": distribution_list, "processes": processes, "unmeasured": unmeasured[:20]})
 
 
 # ─── OP-17: Operasyonel İstatistik Sayfası (süreç bazlı) ───────────────────
@@ -339,28 +425,47 @@ def raporlar_api_cmmi_heatmap():
 @app_bp.route("/raporlar/operasyon-istatistik")
 @login_required
 def raporlar_op_istatistik():
-    return render_template("platform/raporlar/op_istatistik.html")
+    from app.services.plan_year_service import list_plan_years
+    years, active_year = [], None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/op_istatistik.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/operasyon-istatistik")
 @login_required
 def raporlar_api_op_istatistik():
+    from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    proc_ids_subq = db.session.query(Process.id).filter(
-        Process.tenant_id == tid, Process.is_active.is_(True),
-    ).subquery()
+    # ?year= varsa o yıl; yoksa aktif yıl
+    year_q = request.args.get("year", type=int)
+    active_py = get_plan_year(tid, year_q) if year_q else get_active_plan_year_for_user(current_user)
+    py_id = active_py.id if active_py else None
 
-    # Süreç başına: PG sayısı, faaliyet sayısı, son ölçüm tarihi
+    # Süreç başına: PG sayısı, faaliyet sayısı — plan_year filtreli (legacy NULL dahil)
+    proc_filter = [Process.tenant_id == tid, Process.is_active.is_(True)]
+    if py_id:
+        proc_filter.append(or_(Process.plan_year_id == py_id, Process.plan_year_id.is_(None)))
+    pg_filter = [ProcessKpi.is_active.is_(True)]
+    if py_id:
+        pg_filter.append(or_(ProcessKpi.plan_year_id == py_id, ProcessKpi.plan_year_id.is_(None)))
+    act_filter = [ProcessActivity.is_active.is_(True)]
+    if py_id:
+        act_filter.append(or_(ProcessActivity.plan_year_id == py_id, ProcessActivity.plan_year_id.is_(None)))
+
     rows = db.session.query(
         Process.id, Process.code, Process.name, Process.status,
         func.count(func.distinct(ProcessKpi.id)).label("kpi_count"),
         func.count(func.distinct(ProcessActivity.id)).label("activity_count"),
-    ).outerjoin(ProcessKpi, and_(ProcessKpi.process_id == Process.id, ProcessKpi.is_active.is_(True))
-    ).outerjoin(ProcessActivity, and_(ProcessActivity.process_id == Process.id, ProcessActivity.is_active.is_(True))
-    ).filter(Process.tenant_id == tid, Process.is_active.is_(True)
+    ).outerjoin(ProcessKpi, and_(ProcessKpi.process_id == Process.id, *pg_filter)
+    ).outerjoin(ProcessActivity, and_(ProcessActivity.process_id == Process.id, *act_filter)
+    ).filter(*proc_filter
     ).group_by(Process.id, Process.code, Process.name, Process.status).order_by(Process.code).all()
 
     items = [{
@@ -372,82 +477,11 @@ def raporlar_api_op_istatistik():
         "total_processes": len(items),
         "total_kpis": sum(i["kpi_count"] for i in items),
         "total_activities": sum(i["activity_count"] for i in items),
+        "plan_year": active_py.year if active_py else None,
     }, "processes": items})
 
 
-# ─── FN-05: ROI per Strategy ────────────────────────────────────────────────
-
-@app_bp.route("/raporlar/roi-per-strategy")
-@login_required
-def raporlar_roi_strategy():
-    return render_template("platform/raporlar/roi_strategy.html")
-
-
-@app_bp.route("/raporlar/api/roi-per-strategy")
-@login_required
-def raporlar_api_roi_strategy():
-    tid = _tid_or_none()
-    if not tid:
-        return jsonify({"success": False, "message": "Tenant yok"}), 400
-    active_py = get_active_plan_year_for_user(current_user)
-    py_id = active_py.id if active_py else None
-
-    strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
-    if py_id:
-        strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
-    strategies = strat_q.order_by(Strategy.code).all()
-
-    # Skor motorundan strateji skorları
-    try:
-        today = _date.today()
-        score_year = active_py.year if active_py else today.year
-        proc_scores, _ = compute_process_scores_internal(tid, score_year, today, persist_pg_scores=False, plan_year=active_py)
-    except Exception:
-        proc_scores = {}
-
-    # Initiative bütçeleri stratejilere göre tek sorguda gruplanır (N+1 önlemi)
-    _init_rows = db.session.query(
-        Initiative.strategy_id,
-        func.coalesce(func.sum(Initiative.budget_total), 0).label('bt'),
-        func.coalesce(func.sum(Initiative.budget_spent), 0).label('bs'),
-    ).filter(
-        Initiative.tenant_id == tid, Initiative.is_active.is_(True),
-        Initiative.strategy_id.isnot(None),
-    ).group_by(Initiative.strategy_id).all()
-    _init_by_sid = {sid: (bt, bs) for sid, bt, bs in _init_rows}
-
-    rows = []
-    for s in strategies:
-        budget, spent = _init_by_sid.get(s.id, (0, 0))
-
-        # Strateji skoru: bağlı süreçlerin ortalaması
-        sub_ids = [ss.id for ss in s.sub_strategies if getattr(ss, "is_active", True)]
-        related_proc_ids = set()
-        if sub_ids:
-            related_proc_ids = set(r[0] for r in db.session.query(ProcessKpi.process_id).filter(
-                ProcessKpi.sub_strategy_id.in_(sub_ids), ProcessKpi.is_active.is_(True),
-            ).all())
-        scores = [proc_scores.get(pid) for pid in related_proc_ids if proc_scores.get(pid) is not None]
-        avg_score = round(sum(scores) / len(scores), 1) if scores else None
-
-        # ROI: spent başına skor (ham metric)
-        roi_score = None
-        if spent and avg_score is not None:
-            roi_score = round(avg_score / (float(spent) / 100000), 3)  # 100K bazlı
-
-        rows.append({
-            "code": s.code, "title": s.title,
-            "budget": float(budget), "spent": float(spent),
-            "avg_score": avg_score,
-            "roi_score": roi_score,
-        })
-
-    return jsonify({"success": True, "summary": {
-        "total_strategies": len(rows),
-        "total_budget": sum(r["budget"] for r in rows),
-        "total_spent": sum(r["spent"] for r in rows),
-        "plan_year": active_py.year if active_py else None,
-    }, "strategies": rows})
+# ─── FN-05: ROI per Strategy — KALDIRILDI (kapsam dışı) ─────────────────────
 
 
 # ─── HR-07: Bireysel Hedef Hizalama ────────────────────────────────────────
@@ -514,27 +548,43 @@ def raporlar_risk_heatmap():
 @login_required
 def raporlar_api_risk_heatmap():
     from app.models.k_radar_domain import RiskHeatmapItem
+    from sqlalchemy import or_
     tid = _tid_or_none()
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).order_by(
-        RiskHeatmapItem.rpn.desc().nullslast()
-    ).all()
+    year_q = request.args.get("year", type=int)
+    if year_q:
+        from app.models.plan_year import PlanYear
+        _py = PlanYear.query.filter_by(tenant_id=tid, year=year_q).first()
+        py_id = _py.id if _py else None
+    else:
+        py_id = None
+        _py = get_active_plan_year_for_user(current_user)
+        if _py:
+            py_id = _py.id
+
+    risk_q = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True)
+    if py_id:
+        risk_q = risk_q.filter(or_(
+            RiskHeatmapItem.plan_year_id == py_id,
+            RiskHeatmapItem.plan_year_id.is_(None),
+        ))
+    risks = risk_q.order_by(RiskHeatmapItem.rpn.desc().nullslast()).all()
 
     # 5×5 grid
-    grid = [[[] for _ in range(5)] for _ in range(5)]  # grid[probability-1][impact-1]
+    grid = [[[] for _ in range(5)] for _ in range(5)]
     for r in risks:
         p = max(1, min(r.probability or 1, 5))
         i = max(1, min(r.impact or 1, 5))
         grid[p - 1][i - 1].append({
-            "id": r.id, "title": r.title, "status": r.status or "Open",
+            "id": r.id, "title": r.title, "status": r.status or "open",
             "rpn": r.rpn, "source": r.source_type,
         })
 
     summary = {
         "total": len(risks),
-        "open": sum(1 for r in risks if (r.status or "Open").lower() == "open"),
+        "open": sum(1 for r in risks if (r.status or "open").lower() == "open"),
         "mitigated": sum(1 for r in risks if (r.status or "").lower() == "mitigated"),
         "high_rpn": sum(1 for r in risks if (r.rpn or 0) >= 15),
     }

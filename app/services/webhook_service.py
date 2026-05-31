@@ -4,7 +4,7 @@ Sprint 13-15: API ve Entegrasyonlar
 Webhook yönetimi ve event dispatching
 """
 
-from app.extensions import db
+from extensions import db
 from typing import Dict, List
 import requests
 import hmac

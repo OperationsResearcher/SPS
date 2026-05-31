@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from app.models.core import User as CoreUser
-from models import Project
+from app.models.portfolio_project import Project
 
 
 def _label_from_core(u: CoreUser) -> str:

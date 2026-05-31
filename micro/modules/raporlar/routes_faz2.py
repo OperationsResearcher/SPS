@@ -249,10 +249,22 @@ def raporlar_api_chro_dashboard():
 
     # Rol dağılımı
     from app.models.core import Role
+    _ROL_TR = {
+        "Admin":            "Yönetici (Admin)",
+        "admin":            "Yönetici (Admin)",
+        "tenant_admin":     "Kurum Yöneticisi",
+        "standard_user":    "Standart Kullanıcı",
+        "User":             "Kullanıcı",
+        "user":             "Kullanıcı",
+        "executive_manager":"Üst Yönetim",
+        "manager":          "Yönetici",
+        "viewer":           "Görüntüleyici",
+        "editor":           "Editör",
+    }
     role_rows = db.session.query(Role.name, func.count(User.id)).join(
         User, User.role_id == Role.id
     ).filter(User.tenant_id == tid, User.is_active.is_(True)).group_by(Role.name).all()
-    roles = [{"role": r or "(yok)", "count": c} for r, c in role_rows]
+    roles = [{"role": _ROL_TR.get(r, r) or "(tanımsız)", "count": c} for r, c in role_rows]
 
     # En çok bireysel PG sahibi top 10 user
     top_user_rows = db.session.query(

@@ -4,7 +4,7 @@ Proje Klonlama Servisi
 Projeleri derin kopyalama, tarih kaydırma ve şablonlama işlemleri
 """
 from datetime import datetime, timedelta
-from models import db, Project, Task, ProjectRisk, ProjectFile, TaskImpact, project_leaders
+from app.models.legacy_bridge import db, Project, Task, ProjectRisk, ProjectFile, TaskImpact, project_leaders
 from sqlalchemy import insert
 
 
@@ -147,7 +147,7 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
                     for pred in source_task.predecessors:
                         if pred.id in task_mapping:
                             # Predecessor ilişkisini ekle (task_predecessors table)
-                            from models import task_predecessors
+                            from app.models.legacy_bridge import task_predecessors
                             from sqlalchemy import insert
                             db.session.execute(
                                 insert(task_predecessors).values(

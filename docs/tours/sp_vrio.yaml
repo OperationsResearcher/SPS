@@ -1,0 +1,38 @@
+key: sp_vrio
+title: "VRIO Analizi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "VRIO — gerçek rekabet avantajının kaynağı"
+  body: |
+    Jay Barney'in 1991'de geliştirdiği çerçeve. Mantığı şu: Her şirket "biz şudan iyiyiz" der ama gerçekten kalıcı bir rekabet avantajı için bir kaynak ya da yetenek dört soruyu birden geçmelidir:
+
+    • **V — Değerli mi?** (Müşteriye değer katıyor mu?)
+    • **R — Nadir mi?** (Rakiplerin çoğunda var mı?)
+    • **I — Taklit edilemez mi?** (Para verseler kolay kopyalanır mı?)
+    • **O — Organize misin?** (Bu kaynaktan değer çıkaracak yapıya sahip misin?)
+
+    Dördünü birden geçen kaynaklar = sürdürülebilir rekabet avantajı. Üçünü geçenler geçici avantaj. İkisi veya azı, sıradan rekabet.
+  cta_primary: "Anladım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Kaynak listesi"
+    body: |
+      Her satır bir kaynak veya yetenek. Sütunlardan dört soruyu Evet/Hayır olarak işaretlersin; sistem otomatik rekabet konumunu hesaplar.
+
+      Eskişehir Motor Sanayi için örnek kaynaklar:
+      • "Anadolu Üniversitesi mühendislik işbirliği" — V ✓ R ✓ I ✓ O ✓ → Sürdürülebilir avantaj
+      • "Modern üretim hattı" — V ✓ R ✓ I ✗ O ✓ → Geçici avantaj (rakipler de yatırırsa kopyalanır)
+      • "ISO 9001 sertifikası" — V ✓ R ✗ → Sıradan rekabet (herkeste var)
+      • "30 yıllık birikim" — V ✓ R ✓ I ✓ O ?  → İ ve O sorulması gerek
+
+      VRIO bir kez yapılan bir egzersiz değil — yılda bir gözden geçirilir. Çünkü rakipler gelişir, "nadir" olan bir gün "yaygın" olur.
+    placement: "bottom"
+
+finale:
+  title: "İyi bir düşünme egzersizi"
+  body: |
+    İlk haftanda yapmana gerek yok. Ama Mavi Okyanus düşüncesine geçmeden önce 4-6 kaynağınla VRIO yapman, "neye sahibim, neyi büyütmeliyim" sorusuna iyi cevap verir.

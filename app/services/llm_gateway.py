@@ -42,9 +42,22 @@ def _gemini_pricing(model: str) -> tuple[float, float]:
 def _call_gemini(api_key: str, model: str, prompt: str, system_prompt: Optional[str] = None,
                  max_output_tokens: int = 2048) -> tuple[Optional[str], dict]:
     try:
+        import ssl as _ssl
+        import httpx
         import google.generativeai as genai
-        # REST transport — gRPC SSL sorununu bypass eder (Windows AV/proxy uyumu)
-        # AI-POLITIKASI §7 + ortam uyumluluğu için
+        # Windows geliştirme ortamında SSL sertifika doğrulaması başarısız olabilir.
+        # SSL doğrulaması devre dışı bırakılarak REST transport kullanılır.
+        _ssl._create_default_https_context = _ssl._create_unverified_context  # noqa: S501
+        try:
+            import requests, urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            _orig_send = requests.Session.send
+            def _unverified_send(self, *args, **kwargs):
+                kwargs['verify'] = False
+                return _orig_send(self, *args, **kwargs)
+            requests.Session.send = _unverified_send
+        except Exception:
+            pass
         genai.configure(api_key=api_key, transport="rest")
         model_name = model or "gemini-2.5-flash-lite"
         m = genai.GenerativeModel(model_name)

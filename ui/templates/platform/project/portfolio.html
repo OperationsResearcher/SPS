@@ -2,6 +2,10 @@
 {% block title %}Stratejik proje portföyü — Kokpitim{% endblock %}
 {% block page_title %}Stratejik proje portföyü{% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Stratejik Portföy', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div style="max-width:1100px; margin:0 auto;">
     <div class="mc-page-header">

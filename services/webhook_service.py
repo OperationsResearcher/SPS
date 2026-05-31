@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 from flask import current_app
-from models import db, Kurum
+from app.models.legacy_bridge import db, Kurum
 from typing import Dict, Optional, List
 
 
@@ -121,7 +121,7 @@ def trigger_pg_deviation_webhook(kurum_id: int, pg_veri_id: int, deviation_perce
         pg_veri_id: PG veri ID
         deviation_percentage: Sapma yüzdesi
     """
-    from models import PerformansGostergeVeri, BireyselPerformansGostergesi
+    from app.models.legacy_bridge import PerformansGostergeVeri, BireyselPerformansGostergesi
     
     try:
         pg_veri = PerformansGostergeVeri.query.get(pg_veri_id)
@@ -158,7 +158,7 @@ def trigger_risk_increase_webhook(kurum_id: int, risk_id: int, old_score: int, n
         old_score: Eski risk skoru
         new_score: Yeni risk skoru
     """
-    from models import ProjectRisk, Project
+    from app.models.legacy_bridge import ProjectRisk, Project
     
     try:
         risk = ProjectRisk.query.get(risk_id)

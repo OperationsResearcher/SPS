@@ -1,0 +1,49 @@
+key: surec
+title: "Süreç Yönetimi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Süreç — stratejinin sahada konuştuğu yer"
+  body: |
+    Strateji çıkardın, vizyonun var, girişimlerin var — peki günlük iş bunu nasıl yansıtacak? İşte süreçler bu boşluğu doldurur. Süreç, "şu işi nasıl yapıyoruz" sorusunun yazılı, ölçülen, sürekli iyileştirilen halidir.
+
+    Eskişehir Motor Sanayi için tipik süreç listesi:
+    • Satış ve müşteri ilişkileri
+    • Sipariş yönetimi
+    • Üretim planlama
+    • Tedarik ve satın alma
+    • Üretim
+    • Kalite kontrol
+    • Sevkiyat ve lojistik
+    • Satış sonrası servis
+    • İnsan kaynakları
+    • Finans ve muhasebe
+
+    Her süreç altında ölçtüğün şeyler = KPI'lar. Süreç + KPI ikilisi, stratejik hedefin "bu hafta ne yaptık?" sorusuna cevabıdır.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Süreç listesi"
+    body: |
+      Sayfa, kurumun tüm süreçlerini hiyerarşik olarak gösterir. Her süreç şunlara sahip olabilir:
+      • **Kod ve ad** — örn: "URT-001 Motor Montaj Hattı"
+      • **Sahibi** — sorumlu kullanıcı
+      • **Bağlı strateji** — hangi ana stratejiyi besliyor
+      • **Alt süreçler** — daha küçük adımlara bölünebilir
+      • **KPI'lar** — bu süreçte ölçtüğümüz göstergeler
+
+      KPI = "Performans Göstergesi" = ölçülen sayısal bir değer + hedef + ölçüm sıklığı. Örnekler:
+      • Aylık üretim adedi (hedef: 100, ölçüm: aylık)
+      • Hatalı ürün oranı (hedef: %2 altı, ölçüm: haftalık)
+      • Sipariş→sevkiyat süresi (hedef: 5 gün altı, ölçüm: sipariş başı)
+
+      Veri girişi: her ay (veya haftalık/günlük) gerçekleşme değerini girersin; sistem hedefle karşılaştırıp karne çıkarır.
+    placement: "bottom"
+
+finale:
+  title: "Sıralı kurma stratejisi"
+  body: |
+    Önerim Talat: tüm süreçleri bir günde tanımlamaya çalışma. Önce 3-5 kritik süreç (genelde Üretim, Satış, Kalite). Her birinde 2-3 KPI. Toplam 10-15 KPI ile başla. 6 ay sonra ihtiyaç gördükçe genişletirsin. Az ama ölçülen veriden, çok ama girilmeyen veriden çok daha değerlidir.

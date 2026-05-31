@@ -7,72 +7,96 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp_strateji_harita.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb('Strateji Haritası') }}
+{% endblock %}
+
 {% block content %}
 <div class="sh-page">
 
-    <header class="sh-hero">
-        <div class="sh-hero-inner">
-            <div>
-                <div class="sh-hero-badge"><i class="fas fa-layer-group"></i> Canlı hiyerarşi</div>
-                <h1 class="sh-hero-title">
-                    <i class="fas fa-project-diagram" aria-hidden="true"></i>
-                    Strateji Haritası
-                </h1>
-                <p class="sh-hero-sub">
-                    Kurumsal hedeflerinizden süreçlere ve performans göstergelerine akan ilişki ağı.
-                    Aktif SP döneminde <strong>{{ strategy_count }}</strong> ana strateji görüntülenir.
-                </p>
-            </div>
-            <div class="sh-hero-actions">
-                <button type="button" id="harita-fit" class="sh-btn-light sh-btn-light--primary" title="Tüm grafiği sığdır">
-                    <i class="fas fa-compress-arrows-alt"></i> Tümünü Göster
-                </button>
-                <a href="{{ url_for('app_bp.sp') }}" class="sh-btn-light">
-                    <i class="fas fa-arrow-left"></i> SP Modülü
-                </a>
-            </div>
+    <div class="mc-page-header" style="margin-bottom:16px;">
+        <div class="mc-page-header-left">
+            <h1 class="mc-page-title">
+                <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Strateji Haritası
+            </h1>
+            <p class="mc-page-subtitle">
+                Strateji → Alt Strateji → Süreç → KPI ilişki ağı.
+                Aktif SP döneminde <strong>{{ strategy_count }}</strong> ana strateji görüntülenir.
+            </p>
         </div>
-    </header>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button type="button" id="harita-fit" class="mc-btn mc-btn-primary mc-btn-sm" title="Tüm grafiği sığdır">
+                <i class="fas fa-compress-arrows-alt"></i> Tümünü Göster
+            </button>
+            <a href="{{ url_for('app_bp.sp') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+                <i class="fas fa-arrow-left"></i> SP Modülü
+            </a>
+        </div>
+    </div>
+
+    <div class="kr-info-band" style="margin-bottom:16px;">
+        <i class="fas fa-circle-info"></i>
+        <span><b>Nasıl kullanılır?</b> Düğüme tıklayınca bağlı tüm yol vurgulanır. Tekerlek ile yakınlaştırın, sürükleyerek kaydırın. Arama kutusuna yazarak düğüm bulabilirsiniz. <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">+</kbd> <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">−</kbd> zoom.</span>
+    </div>
 
     <div class="sh-stats">
         <div class="sh-stat">
             <div class="sh-stat-icon sh-stat-icon--strategy"><i class="fas fa-bullseye"></i></div>
             <div>
-                <div class="sh-stat-val" id="stat-strategy">{{ strategy_count }}</div>
+                <div class="sh-stat-val">{{ strategy_count }}</div>
                 <div class="sh-stat-lbl">Ana Strateji</div>
             </div>
         </div>
         <div class="sh-stat">
             <div class="sh-stat-icon sh-stat-icon--sub"><i class="fas fa-sitemap"></i></div>
             <div>
-                <div class="sh-stat-val" id="stat-sub">{{ sub_count }}</div>
+                <div class="sh-stat-val">{{ sub_count }}</div>
                 <div class="sh-stat-lbl">Alt Strateji</div>
             </div>
         </div>
         <div class="sh-stat">
             <div class="sh-stat-icon sh-stat-icon--process"><i class="fas fa-diagram-project"></i></div>
             <div>
-                <div class="sh-stat-val" id="stat-process">{{ process_count }}</div>
+                <div class="sh-stat-val">{{ process_count }}</div>
                 <div class="sh-stat-lbl">Süreç</div>
             </div>
         </div>
         <div class="sh-stat">
             <div class="sh-stat-icon sh-stat-icon--kpi"><i class="fas fa-chart-line"></i></div>
             <div>
-                <div class="sh-stat-val" id="stat-kpi">{{ kpi_count }}</div>
-                <div class="sh-stat-lbl">KPI Grubu</div>
+                <div class="sh-stat-val">{{ pg_count }}</div>
+                <div class="sh-stat-lbl">PG</div>
             </div>
         </div>
+        {% if initiative_count %}
+        <div class="sh-stat">
+            <div class="sh-stat-icon" style="background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#db2777;"><i class="fas fa-rocket"></i></div>
+            <div>
+                <div class="sh-stat-val">{{ initiative_count }}</div>
+                <div class="sh-stat-lbl">Str. Girişim</div>
+            </div>
+        </div>
+        {% endif %}
+        {% if proje_count %}
+        <div class="sh-stat">
+            <div class="sh-stat-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#059669;"><i class="fas fa-folder-open"></i></div>
+            <div>
+                <div class="sh-stat-val">{{ proje_count }}</div>
+                <div class="sh-stat-lbl">Proje</div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <div id="strateji-harita-error" role="alert"></div>
 
     <div class="sh-canvas-wrap">
         <div class="sh-flow-strip" aria-hidden="true">
+            <span class="sh-flow-col sh-flow-col--v"><span class="sh-flow-dot"></span> Vizyon</span>
             <span class="sh-flow-col sh-flow-col--s"><span class="sh-flow-dot"></span> Strateji</span>
             <span class="sh-flow-col sh-flow-col--ss"><span class="sh-flow-dot"></span> Alt Strateji</span>
-            <span class="sh-flow-col sh-flow-col--p"><span class="sh-flow-dot"></span> Süreç</span>
-            <span class="sh-flow-col sh-flow-col--k"><span class="sh-flow-dot"></span> KPI</span>
+            <span class="sh-flow-col sh-flow-col--p"><span class="sh-flow-dot"></span> Süreç / Girişim</span>
+            <span class="sh-flow-col sh-flow-col--k"><span class="sh-flow-dot"></span> PG / Proje</span>
         </div>
 
         <div class="sh-toolbar">
@@ -82,10 +106,13 @@
                     <input type="search" id="harita-search" placeholder="Düğüm ara…" autocomplete="off" aria-label="Haritada ara">
                 </label>
                 <div class="sh-legend">
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#0ea5e9;"></span> Vizyon</span>
                     <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#4f46e5;"></span> Strateji</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#7c3aed;"></span> Alt</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#7c3aed;"></span> Alt Strateji</span>
                     <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#059669;"></span> Süreç</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#f59e0b;"></span> KPI</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#f59e0b;"></span> PG</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#db2777;"></span> Girişim</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#10b981;"></span> Proje</span>
                 </div>
             </div>
             <div class="sh-zoom-group">
@@ -112,11 +139,6 @@
         </p>
     </div>
 
-    <p class="sh-hint">
-        <i class="fas fa-mouse"></i>
-        Tekerlek ile yakınlaştırın · Sürükleyerek kaydırın · Düğüme tıklayınca bağlı yolu vurgulanır
-        <span style="margin-left:6px;"><kbd>+</kbd> <kbd>−</kbd> zoom</span>
-    </p>
 
 </div>
 {% endblock %}
@@ -145,11 +167,27 @@
     function nodeThemes() {
         var dk = isDark();
         return {
+            vizyon: {
+                shape: "box",
+                margin: 18,
+                widthConstraint: { minimum: 200, maximum: 400 },
+                heightConstraint: { minimum: 60 },
+                shapeProperties: { borderRadius: 18 },
+                color: {
+                    background: dk ? "#0284c7" : "#0ea5e9",
+                    border: dk ? "#38bdf8" : "#0369a1",
+                    highlight: { background: "#38bdf8", border: "#7dd3fc" },
+                    hover: { background: "#22b0f0", border: "#0284c7" },
+                },
+                font: { color: "#ffffff", size: 16, face: FONT, bold: true, multi: true, align: "center" },
+                borderWidth: 3,
+                shadow: { enabled: true, color: "rgba(3,105,161,0.4)", size: 20, x: 0, y: 8 },
+            },
             strategy: {
                 shape: "box",
-                margin: 14,
-                widthConstraint: { minimum: 150, maximum: 260 },
-                heightConstraint: { minimum: 48 },
+                margin: 16,
+                widthConstraint: { minimum: 180, maximum: 300 },
+                heightConstraint: { minimum: 56 },
                 shapeProperties: { borderRadius: 14 },
                 color: {
                     background: dk ? "#6366f1" : "#4f46e5",
@@ -157,16 +195,16 @@
                     highlight: { background: "#818cf8", border: "#a5b4fc" },
                     hover: { background: "#7c7ff7", border: "#4338ca" },
                 },
-                font: { color: "#ffffff", size: 13, face: FONT, bold: true, multi: true, align: "center" },
+                font: { color: "#ffffff", size: 15, face: FONT, bold: true, multi: true, align: "center" },
                 borderWidth: 2,
                 borderWidthSelected: 3,
                 shadow: { enabled: true, color: dk ? "rgba(99,102,241,0.5)" : "rgba(49,46,129,0.35)", size: 16, x: 0, y: 6 },
             },
             sub_strategy: {
                 shape: "box",
-                margin: 12,
-                widthConstraint: { minimum: 130, maximum: 220 },
-                heightConstraint: { minimum: 42 },
+                margin: 14,
+                widthConstraint: { minimum: 160, maximum: 260 },
+                heightConstraint: { minimum: 50 },
                 shapeProperties: { borderRadius: 12 },
                 color: {
                     background: dk ? "#8b5cf6" : "#7c3aed",
@@ -174,14 +212,95 @@
                     highlight: { background: "#a78bfa", border: "#c4b5fd" },
                     hover: { background: "#9f6ff9", border: "#6d28d9" },
                 },
-                font: { color: "#ffffff", size: 12, face: FONT, multi: true, align: "center" },
+                font: { color: "#ffffff", size: 13, face: FONT, multi: true, align: "center" },
                 borderWidth: 2,
                 shadow: { enabled: true, color: "rgba(91,33,182,0.32)", size: 12, x: 0, y: 4 },
             },
             process: {
                 shape: "box",
+                margin: 12,
+                widthConstraint: { minimum: 140, maximum: 230 },
+                heightConstraint: { minimum: 44 },
+                shapeProperties: { borderRadius: 10 },
+                color: {
+                    background: dk ? "#10b981" : "#059669",
+                    border: dk ? "#34d399" : "#047857",
+                    highlight: { background: "#34d399", border: "#6ee7b7" },
+                    hover: { background: "#2dd4a8", border: "#047857" },
+                },
+                font: { color: "#ffffff", size: 12, face: FONT, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(4,120,87,0.3)", size: 10, x: 0, y: 3 },
+            },
+            kpi: {
+                shape: "box",
                 margin: 10,
-                widthConstraint: { minimum: 110, maximum: 190 },
+                widthConstraint: { minimum: 100, maximum: 160 },
+                heightConstraint: { minimum: 40 },
+                shapeProperties: { borderRadius: 8 },
+                color: {
+                    background: dk ? "#fbbf24" : "#f59e0b",
+                    border: dk ? "#fcd34d" : "#b45309",
+                    highlight: { background: "#fcd34d", border: "#fde68a" },
+                    hover: { background: "#fde047", border: "#d97706" },
+                },
+                font: { color: dk ? "#0f172a" : "#1e293b", size: 12, face: FONT, bold: true, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(180,83,9,0.28)", size: 8, x: 0, y: 2 },
+            },
+            pg: {
+                shape: "box",
+                margin: 9,
+                widthConstraint: { minimum: 80, maximum: 150 },
+                heightConstraint: { minimum: 36 },
+                shapeProperties: { borderRadius: 8 },
+                color: {
+                    background: dk ? "#fbbf24" : "#f59e0b",
+                    border: dk ? "#fcd34d" : "#b45309",
+                    highlight: { background: "#fcd34d", border: "#fde68a" },
+                    hover: { background: "#fde047", border: "#d97706" },
+                },
+                font: { color: dk ? "#0f172a" : "#1e293b", size: 11, face: FONT, bold: true, align: "center" },
+                borderWidth: 2,
+                shadow: { enabled: true, color: "rgba(180,83,9,0.25)", size: 7, x: 0, y: 2 },
+            },
+            pg_more: {
+                shape: "box",
+                margin: 8,
+                widthConstraint: { minimum: 60, maximum: 100 },
+                heightConstraint: { minimum: 32 },
+                shapeProperties: { borderRadius: 8 },
+                color: {
+                    background: "#f8fafc",
+                    border: "#cbd5e1",
+                    highlight: { background: "#f1f5f9", border: "#94a3b8" },
+                },
+                font: { color: "#64748b", size: 10, face: FONT, align: "center" },
+                borderWidth: 1,
+                borderDashes: [3, 2],
+                shadow: { enabled: false },
+            },
+            initiative: {
+                shape: "box",
+                margin: 12,
+                widthConstraint: { minimum: 140, maximum: 240 },
+                heightConstraint: { minimum: 44 },
+                shapeProperties: { borderRadius: 18 },
+                color: {
+                    background: dk ? "#ec4899" : "#db2777",
+                    border: dk ? "#f472b6" : "#9d174d",
+                    highlight: { background: "#f472b6", border: "#fbcfe8" },
+                    hover: { background: "#f0539a", border: "#be185d" },
+                },
+                font: { color: "#ffffff", size: 12, face: FONT, bold: true, align: "center" },
+                borderWidth: 2,
+                borderDashes: [4, 2],
+                shadow: { enabled: true, color: "rgba(157,23,77,0.32)", size: 10, x: 0, y: 3 },
+            },
+            proje: {
+                shape: "box",
+                margin: 10,
+                widthConstraint: { minimum: 120, maximum: 200 },
                 heightConstraint: { minimum: 38 },
                 shapeProperties: { borderRadius: 10 },
                 color: {
@@ -192,40 +311,8 @@
                 },
                 font: { color: "#ffffff", size: 11, face: FONT, align: "center" },
                 borderWidth: 2,
-                shadow: { enabled: true, color: "rgba(4,120,87,0.3)", size: 10, x: 0, y: 3 },
-            },
-            kpi: {
-                shape: "box",
-                margin: 8,
-                widthConstraint: { minimum: 80, maximum: 110 },
-                heightConstraint: { minimum: 34 },
-                shapeProperties: { borderRadius: 8 },
-                color: {
-                    background: dk ? "#fbbf24" : "#f59e0b",
-                    border: dk ? "#fcd34d" : "#b45309",
-                    highlight: { background: "#fcd34d", border: "#fde68a" },
-                    hover: { background: "#fde047", border: "#d97706" },
-                },
-                font: { color: dk ? "#0f172a" : "#1e293b", size: 11, face: FONT, bold: true, align: "center" },
-                borderWidth: 2,
-                shadow: { enabled: true, color: "rgba(180,83,9,0.28)", size: 8, x: 0, y: 2 },
-            },
-            initiative: {
-                shape: "box",
-                margin: 10,
-                widthConstraint: { minimum: 110, maximum: 200 },
-                heightConstraint: { minimum: 36 },
-                shapeProperties: { borderRadius: 18 },
-                color: {
-                    background: dk ? "#ec4899" : "#db2777",
-                    border: dk ? "#f472b6" : "#9d174d",
-                    highlight: { background: "#f472b6", border: "#fbcfe8" },
-                    hover: { background: "#f0539a", border: "#be185d" },
-                },
-                font: { color: "#ffffff", size: 11, face: FONT, bold: true, align: "center" },
-                borderWidth: 2,
                 borderDashes: [4, 2],
-                shadow: { enabled: true, color: "rgba(157,23,77,0.32)", size: 10, x: 0, y: 3 },
+                shadow: { enabled: true, color: "rgba(4,120,87,0.28)", size: 9, x: 0, y: 2 },
             },
         };
     }
@@ -243,13 +330,9 @@
     }
 
     function layoutOpts(nodeCount) {
-        if (nodeCount > 90) {
-            return { levelSeparation: 200, nodeSpacing: 110, treeSpacing: 160 };
-        }
-        if (nodeCount > 45) {
-            return { levelSeparation: 250, nodeSpacing: 140, treeSpacing: 190 };
-        }
-        return { levelSeparation: 310, nodeSpacing: 170, treeSpacing: 230 };
+        if (nodeCount > 120) return { levelSep: 140, nodeSpacing: 160, treeSep: 200 };
+        if (nodeCount > 60)  return { levelSep: 170, nodeSpacing: 190, treeSep: 240 };
+        return                      { levelSep: 200, nodeSpacing: 220, treeSep: 280 };
     }
 
     function buildAdjacency(edges) {
@@ -348,30 +431,28 @@
 
         nodesDs = new vis.DataSet(nodeList.map(function(n) {
             var theme = themes[n.group] || themes.process;
-            return Object.assign({ id: n.id, label: n.label, title: n.title || n.label, group: n.group }, theme);
+            var node = Object.assign({ id: n.id, label: n.label, title: n.title || n.label, group: n.group }, theme);
+            if (n.level !== undefined) node.level = n.level;
+            return node;
         }));
         allNodeIds = nodeList.map(function(n) { return n.id; });
 
         edgePairs = (res.edges || []).map(function(e) { return { from: e.from, to: e.to }; });
 
-        var edges = new vis.DataSet(edgePairs.map(function(e) {
+        var edges = new vis.DataSet((res.edges || []).map(function(e) {
             return {
                 from: e.from,
                 to: e.to,
-                arrows: { to: { enabled: true, scaleFactor: 0.5, type: "arrow" } },
+                arrows: { to: { enabled: true, scaleFactor: 0.55, type: "arrow" } },
                 color: {
                     color: isDark() ? "#475569" : "#94a3b8",
                     highlight: "#818cf8",
                     hover: "#64748b",
-                    opacity: 0.9,
+                    opacity: 0.85,
                 },
-                width: isDark() ? 1.5 : 2,
-                smooth: {
-                    enabled: true,
-                    type: "cubicBezier",
-                    forceDirection: "horizontal",
-                    roundness: 0.42,
-                },
+                width: isDark() ? 1.8 : 2,
+                dashes: e.dashes || false,
+                smooth: { enabled: true, type: "cubicBezier", forceDirection: "vertical", roundness: 0.4 },
             };
         }));
 
@@ -379,14 +460,15 @@
             layout: {
                 hierarchical: {
                     enabled: true,
-                    direction: "LR",
+                    direction: "UD",
                     sortMethod: "directed",
-                    levelSeparation: lo.levelSeparation,
+                    levelSeparation: lo.levelSep,
                     nodeSpacing: lo.nodeSpacing,
-                    treeSpacing: lo.treeSpacing,
+                    treeSpacing: lo.treeSep,
                     blockShifting: true,
                     edgeMinimization: true,
                     parentCentralization: true,
+                    shakeTowards: "roots",
                 },
             },
             physics: { enabled: false },
@@ -398,14 +480,15 @@
                 navigationButtons: false,
                 keyboard: { enabled: false },
                 multiselect: false,
-                hideEdgesOnDrag: false,
+                hideEdgesOnDrag: nodeList.length > 100,
             },
             nodes: { chosen: { label: false } },
             edges: { chosen: { label: false } },
         });
 
         network.once("afterDrawing", function() {
-            setTimeout(fitNetwork, 150);
+            loading.style.display = "none";
+            setTimeout(fitNetwork, 100);
         });
 
         network.on("click", function(params) {

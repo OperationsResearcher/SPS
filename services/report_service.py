@@ -6,7 +6,7 @@ PDF rapor oluşturma ve dışa aktarma
 from datetime import datetime, date
 from flask import current_app
 from io import BytesIO
-from models import (
+from app.models.legacy_bridge import (
     db, Project, Task, ProjectRisk, Surec, User, project_leaders
 )
 from services.project_analytics import calculate_surec_saglik_skoru

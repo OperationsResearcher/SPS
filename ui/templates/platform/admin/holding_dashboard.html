@@ -2,6 +2,10 @@
 {% block title %}Holding Dashboard — Kokpitim{% endblock %}
 {% block page_title %}{{ holding.name }} — Konsolide Görünüm{% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Holding Panosu', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div style="max-width:1400px; margin:0 auto;"
      id="holding-root"
@@ -52,7 +56,7 @@
           <div id="h-kpi" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Toplam Initiative</div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Toplam Girişim</div>
           <div id="h-init" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
       </div>
@@ -155,7 +159,7 @@
           </div>
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:#1e293b;">${t.initiative_total}</div>
-            <div style="color:#94a3b8;">Initiative</div>
+            <div style="color:#94a3b8;">Girişim</div>
           </div>
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:${t.risk_critical > 0 ? '#dc2626' : '#1e293b'};">${t.risk_critical}</div>

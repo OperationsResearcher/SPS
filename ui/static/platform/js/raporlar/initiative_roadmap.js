@@ -3,7 +3,7 @@
   const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   const PRIO = {critical:'#dc2626',high:'#f59e0b',medium:'#0ea5e9',low:'#94a3b8'};
   function drawGantt(inits, container){
-    if(!inits.length){ container.innerHTML='<div style="text-align:center;padding:30px;color:#94a3b8;font-style:italic;">Initiative yok.</div>'; return; }
+    if(!inits.length){ container.innerHTML='<div style="text-align:center;padding:30px;color:#94a3b8;font-style:italic;">Stratejik girişim yok.</div>'; return; }
     const minY = Math.min(...inits.map(i=>i.start_year));
     const maxY = Math.max(...inits.map(i=>i.end_year));
     const years = [];
@@ -12,7 +12,7 @@
     let html = '<div style="min-width:'+(leftW+years.length*cellW)+'px;">';
     // header
     html += '<div style="display:flex;border-bottom:2px solid #e2e8f0;padding-bottom:8px;margin-bottom:6px;font-size:11.5px;font-weight:600;color:#475569;">';
-    html += `<div style="width:${leftW}px;flex-shrink:0;">Initiative</div>`;
+    html += `<div style="width:${leftW}px;flex-shrink:0;">Stratejik Girişim</div>`;
     years.forEach(y => html += `<div style="width:${cellW}px;text-align:center;">${y}</div>`);
     html += '</div>';
     // rows
@@ -41,7 +41,7 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Initiative',s.total,'#0f172a'),
+        stat('Toplam Stratejik Girişim',s.total,'#0f172a'),
         stat('Yıl Aralığı',s.year_range,'#16a34a'),
         stat('Milestone',s.total_milestones,'#0ea5e9'),
       ].join('');

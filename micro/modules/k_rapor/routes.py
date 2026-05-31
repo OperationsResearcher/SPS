@@ -2,7 +2,7 @@
 
 import datetime as _dt
 
-from flask import render_template, jsonify, request, current_app
+from flask import render_template, jsonify, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -60,16 +60,24 @@ def k_rapor_api_forecast(kpi_id):
 @app_bp.route("/k-rapor")
 @login_required
 def k_rapor():
-    """K-Rapor ana sayfası."""
+    """K-Rapor sayfası — ?tab=X seçiliyse o sekme; değilse K-Radar hub'ına yönlendirir."""
+    # Hub artık /k-radar; tab yoksa oraya gönder
+    if not request.args.get("tab"):
+        return redirect(url_for("app_bp.k_radar_hub"))
+
     from app.models.process import Process, ProcessKpi, KpiData
     from app.models.core import Strategy
     from app.services.plan_year_service import get_active_plan_year_for_user
 
     tid = current_user.tenant_id
-    year = _dt.date.today().year
     active_py = get_active_plan_year_for_user(current_user)
-    if active_py:
+    year_param = request.args.get("year", type=int)
+    if year_param:
+        year = year_param
+    elif active_py:
         year = active_py.year
+    else:
+        year = _dt.date.today().year
 
     surec_sayisi = Process.query.filter_by(tenant_id=tid, is_active=True).count()
     pg_sayisi    = (
@@ -173,17 +181,28 @@ def k_rapor_api_surec_pg():
     period = request.args.get("period", "ceyrek")  # aylik / ceyrek / yillik
     try:
         from app.models.process import Process, ProcessKpi, KpiData
-        processes = (
-            Process.query
-            .filter_by(tenant_id=tid, is_active=True, parent_id=None)
-            .order_by(Process.code)
-            .all()
-        )
-        kpis = (
+        from sqlalchemy import or_, text as _t
+        # Verilen yıla ait plan_year_id
+        _py_row = db.session.execute(_t(
+            "SELECT id FROM plan_years WHERE tenant_id=:t AND year=:y LIMIT 1"
+        ), {"t": tid, "y": year}).fetchone()
+        plan_year_id = int(_py_row.id) if _py_row else None
+
+        proc_q = Process.query.filter_by(tenant_id=tid, is_active=True, parent_id=None)
+        if plan_year_id:
+            # Bu plan yılına ait süreçler (legacy NULL'lar da dahil)
+            proc_q = proc_q.filter(or_(Process.plan_year_id == plan_year_id,
+                                       Process.plan_year_id.is_(None)))
+        processes = proc_q.order_by(Process.code).all()
+
+        kpi_q = (
             ProcessKpi.query.join(Process)
             .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
-            .all()
         )
+        if plan_year_id:
+            kpi_q = kpi_q.filter(or_(Process.plan_year_id == plan_year_id,
+                                     Process.plan_year_id.is_(None)))
+        kpis = kpi_q.all()
         kpi_map = {k.id: k for k in kpis}
 
         if period == "aylik":
@@ -197,7 +216,7 @@ def k_rapor_api_surec_pg():
             period_keys = [1, 2, 3, 4]
 
         kpi_ids = [k.id for k in kpis]
-        # period_type kolonu DB'de olmayabilir — güvenli sorgu
+        # period_type'a uyan satırlar; YOKSA aylık veriden hesapla (fallback)
         try:
             data_rows = (
                 KpiData.query
@@ -211,16 +230,54 @@ def k_rapor_api_surec_pg():
             )
         except Exception:
             db.session.rollback()
-            # period_type kolonu yoksa tüm yıl verisini çek
-            data_rows = (
-                KpiData.query
-                .filter(
-                    KpiData.process_kpi_id.in_(kpi_ids),
-                    KpiData.year == year,
-                    KpiData.is_active == True,
+            data_rows = []
+
+        # Eğer ceyrek/yillik istek ama veri yoksa, aylık veriyi getir ve grupla
+        if not data_rows and period != "aylik":
+            try:
+                monthly_rows = (
+                    KpiData.query
+                    .filter(
+                        KpiData.process_kpi_id.in_(kpi_ids),
+                        KpiData.year == year,
+                        KpiData.period_type == "aylik",
+                        KpiData.is_active == True,
+                    )
+                    .all()
                 )
-                .all()
-            )
+            except Exception:
+                db.session.rollback()
+                monthly_rows = []
+
+            # Gruplara topla
+            from collections import defaultdict
+            agg = defaultdict(list)  # (kpi_id, period_no) -> [floats]
+            for d in monthly_rows:
+                try:
+                    v = float(d.actual_value) if d.actual_value is not None else None
+                except (ValueError, TypeError):
+                    v = None
+                if v is None:
+                    continue
+                month = getattr(d, "period_no", None) or 1
+                if period == "ceyrek":
+                    target_pno = (int(month) - 1) // 3 + 1   # 1..3 → Q1, 4..6 → Q2 vb.
+                else:  # yillik
+                    target_pno = 1
+                agg[(d.process_kpi_id, target_pno)].append(v)
+
+            # Ortalama → sahte data satırları gibi index'e koy
+            class _Stub:
+                __slots__ = ("process_kpi_id", "period_no", "actual_value")
+                def __init__(self, kid, pno, v):
+                    self.process_kpi_id = kid
+                    self.period_no = pno
+                    self.actual_value = v
+            data_rows = [
+                _Stub(kid, pno, round(sum(vs) / len(vs), 2))
+                for (kid, pno), vs in agg.items() if vs
+            ]
+
         data_index = {}
         for d in data_rows:
             key = (d.process_kpi_id, getattr(d, 'period_no', None) or 1)
@@ -315,12 +372,17 @@ def k_rapor_api_uyum():
         from app.services.plan_year_service import get_plan_year
 
         plan_year = get_plan_year(tid, year)
+        py_id = plan_year.id if plan_year else None
         vision = compute_vision_score(tid, year=year, persist_pg_scores=False, plan_year=plan_year)
         process_scores  = vision.get("process_scores") or {}
         strategy_scores = vision.get("strategy_scores") or {}
         ss_scores       = vision.get("sub_strategy_scores") or {}
 
-        strategies = Strategy.query.filter_by(tenant_id=tid, is_active=True).order_by(Strategy.code).all()
+        from sqlalchemy import or_
+        strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+        if py_id:
+            strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
+        strategies = strat_q.order_by(Strategy.code).all()
         tree = []
         for s in strategies:
             s_score = strategy_scores.get(s.id, 0.0)
@@ -328,7 +390,18 @@ def k_rapor_api_uyum():
             for ss in (s.sub_strategies or []):
                 if not ss.is_active:
                     continue
-                linked = [p for p in (ss.processes or []) if p.is_active and p.tenant_id == tid]
+                # Süreçleri de plan_year'a göre filtrele + ID dedupe (link tablosunda çift kayıt varsa)
+                _seen_pid = set()
+                linked = []
+                for p in (ss.processes or []):
+                    if not (p.is_active and p.tenant_id == tid):
+                        continue
+                    if py_id is not None and p.plan_year_id is not None and p.plan_year_id != py_id:
+                        continue
+                    if p.id in _seen_pid:
+                        continue
+                    _seen_pid.add(p.id)
+                    linked.append(p)
                 proc_list = []
                 for p in linked:
                     proc_list.append({
@@ -682,6 +755,21 @@ def k_rapor_api_veri_durumu():
 
 # ── Rapor 8: Risk ─────────────────────────────────────────────────────────────
 
+_RISK_STATUS_TR = {
+    "open": "Açık", "mitigated": "Azaltıldı", "closed": "Kapalı",
+    "accepted": "Kabul Edildi", "transferred": "Transfer Edildi",
+}
+_RISK_SOURCE_TR = {
+    "manual": "Manuel", "kpi": "KPI", "process": "Süreç",
+    "strategy": "Strateji", "trigger": "Tetikleyici",
+}
+_SEVERITY_TR = {"high": "Yüksek", "medium": "Orta", "low": "Düşük"}
+_DIMENSION_TR = {
+    "process": "Süreç", "people": "İnsan", "technology": "Teknoloji",
+    "governance": "Yönetişim", "compliance": "Uyum",
+}
+
+
 @app_bp.route("/k-rapor/api/risk")
 @login_required
 def k_rapor_api_risk():
@@ -694,23 +782,25 @@ def k_rapor_api_risk():
             return jsonify({"success": True, "data": {"risk_listesi": [], "darbogaz": [], "olgunluk": []}})
         from app.models.process import Process
 
-        risks = RiskHeatmapItem.query.filter_by(tenant_id=tid).order_by(
+        risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).order_by(
             RiskHeatmapItem.rpn.desc()
         ).limit(50).all()
 
         risk_list = []
         for r in risks:
+            status_raw = (r.status or "").lower()
+            src_raw = (r.source_type or "").lower()
             risk_list.append({
                 "id":          r.id,
                 "title":       r.title,
                 "probability": r.probability,
                 "impact":      r.impact,
                 "rpn":         r.rpn,
-                "status":      r.status or "—",
-                "source_type": r.source_type or "—",
+                "status":      _RISK_STATUS_TR.get(status_raw, r.status or "—"),
+                "source_type": _RISK_SOURCE_TR.get(src_raw, r.source_type or "—"),
             })
 
-        bottlenecks = BottleneckLog.query.filter_by(tenant_id=tid).order_by(
+        bottlenecks = BottleneckLog.query.filter_by(tenant_id=tid, is_active=True).order_by(
             BottleneckLog.triggered_at.desc()
         ).limit(20).all()
         bn_list = []
@@ -718,10 +808,11 @@ def k_rapor_api_risk():
         proc_map = {p.id: p for p in Process.query.filter(Process.id.in_(proc_ids)).all()} if proc_ids else {}
         for b in bottlenecks:
             p = proc_map.get(b.process_id)
+            sev_raw = (b.severity or "").lower()
             bn_list.append({
                 "id":           b.id,
                 "surec":        p.name if p else "—",
-                "severity":     b.severity or "—",
+                "severity":     _SEVERITY_TR.get(sev_raw, b.severity or "—"),
                 "note":         b.note or "",
                 "triggered_at": str(b.triggered_at)[:16] if b.triggered_at else None,
                 "resolved_at":  str(b.resolved_at)[:16] if b.resolved_at else None,
@@ -734,10 +825,11 @@ def k_rapor_api_risk():
         mat_proc_map = {p.id: p for p in Process.query.filter(Process.id.in_(mat_proc_ids)).all()} if mat_proc_ids else {}
         for m in maturity:
             p = mat_proc_map.get(m.process_id)
+            dim_raw = (m.dimension or "").lower()
             mat_list.append({
                 "surec":          p.name if p else "—",
                 "maturity_level": m.maturity_level,
-                "dimension":      m.dimension or "—",
+                "dimension":      _DIMENSION_TR.get(dim_raw, m.dimension or "—"),
             })
 
         return jsonify({
@@ -917,7 +1009,7 @@ def k_rapor_api_uyari():
                 "probability": r.probability,
                 "impact":      r.impact,
                 "rpn":         r.rpn,
-                "status":      r.status or "—",
+                "status":      _RISK_STATUS_TR.get((r.status or "").lower(), r.status or "—"),
             } for r in (
                 RiskHeatmapItem.query
                 .filter(RiskHeatmapItem.tenant_id == tid, RiskHeatmapItem.is_active == True,
@@ -1035,20 +1127,18 @@ def k_rapor_api_k_vektor():
 @login_required
 def k_rapor_api_evm():
     """EVM snapshot — CPI / SPI zaman serisi."""
-    tid = current_user.tenant_id
+    tid  = current_user.tenant_id
+    year = request.args.get("year", type=int)
     try:
         try:
             from app.models.k_radar_domain import EvmSnapshot
         except ImportError:
             return jsonify({"success": True, "data": []})
 
-        snaps = (
-            EvmSnapshot.query
-            .filter_by(tenant_id=tid, is_active=True)
-            .order_by(EvmSnapshot.snapshot_date.desc())
-            .limit(60)
-            .all()
-        )
+        q = EvmSnapshot.query.filter_by(tenant_id=tid, is_active=True)
+        snaps = q.order_by(EvmSnapshot.snapshot_date.desc()).limit(120).all()
+        if year:
+            snaps = [s for s in snaps if s.snapshot_date and s.snapshot_date.year == year]
         # Proje adlarını çek
         proj_ids = {s.project_id for s in snaps if s.project_id}
         proj_names = {}
@@ -1821,6 +1911,7 @@ def k_rapor_api_pg_dagilim():
 def k_rapor_api_faaliyet_matris():
     """Her süreç için faaliyet durumu dağılımı — yatay bar chart."""
     tid  = current_user.tenant_id
+    year = request.args.get("year", type=int)
     try:
         from app.models.process import Process, ProcessActivity
         today = _dt.date.today()
@@ -1830,11 +1921,17 @@ def k_rapor_api_faaliyet_matris():
         if not proc_ids:
             return jsonify({"success": True, "data": []})
 
-        activities = (
+        all_acts = (
             ProcessActivity.query
             .filter(ProcessActivity.process_id.in_(proc_ids), ProcessActivity.is_active == True)
             .all()
         )
+        if year:
+            activities = [a for a in all_acts if
+                          (a.start_date and a.start_date.year == year) or
+                          (a.end_date and a.end_date.year == year)]
+        else:
+            activities = all_acts
 
         # Süreç bazlı grupla
         from collections import defaultdict
@@ -2063,18 +2160,42 @@ def k_rapor_api_strateji_kapsama():
     try:
         from app.models.core import Strategy, SubStrategy
         from app.models.process import Process
+        from sqlalchemy import or_, text as _t
 
-        strategies   = Strategy.query.filter_by(tenant_id=tid, is_active=True).order_by(Strategy.code).all()
-        sub_strats   = SubStrategy.query.join(Strategy).filter(
+        # Verilen yılın plan_year_id'si
+        _py_row = db.session.execute(_t(
+            "SELECT id FROM plan_years WHERE tenant_id=:t AND year=:y LIMIT 1"
+        ), {"t": tid, "y": year}).fetchone()
+        py_id = int(_py_row.id) if _py_row else None
+
+        strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+        if py_id:
+            strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
+        strategies = strat_q.order_by(Strategy.code).all()
+
+        sub_q = SubStrategy.query.join(Strategy).filter(
             Strategy.tenant_id == tid, Strategy.is_active == True, SubStrategy.is_active == True
-        ).all()
-        all_processes = Process.query.filter_by(tenant_id=tid, is_active=True).all()
+        )
+        if py_id:
+            sub_q = sub_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
+        sub_strats = sub_q.all()
 
-        # Alt strateji → bağlı süreç sayısı
+        proc_q = Process.query.filter_by(tenant_id=tid, is_active=True)
+        if py_id:
+            proc_q = proc_q.filter(or_(Process.plan_year_id == py_id, Process.plan_year_id.is_(None)))
+        all_processes = proc_q.all()
+
+        # Alt strateji → bağlı süreç sayısı (plan_year ve dedupe filtreli)
         ss_proc_count = {}
         for ss in sub_strats:
-            linked = [p for p in (ss.processes or []) if p.is_active and p.tenant_id == tid]
-            ss_proc_count[ss.id] = len(linked)
+            seen = set()
+            for p in (ss.processes or []):
+                if not (p.is_active and p.tenant_id == tid):
+                    continue
+                if py_id is not None and p.plan_year_id is not None and p.plan_year_id != py_id:
+                    continue
+                seen.add(p.id)
+            ss_proc_count[ss.id] = len(seen)
 
         # Strateji bazlı özet
         strat_data = []
@@ -2094,12 +2215,15 @@ def k_rapor_api_strateji_kapsama():
                          else ("kismi" if total_procs > 0 else "bos"),
             })
 
-        # Hiçbir alt stratejiye bağlı olmayan süreçler
+        # Hiçbir alt stratejiye bağlı olmayan süreçler (plan_year filtreli)
         linked_proc_ids = set()
         for ss in sub_strats:
             for p in (ss.processes or []):
-                if p.is_active and p.tenant_id == tid:
-                    linked_proc_ids.add(p.id)
+                if not (p.is_active and p.tenant_id == tid):
+                    continue
+                if py_id is not None and p.plan_year_id is not None and p.plan_year_id != py_id:
+                    continue
+                linked_proc_ids.add(p.id)
 
         stratejisiz = [
             {"id": p.id, "code": p.code or "", "name": p.name}
@@ -2132,6 +2256,7 @@ def k_rapor_api_strateji_kapsama():
 def k_rapor_api_sorumlu_analiz():
     """Kişi başına faaliyet yükü, tamamlanma ve gecikme oranları."""
     tid  = current_user.tenant_id
+    year = request.args.get("year", type=int)
     try:
         from app.models.process import Process, ProcessActivity
         from app.models.core import User
@@ -2155,7 +2280,12 @@ def k_rapor_api_sorumlu_analiz():
         act_ids   = {a.activity_id for a in assignees}
         acts_map  = {}
         if act_ids:
-            for act in ProcessActivity.query.filter(ProcessActivity.id.in_(act_ids)).all():
+            all_acts = ProcessActivity.query.filter(ProcessActivity.id.in_(act_ids)).all()
+            if year:
+                all_acts = [a for a in all_acts if
+                            (a.start_date and a.start_date.year == year) or
+                            (a.end_date and a.end_date.year == year)]
+            for act in all_acts:
                 acts_map[act.id] = act
 
         for asgn in assignees:
@@ -2269,59 +2399,108 @@ def k_rapor_api_swot_trend():
 @app_bp.route("/k-rapor/api/bildirim-analiz")
 @login_required
 def k_rapor_api_bildirim_analiz():
-    """Bildirim türü dağılımı, okunma oranı, günlük trend."""
+    """Bildirim türü dağılımı, okunma oranı, günlük trend, yaşlanma, kullanıcı bazlı."""
     tid = current_user.tenant_id
     try:
-        from app.models.core import Notification
-        from sqlalchemy import func
+        from app.models.core import Notification, User
         from collections import Counter
 
         notifs = Notification.query.filter_by(tenant_id=tid).all()
         if not notifs:
             return jsonify({"success": True, "data": {
-                "toplam": 0, "okunma_orani": 0,
+                "toplam": 0, "okunan": 0, "okunmayan": 0, "okunma_orani": 0,
                 "tur_dagilim": [], "gunluk": [], "son_7_gun": 0,
+                "yaslanma": [], "kullanici_top": [],
             }})
 
-        toplam   = len(notifs)
-        okunan   = sum(1 for n in notifs if getattr(n, 'is_read', False))
+        toplam    = len(notifs)
+        okunan    = sum(1 for n in notifs if getattr(n, 'is_read', False))
         okunmayan = toplam - okunan
 
-        # Tür dağılımı
+        # Tür dağılımı — Türkçe etiketler
+        _TUR_TR = {
+            "kpi_alert": "KPI Uyarısı", "task": "Görev", "project": "Proje",
+            "system": "Sistem", "reminder": "Hatırlatıcı", "warning": "Uyarı",
+            "info": "Bilgi", "success": "Başarı", "error": "Hata",
+            "approval": "Onay", "comment": "Yorum", "mention": "Bahsetme",
+        }
         tur_counter = Counter(getattr(n, 'notification_type', None) or getattr(n, 'type', 'genel') for n in notifs)
-        tur_dagilim = [{"tur": k or "genel", "sayi": v} for k, v in tur_counter.most_common(10)]
+        tur_dagilim = [{"tur": _TUR_TR.get(k, k) or "Genel", "tur_raw": k, "sayi": v}
+                       for k, v in tur_counter.most_common(10)]
 
         # Son 30 günlük günlük trend
         today = _dt.date.today()
-        gunluk_map = {}
+        gunluk_map: dict = {}
         son_7 = 0
+        okunmayan_30_gun = 0
         for n in notifs:
             created = getattr(n, 'created_at', None)
             if not created:
                 continue
             d = created.date() if hasattr(created, 'date') else None
-            if d:
-                key = str(d)
-                gunluk_map[key] = gunluk_map.get(key, 0) + 1
-                if (today - d).days <= 7:
-                    son_7 += 1
+            if not d:
+                continue
+            gun_fark = (today - d).days
+            key = str(d)
+            gunluk_map[key] = gunluk_map.get(key, 0) + 1
+            if gun_fark <= 7:
+                son_7 += 1
+            if gun_fark <= 30 and not getattr(n, 'is_read', False):
+                okunmayan_30_gun += 1
 
-        # Son 30 gün
         gunluk = []
         for i in range(29, -1, -1):
             d = today - _dt.timedelta(days=i)
             gunluk.append({"tarih": str(d), "sayi": gunluk_map.get(str(d), 0)})
 
+        # Okunmayan bildirim yaşlanma (bucket'lar)
+        yaslanma_buckets = {"0-3 gün": 0, "4-7 gün": 0, "8-30 gün": 0, "30+ gün": 0}
+        for n in notifs:
+            if getattr(n, 'is_read', False):
+                continue
+            created = getattr(n, 'created_at', None)
+            if not created:
+                continue
+            d = created.date() if hasattr(created, 'date') else None
+            if not d:
+                continue
+            age = (today - d).days
+            if age <= 3:
+                yaslanma_buckets["0-3 gün"] += 1
+            elif age <= 7:
+                yaslanma_buckets["4-7 gün"] += 1
+            elif age <= 30:
+                yaslanma_buckets["8-30 gün"] += 1
+            else:
+                yaslanma_buckets["30+ gün"] += 1
+        yaslanma = [{"aralik": k, "sayi": v} for k, v in yaslanma_buckets.items() if v > 0]
+
+        # Kullanıcı bazlı en çok bildirim alan (top 10)
+        user_counter: Counter = Counter()
+        for n in notifs:
+            uid = getattr(n, 'user_id', None)
+            if uid:
+                user_counter[uid] += 1
+        top_user_ids = [uid for uid, _ in user_counter.most_common(10)]
+        user_map = {u.id: u for u in User.query.filter(User.id.in_(top_user_ids)).all()} if top_user_ids else {}
+        kullanici_top = [{
+            "kullanici": f"{user_map[uid].first_name or ''} {user_map[uid].last_name or ''}".strip() or user_map[uid].email if uid in user_map else f"#{uid}",
+            "sayi": cnt,
+        } for uid, cnt in user_counter.most_common(10)]
+
         return jsonify({
             "success": True,
             "data": {
-                "toplam":        toplam,
-                "okunan":        okunan,
-                "okunmayan":     okunmayan,
-                "okunma_orani":  round(okunan / toplam * 100, 1) if toplam else 0,
-                "tur_dagilim":   tur_dagilim,
-                "gunluk":        gunluk,
-                "son_7_gun":     son_7,
+                "toplam":           toplam,
+                "okunan":           okunan,
+                "okunmayan":        okunmayan,
+                "okunma_orani":     round(okunan / toplam * 100, 1) if toplam else 0,
+                "son_7_gun":        son_7,
+                "okunmayan_30_gun": okunmayan_30_gun,
+                "tur_dagilim":      tur_dagilim,
+                "gunluk":           gunluk,
+                "yaslanma":         yaslanma,
+                "kullanici_top":    kullanici_top,
             },
         })
     except Exception as e:

@@ -9,7 +9,7 @@
 
 ### 0.1 Projenin Bağlamı
 
-Kokpitim, Türkiye pazarına özel çok kiracılı (multi-tenant) bir SaaS uygulamasıdır. Stack: Python 3.11, Flask, SQLite, Docker, GCP VM.
+Kokpitim, Türkiye pazarına özel çok kiracılı (multi-tenant) bir SaaS uygulamasıdır. Stack: Python 3.11, Flask, PostgreSQL (üretim), Docker, Oracle Cloud VM (`docs/ORACLE-PROD-VM.md`).
 
 **Mevcut durum:** `kokpitim.com/login` → doğrudan platform login sayfasına gidiyor. Tanıtım sitesi yok.
 

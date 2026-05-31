@@ -5,7 +5,7 @@ Gecikme olasılığı tahmini ve proje bitiş tarihi tahmini
 """
 from datetime import datetime, date, timedelta
 from flask import current_app
-from models import (
+from app.models.legacy_bridge import (
     db, Project, Task, TaskActivity, ProjectRisk
 )
 from sqlalchemy import func

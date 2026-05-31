@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from models import (
-    db,
-    Project,
+from extensions import db
+from app.models.portfolio_project import Project
+from app.models.legacy_bridge import (
     Process,
     SubStrategy,
     MainStrategy,

@@ -46,6 +46,24 @@
 .kr-panel         { display: none; }
 .kr-panel.active  { display: block; }
 
+/* ── Info Band (tab açıklama şeridi) ─────────────────────────────────────────── */
+.kr-info-band {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-left: 3px solid #0ea5e9;
+  border-radius: 0 8px 8px 0;
+  font-size: 12.5px;
+  color: #0c4a6e;
+  margin-bottom: 16px;
+  line-height: 1.55;
+}
+.kr-info-band i { color: #0ea5e9; flex-shrink: 0; margin-top: 2px; }
+[data-theme="dark"] .kr-info-band { background: #0c1a2e; border-color: #1e3a5f; color: #93c5fd; }
+
 /* ── Loading ─────────────────────────────────────────────────────────────────── */
 .kr-loading {
   color: var(--text-muted, #94a3b8);
@@ -185,7 +203,7 @@
 
 /* ── Geniş sayfa sarmalayıcı ─────────────────────────────────────────────────── */
 .mc-page-content-wide {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 

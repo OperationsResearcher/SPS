@@ -39,14 +39,14 @@ def _safe_json(callable_fn):
 @app_bp.route("/k-radar")
 @login_required
 def k_radar_hub():
-    # K-Radar hub artık K-Analiz olarak adlandırıldı; içeriği KS-Radar sayfasıdır.
-    return redirect(url_for("app_bp.k_radar_ks"))
+    """K-Radar birleşik hub — Eski K-Rapor sekmeleri + raporlar bir arada."""
+    return render_template("platform/k_radar/hub.html")
 
 
 @app_bp.route("/k-analiz")
 @login_required
 def k_analiz_hub():
-    """K-Analiz — eski K-Radar hub'ının yeni adı. KS-Radar'a yönlendirir."""
+    """K-Analiz alt sayfası — KS-Radar'a yönlendirir (K-Radar hub'undan da erişilebilir)."""
     return redirect(url_for("app_bp.k_radar_ks"))
 
 

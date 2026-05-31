@@ -1,6 +1,6 @@
 # KOKPİTİM — Claude için Master Proje Özeti
 > Bu dosya Claude Projects'e yüklenir. Her oturumda bağlam bu dosyadan kurulur.
-> Son güncelleme: 2026-03-23 | Proje versiyonu: TASK-034
+> Son güncelleme: 2026-05-19 | Proje versiyonu: TASK-105
 
 ---
 
@@ -25,17 +25,17 @@
 | Migration | Flask-Migrate / Alembic |
 | Auth | Flask-Login (`session_protection = 'strong'`) |
 | CSRF | Flask-WTF CSRFProtect |
-| Güvenlik | Flask-Talisman (⚠️ `init_app` çağrısı eksik — pasif!) |
-| Rate Limit | Flask-Limiter (⚠️ TAMAMEN DEVRE DIŞI — FakeLimiter mock) |
+| Güvenlik | Flask-Talisman (`FLASK_ENV=production` → CSP aktif) |
+| Rate Limit | Flask-Limiter (login limit; prod’da `REDIS_URL` önerilir) |
 | Cache | Flask-Caching (SimpleCache, Redis opsiyonel) |
 | WebSocket | Flask-SocketIO 5.3.5 + eventlet |
 | Serialization | marshmallow 3.20.1 |
 | Excel | openpyxl, pandas |
 | JWT | PyJWT 2.8.0 |
 | Hata Takip | Sentry SDK |
-| Frontend CSS | Tailwind CSS (CDN — ⚠️ build yok) + özel CSS token sistemi |
+| Frontend CSS | Tailwind CSS (CDN — bilinçli; prod uyarısı zararsız) + `ui/static/platform/css` |
 | Frontend JS | Alpine.js, Chart.js 4.4.0, SweetAlert2 11 |
-| Veritabanı | SQLite → `instance/kokpitim.db` |
+| Veritabanı | PostgreSQL (`SQLALCHEMY_DATABASE_URI` zorunlu) |
 | API Docs | flask-swagger-ui (`/micro/api/docs`) |
 
 **Kritik bağımlılık notu:** `requirements.txt`'te paket versiyonları sabitlenmemiş — deployment kırılma riski.
@@ -53,7 +53,7 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 
 | Blueprint | Prefix | Durum |
 |-----------|--------|-------|
-| `micro_bp` | `/micro` | ✅ AKTİF PLATFORM |
+| `app_bp` (platform) | `/` (kök) | ✅ AKTİF PLATFORM (`ui/`) |
 | `auth_bp` | `/auth` | Legacy (kök) |
 | `main_bp` | `/` | Legacy (kök) |
 | `api_bp` | — | Legacy (kök) |
@@ -77,9 +77,9 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 | shared/ayarlar | 4 | E-posta ayarları |
 | shared/bildirim | 4 | Bildirim yönetimi |
 | analiz | 7 | Analiz modülü |
-| hgs | 2 | ⚠️ KRİTİK: Login bypass riski var |
-| masaustu | 1 | İskelet |
-| proje | 1 | İskelet |
+| hgs | 2 | Gizli `/MfG_hgs`; prod’da `HGS_BYPASS_ENABLED=false` zorunlu |
+| masaustu | 6+ | Komuta merkezi, takvim, widget |
+| proje | 20+ | Portföy CRUD, görevler |
 
 **Toplam micro route: ~113**
 
@@ -91,16 +91,18 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 
 ---
 
-## 4. KRİTİK GÜVENLİK SORUNLARI (Acil)
+## 4. GÜVENLİK DURUMU (2026-05)
 
-| # | Sorun | Risk | Çözüm |
-|---|-------|------|-------|
-| S1 | Rate Limiter devre dışı (FakeLimiter) | Brute force, DDoS | `extensions.py`'de gerçek Flask-Limiter aktif et |
-| S2 | Hardcoded `SECRET_KEY` fallback | Session hijack | `config.py` ve `app/__init__.py` satır 32 temizle |
-| S3 | `SESSION_COOKIE_SECURE` yok | HTTP'de cookie sızıntısı | `config.py`'ye ekle |
-| S4 | Talisman `init_app` yok | CSP koruma pasif | `app/__init__.py`'de `talisman.init_app(app)` ekle |
-| S5 | HGS login bypass | Kimlik doğrulamasız giriş | Production'da feature flag ile kapat |
-| S6 | Scriptlerde hardcoded DB URL/şifre | Credential sızıntısı | `verify_count.py`, `transfer_data.py` temizle |
+| # | Konu | Durum |
+|---|------|--------|
+| S1 | Rate limiter | ✅ Aktif; login limit; prod Redis önerilir |
+| S2 | SECRET_KEY | ✅ Ortam değişkeni zorunlu |
+| S3 | Session cookie secure | ✅ `config.py` |
+| S4 | Talisman CSP | ✅ Production’da aktif |
+| S5 | HGS bypass | ✅ `ProductionConfig.HGS_BYPASS_ENABLED = False` |
+| S6 | Script credential | ⚠️ ARCHIVE/script’leri commit dışı tut |
+
+Detay: `docs/KURALLAR-MASTER.md` §7, `docs/DEPLOY_SMOKE_CHECKLIST.md`
 
 ---
 
@@ -115,7 +117,8 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 - N+1 sorgu riski — `karne_data()`, `hgs/routes.py`, `admin/routes.py`
 - `process.py` 1397 satır — parçalanmalı
 - Multi-tenant izolasyon manuel
-- Tailwind CDN → yerel build gerekiyor
+- Tailwind CDN → bilinçli (yerel build isteğe bağlı)
+- Legacy route birleştirme → `docs/LEGACY_ROUTE_INVENTORY.md`
 
 ### 5.3 Düşük Öncelik
 - `app/extensions.py` dead file — silinmeli
@@ -195,58 +198,49 @@ app.py → create_app() → config.py → extensions init → blueprints registe
 
 ---
 
-## 12. GOOGLE CLOUD DEPLOY BİLGİLERİ
+## 12. ÜRETİM SUNUCUSU (VM = ORACLE CLOUD)
 
-### GCP Hesap & Proje
-- **Hesap:** mfgulen4660@gmail.com
-- **Proje ID:** project-ab214714-b5d6-43db-b33
+> **Terim (2026-05-21):** Doküman ve sohbette **«VM»** = Oracle üretim. Tek referans: `docs/ORACLE-PROD-VM.md`
 
-### VM Bilgileri
-- **Instance adı:** sps-server-v2
-- **Zone:** europe-west3-c
-- **Makine tipi:** e2-medium
-- **External IP:** 34.89.231.89
-- **Durum:** RUNNING
+### Oracle VM (canlı — www.kokpitim.com)
+| | |
+|-|-|
+| Instance | `kokpitim-v2` |
+| IP | `129.159.30.175` |
+| SSH | `ubuntu@129.159.30.175` (anahtar: yerel `.ssh` / `C:\crt\...`) |
+| Uygulama dizini | `/opt/kokpitim/app` |
+| Container | `kokpitim-web` (`kokpitim_web:latest`, `--network host`) |
+| `.env` | `/opt/kokpitim/.env` |
+| `instance/` | `/opt/kokpitim/instance` |
+| Canlı DB | PostgreSQL `kokpitim_db` (yalnızca `127.0.0.1:5432`) |
 
-### Bağlantı Komutu
-```bash
-gcloud compute ssh sps-server-v2 --zone=europe-west3-c
+### Bağlantı
+```powershell
+ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 ```
 
-### Uygulama Yapısı
-- Uygulama **Docker container** içinde çalışıyor
-- Container adı: **sps-web**
-- Image: sps_web_final:latest
-- Port: 80 → 5000
-- Dockerfile: `/home/kokpitim.com/public_html/Dockerfile`
-- Python versiyonu: 3.11-slim
-
-### Aktif Veritabanı
-- **Container içi yol:** `/app/instance/kokpitim.db`
-- **VM üzerindeki yol:** `/home/kokpitim.com/public_html/instance/kokpitim.db`
-- **SQLAlchemy URI:** `sqlite:////app/instance/kokpitim.db`
-- ⚠️ VM'deki diğer .db dosyaları BOŞ (0 byte) — karıştırma!
-
-### Faydalı Komutlar
+### Faydalı komutlar (Oracle VM)
 ```bash
-# Container içine gir
-sudo docker exec -it sps-web bash
+# Container
+docker logs kokpitim-web --tail=50
+docker exec -it kokpitim-web bash
 
-# DB'ye Python ile bağlan
-sudo docker exec sps-web python3 -c "import sqlite3; ..."
+# PostgreSQL yedek (VM'de)
+sudo -u postgres pg_dump -Fc kokpitim_db -f /opt/kokpitim/backups/manual_$(date +%Y%m%d).dump
 
-# Docker loglarına bak
-sudo docker logs sps-web --tail=50
+# Satır sayısı
+sudo -u postgres psql -d kokpitim_db -At -c "SELECT count(*) FROM tenants;"
 
-# DB yedeği al (VM'de)
-sudo docker cp sps-web:/app/instance/kokpitim.db /tmp/yedek_$(date +%Y%m%d).db
-
-# Yedeği yerel bilgisayara indir (local terminalde)
-gcloud compute scp sps-server-v2:/tmp/yedek_*.db ./ --zone=europe-west3-c
-
-# Yereldeki DB'yi sunucuya gönder (local terminalde)
-gcloud compute scp C:\kokpitim\instance\kokpitim.db sps-server-v2:/tmp/kokpitim_new.db --zone=europe-west3-c
+# Güvenli deploy
+cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
 ```
+
+Yerelden deploy paketi: `scripts/ops/oracle/oracle_deploy.ps1` — `docs/ORACLE_DEPLOY_ADIMLAR.md`
+
+### GCP (eski ortam — arşiv)
+- Instance `sps-server-v2` (Frankfurt) — **üretim değil**; geçiş öncesi yedekler `backups/oracle_migration/`
+- Eski yol: `/home/kokpitim.com/public_html`, container `sps-web`
+- Tarihsel `gcloud` komutları: `docs/gcp2oraclegecisplani.md` (Faz 0)
 
 ---
 
@@ -286,12 +280,13 @@ gcloud compute scp C:\kokpitim\instance\kokpitim.db sps-server-v2:/tmp/kokpitim_
 ## 15. DEPLOY KONTROL LİSTESİ
 
 > **Güncel tam yordam (yerel → GitHub → VM):** `docs/YERELDEN_VM_YAYIN.md`  
-> **VM → yerel senkron / dump:** `docs/VM_DEN_YERELE.md`
+> **VM → yerel senkron / dump:** `docs/VM_DEN_YERELE.md`  
+> **VM terimi:** Oracle Cloud — `docs/ORACLE-PROD-VM.md`
 
 ### Her Deploy Öncesi
 1. **DB yedeği al** — deploy öncesi mutlaka
 2. **DB git'e dahil değil** — `.gitignore`'da, git push DB'yi taşımaz
-3. **DB değişikliği varsa** — yereldeki `instance/kokpitim.db`'yi `gcloud compute scp` ile sunucuya gönder
+3. **Şema değişikliği** — Alembic; canlı veri **PostgreSQL** (Oracle VM). Yerel SQLite sunucuya kopyalanmaz.
 4. **Siteyi test et** — login, veriler, sayfalar kontrol edilmeli
 
 ### Standart Deploy Komutları
@@ -303,14 +298,14 @@ git commit -m "açıklama"
 git push origin main
 ```
 
-**Sunucuda (VM — tek komut):**
+**Oracle VM (tercih — tek komut):**
 ```bash
-cd /home/kokpitim.com/public_html && sudo git pull origin main && sudo docker build -t sps_web_final:latest . && sudo docker stop sps-web && sudo docker rm sps-web && sudo docker run -d --name sps-web -p 80:5000 -v /home/kokpitim.com/public_html/instance:/app/instance sps_web_final:latest
+cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
 ```
 
-**Log Kontrolü (VM):**
+**Log kontrolü (VM):**
 ```bash
-sudo docker logs sps-web 2>&1 | grep "No module\|OperationalError\|Listening" | head -5
+docker logs kokpitim-web 2>&1 | grep "No module\|OperationalError\|Listening" | head -5
 ```
 
 ### ⚠️ Kritik Uyarılar

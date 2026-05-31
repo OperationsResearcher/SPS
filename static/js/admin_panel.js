@@ -39,10 +39,8 @@ function viewOrganization(orgAd) {
     fetch(`/admin/get-organization/${orgAd}`)
         .then(response => response.json())
         .then(data => {
-            console.log('Kurum verisi:', data); // Debug log
             if (data.success) {
                 const org = data.organization;
-                console.log('Organization object:', org); // Debug log
                 document.getElementById('viewOrgLogo').src = org.logo_url || '/static/images/default-org-logo.png';
                 document.getElementById('viewOrgKisaAd').textContent = org.kisa_ad || '-';
                 document.getElementById('viewOrgTicariUnvan').textContent = org.ticari_unvan || '-';
@@ -1695,12 +1693,12 @@ function viewProcess(processId) {
 }
 // Süreç düzenle
 function editProcess(processId) {
-    console.log('Süreç düzenleme baþladı, ID:', processId);
+
     // Süreç bilgilerini al
     fetch(`/admin/get-process/${processId}`)
         .then(response => response.json())
         .then(data => {
-            console.log('Süreç verileri yüklendi:', data);
+
             if (data.success) {
                 const surec = data.surec;
                 document.getElementById('editProcessId').value = surec.id;
@@ -1735,18 +1733,18 @@ function editProcess(processId) {
 function loadDüzenleProcessLiderler(surec) {
     const target = document.getElementById('edit_lider_ids');
     target.innerHTML = '';
-    console.log('Lider yükleme iþlemi baþladı:', surec.liderler);
+
     if (surec.liderler && surec.liderler.length > 0) {
-        console.log('Lider sayısı:', surec.liderler.length);
+
         surec.liderler.forEach((lider, index) => {
-            console.log(`Lider ${index + 1}:`, lider);
+
             const option = new Option(lider.username, lider.id);
             target.add(option);
         });
     } else {
-        console.log('Lider bulunamadı');
+
     }
-    console.log('Lider yükleme tamamlandı');
+
 }
 /**
  * Lider ekleme fonksiyonu
@@ -1755,8 +1753,8 @@ function addDüzenleLiderler() {
     const source = document.getElementById('edit_lider_source');
     const target = document.getElementById('edit_lider_ids');
     const selected = Array.from(source.selectedOptions);
-    console.log('Lider ekleme iþlemi baþladı');
-    console.log('Seçilen liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
     if (selected.length === 0) {
         showToast('warning', 'Lütfen önce sol taraftan lider seçin!', 'Uyarı');
         return;
@@ -1768,9 +1766,9 @@ function addDüzenleLiderler() {
             const newOpt = new Option(opt.text, opt.value);
             target.add(newOpt);
             addedCount++;
-            console.log(`Lider eklendi: ${opt.text}`);
+
         } else {
-            console.log(`Lider zaten mevcut: ${opt.text}`);
+
         }
     });
     if (addedCount > 0) {
@@ -1778,7 +1776,7 @@ function addDüzenleLiderler() {
     } else {
         showToast('warning', 'Seçilen liderler zaten mevcut!', 'Uyarı');
     }
-    console.log('Lider ekleme tamamlandı');
+
 }
 /**
  * Lider çıkarma fonksiyonu
@@ -1786,8 +1784,8 @@ function addDüzenleLiderler() {
 function removeDüzenleLiderler() {
     const target = document.getElementById('edit_lider_ids');
     const selected = Array.from(target.selectedOptions);
-    console.log('Lider çıkarma iþlemi baþladı');
-    console.log('Çıkarılacak liderler:', selected.map(opt => ({value: opt.value, text: opt.text})));
+
+
     if (selected.length === 0) {
         showToast('warning', 'Lütfen önce saÝ taraftan çıkarılacak lideri seçin!', 'Uyarı');
         return;
@@ -1795,18 +1793,18 @@ function removeDüzenleLiderler() {
     const removedCount = selected.length;
     selected.forEach(opt => {
         opt.remove();
-        console.log(`Lider çıkarıldı: ${opt.text}`);
+
     });
     showToast('info', `${removedCount} lider çıkarıldı!`, 'Bilgi');
-    console.log('Lider çıkarma tamamlandı');
+
 }
 // Süreç güncelle
 function updateProcess(evt) {
     const processId = document.getElementById('editProcessId').value;
     // Çoklu lider seçimi için lider ID'lerini topla
     const liderIds = Array.from(document.getElementById('edit_lider_ids').options).map(opt => opt.value);
-    console.log('Güncelleme iþlemi baþladı');
-    console.log('Seçilen liderler:', liderIds);
+
+
     const formData = {
         ad: document.getElementById('editProcessAd').value.trim(),
         lider_ids: liderIds, // Çoklu lider seçimi
@@ -2560,7 +2558,7 @@ function createToastContainer() {
 })();
 // Sayfa yüklendiÝinde kontrol ve baþlatma
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Admin Panel yükleniyor...');
+
     const userSearch = document.getElementById('user-search-input');
     if (userSearch) {
         userSearch.addEventListener('input', filterUserList);
@@ -2574,7 +2572,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
         return;
     }
-    console.log('Bootstrap yüklü:', bootstrap);
+
     // Modal elementlerini kontrol et
     const modals = {
         'newOrgModal': 'Kurum Ekle',
@@ -2586,7 +2584,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!modalEl) {
             console.error(`${modalAd} modal'ı bulunamadı! (${modalId})`);
         } else {
-            console.log(`${modalAd} modal'ı bulundu:`, modalEl);
+
         }
     }
     // Butonları kontrol et
@@ -2600,7 +2598,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof window[funcAd] !== 'function') {
             console.error(`${buttonAd} fonksiyonu bulunamadı! (${funcAd})`);
         } else {
-            console.log(`${buttonAd} fonksiyonu mevcut:`, window[funcAd]);
+
         }
     }
     // Yeni Süreç Modalı açıldıÝında
@@ -2620,7 +2618,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Gelecekte ihtiyaç olursa buraya eklenebilir
         });
     }
-    console.log('Admin Panel yükleme tamamlandı.');
+
 });
 // ============ ROL MATRÝSÝ FONKSÝYONLARI ============
 function loadRolMatrisi() {
@@ -2635,20 +2633,20 @@ function loadRolMatrisi() {
     loading.style.display = 'block';
     content.style.display = 'none';
     error.style.display = 'none';
-    console.log('Rol matrisi yükleniyor...');
+
     fetch('/api/rol-matrisi')
         .then(r => {
-            console.log('API yanıtı:', r.status, r.statusText);
+
             if (!r.ok) {
                 throw new Error(`HTTP ${r.status}: ${r.statusText}`);
             }
             return r.json();
         })
         .then(data => {
-            console.log('Rol matrisi verisi:', data);
-            console.log('Kullanıcı sayısı:', data.kullanicilar ? data.kullanicilar.length : 0);
-            console.log('Yetki kategorisi sayısı:', data.yetki_kategorileri ? data.yetki_kategorileri.length : 0);
-            console.log('Yetki sayısı:', data.yetkiler ? data.yetkiler.length : 0);
+
+
+
+
             if (data.success === true && data.kullanicilar && data.yetki_kategorileri) {
                 try {
                     renderRolMatrisi(data);
@@ -2680,9 +2678,9 @@ function renderRolMatrisi(data) {
     const kullanicilar = data.kullanicilar || [];
     const yetkiKategorileri = data.yetki_kategorileri || [];
     const yetkiler = data.yetkiler || [];
-    console.log('Render - Kullanıcı sayısı:', kullanicilar.length);
-    console.log('Render - Yetki kategorisi sayısı:', yetkiKategorileri.length);
-    console.log('Render - Ýlk kullanıcı:', kullanicilar[0]);
+
+
+
     if (!kullanicilar || kullanicilar.length === 0) {
         content.innerHTML = '<div class="alert alert-info">Henüz kullanıcı bulunmamaktadır.</div>';
         return;

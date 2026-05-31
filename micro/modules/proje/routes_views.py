@@ -7,7 +7,7 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from platform_core import app_bp
-from models import Project, Task
+from app.models.portfolio_project import Project, Task
 from app_platform.modules.proje.helpers import kanban_task_buckets
 from app_platform.modules.proje.permissions import user_can_access_project
 

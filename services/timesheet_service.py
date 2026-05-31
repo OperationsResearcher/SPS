@@ -5,7 +5,7 @@ Timesheet ve time entry yönetimi
 """
 from datetime import datetime, timedelta
 from flask import current_app
-from models import db, TimeEntry, Task
+from app.models.legacy_bridge import db, TimeEntry, Task
 
 
 def start_time_entry(task_id, user_id, description=None):
@@ -158,7 +158,7 @@ def get_project_timesheet(project_id, start_date, end_date):
         list: Time entry listesi
     """
     try:
-        from models import Task
+        from app.models.legacy_bridge import Task
         task_ids = [t.id for t in Task.query.filter_by(project_id=project_id).all()]
         
         if not task_ids:

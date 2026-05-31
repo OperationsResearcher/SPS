@@ -152,3 +152,47 @@ def sp_api_milestone_create(iid):
     db.session.add(ms)
     db.session.commit()
     return jsonify({"success": True, "item": ms.to_dict()}), 201
+
+
+# ── Stratejik Girişim ↔ Proje bağlantısı ──────────────────────────────────
+@app_bp.route("/sp/api/initiatives/<int:iid>/projects", methods=["GET"])
+@login_required
+def sp_api_initiative_projects(iid):
+    """Bir stratejik girişimin altındaki projeleri döner."""
+    from app.models.portfolio_project import Project
+    tid = current_user.tenant_id
+    rows = (Project.query
+            .filter_by(initiative_id=iid, tenant_id=tid)
+            .filter(Project.is_archived.is_(False))
+            .order_by(Project.name).all())
+    return jsonify({"success": True, "items": [{
+        "id": p.id,
+        "name": p.name,
+        "manager_id": p.manager_id,
+        "manager_name": ((p.manager.first_name or '') + ' ' + (p.manager.last_name or '')).strip() if p.manager else '',
+        "health_score": p.health_score,
+        "health_status": p.health_status,
+        "priority": p.priority,
+        "start_date": p.start_date.isoformat() if p.start_date else None,
+        "end_date": p.end_date.isoformat() if p.end_date else None,
+    } for p in rows]})
+
+
+@app_bp.route("/sp/api/projects/<int:pid>/initiative", methods=["POST"])
+@csrf.exempt
+@login_required
+def sp_api_project_set_initiative(pid):
+    """Bir projeyi bir stratejik girişime bağlar (veya bağı keser: initiative_id=null)."""
+    from app.models.portfolio_project import Project
+    from app.models.initiative import Initiative
+    tid = current_user.tenant_id
+    p = Project.query.filter_by(id=pid, tenant_id=tid).first_or_404()
+    data = request.get_json(silent=True) or {}
+    new_iid = data.get("initiative_id")
+    if new_iid is not None:
+        try: new_iid = int(new_iid)
+        except (TypeError, ValueError): return jsonify({"success": False, "message": "Geçersiz initiative_id"}), 400
+        Initiative.query.filter_by(id=new_iid, tenant_id=tid).first_or_404()
+    p.initiative_id = new_iid
+    db.session.commit()
+    return jsonify({"success": True, "project_id": p.id, "initiative_id": new_iid})

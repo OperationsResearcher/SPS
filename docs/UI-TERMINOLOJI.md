@@ -50,7 +50,23 @@ Bu belge **Kokpitim arayüzünde kullanılacak Türkçe terimleri** sözlük ola
 | `plan_year` | **Plan Yılı / Dönem** |
 | `strategy` | **Strateji / Ana Strateji** |
 | `sub_strategy` | **Alt Strateji** |
-| `initiative` | **Girişim / Initiative** (her ikisi de kabul, tutarlı kullan) |
+| `initiative` | **Girişim** |
+| `exec dashboard` | **Yönetici Paneli** |
+| `quarterly review` | **Çeyreklik Değerlendirme** |
+| `replan trigger` | **Yeniden Planlama Tetikleyicileri** |
+| `blue ocean` | **Mavi Okyanus** |
+| `x-matrix` | **X-Matrisi** (Hoshin X-Matrisi) |
+| `AI` / `artificial intelligence` | **Yapay Zeka** |
+| `trigger` | **Tetikleyici** |
+| `review` (çeyreklik/aylık) | **Değerlendirme** |
+| `cadence` | **Ritm / Tempo** |
+| `check-in` | **Takip / Kontrol** |
+| `what-if` | **Senaryo Varyasyonu** (bağlama göre) |
+| `baseline` (senaryo) | **Temel Senaryo** |
+| `canvas` (strategy) | **Tuval** (Strateji Tuvali, Değer Tuvali) |
+| `value curve` | **Değer Eğrisi** |
+| `ERRC grid` | **ERRC Tablosu** |
+| Plan yılı durumu: `active/closed/draft/archived` | **aktif / kapalı / taslak / arşiv** |
 | `milestone` | **Kilometre Taşı** |
 | `scenario` | **Senaryo** |
 | `okr` / `objective` | **Hedef / Objective** (akademik konu — OKR bilinçli kalır) |

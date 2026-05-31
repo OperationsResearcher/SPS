@@ -2,7 +2,7 @@
 """Basit kural motoru (tetikleyici/koşul/aksiyon)."""
 import json
 from typing import Dict, Any, List
-from models import RuleDefinition
+from app.models.legacy_bridge import RuleDefinition
 from extensions import db
 
 

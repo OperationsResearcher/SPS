@@ -14,6 +14,18 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}?v={{ config.get('VERSION', '1') }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {%- set _crumbs = [] -%}
+    {%- set _ = _crumbs.append({'label': 'Süreç Yönetimi', 'url': url_for('app_bp.surec')}) -%}
+    {%- if parent_process -%}
+        {%- set _plbl = ((parent_process.code ~ ' — ') if parent_process.code else '') ~ parent_process.name -%}
+        {%- set _ = _crumbs.append({'label': _plbl, 'url': url_for('app_bp.surec_karne', process_id=parent_process.id)}) -%}
+    {%- endif -%}
+    {%- set _clbl = ((process.code ~ ' — ') if process.code else '') ~ process.name -%}
+    {%- set _ = _crumbs.append({'label': _clbl, 'url': None}) -%}
+    {{ mc_breadcrumb(_crumbs) }}
+{% endblock %}
+
 {% block content %}
 {% set kpi_api_placeholder_id = 900000001 %}
 {% set kpi_data_row_placeholder_id = 800000001 %}
@@ -45,7 +57,7 @@
      data-can-enter-pgv="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
      data-can-crud-activity="{{ 'true' if page_flags.can_crud_pg else 'false' }}"
      data-can-track-activity="{{ 'true' if page_flags.can_enter_pgv else 'false' }}"
-     data-favorite-toggle-url="{{ url_for('process_bp.favorite_kpi_toggle') }}"
+     data-favorite-toggle-url="{{ url_for('app_bp.surec_api_favorite_kpi_toggle') }}"
      data-bireysel-ensure-pg-url="{{ url_for('app_bp.bireysel_api_pg_ensure_from_process_kpi') }}"
      data-bireysel-veri-add-url="{{ url_for('app_bp.bireysel_api_veri_add') }}"
      data-kpi-data-detail-url="{{ url_for('app_bp.surec_api_kpi_data_detail') }}"

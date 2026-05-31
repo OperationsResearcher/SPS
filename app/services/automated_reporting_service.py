@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from app.services.report_service import ReportService
 from app.services.recommendation_service import RecommendationService
 from app.models.core import User
-from app.extensions import db
+from extensions import db
 import logging
 
 logger = logging.getLogger(__name__)

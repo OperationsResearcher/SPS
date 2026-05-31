@@ -5,7 +5,7 @@ from . import v2_bp
 
 from datetime import date
 from utils.task_status import COMPLETED_STATUSES
-from models import Task, Project, Surec, AnaStrateji, AltStrateji, SurecPerformansGostergesi
+from app.models.legacy_bridge import Task, Project, Surec, AnaStrateji, AltStrateji, SurecPerformansGostergesi
 
 @v2_bp.route('/masam')
 @login_required # Giriş yapmış kullanıcılar görebilsin

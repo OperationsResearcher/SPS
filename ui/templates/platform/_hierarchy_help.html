@@ -1,0 +1,82 @@
+{# Paylaşılabilir bileşen: Hiyerarşi Rehberi popup'ı + tetikleyici buton.
+   Kullanım:
+     {% include "platform/_hierarchy_help.html" %}
+     <button type="button" class="mc-hier-help-btn">…</button>  (sayfaya istediğin yere koy)
+
+   Buton class'ı `mc-hier-help-btn` olan herhangi bir öge tıklayınca modal açılır.
+#}
+<div id="mc-hier-help-modal" class="mc-modal-overlay" style="display:none;">
+  <div class="mc-modal mc-modal-lg" role="dialog" aria-modal="true">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title">
+        <i class="fas fa-sitemap" style="color:#6366f1;"></i>
+        <span>Strateji Hiyerarşisi — Hangi Katmanda Neyi Yapıyoruz?</span>
+      </div>
+      <button class="mc-modal-close" type="button" id="mc-hier-help-close" aria-label="Kapat">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="mc-modal-body" style="padding:18px;">
+      <p style="font-size:13px; color:#475569; line-height:1.6; margin:0 0 14px;">
+        Strateji 6 katmanlı bir piramittir. Her katmanın <b>amacı, süresi ve sorumlusu</b> farklıdır. Karışıklıkları önler.
+      </p>
+
+      <div style="display:grid; gap:8px;">
+        {% set levels = [
+          {'i':'fa-eye','c':'#0f172a','bg':'#f8fafc','t':'Vizyon','q':'Nereye gidiyoruz?',
+           'd':'Kurum yönü, süresiz. Nadiren değişir. Tüm kararların referansı.','ex':'"2030''da Avrupa''da pazar lideri olmak"'},
+          {'i':'fa-bullseye','c':'#4f46e5','bg':'#eef2ff','t':'Ana Strateji','q':'Hangi yönlerden gideceğiz?',
+           'd':'5-10 yıllık yön kararı, 4-8 adet. Bitiş tarihi YOK, bütçe YOK.','ex':'"Pazar Liderliği ve Büyüme", "Operasyonel Mükemmellik"'},
+          {'i':'fa-bullseye','c':'#8b5cf6','bg':'#f5f3ff','t':'Alt Strateji','q':'Ana stratejiyi nasıl somutlaştırırız?',
+           'd':'3-5 yıl, ana başlığın detaylı kırılımı.','ex':'"Avrupa''da büyüme", "Süreçleri yalınlaştırma"'},
+          {'i':'fa-rocket','c':'#ef4444','bg':'#fef2f2','t':'Stratejik Girişim','q':'Bu dönem hangi atılımı yapacağız?',
+           'd':'<b>1-3 yıl · BÜTÇELİ · sponsorlu</b>. Hoshin Kanri''nin "breakthrough" hamlesi.','ex':'"Almanya pazarına giriş", "ERP geçişi"'},
+          {'i':'fa-folder-open','c':'#6366f1','bg':'#eef2ff','t':'Proje','q':'Somut çıktıyla bitecek iş?',
+           'd':'3-18 ay, PMO yönetir. Belirli kapsam-bütçe-takvim ile başlar ve biter. Bir stratejik girişimin altında olur.','ex':'"Münih ofis kuruluşu", "SAP modül 1 implementasyonu"'},
+          {'i':'fa-list-check','c':'#10b981','bg':'#ecfdf5','t':'Görev','q':'Günlük yapılacak iş?',
+           'd':'Saatler veya günler süren çalışan-bazlı tek aktivite. Atanır, tamamlanır.','ex':'"Münih ofis kira sözleşmesi imzala"'},
+        ] %}
+        {% for l in levels %}
+        <div style="display:grid; grid-template-columns:48px 1fr; gap:12px; align-items:start; padding:12px 14px; background:{{ l.bg }}; border:1px solid #e2e8f0; border-left:4px solid {{ l.c }}; border-radius:8px;">
+          <div style="width:48px; height:48px; border-radius:10px; background:{{ l.c }}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;">
+            <i class="fas {{ l.i }}"></i>
+          </div>
+          <div>
+            <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:3px;">
+              <span style="font-size:15px; font-weight:700; color:#0f172a;">{{ l.t }}</span>
+              <span style="font-size:12px; color:#64748b; font-style:italic;">"{{ l.q }}"</span>
+            </div>
+            <div style="font-size:12.5px; color:#475569; line-height:1.55; margin-bottom:3px;">{{ l.d|safe }}</div>
+            <div style="font-size:11.5px; color:#94a3b8;"><b style="color:#64748b;">Örnek:</b> {{ l.ex }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-top:18px; padding:14px 16px; background:#fef3c7; border-left:4px solid #f59e0b; border-radius:6px;">
+        <div style="font-size:13px; color:#92400e; line-height:1.6;">
+          <b>Stratejik Girişim ≠ Proje:</b> Girişim "Almanya'ya gireceğiz" (3 yıllık hamle).
+          Proje "Münih ofisi kuracağız" (6 aylık somut iş). Bir girişimin altında <b>1 veya daha fazla proje</b> olabilir.
+        </div>
+      </div>
+    </div>
+    <div class="mc-modal-footer">
+      <button type="button" class="mc-btn mc-btn-primary" id="mc-hier-help-ok">Anladım</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const modal = document.getElementById('mc-hier-help-modal');
+  if (!modal) return;
+  function open(){ modal.style.display = 'flex'; }
+  function close(){ modal.style.display = 'none'; }
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.mc-hier-help-btn')) { e.preventDefault(); open(); }
+  });
+  document.getElementById('mc-hier-help-close')?.addEventListener('click', close);
+  document.getElementById('mc-hier-help-ok')?.addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+})();
+</script>

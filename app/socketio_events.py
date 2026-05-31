@@ -163,3 +163,35 @@ def broadcast_to_process(process_id, event, data):
 def send_to_user(user_id, event, data):
     """Belirli kullanıcıya gönder"""
     socketio.emit(event, data, room=f'user_{user_id}')
+
+
+# ── KPI Veri Girişi — Canlı Masaüstü Güncellemesi ────────────────────────────
+
+@socketio.on("kpi_data_entered")
+def handle_kpi_data_entered(data):
+    """
+    KPI veri girildiğinde tetiklenir.
+    data: {"tenant_id": int, "process_id": int, "kpi_id": int}
+    Aynı tenant'taki yöneticilerin masaüstü morning-summary widget'ını günceller.
+    """
+    if not current_user.is_authenticated:
+        return
+    tenant_id = data.get("tenant_id") or current_user.tenant_id
+    socketio.emit(
+        "morning_summary_refresh",
+        {"reason": "kpi_data_entered", "process_id": data.get("process_id")},
+        room=f"tenant_{tenant_id}",
+    )
+
+
+def notify_kpi_update(tenant_id: int, process_id: int, kpi_id: int) -> None:
+    """
+    Backend'den doğrudan çağrılabilir — KPI kaydından sonra tenant'a bildirim gönderir.
+    Kullanım: routes_kpi_data.py içindeki kayıt endpoint'lerinden çağır.
+    """
+    from app.extensions import socketio as _sio
+    _sio.emit(
+        "morning_summary_refresh",
+        {"reason": "kpi_data_updated", "process_id": process_id, "kpi_id": kpi_id},
+        room=f"tenant_{tenant_id}",
+    )

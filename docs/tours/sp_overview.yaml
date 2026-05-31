@@ -1,0 +1,59 @@
+key: sp_overview
+title: "Stratejik Planlama — Genel Bakış"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Stratejinin temelini buradan atacaksın"
+  body: |
+    Karşımızda boş bir sayfa: Eskişehir Motor Sanayi'nin stratejik anayasası. Şimdi üç katman dolduracağız:
+
+    1. **Misyon** — bugün niye varsın
+    2. **Vizyon** — 3-5 yıl sonra nerede olmak istiyorsun
+    3. **Ana Stratejiler** — vizyona giden yollar
+
+    Bu üçü bir akşamda da yazılır, bir ayda da. Acele etme; yazdığın metin önümüzdeki yıl seninle konuşacak. Şimdi sayfayı tanıtalım.
+  cta_primary: "Başlayalım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: '[data-tour="sp-mission"]'
+    title: "Misyon — bugün ne yapıyorsun?"
+    body: |
+      Misyon = "Biz kimiz, ne yapıyoruz, kimin için, niye?" sorusunun cevabı. Vizyon geleceğe bakar; misyon bugüne. Misyon değişmez (en azından sık değişmez), vizyon ise her 5 yılda yenilenir.
+
+      İyi bir misyon kısadır (1-2 cümle), net müşteri ve değer içerir. Örnek: "Eskişehir Motor Sanayi, Türkiye'nin endüstriyel motor üreticilerine güvenilir, yüksek verimli motorlar tedarik eder."
+
+      Zayıf misyon: "Müşterilerimize en iyi hizmeti vermek." (Hangi müşteri? Hangi hizmet? Belirsiz.)
+    placement: "bottom"
+
+  - target: '[data-tour="sp-vision"]'
+    title: "Vizyon — 5 yıl sonrası"
+    body: |
+      Vizyon = "Eğer her şey yolunda giderse, 3-5 yıl sonra nerede olmak istiyoruz?" sorusunun cevabı. İddialı ama gerçekçi olmalı. Çok mütevazı vizyon ekibe heyecan vermez; çok abartılı vizyon ekibi yorar.
+
+      Örnek vizyon: "2030'a kadar Türkiye'de endüstriyel elektrikli motor üretiminde ilk 3 oyuncudan biri olmak; ihracat gelirini %50'ye çıkarmak."
+
+      İçinde ölçülebilir kelimeler var mı? (ilk 3, %50) — bu sayede yıl sonunda "yaklaştık mı?" sorusunu cevaplayabilirsin.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-strategies"]'
+    title: "Ana Stratejiler — vizyona giden yollar"
+    body: |
+      Vizyon hedef, stratejiler yollardır. Genelde 3-5 ana strateji yeterlidir; 10'a çıkarsan odak kaybolur.
+
+      Eskişehir Motor Sanayi için örnek 4 strateji:
+      1. **Pazar genişletme** — Avrupa ve MENA bölgelerine ihracat
+      2. **Ürün gamı** — elektrikli motor portföyü
+      3. **Operasyonel verimlilik** — üretim hattını otomasyonla güçlendirme
+      4. **İnsan kaynağı** — mühendislik kapasitesini iki katına çıkarma
+
+      Her stratejinin altına ileride alt stratejiler ve KPI'lar bağlanacak. Şimdilik ana stratejilerin başlıklarını netleştirmek yeterli.
+    placement: "top"
+
+finale:
+  title: "Anayasa hazır"
+  body: |
+    Misyon, vizyon ve ana stratejiler — büyük yapıyı çıkardın. Tebrikler.
+
+    Sıradaki adım: plan dönemini açmak. Plan dönemi, bu vizyon ve stratejilerin bir yıl boyunca yaşayacağı kap. Sol menüden Plan Şablonları'na veya sağdaki "Plan Dönemleri"ne tıkla, ilk dönemi açalım. Devamı geliyor.

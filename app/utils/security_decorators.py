@@ -74,7 +74,7 @@ def require_process_access(id_param_name='surec_id'):
             if not surec_id:
                 return f(*args, **kwargs)
                 
-            from models import db, Surec, surec_liderleri, surec_uyeleri
+            from app.models.legacy_bridge import db, Surec, surec_liderleri, surec_uyeleri
             surec = Surec.query.get(surec_id)
             if not surec:
                 raise ResourceNotFoundError("Süreç bulunamadı.")

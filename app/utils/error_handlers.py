@@ -4,6 +4,7 @@ Kokpitim Global Error Handlers
 Kurumsal hata yakalama (Centralized Exception Handling) mekanizması.
 """
 from flask import jsonify, current_app, request, render_template
+from werkzeug.exceptions import HTTPException
 
 from app.utils.errors import (
     KokpitimError,
@@ -16,6 +17,14 @@ from app.utils.errors import (
 
 def register_error_handlers(app):
     """Uygulamaya merkezi hata yakalayıcıları (Interceptor) kaydeder."""
+
+    def _wants_json_response() -> bool:
+        if request.is_json:
+            return True
+        if request.path.startswith("/api/") or request.path.startswith("/process/api/"):
+            return True
+        accept = request.accept_mimetypes
+        return accept.best_match(["application/json", "text/html"]) == "application/json"
 
     def _render_error_page(status_code: int):
         """Mevcut hata template'lerine güvenli fallback ile render eder."""
@@ -33,7 +42,7 @@ def register_error_handlers(app):
         current_app.logger.warning(f"{error.__class__.__name__}: {error.message} - Path: {request.path}")
         
         # Eğer istek API/AJAX ise JSON dön, değilse HTML dön
-        if request.is_json or request.path.startswith('/api/'):
+        if _wants_json_response():
             return jsonify(error.to_dict()), error.status_code
             
         return _render_error_page(error.status_code)
@@ -41,7 +50,7 @@ def register_error_handlers(app):
     @app.errorhandler(404)
     def not_found_error(error):
         current_app.logger.info(f"404 Bulunamadı: {request.url}")
-        if request.is_json or request.path.startswith('/api/'):
+        if _wants_json_response():
             return jsonify({
                 "success": False,
                 "message": "İstenen API veya kaynak bulunamadı.",
@@ -49,10 +58,28 @@ def register_error_handlers(app):
             }), 404
         return _render_error_page(404)
 
+    @app.errorhandler(HTTPException)
+    def handle_http_exception(error: HTTPException):
+        """Werkzeug HTTP hataları (410 Gone dahil) — genel Exception'a düşmesin."""
+        code = error.code or 500
+        if code >= 500:
+            current_app.logger.error(f"HTTP {code}: {error.description} — {request.url}")
+        else:
+            current_app.logger.info(f"HTTP {code}: {error.description} — {request.url}")
+        if request.is_json or request.path.startswith("/api/"):
+            return jsonify({
+                "success": False,
+                "message": error.description or "İstek işlenemedi.",
+                "error_code": error.name,
+            }), code
+        if code in (403, 404, 500):
+            return _render_error_page(code)
+        return error.description or "İstek işlenemedi.", code
+
     @app.errorhandler(403)
     def forbidden_error(error):
         current_app.logger.warning(f"403 Yetkisiz Erişim: {request.url}")
-        if request.is_json or request.path.startswith('/api/'):
+        if _wants_json_response():
             return jsonify({
                 "success": False,
                 "message": "Bu işlem için yetkiniz yok.",
@@ -70,7 +97,7 @@ def register_error_handlers(app):
 
         error_message = "Sistemde beklenmeyen bir hata oluştu. Lütfen sistem yöneticisi ile iletişime geçin."
         
-        if request.is_json or request.path.startswith('/api/'):
+        if _wants_json_response():
             return jsonify({
                 "success": False,
                 "message": error_message,

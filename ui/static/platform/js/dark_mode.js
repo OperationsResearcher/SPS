@@ -8,15 +8,28 @@
  */
 (function(global) {
     const KEY = "kk_theme";
+    const API = "/api/profile/theme";
 
-    function apply(theme) {
+    function apply(theme, opts) {
         document.documentElement.setAttribute("data-theme", theme);
         document.body.setAttribute("data-theme", theme);
         try { localStorage.setItem(KEY, theme); } catch(e) {}
-        // Tüm theme-aware butonları güncelle
         document.querySelectorAll("[data-theme-icon]").forEach(el => {
             el.textContent = theme === "dark" ? "☀️" : "🌙";
         });
+        if (!opts || !opts.skipServer) syncToServer(theme);
+    }
+
+    function syncToServer(theme) {
+        try {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+            fetch(API, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+                body: JSON.stringify({ theme })
+            }).catch(() => {});
+        } catch(e) {}
     }
 
     function get() {
@@ -30,7 +43,18 @@
     }
 
     function init() {
-        apply(get());
+        // Önce localStorage ile FOUC'suz uygula, sonra sunucudan oku ve gerekiyorsa düzelt
+        apply(get(), { skipServer: true });
+        try {
+            fetch(API, { credentials: "same-origin" })
+                .then(r => r.ok ? r.json() : null)
+                .then(j => {
+                    if (j && j.success && j.theme && j.theme !== get()) {
+                        apply(j.theme, { skipServer: true });
+                    }
+                })
+                .catch(() => {});
+        } catch(e) {}
     }
 
     global.KKTheme = { get, apply, toggle, init };

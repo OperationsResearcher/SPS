@@ -1,0 +1,33 @@
+key: sp_xmatrix
+title: "Hoshin X-Matrisi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Hoshin X-Matrisi — Japon strateji haritası"
+  body: |
+    Hoshin Kanri, Toyota'nın 1960'larda geliştirdiği strateji yayılım metodolojisi. "Hoshin" pusula iğnesi demek; "Kanri" yönetim. Yani "pusula yönetimi" — strateji yönünün organizasyonun her katmanına yayılmasını disipline eden bir yaklaşım.
+
+    X-Matrisi bu metodolojinin merkezindeki görsel araç. Adı "X" çünkü bir kâğıdın dört kenarına dört şey yazılır, ortada "X" şeklinde birbirine bağlanır.
+  cta_primary: "Anladım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Matrisin dört kenarı"
+    body: |
+      Matris şöyle düzenlenir:
+      • **Kuzey** — Stratejiler (3-5 yıllık ana stratejiler)
+      • **Doğu** — KPI'lar (ne ölçtüğümüz)
+      • **Güney** — Girişimler (büyük iş paketleri)
+      • **Batı** — Yıllık Hedefler (bu yılın somut sayısal hedefleri)
+
+      İçerideki dolu hücreler birbiriyle bağlantı kurulduğunu gösterir. Örnek: "Pazar genişletme" stratejisi (kuzey) + "Avrupa Dağıtım Ağı" girişimi (güney) + "İhracat geliri 25M€" yıllık hedefi (batı) + "Aylık ihracat hacmi" KPI'sı (doğu) — dördü birden işaretliyse, stratejiden ölçüme kadar tutarlı bir hat var demektir.
+
+      Faydası: "Bu KPI'yı neden ölçüyoruz?" sorusunun cevabı bir bakışta görünür. Veya tersine: "Bu strateji ölçülmüyor — eklemeli miyim?" tespiti.
+    placement: "bottom"
+
+finale:
+  title: "İleride lazım olur"
+  body: |
+    İlk yılında matrise mecbur değilsin — 3-4 strateji ve 5-10 KPI ile zaten net görürsün. Ama strateji-girişim-KPI sayın 20'yi geçtiğinde X-Matrisi karmaşıklığı görsele çevirip karar kolaylaştırır. O zaman dön bakacaksın.

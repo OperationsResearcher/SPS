@@ -1,0 +1,121 @@
+key: sp_menu
+title: "Stratejik Planlama merkezi"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Stratejik Planlama merkezi"
+  body: |
+    Burası 12 modüllü bir karargâh. İlk bakışta bunaltıcı görünebilir ama merak etme — hepsini bugün kullanmana gerek yok. Çoğu modül ileride, veri biriktikçe anlam kazanacak.
+
+    Sırayla gezelim: hangisi ne işe yarar, ilk haftada hangisine dokunmalısın, hangileri sonra. Eskişehir Motor Sanayi'nin durumunda neyle başlayacağını da söyleyeceğim.
+  cta_primary: "Gezelim"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: '[data-tour="sp-card-genel-bakis"]'
+    title: "1. Genel Bakış — buradan başla"
+    body: |
+      Vizyon, misyon, değerler ve ana stratejilerin yaşadığı sayfa. Bir nevi "anayasa" — diğer her şey buna referans verir.
+
+      Yeni kurumda ilk işin burası olmalı. Önce vizyon (3-5 yıl sonra olmak istediğin yer), sonra misyon (bugün niye varsın), sonra 3-5 ana strateji. Bu üçü olmadan diğer modüller boş kalır.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-yonetici-paneli"]'
+    title: "2. Yönetici Paneli — uçuş ekranın"
+    body: |
+      Stratejik sağlık göstergelerini tek ekranda toplar: vizyon puanı, KPI sağlığı, gecikmiş faaliyet sayısı, kritik risk, AI uyarıları.
+
+      Boş kurumda buraya bakma — veri yok, görünecek bir şey de yok. Stratejiler ve KPI'lar tanımlandıktan, en az 1-2 aylık veri girildikten sonra burası canlanır. O zaman günlük ilk durağın olur.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-ceyreklik-degerlendirme"]'
+    title: "3. Çeyreklik Değerlendirme — strateji ritmi"
+    body: |
+      Modern strateji yıllık değil çeyreklik nefes alır. Üç ayda bir oturup "vizyona ne kadar yaklaştık, sapma var mı, ne ayarlamalıyız?" sorusunu sorduğun yer.
+
+      İlk çeyreğin sonunda burayı doldurmaya başlarsın. Her çeyrekte 30 dakikalık disiplinli bir değerlendirme, yıl sonunda iflas etmiş strateji ile çalışan strateji arasındaki farkı yaratır.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-girisimler"]'
+    title: "4. Girişimler — büyük iş paketlerin"
+    body: |
+      Girişim = vizyona ulaşmak için yapacağın büyük yatırım veya proje. Birden çok yıla yayılabilir; çoğu zaman birden çok stratejiyi besler.
+
+      Eskişehir Motor Sanayi için örnek girişimler: "Elektrikli motor Ar-Ge laboratuvarı kurma" (2026-2028), "Avrupa pazarı dağıtım ağı" (2026-2027), "Üretim hattı dijital dönüşümü" (2026-2029). Girişimler genelde 3-7 tane olur, fazla değil.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-senaryolar"]'
+    title: "5. Senaryolar — 'ya öyle olursa?' hazırlığı"
+    body: |
+      Plan döneminin iyimser, kötümser ve temel varyasyonlarını üretirsin. Her senaryo tüm stratejileri ve KPI'ları kopyalar; üzerinde bağımsız değişiklik yapabilirsin.
+
+      Örnek: "Eğer faiz %40'a çıkarsa, hangi girişimleri ertelemeliyim?" sorusuna cevap için bir kötümser senaryo kurarsın. Yıl içinde dünya değişirse "şu senaryomuzu canlıya alalım" diyebilirsin.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-yeniden-planlama-tetikleyicileri"]'
+    title: "6. Yeniden Planlama Tetikleyicileri — otomatik nöbetçi"
+    body: |
+      Belirli koşullar gerçekleştiğinde "stratejiyi gözden geçirme zamanı" sinyali üreten kurallar.
+
+      Örnek tetikleyici: "Eğer 3 ay üst üste herhangi bir KPI %70'in altındaysa, otomatik bir yeniden planlama önerisi oluştur ve yönetime bildir." Bu sayede kötü gidişatı 6 ay sonra fark etmez, anında yakalarsın.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-hoshin-x-matrisi"]'
+    title: "7. Hoshin X-Matrisi — Japon strateji haritası"
+    body: |
+      Toyota'dan çıkma metodoloji. Bir matrisin dört kenarına strateji, yıllık hedef, girişim ve KPI yerleştirir; aralarındaki bağlantıları dolu hücrelerle gösterir.
+
+      Faydası: "Bu girişim hangi stratejiye hizmet ediyor? Bu KPI'yı neden ölçüyoruz?" sorularına tek bakışta cevap alırsın. Hiyerarşi bozulduğunda matriste hemen göze çarpar. İlk yıl mecbur değilsin, ama strateji-girişim-KPI sayın 10'u geçtiğinde değerini fark edersin.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-mavi-okyanus"]'
+    title: "8. Mavi Okyanus — rakipsiz pazar tasarımı"
+    body: |
+      Kim & Mauborgne'nin çerçevesi. "Mevcut rekabette boğuşmak yerine, rekabetin olmadığı yeni bir alan tasarlayalım" mantığı.
+
+      Strateji Tuvali (mevcut sektör değer eğrisini görme) + ERRC tablosu (Neyi atalım, neyi azaltalım, neyi artıralım, neyi yaratalım?) ile düşünme egzersizi yaparsın. Bu sayfa düşündürme aracıdır, kayıt aracı değil — yılda 1-2 kez kullanırsın.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-vrio-analizi"]'
+    title: "9. VRIO Analizi — sahip olduklarının değeri"
+    body: |
+      Jay Barney'in çerçevesi. Kaynak ve yeteneklerini dört soruyla sınıflandırırsın:
+      • Değerli mi? (müşteriye değer katıyor mu)
+      • Nadir mi? (rakiplerde de var mı)
+      • Taklit edilemez mi? (kolay kopyalanır mı)
+      • Organize misin? (bu kaynaktan değer çıkarabiliyor musun)
+
+      Eskişehir Motor Sanayi için örnek kaynaklar: "Anadolu üniversitesi mühendislik işbirliği", "30 yıllık Ar-Ge ekibi", "patent portföyü". Bunları VRIO'dan geçirdiğinde gerçek rekabet avantajının nereden geldiğini görürsün.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-haftalik-rapor-pdf"]'
+    title: "10. Haftalık Rapor (PDF)"
+    body: |
+      Yönetim kuruluna veya yatırımcıya gönderebileceğin haftalık özet. KPI durumu, kritik göstergeler, gecikmiş işler ve son hafta neyin değiştiği — hepsi tek PDF.
+
+      Her hafta cumartesi sabahı otomatik üretilir veya tek tıkla anlık alırsın. Toplantı öncesi 5 dakikada hazırlanmana yarar.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-yapay-zeka-ayarlari"]'
+    title: "11. Yapay Zeka Ayarları"
+    body: |
+      AI motorlarımız öneri üretmek, özet çıkarmak, anomali yakalamak için çalışıyor. Buradan hangi AI sağlayıcısının (Gemini, OpenAI, Anthropic, Groq) kullanılacağını, kendi API anahtarını gireceksen onu, ve kullanım kotalarını yönetirsin.
+
+      İlk gün dokunmana gerek yok — sistem ayarları zaten makul. İleride kendi API anahtarınla çalışmak istersen burası.
+    placement: "bottom"
+
+  - target: '[data-tour="sp-card-plan-sablonlari"]'
+    title: "12. Plan Şablonları"
+    body: |
+      Sıfırdan başlamamak için hazır plan yılı şablonları. Sektör örnekleri (üretim, hizmet, perakende) ile örnek stratejiler, KPI setleri, süreç ağacı tek tıkla yüklenir.
+
+      Eskişehir Motor Sanayi için "Üretim sektörü temel şablon" iyi bir başlangıç olabilir — sonra üzerine kendi değişikliklerini eklersin.
+    placement: "bottom"
+
+finale:
+  title: "Tur bitti"
+  body: |
+    12 modülü gezdik. Önemli olan hangisini bugün, hangisini sonra kullanacağın.
+
+    Bu hafta için önerim: Önce "Genel Bakış"a tıkla. Vizyon ve misyonunu yaz. Sonra "Plan Şablonları"ndan üretim şablonunu yükle. Üzerine kendi düzeltmelerini ekle. Hepsi bu kadar — gerisini birlikte sırayla yapacağız.

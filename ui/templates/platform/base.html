@@ -183,20 +183,20 @@
             </a>
 
             <a href="{{ url_for('app_bp.k_radar_hub') }}"
-                class="sidebar-item {% if 'k_radar' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
-                <span class="sidebar-item-text">K-Analiz</span>
-            </a>
-
-            <a href="{{ url_for('app_bp.raporlar_index') }}"
-                class="sidebar-item {% if 'raporlar' in ep %}active{% endif %}">
+                class="sidebar-item {% if ('k_radar' in ep or 'k_rapor' in ep or 'raporlar' in ep) and 'k_radar_ks' not in ep and 'k_radar_kp' not in ep and 'k_radar_kpr' not in ep and 'k_radar_cross' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-satellite-dish"></i></span>
                 <span class="sidebar-item-text">K-Radar</span>
             </a>
 
+            <a href="{{ url_for('app_bp.k_radar_ks') }}"
+                class="sidebar-item {% if 'k_radar_ks' in ep or 'k_radar_kp' in ep or 'k_radar_kpr' in ep or 'k_radar_cross' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
+                <span class="sidebar-item-text">K-Analiz</span>
+            </a>
+
             <a href="{{ url_for('app_bp.bireysel_karne') }}"
                 class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-user-chart"></i></span>
+                <span class="sidebar-item-icon"><i class="fas fa-id-card-clip"></i></span>
                 <span class="sidebar-item-text">Bireysel Performans</span>
             </a>
 
@@ -204,11 +204,6 @@
             <a href="{{ url_for('app_bp.analiz') }}" class="sidebar-item {% if 'analiz' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-chart-line"></i></span>
                 <span class="sidebar-item-text">Performans Analitiği</span>
-            </a>
-
-            <a href="{{ url_for('app_bp.k_rapor') }}" class="sidebar-item {% if 'k_rapor' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-chart-pie"></i></span>
-                <span class="sidebar-item-text">K-Rapor</span>
             </a>
             {% endif %}
 
@@ -344,6 +339,24 @@
 
             <span class="topbar-title">{% block page_title %}Kokpitim{% endblock %}</span>
 
+            {# Topbar Küresel Arama — Ctrl+K paletini açar #}
+            {% if current_user.is_authenticated %}
+            <button type="button" class="topbar-search-btn"
+                    onclick="document.dispatchEvent(new KeyboardEvent('keydown', {key:'k', ctrlKey:true}));"
+                    title="Ara — Ctrl+K"
+                    style="display:flex; align-items:center; gap:8px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12.5px; color:#64748b; margin-left:auto; margin-right:14px; min-width:220px; max-width:340px; flex:1; transition:background 0.15s, border-color 0.15s;">
+              <i class="fas fa-search" style="color:#94a3b8;"></i>
+              <span>Sayfa, strateji, PG, proje ara…</span>
+              <span style="margin-left:auto; font-size:10px; background:#fff; border:1px solid #cbd5e1; padding:1px 6px; border-radius:3px; color:#475569;">Ctrl+K</span>
+            </button>
+            <style>
+              .topbar-search-btn:hover { background:#eef2ff !important; border-color:#c7d2fe !important; }
+              [data-theme="dark"] .topbar-search-btn { background:#1e293b !important; border-color:#334155 !important; color:#cbd5e1 !important; }
+              [data-theme="dark"] .topbar-search-btn:hover { background:#312e81 !important; border-color:#4338ca !important; }
+              @media (max-width: 720px) { .topbar-search-btn { display:none !important; } }
+            </style>
+            {% endif %}
+
             <div class="topbar-actions">
                 <!-- Bildirim -->
                 <a href="{{ url_for('app_bp.bildirim') }}" class="topbar-icon-btn topbar-notif-btn"
@@ -417,11 +430,104 @@
         {% endif %}
         {% endwith %}
 
+        <!-- Breadcrumb — Tüm sayfalarda standart format: 🏠 › [Sidebar Bölümü] › [Sayfa Adı] -->
+        {#
+          Kullanım (yeni standart):
+            {{ mc_breadcrumb('K-Vektör Çarpıklık') }}              → home › K-Radar › K-Vektör Çarpıklık
+            {{ mc_breadcrumb(['Süreç', 'SR10 — Dijital Dönüşüm']) }} → home › K-Radar › Süreç › SR10
+            mc_breadcrumb() çağrılmadığında bile base auto-render eder (sadece section).
+
+          Geriye uyum: liste içinde {label, url} sözlükleri kabul edilir.
+        #}
+        {% macro mc_breadcrumb(items=None) -%}
+            {%- set _norm = [] -%}
+            {%- if items is none -%}
+                {# Hiçbir şey verilmemiş — yalnız section auto eklenir #}
+            {%- elif items is string -%}
+                {%- set _ = _norm.append({'label': items, 'url': None}) -%}
+            {%- elif items is iterable -%}
+                {%- for it in items -%}
+                    {%- if it is mapping -%}
+                        {%- set _ = _norm.append({'label': it.label, 'url': it.url}) -%}
+                    {%- else -%}
+                        {%- set _ = _norm.append({'label': it, 'url': None}) -%}
+                    {%- endif -%}
+                {%- endfor -%}
+            {%- endif -%}
+            {# Dedupe: kullanıcı verilerinin başı section ile aynıysa o öğeyi atla #}
+            {%- if current_section and _norm -%}
+                {%- set _first = _norm[0] -%}
+                {%- if _first.label == current_section.label or _first.url == current_section.url -%}
+                    {%- set _norm = _norm[1:] -%}
+                {%- endif -%}
+            {%- endif -%}
+            <nav class="mc-breadcrumb" aria-label="Sayfa konumu">
+                <a href="/masaustu-launcher" class="mc-breadcrumb-home" title="Ana Sayfa">
+                    <i class="fas fa-home"></i>
+                </a>
+                {%- if current_section -%}
+                    {%- set _section_only = (_norm|length == 0 and not current_subgroup) -%}
+                    <span class="mc-breadcrumb-sep" aria-hidden="true">›</span>
+                    {%- if _section_only -%}
+                        <span class="mc-breadcrumb-current" aria-current="page">{{ current_section.label }}</span>
+                    {%- else -%}
+                        <a href="{{ current_section.url }}" class="mc-breadcrumb-link">{{ current_section.label }}</a>
+                    {%- endif -%}
+                {%- endif -%}
+                {%- if current_subgroup -%}
+                    {%- set _subgroup_only = (_norm|length == 0) -%}
+                    <span class="mc-breadcrumb-sep" aria-hidden="true">›</span>
+                    {%- if _subgroup_only -%}
+                        <span class="mc-breadcrumb-current" aria-current="page">{{ current_subgroup.label }}</span>
+                    {%- else -%}
+                        <a href="{{ current_subgroup.url }}" class="mc-breadcrumb-link">{{ current_subgroup.label }}</a>
+                    {%- endif -%}
+                {%- endif -%}
+                {%- for it in _norm -%}
+                    <span class="mc-breadcrumb-sep" aria-hidden="true">›</span>
+                    {%- if it.url and not loop.last -%}
+                        <a href="{{ it.url }}" class="mc-breadcrumb-link">{{ it.label }}</a>
+                    {%- else -%}
+                        <span class="mc-breadcrumb-current" aria-current="page">{{ it.label }}</span>
+                    {%- endif -%}
+                {%- endfor -%}
+            </nav>
+        {%- endmacro %}
+
         <!-- İçerik -->
         <main class="micro-page">
+            {# Tüm sayfalarda standart breadcrumb. Sayfa kendi sub-crumb'larını verirse
+               override eder; vermezse otomatik Home › Section render edilir. #}
+            {% block breadcrumb %}
+                {% if current_user.is_authenticated and current_section %}
+                    {{ mc_breadcrumb() }}
+                {% endif %}
+            {% endblock %}
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    {# ── Komut Paleti (Ctrl+K) ─────────────────────────────────────────── #}
+    {% if current_user.is_authenticated %}
+    <div id="cmd-palette-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); z-index:9999; align-items:flex-start; justify-content:center; padding-top:80px;">
+      <div id="cmd-palette" style="background:#fff; border-radius:12px; width:min(640px, 92vw); max-height:70vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.35); overflow:hidden;">
+        <div style="display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid #e2e8f0;">
+          <i class="fas fa-search" style="color:#94a3b8;"></i>
+          <input id="cmd-palette-input" type="search" placeholder="Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
+                 autocomplete="off" spellcheck="false"
+                 style="flex:1; border:none; outline:none; font-size:14px; background:transparent; color:#0f172a;">
+          <span style="font-size:11px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">ESC</span>
+        </div>
+        <div id="cmd-palette-list" style="overflow-y:auto; padding:6px;"></div>
+        <div style="padding:8px 16px; border-top:1px solid #e2e8f0; background:#f8fafc; font-size:11px; color:#64748b; display:flex; gap:12px; justify-content:space-between;">
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">↑ ↓</kbd> gezin</span>
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">Enter</kbd> aç</span>
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">Ctrl+K</kbd> kapat</span>
+        </div>
+      </div>
+    </div>
+    <script src="{{ url_for('app_bp.static', filename='platform/js/command_palette.js') }}?v={{ config['VERSION'] }}"></script>
+    {% endif %}
 
     <!-- Genel form modalı (admin kullanıcı düzenle ile aynı mc-modal stili) -->
     <div id="mc-modal-form-global" class="mc-modal-overlay" aria-hidden="true">

@@ -28,7 +28,7 @@ from app.models.process import (
     process_leaders,
 )
 from app.models.core import Notification, Strategy
-from models import Project, Task, project_members, project_leaders
+from app.models.portfolio_project import Project, Task, project_members, project_leaders
 
 from app_platform.modules.proje.permissions import is_privileged, user_can_edit_tasks
 from app_platform.modules.surec.permissions import user_can_access_process
@@ -645,6 +645,19 @@ def api_calendar_activity_form_meta(process_id: int):
             "can_multi_assign": bool(can_multi),
         }
     )
+
+
+@app_bp.route("/api/morning-summary")
+@login_required
+def api_morning_summary():
+    """Yönetici sabah özeti — KPI, faaliyet, proje durumu."""
+    from services.executive_morning_service import get_morning_summary
+    try:
+        data = get_morning_summary(current_user.tenant_id, current_user.id)
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[morning_summary] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Özet yüklenemedi."}), 500
 
 
 @app_bp.route("/takvim", methods=["GET"])

@@ -1,0 +1,237 @@
+{% extends "platform/base.html" %}
+{% block title %}K-Radar — Kokpitim{% endblock %}
+{% block page_title %}K-Radar{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'K-Radar', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1240px; margin:0 auto;" id="kr-hub-root">
+
+  <div class="mc-page-header" style="margin-bottom:14px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-satellite-dish" style="color:#6366f1;"></i> K-Radar — Raporlama & Analiz Merkezi
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Performans · Yürütme · Risk · Strateji · AI panellerini içeren birleşik rapor hub'ı
+      </p>
+    </div>
+  </div>
+
+  {# ── K-Radar birincil navigasyon şeridi ─────────────────────────── #}
+  <div id="kr-hub-filter" class="kr-hub-nav" style="display:flex; flex-wrap:wrap; gap:6px; padding:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:14px;">
+    <button type="button" class="kr-hub-fbtn active" data-group="all">Tümü</button>
+    <button type="button" class="kr-hub-fbtn" data-group="performans">📊 Performans</button>
+    <button type="button" class="kr-hub-fbtn" data-group="yurutme">🚀 Yürütme</button>
+    <button type="button" class="kr-hub-fbtn" data-group="risk">🛡 Risk &amp; Veri</button>
+    <button type="button" class="kr-hub-fbtn" data-group="strateji">🎯 Strateji</button>
+    <button type="button" class="kr-hub-fbtn" data-group="ai">🤖 AI &amp; Üst Yönetim</button>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
+    <div style="position:relative; flex:1; min-width:240px; max-width:520px;">
+      <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
+      <input type="search" id="kr-hub-search" class="mc-form-input" placeholder="Rapor ara (ad, anahtar kelime)…"
+             style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
+    </div>
+    <span id="kr-hub-count" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
+  </div>
+
+  {# ── 5 grup × kart listesi ─────────────────────────────────────────── #}
+  {% set groups = [
+    {
+      'key': 'performans',
+      'title': '📊 Performans & Skor',
+      'desc': 'Stratejilerin, süreçlerin ve PG\'lerin nasıl gittiğinin sayısal görünümü',
+      'color': '#6366f1',
+      'cards': [
+        {'url': '/k-rapor?tab=kurumsal',                                    'icon':'fa-building',          'c':'#4f46e5','bg':'#eef2ff','n':'Kurumsal Performans',         'd':'Vizyon skoru + strateji bazlı başarı tablosu'},
+        {'url': '/k-rapor?tab=surec-pg',                                    'icon':'fa-table-cells',       'c':'#0ea5e9','bg':'#ecfeff','n':'Süreç & PG Tablosu',          'd':'Süreç bazlı PG performansı, hedef/gerçekleşme'},
+        {'url': '/k-rapor?tab=pg-dagilim',                                  'icon':'fa-chart-bar',         'c':'#6366f1','bg':'#eef2ff','n':'PG Bant Dağılımı',            'd':'PG\'lerin performans bantlarına dağılımı'},
+        {'url': '/k-rapor?tab=k-vektor',                                    'icon':'fa-weight-scale',      'c':'#8b5cf6','bg':'#f5f3ff','n':'K-Vektör Skoru',              'd':'Ağırlıklandırılmış vizyon ve strateji skoru'},
+        {'url': '/raporlar/k-vektor-carpiklik',                             'icon':'fa-balance-scale',     'c':'#8b5cf6','bg':'#f5f3ff','n':'K-Vektör Çarpıklık',          'd':'Strateji ağırlığı × gerçek skor uyumsuzluğu'},
+        {'url': '/k-rapor?tab=uyum',                                        'icon':'fa-sitemap',           'c':'#16a34a','bg':'#f0fdf4','n':'Stratejik Uyum',              'd':'Strateji ↔ süreç hizalama analizi'},
+        {'url': '/k-rapor?tab=strateji-kapsama',                            'icon':'fa-layer-group',       'c':'#4f46e5','bg':'#eef2ff','n':'Strateji Kapsama',            'd':'Strateji kapsama ve boşluk analizi'},
+        {'url': '/raporlar/hizalama-sankey',                                'icon':'fa-water',             'c':'#4f46e5','bg':'#eef2ff','n':'Stratejik Akış Haritası',     'd':'Vizyon → strateji → süreç → PG akış görseli'},
+        {'url': '/sp/strateji-proje-matris',                                'icon':'fa-th',                'c':'#6366f1','bg':'#eef2ff','n':'Strateji × Proje Matrisi',    'd':'Strateji-proje hizalama ısı haritası'},
+        {'url': '/raporlar/pg-proje-etki',                                  'icon':'fa-table-cells-large', 'c':'#6366f1','bg':'#eef2ff','n':'PG × Proje Çapraz Etki',      'd':'Hangi proje hangi PG\'yi etkiliyor?'},
+        {'url': '/raporlar/departman-performans',                           'icon':'fa-users-cog',         'c':'#db2777','bg':'#fdf2f8','n':'Departman Performans',        'd':'Departman bazlı bireysel PG ortalaması'},
+        {'url': '/raporlar/yonetici-liderlik',                              'icon':'fa-user-tie',          'c':'#f59e0b','bg':'#fffbeb','n':'Yönetici Liderlik Skoru',     'd':'Süreç liderlerinin etkinlik puanı'},
+        {'url': '/raporlar/cmmi-heatmap',                                   'icon':'fa-stairs',            'c':'#8b5cf6','bg':'#f5f3ff','n':'CMMI Olgunluk Isı Haritası',  'd':'Süreçlerin 1-5 olgunluk seviyesi (Başlangıç → Optimize)'},
+        {'url': '/raporlar/hedef-revizyon',                                 'icon':'fa-history',           'c':'#16a34a','bg':'#f0fdf4','n':'PG Hedef Revizyon Sıklığı',   'd':'Yıl içinde hedef değişen PG\'ler'},
+      ]
+    },
+    {
+      'key': 'yurutme',
+      'title': '🚀 Yürütme & Operasyon',
+      'desc': 'Faaliyet, görev, kişi ve iş ilerlemesinin görünümü',
+      'color': '#10b981',
+      'cards': [
+        {'url': '/k-rapor?tab=faaliyet',                                    'icon':'fa-list-check',        'c':'#f59e0b','bg':'#fffbeb','n':'Faaliyet Durumu',             'd':'Faaliyet durum ve ilerleme dağılımı'},
+        {'url': '/k-rapor?tab=faaliyet-matris',                             'icon':'fa-grip-horizontal',   'c':'#f97316','bg':'#fff7ed','n':'Faaliyet Matrisi',            'd':'Sorumlu × faaliyet matrisi'},
+        {'url': '/k-rapor?tab=aktivite-takvim',                             'icon':'fa-calendar-days',     'c':'#10b981','bg':'#ecfdf5','n':'Aktivite Takvimi',            'd':'Aktivite zaman çizelgesi'},
+        {'url': '/k-rapor?tab=sorumlu-analiz',                              'icon':'fa-user-tie',          'c':'#0e7490','bg':'#ecfeff','n':'Sorumlu Analizi',             'd':'Kişi yükü ve performans dağılımı'},
+        {'url': '/k-rapor?tab=bireysel',                                    'icon':'fa-users',             'c':'#db2777','bg':'#fdf2f8','n':'Bireysel Performans',         'd':'Bireysel karne özetleri'},
+        {'url': '/raporlar/bireysel-hizalama',                              'icon':'fa-user-check',        'c':'#db2777','bg':'#fdf2f8','n':'Bireysel Hedef Hizalama',     'd':'Bireysel hedeflerin stratejiyle uyumu'},
+        {'url': '/k-rapor?tab=evm',                                         'icon':'fa-coins',             'c':'#ca8a04','bg':'#fefce8','n':'EVM (Earned Value)',          'd':'PV/EV/AC, CPI/SPI hesapları'},
+        {'url': '/raporlar/initiative-bubble',                              'icon':'fa-rocket',            'c':'#ef4444','bg':'#fef2f2','n':'Stratejik Girişim Portföyü Balon Grafiği',   'd':'Bütçe × ilerleme × öncelik balon grafiği'},
+        {'url': '/raporlar/initiative-roadmap',                             'icon':'fa-road',              'c':'#8b5cf6','bg':'#f5f3ff','n':'Stratejik Girişim Yol Haritası',          'd':'Çok yıllık girişim yol haritası'},
+        {'url': '/raporlar/quarterly-review',                               'icon':'fa-calendar-check',    'c':'#16a34a','bg':'#f0fdf4','n':'Çeyreklik Review Hazırlayıcı', 'd':'Üç aylık değerlendirme paketi'},
+        {'url': '/raporlar/okr-cascade',                                    'icon':'fa-stream',            'c':'#0ea5e9','bg':'#ecfeff','n':'OKR Cascade',                 'd':'Şirket → Takım → Birey OKR akışı'},
+        {'url': '/raporlar/sabah-ozeti',                                    'icon':'fa-sun',               'c':'#0d9488','bg':'#f0fdfa','n':'Sabah Operasyonel Özeti',     'd':'Bugün biten/bekleyen faaliyet & kritik PG'},
+        {'url': '/raporlar/operasyon-istatistik',                           'icon':'fa-list-ol',           'c':'#0ea5e9','bg':'#ecfeff','n':'Operasyonel İstatistik',      'd':'Operasyonel veri özet istatistikleri'},
+        {'url': '/raporlar/muda-analizi',                                   'icon':'fa-recycle',           'c':'#dc2626','bg':'#fef2f2','n':'7 Muda (İsraf) Analizi',      'd':'Yalın 7 israf türü ölçümü'},
+      ]
+    },
+    {
+      'key': 'risk',
+      'title': '🛡 Risk & Veri Sağlığı',
+      'desc': 'Eksiklikler, alarmlar, riskler ve denetim izleri',
+      'color': '#ef4444',
+      'cards': [
+        {'url': '/k-rapor?tab=risk',                                        'icon':'fa-triangle-exclamation','c':'#dc2626','bg':'#fef2f2','n':'Risk Özeti',                 'd':'Açık riskler ve kritik kayıt sayısı'},
+        {'url': '/raporlar/risk-heatmap',                                   'icon':'fa-fire',              'c':'#ef4444','bg':'#fef2f2','n':'Risk Heatmap (5×5)',          'd':'Olasılık × etki ısı haritası'},
+        {'url': '/k-rapor?tab=uyari',                                       'icon':'fa-bell',              'c':'#ef4444','bg':'#fef2f2','n':'Aktif Uyarılar',              'd':'Sistem uyarıları ve tetikleyiciler'},
+        {'url': '/raporlar/early-warning',                                  'icon':'fa-bell',              'c':'#f59e0b','bg':'#fffbeb','n':'AI Erken Uyarı',              'd':'AI tabanlı erken uyarı sinyalleri'},
+        {'url': '/raporlar/ml-anomaly',                                     'icon':'fa-vials',             'c':'#dc2626','bg':'#fef2f2','n':'ML Anomali (Isolation Forest)','d':'Makine öğrenmesi ile aykırı PG tespiti'},
+        {'url': '/k-rapor?tab=veri-durumu',                                 'icon':'fa-circle-check',      'c':'#0d9488','bg':'#f0fdfa','n':'Veri Durumu',                 'd':'PG veri doluluk durumu'},
+        {'url': '/raporlar/veri-kalitesi',                                  'icon':'fa-database',          'c':'#0ea5e9','bg':'#e0f2fe','n':'Veri Kalitesi Detay',         'd':'Eksik alan, son giriş tarihi, sıklık'},
+        {'url': '/k-rapor?tab=denetim',                                     'icon':'fa-shield-halved',     'c':'#7c3aed','bg':'#f5f3ff','n':'Denetim Kayıtları',           'd':'Aktivite ve değişiklik denetim izleri'},
+        {'url': '/k-rapor?tab=bildirim-analiz',                             'icon':'fa-comment-dots',      'c':'#64748b','bg':'#f1f5f9','n':'Bildirim Analizi',            'd':'Bildirim sıklığı ve okuma oranı'},
+        {'url': '/raporlar/iki-fa',                                         'icon':'fa-mobile-screen',     'c':'#10b981','bg':'#ecfdf5','n':'2FA Kullanım Raporu',         'd':'İki faktörlü doğrulama kapsama'},
+        {'url': '/raporlar/audit-paketi',                                   'icon':'fa-folder-tree',       'c':'#7c3aed','bg':'#f5f3ff','n':'Audit Çıktı Paketi',          'd':'Denetim için derlenmiş kanıt paketi'},
+        {'url': '/raporlar/onay-zinciri',                                   'icon':'fa-circle-check',      'c':'#16a34a','bg':'#f0fdf4','n':'Onay Zinciri (Workflow)',     'd':'Çok adımlı onay süreçleri'},
+      ]
+    },
+    {
+      'key': 'strateji',
+      'title': '🎯 Strateji, Yapı & Paydaş',
+      'desc': 'SWOT, VRIO, rekabet, paydaş ve uzun vadeli görünüm',
+      'color': '#4f46e5',
+      'cards': [
+        {'url': '/k-rapor?tab=stratejik-analiz',                            'icon':'fa-chess-knight',      'c':'#2563eb','bg':'#eff6ff','n':'Stratejik Analiz Paketi',     'd':'SWOT · TOWS · PESTEL · Porter 5'},
+        {'url': '/k-rapor?tab=swot-trend',                                  'icon':'fa-arrow-trend-up',    'c':'#16a34a','bg':'#f0fdf4','n':'SWOT Trend',                  'd':'SWOT öğelerinin zaman içinde değişimi'},
+        {'url': '/raporlar/vrio-portfoy',                                   'icon':'fa-gem',               'c':'#9333ea','bg':'#faf5ff','n':'VRIO Portföy',                'd':'Kaynak/yetenek VRIO sınıflandırması'},
+        {'url': '/k-rapor?tab=paydas',                                      'icon':'fa-people-arrows',     'c':'#0891b2','bg':'#ecfeff','n':'Paydaş Haritası',             'd':'Paydaş etkileşim ve önem analizi'},
+        {'url': '/k-rapor?tab=rekabet',                                     'icon':'fa-ranking-star',      'c':'#dc2626','bg':'#fef2f2','n':'Rekabet & A3',                'd':'Rakip kıyas + A3 problem analizi'},
+        {'url': '/k-rapor?tab=kurum-karsilastirma',                         'icon':'fa-scale-balanced',    'c':'#9333ea','bg':'#faf5ff','n':'Kurum Kıyas',                 'd':'Kurumlar arası karşılaştırma'},
+        {'url': '/raporlar/sektorel',                                       'icon':'fa-industry',          'c':'#16a34a','bg':'#f0fdf4','n':'Sektörel Plan Paketleri',     'd':'Sektöre özel hazır plan şablonları'},
+        {'url': '/sp/strateji-haritasi',                                    'icon':'fa-project-diagram',   'c':'#4f46e5','bg':'#eef2ff','n':'Strateji Haritası',           'd':'Strateji → Süreç → KPI interaktif ilişki ağı'},
+        {'url': '/raporlar/sunburst',                                       'icon':'fa-sun',               'c':'#f59e0b','bg':'#fffbeb','n':'Stratejik Hiyerarşi Sunburst','d':'Strateji ağacı sunburst görseli'},
+        {'url': '/raporlar/evrim-filmi',                                    'icon':'fa-film',              'c':'#9333ea','bg':'#faf5ff','n':'Yıllar Arası Evrim Filmi',    'd':'Strateji ağacının yıldan yıla animasyonu'},
+        {'url': '/raporlar/strateji-hikayesi',                              'icon':'fa-book-open',         'c':'#0d9488','bg':'#f0fdfa','n':'AI Strateji Hikayeleştirici', 'd':'Strateji metnini AI ile hikaye formuna çevir'},
+      ]
+    },
+    {
+      'key': 'ai',
+      'title': '🤖 AI & Üst Yönetim Panelleri',
+      'desc': 'Yönetici özetleri, AI üretimli içgörüler ve dışa aktarma paketleri',
+      'color': '#0d9488',
+      'cards': [
+        {'url': '/raporlar/sektor-benchmark',                               'icon':'fa-chart-line',        'c':'#0ea5e9','bg':'#ecfeff','n':'AI Sektör Benchmark',         'd':'AI ile sektör emsali kıyaslama'},
+        {'url': '/raporlar/cfo-dashboard',                                  'icon':'fa-coins',             'c':'#0d9488','bg':'#f0fdfa','n':'CFO Dashboard',                'd':'Bütçe, gelir, kâr odaklı panel'},
+        {'url': '/raporlar/coo-dashboard',                                  'icon':'fa-cogs',              'c':'#0ea5e9','bg':'#ecfeff','n':'COO Dashboard',                'd':'Operasyon ve verimlilik paneli'},
+        {'url': '/raporlar/chro-dashboard',                                 'icon':'fa-user-tie',          'c':'#db2777','bg':'#fdf2f8','n':'CHRO Dashboard',               'd':'İK ve insan kaynakları paneli'},
+        {'url': '/raporlar/yatirimci-sunum',                                'icon':'fa-handshake',         'c':'#9333ea','bg':'#faf5ff','n':'Yatırımcı Sunumu',            'd':'Yatırımcı için hazır sunum paketi'},
+        {'url': '/raporlar/stratejik-yillik',                               'icon':'fa-book',              'c':'#dc2626','bg':'#fef2f2','n':'Stratejik Yıllık Kitap',      'd':'Yıllık stratejik özet kitap formatı'},
+        {'url': '/raporlar/esg-rapor',                                      'icon':'fa-leaf',              'c':'#16a34a','bg':'#f0fdf4','n':'ESG Yıllık Rapor',             'd':'Çevre, sosyal, yönetişim raporu'},
+        {'url': '/raporlar/carbon-trend',                                   'icon':'fa-smog',              'c':'#0ea5e9','bg':'#ecfeff','n':'Carbon Footprint Trend',      'd':'Karbon emisyonu zaman analizi'},
+        {'url': '/raporlar/ai-danisman',                                    'icon':'fa-robot',             'c':'#0d9488','bg':'#f0fdfa','n':'AI Strateji Danışmanı',       'd':'Stratejinize AI tabanlı öneri'},
+        {'url': '/raporlar/ai-coach',                                       'icon':'fa-graduation-cap',    'c':'#8b5cf6','bg':'#f5f3ff','n':'AI Coach',                    'd':'Yönetici için AI koçluk asistanı'},
+        {'url': '/raporlar/ai-sunum',                                       'icon':'fa-display',           'c':'#dc2626','bg':'#fef2f2','n':'AI Yıl Sonu Sunum Üretici',   'd':'Yıl sonu için AI sunum hazırlama'},
+        {'url': '/raporlar/nlp-query',                                      'icon':'fa-comment',           'c':'#0ea5e9','bg':'#ecfeff','n':'AI Doğal Dil Sorgu',          'd':'Türkçe doğal dilde veri sorgulama'},
+        {'url': '/raporlar/bireysel-karne-batch',                           'icon':'fa-file-zipper',       'c':'#0d9488','bg':'#f0fdfa','n':'Bireysel Karne Batch (ZIP)',  'd':'Tüm bireysel karneleri toplu PDF'},
+        {'url': '/raporlar/mobile',                                         'icon':'fa-mobile-screen',     'c':'#0ea5e9','bg':'#ecfeff','n':'Mobile Hub (PWA)',            'd':'Mobil uygulama girişi'},
+        {'url': '/raporlar/bi-connector',                                   'icon':'fa-plug',              'c':'#7c3aed','bg':'#f5f3ff','n':'BI Connector',                'd':'Power BI / Tableau bağlantı bilgisi'},
+      ]
+    }
+  ] %}
+
+  {% for g in groups %}
+  <div class="kr-hub-group" data-group="{{ g.key }}" style="margin-bottom:28px;">
+    <h3 style="font-size:14px; color:#1e293b; font-weight:700; margin:0 0 4px;">
+      <span style="color:{{ g.color }};">{{ g.title }}</span>
+      <span style="font-weight:400; color:#64748b; font-size:12px; margin-left:8px;">{{ g.cards|length }} öğe</span>
+    </h3>
+    <p style="font-size:12px; color:#94a3b8; margin:0 0 12px;">{{ g.desc }}</p>
+    <div class="kr-hub-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:14px;">
+      {% for it in g.cards %}
+      <a href="{{ it.url }}" class="kr-hub-card" data-name="{{ it.n }} {{ it.d }}"
+         style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:22px 14px 16px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; text-decoration:none; color:inherit; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;">
+        <div style="width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px; background:{{ it.bg }};">
+          <i class="fas {{ it.icon }}" style="color:{{ it.c }};"></i>
+        </div>
+        <span style="font-size:13px; font-weight:600; color:#1e293b; margin-bottom:4px;">{{ it.n }}</span>
+        <span style="font-size:11px; color:#94a3b8; line-height:1.4;">{{ it.d }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+<style>
+  .kr-hub-card:hover { border-color:#c7d2fe !important; transform: translateY(-2px); box-shadow:0 6px 16px rgba(99,102,241,0.12); }
+  [data-theme="dark"] .kr-hub-card { background:#1e293b !important; border-color:#334155 !important; }
+  [data-theme="dark"] .kr-hub-card span:first-of-type { color:#f1f5f9 !important; }
+  [data-theme="dark"] .kr-hub-card:hover { border-color:#6366f1 !important; background:#1e1b4b !important; }
+  .kr-hub-nav .kr-hub-fbtn {
+    background:transparent; border:none; color:#475569;
+    padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600;
+    cursor:pointer; transition: all 0.15s; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:4px;
+  }
+  .kr-hub-nav .kr-hub-fbtn:hover { background:#eef2ff; color:#4338ca; }
+  .kr-hub-nav .kr-hub-fbtn.active {
+    background:#fff; color:#0f172a;
+    box-shadow:0 1px 3px rgba(15,23,42,0.08), 0 0 0 1px rgba(99,102,241,0.25);
+  }
+  [data-theme="dark"] .kr-hub-nav { background:#1e293b !important; border-color:#334155 !important; }
+  [data-theme="dark"] .kr-hub-nav .kr-hub-fbtn { color:#cbd5e1; }
+  [data-theme="dark"] .kr-hub-nav .kr-hub-fbtn:hover { background:#312e81; color:#a5b4fc; }
+  [data-theme="dark"] .kr-hub-nav .kr-hub-fbtn.active { background:#0f172a; color:#f1f5f9; box-shadow:0 0 0 1px rgba(99,102,241,0.4); }
+</style>
+
+<script>
+(function(){
+  const search = document.getElementById('kr-hub-search');
+  const countLbl = document.getElementById('kr-hub-count');
+  const groups = Array.from(document.querySelectorAll('.kr-hub-group'));
+  const fbtns = Array.from(document.querySelectorAll('.kr-hub-fbtn'));
+  // URL'den ?g=<group> okuyup başlangıçta aktif yap
+  const urlGroup = new URLSearchParams(window.location.search).get('g');
+  const validGroups = new Set(['performans','yurutme','risk','strateji','ai']);
+  let activeGroup = (urlGroup && validGroups.has(urlGroup)) ? urlGroup : 'all';
+  fbtns.forEach(b => b.classList.toggle('active', b.dataset.group === activeGroup));
+  function apply() {
+    const q = (search?.value || '').trim().toLowerCase();
+    let totalShown = 0;
+    groups.forEach(g => {
+      const inGroup = (activeGroup === 'all' || g.dataset.group === activeGroup);
+      const cards = Array.from(g.querySelectorAll('.kr-hub-card'));
+      let visibleInGroup = 0;
+      cards.forEach(c => {
+        const hay = (c.dataset.name || '').toLowerCase() + ' ' + c.textContent.toLowerCase();
+        const ok = inGroup && (!q || hay.includes(q));
+        c.style.display = ok ? '' : 'none';
+        if (ok) visibleInGroup++;
+      });
+      g.style.display = (inGroup && visibleInGroup > 0) ? '' : 'none';
+      totalShown += visibleInGroup;
+    });
+    if (countLbl) countLbl.textContent = (q || activeGroup !== 'all') ? `${totalShown} öğe` : '';
+  }
+  search?.addEventListener('input', apply);
+  fbtns.forEach(b => b.addEventListener('click', () => {
+    fbtns.forEach(x => x.classList.toggle('active', x === b));
+    activeGroup = b.dataset.group;
+    apply();
+  }));
+  // URL'den ?g= geldiyse başlangıçta filtreyi uygula
+  if (activeGroup !== 'all') apply();
+})();
+</script>
+{% endblock %}

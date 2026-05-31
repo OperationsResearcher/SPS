@@ -1,8 +1,8 @@
 from flask import render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from extensions import db
-from models.dashboard import UserDashboardSettings
-from models import Task, Note, Project, Surec, Notification, BireyselPerformansGostergesi, PerformansGostergeVeri, project_leaders
+from app.models.legacy_bridge import UserDashboardSettings
+from app.models.legacy_bridge import Task, Note, Project, Surec, Notification, BireyselPerformansGostergesi, PerformansGostergeVeri, project_leaders
 import json
 from datetime import date, timedelta, datetime
 

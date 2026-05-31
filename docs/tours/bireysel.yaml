@@ -1,0 +1,40 @@
+key: bireysel
+title: "Bireysel Performans"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Bireysel Performans — kişisel karneler"
+  body: |
+    Süreç KPI'ları kuruma aittir; bireysel KPI'lar kişiye aittir. Aradaki fark çok önemli — karıştırırsan adaletsiz değerlendirme ortaya çıkar.
+
+    Örnek:
+    • **Süreç KPI'sı:** "Aylık üretim adedi" (Üretim Planlama süreci sahibi: Operasyon Müdürü, ama gerçekleşmeden tek başına o sorumlu değil)
+    • **Bireysel KPI:** "Mehmet'in tasarladığı motor sayısı" (sadece Mehmet'e bağlı)
+
+    Bireysel performans modülü her kullanıcıya bir karne sunar. İçinde:
+    • Aylık hedef gerçekleşmeleri
+    • Başarı puanı ve trend grafiği
+    • Tamamlanan/geciken bireysel görevler
+    • Yıllık değerlendirme özeti
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Karne yapısı"
+    body: |
+      Karne sayfası şunları gösterir:
+      • **Aylık Performans Tablosu** — her bireysel KPI'nın hedefi, gerçekleşmesi, sapması
+      • **Trend Grafiği** — son 12 ayın performans çizgisi
+      • **Başarı Puanı** — KPI ağırlıklarına göre toplam skor (100 üzerinden)
+      • **Görev Listesi** — kullanıcıya atanmış aktif ve geciken işler
+      • **Yıllık Değerlendirme Notları** — yönetici yorumları, gelişim hedefleri
+
+      Karne adildir çünkü veri tabanlıdır — "X kötü çalıştı" değil, "X'in bireysel KPI'larındaki yıllık başarısı %72". Veri ile konuşma kültürü, performans yönetimini duygusal tartışmadan çıkarır.
+    placement: "bottom"
+
+finale:
+  title: "Kullanıcı yokken boş kalır"
+  body: |
+    Bu modül kullanıcı davet ettiğin gün anlam kazanır. İlk olarak Yönetim → Kullanıcılar'dan ekibini ekle, herkese rol ata. Sonra her kullanıcının bireysel KPI'larını birlikte belirleyip atarsın. Yıl sonu performans değerlendirmesi bu verilerle bambaşka bir kalite kazanır.

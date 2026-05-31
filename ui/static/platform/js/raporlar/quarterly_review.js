@@ -14,8 +14,8 @@
         <div style="font-size:12.5px;color:#64748b;margin-top:4px;">${esc(d.period_start)} – ${esc(d.period_end)}${d.plan_year?' · Plan yılı '+d.plan_year:''}</div>`;
       document.getElementById('metrics').innerHTML = [
         stat('Ölçüm Hacmi (Q)', d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a'),
-        stat('Yeni Initiative', d.metrics.new_initiatives, '#0ea5e9'),
-        stat('Tamamlanan Initiative', d.metrics.completed_initiatives, '#10b981'),
+        stat('Yeni Stratejik Girişim', d.metrics.new_initiatives, '#0ea5e9'),
+        stat('Tamamlanan Stratejik Girişim', d.metrics.completed_initiatives, '#10b981'),
       ].join('');
       document.getElementById('ai-text').textContent = d.ai_summary;
       document.getElementById('agenda').innerHTML = '<ol style="margin:0;padding-left:20px;font-size:12.5px;color:#0f172a;line-height:1.7;">' +

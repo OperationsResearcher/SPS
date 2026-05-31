@@ -7,11 +7,15 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Süreç Yönetimi', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <script type="application/json" id="strategies-json">{{ strategies_json|tojson }}</script>
 <script type="application/json" id="users-pick-json">{{ users_pick_json|tojson }}</script>
 
-<div style="max-width:1000px; margin:0 auto;"
+<div style="max-width:1240px; margin:0 auto;"
      id="surec-index"
      data-add-url="{{ url_for('app_bp.surec_api_add') }}"
      data-delete-url-base="/process/api/delete/"
@@ -20,11 +24,13 @@
      data-can-crud-process="{{ 'true' if can_crud_process else 'false' }}"
      data-k-vektor-enabled="{{ 'true' if k_vektor_enabled else 'false' }}">
 
-    <div class="mc-page-header">
+    <div class="mc-page-header" style="margin-bottom:16px;">
         <div>
-            <h2 class="mc-page-title">Süreç Listesi</h2>
-            <p class="mc-page-subtitle">
-                {{ processes|length }} süreç görüntüleniyor
+            <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+                <i class="fas fa-sitemap" style="color:#6366f1;"></i> Süreç Yönetimi
+            </h2>
+            <p style="font-size:13px;color:#64748b;margin:0;">
+                Süreç hiyerarşisi · performans göstergeleri · faaliyetler · stratejik hizalama
                 {% if active_plan_year_val %} · <b>{{ active_plan_year_val }}</b> dönemi{% endif %}
             </p>
         </div>
@@ -64,6 +70,74 @@
         </div>
     </div>
 
+    {# ── KPI Dashboard ────────────────────────────────────────────────── #}
+    {% set _total_p = processes|length %}
+    {% set _kpi_ns = namespace(n=0) %}
+    {% for _p in processes %}{% set _kpi_ns.n = _kpi_ns.n + (_p.kpis|length) %}{% endfor %}
+    {% set _total_kpi = _kpi_ns.n %}
+    {% set _ns = namespace(sum=0, cnt=0, low=0, hi=0, no_kpi=0) %}
+    {% for _p in processes %}
+        {% set _s = (process_scores.get(_p.id) or 0)|round|int %}
+        {% set _ns.sum = _ns.sum + _s %}
+        {% set _ns.cnt = _ns.cnt + 1 %}
+        {% if _s < 50 %}{% set _ns.low = _ns.low + 1 %}{% endif %}
+        {% if _s >= 80 %}{% set _ns.hi = _ns.hi + 1 %}{% endif %}
+        {% if (_p.kpis|length) == 0 %}{% set _ns.no_kpi = _ns.no_kpi + 1 %}{% endif %}
+    {% endfor %}
+    {% set _avg = (_ns.sum / _ns.cnt)|round|int if _ns.cnt else 0 %}
+    {% set _root_cnt = roots|length %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Süreç</div>
+            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_p }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _root_cnt }} kök süreç</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam PG</div>
+            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_kpi }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _ns.no_kpi }} PG'siz süreç</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Ortalama Skor</div>
+            <div style="font-size:24px;font-weight:800;color:{% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};margin-top:4px;">%{{ _avg }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">tüm süreçler</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Yüksek Performans</div>
+            <div style="font-size:24px;font-weight:800;color:#10b981;margin-top:4px;">{{ _ns.hi }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">skor ≥ 80</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Süreç</div>
+            <div style="font-size:24px;font-weight:800;color:{% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ _ns.low }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">skor &lt; 50</div>
+        </div>
+        {% if k_vektor_enabled %}
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
+            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">K-Vektör</div>
+            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:18px;color:#8b5cf6;"></i> Aktif</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">ağırlıklı skorlama</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {# ── Arama / Hızlı Filtre ─────────────────────────────────────────── #}
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
+            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
+            <input type="search" id="surec-search" class="mc-form-input" placeholder="Süreç ara (ad veya kod)…"
+                   style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
+        </div>
+        <select id="surec-filter-skor" class="mc-form-input" style="padding:7px 10px; font-size:13px;">
+            <option value="">Tüm performanslar</option>
+            <option value="hi">Yüksek (≥80)</option>
+            <option value="mid">Orta (50-79)</option>
+            <option value="lo">Kritik (&lt;50)</option>
+            <option value="no_kpi">PG'siz</option>
+        </select>
+        <span id="surec-count-label" style="font-size:12px; color:#64748b; margin-left:auto;">{{ _total_p }} süreç</span>
+    </div>
+
     {% if roots %}
     <div id="surec-tree-view" style="display:flex; flex-direction:column; gap:10px;">
         {% macro render_process(p, depth) %}
@@ -84,6 +158,9 @@
                     </a>
                     <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
                         <span style="font-size:11.5px; color:#94a3b8;">{{ p.kpis|length }} PG</span>
+                        <svg class="pg-sparkline" data-pid="{{ p.id }}" width="58" height="18" viewBox="0 0 58 18" style="flex-shrink:0;" title="Son 3 ay PG hedef üstü oranı">
+                          <polyline class="pg-sparkline-line" points="" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+                        </svg>
                         {% set _ps = (process_scores.get(p.id) or 0)|round|int %}
                         <div class="mc-progress" style="width:80px;">
                             <div class="mc-progress-fill {% if _ps >= 80 %}success{% elif _ps >= 50 %}{% else %}warning{% endif %}"
@@ -354,21 +431,26 @@
 
     {% else %}
     <div class="mc-card">
-        <div class="mc-empty">
-            <div class="mc-empty-icon"><i class="fas fa-sitemap"></i></div>
+        <div class="mc-empty" style="padding:32px 20px;">
+            <div class="mc-empty-icon"><i class="fas fa-sitemap" style="color:#6366f1;"></i></div>
             <div class="mc-empty-title">Görüntülenecek süreç yok</div>
-            <div class="mc-empty-text">
+            <div class="mc-empty-text" style="max-width:520px; margin:0 auto;">
               {% if can_crud_process %}
-              İlk süreci ekleyerek başlayın veya size atanan bir süreç bekleyin.
+              Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri (PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur.
               {% else %}
-              Size atanan (lider/üye) bir süreç olunca burada listelenir.
+              Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. Yöneticinizden süreç ataması talep edebilirsiniz.
               {% endif %}
             </div>
-            {% if can_crud_process %}
-            <button type="button" id="btn-surec-add-empty" class="mc-btn mc-btn-primary">
-                <i class="fas fa-plus"></i> İlk Süreci Ekle
-            </button>
-            {% endif %}
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+              {% if can_crud_process %}
+              <button type="button" id="btn-surec-add-empty" class="mc-btn mc-btn-primary">
+                  <i class="fas fa-plus"></i> İlk Süreci Ekle
+              </button>
+              {% endif %}
+              <a href="/sp" class="mc-btn mc-btn-secondary mc-btn-sm">
+                <i class="fas fa-bullseye"></i> Stratejik Planlama
+              </a>
+            </div>
         </div>
     </div>
     {% endif %}
@@ -578,6 +660,77 @@
       alert("Sunucuya ulaşılamadı.");
     }
   });
+})();
+</script>
+
+{# ── PG Sparkline doldurucu (C2) ─────────────────────────────── #}
+<script>
+(function(){
+  fetch('/process/api/sparklines').then(r => r.json()).then(j => {
+    if (!j.success || !j.data) return;
+    document.querySelectorAll('.pg-sparkline').forEach(svg => {
+      const pid = parseInt(svg.dataset.pid, 10);
+      const series = j.data[pid];
+      if (!series) return;
+      const W = 58, H = 18, PAD = 2;
+      const ys = series.map(v => v == null ? null : v);
+      const valid = ys.filter(v => v != null);
+      if (!valid.length) return;
+      const min = Math.min(...valid), max = Math.max(...valid);
+      const range = (max - min) || 1;
+      const xstep = (W - 2*PAD) / Math.max(ys.length - 1, 1);
+      const pts = ys.map((v, i) => {
+        if (v == null) return null;
+        const x = PAD + i * xstep;
+        const y = PAD + (H - 2*PAD) * (1 - (v - min) / range);
+        return x + ',' + y;
+      }).filter(p => p != null);
+      const line = svg.querySelector('.pg-sparkline-line');
+      if (line && pts.length) {
+        line.setAttribute('points', pts.join(' '));
+        const last = valid[valid.length - 1];
+        const first = valid[0];
+        const color = last >= first ? '#10b981' : '#ef4444';
+        line.setAttribute('stroke', color);
+        svg.setAttribute('title', `Son 3 ay: ${valid.map(v => '%' + v).join(' → ')}`);
+      }
+    });
+  }).catch(() => {});
+})();
+</script>
+
+{# ── Arama / filtre ─────────────────────────────────────────────── #}
+<script>
+(function(){
+  const search = document.getElementById("surec-search");
+  const filter = document.getElementById("surec-filter-skor");
+  const countLbl = document.getElementById("surec-count-label");
+  const items = Array.from(document.querySelectorAll("#surec-tree-view .surec-tree-item"));
+  // Her satırın metnini ve skorunu ön bellekle
+  const meta = items.map(el => {
+    const txt = (el.innerText || "").toLowerCase();
+    const sm = el.innerText.match(/(\d+)%/);
+    const score = sm ? parseInt(sm[1], 10) : 0;
+    const noKpi = /0 PG/i.test(el.innerText);
+    return { el, txt, score, noKpi };
+  });
+  function apply(){
+    const q = (search?.value || "").trim().toLowerCase();
+    const f = filter?.value || "";
+    let shown = 0;
+    meta.forEach(m => {
+      let ok = !q || m.txt.includes(q);
+      if (ok && f === "hi") ok = m.score >= 80;
+      else if (ok && f === "mid") ok = m.score >= 50 && m.score < 80;
+      else if (ok && f === "lo") ok = m.score < 50;
+      else if (ok && f === "no_kpi") ok = m.noKpi;
+      m.el.style.display = ok ? "" : "none";
+      if (ok) shown++;
+    });
+    if (countLbl) countLbl.textContent = `${shown} süreç`;
+  }
+  search?.addEventListener("input", apply);
+  filter?.addEventListener("change", apply);
 })();
 </script>
 {% endblock %}

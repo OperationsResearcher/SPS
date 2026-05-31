@@ -201,10 +201,16 @@ sudo docker logs sps-web 2>&1 | \
   grep "No module\|OperationalError\|Listening" | head -5
 ```
 
-### GCP Bilgileri
+### Üretim (Oracle VM) — «VM» bu sunucudur
 | | |
 |-|-|
-| VM | `sps-server-v2` / zone: `europe-west3-c` |
-| IP | `34.89.231.89` |
-| Container | `sps-web` |
-| DB | `/app/instance/kokpitim.db` |
+| Sunucu | `kokpitim-v2` / `129.159.30.175` |
+| SSH | `ubuntu@129.159.30.175` |
+| Container | `kokpitim-web` |
+| DB | PostgreSQL `kokpitim_db` |
+| Detay | `docs/ORACLE-PROD-VM.md` |
+
+### GCP (eski — arşiv)
+| | |
+|-|-|
+| Instance | `sps-server-v2` (STOP) |

@@ -1,6 +1,14 @@
 {% extends "platform/base.html" %}
-{% block title %}Çok Yıllık Initiative'ler — Kokpitim{% endblock %}
-{% block page_title %}Çok Yıllık Stratejik Initiative'ler{% endblock %}
+{% block title %}Çok Yıllık Girişimler — Kokpitim{% endblock %}
+{% block page_title %}Çok Yıllık Stratejik Girişimler{% endblock %}
+
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_initiatives">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Girişimler', 'url': None}]) }}
+{% endblock %}
 
 {% block content %}
 <div style="max-width:1200px; margin:0 auto;"
@@ -11,24 +19,30 @@
   <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
-        <i class="fas fa-rocket"></i> Stratejik Initiative'ler
+        <i class="fas fa-rocket"></i> Stratejik Girişimler
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
         Birden çok yıla yayılan stratejik girişimler — yıllık plandan bağımsız yaşam döngüsü.
       </p>
     </div>
-    <button type="button" class="mc-btn mc-btn-primary" id="init-btn-new">
-      <i class="fas fa-plus"></i> Yeni Initiative
-    </button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="Hiyerarşi rehberi">
+        <i class="fas fa-circle-info"></i> Hiyerarşi Rehberi
+      </button>
+      <button type="button" class="mc-btn mc-btn-primary" id="init-btn-new" data-tour="init-new">
+        <i class="fas fa-plus"></i> Yeni Girişim
+      </button>
+    </div>
   </div>
+  {% include "platform/_hierarchy_help.html" %}
 
-  <div id="init-list"></div>
+  <div id="init-list" data-tour="init-list"></div>
 
   <!-- Modal -->
   <div class="mc-modal-overlay" id="init-modal" style="display:none;">
     <div class="mc-modal-lg">
       <div class="mc-modal-header">
-        <h3>Yeni Initiative</h3>
+        <h3>Yeni Girişim</h3>
         <button class="mc-modal-close" type="button" id="init-modal-close">✕</button>
       </div>
       <div class="mc-modal-body">
@@ -96,11 +110,11 @@
     const j = await res.json();
     const ul = document.getElementById('init-list');
     if (!j.items || j.items.length === 0) {
-      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz initiative yok.</div>';
+      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz girişim yok.</div>';
       return;
     }
     ul.innerHTML = j.items.map(i => `
-      <div class="mc-card" style="padding:16px;margin-bottom:12px;border-left:4px solid ${statusColor(i.status)};">
+      <div class="mc-card init-card" data-iid="${i.id}" style="padding:16px;margin-bottom:12px;border-left:4px solid ${statusColor(i.status)};">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;">
           <div style="flex:1;min-width:280px;">
             <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
@@ -117,10 +131,54 @@
           <div style="text-align:right;">
             <div style="font-size:24px;font-weight:700;color:#1e293b;">%${i.progress_pct.toFixed(0)}</div>
             <div style="font-size:11px;color:#64748b;">İlerleme</div>
+            <button type="button" class="init-toggle-projects mc-btn mc-btn-secondary mc-btn-sm" data-iid="${i.id}" style="margin-top:8px;">
+              <i class="fas fa-folder-open"></i> Altındaki Projeler
+            </button>
           </div>
         </div>
+        <div class="init-projects-wrap" id="init-projects-${i.id}" style="display:none; margin-top:14px; padding-top:14px; border-top:1px dashed #e2e8f0;"></div>
       </div>
     `).join('');
+    // Tıklama handler'ları
+    ul.querySelectorAll('.init-toggle-projects').forEach(btn => {
+      btn.addEventListener('click', () => loadProjects(btn.dataset.iid));
+    });
+  }
+
+  async function loadProjects(iid) {
+    const wrap = document.getElementById('init-projects-' + iid);
+    if (!wrap) return;
+    if (wrap.style.display === 'block') { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    wrap.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:10px;font-size:12px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>';
+    try {
+      const res = await fetch('/sp/api/initiatives/' + iid + '/projects');
+      const j = await res.json();
+      const items = (j.items || []);
+      if (!items.length) {
+        wrap.innerHTML = `<div style="background:#f8fafc; padding:14px; border-radius:6px; font-size:12.5px; color:#64748b;">
+          Bu stratejik girişime henüz proje bağlanmamış.
+          <a href="/project" style="color:#6366f1; font-weight:600;">Proje listesine git</a> ve oradan "Stratejik Girişim" alanına bunu seçebilirsiniz.
+        </div>`;
+        return;
+      }
+      const esc = s => String(s||'').replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+      wrap.innerHTML = `
+        <div style="font-size:11.5px; color:#64748b; text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+          Altındaki Projeler (${items.length})
+        </div>
+        <div style="display:grid; gap:6px;">
+          ${items.map(p => `
+            <a href="/project/${p.id}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#fafbfc; border:1px solid #e2e8f0; border-radius:6px; text-decoration:none; color:#1e293b; font-size:12.5px;">
+              <i class="fas fa-folder-open" style="color:#6366f1;"></i>
+              <span style="font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(p.name)}</span>
+              ${p.manager_name ? `<span style="font-size:11px; color:#94a3b8;">👤 ${esc(p.manager_name)}</span>` : ''}
+              ${p.health_score !== null && p.health_score !== undefined ? `<span style="background:${p.health_score>=75?'#dcfce7':(p.health_score>=50?'#fef3c7':'#fee2e2')}; color:${p.health_score>=75?'#166534':(p.health_score>=50?'#92400e':'#991b1b')}; padding:1px 7px; border-radius:10px; font-size:11px; font-weight:700;">%${p.health_score}</span>` : ''}
+            </a>`).join('')}
+        </div>`;
+    } catch(e) {
+      wrap.innerHTML = `<div style="color:#dc2626; font-size:12px;">Yüklenemedi: ${e.message}</div>`;
+    }
   }
 
   document.getElementById('init-btn-new').addEventListener('click', () => modal.style.display = 'flex');

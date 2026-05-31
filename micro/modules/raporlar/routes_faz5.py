@@ -295,9 +295,16 @@ def raporlar_api_onay_zinciri():
             u = db.session.get(User, i.owner_user_id)
             owner = f"{u.first_name or ''} {u.last_name or ''}".strip() or u.email if u else None
 
+        priority_tr = {
+            "high": "Yüksek", "medium": "Orta", "low": "Düşük",
+            "critical": "Kritik",
+        }.get((i.priority or "").lower(), i.priority or "—")
+
         items.append({
             "id": i.id, "code": i.code, "name": i.name,
-            "priority": i.priority, "status": i.status,
+            "priority": priority_tr,
+            "priority_raw": i.priority,
+            "status": i.status,
             "approval": approval, "approval_color": approval_color,
             "owner": owner,
             "budget": float(i.budget_total or 0),
@@ -316,3 +323,112 @@ def raporlar_api_onay_zinciri():
         "approved": by_approval.get("Onaylanmış · yürütmede", 0),
         "rejected": by_approval.get("Reddedildi", 0),
     }, "items": items})
+
+
+# ─── PG × Proje Çapraz Etki Analizi (D2) ─────────────────────────────────────
+
+@app_bp.route("/raporlar/pg-proje-etki")
+@login_required
+def raporlar_pg_proje_etki():
+    """PG × Proje çapraz etki analizi sayfası."""
+    return render_template("platform/raporlar/pg_proje_etki.html")
+
+
+@app_bp.route("/raporlar/api/pg-proje-etki")
+@login_required
+def raporlar_api_pg_proje_etki():
+    """Proje × Süreç × PG matrisini ve özet metrikleri döner."""
+    from sqlalchemy import text as _t
+    from app.extensions import db as _db
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": False, "message": "Kurum bulunamadı."}), 400
+    try:
+        # Projeler
+        proj_rows = _db.session.execute(_t("""
+            SELECT id, name, COALESCE(health_score, 0) AS health_score
+            FROM project
+            WHERE tenant_id=:t AND COALESCE(is_archived, false) = false
+            ORDER BY name LIMIT 80
+        """), {"t": tid}).fetchall()
+        projects = [{"id": r.id, "name": r.name or "", "health_score": float(r.health_score or 0)} for r in proj_rows]
+
+        # Proje × süreç bağlantıları
+        link_rows = _db.session.execute(_t("""
+            SELECT prp.project_id AS pid, p.id AS proc_id, p.code, p.name
+            FROM project_related_processes prp
+            JOIN processes p ON p.id = prp.surec_id
+            WHERE p.tenant_id=:t AND p.is_active=true
+        """), {"t": tid}).fetchall()
+        proj_processes = {}
+        all_proc_ids = set()
+        for r in link_rows:
+            proj_processes.setdefault(r.pid, []).append({
+                "id": r.proc_id, "code": r.code or "", "name": r.name or "",
+            })
+            all_proc_ids.add(r.proc_id)
+
+        # Süreç başına PG sayısı + hedef üstü/altı dağılım
+        if all_proc_ids:
+            pg_rows = _db.session.execute(_t("""
+                SELECT
+                  p.id AS proc_id,
+                  count(DISTINCT k.id) AS pg_total,
+                  count(DISTINCT k.id) FILTER (
+                    WHERE EXISTS (
+                      SELECT 1 FROM kpi_data kd
+                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                        AND kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
+                        AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
+                        AND kd.actual_value::float >= kd.target_value::float
+                    )
+                  ) AS pg_on_target
+                FROM processes p
+                JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+                WHERE p.id = ANY(:ids)
+                GROUP BY p.id
+            """), {"ids": list(all_proc_ids)}).fetchall()
+            pg_by_proc = {r.proc_id: {"total": int(r.pg_total or 0), "on_target": int(r.pg_on_target or 0)} for r in pg_rows}
+        else:
+            pg_by_proc = {}
+
+        # Proje başına agregat
+        items = []
+        for proj in projects:
+            procs = proj_processes.get(proj["id"], [])
+            total_pg = 0; on_target = 0
+            for pr in procs:
+                stat = pg_by_proc.get(pr["id"], {})
+                total_pg += stat.get("total", 0)
+                on_target += stat.get("on_target", 0)
+                pr["pg_total"] = stat.get("total", 0)
+                pr["pg_on_target"] = stat.get("on_target", 0)
+            ratio = round((on_target / total_pg) * 100, 1) if total_pg else None
+            items.append({
+                "project_id": proj["id"],
+                "project_name": proj["name"],
+                "health_score": proj["health_score"],
+                "process_count": len(procs),
+                "pg_total": total_pg,
+                "pg_on_target": on_target,
+                "pg_on_target_pct": ratio,
+                "processes": procs,
+            })
+
+        # Özet
+        total_projects = len(projects)
+        projects_with_pg = sum(1 for it in items if it["pg_total"] > 0)
+        avg_ratio = round(sum(it["pg_on_target_pct"] or 0 for it in items if it["pg_on_target_pct"] is not None) / max(projects_with_pg, 1), 1)
+        return jsonify({"success": True, "data": {
+            "items": items,
+            "summary": {
+                "projects": total_projects,
+                "projects_with_pg": projects_with_pg,
+                "projects_without_pg": total_projects - projects_with_pg,
+                "avg_pg_on_target_pct": avg_ratio,
+                "total_pg_touched": sum(it["pg_total"] for it in items),
+            }
+        }})
+    except Exception as e:
+        current_app.logger.error(f"[raporlar_api_pg_proje_etki] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Veri alınamadı."}), 500

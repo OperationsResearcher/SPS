@@ -3,7 +3,6 @@ Flask Extensions
 Tüm Flask extension'ları burada initialize edilir
 """
 
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
@@ -12,8 +11,9 @@ from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
 from flask_caching import Cache
 
-# Database
-db = SQLAlchemy()
+# Database — tek kaynak: kök extensions.py (db.init_app app/__init__.py içinde)
+from extensions import db  # noqa: F401
+
 migrate = Migrate()
 
 # Authentication

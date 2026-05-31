@@ -2933,8 +2933,17 @@
   yearSelect.addEventListener("change", async () => {
     const newYear = parseInt(yearSelect.value, 10) || new Date().getFullYear();
 
-    // Plan year sistemi aktifse: aynı sürecin hedef yıldaki klonuna git
+    // Plan year sistemi aktifse: seçilen yılı kullanıcının aktif yılı yap, sonra hedef yıldaki klonuna git
     if (PLAN_YEAR_ENABLED && RESOLVE_YEAR_URL) {
+      try {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+        await fetch("/sp/api/plan-years/set-active", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+          body: JSON.stringify({ year: newYear }),
+        });
+      } catch (e) { /* aktif yıl yazılamadıysa devam et — resolve yine çalışır */ }
+
       const pid = viewRoot.dataset.processId;
       try {
         const res = await fetch(

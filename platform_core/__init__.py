@@ -25,6 +25,9 @@ from app_platform.modules.k_radar import routes as k_radar_routes  # noqa: E402,
 from app_platform.modules.shared.ayarlar import routes as ayarlar_routes  # noqa: E402, F401
 from app_platform.modules.shared.bildirim import routes as bildirim_routes  # noqa: E402, F401
 from app_platform.modules.shared.kule import routes as kule_routes  # noqa: E402, F401
+from app_platform.modules.shared.search import routes as search_routes  # noqa: E402, F401
+from app_platform.modules.shared.my_tasks import routes as my_tasks_routes  # noqa: E402, F401
+from app_platform.modules.shared.scheduled_reports import routes as scheduled_reports_routes  # noqa: E402, F401
 from app_platform.modules.kurum import routes as kurum_routes  # noqa: E402, F401
 from app_platform.modules.bireysel import routes as bireysel_routes  # noqa: E402, F401
 from app_platform.modules.admin import routes as admin_routes  # noqa: E402, F401

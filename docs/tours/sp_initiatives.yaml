@@ -1,0 +1,54 @@
+key: sp_initiatives
+title: "Girişimler"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Girişim — vizyona giden büyük iş paketleri"
+  body: |
+    Strateji "yolu" gösterir; girişim ise o yola çıkan "araç"tır. Vizyona ulaşmak için yapacağın somut, büyük, çok aylık veya çok yıllık yatırım/proje paketleri.
+
+    Eskişehir Motor Sanayi için 3 örnek girişim:
+    1. **Elektrikli motor Ar-Ge laboratuvarı** (2026 Q2 – 2028 Q4) — "Ürün gamı" stratejisini besler
+    2. **Avrupa pazarı dağıtım ağı** (2026 Q3 – 2027 Q4) — "Pazar genişletme" stratejisini besler
+    3. **Üretim hattı dijital dönüşümü** (2026 Q1 – 2029 Q2) — "Operasyonel verimlilik" stratejisini besler
+
+    Bir girişim genellikle 6-36 ay arası yaşar, milyonluk bütçeleri olur, ekip sorumlusu vardır. Şimdi sayfayı tanıyalım.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: '[data-tour="init-new"]'
+    title: "Yeni Girişim aç"
+    body: |
+      Tıkladığında modal açılır. Şunları gireceksin:
+      • **Kod** — kısa tanımlayıcı, örn: "INIT-2026-01"
+      • **Ad** — örn: "Elektrikli Motor Ar-Ge Laboratuvarı"
+      • **Açıklama** — 1-2 paragrafta amacı ve kapsamı
+      • **Başlangıç/Bitiş Yılı** — örn: 2026 - 2028
+      • **Sorumlu** — kullanıcı listesinden seçilir (henüz kullanıcı yoksa boş bırakılır)
+      • **Bağlı Strateji** — hangi ana stratejiyi besliyor
+
+      İyi bir girişim adı somut ve eylem içerir. Kötü: "Verimlilik artırma". İyi: "Üretim hattı 2 ve 3'te SCADA kurulumu". Fark: ikincisinin yapılıp yapılmadığını yıl sonunda net görürsün.
+    placement: "bottom"
+
+  - target: '[data-tour="init-list"]'
+    title: "Girişim listesi"
+    body: |
+      Tüm girişimlerin durum renkleriyle burada görünür:
+      • **Planlama** (gri) — henüz başlamamış, hazırlık aşamasında
+      • **Devam ediyor** (mavi) — aktif çalışılıyor
+      • **Risk altında** (sarı) — bütçe veya takvim sapması var
+      • **Beklemede** (turuncu) — geçici durduruldu
+      • **Tamamlandı** (yeşil) — bitti, sonuçlar değerlendirildi
+      • **İptal** (kırmızı) — vazgeçildi
+
+      Yeni kurumda liste boş. İlk başlangıç için 1-3 girişim öneririm — fazlası dağılmaya yol açar. Az ve net her zaman çok ve karışıktan iyidir.
+    placement: "top"
+
+finale:
+  title: "Hazırsın"
+  body: |
+    Önerim Talat: bugün burada 1 tane girişim aç, örnek olarak "Elektrikli Motor Ar-Ge Laboratuvarı". Yıl 2026-2028 yaz, "Ürün gamı" stratejisine bağla. Sorumlu boş kalabilir.
+
+    Bu sayede sistemin nasıl tepki verdiğini ve görsel olarak nasıl listelendiğini görürsün. Sonra silmek istersen kolayca silebilirsin — bu sadece deneme.

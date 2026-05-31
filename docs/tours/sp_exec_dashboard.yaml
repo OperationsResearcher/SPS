@@ -1,0 +1,44 @@
+key: sp_exec_dashboard
+title: "Yönetici Paneli"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "Yönetici Paneli — uçuş ekranın"
+  body: |
+    Stratejik sağlığını tek ekranda gösteren panel. Vizyon puanı, KPI sağlığı, gecikmiş faaliyetler, kritik riskler, anomali sayısı, AI önerileri — yöneticinin "günaydın, dün neler oldu?" sorusunun cevabı buradadır.
+
+    Şu an Eskişehir Motor Sanayi'de henüz veri yok, panel doğal olarak boş görünecek. Veri biriktikçe (ilk 1-2 ay içinde) burası canlanır ve günlük ilk durağın olur.
+  cta_primary: "Bakalım"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Sağlık göstergeleri"
+    body: |
+      Panel altı ana göstergeden oluşur:
+      1. **Vizyon Puanı** — K-Vektör ağırlıklarına göre stratejilerin toplam başarısı, 1000 üzerinden
+      2. **KPI Sağlığı** — hedef üzerinde KPI yüzdesi
+      3. **Girişim Ortalaması** — devam eden girişimlerin ortalama ilerlemesi
+      4. **Gecikmiş Faaliyet** — son tarihi geçmiş ama tamamlanmamış işler
+      5. **Kritik Risk** — yüksek olasılık × yüksek etkili açık riskler
+      6. **Yüksek Anomali** — AI'ın yakaladığı olağandışı durumlar
+
+      Renk kodları: yeşil iyi gidiyor, sarı dikkat, kırmızı acil aksiyon. Pazartesi sabahları 5 dakika burayı tara, haftalık önceliklerini belirle.
+    placement: "bottom"
+
+  - target: 'body'
+    title: "AI Pivot — strateji önerisi"
+    body: |
+      Sayfanın altında "AI Pivot" düğmesi var. Tıkladığında sistem mevcut verine bakar ve şu üç senaryoda öneri üretir:
+      • Mevcut stratejiye devam etmenin maliyeti nedir?
+      • Strateji pivotu (yön değiştirme) gerekiyor mu?
+      • Hangi alternatif stratejileri düşünmelisin?
+
+      İlk veriler girilmeden önce AI'ın söyleyeceği fazla şey yoktur — boş kurumda denemen zaman kaybı olur.
+    placement: "top"
+
+finale:
+  title: "Şimdi pek görecek bir şey yok"
+  body: |
+    Veri girmeden burası boş görünür. Önce stratejilerini ve KPI'larını tanımla, en az 1 ay ölçüm girişi yap. O zaman buraya tekrar gel — fark dramatik olacak.

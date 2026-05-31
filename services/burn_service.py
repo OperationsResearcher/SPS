@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Burnup/Burndown hesapları (basitleştirilmiş)."""
 from datetime import date, timedelta
-from models import Task
+from app.models.legacy_bridge import Task
 
 
 def _task_effort(t: Task) -> float:

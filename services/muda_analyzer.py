@@ -3,7 +3,7 @@
 Muda Hunter Service - Süreç Verimsizliği Analizi
 V65.0 - Waste Eliminator
 """
-from models import db, Surec, SurecPerformansGostergesi, PerformansGostergeVeri, MudaFinding
+from app.models.legacy_bridge import db, Surec, SurecPerformansGostergesi, PerformansGostergeVeri, MudaFinding
 from sqlalchemy import func, and_, or_
 from datetime import datetime, timedelta
 

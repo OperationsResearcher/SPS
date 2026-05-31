@@ -9,7 +9,7 @@ from datetime import datetime, date
 from typing import Optional
 from flask import current_app
 from sqlalchemy import event
-from models import (
+from app.models.legacy_bridge import (
     db, Task, TaskImpact, BireyselPerformansGostergesi, 
     PerformansGostergeVeri, SurecPerformansGostergesi, TaskSubtask
 )

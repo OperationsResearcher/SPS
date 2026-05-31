@@ -3,8 +3,13 @@
 {% block page_title %}Bireysel Performans Karnem{% endblock %}
 
 {% block extra_css %}
+<meta name="kule-tour-key" content="bireysel">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/bireysel-karne.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Bireysel Performans', 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -37,6 +42,80 @@
       </div>
     </div>
   </div>
+
+  {# Kişisel İlerleme Halkaları — SVG progress rings #}
+  <div class="mc-card" style="margin-bottom:18px; padding:20px;">
+    <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap; justify-content:center;">
+      <div style="text-align:center;">
+        <svg id="karne-ring-pg" width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+          <circle id="karne-ring-pg-fg" cx="60" cy="60" r="52" fill="none" stroke="#6366f1" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+                  transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
+          <text id="karne-ring-pg-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
+                font-size="22" font-weight="800" fill="#0f172a">—</text>
+          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">PG VERİ KAPSAMI</text>
+        </svg>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">Veri girilen / toplam PG</div>
+      </div>
+      <div style="text-align:center;">
+        <svg id="karne-ring-act" width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+          <circle id="karne-ring-act-fg" cx="60" cy="60" r="52" fill="none" stroke="#10b981" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+                  transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
+          <text id="karne-ring-act-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
+                font-size="22" font-weight="800" fill="#0f172a">—</text>
+          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">FAALİYET TAMAMLAMA</text>
+        </svg>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">İşaretlenen aylar / toplam ay</div>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    const CIRC = 2 * Math.PI * 52; // 326.726
+    function updateRing(fgId, textId, pct) {
+      const fg = document.getElementById(fgId);
+      const tx = document.getElementById(textId);
+      if (!fg || !tx) return;
+      const p = Math.max(0, Math.min(100, Number(pct) || 0));
+      fg.setAttribute('stroke-dashoffset', String(CIRC * (1 - p / 100)));
+      tx.textContent = '%' + Math.round(p);
+      // Renk: kırmızı/amber/yeşil
+      const color = p >= 75 ? '#10b981' : (p >= 50 ? '#f59e0b' : '#ef4444');
+      // Ring 1 (PG) için indigo sabit, ring 2 (faaliyet) için skor renkli
+      if (fgId === 'karne-ring-act-fg') fg.setAttribute('stroke', color);
+    }
+    function readPct(id) {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const m = (el.textContent || '').match(/(\d+(?:[.,]\d+)?)/);
+      return m ? parseFloat(m[1].replace(',', '.')) : null;
+    }
+    function readRatio(num, denom) {
+      const n = parseInt(document.getElementById(num)?.textContent || '0', 10) || 0;
+      const d = parseInt(document.getElementById(denom)?.textContent || '0', 10) || 0;
+      return d > 0 ? (n / d * 100) : 0;
+    }
+    function refresh() {
+      updateRing('karne-ring-pg-fg', 'karne-ring-pg-text', readRatio('stat-filled-pg', 'stat-total-pg'));
+      const donePct = readPct('stat-done-pct');
+      updateRing('karne-ring-act-fg', 'karne-ring-act-text', donePct == null ? 0 : donePct);
+    }
+    // Stats JS tarafından doldurulur. Mutation observer ile değişimleri yakala.
+    const targets = ['stat-total-pg','stat-filled-pg','stat-activities','stat-done-pct']
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+    if ('MutationObserver' in window) {
+      const obs = new MutationObserver(refresh);
+      targets.forEach(t => obs.observe(t, { childList: true, characterData: true, subtree: true }));
+    }
+    // İlk yüklemede de dene (~1.5 sn sonra)
+    setTimeout(refresh, 1500);
+    refresh();
+  })();
+  </script>
 
   <!-- Özet istatistikler -->
   <div class="mc-grid-4" style="margin-bottom:20px;">

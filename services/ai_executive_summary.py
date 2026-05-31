@@ -5,7 +5,7 @@ Dashboard için akıllı durum özetleme
 """
 from datetime import date, datetime
 from flask import current_app
-from models import (
+from app.models.legacy_bridge import (
     db, Project, Task, ProjectRisk
 )
 from sqlalchemy import and_, or_

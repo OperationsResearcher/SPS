@@ -78,6 +78,11 @@ class Project(db.Model):
     # Bildirim Ayarları (JSON)
     notification_settings = db.Column(db.Text, nullable=True)
 
+    # Stratejik bağ — bu projenin altında olduğu stratejik girişim
+    # (Initiative = çok yıllık stratejik hamle; Project = onun operasyonel uygulayıcısı)
+    initiative_id = db.Column(db.Integer, db.ForeignKey('initiatives.id', ondelete='SET NULL'),
+                              nullable=True, index=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -100,6 +105,7 @@ class Project(db.Model):
         secondary=project_related_processes,
         backref="bagli_projeler",
     )
+    initiative = db.relationship("Initiative", foreign_keys=[initiative_id], backref="projects")
     
     def __repr__(self):
         return f'<Project {self.name}>'

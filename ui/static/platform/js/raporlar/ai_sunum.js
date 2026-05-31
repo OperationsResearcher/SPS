@@ -20,7 +20,7 @@
       document.getElementById('data-points').innerHTML = [
         dpItem('Strateji', d.strategies),
         dpItem('Süreç', d.processes),
-        dpItem('Initiative', d.initiatives),
+        dpItem('Stratejik Girişim', d.initiatives),
         dpItem('Çalışan', d.users),
         dpItem('KPI Ölçüm', d.kpi_measurements.toLocaleString('tr-TR')),
       ].join('');

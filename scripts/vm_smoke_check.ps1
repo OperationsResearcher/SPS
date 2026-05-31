@@ -1,9 +1,12 @@
+# VM = Oracle Cloud uretim (docs/ORACLE-PROD-VM.md). GCP icin -Instance/-Zone ile gcloud kullanilabilir.
 param(
-    [string]$Instance = "sps-server-v2",
-    [string]$Zone = "europe-west3-c",
-    [string]$VmAppDir = "/home/kokpitim.com/public_html",
-    [string]$BackupDir = "/home/kokpitim.com/public_html/backups",
+    [string]$OracleHost = "129.159.30.175",
+    [string]$OracleUser = "ubuntu",
+    [string]$IdentityFile = "C:\crt\ssh-key-2026-04-18_v4.key",
+    [string]$VmAppDir = "/opt/kokpitim/app",
+    [string]$BackupDir = "/opt/kokpitim/backups",
     [string]$PgDatabase = "kokpitim_db",
+    [string]$Container = "kokpitim-web",
     [string]$HealthUrl = "http://127.0.0.1/health",
     [switch]$ShowDockerLogs
 )
@@ -12,7 +15,8 @@ $ErrorActionPreference = "Stop"
 
 function Invoke-VMCommand {
     param([Parameter(Mandatory = $true)][string]$Command)
-    gcloud compute ssh $Instance --zone $Zone --command $Command
+    & ssh.exe -o StrictHostKeyChecking=no -i $IdentityFile "${OracleUser}@${OracleHost}" $Command
+    if ($LASTEXITCODE -ne 0) { throw "SSH failed" }
 }
 
 function Get-PgCount {
@@ -64,7 +68,7 @@ Invoke-VMCommand -Command "ss -ltn | sed -n '1,20p'"
 
 if ($ShowDockerLogs) {
     Write-Host "==> Docker log (son 120 satir)" -ForegroundColor Yellow
-    Invoke-VMCommand -Command "sudo docker logs sps-web --tail=120"
+    Invoke-VMCommand -Command "docker logs $Container --tail=120"
 }
 
 Write-Host ""

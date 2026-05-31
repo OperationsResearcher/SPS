@@ -1,6 +1,14 @@
 {% extends "platform/base.html" %}
 {% block title %}Senaryolar — Kokpitim{% endblock %}
-{% block page_title %}Senaryo Dalları (What-If){% endblock %}
+{% block page_title %}Senaryo Dalları{% endblock %}
+
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_scenarios">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Senaryolar', 'url': None}]) }}
+{% endblock %}
 
 {% block content %}
 <div style="max-width:1100px; margin:0 auto;"
@@ -13,7 +21,7 @@
       <i class="fas fa-code-branch"></i> Senaryo Dalları
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">
-      Bir plan yılından "iyimser / kötümser / baseline" what-if senaryoları üret. Tüm strateji/KPI/süreç kopyalanır; bağımsız düzenlenebilir.
+      Bir plan yılından "iyimser / kötümser / temel senaryo" varyasyonları üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız düzenlenebilir.
     </p>
   </div>
 
@@ -54,11 +62,13 @@
     const res = await fetch(listUrl);
     const j = await res.json();
     const items = j.items || [];
+    const STATUS_TR = { active: 'aktif', closed: 'kapalı', draft: 'taslak', archived: 'arşiv' };
+    const statusTr = (s) => STATUS_TR[s] || s || '—';
 
     // Base selector
     const baseSel = document.getElementById('sc-base');
     baseSel.innerHTML = items.filter(i => !i.is_scenario).map(i =>
-      `<option value="${i.id}">${i.year} — ${i.name || ''} (${i.status})</option>`
+      `<option value="${i.id}">${i.year} — ${i.name || ''} (${statusTr(i.status)})</option>`
     ).join('');
 
     // Grup: parent → scenarios
@@ -81,7 +91,7 @@
         <div class="mc-card" style="padding:16px;margin-bottom:12px;">
           <div style="font-size:15px;font-weight:600;color:#1e293b;">
             <i class="fas fa-calendar-alt"></i> ${p.year} — ${p.name || ''}
-            <span style="font-size:11px;color:#64748b;font-weight:400;">(${p.status})</span>
+            <span style="font-size:11px;color:#64748b;font-weight:400;">(${statusTr(p.status)})</span>
           </div>
           ${scenarios.length === 0 ?
             '<div style="color:#94a3b8;font-size:12px;margin-top:8px;">— Senaryo yok</div>' :

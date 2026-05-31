@@ -1,15 +1,27 @@
 {% extends "platform/base.html" %}
 {% block title %}2FA Kullanım — Kokpitim{% endblock %}
 {% block page_title %}2FA Kullanım Raporu{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('2FA Kullanım Raporu') }}{% endblock %}
 {% block content %}
-<div style="max-width:1100px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-key" style="color:#0ea5e9;"></i> 2FA Kullanım Raporu</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">İki adımlı doğrulama (TOTP) etkin olan kullanıcılar — güvenlik özet raporu.</p>
-    </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+
+<div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-key" style="color:#0ea5e9;"></i> 2FA Kullanım Raporu</h1>
+    <p class="mc-page-subtitle">İki adımlı doğrulama (TOTP) etkinleştirme oranı — güvenlik özet raporu</p>
   </div>
+</div>
+
+<!-- Açıklama bandı -->
+<div style="max-width:1240px;margin:0 auto 18px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#1e40af;display:flex;gap:10px;align-items:flex-start;">
+  <i class="fas fa-shield-halved" style="margin-top:2px;flex-shrink:0;"></i>
+  <div>
+    <strong>2FA (İki Adımlı Doğrulama)</strong> hesap güvenliğini önemli ölçüde artırır.
+    Özellikle yönetici hesaplarının 2FA'yı etkinleştirmemiş olması kritik bir güvenlik açığıdır.
+    Bu rapor TOTP (Google Authenticator / Authy) tabanlı doğrulamayı gösterir.
+  </div>
+</div>
+
+<div style="max-width:1240px;margin:0 auto;">
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" id="summary"></div>

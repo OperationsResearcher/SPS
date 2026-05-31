@@ -1,38 +1,91 @@
 {% extends "platform/base.html" %}
-{% block title %}Stratejik Hizalama Sankey — Kokpitim{% endblock %}
-{% block page_title %}Stratejik Hizalama Sankey{% endblock %}
+{% block title %}Stratejik Akış Haritası — Kokpitim{% endblock %}
+{% block page_title %}Stratejik Akış Haritası{% endblock %}
+
+{% block breadcrumb %}{{ mc_breadcrumb('Stratejik Akış Haritası') }}{% endblock %}
 
 {% block content %}
-<div style="max-width:1300px; margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+<div style="max-width:1300px; margin:0 auto;" id="hs-root">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
-        <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Stratejik Hizalama
-      </h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">
-        Vizyon → Strateji → Alt Strateji → Süreç akış görseli. Bant genişliği = K-Vektör ağırlığı veya katkı yüzdesi.
+      <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+        <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Stratejik Akış Haritası
+      </h2>
+      <p style="font-size:13px; color:#64748b; margin:0;">
+        <b>Vizyon → Strateji → Alt Strateji → Süreç → PG</b> akış görseli.
+        Bant kalınlığı = ağırlık/katkı · Renk = mevcut skor
       </p>
     </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary">
-      <i class="fas fa-arrow-left"></i> Raporlara Dön
-    </a>
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      {% if plan_years %}
+      <label class="mc-year-mini">
+        <i class="fas fa-calendar-days"></i>
+        <span>Yıl:</span>
+        <select id="hs-year-select" class="mc-year-sel">
+          {% for y in plan_years %}
+          <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
+      <label style="display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:#475569; white-space:nowrap;">
+        <i class="fas fa-filter" style="color:#8b5cf6;"></i>
+        <span style="white-space:nowrap;">Strateji:</span>
+        <select id="hs-strat-select" class="mc-form-input" style="padding:5px 10px; font-size:13px; min-width:160px;">
+          <option value="all">Tümü</option>
+        </select>
+      </label>
+    </div>
   </div>
 
-  <div id="loading" style="text-align:center;padding:60px;color:#64748b;">
+  <div id="hs-loading" style="text-align:center; padding:60px; color:#64748b;">
     <i class="fas fa-spinner fa-spin" style="font-size:24px;"></i>
   </div>
 
-  <div id="content" style="display:none;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
+  <div id="hs-content" style="display:none;">
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">Akış Görseli</h3>
-      <svg id="sankey" width="100%" height="700" style="overflow:visible;"></svg>
+    {# Özet kartları #}
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:14px;" id="hs-summary"></div>
+
+    {# Legend #}
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding:8px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:14px; font-size:11.5px; color:#475569;">
+      <b>Renk = mevcut skor:</b>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#10b981; border-radius:2px; vertical-align:middle;"></span> ≥75 sağlıklı</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#f59e0b; border-radius:2px; vertical-align:middle;"></span> 50-74 izle</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#ef4444; border-radius:2px; vertical-align:middle;"></span> &lt;50 kritik</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#94a3b8; border-radius:2px; vertical-align:middle;"></span> veri yok</span>
+      <span style="margin-left:auto;"><b>Bant kalınlığı</b> = K-Vektör ağırlığı / katkı yüzdesi</span>
+    </div>
+
+    {# Görsel #}
+    <div class="mc-card" style="padding:18px; overflow-x:auto;">
+      <div id="hs-col-headers" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; margin-bottom:10px; min-width:1100px;">
+        {# JS dolduracak #}
+      </div>
+      <svg id="hs-sankey" width="100%" height="780" style="overflow:visible; min-width:1100px; display:block;"></svg>
+    </div>
+
+    {# Hizalanmamış süreçler uyarı kutusu #}
+    <div id="hs-unaligned" style="display:none; background:#fef3c7; border-left:4px solid #f59e0b; padding:12px 16px; margin-top:14px; border-radius:8px;">
+      <div style="font-size:13px; font-weight:600; color:#92400e; margin-bottom:6px;">
+        <i class="fas fa-triangle-exclamation"></i> Stratejiye bağlı olmayan süreçler
+      </div>
+      <div id="hs-unaligned-list" style="display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px;"></div>
+    </div>
+
+    {# Boş durum #}
+    <div id="hs-empty" style="display:none; text-align:center; padding:40px; color:#64748b;">
+      <i class="fas fa-inbox" style="font-size:32px; color:#cbd5e1;"></i>
+      <p>Bu plan yılı için strateji veya süreç bulunamadı.</p>
     </div>
   </div>
 
-  <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
+  {# Tooltip #}
+  <div id="hs-tooltip" style="display:none; position:fixed; z-index:1000; background:#0f172a; color:#fff; padding:8px 12px; border-radius:6px; font-size:12px; line-height:1.5; pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,0.25); max-width:280px;"></div>
+
+  <div id="hs-error" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:14px; border-radius:8px; font-size:13px;"></div>
 </div>
 
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/hizalama_sankey.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/hizalama_sankey.js') }}?v={{ config['VERSION'] }}" defer></script>
 {% endblock %}

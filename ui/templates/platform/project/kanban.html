@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_views.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Kanban', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 {% set active_view = 'kanban' %}
 <div style="max-width:1280px; margin:0 auto;">

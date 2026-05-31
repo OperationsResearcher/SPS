@@ -1,8 +1,12 @@
 # VM’den yerele (Kokpitim / kokpitim.com)
 
-Bu dosya, **üretim VM’indeki kod veya verinin** geliştirme makinesine **kontrollü şekilde** alınması için referans yordamdır.  
+Bu dosya, **üretim VM’indeki** (Oracle Cloud) kod veya verinin geliştirme makinesine **kontrollü şekilde** alınması için referans yordamdır.
+
+> **VM = Oracle** (`ubuntu@129.159.30.175`, `/opt/kokpitim/...`). Eski GCP komutları arşiv.  
+> `docs/ORACLE-PROD-VM.md`
+
 Ters yön (yerel → VM): `docs/YERELDEN_VM_YAYIN.md`.  
-VM adı, zone: `docs/PROJE-MASTER.md` → bölüm 12.
+Altyapı: `docs/PROJE-MASTER.md` → bölüm 12.
 
 ---
 
@@ -19,7 +23,7 @@ VM adı, zone: `docs/PROJE-MASTER.md` → bölüm 12.
 
 ## Ön koşullar
 
-- `gcloud` CLI ile VM’e **SSH** ve **SCP** yetkisi.
+- Oracle VM’e **SSH** / **SCP** (ör. `ssh -i ... ubuntu@129.159.30.175`).
 - Yerelde: proje kökü (`C:\kokpitim`), PostgreSQL client (dump restore için).
 - **Üretim `.env`, şifreler, API anahtarları** Git’e ve paylaşılan repoya **konmaz**.
 
@@ -39,7 +43,7 @@ git pull origin main
 VM’de hangi commit’in çalıştığını görmek için (SSH oturumunda):
 
 ```bash
-cd /home/kokpitim.com/public_html && sudo git rev-parse HEAD && sudo git log -1 --oneline
+cd /opt/kokpitim/app && git rev-parse HEAD && git log -1 --oneline
 ```
 
 Yerelde aynı commit’i kullanmak:
@@ -59,7 +63,7 @@ Bu yöntem **VM dosya sisteminden kopyalamadan** en güvenli senkron yoldur.
 ## B — Kod: VM’de yerel GitHub’da olmayan değişiklikler
 
 1. SSH ile VM’ye bağlanın.
-2. `cd /home/kokpitim.com/public_html && sudo git status`
+2. `cd /opt/kokpitim/app && git status`
 3. Gerekirse yama veya tek dosya çıkarın:
 
 ```bash
@@ -71,7 +75,7 @@ sudo chmod a+r /tmp/dosya.py
 Yerel PowerShell:
 
 ```powershell
-gcloud compute scp sps-server-v2:/tmp/dosya.py C:\kokpitim\yol\dosya.py --zone=europe-west3-c
+scp -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175:/tmp/dosya.py C:\kokpitim\yol\dosya.py
 ```
 
 **Uyarı:** Sunucudaki tüm ağacı başka bir branch’e commit etmeden yerel ile ezme, iz sürülemez merge’lere yol açar. Mümkünse önce VM’de veya makinede branch + commit.
@@ -97,7 +101,7 @@ sudo chmod a+r /tmp/kokpitim_db_${TS}.dump
 ### 2) Yerel bilgisayara indirme
 
 ```powershell
-gcloud compute scp sps-server-v2:/tmp/kokpitim_db_YYYYMMDD_HHMMSS.dump C:\kokpitim\backups\ --zone=europe-west3-c
+scp -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175:/tmp/kokpitim_db_YYYYMMDD_HHMMSS.dump C:\kokpitim\backups\
 ```
 
 ### 3) Yerelde restore (özet)
@@ -116,14 +120,13 @@ Canlı veri içerir: e-posta, kişisel içerik. Mümkünse **anonimleştirilmiş
 
 ## D — `instance/` ve yüklemeler
 
-VM yol örneği: `/home/kokpitim.com/public_html/instance/` (logolar, `uploads` vb.).
+VM yolu: `/opt/kokpitim/instance/` (logolar, `uploads` vb.).
 
 ```powershell
-# Örnek: sadece tenant_logos (VM'de yol kontrol edin)
-gcloud compute scp --recurse sps-server-v2:/home/kokpitim.com/public_html/instance/uploads/tenant_logos C:\kokpitim\instance\uploads\ --zone=europe-west3-c
+scp -i C:\crt\ssh-key-2026-04-18_v4.key -r ubuntu@129.159.30.175:/opt/kokpitim/instance/uploads/tenant_logos C:\kokpitim\instance\uploads\
 ```
 
-Konteyner içi ile host volume genelde aynı mount; emin değilseniz VM’de `ls /home/kokpitim.com/public_html/instance` ile doğrulayın.
+Doğrulama (SSH): `ls -la /opt/kokpitim/instance`
 
 ---
 

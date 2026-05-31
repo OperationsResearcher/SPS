@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Dönemler', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div style="max-width:860px; margin:0 auto;"
      id="sp-donemler-root"
@@ -645,7 +649,7 @@
         </div>
       </details>`;
 
-    // ── Initiative / OKR / Bağlar özet bölümü (yıllar arası snapshot) ──
+    // ── Stratejik Girişim / OKR / Bağlar özet bölümü (yıllar arası snapshot) ──
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
       c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
     const ini = diff.initiatives || {};
@@ -663,12 +667,12 @@
     const extraSection = `
       <details ${extraChanged > 0 ? "open" : ""} style="margin-bottom:12px;">
         <summary style="cursor:pointer;padding:10px 12px;background:#f8fafc;border-radius:6px;font-size:13px;font-weight:600;color:#1e293b;list-style:none;display:flex;align-items:center;gap:6px;border:1px solid #e2e8f0;">
-          <i class="fas fa-rocket" style="color:#0ea5e9;"></i> Çok Yıllık Initiative / OKR / Bağlar ${extraBadge}
+          <i class="fas fa-rocket" style="color:#0ea5e9;"></i> Çok Yıllık Stratejik Girişim / OKR / Bağlar ${extraBadge}
         </summary>
         <div style="padding:12px;background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;">
             <div>
-              <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">🚀 Çok yıllık Initiative'ler</div>
+              <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">🚀 Çok yıllık stratejik girişim'ler</div>
               <div style="color:#64748b;font-size:12px;margin-bottom:8px;">${y1.year}: <b style="color:#0f172a;">${ini.y1_total || 0}</b> · ${y2.year}: <b style="color:#0f172a;">${ini.y2_total || 0}</b> · devam eden: <b>${ini.continuing || 0}</b></div>
               <div style="margin-top:8px;"><b style="color:#065f46;font-size:12px;">${y2.year}'de başlayan:</b> ${_list(ini.started_in_y2)}</div>
               <div style="margin-top:8px;"><b style="color:#991b1b;font-size:12px;">${y2.year}'den önce biten:</b> ${_list(ini.ended_before_y2)}</div>

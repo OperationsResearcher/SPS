@@ -4,7 +4,7 @@ Görev Aktivite Log Servisleri
 Görev değişikliklerini loglama ve audit trail
 """
 from flask import current_app
-from models import db, TaskActivity, Task
+from app.models.legacy_bridge import db, TaskActivity, Task
 import json
 
 
@@ -91,7 +91,7 @@ def log_task_status_changed(task_id, user_id, old_status, new_status):
 
 def log_task_assigned(task_id, user_id, old_assigned_user_id, new_assigned_user_id):
     """Görev atandı logla"""
-    from models import User
+    from app.models.legacy_bridge import User
     
     old_user_name = None
     if old_assigned_user_id:

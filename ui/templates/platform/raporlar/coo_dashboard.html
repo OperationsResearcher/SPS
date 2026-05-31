@@ -1,15 +1,15 @@
 {% extends "platform/base.html" %}
 {% block title %}COO Dashboard — Kokpitim{% endblock %}
 {% block page_title %}COO Dashboard{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('COO Dashboard') }}{% endblock %}
 {% block content %}
-<div style="max-width:1300px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-cogs" style="color:#0d9488;"></i> COO Dashboard</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">Süreç sağlığı, geciken faaliyetler, darboğazlar ve operasyonel olgunluk.</p>
-    </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+<div class="mc-page-header" style="max-width:1300px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-cogs" style="color:#0d9488;"></i> COO Dashboard</h1>
+    <p class="mc-page-subtitle">Süreç sağlığı, geciken faaliyetler, operasyonel darboğazlar ve olgunluk görünümü.</p>
   </div>
+</div>
+<div style="max-width:1300px;margin:0 auto;">
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="kpis"></div>

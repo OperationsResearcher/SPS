@@ -1,0 +1,192 @@
+{% extends "platform/base.html" %}
+{% block title %}PG × Proje Çapraz Etki — Kokpitim{% endblock %}
+{% block page_title %}PG × Proje Çapraz Etki Analizi{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([
+      {'label': 'K-Radar', 'url': url_for('app_bp.raporlar_index')},
+      {'label': 'PG × Proje Çapraz Etki', 'url': None}
+    ]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1240px; margin:0 auto;" id="pgx-root">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-diagram-project" style="color:#6366f1;"></i> PG × Proje Çapraz Etki Analizi
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Hangi projeler hangi PG'leri etkiliyor? Proje → bağlı süreç(ler) → o süreçlerdeki PG performansı
+      </p>
+    </div>
+    <button id="pgx-refresh" class="mc-btn mc-btn-secondary mc-btn-sm" title="Yenile">
+      <i class="fas fa-sync"></i>
+    </button>
+  </div>
+
+  <div class="mc-card" style="padding:12px 16px; margin-bottom:14px; background:#eef2ff; border-left:4px solid #6366f1;">
+    <div style="font-size:12.5px; color:#3730a3; line-height:1.5;">
+      <b>Nasıl okunur?</b> Her satır bir projedir. Sağdaki "PG hedef üstü %" sütunu, o projeye bağlı tüm süreçlerdeki PG'lerin ne kadarının hedef üstünde olduğunu özetler. Satırı genişletip etkilenen süreç ve PG sayılarını görebilirsiniz. "0 PG" olan projeler, herhangi bir süreçle bağlı değildir.
+    </div>
+  </div>
+
+  <div id="pgx-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:16px;"></div>
+
+  <div class="mc-card" style="padding:0;">
+    <div id="pgx-list-wrap" style="overflow-x:auto;">
+      <div style="text-align:center; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pgx-row { display:grid; grid-template-columns: minmax(0, 2fr) 100px 110px 130px 150px 60px; gap:8px; padding:10px 14px; border-bottom:1px solid #e2e8f0; align-items:center; cursor:pointer; transition: background 0.15s; }
+  .pgx-row:hover { background:#f8fafc; }
+  .pgx-row[data-open="1"] { background:#eef2ff; }
+  .pgx-detail { background:#f8fafc; padding:12px 16px 16px; border-bottom:1px solid #e2e8f0; }
+  .pgx-process-card { background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:8px 12px; display:flex; align-items:center; gap:10px; font-size:12.5px; }
+  .pgx-bar { height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden; min-width:80px; }
+  .pgx-bar > div { height:100%; }
+  .pgx-pct-pill { font-size:11px; font-weight:600; padding:2px 7px; border-radius:10px; white-space:nowrap; }
+</style>
+
+<script>
+(function(){
+  const wrap = document.getElementById("pgx-list-wrap");
+  const summaryEl = document.getElementById("pgx-summary");
+  function escHtml(s){ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]); }
+  function pctColor(p) {
+    if (p == null) return "#94a3b8";
+    if (p >= 75) return "#10b981";
+    if (p >= 50) return "#f59e0b";
+    return "#ef4444";
+  }
+  function pctPill(p) {
+    if (p == null) return `<span class="pgx-pct-pill" style="background:#f1f5f9; color:#64748b;">—</span>`;
+    const c = pctColor(p);
+    return `<span class="pgx-pct-pill" style="background:${c}1a; color:${c};">%${p}</span>`;
+  }
+  function bar(p) {
+    if (p == null) return '';
+    const c = pctColor(p);
+    return `<div class="pgx-bar"><div style="width:${Math.min(100,p)}%; background:${c};"></div></div>`;
+  }
+
+  async function load() {
+    wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>`;
+    try {
+      const res = await fetch("/raporlar/api/pg-proje-etki");
+      const j = await res.json();
+      if (!j.success) throw new Error(j.message || "Veri alınamadı");
+      const d = j.data;
+      const s = d.summary;
+
+      summaryEl.innerHTML = `
+        <div class="mc-card" style="padding:12px 14px;">
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Toplam Proje</div>
+          <div style="font-size:22px; font-weight:800; color:#0f172a;">${s.projects}</div>
+        </div>
+        <div class="mc-card" style="padding:12px 14px;">
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">PG'ye Bağlı Proje</div>
+          <div style="font-size:22px; font-weight:800; color:#10b981;">${s.projects_with_pg}</div>
+        </div>
+        <div class="mc-card" style="padding:12px 14px; border-left:3px solid ${s.projects_without_pg>0?'#dc2626':'#10b981'};">
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Bağsız Proje</div>
+          <div style="font-size:22px; font-weight:800; color:${s.projects_without_pg>0?'#dc2626':'#10b981'};">${s.projects_without_pg}</div>
+        </div>
+        <div class="mc-card" style="padding:12px 14px;">
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Toplam Etkilenen PG</div>
+          <div style="font-size:22px; font-weight:800; color:#0f172a;">${s.total_pg_touched}</div>
+        </div>
+        <div class="mc-card" style="padding:12px 14px;">
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Ort. PG Hedef Üstü</div>
+          <div style="font-size:22px; font-weight:800; color:${pctColor(s.avg_pg_on_target_pct)};">%${s.avg_pg_on_target_pct}</div>
+        </div>`;
+
+      if (!d.items.length) {
+        wrap.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">Bu kurumda henüz proje yok.</div>';
+        return;
+      }
+
+      // Header
+      let html = `
+        <div class="pgx-row" style="background:#f8fafc; font-weight:600; font-size:11.5px; color:#475569; text-transform:uppercase; letter-spacing:0.03em; cursor:default;">
+          <div>Proje</div>
+          <div style="text-align:center;">Süreç</div>
+          <div style="text-align:center;">PG Toplam</div>
+          <div style="text-align:center;">Hedef Üstü</div>
+          <div style="text-align:center;">Hedef Üstü %</div>
+          <div></div>
+        </div>`;
+
+      d.items.forEach((it, idx) => {
+        html += `
+          <div class="pgx-row" data-idx="${idx}">
+            <div style="display:flex; flex-direction:column; min-width:0;">
+              <a href="/project/${it.project_id}" style="font-weight:600; color:#1e293b; text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
+              <div style="font-size:11px; color:#94a3b8;">Sağlık: %${Math.round(it.health_score||0)}</div>
+            </div>
+            <div style="text-align:center; font-weight:600;">${it.process_count}</div>
+            <div style="text-align:center;">${it.pg_total}</div>
+            <div style="text-align:center; color:${pctColor(it.pg_on_target_pct)}; font-weight:600;">${it.pg_on_target}</div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${bar(it.pg_on_target_pct)}
+              ${pctPill(it.pg_on_target_pct)}
+            </div>
+            <div style="text-align:right;">
+              ${it.process_count ? '<i class="fas fa-chevron-down" style="color:#94a3b8; font-size:11px;"></i>' : ''}
+            </div>
+          </div>`;
+      });
+      wrap.innerHTML = html;
+
+      // Drilldown handler
+      wrap.addEventListener("click", (e) => {
+        const row = e.target.closest(".pgx-row[data-idx]");
+        if (!row) return;
+        const idx = parseInt(row.dataset.idx, 10);
+        const it = d.items[idx];
+        if (!it.process_count) return;
+        const isOpen = row.getAttribute("data-open") === "1";
+        // Close all
+        wrap.querySelectorAll(".pgx-row[data-open]").forEach(r => r.removeAttribute("data-open"));
+        wrap.querySelectorAll(".pgx-detail").forEach(d => d.remove());
+        if (isOpen) return;
+        row.setAttribute("data-open", "1");
+        const det = document.createElement("div");
+        det.className = "pgx-detail";
+        det.innerHTML = `
+          <div style="font-size:11.5px; color:#64748b; text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+            Bu projenin etkilediği ${it.process_count} süreç:
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:8px;">
+            ${it.processes.map(p => {
+              const pct = p.pg_total > 0 ? Math.round((p.pg_on_target / p.pg_total) * 100) : null;
+              return `
+                <a href="/process/${p.id}/karne" class="pgx-process-card" style="text-decoration:none; color:inherit;">
+                  <i class="fas fa-sitemap" style="color:#6366f1;"></i>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-weight:600; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                      ${p.code ? `<span style="background:#eef2ff; color:#4338ca; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:11px; margin-right:4px;">${escHtml(p.code)}</span>` : ''}
+                      ${escHtml(p.name)}
+                    </div>
+                    <div style="font-size:11px; color:#64748b; margin-top:2px;">${p.pg_total} PG · ${p.pg_on_target} hedef üstü</div>
+                  </div>
+                  ${pctPill(pct)}
+                </a>`;
+            }).join("")}
+          </div>`;
+        row.after(det);
+      });
+    } catch(e) {
+      wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#dc2626;">Yüklenemedi: ${escHtml(e.message)}</div>`;
+    }
+  }
+
+  document.getElementById("pgx-refresh")?.addEventListener("click", load);
+  load();
+})();
+</script>
+{% endblock %}

@@ -1,14 +1,25 @@
 {% extends "platform/base.html" %}
-{% block title %}OKR Cascade — Kokpitim{% endblock %}
-{% block page_title %}OKR Cascade{% endblock %}
+{% block title %}OKR Hizalama Akışı — Kokpitim{% endblock %}
+{% block page_title %}OKR Hizalama Akışı{% endblock %}
+
+{% block breadcrumb %}{{ mc_breadcrumb('OKR Hizalama Akışı') }}{% endblock %}
+
 {% block content %}
-<div style="max-width:1200px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+<div style="max-width:1240px; margin:0 auto;">
+  <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-tasks" style="color:#0d9488;"></i> OKR Cascade</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">Hedefler ve anahtar sonuçlar — strateji bağlantısı + KR ilerleme.</p>
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-tasks" style="color:#0d9488;"></i> OKR Hizalama Akışı
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Hedef (Objective) ve Anahtar Sonuçların (Key Result) strateji bağlantısı + ilerleme oranları
+      </p>
     </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+  </div>
+  <div class="mc-card" style="padding:12px 16px; margin-bottom:14px; background:#f0fdfa; border-left:4px solid #0d9488;">
+    <div style="font-size:12.5px; color:#134e4a; line-height:1.55;">
+      <b>OKR nedir?</b> <b>Objective</b> (Hedef) — "Ne başarmak istiyoruz?" sorusunun cevabıdır. <b>Key Result</b> (Anahtar Sonuç) — "Başardığımızı nasıl ölçeceğiz?" sorusunun cevabıdır. Bu sayfa OKR'lerin alt stratejilerle bağını ve her KR'nin yüzdesel ilerlemesini gösterir.
+    </div>
   </div>
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">

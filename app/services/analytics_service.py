@@ -141,23 +141,29 @@ class AnalyticsService:
         total_weight = 0
         weighted_score = 0
 
+        from app.utils.numeric import safe_float
+
         for kpi in kpis:
             latest_data = _latest_by_kid.get(kpi.id)
+            if not latest_data:
+                continue
+            tgt = safe_float(latest_data.target_value)
+            act = safe_float(latest_data.actual_value)
+            if tgt is None or act is None or tgt <= 0:
+                continue
+            performance = (act / tgt) * 100
+            weight = kpi.weight or 1
 
-            if latest_data and latest_data.target_value > 0:
-                performance = (latest_data.actual_value / latest_data.target_value) * 100
-                weight = kpi.weight or 1
-                
-                kpi_scores.append({
-                    'kpi_id': kpi.id,
-                    'kpi_name': kpi.name,
-                    'performance': round(performance, 2),
-                    'weight': weight,
-                    'status': AnalyticsService._get_performance_status(performance)
-                })
-                
-                weighted_score += performance * weight
-                total_weight += weight
+            kpi_scores.append({
+                'kpi_id': kpi.id,
+                'kpi_name': kpi.name,
+                'performance': round(performance, 2),
+                'weight': weight,
+                'status': AnalyticsService._get_performance_status(performance)
+            })
+
+            weighted_score += performance * weight
+            total_weight += weight
         
         overall_score = round(weighted_score / total_weight, 2) if total_weight > 0 else 0
         status = AnalyticsService._get_performance_status(overall_score)

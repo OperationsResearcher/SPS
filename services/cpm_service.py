@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import timedelta
 from collections import defaultdict, deque
 from typing import Dict, List, Tuple
-from models import Task, TaskDependency, task_predecessors
+from app.models.legacy_bridge import Task, TaskDependency, task_predecessors
 from extensions import db
 
 

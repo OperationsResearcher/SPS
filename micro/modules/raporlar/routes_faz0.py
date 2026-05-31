@@ -172,18 +172,32 @@ def raporlar_api_veri_kalitesi():
 @login_required
 def raporlar_kv_carpiklik():
     """K-Vektör Çarpıklık — strateji ağırlığı × skor uyumsuzluğu."""
-    return render_template("platform/raporlar/kv_carpiklik.html")
+    from app.services.plan_year_service import list_plan_years
+    years = []
+    active_year = None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/kv_carpiklik.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/k-vektor-carpiklik")
 @login_required
 def raporlar_api_kv_carpiklik():
     """Her ana stratejinin K-Vektör ağırlığı vs gerçek skor uyumsuzluğu."""
+    from app.services.plan_year_service import get_plan_year
     tid = current_user.tenant_id
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    active_py = get_active_plan_year_for_user(current_user)
+    # ?year= varsa o yıla geç; yoksa aktif yıl
+    year_q = request.args.get("year", type=int)
+    if year_q:
+        active_py = get_plan_year(tid, year_q)
+    else:
+        active_py = get_active_plan_year_for_user(current_user)
     py_id = active_py.id if active_py else None
 
     # Stratejiler + ağırlık
@@ -269,28 +283,62 @@ def raporlar_api_kv_carpiklik():
     })
 
 
-# ─── Rapor 3: Stratejik Hizalama Sankey ──────────────────────────────────────
+# ─── Rapor 3: Stratejik Akış Haritası ────────────────────────────────────────
 
 @app_bp.route("/raporlar/hizalama-sankey")
 @login_required
 def raporlar_hizalama_sankey():
-    return render_template("platform/raporlar/hizalama_sankey.html")
+    from app.services.plan_year_service import list_plan_years
+    years, active_year = [], None
+    if current_user.tenant_id:
+        years = [py.year for py in list_plan_years(current_user.tenant_id)]
+        apy = get_active_plan_year_for_user(current_user)
+        active_year = apy.year if apy else None
+    return render_template("platform/raporlar/hizalama_sankey.html",
+                           plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/raporlar/api/hizalama-sankey")
 @login_required
 def raporlar_api_hizalama_sankey():
-    """Vizyon → Strateji → Alt Strateji → Süreç akış verisi."""
+    """Vizyon → Strateji → Alt Strateji → Süreç → PG akış verisi (5 seviye)."""
+    from app.services.plan_year_service import get_plan_year
+    from app.models.process import ProcessKpi
+    from app.services.score_engine_service import compute_vision_score
     tid = current_user.tenant_id
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
-    active_py = get_active_plan_year_for_user(current_user)
-    py_id = active_py.id if active_py else None
 
-    # Stratejiler + ağırlık
+    # ?year= → o yılı kullan; yoksa aktif yıl
+    year_q = request.args.get("year", type=int)
+    if year_q:
+        active_py = get_plan_year(tid, year_q)
+    else:
+        active_py = get_active_plan_year_for_user(current_user)
+    py_id = active_py.id if active_py else None
+    year_val = active_py.year if active_py else None
+
+    # Skorlar
+    try:
+        bundle = compute_vision_score(tid, year=year_val, persist_pg_scores=False, plan_year=active_py)
+        strat_scores = bundle.get("strategy_scores") or {}
+        ss_scores    = bundle.get("sub_strategy_scores") or {}
+        proc_scores  = bundle.get("process_scores") or {}
+        pg_scores    = bundle.get("pg_scores") or {}
+    except Exception:
+        strat_scores = ss_scores = proc_scores = pg_scores = {}
+
+    # K-Vektör ağırlıkları
     weights = {w.strategy_id: w.weight_raw or 0 for w in
                KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}
     total_w = sum(weights.values()) or 1
+
+    def _score_color(sc):
+        if sc is None or sc == 0:
+            return "#94a3b8"
+        if sc >= 75: return "#10b981"
+        if sc >= 50: return "#f59e0b"
+        return "#ef4444"
 
     strat_q = Strategy.query.options(
         selectinload(Strategy.sub_strategies)
@@ -301,56 +349,93 @@ def raporlar_api_hizalama_sankey():
         strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
     strategies = strat_q.order_by(Strategy.code).all()
 
-    nodes = [{"id": "vision", "label": "Vizyon", "level": 0, "color": "#0f172a"}]
+    nodes = [{
+        "id": "vision", "label": "Vizyon", "level": 0, "color": "#0f172a",
+        "score": None, "weight": None, "url": "/sp",
+    }]
     links = []
     node_index = {"vision": 0}
+    pg_added = set()
+    unaligned_processes = set()
+    unaligned_pgs = set()
 
     for s in strategies:
         sid = f"s-{s.id}"
         node_index[sid] = len(nodes)
+        s_score = round(strat_scores.get(s.id, 0) or 0, 1)
+        s_weight = weights.get(s.id, 0)
         nodes.append({
-            "id": sid,
-            "label": f"{s.code or ''} {s.title}".strip()[:40],
-            "level": 1,
-            "color": "#4f46e5",
+            "id": sid, "label": f"{s.code or ''} {s.title}".strip(),
+            "level": 1, "color": _score_color(s_score),
+            "score": s_score, "weight": round(s_weight, 1), "url": "/sp",
+            "strategy_key": sid,
         })
-        w = weights.get(s.id, 0)
-        links.append({"source": 0, "target": node_index[sid], "value": round(w / total_w * 100, 1)})
+        links.append({
+            "source": 0, "target": node_index[sid],
+            "value": round((s_weight / total_w) * 100, 1) or 1,
+            "strategy_key": sid,
+        })
 
-        # Alt stratejiler
         for ss in s.sub_strategies:
             if not getattr(ss, "is_active", True):
                 continue
             ssid = f"ss-{ss.id}"
             node_index[ssid] = len(nodes)
+            ss_score = round(ss_scores.get(ss.id, 0) or 0, 1)
             nodes.append({
-                "id": ssid,
-                "label": f"{ss.code or ''} {ss.title}".strip()[:40],
-                "level": 2,
-                "color": "#8b5cf6",
+                "id": ssid, "label": f"{ss.code or ''} {ss.title}".strip(),
+                "level": 2, "color": _score_color(ss_score),
+                "score": ss_score, "weight": None, "url": "/sp",
+                "strategy_key": sid,
             })
-            links.append({"source": node_index[sid], "target": node_index[ssid], "value": 1})
+            links.append({"source": node_index[sid], "target": node_index[ssid], "value": 1, "strategy_key": sid})
 
-            # Bağlı süreçler (process_sub_strategy_links)
             for pssl in ss.process_sub_strategy_links:
                 p = pssl.process
-                if not p or not p.is_active:
+                if not p or not p.is_active or p.tenant_id != tid:
                     continue
-                if p.tenant_id != tid:
-                    continue
-                if py_id and p.plan_year_id and p.plan_year_id != py_id:
+                if py_id and p.plan_year_id is not None and p.plan_year_id != py_id:
                     continue
                 pid = f"p-{p.id}"
                 if pid not in node_index:
+                    p_score = round(proc_scores.get(p.id, 0) or 0, 1)
                     node_index[pid] = len(nodes)
                     nodes.append({
-                        "id": pid,
-                        "label": f"{p.code or ''} {p.name}".strip()[:40],
-                        "level": 3,
-                        "color": "#10b981",
+                        "id": pid, "label": f"{p.code or ''} {p.name}".strip(),
+                        "level": 3, "color": _score_color(p_score),
+                        "score": p_score, "weight": None,
+                        "url": f"/process/{p.id}/karne",
+                        "strategy_key": sid,
                     })
                 contrib = pssl.contribution_pct or 1
-                links.append({"source": node_index[ssid], "target": node_index[pid], "value": round(contrib, 1)})
+                links.append({"source": node_index[ssid], "target": node_index[pid], "value": round(contrib, 1), "strategy_key": sid})
+
+                # PG'ler
+                p_kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
+                for k in p_kpis:
+                    kid = f"k-{k.id}"
+                    if kid not in node_index:
+                        k_score = round(pg_scores.get(k.id, 0) or 0, 1) if pg_scores else None
+                        node_index[kid] = len(nodes)
+                        nodes.append({
+                            "id": kid, "label": k.name or "(adsız PG)",
+                            "level": 4, "color": _score_color(k_score),
+                            "score": k_score, "weight": None,
+                            "url": f"/process/{p.id}/karne",
+                            "strategy_key": sid,
+                        })
+                        pg_added.add(k.id)
+                    links.append({"source": node_index[pid], "target": node_index[kid], "value": 1, "strategy_key": sid})
+
+    # Hizalanmamış süreçler: tenant'taki süreçlerden link'lenmemiş olanlar
+    from app.models.process import Process
+    proc_q = Process.query.filter_by(tenant_id=tid, is_active=True)
+    if py_id:
+        proc_q = proc_q.filter(or_(Process.plan_year_id == py_id, Process.plan_year_id.is_(None)))
+    linked_pids = {int(nid.split("-",1)[1]) for nid in node_index if nid.startswith("p-")}
+    for p in proc_q.all():
+        if p.id not in linked_pids:
+            unaligned_processes.add((p.id, p.code or "", p.name or ""))
 
     return jsonify({
         "success": True,
@@ -359,11 +444,17 @@ def raporlar_api_hizalama_sankey():
             "strategy_nodes": len(strategies),
             "sub_strategy_nodes": sum(1 for n in nodes if n["level"] == 2),
             "process_nodes": sum(1 for n in nodes if n["level"] == 3),
+            "pg_nodes": sum(1 for n in nodes if n["level"] == 4),
             "total_links": len(links),
-            "plan_year": active_py.year if active_py else None,
+            "unaligned_processes": len(unaligned_processes),
+            "plan_year": year_val,
         },
+        "level_labels": ["Vizyon", "Ana Strateji", "Alt Strateji", "Süreç", "PG"],
         "nodes": nodes,
         "links": links,
+        "unaligned": {
+            "processes": [{"id": pid, "code": code, "name": name} for pid, code, name in sorted(unaligned_processes)],
+        },
     })
 
 

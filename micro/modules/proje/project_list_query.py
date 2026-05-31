@@ -11,7 +11,15 @@ from flask import Request
 from sqlalchemy import and_, exists, func, or_
 from sqlalchemy.orm import Query
 
-from models import Project, Task, db, project_leaders, project_members, project_observers, project_related_processes
+from extensions import db
+from app.models.portfolio_project import (
+    Project,
+    Task,
+    project_leaders,
+    project_members,
+    project_observers,
+    project_related_processes,
+)
 from app_platform.modules.proje.permissions import accessible_projects_query, is_privileged
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
@@ -104,7 +112,7 @@ def _base_projects_query(user, kid: int, scope: str) -> Query:
     if not is_privileged(user):
         return accessible_projects_query(Project.query, user, kid)
 
-    q = Project.query.filter(Project.kurum_id == kid, Project.is_archived.is_(False))
+    q = Project.query.filter(Project.kurum_id == kid, Project.is_archived.is_(False), Project.is_active.is_(True))
     if scope != "my":
         return q
 

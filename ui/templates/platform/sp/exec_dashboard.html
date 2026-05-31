@@ -1,28 +1,79 @@
 {% extends "platform/base.html" %}
-{% block title %}Exec Dashboard — Kokpitim{% endblock %}
+{% block title %}Yönetici Paneli — Kokpitim{% endblock %}
 {% block page_title %}Stratejik Sağlık Paneli{% endblock %}
 
+{% block extra_css %}
+<meta name="kule-tour-key" content="sp_exec_dashboard">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Yönetici Paneli', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1300px; margin:0 auto;"
+<div style="max-width:1240px; margin:0 auto;"
      id="exec-root"
      data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
      data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
 
-  {# ─── Sayfa başlığı — UI Kılavuzu §5 ──────────────────────────────────── #}
-  <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:var(--space-3);">
+  <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em;">
-        <i class="fas fa-tachometer-alt" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
-        Stratejik Sağlık Paneli
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-tachometer-alt" style="color:#6366f1;"></i> Yönetici Paneli
       </h2>
-      <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0; line-height:1.5;">
-        KPI, strateji, initiative, risk ve anomalilerin 360° görünümü. Üst yönetim için optimize.
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        PG · strateji · girişim · risk · anomali 360° görünümü — üst yönetim için optimize
+        <span id="exec-period-badge"></span>
       </p>
     </div>
-    <button class="mc-btn mc-btn-primary" id="exec-pivot-btn"
-            style="display:inline-flex; align-items:center; gap:var(--space-2);">
-      <i class="fas fa-brain"></i> AI Pivot Önerisi Al
-    </button>
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      {% if plan_years %}
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:#475569;">
+        <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
+        <span>SP Yılı:</span>
+        <select id="exec-year-select" class="mc-form-input" style="padding:5px 10px; font-size:13px; min-width:120px;">
+          {% for py in plan_years %}
+          <option value="{{ py.year }}" {% if py.year == active_year %}selected{% endif %}>{{ py.year }}{% if py.name %} — {{ py.name }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
+      <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; user-select:none;">
+        <input type="checkbox" id="exec-autorefresh" style="cursor:pointer;">
+        <span>Otomatik yenile (5 dk)</span>
+      </label>
+      <button id="exec-refresh-btn" class="mc-btn mc-btn-secondary mc-btn-sm" title="Yenile">
+        <i class="fas fa-sync"></i>
+      </button>
+      <a href="/sp/digest/weekly.pdf" target="_blank" class="mc-btn mc-btn-secondary mc-btn-sm" title="Haftalık PDF raporu">
+        <i class="fas fa-file-pdf"></i> Haftalık PDF
+      </a>
+      <button class="mc-btn mc-btn-primary mc-btn-sm" id="exec-pivot-btn">
+        <i class="fas fa-brain"></i> AI Pivot Önerisi
+      </button>
+    </div>
+  </div>
+
+  {# ── Hızlı Eylemler ── #}
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+    <a href="{{ url_for('app_bp.sp_xmatrix_page') }}" class="mc-btn mc-btn-sm" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;">
+      <i class="fas fa-th-large"></i> X-Matrix
+    </a>
+    <a href="/sp/strateji-proje-matris" class="mc-btn mc-btn-sm" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;">
+      <i class="fas fa-th"></i> Strateji × Proje
+    </a>
+    <a href="/sp/replan-triggers" class="mc-btn mc-btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;">
+      <i class="fas fa-bell"></i> Replan Tetikleyiciler
+    </a>
+    <a href="/sp/ceyreklik-review" class="mc-btn mc-btn-sm" style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;">
+      <i class="fas fa-calendar-check"></i> Çeyreklik Review
+    </a>
+    <a href="{{ url_for('app_bp.surec') }}" class="mc-btn mc-btn-sm" style="background:#fce7f3;color:#9d174d;border:1px solid #fbcfe8;">
+      <i class="fas fa-sitemap"></i> Süreç Yönetimi
+    </a>
+    <a href="{{ url_for('app_bp.k_radar_ks') }}" class="mc-btn mc-btn-sm" style="background:#ecfeff;color:#155e75;border:1px solid #a5f3fc;">
+      <i class="fas fa-satellite-dish"></i> K-Analiz
+    </a>
   </div>
 
   {# ─── HERO — tek büyük rakam, sayfa başına 1 (UI Kılavuzu §5) ─────────── #}
@@ -40,9 +91,13 @@
          flex-wrap:wrap; gap: var(--space-6); position:relative;">
 
       <div style="flex:1; min-width:240px;">
-        <div style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase;
+        <div style="display:flex; align-items:center; gap:6px; font-size: var(--text-xs); opacity:0.7; text-transform:uppercase;
              letter-spacing:0.08em; font-weight:600;">
-          Strateji Sağlık Skoru
+          <span>Strateji Sağlık Skoru</span>
+          <button type="button" class="exec-info-btn" data-info="health" title="Nasıl hesaplanıyor?"
+                  style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; font-size:10px; line-height:1;">
+            <i class="fas fa-info"></i>
+          </button>
         </div>
         <div id="exec-health" class="mc-num"
              style="font-size: var(--text-display); font-weight:800; line-height:1;
@@ -55,17 +110,35 @@
       <div style="display:grid; grid-template-columns:repeat(3, auto); gap: var(--space-8);
            font-size: var(--text-sm);">
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Aktif KPI</div>
+          <div style="display:flex; align-items:center; gap:6px; opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">
+            <span>Aktif PG</span>
+            <button type="button" class="exec-info-btn" data-info="pg" title="Nasıl hesaplanıyor?"
+                    style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; font-size:9px; line-height:1;">
+              <i class="fas fa-info"></i>
+            </button>
+          </div>
           <div id="exec-kpi-total" class="mc-num"
                style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Strateji</div>
+          <div style="display:flex; align-items:center; gap:6px; opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">
+            <span>Strateji</span>
+            <button type="button" class="exec-info-btn" data-info="strategy" title="Nasıl hesaplanıyor?"
+                    style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; font-size:9px; line-height:1;">
+              <i class="fas fa-info"></i>
+            </button>
+          </div>
           <div id="exec-strat-total" class="mc-num"
                style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Initiative</div>
+          <div style="display:flex; align-items:center; gap:6px; opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">
+            <span>Girişim</span>
+            <button type="button" class="exec-info-btn" data-info="initiative" title="Nasıl hesaplanıyor?"
+                    style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; font-size:9px; line-height:1;">
+              <i class="fas fa-info"></i>
+            </button>
+          </div>
           <div id="exec-init-total" class="mc-num"
                style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
         </div>
@@ -78,65 +151,154 @@
        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
               gap: var(--space-4); margin-bottom: var(--space-6);">
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-info);
-         transition: var(--transition-base);" data-tile="kpi">
+    <a href="/process" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-info);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="kpi" title="Süreç & PG yönetimine git">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
-           letter-spacing:0.05em; font-weight:600;">KPI Hedef Üstü</div>
+           letter-spacing:0.05em; font-weight:600;">PG Hedef Üstü</div>
       <div class="mc-skeleton" id="exec-kpi-pct-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-kpi-pct" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
-    </div>
+    </a>
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
-         transition: var(--transition-base);" data-tile="init">
+    <a href="/sp/initiatives" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="init" title="Girişim listesine git">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
-           letter-spacing:0.05em; font-weight:600;">Initiative Sağlığı</div>
+           letter-spacing:0.05em; font-weight:600;">Girişim Sağlığı</div>
       <div class="mc-skeleton" id="exec-init-avg-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-init-avg" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
-    </div>
+    </a>
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
-         transition: var(--transition-base);" data-tile="overdue">
+    <a href="/process" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="overdue" title="Süreçler ve gecikmiş faaliyetler">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">Gecikmiş Faaliyet</div>
       <div class="mc-skeleton" id="exec-overdue-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-overdue" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
-    </div>
+    </a>
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
-         transition: var(--transition-base);" data-tile="risk">
+    <a href="/k-radar/risk-management" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="risk" title="Risk yönetimine git">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">Kritik Risk</div>
       <div class="mc-skeleton" id="exec-risk-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-risk" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-risk-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
-    </div>
+    </a>
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
-         transition: var(--transition-base);" data-tile="anomaly">
+    <a href="/analiz" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="anomaly" title="Anomali analizine git">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">Yüksek Anomali</div>
       <div class="mc-skeleton" id="exec-anomaly-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-anomaly" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
-    </div>
+    </a>
 
-    <div class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-success);
-         transition: var(--transition-base);" data-tile="trigger">
+    <a href="/sp/replan-triggers" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-success);
+         transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="trigger" title="Replan tetikleyici yönetimi">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
-           letter-spacing:0.05em; font-weight:600;">Aktif Trigger</div>
+           letter-spacing:0.05em; font-weight:600;">Aktif Tetikleyici</div>
       <div class="mc-skeleton" id="exec-trigger-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-trigger" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
            color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div id="exec-trigger-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
+    </a>
+  </div>
+
+  {# ── K-Vektör Puan Gelişimi (Günlük / Aylık / Çeyreklik / Yıllık) ── #}
+  <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      <div>
+        <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+          <i class="fas fa-vector-square" style="color:#8b5cf6; margin-right:6px;"></i>
+          K-Vektör Vizyon Puanı — Gelişim
+        </h3>
+        <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Ağırlıklandırılmış strateji + PG performansının 0-100 ölçekli bütüncül skoru</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="text-align:right;">
+          <div style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Bugün</div>
+          <div id="exec-kv-current" style="font-size:30px; font-weight:800; color:#8b5cf6; line-height:1;">—</div>
+          <div style="font-size:11px; color:#94a3b8;">/ 100</div>
+        </div>
+      </div>
     </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+      <div style="background:#fafbfc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11.5px; font-weight:600; color:#475569; text-transform:uppercase;">Günlük (son 30 gün)</span>
+          <span id="exec-kv-daily-sum" style="font-size:11px; color:#64748b;"></span>
+        </div>
+        <canvas id="exec-kv-daily" style="max-height:90px;"></canvas>
+      </div>
+      <div style="background:#fafbfc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11.5px; font-weight:600; color:#475569; text-transform:uppercase;">Aylık (son 12 ay)</span>
+          <span id="exec-kv-monthly-sum" style="font-size:11px; color:#64748b;"></span>
+        </div>
+        <canvas id="exec-kv-monthly" style="max-height:90px;"></canvas>
+      </div>
+      <div style="background:#fafbfc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11.5px; font-weight:600; color:#475569; text-transform:uppercase;">Çeyreklik (son 8 çeyrek)</span>
+          <span id="exec-kv-quarterly-sum" style="font-size:11px; color:#64748b;"></span>
+        </div>
+        <canvas id="exec-kv-quarterly" style="max-height:90px;"></canvas>
+      </div>
+      <div style="background:#fafbfc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11.5px; font-weight:600; color:#475569; text-transform:uppercase;">Yıllık (son 5 yıl)</span>
+          <span id="exec-kv-yearly-sum" style="font-size:11px; color:#64748b;"></span>
+        </div>
+        <canvas id="exec-kv-yearly" style="max-height:90px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {# ── 12 Aylık Sağlık Trendi ──────────────────────────────────────── #}
+  <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+        <i class="fas fa-chart-line" style="color:#6366f1; margin-right:6px;"></i>
+        Son 12 Ay PG Hedef Üstü Oranı
+      </h3>
+      <span id="exec-trend-summary" style="font-size:11.5px; color:#64748b;"></span>
+    </div>
+    <canvas id="exec-trend-chart" style="max-height:140px;"></canvas>
+  </div>
+
+  {# ── Strateji Sıralaması (Top 5 / Bottom 5) ───────────────────────── #}
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:14px; margin-bottom:18px;">
+    <div class="mc-card" style="padding:14px 18px;">
+      <h3 style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#15803d;">
+        <i class="fas fa-trophy" style="color:#10b981; margin-right:6px;"></i>
+        En İyi 5 Strateji (PG hedef üstü %)
+      </h3>
+      <div id="exec-strat-top" style="display:grid; gap:6px;"></div>
+    </div>
+    <div class="mc-card" style="padding:14px 18px;">
+      <h3 style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#991b1b;">
+        <i class="fas fa-triangle-exclamation" style="color:#ef4444; margin-right:6px;"></i>
+        En Düşük 5 Strateji (öncelikli aksiyon)
+      </h3>
+      <div id="exec-strat-bottom" style="display:grid; gap:6px;"></div>
+    </div>
+  </div>
+
+  {# ── Otomatik Vurgular (heuristic uyarılar) ───────────────────────── #}
+  <div class="mc-card" id="exec-highlights" style="padding:14px 18px; margin-bottom:18px; border-left:4px solid #0ea5e9; display:none;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <i class="fas fa-lightbulb" style="color:#0ea5e9;"></i>
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">Bu Hafta Dikkat Edilmesi Gerekenler</h3>
+    </div>
+    <div id="exec-highlights-list" style="display:grid; gap:6px;"></div>
   </div>
 
   {# ─── AI Pivot panel ────────────────────────────────────────────────── #}
@@ -216,7 +378,7 @@
       refocus:         '🎯 Odak Daraltma',
       sunset:          '🌅 Sonlandırma',
       accelerate:      '⚡ Hızlandırma',
-      new_initiative:  '🚀 Yeni Initiative',
+      new_initiative:  '🚀 Yeni Girişim',
       risk_mitigation: '🛡️ Risk Mitigasyon',
     }[t] || t;
   }
@@ -235,19 +397,30 @@
     } catch { return iso; }
   }
 
+  // Aktif yıl (URL/seçim)
+  function getYear() {
+    const sel = document.getElementById('exec-year-select');
+    return sel?.value || '';
+  }
+
   async function loadSnapshot() {
     try {
-      const res = await fetch(r.dataset.snapshotUrl);
+      const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
+      const res = await fetch(r.dataset.snapshotUrl + yq);
       const j = await res.json();
-      if (!j.success) throw new Error(j.error || 'Snapshot alınamadı');
+      if (!j.success) throw new Error(j.error || 'Veri alınamadı');
       const s = j.snapshot;
+
+      // Plan dönemi badge
+      const pb = document.getElementById('exec-period-badge');
+      if (pb && s.year) pb.innerHTML = ' · <b>' + s.year + '</b> dönemi';
 
       // Hero
       const hEl = document.getElementById('exec-health');
       hEl.textContent = s.health_score != null ? s.health_score : '—';
       hEl.style.color = healthColor(s.health_score);
       document.getElementById('exec-generated').textContent =
-        'Üretildi: ' + fmtDate(s.generated_at);
+        'Güncellendi: ' + fmtDate(s.generated_at);
       document.getElementById('exec-kpi-total').textContent = s.kpi.total;
       document.getElementById('exec-strat-total').textContent =
         s.strategy.count + ' · ' + s.strategy.sub_count;
@@ -260,14 +433,14 @@
                          : s.kpi.on_target_pct >= 50 ? '#d97706' : '#dc2626';
       reveal('exec-kpi-pct-skel', kpiPct);
       document.getElementById('exec-kpi-detail').textContent =
-        s.kpi.with_data + ' / ' + s.kpi.total + " KPI'da veri var";
+        s.kpi.with_data + ' / ' + s.kpi.total + " PG'de veri var";
 
       const inProg = (s.initiative.by_status.in_progress) || {avg_progress:0, count:0};
       const initEl = document.getElementById('exec-init-avg');
       initEl.textContent = '%' + Math.round(inProg.avg_progress);
       reveal('exec-init-avg-skel', initEl);
       document.getElementById('exec-init-detail').textContent =
-        inProg.count + ' devam eden initiative';
+        inProg.count + ' devam eden girişim';
 
       const odEl = document.getElementById('exec-overdue');
       odEl.textContent = s.activity.overdue;
@@ -295,10 +468,50 @@
       document.getElementById('exec-trigger-detail').textContent =
         s.trigger.fired_last_7d + ' son 7 günde ateşlendi';
 
+      // ── Otomatik Vurgular (heuristic) ─────────────────────────────────
+      renderHighlights(s);
+
     } catch (err) {
       document.getElementById('exec-error-msg').textContent = 'Hata: ' + err.message;
       document.getElementById('exec-error').style.display = 'block';
     }
+  }
+
+  function renderHighlights(s) {
+    const items = [];
+    const onPct = s.kpi?.on_target_pct ?? 0;
+    if (s.health_score != null && s.health_score < 50)
+      items.push({icon:'fa-heart-pulse', color:'#dc2626', text:`Strateji sağlık skoru kritik (${s.health_score}). Pivot önerisi almanız tavsiye edilir.`});
+    if (onPct < 50)
+      items.push({icon:'fa-bullseye', color:'#dc2626', text:`PG'lerin yalnızca %${onPct}'i hedef üstünde — öncelikleri gözden geçirin.`});
+    if (s.activity?.overdue > 5)
+      items.push({icon:'fa-clock', color:'#dc2626', text:`${s.activity.overdue} gecikmiş faaliyet var — sahiplere atama yapın.`});
+    if (s.risk?.critical > 0)
+      items.push({icon:'fa-shield-halved', color:'#dc2626', text:`${s.risk.critical} kritik risk açık — risk azaltma planı gerekli.`});
+    if (s.anomaly?.high > 0)
+      items.push({icon:'fa-chart-line', color:'#f59e0b', text:`${s.anomaly.high} yüksek öncelikli PG anomalisi — kök neden analizi başlatın.`});
+    if (s.trigger?.fired_last_7d > 0)
+      items.push({icon:'fa-bell', color:'#f59e0b', text:`Son 7 günde ${s.trigger.fired_last_7d} tetikleyici ateşlendi — Replan paneline bakın.`});
+    if (s.kpi?.total > 0 && s.kpi.with_data < s.kpi.total * 0.6)
+      items.push({icon:'fa-keyboard', color:'#0ea5e9', text:`PG'lerin yalnızca %${Math.round(s.kpi.with_data/s.kpi.total*100)}'inde veri var — veri girişi disiplinini güçlendirin.`});
+
+    const box = document.getElementById('exec-highlights');
+    const list = document.getElementById('exec-highlights-list');
+    if (!box || !list) return;
+    if (!items.length) {
+      box.style.display = 'block';
+      box.style.borderLeftColor = '#10b981';
+      list.innerHTML = '<div style="display:flex; align-items:center; gap:8px; color:#047857; font-size:13px;"><i class="fas fa-check-circle"></i> Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürdürün.</div>';
+      return;
+    }
+    box.style.display = 'block';
+    box.style.borderLeftColor = '#0ea5e9';
+    list.innerHTML = items.map(it =>
+      `<div style="display:flex; align-items:flex-start; gap:8px; font-size:13px; color:#334155; padding:4px 0;">
+         <i class="fas ${it.icon}" style="color:${it.color}; margin-top:2px; flex-shrink:0;"></i>
+         <span>${it.text}</span>
+       </div>`
+    ).join('');
   }
 
   document.getElementById('exec-pivot-btn').onclick = async function() {
@@ -398,7 +611,230 @@
     }
   };
 
-  loadSnapshot();
+  // ── Sağlık trendi (son 12 ay) ───────────────────────────────────────
+  let trendChart = null;
+  async function loadTrend() {
+    try {
+      const res = await fetch('/sp/api/exec-trend');
+      const j = await res.json();
+      if (!j.success) return;
+      const canvas = document.getElementById('exec-trend-chart');
+      const sumEl = document.getElementById('exec-trend-summary');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const labels = j.data.labels;
+      const values = j.data.values;
+      const validVals = values.filter(v => v != null);
+      if (validVals.length) {
+        const last = validVals[validVals.length - 1];
+        const first = validVals[0];
+        const delta = (last - first).toFixed(1);
+        const sign = delta > 0 ? '+' : '';
+        if (sumEl) sumEl.innerHTML = `${labels.length} ay · son: <b>%${last}</b> · 12 ay değişim: <b style="color:${delta>=0?'#10b981':'#ef4444'}">${sign}${delta}</b> puan`;
+      } else if (sumEl) sumEl.textContent = 'Yeterli veri yok';
+      if (trendChart) trendChart.destroy();
+      trendChart = new Chart(canvas, {
+        type: 'line',
+        data: { labels, datasets: [{
+          label: 'PG hedef üstü %', data: values, spanGaps: true,
+          borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.10)',
+          fill: true, borderWidth: 2, tension: 0.3, pointRadius: 3,
+        }]},
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } }
+        }
+      });
+    } catch (e) { /* sessiz */ }
+  }
+
+  // ── Strateji sıralaması (Top/Bottom 5) ───────────────────────────────
+  async function loadStrategyScores() {
+    try {
+      const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
+      const res = await fetch('/sp/api/exec-strategy-scores' + yq);
+      const j = await res.json();
+      if (!j.success) return;
+      const render = (items, color) => items.length ? items.map(it => `
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 8px; background:#f8fafc; border-radius:6px; font-size:12.5px;">
+          <span style="background:#fff; border:1px solid #e2e8f0; padding:2px 6px; border-radius:4px; font-family:monospace; font-size:11px; color:#475569;">${it.code || '·'}</span>
+          <span style="flex:1; color:#1e293b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
+          <span style="color:${color}; font-weight:700;">%${it.on_target_pct}</span>
+          <span style="color:#94a3b8; font-size:11px;">(${it.pg_total} PG)</span>
+        </div>`).join('') : '<div style="font-size:12px; color:#94a3b8; padding:6px;">Veri yok</div>';
+      const topEl = document.getElementById('exec-strat-top');
+      const botEl = document.getElementById('exec-strat-bottom');
+      if (topEl) topEl.innerHTML = render(j.data.top, '#10b981');
+      if (botEl) botEl.innerHTML = render(j.data.bottom, '#dc2626');
+    } catch (e) { /* sessiz */ }
+  }
+
+  // ── K-Vektör puan gelişimi ───────────────────────────────────────────
+  const kvCharts = {};
+  function renderSparkline(id, color, labels, values) {
+    const c = document.getElementById(id);
+    if (!c || typeof Chart === 'undefined') return null;
+    if (kvCharts[id]) kvCharts[id].destroy();
+    kvCharts[id] = new Chart(c, {
+      type: 'line',
+      data: { labels, datasets: [{
+        data: values, spanGaps: true, borderColor: color,
+        backgroundColor: color + '22', fill: true, borderWidth: 2,
+        tension: 0.35, pointRadius: 2, pointHoverRadius: 4
+      }]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '%' + (ctx.parsed.y ?? '—') } } },
+        scales: { y: { min: 0, max: 100, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }
+      }
+    });
+  }
+  function deltaSummary(values) {
+    const v = values.filter(x => x != null);
+    if (v.length < 2) return v.length ? `son: <b>%${v[v.length-1]}</b>` : '';
+    const delta = (v[v.length-1] - v[0]).toFixed(1);
+    const sign = delta > 0 ? '+' : '';
+    const color = delta >= 0 ? '#10b981' : '#ef4444';
+    return `son: <b>%${v[v.length-1]}</b> · Δ <b style="color:${color}">${sign}${delta}</b>`;
+  }
+  async function loadKvektorTrend() {
+    try {
+      const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
+      const res = await fetch('/sp/api/exec-kvektor-trend' + yq);
+      const j = await res.json();
+      if (!j.success) return;
+      const d = j.data;
+      const curEl = document.getElementById('exec-kv-current');
+      if (curEl) curEl.textContent = d.current != null ? d.current : '—';
+      const cfg = [
+        ['daily',     '#8b5cf6', 'exec-kv-daily',     'exec-kv-daily-sum'],
+        ['monthly',   '#6366f1', 'exec-kv-monthly',   'exec-kv-monthly-sum'],
+        ['quarterly', '#0ea5e9', 'exec-kv-quarterly', 'exec-kv-quarterly-sum'],
+        ['yearly',    '#10b981', 'exec-kv-yearly',    'exec-kv-yearly-sum'],
+      ];
+      cfg.forEach(([k, color, cid, sid]) => {
+        const s = d[k] || {labels:[], values:[]};
+        renderSparkline(cid, color, s.labels, s.values);
+        const sumEl = document.getElementById(sid);
+        if (sumEl) sumEl.innerHTML = deltaSummary(s.values);
+      });
+    } catch (e) { /* sessiz */ }
+  }
+
+  function loadAll() {
+    loadSnapshot();
+    loadTrend();
+    loadStrategyScores();
+    loadKvektorTrend();
+  }
+
+  // SP yıl seçici: değişince aktif yılı session'a yaz + tüm panelleri yenile
+  document.getElementById('exec-year-select')?.addEventListener('change', async (e) => {
+    const newYear = parseInt(e.target.value, 10);
+    if (!newYear) return;
+    try {
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      await fetch('/sp/api/plan-years/set-active', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+        body: JSON.stringify({ year: newYear })
+      });
+    } catch (_) {}
+    loadAll();
+  });
+
+  // Yenile butonu ve otomatik yenileme
+  let autoTimer = null;
+  document.getElementById('exec-refresh-btn')?.addEventListener('click', () => {
+    const ic = document.querySelector('#exec-refresh-btn i');
+    if (ic) ic.classList.add('fa-spin');
+    Promise.allSettled([loadSnapshot(), loadTrend(), loadStrategyScores()])
+      .finally(() => setTimeout(() => ic?.classList.remove('fa-spin'), 400));
+  });
+  document.getElementById('exec-autorefresh')?.addEventListener('change', (e) => {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    if (e.target.checked) {
+      autoTimer = setInterval(loadAll, 5 * 60 * 1000); // 5 dk
+    }
+  });
+
+  // ── Hero metrik açıklama popupları ───────────────────────────────────
+  const HERO_INFO = {
+    health: {
+      title: 'Strateji Sağlık Skoru — Nasıl hesaplanıyor?',
+      html: `
+        <div style="text-align:left; font-size:13.5px; line-height:1.6;">
+          <p>Stratejinin <b>genel sağlık durumunu 0–100 ölçeğinde</b> özetler. Ağırlıklı dört bileşenden oluşur:</p>
+          <table style="width:100%; border-collapse:collapse; margin:8px 0; font-size:12.5px;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="padding:6px 8px; text-align:left; border:1px solid #e2e8f0;">Bileşen</th>
+                <th style="padding:6px 8px; text-align:right; border:1px solid #e2e8f0;">Ağırlık</th>
+                <th style="padding:6px 8px; text-align:left; border:1px solid #e2e8f0;">Hesaplama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:6px 8px;border:1px solid #e2e8f0;">PG hedef üstü oranı</td><td style="padding:6px 8px;border:1px solid #e2e8f0;text-align:right;">%40</td><td style="padding:6px 8px;border:1px solid #e2e8f0;">Gerçekleşen ≥ hedef olan PG sayısı ÷ karşılaştırılabilir toplam PG</td></tr>
+              <tr><td style="padding:6px 8px;border:1px solid #e2e8f0;">PG veri kapsamı</td><td style="padding:6px 8px;border:1px solid #e2e8f0;text-align:right;">%20</td><td style="padding:6px 8px;border:1px solid #e2e8f0;">Veri girilmiş PG sayısı ÷ toplam aktif PG</td></tr>
+              <tr><td style="padding:6px 8px;border:1px solid #e2e8f0;">Faaliyet zamanlaması</td><td style="padding:6px 8px;border:1px solid #e2e8f0;text-align:right;">%20</td><td style="padding:6px 8px;border:1px solid #e2e8f0;">100 − (gecikmiş faaliyet ÷ toplam faaliyet × 100)</td></tr>
+              <tr><td style="padding:6px 8px;border:1px solid #e2e8f0;">Kritik risk yokluğu</td><td style="padding:6px 8px;border:1px solid #e2e8f0;text-align:right;">%10</td><td style="padding:6px 8px;border:1px solid #e2e8f0;">Açık kritik risk yoksa +10 puan eklenir</td></tr>
+              <tr><td style="padding:6px 8px;border:1px solid #e2e8f0;">Yüksek anomali yokluğu</td><td style="padding:6px 8px;border:1px solid #e2e8f0;text-align:right;">%10</td><td style="padding:6px 8px;border:1px solid #e2e8f0;">Yüksek öncelikli anomali yoksa +10 puan eklenir</td></tr>
+            </tbody>
+          </table>
+          <p><b>Yorum aralıkları:</b> 75 ve üzeri sağlıklı · 50–74 yakın izleme · 50 altı acil aksiyon gerekli.</p>
+        </div>`
+    },
+    pg: {
+      title: 'Aktif PG — Açıklama',
+      html: `
+        <div style="text-align:left; font-size:13.5px; line-height:1.6;">
+          <p>Kurumunuzun <b>tüm süreçlerinde aktif olarak tanımlanmış Performans Göstergeleri</b>nin toplam sayısıdır.</p>
+          <p>PG (Performans Göstergesi), bir sürecin başarısını sayısal olarak ölçen göstergedir. Örneğin: "Müşteri memnuniyeti oranı", "İlk seferde doğru tamamlama yüzdesi", "Ortalama yanıt süresi".</p>
+          <p><b>Not:</b> Bu sayı kurum envanteri olduğundan plan dönemine bağlı değildir; "PG'de veri var" sayacı ise yalnızca seçili yıl için ölçüm girilmiş PG'leri gösterir.</p>
+        </div>`
+    },
+    strategy: {
+      title: 'Strateji & Alt Strateji — Açıklama',
+      html: `
+        <div style="text-align:left; font-size:13.5px; line-height:1.6;">
+          <p>Gösterim <b>ana strateji · alt strateji</b> şeklindedir.</p>
+          <ul style="margin:4px 0 8px 18px;">
+            <li><b>Ana strateji:</b> Kurumun yönünü belirleyen üst seviye stratejik başlıklardır (örn. "Pazar Liderliği", "Operasyonel Mükemmellik").</li>
+            <li><b>Alt strateji:</b> Her ana stratejinin altında somutlaştırılmış, ölçülebilir hedeflerdir (örn. "Pazar payını %15'e çıkarma", "Çevrim süresini %20 kısaltma").</li>
+          </ul>
+          <p>Sayım kurumun tüm aktif stratejilerini kapsar; plan dönemine bağlı değildir.</p>
+          <p><b>Sağlıklı aralık:</b> 4–8 ana strateji ve her ana strateji altında 2–4 alt strateji önerilir. Daha fazlası odak kaybına, daha azı yetersiz kapsayıcılığa yol açar.</p>
+        </div>`
+    },
+    initiative: {
+      title: 'Girişim — Açıklama',
+      html: `
+        <div style="text-align:left; font-size:13.5px; line-height:1.6;">
+          <p>Girişim; bir veya birden fazla alt stratejiyi ileri taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır. Strateji ile günlük operasyon arasındaki köprüdür.</p>
+          <p>Örnekler: "Dijital satış kanalı kurulumu", "ERP geçiş projesi", "Sıfır atık sertifikasyonu hazırlığı".</p>
+          <p>Buradaki sayı, kurumdaki <b>tüm aktif girişimlerin toplamı</b>dır (durumdan bağımsız).</p>
+          <p>Üstteki "Girişim Sağlığı" kartında ise yalnızca <b>devam eden</b> girişimlerin ortalama ilerleme yüzdesi gösterilir. Girişimler şu durumlarda olabilir: <i>Planlandı, Devam Ediyor, Beklemede, Tamamlandı, İptal, Gecikmiş</i>.</p>
+          <p><b>İpucu:</b> "X-Matrix" üzerinden girişimlerin hangi stratejilere katkı verdiğini görsel olarak takip edebilirsiniz.</p>
+        </div>`
+    }
+  };
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.exec-info-btn');
+    if (!btn) return;
+    const key = btn.getAttribute('data-info');
+    const info = HERO_INFO[key];
+    if (!info || typeof Swal === 'undefined') return;
+    Swal.fire({
+      title: info.title,
+      html: info.html,
+      icon: 'info',
+      confirmButtonText: 'Anladım',
+      width: 640,
+      customClass: { popup: 'swal-above-nested-modal' }
+    });
+  });
+
+  loadAll();
 })();
 </script>
 {% endblock %}

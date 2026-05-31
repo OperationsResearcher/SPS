@@ -1,0 +1,43 @@
+type,id,code,title,parent_id
+strategy,244,H1,"Yerli OEM'lere Klasik Motor Parça Tedariki",
+strategy,245,H2,'Üretim Kapasitesi ve Kalite Mükemmelliği',
+strategy,246,H3,'İnsan, Kültür ve Kurumsallaşma',
+strategy,247,H4,'İhracat Açılımı ve Avrupa Pazarı',
+strategy,248,H5,'Elektrikli Araç Parça Üretimi (EV Pivot)',
+strategy,249,H6,'Sürdürülebilirlik ve ESG Liderliği',
+strategy,250,H7,'Dijital Operasyon ve Endüstri 4.0',
+substrategy,1081,1.A,'Hassas Mekanik Parça Üretimi',244
+substrategy,1082,1.A.1,'Motor Blok ve Silindir Parçaları (Ford Otosan)',244
+substrategy,1083,1.A.3,'Şanzıman Dişli ve Mil Üretimi (Tofaş)',244
+substrategy,1084,2.A,'CNC + 5-Eksen İşleme Kapasitesi',245
+substrategy,1085,2.A.1,'5-Eksen İşleme Merkezi (2 → 6 adet, 2030)',245
+substrategy,1086,2.B,'Kalite Yönetim Sistemi',245
+substrategy,1087,2.B.1,'IATF 16949 + ISO 9001 Sertifika Bakımı',245
+substrategy,1088,2.B.2,'PPM <50 — Sıfır Hata Hedefi',245
+substrategy,1089,2.C,'Üretim Verimliliği',245
+substrategy,1090,2.C.1,'OEE %72 → %88 (2030)',245
+substrategy,1091,2.D,'APQP / PPAP Olgunlaştırma',245
+substrategy,1092,3.A,'Yetenek Çekme ve Tutma',246
+substrategy,1093,3.A.1,'Bursa Üniversite Stajı Programı (BUÜ, Uludağ)',246
+substrategy,1094,3.B,'Kurumsal Yönetişim',246
+substrategy,1095,3.B.1,'ISO 9001 + IATF Entegre Yönetim Sistemi Olgunlaşması',246
+substrategy,1096,3.C,'Esnek ve Hibrit Çalışma',246
+substrategy,1097,4.A,'Avrupa Tier-1 Tedarikçi Sertifikasyonu',247
+substrategy,1098,4.A.1,'Almanya VW Group Onboarding (devam)',247
+substrategy,1099,4.A.2,'CBAM Uyum Hazırlığı (2027 yürürlük)',247
+substrategy,1100,5.A,'E-Motor Stator ve Rotor Üretimi',248
+substrategy,1101,5.A.1,'Stator Lamination — Yıllık 25.000 → 80.000 adet',248
+substrategy,1102,5.A.2,'Rotor Mil + Mıknatıs Montaj',248
+substrategy,1103,5.A.3,'Hairpin Sargı Teknolojisi Lisansı (Bosch ortaklığı)',248
+substrategy,1104,5.A.4,'V2G / V2H Teknoloji İzleme',248
+substrategy,1105,5.B,'Batarya Hücre Kasası Üretimi',248
+substrategy,1106,5.B.1,'Alüminyum Pres + İşleme — TOGG Tedariki',248
+substrategy,1107,6.A,'Karbon Ayak İzi Yönetimi',249
+substrategy,1108,6.A.1,'Scope 1+2 Ölçümü ve Yıllık Raporlama',249
+substrategy,1109,6.A.2,'Çatı GES — 250 kWp (2026)',249
+substrategy,1110,6.B,'Geri Dönüşümlü Hammadde',249
+substrategy,1111,6.B.1,'Alüminyum Geri Dönüşüm %40 hedefi (batarya kasası)',249
+substrategy,1112,7.A,'Industry 4.0 Altyapı',250
+substrategy,1113,7.A.1,'Predictive Maintenance — IoT Sensör + ML Model',250
+substrategy,1114,7.A.2,'Dijital İkiz — Hat 2 Sanal Devreye Alma',250
+substrategy,1115,7.A.3,'MES + ERP Tam Entegrasyon',250

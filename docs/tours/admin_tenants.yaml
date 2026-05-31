@@ -1,0 +1,37 @@
+key: admin_tenants
+title: "Kurum Yönetimi"
+audience: ["Admin"]
+auto_show: true
+
+welcome:
+  title: "Platform genelindeki tüm kurumlar"
+  body: |
+    Bu sayfa yalnızca Platform Yöneticisi tarafından görülür. Kokpitim üzerinde abone olan tüm kurumlar (Eskişehir Motor Sanayi de dahil) burada listelenir.
+
+    Bir Bayi veya Holding kurumu, alt kurumlarını yönetebilir; ama platform genelini sadece Platform Admin görür. Yetki ayrımı buradan başlar.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Kurum tablosu"
+    body: |
+      Tabloda her satır bir kurum. Sütunlar:
+      • **Ad ve kısa ad** — kurumun resmi adı
+      • **Kurum Tipi** — Normal / Bayi / Holding (hiyerarşi için)
+      • **Üst Kurum** — varsa hangi Bayi veya Holding'in alt kurumu
+      • **Paket** — hangi abonelik paketinde (özellikler, kotalar)
+      • **Kullanıcı sayısı** — aktif kullanıcı
+      • **Plan Yılı** — kaç plan dönemi açmış
+      • **Aktiflik** — kurum aktif mi (pasifse hiç kimse giriş yapamaz)
+      • **Oluşturma Tarihi** — sisteme ne zaman katıldı
+
+      Filtre ve arama ile büyük kurum listelerinde hızlı erişirsin. Bir kurumu pasifleştirme, paketi değiştirme, hatta yöneticisinin şifresini sıfırlama buradan yapılır.
+
+      Yeni kurum açma: "Yeni Kurum" butonu → ad, tip, paket, ilk yönetici e-postası → sistem otomatik kurum + admin kullanıcı oluşturur.
+    placement: "bottom"
+
+finale:
+  title: "Yalnızca platform sahibi içindir"
+  body: |
+    Eskişehir Motor Sanayi'nin yöneticisi olarak bu sayfayı normalde görmezsin. Platform işletmecisi (Kokpitim ekibi) bayilik açar, alt kurumları izler, paket atamaları yönetir. Senin için bu sayfa bilgilendirme amaçlıdır.

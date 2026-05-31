@@ -16,7 +16,7 @@ from app.models.k_radar_domain import (
 )
 from app.models.k_radar import KRadarRecommendationAction
 from app.models.process import KpiData, Process, ProcessKpi
-from models.project import Project, Task
+from app.models.portfolio_project import Project, Task
 
 
 def _login(client, user_id: int):

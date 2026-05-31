@@ -1,15 +1,15 @@
 {% extends "platform/base.html" %}
 {% block title %}AI Strateji Hikayesi — Kokpitim{% endblock %}
 {% block page_title %}AI Strateji Hikayeleştirici{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('AI Strateji Hikayeleştirici') }}{% endblock %}
 {% block content %}
-<div style="max-width:1100px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-book" style="color:#7c3aed;"></i> AI Strateji Hikayeleştirici</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">Yıllar boyu kurum stratejik plan evriminin AI tarafından anlatımı.</p>
-    </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+<div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-book-open" style="color:#7c3aed;"></i> AI Strateji Hikayeleştirici</h1>
+    <p class="mc-page-subtitle">Kurumun stratejik plan evrimini AI anlatır — yıllık snapshot, kırılım noktaları ve narrative özet.</p>
   </div>
+</div>
+<div style="max-width:1100px;margin:0 auto;">
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> AI yıllık hikayeyi yazıyor…</div>
   <div id="content" style="display:none;">
     <div id="header" style="background:linear-gradient(135deg,#faf5ff,#fff);border:1px solid #ddd6fe;border-radius:10px;padding:20px;margin-bottom:20px;"></div>

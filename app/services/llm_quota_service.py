@@ -63,7 +63,7 @@ def check_quota(tenant_id: int, endpoint: str) -> QuotaCheckResult:
     Sırayla 5 kontrol — biri red ederse erken döner.
     """
     limits = _get_limits()
-    now = _dt.datetime.utcnow()
+    now = _dt.datetime.now()  # DB yerel saati ile tutarlı (utcnow → yanlış offset hesabı)
     today_start = _dt.datetime(now.year, now.month, now.day)
     month_start = _dt.datetime(now.year, now.month, 1)
 
@@ -225,7 +225,7 @@ def get_tenant_usage_summary(tenant_id: int) -> dict:
         or limits["tenant_monthly_cost_usd"]
     )
 
-    now = _dt.datetime.utcnow()
+    now = _dt.datetime.now()
     today_start = _dt.datetime(now.year, now.month, now.day)
     month_start = _dt.datetime(now.year, now.month, 1)
 

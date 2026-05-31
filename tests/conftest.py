@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 from app import create_app
 from app.models import db
 from app.models.core import User, Tenant, Role
+from app.models.portfolio_project import Project, Task
 from config import TestingConfig
 
 
@@ -46,7 +47,6 @@ def test_tenant(db_session):
         name='Test Tenant',
         short_name='test',
         is_active=True,
-        k_radar_enabled=True,
     )
     db_session.add(tenant)
     db_session.commit()
@@ -80,3 +80,31 @@ def test_user(db_session, test_tenant, test_role):
     db_session.add(user)
     db_session.commit()
     return user
+
+
+@pytest.fixture
+def test_project(db_session, test_tenant, test_user):
+    """Portföy projesi fixture"""
+    project = Project(
+        name="Test Project",
+        tenant_id=test_tenant.id,
+        manager_id=test_user.id,
+    )
+    db_session.add(project)
+    db_session.commit()
+    return project
+
+
+@pytest.fixture
+def test_task(db_session, test_project, test_user):
+    """Portföy görevi fixture"""
+    task = Task(
+        title="Test Task",
+        project_id=test_project.id,
+        assignee_id=test_user.id,
+        reporter_id=test_user.id,
+        status="Beklemede",
+    )
+    db_session.add(task)
+    db_session.commit()
+    return task

@@ -104,7 +104,7 @@ def fonksiyon_adi():
 
 | Öncelik | Sorun | Dosya | Ne Yapılacak |
 |---------|-------|-------|--------------|
-| 🔴 1 | FakeLimiter aktif | `extensions.py` | Gerçek Flask-Limiter'ı aç |
+| ✅ | Rate limiter | `extensions.py` | Aktif (2026-05) |
 | 🔴 2 | Hardcoded SECRET_KEY | `config.py` | env variable'a taşı |
 | 🟡 3 | SESSION_COOKIE_SECURE yok | `config.py` | Production config'e ekle |
 | 🟡 4 | Talisman init_app yok | `__init__.py` | `talisman.init_app(app)` ekle |

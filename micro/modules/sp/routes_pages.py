@@ -313,7 +313,9 @@ def sp_strateji_haritasi():
         strategy_count=len(strategies),
         sub_count=meta.get("sub", 0),
         process_count=meta.get("process", 0),
-        kpi_count=meta.get("kpi", 0),
+        pg_count=meta.get("pg", 0),
+        initiative_count=meta.get("initiative", 0),
+        proje_count=meta.get("proje", 0),
     )
 
 

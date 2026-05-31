@@ -131,6 +131,144 @@ def create_app(config_class=None):
     def _inject_safe_url_for():
         return {"safe_url_for": safe_url_for}
 
+    # K-Radar hub'ındaki kart URL'lerinin grup eşlemesi (breadcrumb için)
+    _KRADAR_GROUPS = {
+        "performans": "📊 Performans",
+        "yurutme": "🚀 Yürütme",
+        "risk": "🛡 Risk & Veri",
+        "strateji": "🎯 Strateji",
+        "ai": "🤖 AI & Üst Yönetim",
+    }
+    # (path, tab) → group_key
+    _KRADAR_URL_TO_GROUP = {
+        # Performans
+        ("/k-rapor", "kurumsal"): "performans",
+        ("/k-rapor", "surec-pg"): "performans",
+        ("/k-rapor", "pg-dagilim"): "performans",
+        ("/k-rapor", "k-vektor"): "performans",
+        ("/k-rapor", "uyum"): "performans",
+        ("/k-rapor", "strateji-kapsama"): "performans",
+        ("/raporlar/k-vektor-carpiklik", None): "performans",
+        ("/raporlar/hizalama-sankey", None): "performans",
+        ("/sp/strateji-proje-matris", None): "performans",
+        ("/raporlar/pg-proje-etki", None): "performans",
+        ("/raporlar/departman-performans", None): "performans",
+        ("/raporlar/yonetici-liderlik", None): "performans",
+        ("/raporlar/cmmi-heatmap", None): "performans",
+        ("/raporlar/hedef-revizyon", None): "performans",
+        ("/k-radar/ks", None): "performans",
+        # Yürütme
+        ("/k-rapor", "faaliyet"): "yurutme",
+        ("/k-rapor", "faaliyet-matris"): "yurutme",
+        ("/k-rapor", "aktivite-takvim"): "yurutme",
+        ("/k-rapor", "sorumlu-analiz"): "yurutme",
+        ("/k-rapor", "bireysel"): "yurutme",
+        ("/k-rapor", "evm"): "yurutme",
+        ("/raporlar/bireysel-hizalama", None): "yurutme",
+        ("/raporlar/initiative-bubble", None): "yurutme",
+        ("/raporlar/initiative-roadmap", None): "yurutme",
+        ("/raporlar/quarterly-review", None): "yurutme",
+        ("/raporlar/okr-cascade", None): "yurutme",
+        ("/raporlar/sabah-ozeti", None): "yurutme",
+        ("/raporlar/operasyon-istatistik", None): "yurutme",
+        ("/raporlar/muda-analizi", None): "yurutme",
+        # Risk & Veri
+        ("/k-rapor", "risk"): "risk",
+        ("/k-rapor", "uyari"): "risk",
+        ("/k-rapor", "veri-durumu"): "risk",
+        ("/k-rapor", "denetim"): "risk",
+        ("/k-rapor", "bildirim-analiz"): "risk",
+        ("/raporlar/risk-heatmap", None): "risk",
+        ("/raporlar/early-warning", None): "risk",
+        ("/raporlar/ml-anomaly", None): "risk",
+        ("/raporlar/veri-kalitesi", None): "risk",
+        ("/raporlar/iki-fa", None): "risk",
+        ("/raporlar/audit-paketi", None): "risk",
+        ("/raporlar/onay-zinciri", None): "risk",
+        # Strateji
+        ("/k-rapor", "stratejik-analiz"): "strateji",
+        ("/k-rapor", "swot-trend"): "strateji",
+        ("/k-rapor", "paydas"): "strateji",
+        ("/k-rapor", "rekabet"): "strateji",
+        ("/k-rapor", "kurum-karsilastirma"): "strateji",
+        ("/raporlar/vrio-portfoy", None): "strateji",
+        ("/raporlar/sektor-benchmark", None): "ai",
+        ("/raporlar/sektorel", None): "strateji",
+        ("/raporlar/sunburst", None): "strateji",
+        ("/sp/strateji-haritasi", None): "strateji",
+        ("/raporlar/evrim-filmi", None): "strateji",
+        ("/raporlar/strateji-hikayesi", None): "strateji",
+        # AI & Üst Yönetim
+        ("/raporlar/cfo-dashboard", None): "ai",
+        ("/raporlar/coo-dashboard", None): "ai",
+        ("/raporlar/chro-dashboard", None): "ai",
+        ("/raporlar/yatirimci-sunum", None): "ai",
+        ("/raporlar/stratejik-yillik", None): "ai",
+        ("/raporlar/esg-rapor", None): "ai",
+        ("/raporlar/carbon-trend", None): "ai",
+        ("/raporlar/ai-danisman", None): "ai",
+        ("/raporlar/ai-coach", None): "ai",
+        ("/raporlar/ai-sunum", None): "ai",
+        ("/raporlar/nlp-query", None): "ai",
+        ("/raporlar/bireysel-karne-batch", None): "ai",
+        ("/raporlar/mobile", None): "ai",
+        ("/raporlar/bi-connector", None): "ai",
+    }
+
+    @app.context_processor
+    def _inject_kradar_subgroup():
+        """K-Radar alt sayfalarında bağlı oldukları grubu döner (breadcrumb için)."""
+        from flask import request
+        try:
+            path = request.path
+            tab = request.args.get("tab")
+        except Exception:
+            return {"current_subgroup": None}
+        key = (path, tab) if tab else (path, None)
+        group_key = _KRADAR_URL_TO_GROUP.get(key)
+        if not group_key:
+            return {"current_subgroup": None}
+        return {"current_subgroup": {
+            "label": _KRADAR_GROUPS.get(group_key, group_key),
+            "url": "/k-radar?g=" + group_key,
+            "key": group_key,
+        }}
+
+    @app.context_processor
+    def _inject_current_section():
+        """Geçerli URL'den sidebar bölümünü çöz — breadcrumb için."""
+        from flask import request
+        # Path → (etiket, url) eşlemesi. Önek eşleşmesi sıralı; ilk eşleşen kazanır.
+        # Sıra: daha uzun/spesifik önek önce.
+        sections = [
+            ("/masaustu-launcher", "Masaüstü", "/masaustu-launcher"),
+            ("/masaustu",          "Masaüstü", "/masaustu-launcher"),
+            ("/sp",                "Stratejik Planlama", "/sp"),
+            ("/process",           "Süreç Yönetimi", "/process"),
+            ("/proje",             "Proje Yönetimi", "/project"),
+            ("/project",           "Proje Yönetimi", "/project"),
+            ("/k-radar",           "K-Radar", "/k-radar"),
+            ("/k-analiz",          "K-Radar", "/k-radar"),
+            ("/k-rapor",           "K-Radar", "/k-radar"),
+            ("/raporlar",          "K-Radar", "/k-radar"),
+            ("/bireysel",          "Bireysel Performans", "/bireysel/karne"),
+            ("/analiz",            "Performans Analitiği", "/analiz"),
+            ("/bildirim",          "Bildirimler", "/bildirim"),
+            ("/ayarlar",           "Ayarlar", "/ayarlar"),
+            ("/kurum",             "Kurum", "/kurum"),
+            ("/admin",             "Yönetim Paneli", "/admin/yonetim"),
+            ("/yonetim",           "Yönetim Paneli", "/admin/yonetim"),
+            ("/profil",            "Profil", "/profil"),
+        ]
+        try:
+            path = request.path
+        except Exception:
+            return {"current_section": None}
+        for prefix, label, url in sections:
+            if path == prefix or path.startswith(prefix + "/") or path.startswith(prefix + "?"):
+                return {"current_section": {"label": label, "url": url, "prefix": prefix, "is_root": (path == prefix or path == url)}}
+        return {"current_section": None}
+
     @app.route("/health")
     def global_health():
         """Yük dengeleyici / izleme endpoint'i."""

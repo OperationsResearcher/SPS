@@ -2,6 +2,8 @@
 {% block title %}Performans Analitiği{% endblock %}
 {% block page_title %}Performans Analitiği{% endblock %}
 
+{% block breadcrumb %}{{ mc_breadcrumb() }}{% endblock %}
+
 {% block content %}
 <div id="analiz-root"
      data-trend-base="/analiz/api/trend/"
@@ -10,26 +12,54 @@
      data-comparison-url="{{ url_for('app_bp.analiz_api_comparison') }}"
      data-anomalies-url="{{ url_for('app_bp.analiz_api_anomalies') }}"
      data-report-base="/analiz/api/report/"
-     style="max-width:1000px; margin:0 auto;">
+     style="max-width:1240px; margin:0 auto;">
 
-  <!-- Süreç seçici araç çubuğu -->
-  <div class="mc-card" style="margin-bottom:20px;">
-    <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
-      <label class="mc-label" style="margin:0; white-space:nowrap;">Süreç:</label>
-      <select id="analiz-process-select" class="mc-select" style="flex:1; max-width:320px;">
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+        <i class="fas fa-chart-bar" style="color:#6366f1;"></i> Performans Analitiği
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Süreç sağlığı · trend · tahmin · anomali tespiti — {{ processes|length }} süreç
+      </p>
+    </div>
+  </div>
+
+  <!-- Süreç seçici + Aksiyon Çubuğu -->
+  <div class="mc-card" style="margin-bottom:18px;">
+    <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+      <div style="position:relative; flex:1; min-width:260px; max-width:420px;">
+        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
+        <input id="analiz-process-search" type="search" class="mc-form-input"
+               placeholder="Süreç ara…" style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
+      </div>
+      <select id="analiz-process-select" class="mc-form-input" style="flex:1; min-width:240px; max-width:340px; font-size:13px;">
         <option value="">— Süreç Seçin —</option>
         {% for p in processes %}
-        <option value="{{ p.id }}">{{ p.code or '' }} {{ p.name }}</option>
+        <option value="{{ p.id }}">{{ (p.code ~ ' — ') if p.code else '' }}{{ p.name }}</option>
         {% endfor %}
       </select>
-      <button id="btn-load-analiz" class="mc-btn mc-btn-primary">
+      <select id="analiz-frequency" class="mc-form-input" style="font-size:13px;" title="Trend frekansı">
+        <option value="monthly">Aylık</option>
+        <option value="quarterly">Çeyreklik</option>
+        <option value="weekly">Haftalık</option>
+        <option value="daily">Günlük</option>
+      </select>
+      <select id="analiz-forecast-method" class="mc-form-input" style="font-size:13px;" title="Tahmin yöntemi">
+        <option value="linear">Doğrusal Tahmin</option>
+        <option value="moving_avg">Hareketli Ortalama</option>
+        <option value="seasonal">Mevsimsel</option>
+      </select>
+      <button id="btn-load-analiz" class="mc-btn mc-btn-primary mc-btn-sm">
         <i class="fas fa-chart-bar"></i> Analiz Et
       </button>
-      <button id="btn-anomalies" class="mc-btn mc-btn-sm" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">
+      <button id="btn-anomalies" class="mc-btn mc-btn-sm" title="Seçili sürecin (yoksa tüm) PG'lerinde anomali tara"
+              style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">
         <i class="fas fa-exclamation-triangle"></i> Anomali Tara
       </button>
-      <a href="{{ url_for('app_bp.k_radar_hub') }}" class="mc-btn mc-btn-sm" style="background:#ecfeff; color:#155e75; border:1px solid #a5f3fc;">
-        <i class="fas fa-satellite-dish"></i> K-Radar
+      <a href="{{ url_for('app_bp.k_radar_ks') }}" class="mc-btn mc-btn-sm"
+         style="background:#ecfeff; color:#155e75; border:1px solid #a5f3fc;">
+        <i class="fas fa-satellite-dish"></i> K-Analiz
       </a>
     </div>
   </div>

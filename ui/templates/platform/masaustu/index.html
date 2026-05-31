@@ -57,6 +57,23 @@
         </div>
     </div>
 
+    <!-- Yönetici Sabah Özeti Widget -->
+    {% set role_code = current_user.role.name if current_user.role else '' %}
+    {% if role_code in ['tenant_admin', 'executive_manager', 'Admin'] %}
+    <div class="mc-card masaustu-widget-panel" data-widget-id="morning-summary" style="margin-bottom:20px; border-left:4px solid #6366f1;"
+         data-morning-url="{{ url_for('app_bp.api_morning_summary') }}">
+        <div class="mc-card-header masaustu-widget-head" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="mc-card-title"><i class="fas fa-sun" style="color:#f59e0b; margin-right:6px;"></i>Yönetici Sabah Özeti</span>
+            <span id="morning-summary-date" style="font-size:12px; color:#94a3b8;"></span>
+        </div>
+        <div class="mc-card-body" id="morning-summary-body">
+            <div style="text-align:center; padding:20px; color:#94a3b8;">
+                <i class="fas fa-spinner fa-spin"></i> Yükleniyor…
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Bugünün özeti -->
     <div class="mc-card masaustu-widget-panel" data-widget-id="command" style="margin-bottom:20px;">
         <div class="mc-card-header masaustu-widget-head">
@@ -104,7 +121,7 @@
             <div class="mc-stat-sub">Aktif faaliyet</div>
         </div>
         <div class="mc-stat-card mc-stat-emerald">
-            <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="mc-stat-icon"><i class="fas fa-diagram-project"></i></div>
             <div class="mc-stat-label">Süreç PG</div>
             <div class="mc-stat-value">{{ toplam_surec_pg }}</div>
             <div class="mc-stat-sub">Üye/lider olduğunuz süreçlerdeki toplam aktif PG</div>
@@ -118,6 +135,234 @@
     </div>
 
     <div id="masaustu-sortable-root">
+
+    {# ── Benim Görevlerim (D4) ─────────────────────────────────────── #}
+    <div class="mc-card masaustu-widget-panel" data-widget-id="my-tasks" style="margin-bottom:20px;">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-list-check" style="color:#6366f1; margin-right:6px;"></i>Benim Görevlerim
+          <span id="my-tasks-counter" style="background:#eef2ff; color:#4338ca; font-size:11px; padding:1px 8px; border-radius:10px; margin-left:8px; font-weight:600;"></span>
+        </span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="my-tasks-filter" class="mc-form-input" style="font-size:12px; padding:4px 8px;">
+            <option value="all">Tümü</option>
+            <option value="overdue">Gecikmiş</option>
+            <option value="today">Bugün</option>
+            <option value="week">Bu hafta</option>
+          </select>
+          <button id="my-tasks-refresh" class="mc-btn mc-btn-sm mc-btn-secondary" title="Yenile">
+            <i class="fas fa-sync"></i>
+          </button>
+        </div>
+      </div>
+      <div class="mc-card-body" style="padding-top:8px;">
+        <div id="my-tasks-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin-bottom:12px;"></div>
+        <div id="my-tasks-list" style="display:grid; gap:6px; max-height:380px; overflow-y:auto;">
+          <div style="text-align:center; padding:14px; color:#94a3b8; font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+        </div>
+      </div>
+    </div>
+    <script>
+    (function() {
+      const listEl = document.getElementById("my-tasks-list");
+      const summaryEl = document.getElementById("my-tasks-summary");
+      const counterEl = document.getElementById("my-tasks-counter");
+      const filterEl = document.getElementById("my-tasks-filter");
+      const refreshEl = document.getElementById("my-tasks-refresh");
+      let allItems = [];
+
+      function escHtml(s){ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]); }
+      function fmtDate(iso) {
+        if (!iso) return "—";
+        try {
+          const d = new Date(iso);
+          return d.toLocaleDateString("tr-TR", { day:"2-digit", month:"short", year:"numeric" });
+        } catch(e) { return iso; }
+      }
+      function dueBadge(du) {
+        if (du == null) return '<span style="color:#94a3b8;">tarihsiz</span>';
+        if (du < 0)   return `<span style="background:#fee2e2; color:#991b1b; padding:1px 6px; border-radius:4px;">${Math.abs(du)} gün gecikme</span>`;
+        if (du === 0) return '<span style="background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:4px;">Bugün</span>';
+        if (du <= 7)  return `<span style="background:#dbeafe; color:#1e40af; padding:1px 6px; border-radius:4px;">${du} gün kaldı</span>`;
+        return `<span style="color:#64748b;">${du} gün</span>`;
+      }
+      function kindColor(kind) {
+        return { project_task: "#6366f1", individual_activity: "#0ea5e9", process_activity: "#10b981" }[kind] || "#94a3b8";
+      }
+      function applyFilter(items) {
+        const f = filterEl?.value || "all";
+        if (f === "overdue") return items.filter(i => i.days_until != null && i.days_until < 0);
+        if (f === "today")   return items.filter(i => i.days_until === 0);
+        if (f === "week")    return items.filter(i => i.days_until != null && i.days_until >= 0 && i.days_until <= 7);
+        return items;
+      }
+      function render() {
+        const items = applyFilter(allItems);
+        if (counterEl) counterEl.textContent = items.length;
+        if (!items.length) {
+          listEl.innerHTML = '<div style="text-align:center; padding:18px; color:#94a3b8; font-size:13px;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Filtreye uyan görev yok.</div>';
+          return;
+        }
+        listEl.innerHTML = items.map(it => `
+          <a href="${escHtml(it.url)}" style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#fafbfc; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#1e293b;">
+            <span style="width:3px; align-self:stretch; background:${kindColor(it.kind)}; border-radius:2px;"></span>
+            <i class="fas ${escHtml(it.icon)} fa-fw" style="color:${kindColor(it.kind)};"></i>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.title)}</div>
+              <div style="display:flex; gap:8px; font-size:11px; color:#64748b; margin-top:2px; flex-wrap:wrap;">
+                <span style="background:#fff; border:1px solid #e2e8f0; padding:1px 6px; border-radius:4px;">${escHtml(it.kind_label)}</span>
+                ${it.subtitle ? `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.subtitle)}</span>` : ""}
+                <span>·</span>
+                <span>${escHtml(it.status)}</span>
+              </div>
+            </div>
+            <div style="text-align:right; font-size:11px;">
+              <div>${dueBadge(it.days_until)}</div>
+              <div style="color:#94a3b8; margin-top:2px;">${fmtDate(it.due_date)}</div>
+            </div>
+          </a>
+        `).join("");
+      }
+      function renderSummary(d) {
+        summaryEl.innerHTML = `
+          <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; text-align:center;">
+            <div style="font-size:10px; color:#64748b; text-transform:uppercase;">Toplam</div>
+            <div style="font-size:18px; font-weight:800; color:#0f172a;">${d.total}</div>
+          </div>
+          <div style="background:#fff; border:1px solid #fecaca; border-radius:8px; padding:8px 10px; text-align:center;">
+            <div style="font-size:10px; color:#991b1b; text-transform:uppercase;">Gecikmiş</div>
+            <div style="font-size:18px; font-weight:800; color:${d.overdue>0?'#dc2626':'#10b981'};">${d.overdue}</div>
+          </div>
+          <div style="background:#fff; border:1px solid #fde68a; border-radius:8px; padding:8px 10px; text-align:center;">
+            <div style="font-size:10px; color:#92400e; text-transform:uppercase;">Bugün</div>
+            <div style="font-size:18px; font-weight:800; color:#0f172a;">${d.due_today}</div>
+          </div>
+          <div style="background:#fff; border:1px solid #c7d2fe; border-radius:8px; padding:8px 10px; text-align:center;">
+            <div style="font-size:10px; color:#3730a3; text-transform:uppercase;">Bu Hafta</div>
+            <div style="font-size:18px; font-weight:800; color:#0f172a;">${d.due_this_week}</div>
+          </div>`;
+      }
+      async function load() {
+        listEl.innerHTML = '<div style="text-align:center; padding:14px; color:#94a3b8; font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>';
+        try {
+          const res = await fetch("/api/my-tasks");
+          const j = await res.json();
+          if (!j.success) throw new Error(j.message || "Veri alınamadı");
+          allItems = j.data.items || [];
+          renderSummary(j.data);
+          render();
+        } catch(e) {
+          listEl.innerHTML = `<div style="text-align:center; padding:18px; color:#dc2626; font-size:13px;">Yüklenemedi: ${escHtml(e.message)}</div>`;
+        }
+      }
+      filterEl?.addEventListener("change", render);
+      refreshEl?.addEventListener("click", load);
+      load();
+    })();
+    </script>
+
+    {# ── Favoriler & Son Ziyaret Edilenler (B2) ─────────────────────── #}
+    <div class="mc-card masaustu-widget-panel" data-widget-id="favorites" style="margin-bottom:20px;">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-star" style="color:#f59e0b; margin-right:6px;"></i>Favoriler & Son Ziyaret Edilenler
+        </span>
+        <button type="button" id="fav-add-current" class="mc-btn mc-btn-sm mc-btn-secondary" title="Önceki sayfayı favorilere ekle">
+          <i class="fas fa-plus"></i> Son Sayfayı Pinle
+        </button>
+      </div>
+      <div class="mc-card-body" style="padding-top:8px;">
+        <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">⭐ Sabitlenmiş</div>
+        <div id="fav-pinned" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div id="fav-empty-pinned" style="font-size:12.5px; color:#94a3b8; padding:6px 0;">
+            Henüz sabitlenmiş bir sayfa yok. Bir sayfaya gidip yukarıdaki "Son Sayfayı Pinle" butonuna basın.
+          </div>
+        </div>
+        <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">⏱ Son ziyaret edilenler</div>
+        <div id="fav-recent" style="display:flex; flex-wrap:wrap; gap:8px;">
+          <div id="fav-empty-recent" style="font-size:12.5px; color:#94a3b8; padding:6px 0;">
+            Henüz ziyaret kaydı yok. Sayfalar arasında gezdikçe burada listelenecek.
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      .fav-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; font-size:12.5px; color:#1e293b; text-decoration:none; transition:background 0.15s; }
+      .fav-chip:hover { background:#eef2ff; color:#4338ca; border-color:#c7d2fe; }
+      .fav-chip i.fa-fw { color:#64748b; }
+      .fav-chip .fav-remove { color:#cbd5e1; cursor:pointer; padding:0 2px; font-size:11px; }
+      .fav-chip .fav-remove:hover { color:#dc2626; }
+      [data-theme="dark"] .fav-chip { background:#1e293b; border-color:#334155; color:#e2e8f0; }
+      [data-theme="dark"] .fav-chip:hover { background:#312e81; color:#a5b4fc; }
+    </style>
+    <script>
+    (function() {
+      const PIN_KEY = "kk_pinned_pages";
+      const REC_KEY = "kk_recent_pages";
+      function read(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch(e) { return []; } }
+      function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+      function escHtml(s){ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]); }
+      function chip(item, pinned) {
+        const icon = item.icon || "fa-circle";
+        return `<a class="fav-chip" href="${escHtml(item.url)}">
+                  <i class="fas ${escHtml(icon)} fa-fw"></i>
+                  <span>${escHtml(item.title)}</span>
+                  ${pinned ? `<span class="fav-remove" data-url="${escHtml(item.url)}" title="Sabitten kaldır">✕</span>` : ""}
+                </a>`;
+      }
+      function render() {
+        const pins = read(PIN_KEY);
+        const recs = read(REC_KEY);
+        const pinnedEl = document.getElementById("fav-pinned");
+        const recentEl = document.getElementById("fav-recent");
+        const emp1 = document.getElementById("fav-empty-pinned");
+        const emp2 = document.getElementById("fav-empty-recent");
+        if (pins.length) {
+          pinnedEl.innerHTML = pins.map(p => chip(p, true)).join("");
+        } else {
+          pinnedEl.innerHTML = '';
+          pinnedEl.appendChild(emp1 || document.createElement("div"));
+        }
+        const pinUrls = new Set(pins.map(p => p.url));
+        const rec_filtered = recs.filter(r => !pinUrls.has(r.url)).slice(0, 8);
+        if (rec_filtered.length) {
+          recentEl.innerHTML = rec_filtered.map(r => chip(r, false)).join("");
+        } else {
+          recentEl.innerHTML = '';
+          recentEl.appendChild(emp2 || document.createElement("div"));
+        }
+      }
+      // Sabitten kaldır
+      document.getElementById("fav-pinned")?.addEventListener("click", e => {
+        const rm = e.target.closest(".fav-remove");
+        if (!rm) return;
+        e.preventDefault(); e.stopPropagation();
+        const url = rm.dataset.url;
+        const pins = read(PIN_KEY).filter(p => p.url !== url);
+        write(PIN_KEY, pins);
+        render();
+      });
+      // "Son Sayfayı Pinle" — recent listesindeki en güncel sayfayı pin'e ekle
+      document.getElementById("fav-add-current")?.addEventListener("click", () => {
+        const recs = read(REC_KEY);
+        if (!recs.length) {
+          if (window.Swal) Swal.fire({toast:true, position:"top-end", icon:"info", title:"Önce bir sayfayı ziyaret edin.", timer:2500, showConfirmButton:false});
+          return;
+        }
+        const last = recs[0];
+        const pins = read(PIN_KEY);
+        if (pins.find(p => p.url === last.url)) {
+          if (window.Swal) Swal.fire({toast:true, position:"top-end", icon:"info", title:"Bu sayfa zaten sabitlenmiş.", timer:2000, showConfirmButton:false});
+          return;
+        }
+        pins.unshift({ title: last.title, url: last.url, icon: last.icon });
+        write(PIN_KEY, pins.slice(0, 12));
+        render();
+        if (window.Swal) Swal.fire({toast:true, position:"top-end", icon:"success", title:`"${last.title}" sabitlendi`, timer:2000, showConfirmButton:false});
+      });
+      render();
+    })();
+    </script>
 
     <!-- Hızlı işlemler -->
     <div class="mc-card masaustu-widget-panel" data-widget-id="quick" style="margin-bottom:20px;">

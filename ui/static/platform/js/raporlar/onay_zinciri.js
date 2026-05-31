@@ -15,16 +15,20 @@
         stat('Onaylanmış',s.approved,'#10b981'),
         stat('Reddedilen',s.rejected,s.rejected>0?'#dc2626':'#94a3b8'),
       ].join('');
-      document.getElementById('tbl').innerHTML = j.items.map(i => `
-        <tr style="border-bottom:1px solid #f1f5f9;">
-          <td style="padding:10px;color:#0f172a;font-weight:600;">${esc(i.code||'')}</td>
-          <td style="padding:10px;color:#475569;">${esc(i.name)}</td>
-          <td style="padding:10px;"><span style="background:${i.approval_color};color:#fff;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;">${esc(i.approval)}</span></td>
-          <td style="padding:10px;color:#475569;font-size:11px;font-weight:600;">${esc(i.priority||'—')}</td>
+      const prioColor = {'Kritik':'#dc2626','Yüksek':'#f97316','Orta':'#f59e0b','Düşük':'#94a3b8'};
+      document.getElementById('tbl').innerHTML = j.items.map(i => {
+        const pc = prioColor[i.priority] || '#64748b';
+        const progColor = i.progress >= 80 ? '#10b981' : i.progress >= 40 ? '#f59e0b' : '#ef4444';
+        return `<tr style="border-bottom:1px solid #f1f5f9;">
+          <td style="padding:10px;color:#6366f1;font-weight:700;font-size:11.5px;">${esc(i.code||'—')}</td>
+          <td style="padding:10px;color:#0f172a;font-weight:600;">${esc(i.name)}</td>
+          <td style="padding:10px;"><span style="background:${i.approval_color};color:#fff;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;">${esc(i.approval)}</span></td>
+          <td style="padding:10px;"><span style="color:${pc};font-weight:700;font-size:11.5px;">${esc(i.priority||'—')}</span></td>
           <td style="padding:10px;color:#475569;font-size:11.5px;">${esc(i.owner||'—')}</td>
-          <td style="padding:10px;text-align:right;color:#475569;">₺${fmt(i.budget)}</td>
-          <td style="padding:10px;text-align:right;color:#10b981;font-weight:600;">%${i.progress}</td>
-        </tr>`).join('');
+          <td style="padding:10px;text-align:right;color:#475569;font-size:12px;">₺${fmt(i.budget)}</td>
+          <td style="padding:10px;text-align:right;font-weight:700;color:${progColor};font-size:12px;">%${i.progress}</td>
+        </tr>`;
+      }).join('');
     } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent='Hata: '+e.message; }
   }
   load();

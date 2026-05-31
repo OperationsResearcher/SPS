@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block error_title %}Hata{% endblock %} — Kokpitim</title>
+    <link rel="stylesheet"
+        href="{{ url_for('app_bp.static', filename='platform/vendor/fontawesome/all.min.css') }}?v={{ config.get('VERSION', '1') }}">
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; background: #f8fafc; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .err-card { max-width: 480px; width: 100%; background: #fff; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        .err-card h1 { font-size: 48px; margin: 0 0 8px; color: #dc2626; }
+        .err-card p { color: #64748b; margin: 0 0 24px; }
+        .err-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .err-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; }
+        .err-btn-primary { background: #6366f1; color: #fff; }
+        .err-btn-secondary { background: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body>
+    <div class="err-card">
+        {% block error_body %}{% endblock %}
+        <div class="err-actions">
+            <a href="{{ url_for('app_bp.masaustu') }}" class="err-btn err-btn-primary">
+                <i class="fas fa-home"></i> Masaüstü
+            </a>
+            <a href="javascript:history.back()" class="err-btn err-btn-secondary">
+                <i class="fas fa-arrow-left"></i> Geri
+            </a>
+        </div>
+    </div>
+</body>
+</html>

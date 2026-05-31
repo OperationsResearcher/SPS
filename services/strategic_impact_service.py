@@ -7,7 +7,7 @@ from flask import current_app
 from sqlalchemy import func, case
 
 from extensions import cache
-from models import (
+from app.models.legacy_bridge import (
     db,
     AnaStrateji,
     AltStrateji,

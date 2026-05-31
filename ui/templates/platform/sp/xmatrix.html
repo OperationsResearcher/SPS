@@ -6,6 +6,10 @@
 <meta name="kule-tour-key" content="sp_xmatrix">
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'X-Matrix', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div style="max-width:1400px; margin:0 auto;"
      id="xm-root"
@@ -50,14 +54,14 @@
     //               [ KPI başlıkları (W) — sütun ]
     //  [ Strateji (N) - satır ]   ●  ●          [ SubStr (E) — sütun ]
     //                                            (yan sağda)
-    //               [ Initiative (S) — satır altta ]
+    //               [ Stratejik Girişim (S) — satır altta ]
     //
     // Sadeleştirme: 4 ayrı tablo yerine **tek HTML tablosu**:
     //   sütunlar : (boş)   | KPI x len(W)               | SubStrategy x len(E)
     //   satırlar :
     //     1. başlıklar (KPI kodları üst)
     //     2. tek tek N (Strategy)  — hücrelerde NW ve NE işaretlerini koyar
-    //     3. Initiative satırları — SW ve ES işaretleri
+    //     3. Stratejik girişim satırları — SW ve ES işaretleri
     //     4. SubStrategy başlıkları en sağ sütun kodları zaten ilk satırda
 
     const html = [];
@@ -84,7 +88,7 @@
       html.push('</tr>');
     });
 
-    // Initiative (South) rows
+    // Stratejik Girişim (South) rows
     S.forEach(s => {
       const color = s.progress_pct >= 70 ? '#10b981' : s.progress_pct >= 30 ? '#f59e0b' : '#ef4444';
       html.push(`<tr><td title="${s.name}" style="padding:6px;background:#db2777;color:#fff;border:1px solid #9d174d;font-size:10px;">🚀 ${shortLabel(s.name, 28)} <span style="background:rgba(0,0,0,0.2);padding:1px 4px;border-radius:3px;">%${Math.round(s.progress_pct)}</span></td>`);

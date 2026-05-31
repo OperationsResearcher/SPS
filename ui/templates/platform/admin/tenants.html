@@ -2,6 +2,14 @@
 {% block title %}Kurum Yönetimi{% endblock %}
 {% block page_title %}Kurum Yönetimi{% endblock %}
 
+{% block extra_css %}
+<meta name="kule-tour-key" content="admin_tenants">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Kurumlar', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div id="admin-tenants-root"
      data-add-url="{{ url_for('app_bp.admin_tenants_add') }}"

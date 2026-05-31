@@ -1,15 +1,15 @@
 {% extends "platform/base.html" %}
 {% block title %}ESG Rapor (GRI/CDP/TCFD) — Kokpitim{% endblock %}
 {% block page_title %}ESG Yıllık Rapor (GRI/CDP/TCFD){% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('ESG Yıllık Rapor') }}{% endblock %}
 {% block content %}
-<div style="max-width:1100px;margin:0 auto;">
-  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;"><i class="fas fa-globe" style="color:#16a34a;"></i> ESG Yıllık Rapor</h1>
-      <p style="font-size:13px;color:#64748b;margin:0;">GRI 102/305/403 + TCFD iklim risk standartlarına uygun PDF rapor.</p>
-    </div>
-    <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Raporlara Dön</a>
+<div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
+  <div class="mc-page-header-left">
+    <h1 class="mc-page-title"><i class="fas fa-leaf" style="color:#16a34a;"></i> ESG Yıllık Rapor</h1>
+    <p class="mc-page-subtitle">GRI 102/305/403 + TCFD iklim risk standartlarına uygun PDF — yatırımcı ve denetçi hazır.</p>
   </div>
+</div>
+<div style="max-width:1100px;margin:0 auto;">
   <div style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
     <div>
       <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">YATIRIMCI / DENETÇI HAZIR · PDF</div>

@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-03-26T08:30:56.939036+00:00",
+  "snapshot": "pre",
+  "tables": {
+    "tenants": {
+      "label": "Kurum",
+      "count": 18
+    },
+    "users": {
+      "label": "Kullanıcı",
+      "count": 77
+    },
+    "roles": {
+      "label": "Rol",
+      "count": 5
+    },
+    "processes": {
+      "label": "Süreç",
+      "count": 55
+    },
+    "process_kpis": {
+      "label": "Süreç KPI",
+      "count": 345
+    },
+    "kpi_data": {
+      "label": "KPI Veri",
+      "count": 4689
+    },
+    "individual_performance_indicators": {
+      "label": "Bireysel KPI",
+      "count": 124
+    },
+    "individual_activities": {
+      "label": "Bireysel Faaliyet",
+      "count": 0
+    },
+    "individual_kpi_data": {
+      "label": "Bireysel KPI Veri",
+      "count": 1293
+    },
+    "project": {
+      "label": "Proje",
+      "count": 6
+    },
+    "task": {
+      "label": "Görev",
+      "count": 20
+    }
+  }
+}

@@ -27,14 +27,14 @@
             <div style="font-weight:700;color:#0f172a;">${fmt(i.budget)}</div>
             <div style="font-size:10.5px;color:${i.usage_pct>100?'#dc2626':'#64748b'};">${fmt(i.spent)} kullanıldı (%${i.usage_pct})</div>
           </div>
-        </div>`).join('') || '<div style="color:#94a3b8;font-style:italic;">Initiative yok.</div>';
+        </div>`).join('') || '<div style="color:#94a3b8;font-style:italic;">Stratejik girişim yok.</div>';
       document.getElementById('status-list').innerHTML = Object.entries(j.by_status).map(([s,c]) => `
         <div style="display:flex;justify-content:space-between;padding:6px 8px;border-bottom:1px solid #f1f5f9;font-size:12.5px;">
           <span style="color:#475569;">${esc(s)}</span>
           <span style="font-weight:700;color:#0f172a;">${c}</span>
         </div>`).join('') || '<div style="color:#94a3b8;font-style:italic;">Veri yok.</div>';
       document.getElementById('strat-table').innerHTML = j.by_strategy.length===0?'<div style="color:#94a3b8;font-style:italic;">Strateji bazlı atıf yok.</div>':
-        '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;"><th style="padding:8px;text-align:left;">Strateji</th><th style="padding:8px;text-align:right;">Bütçe</th><th style="padding:8px;text-align:right;">Harcanan</th><th style="padding:8px;text-align:right;">Kullanım %</th><th style="padding:8px;text-align:right;">Initiative</th></tr></thead><tbody>'+
+        '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;"><th style="padding:8px;text-align:left;">Strateji</th><th style="padding:8px;text-align:right;">Bütçe</th><th style="padding:8px;text-align:right;">Harcanan</th><th style="padding:8px;text-align:right;">Kullanım %</th><th style="padding:8px;text-align:right;">Stratejik Girişim</th></tr></thead><tbody>'+
         j.by_strategy.map(s => `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px;color:#0f172a;font-weight:600;">${esc(s.label)}</td><td style="padding:8px;text-align:right;">${fmt(s.budget)}</td><td style="padding:8px;text-align:right;">${fmt(s.spent)}</td><td style="padding:8px;text-align:right;color:${s.usage_pct>90?'#dc2626':'#475569'};font-weight:600;">%${s.usage_pct}</td><td style="padding:8px;text-align:right;">${s.count}</td></tr>`).join('')+'</tbody></table>';
     } catch(e){
       document.getElementById('loading').style.display='none';

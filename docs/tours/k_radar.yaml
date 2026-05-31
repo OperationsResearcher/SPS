@@ -1,0 +1,61 @@
+key: k_radar
+title: "K-Radar"
+audience: ["tenant_admin", "executive_manager", "Admin"]
+auto_show: true
+
+welcome:
+  title: "K-Radar — risk ve fırsat tarayıcısı"
+  body: |
+    Strateji yapanlar genelde iyi senaryoyu varsayar. Ama strateji başarısının önemli bir kısmı, beklenmedik olaylara hazırlıklı olmaktan gelir. K-Radar bu hazırlığın merkezidir.
+
+    "K-Radar" adındaki K = Kokpitim. Pilotun radar ekranına bakması gibi sen de buradan kurumunun çevresel durumunu tararsın.
+
+    İki temel kavram:
+    • **Risk** — gerçekleşirse kurumuna zarar verecek olay (kötü hava)
+    • **Fırsat** — gerçekleşirse kurumuna fayda sağlayacak olay (rüzgar arkadan)
+
+    Her ikisinin de iki boyutu vardır: olasılık (gerçekleşme şansı) ve etki (gerçekleştiğinde büyüklüğü). Bu iki boyutun çarpımı önceliği belirler.
+  cta_primary: "Tanıt"
+  cta_secondary: "Sonra"
+
+steps:
+  - target: 'h2'
+    title: "Olasılık × Etki matrisi"
+    body: |
+      Riskler ve fırsatlar 5×5'lik bir matrise yerleşir:
+      • **X ekseni** — Olasılık (1: çok düşük, 5: kesin)
+      • **Y ekseni** — Etki (1: önemsiz, 5: yıkıcı)
+
+      Dört bölge:
+      • **Sağ üst (yüksek-yüksek)** — Acil aksiyon gerektirir, kırmızı kuşak
+      • **Sağ alt (yüksek olasılık, düşük etki)** — İzlemede tut, hazırlık yap
+      • **Sol üst (düşük olasılık, yüksek etki)** — Yedek plan hazırla
+      • **Sol alt (düşük-düşük)** — Sadece kayıt altında tut
+
+      Eskişehir Motor Sanayi için örnek riskler:
+      • "Hammadde fiyatlarının %30 artması" — olasılık 4, etki 4 → kırmızı, acil
+      • "Dolar 50 TL'yi aşması" — olasılık 3, etki 5 → izlem + yedek plan
+      • "Anahtar bir mühendisin ayrılması" — olasılık 2, etki 3 → izlemede
+
+      Her risk için aksiyon planı, sahip ve son tarih atarsın. Sistem geçen riskleri unutmaz — periyodik olarak hatırlatır.
+    placement: "bottom"
+
+  - target: 'body'
+    title: "Cross modülleri"
+    body: |
+      K-Radar'ın yan modülleri var:
+      • **Cross A3** — Toyota tarzı A3 problem çözme sayfası
+      • **Cross Anket** — paydaşlardan risk/fırsat algısı toplama
+      • **Cross Paydaş** — paydaş haritası ve etki analizi
+      • **Cross Rekabet** — rakip izleme paneli
+      • **KP Benchmark** — sektör karşılaştırması
+      • **KP Darboğaz** — süreç darboğazlarını yakalama
+      • **KP Değer Zinciri** — Porter değer zinciri haritası
+
+      Bunların hepsini bir gün öğrenmen gerekmez. K-Radar ana sayfayı (risk listesi + matris) iyi kullanırsan zaten %80'ini almışsındır.
+    placement: "top"
+
+finale:
+  title: "Aşamalı başla"
+  body: |
+    İlk hafta için: 5-10 önemli riski elle ekle, matrise yerleştir, sorumlular ata. Her ay başı 15 dakika gözden geçirme oturumu yap. Bu disiplin tek başına çoğu şirketin yapmadığı bir şey — başlangıç olarak yeterli.

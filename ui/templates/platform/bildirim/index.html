@@ -6,6 +6,10 @@
 <script src="{{ url_for('app_bp.static', filename='platform/js/bildirim.js') }}"></script>
 {% endblock %}
 
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Bildirimler', 'url': None}]) }}
+{% endblock %}
+
 {% block content %}
 <div class="bildirim-page-wrap">
 
@@ -70,10 +74,20 @@
       {% endfor %}
     </div>
     {% else %}
-    <div class="mc-empty bildirim-empty" id="bildirim-empty-state">
-      <div class="mc-empty-icon"><i class="fas fa-bell-slash"></i></div>
+    <div class="mc-empty bildirim-empty" id="bildirim-empty-state" style="padding:32px 20px;">
+      <div class="mc-empty-icon"><i class="fas fa-bell-slash" style="color:#94a3b8;"></i></div>
       <div class="mc-empty-title">Bildirim yok</div>
-      <div class="mc-empty-text">Yeni bildirimler burada görünecek.</div>
+      <div class="mc-empty-text" style="max-width:480px; margin:0 auto;">
+        Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan tetikleyici vb.) bildirimler burada görünür.
+      </div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+        <a href="/ayarlar" class="mc-btn mc-btn-secondary mc-btn-sm" title="Bildirim e-postası ve kanal ayarları">
+          <i class="fas fa-cog"></i> Bildirim Ayarları
+        </a>
+        <a href="/masaustu-launcher" class="mc-btn mc-btn-secondary mc-btn-sm">
+          <i class="fas fa-home"></i> Masaüstü
+        </a>
+      </div>
     </div>
     {% endif %}
   </div>

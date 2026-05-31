@@ -10,9 +10,16 @@ from flask_login import current_user
 from sqlalchemy import delete, insert
 from sqlalchemy.orm import joinedload
 
+from extensions import db
 from app.models.core import User as CoreUser
-from app.models.process import Process as AppProcess, ProcessKpi
-from models import Project, Task, Surec, db, project_members, project_observers, project_leaders
+from app.models.process import Process as AppProcess, ProcessKpi, Process as Surec
+from app.models.portfolio_project import (
+    Project,
+    Task,
+    project_members,
+    project_observers,
+    project_leaders,
+)
 from utils.task_status import normalize_task_status
 
 

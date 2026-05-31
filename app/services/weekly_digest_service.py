@@ -70,22 +70,28 @@ def _fetch_digest_extras(tenant_id: int) -> dict:
         pass
 
     # Strateji bazlı PG performansı (aktif plan yıl)
+    # Performans notu: önceki sürümde her PG için 2 korelasyonlu alt-sorgu vardı (N+1).
+    # DISTINCT ON ile son kpi_data satırını TEK pass'ta alıyoruz (büyük tenantlarda ~30x hızlanma).
     try:
         rows = db.session.execute(text("""
-            WITH pgdata AS (
+            WITH latest_kd AS (
+              SELECT DISTINCT ON (process_kpi_id)
+                     process_kpi_id, actual_value, target_value, data_date
+              FROM kpi_data
+              WHERE is_active=true
+              ORDER BY process_kpi_id, data_date DESC
+            ),
+            pgdata AS (
               SELECT s.id as strategy_id, s.code, s.title,
                      k.id as kid,
-                     (SELECT actual_value FROM kpi_data kd
-                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
-                      ORDER BY kd.data_date DESC LIMIT 1) as last_actual,
-                     (SELECT target_value FROM kpi_data kd
-                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
-                      ORDER BY kd.data_date DESC LIMIT 1) as last_target
+                     lkd.actual_value as last_actual,
+                     lkd.target_value as last_target
               FROM strategies s
               JOIN sub_strategies ss ON ss.strategy_id = s.id AND ss.is_active=true
               JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
               JOIN processes p ON p.id = psl.process_id AND p.is_active=true
               JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+              LEFT JOIN latest_kd lkd ON lkd.process_kpi_id = k.id
               WHERE s.tenant_id=:t AND s.is_active=true
             )
             SELECT strategy_id, code, title,
@@ -191,6 +197,38 @@ def render_digest_html(tenant_id: int, tenant_name: str = "Kurumunuz") -> str:
     )
 
 
+_FONT_REGISTERED = False
+def _ensure_tr_font():
+    """Türkçe karakter desteği için Arial TTF'yi kaydet (idempotent)."""
+    global _FONT_REGISTERED
+    if _FONT_REGISTERED:
+        return ("Arial", "Arial-Bold", "Arial-Italic")
+    try:
+        import os
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        from reportlab.pdfbase.pdfmetrics import registerFontFamily
+        candidates = [
+            (r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\ariali.ttf"),
+            ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf"),
+        ]
+        for reg, bold, ital in candidates:
+            if os.path.exists(reg) and os.path.exists(bold):
+                pdfmetrics.registerFont(TTFont("Arial", reg))
+                pdfmetrics.registerFont(TTFont("Arial-Bold", bold))
+                if os.path.exists(ital):
+                    pdfmetrics.registerFont(TTFont("Arial-Italic", ital))
+                registerFontFamily("Arial", normal="Arial", bold="Arial-Bold",
+                                   italic="Arial-Italic", boldItalic="Arial-Bold")
+                _FONT_REGISTERED = True
+                return ("Arial", "Arial-Bold", "Arial-Italic")
+    except Exception:
+        pass
+    return ("Helvetica", "Helvetica-Bold", "Helvetica-Oblique")
+
+
 def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
     """ReportLab ile zengin Türkçe haftalık rapor üretir."""
     from reportlab.lib.pagesizes import A4
@@ -201,6 +239,8 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
     from reportlab.platypus import (
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
     )
+
+    FONT, FONT_BOLD, FONT_ITAL = _ensure_tr_font()
 
     snap = build_exec_snapshot(tenant_id)
     extras = _fetch_digest_extras(tenant_id)
@@ -215,15 +255,15 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
     )
 
     styles = getSampleStyleSheet()
-    h_title = ParagraphStyle("HTitle", parent=styles["Title"], fontSize=20,
+    h_title = ParagraphStyle("HTitle", parent=styles["Title"], fontName=FONT_BOLD, fontSize=20,
         textColor=colors.HexColor("#0f172a"), spaceAfter=4, leading=24)
-    h_sub = ParagraphStyle("HSub", parent=styles["Normal"], fontSize=10,
+    h_sub = ParagraphStyle("HSub", parent=styles["Normal"], fontName=FONT, fontSize=10,
         textColor=colors.HexColor("#64748b"), spaceAfter=16)
-    h2 = ParagraphStyle("H2", parent=styles["Heading2"], fontSize=13,
+    h2 = ParagraphStyle("H2", parent=styles["Heading2"], fontName=FONT_BOLD, fontSize=13,
         textColor=colors.HexColor("#0f172a"), spaceBefore=14, spaceAfter=8)
-    body = ParagraphStyle("Body", parent=styles["Normal"], fontSize=10.5,
+    body = ParagraphStyle("Body", parent=styles["Normal"], fontName=FONT, fontSize=10.5,
         textColor=colors.HexColor("#1e293b"), leading=14, spaceAfter=4)
-    note = ParagraphStyle("Note", parent=styles["Normal"], fontSize=8.5,
+    note = ParagraphStyle("Note", parent=styles["Normal"], fontName=FONT_ITAL, fontSize=8.5,
         textColor=colors.HexColor("#94a3b8"), spaceBefore=20, alignment=TA_CENTER)
 
     story = []
@@ -299,7 +339,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
     mt.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f1f5f9")),
         ("TEXTCOLOR", (0,0), (-1,0), colors.HexColor("#0f172a")),
-        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+        ("FONTNAME", (0,0), (-1,-1), FONT), ("FONTNAME", (0,0), (-1,0), FONT_BOLD),
         ("FONTSIZE", (0,0), (-1,-1), 9.5),
         ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
         ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#e2e8f0")),
@@ -317,12 +357,12 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
         story.append(Paragraph("🚀 Girişim Durumu", h2))
         ini_data = [["Durum", "Adet", "Ortalama İlerleme"]]
         for st_key, info in by_status.items():
-            avg = info.get("avg_progress", 0)
-            ini_data.append([_INI_STATUS_TR.get(st_key, st_key), str(info.get("count", 0)), f"%{int(round(avg))}"])
+            avg = info.get("avg_progress", 0) or 0
+            ini_data.append([_INI_STATUS_TR.get(st_key, st_key), str(info.get("count", 0)), f"%{int(round(float(avg)))}"])
         it = Table(ini_data, colWidths=[doc.width*0.5, doc.width*0.25, doc.width*0.25])
         it.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f1f5f9")),
-            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTNAME", (0,0), (-1,-1), FONT), ("FONTNAME", (0,0), (-1,0), FONT_BOLD),
             ("FONTSIZE", (0,0), (-1,-1), 9.5),
             ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
             ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#e2e8f0")),
@@ -348,7 +388,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
         tt = Table(rows, colWidths=[doc.width*0.06, doc.width*0.54, doc.width*0.22, doc.width*0.18])
         tt.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f1f5f9")),
-            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTNAME", (0,0), (-1,-1), FONT), ("FONTNAME", (0,0), (-1,0), FONT_BOLD),
             ("FONTSIZE", (0,0), (-1,-1), 9),
             ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
             ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#e2e8f0")),
@@ -376,7 +416,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
         ot.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#fef2f2")),
             ("TEXTCOLOR", (0,0), (-1,0), colors.HexColor("#991b1b")),
-            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTNAME", (0,0), (-1,-1), FONT), ("FONTNAME", (0,0), (-1,0), FONT_BOLD),
             ("FONTSIZE", (0,0), (-1,-1), 9),
             ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
             ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#fecaca")),
@@ -403,7 +443,7 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
         st_.setStyle(TableStyle([
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eef2ff")),
             ("TEXTCOLOR", (0,0), (-1,0), colors.HexColor("#4338ca")),
-            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("FONTNAME", (0,0), (-1,-1), FONT), ("FONTNAME", (0,0), (-1,0), FONT_BOLD),
             ("FONTSIZE", (0,0), (-1,-1), 9),
             ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, colors.HexColor("#fafbfc")]),
             ("GRID", (0,0), (-1,-1), 0.25, colors.HexColor("#c7d2fe")),
@@ -456,24 +496,31 @@ def _build_reportlab_pdf(tenant_id: int, tenant_name: str) -> bytes:
 
 def render_digest_pdf(tenant_id: int, tenant_name: str = "Kurumunuz") -> tuple[bytes, str]:
     """Returns (pdf_bytes, mime). reportlab başarısızsa HTML döner."""
-    # Tercih 1: WeasyPrint (Linux/Mac sunucularda)
+    # Tercih 1: reportlab — saf Python, her ortamda çalışır, zengin Türkçe PDF
+    try:
+        pdf = _build_reportlab_pdf(tenant_id, tenant_name)
+        if pdf and pdf[:4] == b"%PDF":
+            return pdf, "application/pdf"
+    except Exception as e:
+        from flask import current_app as _ca
+        import traceback
+        try:
+            _ca.logger.error(
+                "[weekly-digest] reportlab PDF uretilemedi: %s\n%s",
+                e, traceback.format_exc()
+            )
+        except Exception:
+            pass
+
+    # Tercih 2: WeasyPrint (Linux/Mac sunucularda kurulu olabilir)
     try:
         from weasyprint import HTML
         html = render_digest_html(tenant_id, tenant_name)
         pdf = HTML(string=html).write_pdf()
-        return pdf, "application/pdf"
+        if pdf:
+            return pdf, "application/pdf"
     except Exception:
         pass
-
-    # Tercih 2: reportlab — zengin Türkçe PDF
-    try:
-        return _build_reportlab_pdf(tenant_id, tenant_name), "application/pdf"
-    except Exception as e:
-        from flask import current_app as _ca
-        try:
-            _ca.logger.warning(f"[weekly-digest] reportlab PDF üretilemedi: {e}")
-        except Exception:
-            pass
 
     # Fallback: HTML
     return render_digest_html(tenant_id, tenant_name).encode("utf-8"), "text/html"

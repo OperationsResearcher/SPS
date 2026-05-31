@@ -11,7 +11,8 @@ from flask_login import current_user, login_required
 from app.models.process import ProcessKpi
 from app.models.core import User as CoreUser
 from platform_core import app_bp
-from models import Task, db
+from extensions import db
+from app.models.portfolio_project import Task
 from app_platform.modules.proje.helpers import kurum_id, load_project, tenant_core_users, kpis_for_tenant
 from app_platform.modules.proje.permissions import (
     can_crud_project_portfolio,

@@ -5,7 +5,7 @@ Süreç Sağlık Skoru hesaplama ve diğer analitik işlemler
 """
 from datetime import date
 from flask import current_app
-from models import (
+from app.models.legacy_bridge import (
     db, Surec, Project, Task, TaskImpact, BireyselPerformansGostergesi,
     PerformansGostergeVeri, SurecPerformansGostergesi, ProjectRisk
 )
@@ -63,7 +63,7 @@ def calculate_surec_saglik_skoru(surec_id, yil=None):
         
         # 1. Proje Tamamlama Oranı (%25) - Optimize edilmiş
         # Association table üzerinden bağlı projeleri bul (arşivlenmiş projeler hariç)
-        from models import project_related_processes
+        from app.models.legacy_bridge import project_related_processes
         bagli_proje_ids = db.session.query(project_related_processes.c.project_id).filter(
             project_related_processes.c.surec_id == surec_id
         ).all()
