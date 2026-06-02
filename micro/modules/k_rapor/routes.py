@@ -1168,8 +1168,8 @@ def k_rapor_api_evm():
                 from app.models.project import Project as ProjModel
                 for p in ProjModel.query.filter(ProjModel.id.in_(proj_ids)).all():
                     proj_names[p.id] = p.name
-            except Exception:
-                pass
+            except Exception as _e:
+                current_app.logger.error("[k_rapor] proje adları yüklenemedi: %s", _e)
         data = [{
             "id":            s.id,
             "project_id":    s.project_id,

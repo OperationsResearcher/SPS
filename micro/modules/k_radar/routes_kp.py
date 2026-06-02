@@ -202,8 +202,8 @@ def k_radar_api_kp_radar():
             """), {"t": tid}).fetchone()
             if r4 and r4.avg_skor is not None:
                 maturity = round(float(r4.avg_skor) * 20, 1)  # 1-5 → 20-100
-        except Exception:
-            pass
+        except Exception as _e:
+            current_app.logger.error("[k_radar_kp] olgunluk skoru hesaplanamadı: %s", _e)
 
         return jsonify({"success": True, "data": {
             "labels": ["Performans", "Veri Kapsamı", "Olgunluk", "Faaliyet Zamanlaması", "Risk Yönetimi"],
