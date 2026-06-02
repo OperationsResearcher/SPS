@@ -10,11 +10,14 @@ Bu servis: bir tenant+yıl+çeyrek için consolidate edilmiş review data üreti
 from __future__ import annotations
 
 import datetime as _dt
+import logging
 from dataclasses import dataclass, field
 from typing import Optional
 
 from extensions import db
 from sqlalchemy import text
+
+logger = logging.getLogger(__name__)
 
 
 QUARTER_MONTHS = {1: (1, 3), 2: (4, 6), 3: (7, 9), 4: (10, 12)}
@@ -234,8 +237,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
             1 for r in risks
             if (r.probability or 0) * (r.impact or 0) >= 16
         )
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[quarterly] risk verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
     # Anomali
     try:
@@ -243,8 +246,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         anomalies = detect_anomalies_for_tenant(tenant_id, threshold=2.0, limit=100)
         data.anomaly_high = sum(1 for a in anomalies if a.severity == "high")
         data.anomaly_medium = sum(1 for a in anomalies if a.severity == "medium")
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[quarterly] anomali tespiti başarısız (tenant=%s): %s", tenant_id, _e)
 
     # Heuristik öneriler
     if data.kpi_on_target_pct < 50:
