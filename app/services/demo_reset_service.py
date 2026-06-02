@@ -55,6 +55,50 @@ def _collect_fk_constraints(conn) -> list[tuple[str, str, str]]:
     return [(r[0], r[1], r[2]) for r in rows if r[1] not in _EXCLUDE_TABLES]
 
 
+def _collect_fk_details(conn) -> list[dict]:
+    """FK'leri orphan-temizliği için detaylı topla (tek-kolon child/parent kolonları dahil)."""
+    rows = conn.execute(text("""
+        SELECT c.conname, t.relname, pg_get_constraintdef(c.oid),
+               (SELECT attname FROM pg_attribute WHERE attrelid = c.conrelid  AND attnum = c.conkey[1]),
+               pt.relname,
+               (SELECT attname FROM pg_attribute WHERE attrelid = c.confrelid AND attnum = c.confkey[1]),
+               array_length(c.conkey, 1)
+        FROM pg_constraint c
+        JOIN pg_class t     ON t.oid = c.conrelid
+        JOIN pg_namespace n ON n.oid = c.connamespace
+        JOIN pg_class pt    ON pt.oid = c.confrelid
+        WHERE c.contype = 'f' AND n.nspname = 'public'
+    """)).fetchall()
+    return [
+        {"conname": r[0], "child": r[1], "cdef": r[2], "childcol": r[3],
+         "parent": r[4], "parentcol": r[5], "ncols": r[6]}
+        for r in rows if r[1] not in _EXCLUDE_TABLES
+    ]
+
+
+def _clean_orphans_iterative(conn, fks: list[dict], max_passes: int = 6) -> int:
+    """FK'siz ortamda parent'ı olmayan (orphan) child satırları sabit noktaya kadar siler.
+
+    Bir orphan'ı silmek başka bir FK'de yeni orphan yaratabileceği (cascade) için
+    silme 0'a inene kadar tekrarlanır. Yalnızca tek-kolonlu FK'ler için.
+    """
+    single = [f for f in fks if f["ncols"] == 1]
+    total = 0
+    for _ in range(max_passes):
+        deleted = 0
+        for f in single:
+            r = conn.execute(text(
+                f'DELETE FROM public."{f["child"]}" WHERE "{f["childcol"]}" IS NOT NULL '
+                f'AND "{f["childcol"]}" NOT IN (SELECT "{f["parentcol"]}" FROM public."{f["parent"]}")'
+            ))
+            deleted += (r.rowcount or 0)
+        total += deleted
+        if deleted == 0:
+            break
+    logger.info("[demo_reset] orphan temizliği: %d satır silindi", total)
+    return total
+
+
 def _resync_sequences(conn) -> None:
     """Restore sonrası: her identity/serial sequence'i max(kolon)'a ayarla."""
     seqs = conn.execute(text("""
@@ -163,26 +207,38 @@ def fk_safe_tenant_load(data: dict) -> dict:
     _assert_demo()
     from services.tenant_backup_service import restore_tenant_data
 
-    # 1) FK'leri topla ve kaldır (ayrı commit)
+    # 1) FK detaylarını topla + tüm FK'leri kaldır
     with db.engine.begin() as conn:
-        fks = _collect_fk_constraints(conn)
-        for conname, tbl, _cdef in fks:
-            conn.execute(text(f'ALTER TABLE public."{tbl}" DROP CONSTRAINT "{conname}"'))
-    logger.info("[demo_reset] tenant load: %d FK geçici kaldırıldı", len(fks))
+        fks = _collect_fk_details(conn)
+        for f in fks:
+            conn.execute(text(f'ALTER TABLE public."{f["child"]}" DROP CONSTRAINT "{f["conname"]}"'))
+    logger.info("[demo_reset] tenant load: %d FK kaldırıldı", len(fks))
 
-    result = None
     try:
         # 2) FK'siz ortamda tenant restore (delete + insert, sıra-bağımsız)
         result = restore_tenant_data(data)
         db.session.commit()
-    finally:
-        # 3) FK'leri her durumda geri ekle + sequence resync
+        # 3) Kapsam-dışı orphan'ları iteratif temizle (notifications vb. — TABLE_PLAN dışı tablolar)
         with db.engine.begin() as conn:
-            for conname, tbl, cdef in fks:
-                conn.execute(text(f'ALTER TABLE public."{tbl}" ADD CONSTRAINT "{conname}" {cdef}'))
+            _clean_orphans_iterative(conn, fks)
+        # 4) FK'leri geri ekle + sequence resync (orphan temizlendiği için başarılı olmalı)
+        failed = []
+        for f in fks:
+            try:
+                with db.engine.begin() as conn:
+                    conn.execute(text(f'ALTER TABLE public."{f["child"]}" ADD CONSTRAINT "{f["conname"]}" {f["cdef"]}'))
+            except Exception as e:
+                failed.append((f["conname"], str(e)[:120]))
+        with db.engine.begin() as conn:
             _resync_sequences(conn)
+        if failed:
+            logger.error("[demo_reset] %d FK geri eklenemedi: %s", len(failed), failed[:5])
+            raise RuntimeError(f"{len(failed)} FK geri eklenemedi (ilk: {failed[0]})")
         logger.info("[demo_reset] tenant load: %d FK geri eklendi + sequence resync", len(fks))
-    return result
+        return result
+    except Exception:
+        logger.error("[demo_reset] fk_safe_tenant_load HATA — FK'ler kaldırılmış olabilir, yedekten kurtar", exc_info=True)
+        raise
 
 
 def safe_restore_baseline() -> bool:
