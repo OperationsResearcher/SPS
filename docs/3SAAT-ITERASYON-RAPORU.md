@@ -32,3 +32,6 @@
 ### Tur 6 — Kalite: karne başarı puanı testleri
 - **Commit:** karne başarı puanı + aralık kontrolü 13 birim testi
 - deger_aralikta_mi + hesapla_basari_puani (artan/azalan, sınır aşımı, açık üst-sınır). Çekirdek skorlama, sıfır risk.
+
+### Tur 7 — Kalite: karne ağırlıklı puan testleri
+- **Commit:** ağırlıklı başarı puanı 6 birim testi. Karne test kapsamı tamamlandı.
