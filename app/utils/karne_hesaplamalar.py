@@ -80,12 +80,16 @@ def parse_aralik_degeri(aralik_str: str) -> Optional[tuple]:
     if not aralik_str or aralik_str.strip() in ('-', ''):
         return None
 
+    # Türkçe sayı biçimi: '.' binlik ayraç, ',' ondalık ayraç.
+    # Binlik noktalarını kaldır, ondalık virgülünü standart noktaya çevir.
+    # (Önceki sürüm hem ',' hem '.' siliyordu → "4,5"/"4.5" gibi ondalık aralık
+    #  sınırları "45"e dönüşüp yanlış başarı puanı veriyordu.)
     temiz_str = (
         aralik_str.strip()
         .replace('%', '')
         .replace('TL', '')
-        .replace(',', '')
         .replace('.', '')
+        .replace(',', '.')
         .strip()
     )
 
