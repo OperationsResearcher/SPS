@@ -48,3 +48,6 @@
 
 ### Tur 11 — Kod: 2 sessiz dashboard hatasına logging
 - **Commit:** k_radar olgunluk + k_rapor proje-adı sessiz hatalarına logging. Inline parse-default'lara dokunulmadı.
+
+### Tur 12 — A11y: kurum ayarları label-for
+- **Commit:** kurum ayarları formunda 7 label'a for= (input id'leri mevcuttu). Parse OK.
