@@ -172,8 +172,8 @@ def api_kpi_data_delete(entry_id):
                 action="DELETE", resource_type="KpiData",
                 resource_id=entry.id,
             )
-        except Exception:
-            pass
+        except Exception as _audit_err:
+            current_app.logger.error("[audit] KpiData delete audit kaydı başarısız: %s", _audit_err)
         db.session.commit()
         return jsonify({"success": True, "message": "Silindi."})
     except Exception as e:

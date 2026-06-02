@@ -1090,8 +1090,8 @@ def admin_users_2fa_reset(user_id):
                 resource_id=u.id,
                 description=f"Admin {current_user.email} tarafından {u.email} 2FA sıfırlandı",
             )
-        except Exception:
-            pass
+        except Exception as _audit_err:
+            current_app.logger.error("[audit] 2FA reset audit kaydı başarısız: %s", _audit_err)
 
         return jsonify({
             "success": True,

@@ -93,8 +93,8 @@ def holding_sub_tenant_view_page(sub_tenant_id):
             resource_id=sub.id,
             description=f"{current_user.email} (holding={holding_id}) → drill-down: {sub.name}",
         )
-    except Exception:
-        pass
+    except Exception as _audit_err:
+        current_app.logger.error("[audit] holding drill-down audit kaydı başarısız: %s", _audit_err)
 
     return render_template(
         "platform/admin/holding_drilldown.html",
