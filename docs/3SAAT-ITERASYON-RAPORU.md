@@ -63,3 +63,6 @@
 
 ### Tur 16 — Kalite: forecast regresyon matematiği testleri
 - **Commit:** _linear_regression + _standard_error 7 birim testi. Saf matematik.
+
+### Tur 17 — Kalite: karne JSON aralık parser testleri
+- **Commit:** parse_basari_puani_araliklari 6 birim testi (liste/dict/obje/geçersiz). NOT: process_performance_service:518 N+1 tespit edildi ama çeyrek-tipine göre değişen sorgu → riskli refactor, ertelendi.
