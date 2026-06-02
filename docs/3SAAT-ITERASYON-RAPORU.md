@@ -51,3 +51,6 @@
 
 ### Tur 12 — A11y: kurum ayarları label-for
 - **Commit:** kurum ayarları formunda 7 label'a for= (input id'leri mevcuttu). Parse OK.
+
+### Tur 13 — Correctness: karne negatif aralık parse (deep-scan C4)
+- **Commit:** negatif sınırlı aralıkları parse et (regex) + 4 test. Mevcut davranış korundu.
