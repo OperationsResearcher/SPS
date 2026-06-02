@@ -45,3 +45,6 @@
 
 ### Tur 10 — Kalite: date-sovereign doktrin testleri
 - **Commit:** entity_exists_in_year 6 birim testi (çok-yıllı varlık-mevcudiyet doktrini).
+
+### Tur 11 — Kod: 2 sessiz dashboard hatasına logging
+- **Commit:** k_radar olgunluk + k_rapor proje-adı sessiz hatalarına logging. Inline parse-default'lara dokunulmadı.
