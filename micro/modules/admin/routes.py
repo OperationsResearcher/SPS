@@ -824,9 +824,9 @@ def admin_users():
         return render_template("platform/errors/403.html"), 403
 
     if _is_admin():
-        users = User.query.options(selectinload(User.role)).order_by(User.tenant_id, User.first_name).all()
+        users = User.query.options(selectinload(User.role), selectinload(User.tenant)).order_by(User.tenant_id, User.first_name).all()
     else:
-        users = User.query.options(selectinload(User.role)).filter_by(tenant_id=current_user.tenant_id).order_by(User.first_name).all()
+        users = User.query.options(selectinload(User.role), selectinload(User.tenant)).filter_by(tenant_id=current_user.tenant_id).order_by(User.first_name).all()
 
     roles   = Role.query.filter(Role.name.in_(ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", []))).all()
     tenants = Tenant.query.filter_by(is_active=True).order_by(Tenant.name).all() if _is_admin() else []
