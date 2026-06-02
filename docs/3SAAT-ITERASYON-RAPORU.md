@@ -66,3 +66,6 @@
 
 ### Tur 17 — Kalite: karne JSON aralık parser testleri
 - **Commit:** parse_basari_puani_araliklari 6 birim testi (liste/dict/obje/geçersiz). NOT: process_performance_service:518 N+1 tespit edildi ama çeyrek-tipine göre değişen sorgu → riskli refactor, ertelendi.
+
+### Tur 18 — Kod: exec-dashboard/quarterly sessiz hatalara logging
+- **Commit:** 4 best-effort except'e logger.error (risk + anomali, exec_dashboard + quarterly). Modül logger eklendi.
