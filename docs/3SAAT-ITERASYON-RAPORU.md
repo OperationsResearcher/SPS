@@ -28,3 +28,7 @@
 ### Tur 5 — Performans: admin kullanıcı sayfası tenant N+1
 - **Commit:** kullanıcı sayfasında tenant eager-load
 - users.html `u.tenant.name` kullanıyor → selectinload(User.tenant). 50 user: 8→3 sorgu.
+
+### Tur 6 — Kalite: karne başarı puanı testleri
+- **Commit:** karne başarı puanı + aralık kontrolü 13 birim testi
+- deger_aralikta_mi + hesapla_basari_puani (artan/azalan, sınır aşımı, açık üst-sınır). Çekirdek skorlama, sıfır risk.
