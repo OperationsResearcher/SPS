@@ -42,3 +42,6 @@
 ### Tur 9 — Kod: sessiz audit hatalarına logging
 - **Commit:** sessiz audit except'lerine logging (3 yer: 2FA reset, holding drill-down, KpiData delete)
 - `except Exception: pass` → `current_app.logger.error`. CLAUDE.md "her except loglamalı" uyumu + gözlemlenebilirlik. Control flow aynı.
+
+### Tur 10 — Kalite: date-sovereign doktrin testleri
+- **Commit:** entity_exists_in_year 6 birim testi (çok-yıllı varlık-mevcudiyet doktrini).
