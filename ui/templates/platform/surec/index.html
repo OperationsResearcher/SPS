@@ -481,15 +481,15 @@
 
             <div class="mc-surec-form-grid">
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label"><i class="fas fa-bookmark" style="color:#6366f1;"></i> Süreç Adı <span class="mc-text-danger">*</span></label>
+                    <label class="mc-label" for="surec-name"><i class="fas fa-bookmark" style="color:#6366f1;"></i> Süreç Adı <span class="mc-text-danger">*</span></label>
                     <input type="text" id="surec-name" class="mc-input mc-input-lg" placeholder="Örn: Satın Alma Süreci">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">Süreç Kodu</label>
+                    <label class="mc-label" for="surec-code">Süreç Kodu</label>
                     <input type="text" id="surec-code" class="mc-input" placeholder="SR-01">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">Durum</label>
+                    <label class="mc-label" for="surec-status">Durum</label>
                     <select id="surec-status" class="mc-select">
                         <option value="Aktif">Aktif</option>
                         <option value="Pasif">Pasif</option>
@@ -498,23 +498,23 @@
                     </select>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">Doküman No</label>
+                    <label class="mc-label" for="surec-doc-no">Doküman No</label>
                     <input type="text" id="surec-doc-no" class="mc-input" placeholder="DOK-001">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">Revizyon No</label>
+                    <label class="mc-label" for="surec-rev-no">Revizyon No</label>
                     <input type="text" id="surec-rev-no" class="mc-input" placeholder="Rev-1">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">Revizyon Tarihi</label>
+                    <label class="mc-label" for="surec-revision-date">Revizyon Tarihi</label>
                     <input type="date" id="surec-revision-date" class="mc-input">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label">İlk Yayın Tarihi</label>
+                    <label class="mc-label" for="surec-first-publish-date">İlk Yayın Tarihi</label>
                     <input type="date" id="surec-first-publish-date" class="mc-input">
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label"><i class="fas fa-sitemap" style="color:#64748b;"></i> Üst Süreç (Parent)</label>
+                    <label class="mc-label" for="surec-parent-id"><i class="fas fa-sitemap" style="color:#64748b;"></i> Üst Süreç (Parent)</label>
                     <select id="surec-parent-id" class="mc-select">
                         <option value="">— Bağımsız (Üst Süreç Yok) —</option>
                         {% for p, depth in parent_options_with_depth %}
@@ -523,11 +523,11 @@
                     </select>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label"><i class="fas fa-arrow-right-to-bracket" style="color:#10b981;"></i> Başlangıç Sınırı</label>
+                    <label class="mc-label" for="surec-start-boundary"><i class="fas fa-arrow-right-to-bracket" style="color:#10b981;"></i> Başlangıç Sınırı</label>
                     <textarea id="surec-start-boundary" class="mc-textarea" rows="2" placeholder="Sürecin başlangıç noktası..."></textarea>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label"><i class="fas fa-arrow-left-to-bracket" style="color:#ef4444;"></i> Bitiş Sınırı</label>
+                    <label class="mc-label" for="surec-end-boundary"><i class="fas fa-arrow-left-to-bracket" style="color:#ef4444;"></i> Bitiş Sınırı</label>
                     <textarea id="surec-end-boundary" class="mc-textarea" rows="2" placeholder="Sürecin bitiş noktası..."></textarea>
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
