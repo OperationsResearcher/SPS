@@ -171,6 +171,12 @@ def restore_baseline() -> bool:
     conn = db.engine.connect()
     trans = conn.begin()
     try:
+        # Eşzamanlı sıfırlamaları serialize et (sweeper + /demo/end + heartbeat aynı anda tetiklenebilir).
+        # Kilit alınamazsa: zaten bir sıfırlama sürüyor → atla (tx sonunda otomatik bırakılır).
+        if not conn.execute(text("SELECT pg_try_advisory_xact_lock(918273645)")).scalar():
+            logger.info("[demo_reset] başka bir sıfırlama sürüyor — bu çağrı atlandı")
+            trans.rollback()
+            return False
         tables = _public_tables(conn)
         # Non-superuser uyumlu: session_replication_role kullanılamadığı için
         # FK constraint'leri geçici kaldırılır → truncate+insert sıra-bağımsız → FK geri eklenir.
@@ -248,6 +254,26 @@ def safe_restore_baseline() -> bool:
     except Exception as e:
         logger.error("[demo_reset] safe_restore hata: %s", e, exc_info=True)
         return False
+
+
+def trigger_async_reset() -> None:
+    """Sıfırlamayı ARKA PLAN thread'inde başlatır → HTTP isteğini bloke etmez.
+
+    Sebep: restore_baseline ~1-2 dk (156 tablo truncate + ~92k satır + 236 FK drop/readd).
+    Senkron çağrıda gunicorn worker timeout → SIGKILL → 502. Thread'de çalışınca
+    /demo/end anında yanıt verir; restore_baseline atomik (tek transaction) + advisory
+    lock'lu olduğundan thread kesilse bile rollback olur ve çift-çalışma engellenir.
+    """
+    if not current_app.config.get("KOKPITIM_DEMO_MODE"):
+        return
+    import threading
+    app = current_app._get_current_object()
+
+    def _run():
+        with app.app_context():
+            safe_restore_baseline()
+
+    threading.Thread(target=_run, daemon=True, name="demo-reset").start()
 
 
 # ── İnaktivite izleme (demo_runtime tablosu — Alembic'siz, snapshot/restore'dan hariç) ──

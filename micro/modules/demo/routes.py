@@ -185,9 +185,10 @@ def demo_end():
     flask_session.clear()
     if was_active:
         current_app.logger.info(f"[demo] session bitti role={role}")
-        # KURALLAR §8.4: çıkışta Tomofil verisini baseline'a sıfırla (best-effort)
-        from app.services.demo_reset_service import safe_restore_baseline
-        safe_restore_baseline()
+        # KURALLAR §8.4: çıkışta Tomofil'i baseline'a sıfırla — ARKA PLANDA
+        # (senkron çalışırsa ~1-2 dk sürüp worker timeout → 502 verir).
+        from app.services.demo_reset_service import trigger_async_reset
+        trigger_async_reset()
     if request.method == "POST":
         return jsonify({"success": True, "redirect": url_for("app_bp.demo_landing")})
     return redirect(url_for("app_bp.demo_landing"))
@@ -214,8 +215,8 @@ def demo_heartbeat():
         # Süre doldu — session'ı temizle + Tomofil'i baseline'a sıfırla (KURALLAR §8.4)
         logout_user()
         flask_session.clear()
-        from app.services.demo_reset_service import safe_restore_baseline
-        safe_restore_baseline()
+        from app.services.demo_reset_service import trigger_async_reset
+        trigger_async_reset()
         return jsonify({"active": False, "expired": True})
     remaining_seconds = int((exp - now).total_seconds())
     # Aktif heartbeat → inaktivite sayacını sıfırla (KURALLAR §8.4)
