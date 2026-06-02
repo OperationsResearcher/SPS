@@ -8,6 +8,7 @@ import tempfile
 from flask import render_template, jsonify, request, current_app, send_file, flash, redirect, url_for, abort
 from flask_login import login_required, current_user
 from sqlalchemy import func, and_, or_, text
+from sqlalchemy.orm import selectinload
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from platform_core import app_bp
@@ -218,7 +219,7 @@ def get_user_activity_stats(tenant_id=None):
         func.upper(AuditLog.action).like("%LOGOUT%"),
     )
 
-    user_q = User.query
+    user_q = User.query.options(selectinload(User.role))  # N+1 önlemi: rol eager-load
     if tenant_id is not None:
         user_q = user_q.filter(User.tenant_id == tenant_id)
     users = user_q.order_by(User.last_name, User.first_name).all()
@@ -823,9 +824,9 @@ def admin_users():
         return render_template("platform/errors/403.html"), 403
 
     if _is_admin():
-        users = User.query.order_by(User.tenant_id, User.first_name).all()
+        users = User.query.options(selectinload(User.role)).order_by(User.tenant_id, User.first_name).all()
     else:
-        users = User.query.filter_by(tenant_id=current_user.tenant_id).order_by(User.first_name).all()
+        users = User.query.options(selectinload(User.role)).filter_by(tenant_id=current_user.tenant_id).order_by(User.first_name).all()
 
     roles   = Role.query.filter(Role.name.in_(ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", []))).all()
     tenants = Tenant.query.filter_by(is_active=True).order_by(Tenant.name).all() if _is_admin() else []
@@ -843,7 +844,7 @@ def admin_api_users_paginated():
         return jsonify({"success": False, "message": "Yetkisiz"}), 403
 
     from app.utils.pagination import paginate_query
-    q = User.query
+    q = User.query.options(selectinload(User.role))  # N+1 önlemi: rol eager-load
     if not _is_admin():
         q = q.filter_by(tenant_id=current_user.tenant_id)
 
