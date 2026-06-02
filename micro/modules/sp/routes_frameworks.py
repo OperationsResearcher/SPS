@@ -47,7 +47,7 @@ def sp_api_xmatrix():
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"xmatrix error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── S60: Blue Ocean ─────────────────────────────────────────────────────────
@@ -258,7 +258,7 @@ def sp_api_project_evm(pid):
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"evm error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── S63: Weekly Digest ──────────────────────────────────────────────────────

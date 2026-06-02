@@ -9,7 +9,7 @@ from platform_core import app_bp
 from app.models import db
 from services import k_radar_scheduler_service as _scheduler
 
-_WRITE_ROLES = {"Admin", "tenant_admin", "executive_manager"}
+from app.constants.roles import WRITE_ROLES as _WRITE_ROLES
 
 
 def _can_manage_k_radar() -> bool:
@@ -112,7 +112,7 @@ def k_radar_api_recommendation_action():
     try:
         return _do()
     except ValueError as e:
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
     except Exception as e:
         current_app.logger.exception("[k_radar_action] %s", e)
         return jsonify({"success": False, "message": "Aksiyon kaydi olusturulamadi."}), 500

@@ -104,7 +104,7 @@ def forecast_kpi(
     ys: list[float] = []
     for i, r in enumerate(rows):
         try:
-            val = float(str(r.actual_value).replace(",", "."))
+            val = float(r.actual_value)
         except (ValueError, TypeError):
             continue
         label = (

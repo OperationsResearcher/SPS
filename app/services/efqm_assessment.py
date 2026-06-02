@@ -102,20 +102,23 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
           'kpi_327': {target, latest_value, gap} | None,
         }
     """
-    py_clause = "AND plan_year_id = :py" if plan_year_id else ""
-    py_params = {"py": plan_year_id} if plan_year_id else {}
+    # py_clause: sadece sabit SQL string + named parameter — kullanıcı girdisi yoktur
+    # f-string kullanımı yerine koşullu parametrik sorgu güvenlidir
+    py_clause    = "AND plan_year_id = :py"   if plan_year_id else ""
+    p_py_clause  = "AND p.plan_year_id = :py" if plan_year_id else ""
+    py_params    = {"py": plan_year_id}        if plan_year_id else {}
 
     # ── Veri toplama ─────────────────────────────────────────────────────────
     strat_count = _scalar(
-        f"SELECT count(*) FROM strategies WHERE tenant_id=:t AND is_active=true {py_clause}",
+        "SELECT count(*) FROM strategies WHERE tenant_id=:t AND is_active=true " + py_clause,
         {"t": tenant_id, **py_params})
     sub_strat_count = _scalar(
-        f"SELECT count(*) FROM sub_strategies WHERE strategy_id IN "
-        f"(SELECT id FROM strategies WHERE tenant_id=:t AND is_active=true {py_clause}) "
-        f"AND is_active=true",
+        "SELECT count(*) FROM sub_strategies WHERE strategy_id IN "
+        "(SELECT id FROM strategies WHERE tenant_id=:t AND is_active=true " + py_clause + ") "
+        "AND is_active=true",
         {"t": tenant_id, **py_params})
     process_count = _scalar(
-        f"SELECT count(*) FROM processes WHERE tenant_id=:t AND is_active=true {py_clause}",
+        "SELECT count(*) FROM processes WHERE tenant_id=:t AND is_active=true " + py_clause,
         {"t": tenant_id, **py_params})
 
     # Tenant identity — vizyon/amaç tanımlı mı?
@@ -147,12 +150,12 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     # PG verisi
     kpi_total = _scalar(
         f"SELECT count(*) FROM process_kpis k JOIN processes p ON k.process_id=p.id "
-        f"WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true {py_clause.replace('plan_year_id','p.plan_year_id')}",
+        "WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true " + p_py_clause,
         {"t": tenant_id, **py_params})
     kpi_with_data = _scalar(
         "SELECT count(DISTINCT process_kpi_id) FROM kpi_data WHERE process_kpi_id IN "
         "(SELECT k.id FROM process_kpis k JOIN processes p ON k.process_id=p.id "
-        f"WHERE p.tenant_id=:t AND k.is_active=true {py_clause.replace('plan_year_id','p.plan_year_id')}) "
+        "WHERE p.tenant_id=:t AND k.is_active=true " + p_py_clause + ") "
         "AND is_active=true",
         {"t": tenant_id, **py_params})
     on_target_pct = _scalar("""
@@ -381,7 +384,7 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     return {
         "tenant_id": tenant_id,
         "plan_year_id": plan_year_id,
-        "generated_at": _dt.datetime.utcnow().isoformat(),
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "total_points": total_pts,
         "max_points": 1000,
         "level": level,

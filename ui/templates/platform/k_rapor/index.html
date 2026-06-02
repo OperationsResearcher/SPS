@@ -1,3 +1,10 @@
+{#
+  REFACTOR NOTU (TASK-144):
+  Bu dosya ~950 satırdır. JS zaten dış dosyaya taşındı (k_rapor.js).
+  İleride her sekme paneli ayrı partial template'e bölünebilir:
+    _panel_kurumsal.html, _panel_surec_pg.html, vb.
+  Öncelik düşük — mevcut haliyle bakımı sürdürülebilir.
+#}
 {% extends "platform/base.html" %}
 {% block title %}K-Rapor — Raporlama Merkezi{% endblock %}
 {% block page_title %}K-Rapor{% endblock %}
@@ -51,7 +58,7 @@
   {# ── Standart sayfa başlığı ─────────────────────────────────────── #}
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-chart-pie" style="color:#6366f1;"></i> K-Rapor — Kurumsal Raporlama Merkezi
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -122,7 +129,7 @@
       <div style="width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px; background:{{ t.bg }};">
         <i class="fas {{ t.i }}" style="color:{{ t.c }};"></i>
       </div>
-      <span style="font-size:13px; font-weight:600; color:#1e293b; margin-bottom:4px;">{{ t.n }}</span>
+      <span style="font-size:13px; font-weight:600; color:var(--text-default); margin-bottom:4px;">{{ t.n }}</span>
       <span style="font-size:11px; color:#94a3b8; line-height:1.4;">{{ t.d }}</span>
     </a>
     {% endfor %}
@@ -921,7 +928,7 @@
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-chart-line"></i><span id="kr-trend-modal-title">Trend</span></div>
-      <button class="mc-modal-close" id="kr-trend-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close" id="kr-trend-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body" id="kr-trend-modal-body"></div>
   </div>

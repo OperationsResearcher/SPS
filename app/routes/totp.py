@@ -114,7 +114,7 @@ def totp_disable():
     """2FA devre dışı bırak — şifre confirm zorunlu."""
     from werkzeug.security import check_password_hash
     password = request.form.get("password") or ""
-    if not check_password_hash(current_user.password_hash, password):
+    if not password or not check_password_hash(current_user.password_hash, password):
         return jsonify({"success": False, "message": "Şifre hatalı."}), 401
 
     current_user.totp_secret = None
@@ -143,12 +143,22 @@ def totp_challenge():
     if not pending_user_id:
         return redirect(url_for("auth_bp.login"))
 
-    user = User.query.get(pending_user_id)
+    user = User.query.filter_by(id=pending_user_id, is_active=True).first()
     if not user or not user.totp_enabled:
         session.pop("_pending_2fa_user_id", None)
         return redirect(url_for("auth_bp.login"))
 
     if request.method == "POST":
+        ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
+
+        # Brute-force koruması: hesap kilitli mi?
+        from app.utils.login_throttle import is_locked, record_failure, clear_failures
+        locked, remaining = is_locked(user.email, ip)
+        if locked:
+            mins = max(1, remaining // 60)
+            flash(f"Çok fazla başarısız deneme. Hesap {mins} dakika boyunca kilitli.", "danger")
+            return render_template("platform/auth/totp_challenge.html"), 429
+
         code = (request.form.get("code") or "").strip()
         is_backup = (request.form.get("is_backup") or "").lower() in ("1", "true", "on")
 
@@ -161,10 +171,16 @@ def totp_challenge():
             ok = verify_totp_code(user.totp_secret, code)
 
         if not ok:
-            flash("Doğrulama kodu hatalı.", "danger")
+            now_locked, attempts = record_failure(user.email, ip)
+            if now_locked:
+                flash("Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi.", "danger")
+            else:
+                remaining_attempts = max(0, 5 - attempts)
+                flash(f"Doğrulama kodu hatalı. ({remaining_attempts} deneme hakkı kaldı)", "danger")
             return render_template("platform/auth/totp_challenge.html")
 
         # Login complete
+        clear_failures(user.email)
         session.pop("_pending_2fa_user_id", None)
         login_user(user)
         try:

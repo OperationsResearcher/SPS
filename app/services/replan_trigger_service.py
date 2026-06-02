@@ -102,7 +102,7 @@ def evaluate_triggers(tenant_id: int, dry_run: bool = False) -> list[ReplanTrigg
         )
         if not dry_run:
             db.session.add(event)
-            t.last_fired_at = _dt.datetime.utcnow()
+            t.last_fired_at = _dt.datetime.now(_dt.timezone.utc)
             t.fire_count = (t.fire_count or 0) + 1
         fired_events.append(event)
 

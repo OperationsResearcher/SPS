@@ -14,7 +14,7 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-diagram-project" style="color:#6366f1;"></i> PG × Proje Çapraz Etki Analizi
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -125,7 +125,7 @@
         html += `
           <div class="pgx-row" data-idx="${idx}">
             <div style="display:flex; flex-direction:column; min-width:0;">
-              <a href="/project/${it.project_id}" style="font-weight:600; color:#1e293b; text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
+              <a href="/project/${it.project_id}" style="font-weight:600; color:var(--text-default); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
               <div style="font-size:11px; color:#94a3b8;">Sağlık: %${Math.round(it.health_score||0)}</div>
             </div>
             <div style="text-align:center; font-weight:600;">${it.process_count}</div>
@@ -168,7 +168,7 @@
                 <a href="/process/${p.id}/karne" class="pgx-process-card" style="text-decoration:none; color:inherit;">
                   <i class="fas fa-sitemap" style="color:#6366f1;"></i>
                   <div style="flex:1; min-width:0;">
-                    <div style="font-weight:600; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div style="font-weight:600; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                       ${p.code ? `<span style="background:#eef2ff; color:#4338ca; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:11px; margin-right:4px;">${escHtml(p.code)}</span>` : ''}
                       ${escHtml(p.name)}
                     </div>

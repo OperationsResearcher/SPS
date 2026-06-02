@@ -5,7 +5,7 @@ Tur YAML dosyalarını yükler, kullanıcı durumlarını yönetir.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -73,7 +73,7 @@ def mark_seen(user_id: int, tour_key: str) -> UserTourProgress:
 def mark_complete(user_id: int, tour_key: str) -> UserTourProgress:
     row = get_or_create_progress(user_id, tour_key)
     row.status = "completed"
-    row.completed_at = datetime.utcnow()
+    row.completed_at = datetime.now(timezone.utc)
     db.session.commit()
     return row
 
@@ -81,7 +81,7 @@ def mark_complete(user_id: int, tour_key: str) -> UserTourProgress:
 def mark_dismiss(user_id: int, tour_key: str) -> UserTourProgress:
     row = get_or_create_progress(user_id, tour_key)
     row.status = "dismissed"
-    row.dismissed_at = datetime.utcnow()
+    row.dismissed_at = datetime.now(timezone.utc)
     db.session.commit()
     return row
 

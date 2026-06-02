@@ -2,6 +2,7 @@
 
 import io
 import re
+import secrets
 from datetime import datetime
 
 import pandas as pd
@@ -17,6 +18,13 @@ from app.models.core import Role, Tenant, User, Ticket, Strategy, SubStrategy
 from app.models.saas import ModuleComponentSlug, RouteRegistry, SystemModule, SubscriptionPackage
 from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
 from app.utils.process_utils import validate_process_parent_id, validate_same_tenant_user_ids, validate_same_tenant_sub_strategies, ensure_int_list, parse_optional_date
+from app.constants.roles import PLATFORM_ADMIN_ROLES
+
+# Privilege escalation guard: non-Admin roller yalnızca bu whitelist'teki rolleri atayabilir.
+_ASSIGNABLE_ROLES = {
+    'tenant_admin': {'executive_manager', 'standard_user'},
+    'executive_manager': {'standard_user'},
+}
 
 admin_bp = Blueprint("admin_bp", __name__)
 
@@ -221,16 +229,21 @@ def components_sync():
                     methods=methods_str
                 )
                 db.session.add(new_route)
-                db.session.commit() # Her başarılı kayıtta commit yap
                 added_count += 1
             else:
                 existing.methods = methods_str
                 existing.url_rule = str(rule)
-                db.session.commit()
         except Exception as e:
-            db.session.rollback() # Hata varsa geri al ve diğer rotaya geç
+            current_app.logger.warning(f"[components_sync] rota atlandı: {e}")
             continue
-            
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[components_sync] commit hatası: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Rota kayıt hatası."}), 500
+
     return jsonify({"success": True, "message": f"{added_count} yeni rota eklendi.", "added": added_count})
 
 
@@ -387,7 +400,13 @@ def tenants_add():
         is_active=True,
     )
     db.session.add(t)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[tenants_add] {e}", exc_info=True)
+        flash("Kurum eklenemedi, lütfen tekrar deneyin.", "danger")
+        return redirect(url_for("admin_bp.tenants"))
     flash("Kurum eklendi.", "success")
     return redirect(url_for("admin_bp.tenants"))
 
@@ -449,6 +468,9 @@ def _require_user_management():
     if not current_user.is_authenticated:
         abort(401)
     if not current_user.role:
+        abort(403)
+    allowed_roles = {'Admin', 'tenant_admin', 'executive_manager'}
+    if current_user.role.name not in allowed_roles:
         abort(403)
 
 @admin_bp.route("/users")
@@ -516,17 +538,26 @@ def users_add():
     if not data["email"]:
         flash("E-posta zorunludur.", "danger")
         return redirect(url_for("admin_bp.users"))
+    if not re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', data["email"]):
+        flash("Geçersiz e-posta formatı.", "danger")
+        return redirect(url_for("admin_bp.users"))
     if User.query.filter_by(email=data["email"]).first():
         flash("Bu e-posta adresi zaten kayıtlı.", "danger")
         return redirect(url_for("admin_bp.users"))
-    if len(data["password"]) < 6:
-        flash("Şifre en az 6 karakter olmalıdır.", "danger")
-        return redirect(url_for("admin_bp.users"))
-        
-    target_role = Role.query.get(int(data["role_id"])) if data["role_id"] else None
-    if current_user.role.name != "Admin" and target_role and target_role.name == "tenant_admin":
-        flash("Kurum Yöneticisi atama işlemi sadece Admin tarafından yapılabilir.", "danger")
-        return redirect(url_for("admin_bp.users"))
+    if data["password"]:
+        from app.utils.password_policy import validate_password
+        ok, errs = validate_password(data["password"], username=data["email"])
+        if not ok:
+            for e in errs:
+                flash(e, "danger")
+            return redirect(url_for("admin_bp.users"))
+
+    target_role = Role.query.get(int(data["role_id"])) if (data.get("role_id") and str(data["role_id"]).strip().isdigit()) else None
+    if current_user.role.name != "Admin":
+        allowed = _ASSIGNABLE_ROLES.get(current_user.role.name, set())
+        if target_role and target_role.name not in allowed:
+            flash("Bu rolü atama yetkiniz yok.", "danger")
+            return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin":
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
@@ -585,10 +616,12 @@ def users_edit(user_id):
         flash("Bu e-posta adresi başka bir kullanıcıya aittir.", "danger")
         return redirect(url_for("admin_bp.users"))
         
-    target_role = Role.query.get(int(data["role_id"])) if data["role_id"] else None
-    if current_user.role.name != "Admin" and target_role and target_role.name == "tenant_admin":
-        flash("Kurum Yöneticisi rolü sadece Admin tarafından atanabilir/değiştirilebilir.", "danger")
-        return redirect(url_for("admin_bp.users"))
+    target_role = Role.query.get(int(data["role_id"])) if (data.get("role_id") and str(data["role_id"]).strip().isdigit()) else None
+    if current_user.role.name != "Admin":
+        allowed = _ASSIGNABLE_ROLES.get(current_user.role.name, set())
+        if target_role and target_role.name not in allowed:
+            flash("Bu rolü atama yetkiniz yok.", "danger")
+            return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin" and (not u.role or u.role.name != "tenant_admin"):
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
@@ -603,7 +636,7 @@ def users_edit(user_id):
     u.department = data["department"]
     u.profile_picture = data["profile_picture"]
     u.tenant_id = int(data["tenant_id"]) if data["tenant_id"] else None
-    u.role_id = int(data["role_id"]) if data["role_id"] else None
+    u.role_id = int(data["role_id"]) if (data.get("role_id") and str(data["role_id"]).strip().isdigit()) else None
     if data["password"]:
         u.password_hash = generate_password_hash(data["password"])
     db.session.commit()
@@ -676,14 +709,14 @@ def users_bulk_import():
     _require_user_management()
     
     if current_user.role.name == "standard_user":
-        return jsonify({"status": "error", "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
 
     if 'file' not in request.files:
-        return jsonify({"status": "error", "message": "Dosya bulunamadı."}), 400
+        return jsonify({"success": False, "message": "Dosya bulunamadı."}), 400
         
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"status": "error", "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
 
     try:
         if file.filename.endswith('.csv'):
@@ -691,7 +724,7 @@ def users_bulk_import():
         elif file.filename.endswith('.xlsx') or file.filename.endswith('.xls'):
             df = pd.read_excel(file)
         else:
-            return jsonify({"status": "error", "message": "Geçersiz dosya formatı. Lütfen Excel veya CSV yükleyin."}), 400
+            return jsonify({"success": False, "message": "Geçersiz dosya formatı. Lütfen Excel veya CSV yükleyin."}), 400
 
         # Replace NaN with None
         df = df.where(pd.notnull(df), None)
@@ -709,7 +742,7 @@ def users_bulk_import():
         
         email_col = next((c for c in actual_cols if "posta" in c.lower() or "mail" in c.lower()), None)
         if not email_col:
-            return jsonify({"status": "error", "message": "Dosyada E-posta sütunu bulunamadı."}), 400
+            return jsonify({"success": False, "message": "Dosyada E-posta sütunu bulunamadı."}), 400
             
         success_count = 0
         duplicate_count = 0
@@ -732,7 +765,11 @@ def users_bulk_import():
             # Get fields based on column names or synonyms
             fn = str(row["Ad"]) if "Ad" in actual_cols and pd.notnull(row["Ad"]) else None
             ln = str(row["Soyad"]) if "Soyad" in actual_cols and pd.notnull(row["Soyad"]) else None
-            pwd = str(row["Şifre"]) if "Şifre" in actual_cols and pd.notnull(row["Şifre"]) else "123456"
+            pwd_raw = str(row["Şifre"]) if "Şifre" in actual_cols and pd.notnull(row["Şifre"]) else ""
+            if len(pwd_raw) < 8:
+                pwd = secrets.token_urlsafe(12)
+            else:
+                pwd = pwd_raw
             jt = str(row["Unvan"]) if "Unvan" in actual_cols and pd.notnull(row["Unvan"]) else None
             ph = str(row["Telefon"]) if "Telefon" in actual_cols and pd.notnull(row["Telefon"]) else None
             dp = str(row["Departman"]) if "Departman" in actual_cols and pd.notnull(row["Departman"]) else None
@@ -758,24 +795,25 @@ def users_bulk_import():
         if duplicate_count > 0:
             msg += f" {duplicate_count} e-posta zaten mevcuttu."
             
-        return jsonify({"status": "success", "message": msg})
+        return jsonify({"success": True, "message": msg})
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"status": "error", "message": f"Dosya okuma hatası: {str(e)}"}), 500
+        current_app.logger.error(f"[bulk_import] dosya okuma hatası: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Dosya işlenirken bir hata oluştu."}), 500
 
 
 @admin_bp.route("/kule-iletisim")
 @login_required
 def kule_iletisim():
     """Kule İletişim yönetim paneli (Admin ve Yönetici erişimi)."""
-    if current_user.role.name not in ['Admin', 'tenant_admin', 'executive_manager']:
+    if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
         flash("Bu sayfayı görüntüleme yetkiniz yok.", "warning")
         return redirect(url_for('app_bp.masaustu'))  # Sprint 9: dashboard_bp → masaustu
-    
+
     # Filter by tenant if not Admin
     query = Ticket.query
-    if current_user.role.name != 'Admin':
+    if (current_user.role.name if current_user.role else "") != 'Admin':
         query = query.filter_by(tenant_id=current_user.tenant_id)
         
     tickets = query.order_by(Ticket.created_at.desc()).all()
@@ -799,13 +837,13 @@ def kule_iletisim():
 @admin_bp.route("/kule-iletisim/<int:ticket_id>/detail")
 @login_required
 def kule_ticket_detail(ticket_id):
-    if current_user.role.name not in ['Admin', 'tenant_admin', 'executive_manager']:
+    if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
         return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-        
+
     ticket = Ticket.query.get_or_404(ticket_id)
-    if current_user.role.name != 'Admin' and ticket.tenant_id != current_user.tenant_id:
+    if (current_user.role.name if current_user.role else "") != 'Admin' and ticket.tenant_id != current_user.tenant_id:
         return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-        
+
     return jsonify({
         "success": True,
         "ticket": {
@@ -826,13 +864,13 @@ def kule_ticket_detail(ticket_id):
 @admin_bp.route("/kule-iletisim/<int:ticket_id>/update", methods=["POST"])
 @login_required
 def kule_ticket_update(ticket_id):
-    if current_user.role.name not in ['Admin', 'tenant_admin', 'executive_manager']:
+    if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
         return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-        
+
     ticket = Ticket.query.get_or_404(ticket_id)
-    if current_user.role.name != 'Admin' and ticket.tenant_id != current_user.tenant_id:
+    if (current_user.role.name if current_user.role else "") != 'Admin' and ticket.tenant_id != current_user.tenant_id:
         return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
-        
+
     data = request.get_json()
     new_status = data.get("status")
     admin_note = data.get("admin_note")
@@ -950,7 +988,12 @@ def admin_create_process():
     if sub_strategy_ids:
         new_process.sub_strategies = validate_same_tenant_sub_strategies(tenant_id, sub_strategy_ids)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_create_process] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Süreç oluşturulamadı."}), 500
     return jsonify({"success": True, "message": "Süreç başarıyla oluşturuldu", "id": new_process.id})
 
 
@@ -969,7 +1012,7 @@ def admin_update_process(process_id):
     if not request.is_json:
         return jsonify({"success": False, "message": "Content-Type application/json olmalı"}), 400
     p = Process.query.filter_by(id=process_id, is_active=True).first_or_404()
-    if p.tenant_id != current_user.tenant_id and current_user.role.name != "Admin":
+    if p.tenant_id != current_user.tenant_id and current_user.role.name not in PLATFORM_ADMIN_ROLES:
         abort(403)
 
     data = request.get_json() or {}
@@ -1012,7 +1055,12 @@ def admin_update_process(process_id):
         ids = ensure_int_list(data.get("sub_strategy_ids") or data.get("strateji_ids"))
         p.sub_strategies = validate_same_tenant_sub_strategies(p.tenant_id, ids) if ids else []
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_update_process] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Süreç güncellenemedi."}), 500
     return jsonify({"success": True, "message": "Süreç başarıyla güncellendi"})
 
 
@@ -1022,11 +1070,16 @@ def admin_delete_process(process_id):
     """Admin süreç silme (soft delete)."""
     _require_process_admin()
     p = Process.query.filter_by(id=process_id, is_active=True).first_or_404()
-    if p.tenant_id != current_user.tenant_id and current_user.role.name != "Admin":
+    if p.tenant_id != current_user.tenant_id and current_user.role.name not in PLATFORM_ADMIN_ROLES:
         abort(403)
     from datetime import timezone as tz
     p.is_active = False
     p.deleted_at = datetime.now(tz.utc)
     p.deleted_by = current_user.id
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_delete_process] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Süreç silinemedi."}), 500
     return jsonify({"success": True, "message": "Süreç başarıyla silindi"})

@@ -45,7 +45,7 @@
         {% for pkg in packages %}
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
           <div>
-            <div style="font-size:13.5px; font-weight:500; color:#1e293b;">{{ pkg.name }}</div>
+            <div style="font-size:13.5px; font-weight:500; color:var(--text-default);">{{ pkg.name }}</div>
             <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ pkg.code }}</div>
             {% if pkg.description %}
             <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ pkg.description }}</div>
@@ -93,7 +93,7 @@
         {% for mod in modules %}
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
           <div>
-            <div style="font-size:13.5px; font-weight:500; color:#1e293b;">{{ mod.name }}</div>
+            <div style="font-size:13.5px; font-weight:500; color:var(--text-default);">{{ mod.name }}</div>
             <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ mod.code }}</div>
             {% if mod.description %}
             <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ mod.description }}</div>

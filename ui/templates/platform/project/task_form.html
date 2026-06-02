@@ -30,8 +30,9 @@
         <label class="mc-label mt-3">Öncelik</label>
         <select name="priority" class="mc-select">
             {% set pr = task.priority if task else 'Medium' %}
+            {% set priority_tr = {'Low': 'Düşük', 'Medium': 'Orta', 'High': 'Yüksek', 'Critical': 'Kritik'} %}
             {% for o in ['Low','Medium','High','Critical'] %}
-            <option value="{{ o }}" {% if pr == o %}selected{% endif %}>{{ o }}</option>
+            <option value="{{ o }}" {% if pr == o %}selected{% endif %}>{{ priority_tr[o] }}</option>
             {% endfor %}
         </select>
 

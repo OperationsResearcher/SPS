@@ -61,7 +61,7 @@ class PushNotificationService:
             
         except Exception as e:
             db.session.rollback()
-            logger.error(f"Failed to save push subscription: {str(e)}")
+            logger.error(f"Failed to save push subscription: {e}")
             raise
     
     def unsubscribe(self, user_id, endpoint):
@@ -85,7 +85,7 @@ class PushNotificationService:
         
         except Exception as e:
             db.session.rollback()
-            logger.error(f"Failed to remove push subscription: {str(e)}")
+            logger.error(f"Failed to remove push subscription: {e}")
             raise
     
     def send_notification(self, user_id, title, body, url=None, icon=None):
@@ -138,7 +138,7 @@ class PushNotificationService:
                 logger.info(f"Push notification sent to user {user_id}")
                 
             except WebPushException as e:
-                logger.error(f"Push notification failed: {str(e)}")
+                logger.error(f"Push notification failed: {e}")
                 
                 # If subscription is invalid, deactivate it
                 if e.response and e.response.status_code in [404, 410]:

@@ -71,7 +71,7 @@ def project_list():
 
     privileged = is_privileged(current_user)
     flt = parse_project_list_filters(request, privileged)
-    page = request.args.get("page", 1, type=int)
+    page = max(1, request.args.get("page", 1, type=int))
     per_page = 20
 
     q = build_filtered_projects_query(current_user, kid, flt)

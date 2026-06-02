@@ -17,7 +17,7 @@
      data-create-url="{{ url_for('app_bp.sp_api_scenario_create') }}">
 
   <div class="mc-page-header" style="margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+    <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
       <i class="fas fa-code-branch"></i> Senaryo Dalları
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">
@@ -36,7 +36,7 @@
         <select id="sc-label" class="mc-input" style="width:180px;">
           <option value="optimistic">İyimser</option>
           <option value="pessimistic">Kötümser</option>
-          <option value="baseline">Baseline</option>
+          <option value="baseline">Temel Senaryo</option>
         </select>
       </div>
       <button type="submit" class="mc-btn mc-btn-primary">
@@ -89,7 +89,7 @@
       const scenarios = byParent[p.id] || [];
       return `
         <div class="mc-card" style="padding:16px;margin-bottom:12px;">
-          <div style="font-size:15px;font-weight:600;color:#1e293b;">
+          <div style="font-size:15px;font-weight:600;color:var(--text-default);">
             <i class="fas fa-calendar-alt"></i> ${p.year} — ${p.name || ''}
             <span style="font-size:11px;color:#64748b;font-weight:400;">(${statusTr(p.status)})</span>
           </div>

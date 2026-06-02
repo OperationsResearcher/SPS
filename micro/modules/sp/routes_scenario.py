@@ -87,7 +87,7 @@ def sp_api_scenario_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"scenario_create error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
     return jsonify({
         "success": True,
@@ -117,5 +117,5 @@ def sp_api_scenario_delete(py_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({"success": True})

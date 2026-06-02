@@ -1,6 +1,7 @@
 """Application configuration loaded from .env via python-dotenv."""
 
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,6 +20,16 @@ def _require_postgres_uri() -> str:
             "SQLite artık geliştirme ve üretim için desteklenmiyor. "
             "SQLALCHEMY_DATABASE_URI değerini PostgreSQL olarak ayarlayın."
         )
+    # Driver normalizasyonu: requirements.txt psycopg3 (psycopg[binary]) kuruyor.
+    # .env'lerde kalmış `+psycopg2` veya çıplak `postgresql://` şemaları, psycopg2
+    # kurulu olmayan ortamda (yeni container) ModuleNotFoundError → her DB sorgusu
+    # 500 verir. Şemayı her zaman kurulu olan psycopg3 dialect'ine sabitle.
+    if raw.startswith("postgresql+psycopg2://"):
+        raw = raw.replace("postgresql+psycopg2://", "postgresql+psycopg://", 1)
+    elif raw.startswith("postgres://"):
+        raw = raw.replace("postgres://", "postgresql+psycopg://", 1)
+    elif raw.startswith("postgresql://"):
+        raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
     return raw
 
 
@@ -42,11 +53,31 @@ class Config:
     DEMO_SESSION_MINUTES = int(os.environ.get("DEMO_SESSION_MINUTES", "60"))
     # Demo verisinin bulunduğu tenant adı (Tomofil)
     DEMO_TENANT_ID = int(os.environ.get("DEMO_TENANT_ID", "27"))
+    # Demo inaktivite sıfırlama eşiği (dk) — bu süre boyunca heartbeat gelmezse
+    # ve veri değişmişse Tomofil baseline'a geri yüklenir (KURALLAR §8.4)
+    DEMO_INACTIVITY_MINUTES = int(os.environ.get("DEMO_INACTIVITY_MINUTES", "15"))
 
     # Araç/script geriye dönük uyumu: asıl uygulama get_config() ile doldurur.
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI") or ""
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # ── İş Kuralı Sabitleri ─────────────────────────────────────────────────────
+    # Analitik ve raporlama geri bakış pencereleri (gün cinsinden)
+    ANALYTICS_SHORT_LOOKBACK_DAYS  = int(os.environ.get("ANALYTICS_SHORT_LOOKBACK_DAYS",  "30"))
+    ANALYTICS_MID_LOOKBACK_DAYS    = int(os.environ.get("ANALYTICS_MID_LOOKBACK_DAYS",    "90"))
+    ANALYTICS_LONG_LOOKBACK_DAYS   = int(os.environ.get("ANALYTICS_LONG_LOOKBACK_DAYS",   "365"))
+    # Performans eşikleri (0-100 skor skalaı)
+    KPI_SCORE_CRITICAL_THRESHOLD   = int(os.environ.get("KPI_SCORE_CRITICAL_THRESHOLD",   "70"))
+    KPI_SCORE_WARNING_THRESHOLD    = int(os.environ.get("KPI_SCORE_WARNING_THRESHOLD",    "90"))
+    # Dışa aktarma limitleri
+    MAX_EXPORT_RECORDS             = int(os.environ.get("MAX_EXPORT_RECORDS",            "1000"))
+
+    # ── Sorgu Limitleri ─────────────────────────────────────────────────────────
+    # Tek sorguda döndürülen maksimum satır sayısı (pagination olmayan listelerde)
+    MAX_QUERY_ROWS = int(os.environ.get("MAX_QUERY_ROWS", "100"))
+    # Bildirim listesi maksimum sayısı
+    MAX_NOTIFICATION_ROWS = int(os.environ.get("MAX_NOTIFICATION_ROWS", "100"))
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     # Sprint 22: SameSite=Strict (CSRF güvenliği — payment-style strict)
@@ -55,6 +86,11 @@ class Config:
     REMEMBER_COOKIE_SECURE = True
     REMEMBER_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_SAMESITE = "Strict"  # Sprint 22
+
+    # Session süresi (varsayılan 24 saat)
+    PERMANENT_SESSION_LIFETIME = timedelta(
+        seconds=int(os.environ.get("SESSION_LIFETIME_HOURS", "24")) * 3600
+    )
 
     # CSRF Protection
     WTF_CSRF_ENABLED = True
@@ -78,7 +114,7 @@ class Config:
     # Üretimde REDIS_URL tanımlıysa init_limiter otomatik Redis kullanır (memory:// yerine)
     RATELIMIT_STORAGE_URL = os.environ.get("RATELIMIT_STORAGE_URL", "memory://")
     RATELIMIT_ENABLED = True
-    RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
+    RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "300 per hour; 3000 per day")
     RATELIMIT_LOGIN = os.environ.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour")
     HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
 
@@ -150,6 +186,8 @@ class ProductionConfig(Config):
     DEBUG = False
     # Üretimde HGS bypass asla açılmaz (.env yanlış set edilse bile)
     HGS_BYPASS_ENABLED = False
+    # CSP üretimde varsayılan olarak açık; CSP_ENABLED=false ile kapatılabilir
+    CSP_ENABLED = os.environ.get("CSP_ENABLED", "true").lower() != "false"
 
     def __init__(self):
         _apply_runtime_db_uri(self)

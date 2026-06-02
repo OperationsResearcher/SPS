@@ -63,7 +63,7 @@ def api_kpi_data_create():
     kpi = ProcessKpi.query.join(Process).filter(
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id,
-        ProcessKpi.is_active == True,
+        ProcessKpi.is_active.is_(True),
     ).first()
     if not kpi:
         return jsonify({"success": False, "message": "PG bulunamadı."}), 404
@@ -114,7 +114,7 @@ def api_kpi_data_get(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     return jsonify({
         "success": True,
@@ -133,7 +133,7 @@ def api_kpi_data_update(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     data = request.get_json() or {}
     try:
@@ -159,7 +159,7 @@ def api_kpi_data_delete(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     try:
         entry.is_active = False
@@ -218,7 +218,7 @@ def api_analytics_comparison():
         p.id for p in Process.query.filter(
             Process.id.in_(data.get("process_ids", [])),
             Process.tenant_id == current_user.tenant_id,
-            Process.is_active == True,
+            Process.is_active.is_(True),
         ).all()
     ]
     try:

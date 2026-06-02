@@ -37,15 +37,10 @@ from app.services.plan_year_service import (
     get_active_plan_year_for_user,
 )
 from app.models.tenant_year import TenantYearIdentity
+from app.constants.roles import PRIVILEGED_ROLES as _PRIVILEGED_ROLES_SET
 
-_SP_ROLES = (
-    "Admin",
-    "admin",
-    "tenant_admin",
-    "executive_manager",
-    "kurum_yoneticisi",
-    "ust_yonetim",
-)
+# Legacy sistem rolleri de dahil (sistem_rol dönüşümü)
+_SP_ROLES = _PRIVILEGED_ROLES_SET | {"admin", "kurum_yoneticisi", "ust_yonetim"}
 from micro.modules.sp.helpers import (
     _check_sp_role,
     sp_manage_required,
@@ -221,7 +216,7 @@ def sp_update_sub_strategy(sub_id):
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
         Strategy.tenant_id == current_user.tenant_id,
-        SubStrategy.is_active == True,
+        SubStrategy.is_active.is_(True),
     ).first_or_404()
 
     data = request.get_json() or {}

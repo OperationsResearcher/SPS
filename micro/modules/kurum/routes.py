@@ -161,7 +161,7 @@ def kurum_ayarlar():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_ayarlar] {e}")
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────

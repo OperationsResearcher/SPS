@@ -567,12 +567,16 @@
 
 </div>
 
+{# Veri script tagları — inline script yerine JSON.parse ile okunur (XSS-safe) #}
+<script id="_kp-bsc-data" type="application/json">{{ bsc_distribution|tojson }}</script>
+<script id="_kp-proj-data" type="application/json">{{ project_impact|tojson }}</script>
+
 <script>
-    // DATA
+    // DATA — application/json script tag'larından güvenli parse
     const REAL_DATA = {
         score: {{ global_score|default(0)|int }},
-        bsc: {{ bsc_distribution|tojson|safe }},
-        projects: {{ project_impact|tojson|safe }}
+        bsc: JSON.parse(document.getElementById("_kp-bsc-data").textContent),
+        projects: JSON.parse(document.getElementById("_kp-proj-data").textContent)
     };
 
     document.addEventListener("DOMContentLoaded", function () {

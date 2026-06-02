@@ -4,15 +4,17 @@ Sprint 13-15: API ve Entegrasyonlar
 OAuth2 ve API Key authentication
 """
 
+import os
 from functools import wraps
 from flask import request, jsonify
 from flask_login import current_user
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from app.models.core import User
 
-# JWT Secret (production'da environment variable'dan alınmalı)
-JWT_SECRET = 'your-secret-key-change-in-production'
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET ortam değişkeni tanımlanmamış. .env dosyasına ekleyin.")
 JWT_ALGORITHM = 'HS256'
 JWT_EXPIRATION_HOURS = 24
 
@@ -34,8 +36,8 @@ class APIAuth:
         payload = {
             'user_id': user_id,
             'tenant_id': tenant_id,
-            'exp': datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
-            'iat': datetime.utcnow()
+            'exp': datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
+            'iat': datetime.now(timezone.utc)
         }
         
         token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -134,7 +136,7 @@ def jwt_required(f):
             return f(*args, **kwargs)
             
         except Exception as e:
-            return jsonify({'error': str(e)}), 401
+            return jsonify({'error': 'Geçersiz veya süresi dolmuş token.'}), 401
     
     return decorated_function
 
@@ -194,11 +196,12 @@ def create_token_endpoint():
     """
     from flask import request, jsonify
     
-    grant_type = request.json.get('grant_type')
-    
+    _body = request.get_json(silent=True) or {}
+    grant_type = _body.get('grant_type')
+
     if grant_type == 'password':
-        username = request.json.get('username')
-        password = request.json.get('password')
+        username = _body.get('username')
+        password = _body.get('password')
         
         # User authentication
         user = User.query.filter_by(email=username, is_active=True).first()

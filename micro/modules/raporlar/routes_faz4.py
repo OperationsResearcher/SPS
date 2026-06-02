@@ -252,7 +252,7 @@ def raporlar_api_nlp_query():
     if pattern_id == "overdue_activities":
         overdue = ProcessActivity.query.options(joinedload(ProcessActivity.process)).join(Process).filter(
             Process.tenant_id == tid, ProcessActivity.is_active.is_(True),
-            ProcessActivity.end_at < datetime.utcnow(),
+            ProcessActivity.end_at < datetime.now(timezone.utc),
             ProcessActivity.status != "Tamamlandı",
         ).order_by(ProcessActivity.end_at).limit(20).all()
         return jsonify({"success": True, "type": "table",

@@ -248,7 +248,7 @@
     var status = document.getElementById("item-status").value;
 
     if (!title) {
-      alert("Başlık gerekli");
+      Swal.fire({ toast: true, position: "top-end", icon: "warning", title: "Başlık gerekli", showConfirmButton: false, timer: 2500 });
       return;
     }
 
@@ -272,11 +272,12 @@
     var url = id ? apiRaid() + "/" + id : apiRaid();
     var method = id ? "PUT" : "POST";
 
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || "";
     try {
       var res = await fetch(url, {
         method: method,
         credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         body: JSON.stringify(body),
       });
       var data = await _parseJsonRes(res);
@@ -295,7 +296,8 @@
     if (!confirm("Bu öğeyi silmek istediğinizden emin misiniz?")) return;
 
     try {
-      var res = await fetch(apiRaid() + "/" + id, { method: "DELETE", credentials: "same-origin" });
+      var csrfDel = document.querySelector('meta[name="csrf-token"]')?.content || "";
+      var res = await fetch(apiRaid() + "/" + id, { method: "DELETE", credentials: "same-origin", headers: { "X-CSRFToken": csrfDel } });
       var data = await _parseJsonRes(res);
       if (!data.success) throw new Error(data.message);
 

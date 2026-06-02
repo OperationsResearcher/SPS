@@ -12,7 +12,7 @@ import datetime as _dt
 from typing import Optional
 
 from flask import current_app
-from sqlalchemy import func, text
+from sqlalchemy import func
 
 from extensions import db
 from app.models.llm_usage import LLMUsageLog, LLMQuotaOverride
@@ -117,15 +117,20 @@ def check_quota(tenant_id: int, endpoint: str) -> QuotaCheckResult:
         or limits["tenant_monthly_cost_usd"]
     )
 
-    month_row = db.session.execute(text("""
-        SELECT
-            count(*) FILTER (WHERE status='ok') as calls,
-            COALESCE(sum(cost_usd) FILTER (WHERE status='ok'), 0) as cost
-        FROM llm_usage_logs
-        WHERE tenant_id=:t AND created_at >= :start
-    """), {"t": tenant_id, "start": month_start}).fetchone()
-    month_calls = int(month_row.calls or 0)
-    month_cost = float(month_row.cost or 0)
+    # H-35 fix: FILTER (WHERE ...) PostgreSQL-only → ORM sorguya geç
+    month_calls = db.session.query(func.count(LLMUsageLog.id)).filter(
+        LLMUsageLog.tenant_id == tenant_id,
+        LLMUsageLog.created_at >= month_start,
+        LLMUsageLog.status == "ok",
+    ).scalar() or 0
+    month_cost = float(
+        db.session.query(func.coalesce(func.sum(LLMUsageLog.cost_usd), 0)).filter(
+            LLMUsageLog.tenant_id == tenant_id,
+            LLMUsageLog.created_at >= month_start,
+            LLMUsageLog.status == "ok",
+        ).scalar() or 0
+    )
+    month_calls = int(month_calls)
 
     if month_calls >= monthly_call_limit:
         return QuotaCheckResult(
@@ -195,7 +200,7 @@ def log_usage(
         limits = _get_limits()
         threshold = limits["alert_threshold_pct"] / 100.0
         # Sistem günlük
-        today_start = _dt.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = _dt.datetime.now(_dt.timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         sys_count = db.session.query(func.count(LLMUsageLog.id)).filter(
             LLMUsageLog.created_at >= today_start, LLMUsageLog.status == "ok",
         ).scalar() or 0
@@ -235,19 +240,29 @@ def get_tenant_usage_summary(tenant_id: int) -> dict:
         LLMUsageLog.status == "ok",
     ).scalar() or 0
 
-    month_row = db.session.execute(text("""
-        SELECT count(*) FILTER (WHERE status='ok') as c,
-               COALESCE(sum(cost_usd) FILTER (WHERE status='ok'), 0) as cost
-        FROM llm_usage_logs WHERE tenant_id=:t AND created_at >= :s
-    """), {"t": tenant_id, "s": month_start}).fetchone()
+    # H-35 fix: FILTER (WHERE ...) PostgreSQL-only → ORM sorguya geç
+    month_calls_used = int(
+        db.session.query(func.count(LLMUsageLog.id)).filter(
+            LLMUsageLog.tenant_id == tenant_id,
+            LLMUsageLog.created_at >= month_start,
+            LLMUsageLog.status == "ok",
+        ).scalar() or 0
+    )
+    month_cost_used = float(
+        db.session.query(func.coalesce(func.sum(LLMUsageLog.cost_usd), 0)).filter(
+            LLMUsageLog.tenant_id == tenant_id,
+            LLMUsageLog.created_at >= month_start,
+            LLMUsageLog.status == "ok",
+        ).scalar() or 0
+    )
 
     return {
         "today": {"used": today_count, "limit": daily_limit,
                   "pct": round((today_count / daily_limit) * 100, 1) if daily_limit else 0},
-        "month_calls": {"used": int(month_row.c or 0), "limit": monthly_call_limit,
-                        "pct": round((int(month_row.c or 0) / monthly_call_limit) * 100, 1) if monthly_call_limit else 0},
-        "month_cost": {"used_usd": round(float(month_row.cost or 0), 4),
+        "month_calls": {"used": month_calls_used, "limit": monthly_call_limit,
+                        "pct": round((month_calls_used / monthly_call_limit) * 100, 1) if monthly_call_limit else 0},
+        "month_cost": {"used_usd": round(month_cost_used, 4),
                        "limit_usd": monthly_cost_limit,
-                       "pct": round((float(month_row.cost or 0) / monthly_cost_limit) * 100, 1) if monthly_cost_limit else 0},
+                       "pct": round((month_cost_used / monthly_cost_limit) * 100, 1) if monthly_cost_limit else 0},
         "paused": bool(override and override.is_paused),
     }

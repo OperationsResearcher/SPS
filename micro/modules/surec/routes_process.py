@@ -100,8 +100,8 @@ def surec():
         if not all_processes:
             best = (
                 db.session.query(Process.plan_year_id, _sqla_func.count(Process.id))
-                .filter(Process.tenant_id == tid, Process.is_active == True,
-                        Process.plan_year_id != None)
+                .filter(Process.tenant_id == tid, Process.is_active.is_(True),
+                        Process.plan_year_id.isnot(None))
                 .group_by(Process.plan_year_id)
                 .order_by(_sqla_func.count(Process.id).desc())
                 .first()
@@ -127,7 +127,7 @@ def surec():
     strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
     if _effective_py_id:
         strat_q = strat_q.filter(
-            or_(Strategy.plan_year_id == _effective_py_id, Strategy.plan_year_id == None)
+            or_(Strategy.plan_year_id == _effective_py_id, Strategy.plan_year_id.is_(None))
         )
     strategies = strat_q.order_by(Strategy.code).all()
     strategies_json = [
@@ -320,9 +320,11 @@ def surec_api_add():
     try:
         parent_id_raw = data.get("parent_id") or None
         parent_id = validate_process_parent_id(None, parent_id_raw, current_user.tenant_id)
+        active_py = get_active_plan_year_for_user(current_user)
         p = Process(
             tenant_id=current_user.tenant_id,
             parent_id=parent_id,
+            plan_year_id=active_py.id if active_py else None,
             code=data.get("code"),
             name=data.get("name"),
             english_name=data.get("english_name"),
@@ -385,7 +387,7 @@ def surec_api_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/get/<int:process_id>", methods=["GET"])
@@ -486,16 +488,15 @@ def surec_api_update(process_id):
         old_member_ids = {u.id for u in p.members}
 
         tid = current_user.tenant_id
+        leader_ids = [int(x) for x in (data.get("leader_ids") or [])] if "leader_ids" in data else []
+        member_ids = [int(x) for x in (data.get("member_ids") or [])] if "member_ids" in data else []
+        all_uids = list(set(leader_ids + member_ids))
+        users_map = {u.id: u for u in User.query.filter(User.id.in_(all_uids), User.tenant_id == tid).all()} if all_uids else {}
+
         if "leader_ids" in data:
-            p.leaders = [
-                u for uid in data["leader_ids"]
-                if (u := User.query.get(int(uid))) and u.tenant_id == tid
-            ]
+            p.leaders = [u for uid in leader_ids if (u := users_map.get(uid))]
         if "member_ids" in data:
-            p.members = [
-                u for uid in data["member_ids"]
-                if (u := User.query.get(int(uid))) and u.tenant_id == tid
-            ]
+            p.members = [u for uid in member_ids if (u := users_map.get(uid))]
 
         # Yeni eklenen lider/üyelere bildirim gönder
         try:
@@ -518,7 +519,7 @@ def surec_api_update(process_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/delete/<int:process_id>", methods=["POST"])
@@ -528,15 +529,26 @@ def surec_api_delete(process_id):
         return jsonify({"success": False, "message": "Süreç silme yetkiniz yok."}), 403
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
     try:
-        p.is_active = False
-        p.deleted_at = datetime.now(timezone.utc)
-        p.deleted_by = current_user.id
+        # Soft-delete cascade: torun süreçleri de pasif yap
+        to_delete = [p.id]
+        stack = [p.id]
+        while stack:
+            children = [c.id for c in Process.query.filter_by(
+                parent_id=stack.pop(), tenant_id=current_user.tenant_id, is_active=True
+            ).all()]
+            to_delete.extend(children)
+            stack.extend(children)
+        now = datetime.now(timezone.utc)
+        Process.query.filter(
+            Process.id.in_(to_delete), Process.tenant_id == current_user.tenant_id
+        ).update({"is_active": False, "deleted_at": now, "deleted_by": current_user.id},
+                 synchronize_session="fetch")
         db.session.commit()
-        return jsonify({"success": True, "message": "Süreç silindi."})
+        return jsonify({"success": True, "message": "Süreç silindi.", "cascade_count": len(to_delete)})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── PG Mini Sparkline (C2) — Süreç başına son 3 ay PG hedef üstü % ─────────
@@ -546,12 +558,15 @@ def surec_api_sparklines():
     """Tenant'ın tüm süreçleri için son 3 ay aylık PG hedef-üstü oranı.
     Dönüş: {process_id: [v1, v2, v3]}  — None'lar veri yok demek.
     """
-    from sqlalchemy import text as _t
+    from sqlalchemy import text as _t, inspect as _sqlinspect
     tid = current_user.tenant_id
     if not tid:
         return jsonify({"success": True, "data": {}})
+    # M-18 fix: generate_series() PostgreSQL-only → SQLite (Yerel) ortamında boş dön
+    if _sqlinspect(db.engine).dialect.name != 'postgresql':
+        return jsonify({"success": True, "data": {}, "labels": []})
     try:
-        rows = db.session.execute(_t("""
+        rows = db.session.execute(_t(r"""
             WITH months AS (
               SELECT generate_series(
                 date_trunc('month', CURRENT_DATE) - INTERVAL '2 months',

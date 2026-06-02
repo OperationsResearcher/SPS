@@ -139,8 +139,8 @@ def _resolve_process_by_source_chain(proc: Process, target_plan_year_id: int):
         Process.query
         .filter(
             Process.tenant_id == tid,
-            Process.is_active == True,
-            Process.source_process_id != None,
+            Process.is_active.is_(True),
+            Process.source_process_id.isnot(None),
         )
         .with_entities(
             Process.id,
@@ -261,7 +261,7 @@ def surec_api_karne(process_id):
             .filter(
                 KpiData.process_kpi_id.in_(kpi_ids),
                 KpiData.year.in_([year, prev_y]),
-                KpiData.is_active == True,
+                KpiData.is_active.is_(True),
             )
             .order_by(KpiData.process_kpi_id, KpiData.data_date)
             .all()

@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, selectinload
 from app.models import db
+from app.utils.query_helpers import get_tenant_user, get_tenant_process
 from app.utils.process_utils import (
     process_descendant_ids,
     validate_process_parent_id,
@@ -392,11 +393,11 @@ def add_process():
 
         # Leaders / Members
         for uid in (data.get('leader_ids') or []):
-            u = User.query.filter_by(id=int(uid), tenant_id=current_user.tenant_id, is_active=True).first()
+            u = get_tenant_user(int(uid), current_user.tenant_id)
             if u:
                 new_process.leaders.append(u)
         for uid in (data.get('member_ids') or []):
-            u = User.query.filter_by(id=int(uid), tenant_id=current_user.tenant_id, is_active=True).first()
+            u = get_tenant_user(int(uid), current_user.tenant_id)
             if u:
                 new_process.members.append(u)
 
@@ -404,14 +405,14 @@ def add_process():
         return jsonify({'success': True, 'message': 'Süreç başarıyla oluşturuldu.', 'id': new_process.id})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/get/<int:process_id>', methods=['GET'])
 @login_required
 def get_process(process_id):
     """Süreç bilgilerini düzenle modalı için döner."""
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _can_edit_process_record(p):
         return jsonify({'success': False, 'message': 'Bu süreci düzenleme yetkiniz yok.'}), 403
     sub_strategy_links = [
@@ -447,7 +448,7 @@ def get_process(process_id):
 @process_bp.route('/api/update/<int:process_id>', methods=['POST'])
 @login_required
 def update_process(process_id):
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _can_edit_process_record(p):
         return jsonify({'success': False, 'message': 'Bu süreci güncelleme yetkiniz yok.'}), 403
     data = request.get_json()
@@ -479,14 +480,14 @@ def update_process(process_id):
         if 'leader_ids' in data:
             p.leaders = [
                 u for u in (
-                    User.query.filter_by(id=int(i), tenant_id=current_user.tenant_id, is_active=True).first()
+                    get_tenant_user(int(i), current_user.tenant_id)
                     for i in data['leader_ids']
                 ) if u
             ]
         if 'member_ids' in data:
             p.members = [
                 u for u in (
-                    User.query.filter_by(id=int(i), tenant_id=current_user.tenant_id, is_active=True).first()
+                    get_tenant_user(int(i), current_user.tenant_id)
                     for i in data['member_ids']
                 ) if u
             ]
@@ -515,13 +516,13 @@ def update_process(process_id):
         return jsonify({'success': True, 'message': 'Süreç güncellendi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/delete/<int:process_id>', methods=['POST'])
 @login_required
 def delete_process(process_id):
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _is_privileged_process_role():
         return jsonify({'success': False, 'message': 'Süreç silme yetkiniz yok.'}), 403
     try:
@@ -532,7 +533,7 @@ def delete_process(process_id):
         return jsonify({'success': True, 'message': 'Süreç silindi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 # ──────────────────────────────────────────────────
@@ -544,7 +545,7 @@ def delete_process(process_id):
 def add_kpi():
     data = request.get_json()
     process_id = data.get('process_id') or data.get('surec_id')
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _can_crud_pg_and_activity(p):
         return jsonify({'success': False, 'message': 'PG ekleme yetkiniz yok.'}), 403
     try:
@@ -578,7 +579,7 @@ def add_kpi():
         return jsonify({'success': True, 'message': 'Performans göstergesi eklendi.', 'id': new_kpi.id})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi/get/<int:kpi_id>', methods=['GET'])
@@ -647,7 +648,7 @@ def update_kpi(kpi_id):
         return jsonify({'success': True, 'message': 'PG güncellendi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi/delete/<int:kpi_id>', methods=['POST'])
@@ -665,13 +666,13 @@ def delete_kpi(kpi_id):
         return jsonify({'success': True, 'message': 'PG silindi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi/list/<int:process_id>', methods=['GET'])
 @login_required
 def list_kpis(process_id):
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _can_access_process(p):
         return jsonify({'success': False, 'message': 'Bu süreç için erişim yetkiniz yok.'}), 403
     kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
@@ -702,7 +703,7 @@ def list_kpis(process_id):
 def add_activity():
     data = request.get_json() or {}
     process_id = data.get('process_id') or data.get('surec_id')
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     if not _can_access_process(p):
         return jsonify({'success': False, 'message': 'Faaliyet ekleme yetkiniz yok.'}), 403
     try:
@@ -749,7 +750,7 @@ def add_activity():
         return jsonify({'success': True, 'message': 'Faaliyet eklendi.', 'id': new_act.id})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/activity/delete/<int:act_id>', methods=['POST'])
@@ -769,7 +770,7 @@ def delete_activity(act_id):
         return jsonify({'success': True, 'message': 'Faaliyet silindi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/activity/cancel/<int:act_id>', methods=['POST'])
@@ -788,7 +789,7 @@ def cancel_activity(act_id):
         return jsonify({'success': True, 'message': 'Faaliyet iptal edildi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/activity/postpone/<int:act_id>', methods=['POST'])
@@ -820,7 +821,7 @@ def postpone_activity(act_id):
         return jsonify({'success': True, 'message': 'Faaliyet ertelendi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/activity/complete/<int:act_id>', methods=['POST'])
@@ -840,7 +841,7 @@ def complete_activity(act_id):
         return jsonify({'success': True, 'message': 'Faaliyet tamamlandı.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 # ──────────────────────────────────────────────────
@@ -921,7 +922,7 @@ def add_kpi_data():
         return jsonify({'success': True, 'message': 'Veri kaydedildi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi-data/list/<int:kpi_id>', methods=['GET'])
@@ -1167,7 +1168,7 @@ def update_activity(act_id):
         return jsonify({'success': True, 'message': 'Faaliyet güncellendi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/activity/track', methods=['POST'])
@@ -1211,7 +1212,7 @@ def toggle_activity_track():
         return jsonify({'success': True, 'completed': track.completed})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 # ──────────────────────────────────────────────────
@@ -1225,7 +1226,7 @@ def kullanici_surecleri():
     processes = (
         Process.query.filter(
             Process.tenant_id == current_user.tenant_id,
-            Process.is_active == True
+            Process.is_active.is_(True)
         )
         .filter(
             db.or_(
@@ -1260,7 +1261,7 @@ def kullanici_surecleri():
 @login_required
 def surec_uyeleri(process_id):
     """Süreç üyelerini (lider, üye, sahip) döner."""
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     uyeler = set()
     for u in p.leaders + p.members + p.owners:
         if u and u.is_active:
@@ -1321,7 +1322,7 @@ def muda_verimlilik_skoru():
 @login_required
 def pg_dagit(process_id, kpi_id):
     """PG'yi seçilen kullanıcılara bireysel hedef olarak dağıtır."""
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     kpi = ProcessKpi.query.filter_by(id=kpi_id, process_id=p.id, is_active=True).first_or_404()
     data = request.get_json() or {}
     user_ids = data.get('user_ids', [])
@@ -1362,20 +1363,20 @@ def pg_dagit(process_id, kpi_id):
         return jsonify({'success': True, 'message': f'{len(created)} kullanıcıya dağıtıldı.', 'created': created})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/surec/<int:process_id>/faaliyet/<int:act_id>/create-bireysel', methods=['POST'])
 @login_required
 def faaliyet_create_bireysel(process_id, act_id):
     """Süreç faaliyetinden kullanıcı için bireysel faaliyet oluşturur."""
-    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     act = ProcessActivity.query.filter_by(id=act_id, process_id=p.id, is_active=True).first_or_404()
     data = request.get_json() or {}
     target_user_id = data.get('user_id', current_user.id)
     if target_user_id != current_user.id and not (current_user.role and current_user.role.name in ('tenant_admin', 'Admin', 'executive_manager')):
         return jsonify({'success': False, 'message': 'Yetkisiz.'}), 403
-    target_user = User.query.filter_by(id=target_user_id, tenant_id=current_user.tenant_id).first_or_404()
+    target_user = User.query.filter_by(id=target_user_id, tenant_id=current_user.tenant_id, is_active=True).first_or_404()
     try:
         existing = IndividualActivity.query.filter_by(
             user_id=target_user.id,
@@ -1401,7 +1402,7 @@ def faaliyet_create_bireysel(process_id, act_id):
         return jsonify({'success': True, 'message': 'Bireysel faaliyet oluşturuldu.', 'id': ia.id})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/bireysel-faaliyet/<int:act_id>/takip', methods=['POST'])
@@ -1434,7 +1435,7 @@ def bireysel_faaliyet_takip(act_id):
         return jsonify({'success': True, 'completed': track.completed})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/favorite-kpi/toggle', methods=['POST'])
@@ -1600,7 +1601,7 @@ def export_surec_karnesi_excel():
         )
     except Exception as e:
         current_app.logger.error(f'Excel export hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 
 @process_bp.route('/api/individual-kpi-data/add', methods=['POST'])
@@ -1633,7 +1634,7 @@ def add_individual_kpi_data():
         return jsonify({'success': True, 'message': 'Veri kaydedildi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi-data/detail', methods=['GET'])
@@ -1753,7 +1754,7 @@ def kpi_data_update(data_id):
         return jsonify({'success': True, 'message': 'Veri güncellendi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi-data/delete/<int:data_id>', methods=['POST', 'DELETE'])
@@ -1793,7 +1794,7 @@ def kpi_data_delete(data_id):
         return jsonify({'success': True, 'message': 'Veri silindi.'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
 
 
 @process_bp.route('/api/kpi-data/proje-gorevleri', methods=['GET'])

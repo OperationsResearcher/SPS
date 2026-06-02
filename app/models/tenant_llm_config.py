@@ -112,3 +112,6 @@ class TenantLLMConfig(db.Model):
             "last_test_status": self.last_test_status,
             "last_test_message": self.last_test_message,
         }
+
+    def __repr__(self):
+        return f"<TenantLLMConfig {self.id} tenant={self.tenant_id} provider={self.provider}>"

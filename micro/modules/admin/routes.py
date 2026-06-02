@@ -18,8 +18,12 @@ from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from micro.modules.admin.constants import AKTIVITE_ETIKETLER, RESOURCE_IKONLAR
 
-_ADMIN_ROLES   = ("Admin",)
-_MANAGER_ROLES = ("Admin", "tenant_admin", "executive_manager")
+# _is_admin() = SADECE platform Admin (tüm kurumlar). tenant_admin tek-kurum
+# yöneticisidir; cross-tenant kapıları açmaması için PLATFORM_ADMIN_ROLES kullanılır.
+# (ADMIN_ROLES = {"Admin","tenant_admin"} idi → tenant_admin'e platform yetkisi sızdırıyordu.)
+from app.constants.roles import PLATFORM_ADMIN_ROLES as _ADMIN_ROLES_SET, PRIVILEGED_ROLES as _PRIVILEGED_ROLES_SET
+_ADMIN_ROLES   = tuple(_ADMIN_ROLES_SET)
+_MANAGER_ROLES = tuple(_PRIVILEGED_ROLES_SET)
 
 from services import admin_backup_service as _backup  # noqa: E402
 from services import backup_scheduler_service as _backup_scheduler  # noqa: E402
@@ -118,7 +122,7 @@ def get_login_stats(tenant_id=None):
     Login istatistikleri.
     Döner: online_now, active_now, last_24h, last_7d, last_30d, all_time
     """
-    now_utc = datetime.datetime.utcnow()
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
 
     login_predicate = or_(
         AuditLog.action.in_(("OTURUM AÇMA", "LOGIN")),
@@ -199,7 +203,7 @@ def get_user_activity_stats(tenant_id=None):
     Kullanıcı bazlı giriş ve aktivite istatistikleri.
     Her kullanıcı için: hesap durumu, çevrimiçi mi, son giriş, 30 günlük giriş/işlem sayısı.
     """
-    now_utc = datetime.datetime.utcnow()
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
     active_cutoff = now_utc - datetime.timedelta(minutes=30)
     since_30d = now_utc - datetime.timedelta(days=30)
 
@@ -449,7 +453,7 @@ def ayarlar_yedekleme():
         pg_err = None
     except Exception as e:
         pg_ok = False
-        pg_err = str(e)
+        pg_err = "Veritabanı bağlantı hatası."
     return render_template(
         "platform/ayarlar/yedekleme.html",
         pg_ok=pg_ok,
@@ -484,8 +488,8 @@ def ayarlar_yedekleme_preview_data():
         preview = _backup.preview_sql_backup(path)
         preview["label"] = "Veri Yedeği Önizleme"
     except Exception as e:
-        current_app.logger.exception("[preview_veri] %s", e)
-        flash(f"Önizleme hatası: {e}", "danger")
+        current_app.logger.error(f"[preview_veri] {e}", exc_info=True)
+        flash("Önizleme işlemi başarısız.", "danger")
     finally:
         try:
             os.unlink(path)
@@ -524,8 +528,8 @@ def ayarlar_yedekleme_preview_full():
         preview = _backup.preview_full_zip(path)
         preview["label"] = "Tam Sistem Yedeği Önizleme"
     except Exception as e:
-        current_app.logger.exception("[preview_tam] %s", e)
-        flash(f"Önizleme hatası: {e}", "danger")
+        current_app.logger.error(f"[preview_tam] {e}", exc_info=True)
+        flash("Önizleme işlemi başarısız.", "danger")
     finally:
         try:
             os.unlink(path)
@@ -566,7 +570,7 @@ def ayarlar_yedekleme_takvim_kaydet():
         _backup_scheduler.apply_schedule(current_app)
         flash("Otomatik yedekleme takvimi kaydedildi.", "success")
     except Exception as e:
-        current_app.logger.exception("[backup_schedule_save] %s", e)
+        current_app.logger.exception(f"[backup_schedule_save] {e}")
         flash(f"Takvim kaydedilemedi: {e}", "danger")
     return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
 
@@ -586,7 +590,7 @@ def ayarlar_yedekleme_indir_veri():
         flash("pg_dump bulunamadı. Sunucuda PostgreSQL client (PATH veya PG_BIN) gerekir.", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
     except Exception as e:
-        current_app.logger.exception("[yedek_veri] %s", e)
+        current_app.logger.exception(f"[yedek_veri] {e}")
         if path:
             try:
                 os.unlink(path)
@@ -626,7 +630,7 @@ def ayarlar_yedekleme_indir_tam_sistem():
         flash("pg_dump bulunamadı. Sunucuda PostgreSQL client (PATH veya PG_BIN) gerekir.", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
     except Exception as e:
-        current_app.logger.exception("[yedek_tam] %s", e)
+        current_app.logger.exception(f"[yedek_tam] {e}")
         flash(f"Tam sistem yedeği oluşturulamadı: {e}", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
 
@@ -682,7 +686,7 @@ def ayarlar_yedekleme_restore_data():
         _backup.restore_from_sql_file(path)
         flash("Veri geri yükleme tamamlandı. Uygulamayı ve oturumları kontrol edin.", "success")
     except Exception as e:
-        current_app.logger.exception("[restore_veri] %s", e)
+        current_app.logger.exception(f"[restore_veri] {e}")
         flash(f"Geri yükleme hatası: {e}", "danger")
     finally:
         try:
@@ -722,7 +726,7 @@ def ayarlar_yedekleme_restore_full():
             "success",
         )
     except Exception as e:
-        current_app.logger.exception("[restore_tam] %s", e)
+        current_app.logger.exception(f"[restore_tam] {e}")
         flash(f"Geri yükleme hatası: {e}", "danger")
     finally:
         try:
@@ -750,15 +754,15 @@ def ayarlar_yedekleme_kurum_indir():
     try:
         gz_bytes = _tenant_backup.export_tenant_json(tenant_id)
     except ValueError as e:
-        flash(str(e), "danger")
+        flash("Yedekleme hatası: geçersiz kurum.", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
     except Exception as e:
-        current_app.logger.exception("[kurum_indir] tenant=%s %s", tenant_id, e)
+        current_app.logger.exception(f"[kurum_indir] tenant={tenant_id} {e}")
         flash(f"Yedek alınamadı: {e}", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
 
     import io
-    now_str = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    now_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d_%H%M%S")
     filename = f"kurum_{tenant_id}_{now_str}.json.gz"
     return send_file(
         io.BytesIO(gz_bytes),
@@ -798,7 +802,7 @@ def ayarlar_yedekleme_kurum_yukle():
     try:
         result = _tenant_backup.restore_tenant_data(data)
     except Exception as e:
-        current_app.logger.exception("[kurum_yukle] %s", e)
+        current_app.logger.exception(f"[kurum_yukle] {e}")
         flash(f"Geri yükleme hatası: {e}", "danger")
         return redirect(url_for("app_bp.ayarlar_yedekleme")), 302
 
@@ -899,7 +903,7 @@ def admin_users_add():
     tid  = int(data.get("tenant_id") or current_user.tenant_id or 0)
     if role and role.name == "tenant_admin":
         existing = User.query.join(Role).filter(
-            User.tenant_id == tid, Role.name == "tenant_admin", User.is_active == True
+            User.tenant_id == tid, Role.name == "tenant_admin", User.is_active.is_(True)
         ).first()
         if existing:
             return jsonify({"success": False, "message": "Bu kurumda zaten aktif bir Kurum Yöneticisi var."}), 400
@@ -907,7 +911,7 @@ def admin_users_add():
     try:
         u = User(
             email=email,
-            password_hash=generate_password_hash(data.get("password") or "Changeme123!"),
+            password_hash=generate_password_hash(data.get("password") or ("Kp_" + __import__("secrets").token_urlsafe(12))),
             first_name=data.get("first_name", "").strip(),
             last_name=data.get("last_name", "").strip(),
             tenant_id=tid or None,
@@ -933,7 +937,7 @@ def admin_users_add():
                 sync_pg_sequence_if_needed("users", "id")
                 u = User(
                     email=email,
-                    password_hash=generate_password_hash(data.get("password") or "Changeme123!"),
+                    password_hash=generate_password_hash(data.get("password") or ("Kp_" + __import__("secrets").token_urlsafe(12))),
                     first_name=(data.get("first_name") or "").strip(),
                     last_name=(data.get("last_name") or "").strip(),
                     tenant_id=tid or None,
@@ -1110,6 +1114,9 @@ def admin_users_bulk_import():
     if not file:
         return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
 
+    if request.content_length and request.content_length > 10 * 1024 * 1024:
+        return jsonify({"success": False, "message": "Dosya boyutu 10 MB sınırını aşıyor."}), 400
+
     filename = (file.filename or "").lower()
     try:
         import io
@@ -1151,7 +1158,7 @@ def admin_users_bulk_import():
                 continue
             _existing.add(email)  # aynı dosyada tekrarı engelle
             raw_pass = (row.get("Sifre") or row.get("Şifre") or row.get("password") or "").strip()
-            password = raw_pass if raw_pass else "Changeme123!"
+            password = raw_pass if (raw_pass and len(raw_pass) >= 8) else ("Kp_" + __import__("secrets").token_urlsafe(12))
             u = User(
                 email=email,
                 password_hash=generate_password_hash(password),
@@ -1229,15 +1236,24 @@ def admin_tenants():
     if _is_admin():
         parent_candidates = Tenant.query.filter(
             Tenant.tenant_type.in_(["dealer", "holding"]),
-            Tenant.is_active == True,
+            Tenant.is_active.is_(True),
             Tenant.parent_tenant_id.is_(None),  # iç içe yasak
         ).order_by(Tenant.name).all()
 
-    total_users = sum(len(t.users) for t in tenants)
+    # M-19: N+1 önlemi — kullanıcı sayılarını tek sorguda topla
+    _tenant_ids = [t.id for t in tenants]
+    _user_counts = dict(
+        db.session.query(User.tenant_id, func.count(User.id))
+        .filter(User.tenant_id.in_(_tenant_ids), User.is_active == True)
+        .group_by(User.tenant_id)
+        .all()
+    ) if _tenant_ids else {}
+    total_users = sum(_user_counts.values())
     return render_template(
         "platform/admin/tenants.html",
         tenants=tenants, packages=packages,
         total_users=total_users,
+        user_counts=_user_counts,
         parent_candidates=parent_candidates,
     )
 
@@ -1282,22 +1298,29 @@ def admin_tenants_add():
             return jsonify({"success": False, "message": err}), 400
 
     try:
+        def _int(val, default=None):
+            """Sayısal dönüşüm — hatalı değerde ValueError yerine None/default döner."""
+            try:
+                return int(val) if val not in (None, "") else default
+            except (TypeError, ValueError):
+                raise ValueError(f"'{val}' geçerli bir sayı değil.")
+
         t = Tenant(
             name=name,
             short_name=(data.get("short_name") or "").strip() or None,
             sector=data.get("sector") or None,
             activity_area=data.get("activity_area") or None,
-            employee_count=int(data["employee_count"]) if data.get("employee_count") else None,
+            employee_count=_int(data.get("employee_count")),
             contact_email=data.get("contact_email") or None,
             phone_number=data.get("phone_number") or None,
             website_url=data.get("website_url") or None,
             tax_office=data.get("tax_office") or None,
             tax_number=data.get("tax_number") or None,
-            max_user_count=int(data["max_user_count"]) if data.get("max_user_count") else 5,
-            package_id=int(data["package_id"]) if data.get("package_id") else None,
+            max_user_count=_int(data.get("max_user_count"), default=5),
+            package_id=_int(data.get("package_id")),
             tenant_type=tenant_type,
             parent_tenant_id=parent_tenant.id if parent_tenant else None,
-            sub_tenant_limit=int(data["sub_tenant_limit"]) if data.get("sub_tenant_limit") else None,
+            sub_tenant_limit=_int(data.get("sub_tenant_limit")),
         )
         if data.get("license_end_date"):
             from datetime import date
@@ -1313,6 +1336,8 @@ def admin_tenants_add():
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
         return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
+    except ValueError as e:
+        return jsonify({"success": False, "message": f"Geçersiz sayısal alan: {e}"}), 400
     except Exception as e:
         db.session.rollback()
         if is_pk_duplicate(e, "tenants"):
@@ -1599,13 +1624,13 @@ def admin_notifications():
     if _is_admin():
         notifications = (Notification.query
                          .options(joinedload(Notification.user))
-                         .order_by(Notification.created_at.desc()).limit(500).all())
+                         .order_by(Notification.created_at.desc()).limit(100).all())
         tenants = Tenant.query.filter_by(is_active=True).order_by(Tenant.name).all()
     else:
         notifications = (Notification.query
                          .options(joinedload(Notification.user))
                          .filter_by(tenant_id=current_user.tenant_id)
-                         .order_by(Notification.created_at.desc()).limit(200).all())
+                         .order_by(Notification.created_at.desc()).limit(100).all())
         tenants = []
 
     return render_template("platform/admin/notifications.html",
@@ -1890,6 +1915,10 @@ def admin_modules_toggle(mod_id):
 
 
 # Sprint C — Bayi/Holding alt-tenant yönetim sayfası
+# TASARIM NOTU: Bu late-import (modül seviyesinin sonunda) kasıtlıdır.
+# routes_sub_tenants ve routes_holding, app_bp'yi kayıt ettikten sonra
+# route'larını ekler. Circular import riski: bu dosya onları import eder,
+# onlar da helpers'tan import yapar — döngüsel zincir yok.
 from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
 
 from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D

@@ -60,7 +60,7 @@ def raporlar_api_cfo_dashboard():
     } for i in top5_inits]
 
     # LLM kullanım maliyeti (son 30 gün)
-    last_30 = datetime.utcnow() - timedelta(days=30)
+    last_30 = datetime.now(timezone.utc) - timedelta(days=30)
     llm_cost = db.session.query(func.coalesce(func.sum(LLMUsageLog.cost_usd), 0)).filter(
         LLMUsageLog.tenant_id == tid,
         LLMUsageLog.created_at >= last_30,
@@ -187,7 +187,7 @@ def raporlar_api_coo_dashboard():
     overdue_count = ProcessActivity.query.join(Process).filter(
         Process.tenant_id == tid,
         ProcessActivity.is_active.is_(True),
-        ProcessActivity.end_at < datetime.utcnow(),
+        ProcessActivity.end_at < datetime.now(timezone.utc),
         ProcessActivity.status != "Tamamlandı",
     ).count()
 

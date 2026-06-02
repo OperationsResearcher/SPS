@@ -35,8 +35,8 @@ def list_processes():
         - search: Arama terimi
         - status: Durum filtresi
     """
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 20, type=int)
+    page = max(1, request.args.get('page', 1, type=int))
+    per_page = min(100, max(1, request.args.get('per_page', 20, type=int)))
     search = request.args.get('search', '')
     
     query = Process.query.filter_by(
@@ -115,6 +115,16 @@ def create_kpi_data(validated_data):
             "notes": "Optional notes"
         }
     """
+    # Güvenlik: process_kpi_id caller'ın tenant'ına ait olmalı (cross-tenant veri yazma önlemi).
+    _owns = (
+        ProcessKpi.query.join(Process, ProcessKpi.process_id == Process.id)
+        .filter(ProcessKpi.id == validated_data["process_kpi_id"],
+                Process.tenant_id == current_user.tenant_id)
+        .first()
+    )
+    if not _owns:
+        return jsonify({"success": False, "message": "Erişim reddedildi."}), 403
+
     # Map schema fields to model (notes->description, add year)
     create_data = {
         "process_kpi_id": validated_data["process_kpi_id"],
@@ -153,11 +163,12 @@ def create_kpi_data(validated_data):
 @login_required
 def get_kpi_data(kpi_data_id):
     """KPI veri detayı"""
-    kpi_data = KpiData.query.filter_by(
-        id=kpi_data_id,
-        is_active=True
-    ).first_or_404()
-    
+    kpi_data = (KpiData.query
+        .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
+        .join(Process, ProcessKpi.process_id == Process.id)
+        .filter(KpiData.id == kpi_data_id, KpiData.is_active.is_(True), Process.tenant_id == current_user.tenant_id)
+        .first_or_404())
+
     return jsonify(kpi_data.to_dict())
 
 
@@ -165,28 +176,30 @@ def get_kpi_data(kpi_data_id):
 @login_required
 def update_kpi_data(kpi_data_id):
     """KPI veri güncelleme"""
-    kpi_data = KpiData.query.filter_by(
-        id=kpi_data_id,
-        is_active=True
-    ).first_or_404()
-    
+    kpi_data = (KpiData.query
+        .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
+        .join(Process, ProcessKpi.process_id == Process.id)
+        .filter(KpiData.id == kpi_data_id, KpiData.is_active.is_(True), Process.tenant_id == current_user.tenant_id)
+        .first_or_404())
+
     old_values = {
         'actual_value': kpi_data.actual_value,
         'target_value': kpi_data.target_value
     }
     
+    data = request.get_json(silent=True) or {}
     # Update fields
-    if 'actual_value' in request.json:
-        kpi_data.actual_value = request.json['actual_value']
-    if 'target_value' in request.json:
-        kpi_data.target_value = request.json['target_value']
-    if 'notes' in request.json:
-        kpi_data.description = request.json['notes']
+    if 'actual_value' in data:
+        kpi_data.actual_value = data['actual_value']
+    if 'target_value' in data:
+        kpi_data.target_value = data['target_value']
+    if 'notes' in data:
+        kpi_data.description = data['notes']
 
     db.session.commit()
-    
+
     # Audit log
-    AuditLogger.log_update('KpiData', kpi_data_id, old_values, request.json)
+    AuditLogger.log_update('KpiData', kpi_data_id, old_values, data)
     
     return jsonify({
         'success': True,
@@ -198,11 +211,12 @@ def update_kpi_data(kpi_data_id):
 @login_required
 def delete_kpi_data(kpi_data_id):
     """KPI veri silme (soft delete)"""
-    kpi_data = KpiData.query.filter_by(
-        id=kpi_data_id,
-        is_active=True
-    ).first_or_404()
-    
+    kpi_data = (KpiData.query
+        .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
+        .join(Process, ProcessKpi.process_id == Process.id)
+        .filter(KpiData.id == kpi_data_id, KpiData.is_active.is_(True), Process.tenant_id == current_user.tenant_id)
+        .first_or_404())
+
     old_values = kpi_data.to_dict()
     
     kpi_data.is_active = False
@@ -234,8 +248,11 @@ def get_trend(kpi_id):
     end_date = datetime.strptime(request.args.get('end_date'), '%Y-%m-%d')
     frequency = request.args.get('frequency', 'monthly')
     
-    kpi = ProcessKpi.query.get_or_404(kpi_id)
-    
+    kpi = (ProcessKpi.query
+           .join(Process, ProcessKpi.process_id == Process.id)
+           .filter(ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id)
+           .first_or_404())
+
     trend = AnalyticsService.get_performance_trend(
         process_id=kpi.process_id,
         kpi_id=kpi_id,
@@ -243,7 +260,7 @@ def get_trend(kpi_id):
         end_date=end_date,
         frequency=frequency
     )
-    
+
     return jsonify(trend)
 
 
@@ -257,9 +274,10 @@ def get_health(process_id):
         - year: Yıl (default: current year)
     """
     year = request.args.get('year', datetime.now().year, type=int)
-    
+    Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+
     health = AnalyticsService.get_process_health_score(process_id, year)
-    
+
     return jsonify(health)
 
 
@@ -276,16 +294,22 @@ def get_comparison():
             "end_date": "2024-12-31"
         }
     """
-    data = request.json
-    start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
-    end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
-    
+    data = request.get_json(silent=True) or {}
+    start_date = datetime.strptime(data.get('start_date', ''), '%Y-%m-%d')
+    end_date = datetime.strptime(data.get('end_date', ''), '%Y-%m-%d')
+
+    # Yalnızca bu tenant'a ait process_id'leri kabul et
+    raw_ids = [int(i) for i in (data.get('process_ids') or []) if str(i).isdigit()]
+    valid_ids = [p.id for p in Process.query.filter(
+        Process.id.in_(raw_ids), Process.tenant_id == current_user.tenant_id
+    ).all()] if raw_ids else []
+
     comparison = AnalyticsService.get_comparative_analysis(
-        process_ids=data['process_ids'],
+        process_ids=valid_ids,
         start_date=start_date,
         end_date=end_date
     )
-    
+
     return jsonify(comparison)
 
 
@@ -301,7 +325,12 @@ def get_forecast(kpi_id):
     """
     periods = request.args.get('periods', 3, type=int)
     method = request.args.get('method', 'moving_average')
-    
+
+    # Güvenlik: kpi_id caller'ın tenant'ına ait olmalı (cross-tenant veri okuma önlemi).
+    ProcessKpi.query.join(Process, ProcessKpi.process_id == Process.id).filter(
+        ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id
+    ).first_or_404()
+
     forecast = AnalyticsService.get_forecast(kpi_id, periods, method)
     
     return jsonify(forecast)
@@ -322,10 +351,11 @@ def get_performance_report(process_id):
         - end_date: Bitiş tarihi
         - format: json, excel
     """
+    Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
     start_date = datetime.strptime(request.args.get('start_date'), '%Y-%m-%d')
     end_date = datetime.strptime(request.args.get('end_date'), '%Y-%m-%d')
     format = request.args.get('format', 'json')
-    
+
     report = ReportService.generate_performance_report(
         process_id=process_id,
         start_date=start_date,
@@ -390,14 +420,14 @@ def create_webhook():
 
 @api_bp.errorhandler(404)
 def not_found(error):
-    return jsonify({'error': 'Resource not found'}), 404
+    return jsonify({'success': False, 'message': 'Kaynak bulunamadı'}), 404
 
 
 @api_bp.errorhandler(400)
 def bad_request(error):
-    return jsonify({'error': 'Bad request'}), 400
+    return jsonify({'success': False, 'message': 'Geçersiz istek'}), 400
 
 
 @api_bp.errorhandler(500)
 def internal_error(error):
-    return jsonify({'error': 'Internal server error'}), 500
+    return jsonify({'success': False, 'message': 'Sunucu hatası'}), 500

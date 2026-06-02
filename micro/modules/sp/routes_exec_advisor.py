@@ -49,7 +49,7 @@ def sp_api_exec_snapshot():
         return jsonify({"success": True, "snapshot": snap})
     except Exception as e:
         current_app.logger.error(f"exec_snapshot error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Strateji bazlı performans sıralaması ────────────────────────────────────
@@ -108,7 +108,7 @@ def sp_api_exec_strategy_scores():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_strategy_scores error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── K-Vektör puan gelişimi (günlük/aylık/çeyreklik/yıllık) ─────────────────
@@ -228,7 +228,7 @@ def sp_api_exec_kvektor_trend():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_kvektor_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Son 12 ay sağlık trendi (PG hedef üstü oranı) ───────────────────────────
@@ -271,7 +271,7 @@ def sp_api_exec_trend():
         return jsonify({"success": True, "data": {"labels": labels, "values": values}})
     except Exception as e:
         current_app.logger.error(f"exec_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ def sp_api_ai_pivot():
         return jsonify({"success": True, **result}), status
     except Exception as e:
         current_app.logger.error(f"ai_pivot error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Template Marketplace ────────────────────────────────────────────────────
@@ -335,6 +335,8 @@ def sp_api_template_apply(code):
         target_year = int(data.get("target_year"))
     except (TypeError, ValueError):
         return jsonify({"error": "target_year zorunlu"}), 400
+    if not (2000 <= target_year <= 2100):
+        return jsonify({"error": "Geçersiz yıl değeri."}), 400
     overwrite = bool(data.get("overwrite_identity", False))
     try:
         py = apply_template_to_tenant(
@@ -346,4 +348,4 @@ def sp_api_template_apply(code):
         }), 201
     except Exception as e:
         current_app.logger.error(f"template_apply error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500

@@ -11,11 +11,28 @@ from extensions import db  # ROOT extensions.py — tek init_app edilmiş db ins
 from functools import wraps
 import json
 
+_SENSITIVE_KEYS = frozenset({
+    'password', 'password_hash', 'secret', 'token', 'api_key',
+    'smtp_password', 'totp_secret', 'backup_codes', 'totp_backup_codes_json',
+    'encryption_key', 'credit_card', 'ssn',
+})
+
+
+def _sanitize(data):
+    """Dict içindeki hassas alanları maskele."""
+    if not isinstance(data, dict):
+        return data
+    return {
+        k: '***' if k.lower() in _SENSITIVE_KEYS else v
+        for k, v in data.items()
+    }
+
+
 class AuditLogger:
     """Audit logging servisi"""
-    
+
     @staticmethod
-    def log(action, resource_type=None, resource_id=None, description=None, 
+    def log(action, resource_type=None, resource_id=None, description=None,
             old_values=None, new_values=None):
         """
         Audit log kaydı oluştur
@@ -37,8 +54,8 @@ class AuditLogger:
                 resource_type=resource_type,
                 resource_id=resource_id,
                 description=description,
-                old_values=old_values,
-                new_values=new_values,
+                old_values=_sanitize(old_values),
+                new_values=_sanitize(new_values),
                 ip_address=request.remote_addr,
                 user_agent=request.user_agent.string[:500] if request.user_agent else None,
                 request_method=request.method,
@@ -49,7 +66,8 @@ class AuditLogger:
             db.session.commit()
             
         except Exception as e:
-            print(f"Audit log error: {e}")
+            import logging as _logging
+            _logging.getLogger(__name__).warning(f"[AuditLogger] log yazılamadı: {e}")
             db.session.rollback()
     
     @staticmethod

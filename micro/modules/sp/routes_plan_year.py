@@ -147,6 +147,7 @@ def sp_api_plan_years_create():
 @app_bp.route("/sp/api/plan-years/set-active", methods=["POST"])
 @csrf.exempt
 @login_required
+@sp_manage_required
 def sp_api_plan_years_set_active():
     """Aktif plan yılını session'a yazar."""
     data = request.get_json() or {}
@@ -229,12 +230,19 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
     if py.status == "closed":
         return jsonify({"success": False, "message": "Kapalı plan yılı düzenlenemez."}), 400
 
+    # H-16: cross-tenant doğrulama
+    kpi_owner = ProcessKpi.query.join(Process).filter(
+        ProcessKpi.id == kpi_id, Process.tenant_id == tid
+    ).first()
+    if not kpi_owner:
+        return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+
     data = request.get_json() or {}
     try:
         cfg = upsert_kpi_year_config(py, kpi_id, data)
         return jsonify({"success": True, "id": cfg.id, "message": "KPI yıllık hedef güncellendi."})
-    except ValueError as ve:
-        return jsonify({"success": False, "message": str(ve)}), 404
+    except ValueError:
+        return jsonify({"success": False, "message": "Geçersiz KPI."}), 404
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_plan_year_kpi_config_upsert] {e}")
@@ -260,6 +268,17 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
     if not configs:
         return jsonify({"success": False, "message": "Konfigürasyon listesi boş."}), 400
 
+    # H-16: cross-tenant doğrulama — tüm kpi_id'lerin tenant'a ait olduğunu doğrula
+    requested_ids = [int(item["kpi_id"]) for item in configs if item.get("kpi_id")]
+    if requested_ids:
+        valid_ids = {
+            row.id for row in ProcessKpi.query.join(Process).filter(
+                ProcessKpi.id.in_(requested_ids), Process.tenant_id == tid
+            ).all()
+        }
+        if len(valid_ids) < len(set(requested_ids)):
+            return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+
     updated = 0
     errors = []
     for item in configs:
@@ -269,8 +288,8 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
         try:
             upsert_kpi_year_config(py, int(kpi_id), item)
             updated += 1
-        except Exception as e:
-            errors.append({"kpi_id": kpi_id, "error": str(e)})
+        except Exception:
+            errors.append({"kpi_id": kpi_id, "error": "Geçersiz KPI."})
 
     if errors:
         db.session.rollback()
@@ -318,7 +337,7 @@ def sp_api_sihirbaz_preview():
     kpi_count = (
         ProcessKpi.query
         .join(Process, Process.id == ProcessKpi.process_id)
-        .filter(Process.plan_year_id == source.id, ProcessKpi.is_active == True)
+        .filter(Process.plan_year_id == source.id, ProcessKpi.is_active.is_(True))
         .count()
     )
 

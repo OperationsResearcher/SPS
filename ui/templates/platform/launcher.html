@@ -18,7 +18,7 @@
 
     <!-- Karşılama -->
     <div style="margin-bottom:28px;">
-        <h1 style="font-size:22px; font-weight:700; color:#1e293b; margin:0 0 4px;" class="dark:text-white">
+        <h1 style="font-size:22px; font-weight:700; color:var(--text-default); margin:0 0 4px;" class="dark:text-white">
             Hoş geldiniz, {{ current_user.first_name or current_user.email }} 👋
         </h1>
         <p style="font-size:13.5px; color:#64748b; margin:0;">
@@ -39,7 +39,7 @@
                         background:{% if mod.id == 'masaustu' %}#eef2ff{% elif mod.id == 'sp' %}#fdf4ff{% elif mod.id == 'surec' %}#f0fdf4{% elif mod.id == 'kurum' %}#fff7ed{% elif mod.id == 'bireysel' %}#eff6ff{% elif mod.id == 'analiz' %}#fefce8{% elif mod.id == 'k_radar' %}#ecfeff{% elif mod.id == 'admin' %}#fef2f2{% elif mod.id == 'api' %}#f0fdfa{% elif mod.id == 'hgs' %}#fffbeb{% else %}#f8fafc{% endif %};">
                 {{ mod.icon }}
             </div>
-            <span style="font-size:13.5px; font-weight:600; color:#1e293b; margin-bottom:6px; display:block;" class="dark:text-white">
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">
                 {{ mod.name }}
             </span>
             <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">
@@ -54,7 +54,7 @@
             <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:#f0fdfa;">
                 <i class="fas fa-calendar-days" style="color:#0ea5e9;"></i>
             </div>
-            <span style="font-size:13.5px; font-weight:600; color:#1e293b; margin-bottom:6px; display:block;" class="dark:text-white">Takvim</span>
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">Takvim</span>
             <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">Kurumun süreç ve proje takvimini görüntüleyin</span>
         </a>
 
@@ -65,7 +65,7 @@
             <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:#eef2ff;">
                 <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
             </div>
-            <span style="font-size:13.5px; font-weight:600; color:#1e293b; margin-bottom:6px; display:block;" class="dark:text-white">Plan Dönemleri</span>
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">Plan Dönemleri</span>
             <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">Stratejik plan dönemi seçimi ve yönetimi</span>
         </a>
         {% endif %}

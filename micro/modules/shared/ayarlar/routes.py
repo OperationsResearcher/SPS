@@ -76,7 +76,7 @@ def ayarlar_eposta_save():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[ayarlar_eposta_save] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/ayarlar/eposta/api/test", methods=["POST"])
@@ -100,7 +100,7 @@ def ayarlar_eposta_test():
         return jsonify({"success": ok, "message": msg})
     except Exception as e:
         current_app.logger.error(f"[ayarlar_eposta_test] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/ayarlar/eposta/api/send-test", methods=["POST"])
@@ -140,4 +140,4 @@ def ayarlar_eposta_send_test():
         )
     except Exception as e:
         current_app.logger.error(f"[ayarlar_eposta_send_test] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400

@@ -1,4 +1,4 @@
-﻿"""HGS — Hızlı Giriş Sistemi modülü.
+"""HGS — Hızlı Giriş Sistemi modülü.
 
 Bu modül @login_required KULLANMAZ — geliştirme/demo ortamı için hızlı giriş sağlar.
 

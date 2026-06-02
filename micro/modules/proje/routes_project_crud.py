@@ -157,7 +157,7 @@ def project_new():
     try:
         leader_ids = resolve_leader_ids_from_form(kid, project=None)
     except ValueError as e:
-        flash(str(e) or "Geçerli proje lideri seçilemedi.", "danger")
+        flash("Geçerli proje lideri seçilemedi.", "danger")
         return redirect(url_for("app_bp.project_new"))
 
     start_date = end_date = None
@@ -225,7 +225,7 @@ def project_new():
         sync_project_leaders(proj, kid, leader_ids)
     except ValueError as e:
         db.session.rollback()
-        flash(str(e) or "Lider kaydı oluşturulamadı.", "danger")
+        flash("Lider kaydı oluşturulamadı.", "danger")
         return redirect(url_for("app_bp.project_new"))
 
     _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
@@ -323,7 +323,7 @@ def project_edit(project_id: int):
         leader_ids = resolve_leader_ids_from_form(kid, project=proj)
         sync_project_leaders(proj, kid, leader_ids)
     except ValueError as e:
-        flash(str(e) or "Geçerli proje lideri seçilemedi.", "danger")
+        flash("Geçerli proje lideri seçilemedi.", "danger")
         return redirect(url_for("app_bp.project_edit", project_id=project_id))
 
     if request.form.get("start_date"):

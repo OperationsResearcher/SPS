@@ -108,6 +108,9 @@
 </div>
 
 <script>
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s??''); return d.innerHTML; }
+</script>
+<script>
 (function() {
   const root = document.getElementById("holding-root");
   const SNAP_URL = root.dataset.snapshotUrl;
@@ -137,7 +140,7 @@
       <div class="mc-card" style="padding:18px; cursor:pointer; transition:var(--transition-base);" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow=''" onclick="window.location.href='/holding/tenant/${t.id}/view'">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
           <div style="flex:1; min-width:0;">
-            <div style="font-weight:600; font-size:15px; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.name}</div>
+            <div style="font-weight:600; font-size:15px; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(t.name)}</div>
             <div style="font-size:11px; color:#94a3b8;">${t.users_count} kullanıcı · Son aktivite: ${fmtDate(t.last_activity)}</div>
           </div>
           ${statusBadge}
@@ -149,16 +152,16 @@
           </div>
           <div style="text-align:right;">
             <div style="font-size:10px; color:#64748b; text-transform:uppercase;">KPI Hedef Üstü</div>
-            <div style="font-size:18px; font-weight:600; color:#1e293b;" class="mc-num">%${t.kpi_on_target_pct}</div>
+            <div style="font-size:18px; font-weight:600; color:var(--text-default);" class="mc-num">%${t.kpi_on_target_pct}</div>
           </div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; font-size:11px; color:#475569; padding-top:10px; border-top:1px solid #e2e8f0;">
           <div style="text-align:center;">
-            <div style="font-weight:600; font-size:14px; color:#1e293b;">${t.kpi_total}</div>
+            <div style="font-weight:600; font-size:14px; color:var(--text-default);">${t.kpi_total}</div>
             <div style="color:#94a3b8;">KPI</div>
           </div>
           <div style="text-align:center;">
-            <div style="font-weight:600; font-size:14px; color:#1e293b;">${t.initiative_total}</div>
+            <div style="font-weight:600; font-size:14px; color:var(--text-default);">${t.initiative_total}</div>
             <div style="color:#94a3b8;">Girişim</div>
           </div>
           <div style="text-align:center;">

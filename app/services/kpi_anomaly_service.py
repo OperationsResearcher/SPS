@@ -138,7 +138,7 @@ def detect_anomalies_for_tenant(
             continue
 
         try:
-            target_num = float(str(r.target_value).replace(",", ".")) if r.target_value else None
+            target_num = float(r.target_value) if r.target_value is not None else None
         except (ValueError, TypeError):
             target_num = None
 

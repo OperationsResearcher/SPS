@@ -67,15 +67,16 @@ def build_xmatrix(tenant_id: int, plan_year_id: int | None = None) -> dict:
     ]
 
     # West — PG'ler (önemli olanları öncele); plan_year varsa o yıla filtre
+    # Güvenlik: west_py sabit SQL fragment — kullanıcı girdisi içermez
     west_py = "AND p.plan_year_id = :py" if plan_year_id else ""
-    kpis = db.session.execute(text(f"""
-        SELECT k.id, k.code, k.name, p.id as process_id, p.code as proc_code
-        FROM process_kpis k
-        JOIN processes p ON k.process_id=p.id
-        WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true {west_py}
-        ORDER BY k.is_important DESC NULLS LAST, k.id
-        LIMIT 60
-    """), params).fetchall()
+    kpis = db.session.execute(text(
+        "SELECT k.id, k.code, k.name, p.id as process_id, p.code as proc_code "
+        "FROM process_kpis k "
+        "JOIN processes p ON k.process_id=p.id "
+        "WHERE p.tenant_id=:t AND k.is_active=true AND p.is_active=true " + west_py + " "
+        "ORDER BY k.is_important DESC NULLS LAST, k.id "
+        "LIMIT 60"
+    ), params).fetchall()
     west = [
         {"id": r.id, "code": r.code or "", "name": r.name,
          "process_id": r.process_id, "proc_code": r.proc_code or ""}

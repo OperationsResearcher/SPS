@@ -15,6 +15,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from micro.modules.k_radar.routes_common import _required_tenant_id as _rtid
 from extensions import db
 from app.models.k_radar_domain import RiskHeatmapItem
 
@@ -36,7 +37,10 @@ def k_radar_risk_page():
 @login_required
 def k_radar_api_risk_list():
     """Aktif riskler listesi + filter."""
-    tid = current_user.tenant_id
+    try:
+        tid = _rtid()
+    except ValueError:
+        return jsonify({"success": False, "message": "Tenant bağlamı yok."}), 400
     severity = request.args.get("severity")  # "low"/"medium"/"high"/"critical"
     status = request.args.get("status")  # "Open"/"Mitigating"/"Closed"
     source = request.args.get("source")  # process/pestel/swot/project
@@ -85,7 +89,10 @@ def k_radar_api_risk_list():
 @login_required
 def k_radar_api_risk_matrix():
     """5×5 probability × impact heatmap için count grid."""
-    tid = current_user.tenant_id
+    try:
+        tid = _rtid()
+    except ValueError:
+        return jsonify({"success": False, "message": "Tenant bağlamı yok."}), 400
     risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).all()
     # 5x5 matrix [probability-1][impact-1] = count
     grid = [[0] * 5 for _ in range(5)]

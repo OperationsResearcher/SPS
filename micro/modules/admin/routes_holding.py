@@ -56,7 +56,7 @@ def holding_api_snapshot():
         return jsonify({"success": True, **snap})
     except Exception as e:
         current_app.logger.error(f"[holding_api_snapshot] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 # ─── Sprint E: Read-Only Drill-Down ──────────────────────────────────────────
@@ -116,4 +116,4 @@ def holding_api_drilldown(sub_tenant_id):
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"[holding_api_drilldown] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500

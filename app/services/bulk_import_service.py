@@ -11,6 +11,7 @@ Kullanım:
 from __future__ import annotations
 
 import io
+from collections import Counter
 from datetime import date, datetime
 from typing import Optional
 
@@ -47,14 +48,16 @@ def import_kpi_data_from_excel(
         return {"success": False, "message": f"Excel açılamadı: {e}", "valid_rows": 0, "errors": []}
 
     # KPI code → ProcessKpi.id map (tenant scope)
-    kpi_map = {
-        k.code: k.id for k in (
-            db.session.query(ProcessKpi)
-            .join(Process)
-            .filter(Process.tenant_id == tenant_id, ProcessKpi.is_active == True)
-            .all()
-        ) if k.code
-    }
+    # H-29: duplicate kodları Counter ile tespit et, map'e sadece tekil kodları koy
+    _kpis = (
+        db.session.query(ProcessKpi)
+        .join(Process)
+        .filter(Process.tenant_id == tenant_id, ProcessKpi.is_active.is_(True))
+        .all()
+    )
+    _code_counts = Counter(k.code for k in _kpis if k.code)
+    _duplicate_codes = {code for code, cnt in _code_counts.items() if cnt > 1}
+    kpi_map = {k.code: k.id for k in _kpis if k.code and k.code not in _duplicate_codes}
 
     valid: list[dict] = []
     errors: list[dict] = []
@@ -68,7 +71,17 @@ def import_kpi_data_from_excel(
 
         try:
             cells = list(row) + [None] * (7 - len(row))
+
+            # M-17: Excel injection koruması — = + - @ ile başlayan string değerlere ' prefix ekle
+            cells = [
+                ("'" + c if isinstance(c, str) and c and c[0] in ('=', '+', '-', '@') else c)
+                for c in cells
+            ]
+
             kpi_code = str(cells[0] or "").strip()
+            # kpi_code injection-prefix'i kaldır (kodun kendisi değişmemeli)
+            if kpi_code.startswith("'"):
+                kpi_code = kpi_code[1:]
             year_val = cells[1]
             period_type = str(cells[2] or "Aylık").strip()
             period_no = cells[3]
@@ -79,6 +92,8 @@ def import_kpi_data_from_excel(
             # Validation
             if not kpi_code:
                 raise ValueError("kpi_code boş")
+            if kpi_code in _duplicate_codes:
+                raise ValueError(f"Veritabanında duplicate KPI kodu: '{kpi_code}' — önce DB'yi düzeltin")
             if kpi_code not in kpi_map:
                 raise ValueError(f"Tanımsız KPI kodu: '{kpi_code}'")
             if year_val is None:
@@ -108,8 +123,8 @@ def import_kpi_data_from_excel(
                 "period_type": period_type,
                 "period_no": period_no_int,
                 "period_month": month,
-                "target_value": str(target) if target is not None else None,
-                "actual_value": str(actual),
+                "target_value": float(str(target).replace(",", ".")) if target not in (None, "") else None,
+                "actual_value": float(str(actual).replace(",", ".")),
                 "description": desc,
                 "user_id": user_id,
                 "is_active": True,
@@ -117,7 +132,7 @@ def import_kpi_data_from_excel(
                 "kpi_code": kpi_code,
             })
         except Exception as e:
-            errors.append({"row": row_idx, "error": str(e), "data": list(row)[:7]})
+            errors.append({"row": row_idx, "error": "Satır işlenemedi.", "data": list(row)[:7]})
 
     result = {
         "success": True,

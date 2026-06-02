@@ -94,7 +94,7 @@ def build_digest_content(tenant_id: int) -> dict:
     process_count = Process.query.filter_by(tenant_id=tenant_id, is_active=True).count()
     kpi_count = (
         ProcessKpi.query.join(Process)
-        .filter(Process.tenant_id == tenant_id, ProcessKpi.is_active == True)
+        .filter(Process.tenant_id == tenant_id, ProcessKpi.is_active.is_(True))
         .count()
     )
 
@@ -136,7 +136,7 @@ def get_digest_recipients(tenant_id: int) -> list[str]:
         return []
     users = (
         User.query
-        .filter(User.tenant_id == tenant_id, User.is_active == True, User.role_id.in_(role_ids))
+        .filter(User.tenant_id == tenant_id, User.is_active.is_(True), User.role_id.in_(role_ids))
         .all()
     )
     return [u.email for u in users if u.email and not u.email.startswith("deleted_")]
@@ -173,7 +173,7 @@ def send_digest(tenant_id: int, recipients: Optional[list[str]] = None) -> dict:
         }
     except Exception as e:
         current_app.logger.error(f"[send_digest] {e}", exc_info=True)
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": "Özet e-postası gönderilemedi."}
 
 
 def _send_via_smtp(tenant_id: int, recipients: list[str], subject: str, html: str) -> int:

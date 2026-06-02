@@ -92,7 +92,7 @@ def register_error_handlers(app):
         """Yakalanmayan genel hataları (500) sessizce merkezden karşılar."""
         # Gerçek üretim ortamında hata stack trace'ini logla
         import traceback
-        current_app.logger.error(f"Beklenmeyen Sistem Hatası: {str(e)}")
+        current_app.logger.error(f"Beklenmeyen Sistem Hatası: {e}")
         current_app.logger.error(traceback.format_exc())
 
         error_message = "Sistemde beklenmeyen bir hata oluştu. Lütfen sistem yöneticisi ile iletişime geçin."

@@ -88,8 +88,8 @@ def sp():
             from sqlalchemy import func as _func
             best = (
                 db.session.query(Strategy.plan_year_id, _func.count(Strategy.id).label("cnt"))
-                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True,
-                        Strategy.plan_year_id != None)
+                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True),
+                        Strategy.plan_year_id.isnot(None))
                 .group_by(Strategy.plan_year_id)
                 .order_by(_func.count(Strategy.id).desc())
                 .first()
@@ -351,7 +351,7 @@ def sp_rapor_donemsel():
             download_name=fname,
         )
     except RuntimeError as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
     except Exception as e:
         current_app.logger.error(f"[sp_rapor_donemsel] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500

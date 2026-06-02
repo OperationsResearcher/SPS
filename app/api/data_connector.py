@@ -36,13 +36,16 @@ def _generate_user_api_token(user_id: int) -> str:
 
 
 def _user_from_token(token: str) -> Optional[User]:
-    """Token'dan user'ı bul."""
+    """Token'dan user'ı bul.
+
+    Token deterministik (sha256 one-way), reverse-decode mümkün değil.
+    TODO: api_tokens tablosu ile O(1) lookup — şimdilik max 2000 kullanıcıyla sınırlandırıldı.
+    """
     if not token or not token.startswith("kk_"):
         return None
-    # Tüm aktif user'larda match ara (küçük tenant için OK; ölçek için ayrı tablo gerek)
-    users = User.query.filter(User.is_active == True).all()
+    users = User.query.filter(User.is_active.is_(True)).limit(2000).all()
     for u in users:
-        if _generate_user_api_token(u.id) == token:
+        if secrets.compare_digest(_generate_user_api_token(u.id), token):
             return u
     return None
 
@@ -68,17 +71,17 @@ def dataconn_kpi_data():
         ?year=2026
         ?from_date=2024-01-01
         ?process_code=P2M
-        ?limit=10000 (default 5000, max 50000)
+        ?limit=1000 (default 1000, max 10000 — DOS koruması)
     """
     user = _auth_or_401()
     if not user:
-        return jsonify({"error": "Geçersiz token. X-API-Token header veya ?token= ile gönder"}), 401
+        return jsonify({"success": False, "message": "Geçersiz token. X-API-Token header veya ?token= ile gönder"}), 401
 
     tid = user.tenant_id
     year = request.args.get("year", type=int)
     from_date = request.args.get("from_date")
     process_code = request.args.get("process_code")
-    limit = min(50000, max(1, request.args.get("limit", 5000, type=int)))
+    limit = min(10000, max(1, request.args.get("limit", 1000, type=int)))
 
     q = (
         db.session.query(
@@ -96,7 +99,7 @@ def dataconn_kpi_data():
         )
         .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
         .join(Process, ProcessKpi.process_id == Process.id)
-        .filter(Process.tenant_id == tid, KpiData.is_active == True)
+        .filter(Process.tenant_id == tid, KpiData.is_active.is_(True))
     )
 
     if year:
@@ -145,7 +148,7 @@ def dataconn_processes():
     """Süreç listesi (Power BI için master data)."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"error": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": "Geçersiz token"}), 401
 
     rows = (
         Process.query.filter_by(tenant_id=user.tenant_id, is_active=True)
@@ -168,11 +171,11 @@ def dataconn_kpis():
     """KPI tanım listesi."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"error": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": "Geçersiz token"}), 401
 
     rows = (
         ProcessKpi.query.join(Process)
-        .filter(Process.tenant_id == user.tenant_id, ProcessKpi.is_active == True)
+        .filter(Process.tenant_id == user.tenant_id, ProcessKpi.is_active.is_(True))
         .all()
     )
     return jsonify({
@@ -193,7 +196,7 @@ def dataconn_metadata():
     """OData-style metadata + token info (Power BI bağlantı için)."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"error": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": "Geçersiz token"}), 401
 
     base = request.url_root.rstrip("/")
     return jsonify({

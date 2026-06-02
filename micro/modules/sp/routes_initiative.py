@@ -76,7 +76,7 @@ def sp_api_initiatives_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"initiative_create error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({"success": True, "item": init.to_dict()}), 201
 
 
@@ -92,16 +92,40 @@ def sp_api_initiatives_update(iid):
     if not init:
         return jsonify({"error": "not found"}), 404
     data = request.get_json(silent=True) or {}
+    tid = current_user.tenant_id
+    # Basit alanlar doğrudan atanabilir
     for f in ("name", "code", "description", "status", "priority",
-              "strategy_id", "sub_strategy_id", "start_year", "end_year",
-              "budget_total", "budget_spent", "progress_pct", "owner_user_id"):
+              "start_year", "end_year", "budget_total", "budget_spent", "progress_pct"):
         if f in data:
             setattr(init, f, data[f])
+    # Tenant-scoped FK'lar — sahiplik doğrulaması gerekir
+    if "strategy_id" in data and data["strategy_id"]:
+        from app.models.core import Strategy
+        s = Strategy.query.filter_by(id=data["strategy_id"], tenant_id=tid).first()
+        if not s:
+            return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+        init.strategy_id = s.id
+    elif "strategy_id" in data:
+        init.strategy_id = None
+    if "sub_strategy_id" in data and data["sub_strategy_id"]:
+        from app.models.core import SubStrategy
+        ss = SubStrategy.query.filter_by(id=data["sub_strategy_id"]).join(
+            __import__('app.models.core', fromlist=['Strategy']).Strategy
+        ).filter_by(tenant_id=tid).first()
+        init.sub_strategy_id = ss.id if ss else None
+    elif "sub_strategy_id" in data:
+        init.sub_strategy_id = None
+    if "owner_user_id" in data and data["owner_user_id"]:
+        from app.models.core import User
+        u = User.query.filter_by(id=data["owner_user_id"], tenant_id=tid, is_active=True).first()
+        init.owner_user_id = u.id if u else None
+    elif "owner_user_id" in data:
+        init.owner_user_id = None
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({"success": True, "item": init.to_dict()})
 
 

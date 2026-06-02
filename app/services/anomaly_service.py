@@ -38,7 +38,7 @@ class AnomalyService:
             data = KpiData.query.filter(
                 KpiData.process_kpi_id == kpi_id,
                 KpiData.data_date >= six_months_ago,
-                KpiData.is_active == True
+                KpiData.is_active.is_(True)
             ).order_by(KpiData.data_date).all()
             
             if len(data) < 10:
@@ -84,8 +84,8 @@ class AnomalyService:
             }
             
         except Exception as e:
-            logger.error(f"Anomaly detection failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Anomaly detection failed: {e}")
+            return {'success': False, 'error': 'Anomali tespiti sırasında hata oluştu.'}
     
     def _detect_zscore(self, values, threshold):
         """Z-score yöntemi ile anomali tespiti"""
@@ -182,5 +182,5 @@ class AnomalyService:
             return False
             
         except Exception as e:
-            logger.error(f"Monitor and alert failed: {str(e)}")
+            logger.error(f"Monitor and alert failed: {e}")
             return False

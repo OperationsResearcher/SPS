@@ -64,16 +64,16 @@ def sp_flow():
     proc_base = Process.query.filter_by(tenant_id=tid, is_active=True)
     if active_py:
         strat_base = strat_base.filter(
-            or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None))
+            or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id.is_(None)))
         proc_base = proc_base.filter(
-            or_(Process.plan_year_id == active_py.id, Process.plan_year_id == None))
+            or_(Process.plan_year_id == active_py.id, Process.plan_year_id.is_(None)))
     strategy_count = strat_base.count()
     process_count = proc_base.count()
     sub_strategy_count = (
         SubStrategy.query
         .join(Strategy)
-        .filter(Strategy.tenant_id == tid, SubStrategy.is_active == True,
-                *([or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id == None)]
+        .filter(Strategy.tenant_id == tid, SubStrategy.is_active.is_(True),
+                *([or_(Strategy.plan_year_id == active_py.id, Strategy.plan_year_id.is_(None))]
                   if active_py else []))
         .count()
     )

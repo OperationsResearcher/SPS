@@ -12,9 +12,13 @@ from __future__ import annotations
 import datetime as _dt
 from typing import Optional
 
+import logging as _logging
+
 from extensions import db
 from app.models.core import Tenant, User
 from app.services.exec_dashboard_service import build_exec_snapshot
+
+_log = _logging.getLogger(__name__)
 
 
 def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> dict:
@@ -41,7 +45,8 @@ def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> di
     try:
         snap = build_exec_snapshot(sub.id)
     except Exception as e:
-        snap = {"error": str(e)}
+        _log.warning(f"[drilldown] exec_snapshot hatası tenant={sub.id}: {e}")
+        snap = {}
 
     # Initiative'ler
     initiatives = []
@@ -51,8 +56,8 @@ def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> di
             tenant_id=sub.id, is_active=True
         ).order_by(Initiative.priority.desc(), Initiative.id.desc()).limit(20).all()
         initiatives = [i.to_dict() for i in items]
-    except Exception:
-        pass
+    except Exception as e:
+        _log.warning(f"[drilldown] initiative query hatası tenant={sub.id}: {e}")
 
     # Risk listesi
     risks = []
@@ -72,8 +77,8 @@ def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> di
             "status": getattr(r, "status", "—"),
             "owner": getattr(r, "owner_name", None) or getattr(r, "owner", None),
         } for r in items]
-    except Exception:
-        pass
+    except Exception as e:
+        _log.warning(f"[drilldown] risk query hatası tenant={sub.id}: {e}")
 
     # Senaryo sayısı
     scenarios_count = 0
@@ -83,8 +88,8 @@ def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> di
             PlanYear.tenant_id == sub.id,
             PlanYear.scenario_of_id.isnot(None),
         ).count()
-    except Exception:
-        pass
+    except Exception as e:
+        _log.warning(f"[drilldown] scenario query hatası tenant={sub.id}: {e}")
 
     # Kullanıcı sayısı
     users_count = User.query.filter_by(tenant_id=sub.id, is_active=True).count()
@@ -103,7 +108,7 @@ def build_sub_tenant_drilldown(holding_tenant_id: int, sub_tenant_id: int) -> di
         "initiatives": initiatives,
         "risks": risks,
         "scenarios_count": scenarios_count,
-        "generated_at": _dt.datetime.utcnow().isoformat(),
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
     }
 
 
@@ -197,5 +202,5 @@ def build_holding_snapshot(holding_tenant_id: int) -> dict:
             "anomaly_high_sum": sum(s["anomaly_high"] for s in sub_data),
             "activity_overdue_sum": sum(s["activity_overdue"] for s in sub_data),
         },
-        "generated_at": _dt.datetime.utcnow().isoformat(),
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
     }

@@ -26,7 +26,7 @@
 
     <div class="mc-page-header" style="margin-bottom:16px;">
         <div>
-            <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+            <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
                 <i class="fas fa-sitemap" style="color:#6366f1;"></i> Süreç Yönetimi
             </h2>
             <p style="font-size:13px;color:#64748b;margin:0;">
@@ -153,7 +153,7 @@
                 {% endif %}
 
                 <div style="flex:1; min-width:0;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" style="font-size:14px; font-weight:600; color:#1e293b; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none;" class="dark:text-white">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" style="font-size:14px; font-weight:600; color:var(--text-default); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none;" class="dark:text-white">
                         {{ p.name }}
                     </a>
                     <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">

@@ -129,7 +129,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         from app.services.plan_year_service import get_plan_year
         py = get_plan_year(tenant_id, year)
         py_id = py.id if py else None
-    except Exception:
+    except Exception as e:
+        import logging; logging.getLogger(__name__).warning(f"[quarterly_review] plan_year lookup hatası: {e}")
         py_id = None
 
     # KPI (plan_year_id varsa o yıla ait süreçlerin KPI'larını say)
@@ -198,8 +199,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
                 progresses.append(sum(pcts) / len(pcts))
         if progresses:
             data.okr_avg_progress = sum(progresses) / len(progresses)
-    except Exception:
-        pass
+    except Exception as e:
+        import logging; logging.getLogger(__name__).warning(f"[quarterly_review] OKR query hatası: {e}")
 
     # Süreç + Faaliyet (plan_year filtre)
     proc_py_clause = "AND plan_year_id = :py" if py_id else ""

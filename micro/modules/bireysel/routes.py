@@ -130,7 +130,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
-            return jsonify({"success": False, "message": str(e)}), 400
+            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/add", methods=["POST"])
@@ -167,7 +167,7 @@ def bireysel_api_pg_add():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_add] {e}")
-            return jsonify({"success": False, "message": str(e)}), 400
+            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])
@@ -191,7 +191,7 @@ def bireysel_api_pg_update(pg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/delete/<int:pg_id>", methods=["POST"])
@@ -207,7 +207,7 @@ def bireysel_api_pg_delete(pg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Veri Girişi ─────────────────────────────────────────────────
@@ -275,7 +275,7 @@ def bireysel_api_veri_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_veri_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Faaliyet CRUD ───────────────────────────────────────────────
@@ -302,7 +302,7 @@ def bireysel_api_faaliyet_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/update/<int:act_id>", methods=["POST"])
@@ -326,7 +326,7 @@ def bireysel_api_faaliyet_update(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/delete/<int:act_id>", methods=["POST"])
@@ -342,7 +342,7 @@ def bireysel_api_faaliyet_delete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/track/<int:act_id>", methods=["POST"])
@@ -374,7 +374,7 @@ def bireysel_api_faaliyet_track(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_track] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Favori PG toggle ─────────────────────────────────────────────────────
@@ -384,20 +384,26 @@ def bireysel_api_faaliyet_track(act_id):
 def bireysel_api_favori_toggle(kpi_id):
     """Favori KPI oluştur veya soft delete."""
     try:
+        # Tenant isolation: yalnızca bu tenant'a ait KPI favorilere eklenebilir
+        kpi = (ProcessKpi.query.join(Process)
+               .filter(ProcessKpi.id == kpi_id,
+                       Process.tenant_id == current_user.tenant_id,
+                       ProcessKpi.is_active.is_(True))
+               .first_or_404())
         fav = FavoriteKpi.query.filter_by(
-            user_id=current_user.id, process_kpi_id=kpi_id
+            user_id=current_user.id, process_kpi_id=kpi.id
         ).first()
         if fav:
             fav.is_active = not fav.is_active
         else:
-            fav = FavoriteKpi(user_id=current_user.id, process_kpi_id=kpi_id, is_active=True)
+            fav = FavoriteKpi(user_id=current_user.id, process_kpi_id=kpi.id, is_active=True)
             db.session.add(fav)
         db.session.commit()
         return jsonify({"success": True, "is_favorite": fav.is_active})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_favori_toggle] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Karne AJAX ──────────────────────────────────────────────────

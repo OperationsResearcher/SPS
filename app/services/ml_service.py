@@ -112,10 +112,10 @@ class MLService:
             }
             
         except Exception as e:
-            logger.error(f"Forecast failed for KPI {kpi_id}: {str(e)}")
+            logger.error(f"Forecast failed for KPI {kpi_id}: {e}")
             return {
                 'success': False,
-                'error': str(e)
+                'error': 'Tahmin oluşturulurken hata oluştu.'
             }
     
     def _calculate_confidence(self, df, prediction):
@@ -153,7 +153,7 @@ class MLService:
             recent_data = KpiData.query.filter(
                 KpiData.process_kpi_id == kpi_id,
                 KpiData.data_date >= six_months_ago,
-                KpiData.is_active == True
+                KpiData.is_active.is_(True)
             ).order_by(KpiData.data_date).all()
             
             if len(recent_data) < 3:
@@ -214,8 +214,8 @@ class MLService:
             }
             
         except Exception as e:
-            logger.error(f"Achievement probability failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Achievement probability failed: {e}")
+            return {'success': False, 'error': 'Başarı olasılığı hesaplanamadı.'}
     
     def _generate_recommendations(self, avg_achievement, trend, probability):
         """Aksiyon önerileri oluştur"""
@@ -267,7 +267,7 @@ class MLService:
             data = KpiData.query.filter(
                 KpiData.process_kpi_id == kpi_id,
                 KpiData.data_date >= one_year_ago,
-                KpiData.is_active == True
+                KpiData.is_active.is_(True)
             ).order_by(KpiData.data_date).all()
             
             if len(data) < 12:
@@ -315,5 +315,5 @@ class MLService:
             }
             
         except Exception as e:
-            logger.error(f"Seasonality detection failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Seasonality detection failed: {e}")
+            return {'success': False, 'error': 'Mevsimsellik analizi başarısız.'}

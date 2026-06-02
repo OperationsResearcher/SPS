@@ -83,8 +83,11 @@ def api_my_tasks():
                 ProcessActivityAssignee.query.filter_by(user_id=uid).limit(200).all()
             ]
             if assigned_act_ids:
+                from sqlalchemy.orm import joinedload as _jl
                 pas = (
-                    ProcessActivity.query.filter(
+                    ProcessActivity.query
+                    .options(_jl(ProcessActivity.process))
+                    .filter(
                         ProcessActivity.id.in_(assigned_act_ids),
                         ProcessActivity.is_active.is_(True),
                         ~ProcessActivity.status.in_(_DONE_STATUSES),

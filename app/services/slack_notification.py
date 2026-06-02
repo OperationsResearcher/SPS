@@ -77,13 +77,13 @@ def send_slack_message(
             current_app.logger.error(f"[slack] URL hatası: {e}")
         except Exception:
             pass
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": "Slack webhook URL hatası."}
     except Exception as e:
         try:
             current_app.logger.error(f"[slack] {e}")
         except Exception:
             pass
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": "Slack mesajı gönderilemedi."}
 
 
 def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim") -> dict:
@@ -115,7 +115,7 @@ def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim")
             current_app.logger.error(f"[teams] {e}")
         except Exception:
             pass
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": "Webhook mesajı gönderilemedi."}
 
 
 def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpitim") -> dict:
@@ -140,7 +140,7 @@ def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpi
             current_app.logger.error(f"[discord] {e}")
         except Exception:
             pass
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": "Webhook mesajı gönderilemedi."}
 
 
 def dispatch_webhook(provider: str, text_msg: str, webhook_url: str, **kwargs) -> dict:

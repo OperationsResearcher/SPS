@@ -18,7 +18,7 @@
 
   <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
     <div>
-      <h2 style="font-size:20px; font-weight:700; color:#1e293b; margin:0 0 4px;">
+      <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
         <i class="fas fa-rocket"></i> Stratejik Girişimler
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
@@ -122,14 +122,14 @@
               <span style="color:#64748b;font-size:12px;">${i.code || ''}</span>
               <span style="color:${statusColor(i.status)};font-size:12px;font-weight:600;">${statusLabel(i.status)}</span>
             </div>
-            <div style="font-size:15px;font-weight:600;color:#1e293b;">${i.name}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text-default);">${i.name}</div>
             <div style="font-size:12px;color:#64748b;margin-top:4px;">
               ${i.start_year} - ${i.end_year} • ${i.milestone_count} milestone
               ${i.budget_total ? ' • Bütçe: ' + i.budget_total.toLocaleString('tr-TR') : ''}
             </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:24px;font-weight:700;color:#1e293b;">%${i.progress_pct.toFixed(0)}</div>
+            <div style="font-size:24px;font-weight:700;color:var(--text-default);">%${i.progress_pct.toFixed(0)}</div>
             <div style="font-size:11px;color:#64748b;">İlerleme</div>
             <button type="button" class="init-toggle-projects mc-btn mc-btn-secondary mc-btn-sm" data-iid="${i.id}" style="margin-top:8px;">
               <i class="fas fa-folder-open"></i> Altındaki Projeler
@@ -169,7 +169,7 @@
         </div>
         <div style="display:grid; gap:6px;">
           ${items.map(p => `
-            <a href="/project/${p.id}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#fafbfc; border:1px solid #e2e8f0; border-radius:6px; text-decoration:none; color:#1e293b; font-size:12.5px;">
+            <a href="/project/${p.id}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--surface-hover); border:1px solid #e2e8f0; border-radius:6px; text-decoration:none; color:var(--text-default); font-size:12.5px;">
               <i class="fas fa-folder-open" style="color:#6366f1;"></i>
               <span style="font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(p.name)}</span>
               ${p.manager_name ? `<span style="font-size:11px; color:#94a3b8;">👤 ${esc(p.manager_name)}</span>` : ''}

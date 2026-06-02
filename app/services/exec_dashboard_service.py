@@ -153,7 +153,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
     return {
         "tenant_id": tenant_id,
         "year": year,
-        "generated_at": _dt.datetime.utcnow().isoformat(),
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "health_score": health_score,
         "kpi": {
             "total": int(kpi_row.total or 0) if kpi_row else 0,

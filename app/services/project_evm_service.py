@@ -88,7 +88,7 @@ def compute_project_evm(project_id: int) -> dict:
     return {
         "project_id": project.id,
         "project_name": project.name,
-        "computed_at": _dt.datetime.utcnow().isoformat(),
+        "computed_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "bac": round(bac_total, 2),
         "pv": round(pv_total, 2),
         "ev": round(ev_total, 2),

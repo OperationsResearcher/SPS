@@ -18,3 +18,6 @@ class SystemSetting(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+    def __repr__(self):
+        return f"<SystemSetting {self.key}={str(self.value or '')[:20]}>"

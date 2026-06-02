@@ -132,7 +132,7 @@
        data-verify-url="{{ url_for('totp_bp.totp_verify_setup') }}"
        data-disable-url="{{ url_for('totp_bp.totp_disable') }}">
     <div class="mc-card-header">
-      <h3 style="margin:0;font-size:16px;color:#1e293b;">
+      <h3 style="margin:0;font-size:16px;color:var(--text-default);">
         <i class="fas fa-shield-alt" style="color:#4f46e5;margin-right:8px;"></i>
         İki Faktörlü Kimlik Doğrulama (2FA)
       </h3>
@@ -154,7 +154,7 @@
         <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;">
           <i class="fas fa-shield-alt" style="font-size:24px;color:#94a3b8;"></i>
           <div style="flex:1;">
-            <div style="font-weight:600;color:#1e293b;">2FA devre dışı</div>
+            <div style="font-weight:600;color:var(--text-default);">2FA devre dışı</div>
             <div style="font-size:12px;color:#64748b;">Hesabınız sadece şifre ile korunuyor.</div>
           </div>
           <button class="mc-btn mc-btn-primary" id="twofa-enable-btn">

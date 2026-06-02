@@ -5,7 +5,7 @@ Kullanıcı aktivitelerini loglama
 """
 
 from extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 
 class AuditLog(db.Model):
     """Audit log tablosu"""
@@ -36,7 +36,7 @@ class AuditLog(db.Model):
     request_path = db.Column(db.String(500))
     
     # Timestamp
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     
     # İndeksler
     __table_args__ = (

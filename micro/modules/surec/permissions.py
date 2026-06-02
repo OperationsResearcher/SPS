@@ -10,7 +10,7 @@ from app.models.process import Process
 
 
 # Kurum / platform yöneticileri (süreç oluşturma-silme dahil tam CRUD)
-PRIVILEGED_ROLES = frozenset({"Admin", "tenant_admin", "executive_manager"})
+from app.constants.roles import PRIVILEGED_ROLES
 
 
 def role_name(user) -> str | None:

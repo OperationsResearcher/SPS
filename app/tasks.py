@@ -4,6 +4,7 @@ Sprint 16-18: AI ve Otomasyon
 Background tasks for automated reporting and monitoring
 """
 
+import logging as _log_tasks
 from celery import Celery
 from celery.schedules import crontab
 from app.services.automated_reporting_service import AutomatedReportingService
@@ -42,7 +43,7 @@ def send_daily_digest():
         try:
             reporting_service.schedule_and_send_reports(tenant_id, 'daily')
         except Exception as e:
-            print(f"Daily digest failed for tenant {tenant_id}: {str(e)}")
+            _log_tasks.getLogger(__name__).error(f"Daily digest failed for tenant {tenant_id}: {e}", exc_info=True)
 
 
 @celery.task(name='tasks.send_weekly_summary')
@@ -54,7 +55,7 @@ def send_weekly_summary():
         try:
             reporting_service.schedule_and_send_reports(tenant_id, 'weekly')
         except Exception as e:
-            print(f"Weekly summary failed for tenant {tenant_id}: {str(e)}")
+            _log_tasks.getLogger(__name__).error(f"Weekly summary failed for tenant {tenant_id}: {e}", exc_info=True)
 
 
 @celery.task(name='tasks.send_monthly_report')
@@ -66,7 +67,7 @@ def send_monthly_report():
         try:
             reporting_service.schedule_and_send_reports(tenant_id, 'monthly')
         except Exception as e:
-            print(f"Monthly report failed for tenant {tenant_id}: {str(e)}")
+            _log_tasks.getLogger(__name__).error(f"Monthly report failed for tenant {tenant_id}: {e}", exc_info=True)
 
 
 @celery.task(name='tasks.monitor_anomalies')
@@ -81,7 +82,7 @@ def monitor_anomalies():
                 for leader in kpi.process.leaders:
                     anomaly_service.monitor_and_alert(kpi.id, leader.id)
         except Exception as e:
-            print(f"Anomaly monitoring failed for KPI {kpi.id}: {str(e)}")
+            _log_tasks.getLogger(__name__).error(f"Anomaly monitoring failed for KPI {kpi.id}: {e}", exc_info=True)
 
 
 # Celery Beat Schedule

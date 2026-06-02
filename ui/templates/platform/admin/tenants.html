@@ -83,7 +83,7 @@
                 {{ (t.short_name or t.name)[0]|upper }}
               </div>
               <div>
-                <div style="font-weight:600; color:#1e293b; font-size:13.5px;">
+                <div style="font-weight:600; color:var(--text-default); font-size:13.5px;">
                   {{ t.name }}
                   {% if t.parent_tenant_id %}<i class="fas fa-arrow-right" style="font-size:9px; color:#cbd5e1; margin:0 4px;"></i><span style="font-size:11px; color:#94a3b8;">{{ t.parent_tenant.name if t.parent_tenant else '—' }}</span>{% endif %}
                 </div>
@@ -189,7 +189,7 @@
           <i class="fas fa-building"></i>
           <span id="detail-modal-title">Kurum Detayı</span>
         </div>
-        <button id="btn-close-detail" class="mc-modal-close"><i class="fas fa-times"></i></button>
+        <button id="btn-close-detail" class="mc-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div id="detail-modal-body" class="mc-modal-body"></div>
     </div>
@@ -203,7 +203,7 @@
           <i class="fas fa-building"></i>
           <span id="edit-modal-heading">Kurum Düzenle</span>
         </div>
-        <button class="mc-modal-close" id="btn-edit-modal-close"><i class="fas fa-times"></i></button>
+        <button class="mc-modal-close" id="btn-edit-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="mc-modal-body">
 

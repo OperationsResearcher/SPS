@@ -5,7 +5,7 @@ Süreç karnesi performans verilerinin hesaplandığı "Business Logic" katmanı
 """
 from typing import Dict, Any, Tuple
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import current_app
 from app.models.legacy_bridge import db, Surec, SurecPerformansGostergesi, AltStrateji, surec_liderleri, surec_uyeleri
@@ -249,8 +249,8 @@ class ProcessPerformanceService:
             return {'success': True, 'bireysel_faaliyet_id': yeni.id}, 200
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Bireysel Faaliyet oluşturma hatası: {str(e)}')
-            raise Exception(f'Veritabanı hatası: {str(e)}')
+            current_app.logger.error(f'Bireysel Faaliyet oluşturma hatası: {e}')
+            raise Exception('Veritabanı hatası oluştu.')
 
     @staticmethod
     def save_activity_tracking(user, faaliyet_id: int, data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
@@ -655,8 +655,8 @@ class ProcessPerformanceService:
             })
         
         except Exception as e:
-            current_app.logger.error(f'PG veri detay getirme hatası: {str(e)}', exc_info=True)
-            return dict({'success': False, 'message': str(e)}), 500
+            current_app.logger.error(f'PG veri detay getirme hatası: {e}', exc_info=True)
+            return dict({'success': False, 'message': 'Veri getirme hatası oluştu.'}), 500
 
 
 ################################################################################
@@ -876,7 +876,7 @@ class ProcessPerformanceService:
             # Son güncelleyen bilgisini audit log'dan al
             son_guncelleyen = None
             son_guncelleme_tarihi = None
-            if audit_list and len(audit_list) > 0:
+            if audit_list:
                 son_islem = audit_list[0]  # En son işlem
                 if son_islem['islem_tipi'] == 'GUNCELLE':
                     son_guncelleyen = son_islem['islem_yapan']
@@ -1140,7 +1140,7 @@ class ProcessPerformanceService:
                 })
             
                 # Son güncelleyen bilgisini audit log'dan al
-                if audit_list and len(audit_list) > 0:
+                if audit_list:
                     son_islem = audit_list[0]  # En son işlem
                     if son_islem['islem_tipi'] == 'GUNCELLE':
                         veriler_listesi[-1]['veri']['guncelleyen'] = son_islem['islem_yapan']
@@ -1242,7 +1242,7 @@ class ProcessPerformanceService:
                 pg_veri.durum_yuzdesi = durum_yuzdesi
         
             pg_veri.updated_by = user.id
-            pg_veri.updated_at = datetime.utcnow()
+            pg_veri.updated_at = datetime.now(timezone.utc)
         
             # Audit log oluştur
             degisiklik_aciklama = []
@@ -1259,7 +1259,7 @@ class ProcessPerformanceService:
                     yeni_deger=str(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger is not None else None,
                     degisiklik_aciklama='; '.join(degisiklik_aciklama),
                     islem_yapan_user_id=user.id,
-                    islem_tarihi=datetime.utcnow()
+                    islem_tarihi=datetime.now(timezone.utc)
                 )
                 db.session.add(audit)
         

@@ -35,7 +35,7 @@ class ReportService:
         Returns:
             Rapor verisi
         """
-        process = Process.query.get(process_id)
+        process = Process.query.filter_by(id=process_id).first()
         if not process:
             return {'error': 'Süreç bulunamadı'}
         
@@ -213,7 +213,7 @@ class ReportService:
                 dashboard_data['summary']['poor_processes'] += 1
         
         # Ortalama performans
-        if len(processes) > 0:
+        if processes:
             dashboard_data['summary']['average_performance'] = round(total_score / len(processes), 2)
         
         # Sıralama

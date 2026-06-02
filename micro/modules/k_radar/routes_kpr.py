@@ -24,17 +24,21 @@ def k_radar_kpr_cpm():
     projects = Project.query.filter_by(tenant_id=tenant_id, is_archived=False).order_by(Project.name).all()
     analysis = None
     if project_id:
-        tasks = Task.query.filter_by(project_id=project_id, is_archived=False).all()
-        dep_rows = TaskDependency.query.filter_by(project_id=project_id).all()
-        predecessor_map = {t.id: set() for t in tasks}
-        for d in dep_rows:
-            predecessor_map.setdefault(d.successor_id, set()).add(d.predecessor_id)
-        critical = [t for t in tasks if len(predecessor_map.get(t.id, set())) == 0]
-        analysis = {
-            "task_count": len(tasks),
-            "dependency_count": len(dep_rows),
-            "critical_starts": [{"id": t.id, "title": t.title} for t in critical[:15]],
-        }
+        project = Project.query.filter_by(id=project_id, tenant_id=tenant_id, is_archived=False).first()
+        if not project:
+            project_id = None
+        else:
+            tasks = Task.query.filter_by(project_id=project_id, is_archived=False).all()
+            dep_rows = TaskDependency.query.filter_by(project_id=project_id).all()
+            predecessor_map = {t.id: set() for t in tasks}
+            for d in dep_rows:
+                predecessor_map.setdefault(d.successor_id, set()).add(d.predecessor_id)
+            critical = [t for t in tasks if len(predecessor_map.get(t.id, set())) == 0]
+            analysis = {
+                "task_count": len(tasks),
+                "dependency_count": len(dep_rows),
+                "critical_starts": [{"id": t.id, "title": t.title} for t in critical[:15]],
+            }
     return render_template(
         "platform/k_radar/kpr_cpm.html",
         can_manage_k_radar=_can_manage_k_radar(),

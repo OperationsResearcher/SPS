@@ -18,7 +18,7 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-tachometer-alt" style="color:#6366f1;"></i> Yönetici Paneli
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -216,7 +216,7 @@
   <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
       <div>
-        <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+        <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
           <i class="fas fa-vector-square" style="color:#8b5cf6; margin-right:6px;"></i>
           K-Vektör Vizyon Puanı — Gelişim
         </h3>
@@ -265,7 +265,7 @@
   {# ── 12 Aylık Sağlık Trendi ──────────────────────────────────────── #}
   <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
         <i class="fas fa-chart-line" style="color:#6366f1; margin-right:6px;"></i>
         Son 12 Ay PG Hedef Üstü Oranı
       </h3>
@@ -296,7 +296,7 @@
   <div class="mc-card" id="exec-highlights" style="padding:14px 18px; margin-bottom:18px; border-left:4px solid #0ea5e9; display:none;">
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
       <i class="fas fa-lightbulb" style="color:#0ea5e9;"></i>
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">Bu Hafta Dikkat Edilmesi Gerekenler</h3>
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">Bu Hafta Dikkat Edilmesi Gerekenler</h3>
     </div>
     <div id="exec-highlights-list" style="display:grid; gap:6px;"></div>
   </div>
@@ -658,7 +658,7 @@
       const render = (items, color) => items.length ? items.map(it => `
         <div style="display:flex; align-items:center; gap:8px; padding:6px 8px; background:#f8fafc; border-radius:6px; font-size:12.5px;">
           <span style="background:#fff; border:1px solid #e2e8f0; padding:2px 6px; border-radius:4px; font-family:monospace; font-size:11px; color:#475569;">${it.code || '·'}</span>
-          <span style="flex:1; color:#1e293b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
+          <span style="flex:1; color:var(--text-default); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
           <span style="color:${color}; font-weight:700;">%${it.on_target_pct}</span>
           <span style="color:#94a3b8; font-size:11px;">(${it.pg_total} PG)</span>
         </div>`).join('') : '<div style="font-size:12px; color:#94a3b8; padding:6px;">Veri yok</div>';

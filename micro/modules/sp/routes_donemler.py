@@ -240,10 +240,10 @@ def sp_api_donem_karsilastir():
     s2_ids = [s.id for s in strats2]
 
     ss1 = (_SubStrategy.query
-           .filter(_SubStrategy.strategy_id.in_(s1_ids), _SubStrategy.is_active == True)
+           .filter(_SubStrategy.strategy_id.in_(s1_ids), _SubStrategy.is_active.is_(True))
            .all()) if s1_ids else []
     ss2 = (_SubStrategy.query
-           .filter(_SubStrategy.strategy_id.in_(s2_ids), _SubStrategy.is_active == True)
+           .filter(_SubStrategy.strategy_id.in_(s2_ids), _SubStrategy.is_active.is_(True))
            .all()) if s2_ids else []
 
     ss_diffs = []
@@ -274,13 +274,13 @@ def sp_api_donem_karsilastir():
     # Legacy uyumluluk: plan_year_id NULL süreçler iki yıl için de ortak taban kabul edilir.
     procs1 = _Process.query.filter(
         _Process.tenant_id == tid,
-        _Process.is_active == True,
-        or_(_Process.plan_year_id == py1.id, _Process.plan_year_id == None),
+        _Process.is_active.is_(True),
+        or_(_Process.plan_year_id == py1.id, _Process.plan_year_id.is_(None)),
     ).all()
     procs2 = _Process.query.filter(
         _Process.tenant_id == tid,
-        _Process.is_active == True,
-        or_(_Process.plan_year_id == py2.id, _Process.plan_year_id == None),
+        _Process.is_active.is_(True),
+        or_(_Process.plan_year_id == py2.id, _Process.plan_year_id.is_(None)),
     ).all()
 
     # KPI karşılaştırmasında process_kpi.plan_year_id dolu olmayan legacy kayıtlar da dikkate alınmalı.
@@ -288,12 +288,12 @@ def sp_api_donem_karsilastir():
     p2_ids = [p.id for p in procs2]
     kpis1_all = (
         _ProcessKpi.query
-        .filter(_ProcessKpi.process_id.in_(p1_ids), _ProcessKpi.is_active == True)
+        .filter(_ProcessKpi.process_id.in_(p1_ids), _ProcessKpi.is_active.is_(True))
         .all()
     ) if p1_ids else []
     kpis2_all = (
         _ProcessKpi.query
-        .filter(_ProcessKpi.process_id.in_(p2_ids), _ProcessKpi.is_active == True)
+        .filter(_ProcessKpi.process_id.in_(p2_ids), _ProcessKpi.is_active.is_(True))
         .all()
     ) if p2_ids else []
 
@@ -532,4 +532,4 @@ def sp_api_quarterly_review():
         return jsonify({"success": True, "review": data.to_dict()})
     except Exception as e:
         current_app.logger.error(f"quarterly_review error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500

@@ -64,7 +64,7 @@ def sp_api_triggers_create():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({"success": True, "item": t.to_dict()}), 201
 
 
@@ -96,7 +96,7 @@ def sp_api_triggers_evaluate():
         events = evaluate_triggers(current_user.tenant_id, dry_run=dry)
     except Exception as e:
         current_app.logger.error(f"trigger_eval error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({
         "success": True,
         "fired_count": len(events),

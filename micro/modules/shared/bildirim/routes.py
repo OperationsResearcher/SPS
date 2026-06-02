@@ -45,7 +45,7 @@ def bildirim_api_mark_read(notif_id):
         db.session.rollback()
         from flask import current_app
         current_app.logger.error(f"[bildirim_api_mark_read] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bildirim/api/mark-all-read", methods=["POST"])
@@ -62,4 +62,4 @@ def bildirim_api_mark_all_read():
         db.session.rollback()
         from flask import current_app
         current_app.logger.error(f"[bildirim_api_mark_all_read] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400

@@ -105,4 +105,4 @@ def sp_api_strategy_project_matrix():
         }})
     except Exception as e:
         current_app.logger.error(f"[strategy_project_matrix] {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500

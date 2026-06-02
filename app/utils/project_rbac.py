@@ -68,7 +68,7 @@ def project_access_required(allowed_roles=None):
             except Exception as e:
                 from flask import current_app
                 current_app.logger.error(f'Proje erişim kontrolü hatası: {e}')
-                return jsonify({'success': False, 'message': str(e)}), 500
+                return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
         
         return decorated_function
     return decorator

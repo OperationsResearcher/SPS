@@ -86,7 +86,7 @@ def sp_api_ai_config_test():
         return jsonify({"success": result["success"], **result})
     except Exception as e:
         current_app.logger.error(f"ai_config_test error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 @app_bp.route("/sp/api/ai-config", methods=["DELETE"])

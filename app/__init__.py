@@ -41,7 +41,7 @@ def create_app(config_class=None):
     # Cloudflare / ters vekil: X-Forwarded-Proto ve Host okunsun; aksi halde is_secure ve yönlendirmeler hatalı.
     _env = (os.environ.get("FLASK_ENV") or "").lower()
     _trust = (os.environ.get("TRUST_PROXY") or "").lower()
-    if _env == "production" or _trust in ("1", "true", "yes"):
+    if _env == "production" and _trust not in ("0", "false", "no"):
         from werkzeug.middleware.proxy_fix import ProxyFix
 
         app.wsgi_app = ProxyFix(
@@ -64,7 +64,10 @@ def create_app(config_class=None):
     init_limiter(app)
 
     _flask_env = (os.environ.get("FLASK_ENV") or "").lower()
-    if _flask_env == "production":
+    _csp_enabled = app.config.get(
+        "CSP_ENABLED", os.environ.get("CSP_ENABLED", str(_flask_env == "production")).lower() == "true"
+    )
+    if _csp_enabled:
         talisman.init_app(
             app,
             force_https=False,
@@ -378,6 +381,8 @@ def create_app(config_class=None):
         init_k_radar_scheduler(app)
         _init_early_warning_scheduler(app)
         _init_weekly_digest_scheduler(app)  # Sprint 18
+        if app.config.get("KOKPITIM_DEMO_MODE"):
+            _init_demo_inactivity_sweeper(app)  # KURALLAR §8.4 — demo Tomofil sıfırlama
 
     # Legacy HTML sunset (GET yönlendirme / 410) — main_bp'den önce kayıt
     from app.middleware.legacy_sunset import init_legacy_sunset
@@ -451,3 +456,32 @@ def _init_early_warning_scheduler(app) -> None:
         app.logger.warning("[early_warning] apscheduler kurulu değil, zamanlayıcı atlandı.")
 
     return app
+
+
+def _init_demo_inactivity_sweeper(app) -> None:
+    """Demo inaktivite sıfırlayıcı (KURALLAR §8.4) — her 5 dk Tomofil'i baseline'a
+    döndürme kontrolü. Yalnızca KOKPITIM_DEMO_MODE=1 ortamında çağrılır."""
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.interval import IntervalTrigger
+
+        inactivity = app.config.get("DEMO_INACTIVITY_MINUTES", 15)
+
+        def _run():
+            with app.app_context():
+                from app.services.demo_reset_service import inactivity_sweep
+                inactivity_sweep(inactivity)
+
+        scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
+        scheduler.add_job(
+            func=_run,
+            trigger=IntervalTrigger(minutes=5),
+            id="demo_inactivity_sweep",
+            replace_existing=True,
+        )
+        scheduler.start()
+        app.logger.info("[demo_reset] inaktivite sweeper başlatıldı (her 5 dk, eşik=%s dk).", inactivity)
+    except ImportError:
+        app.logger.warning("[demo_reset] apscheduler kurulu değil, sweeper atlandı.")
+    except Exception as e:
+        app.logger.error("[demo_reset] sweeper başlatma hatası: %s", e)

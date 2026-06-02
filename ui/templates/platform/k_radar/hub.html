@@ -11,7 +11,7 @@
 
   <div class="mc-page-header" style="margin-bottom:14px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-satellite-dish" style="color:#6366f1;"></i> K-Radar — Raporlama & Analiz Merkezi
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -75,11 +75,11 @@
         {'url': '/k-rapor?tab=sorumlu-analiz',                              'icon':'fa-user-tie',          'c':'#0e7490','bg':'#ecfeff','n':'Sorumlu Analizi',             'd':'Kişi yükü ve performans dağılımı'},
         {'url': '/k-rapor?tab=bireysel',                                    'icon':'fa-users',             'c':'#db2777','bg':'#fdf2f8','n':'Bireysel Performans',         'd':'Bireysel karne özetleri'},
         {'url': '/raporlar/bireysel-hizalama',                              'icon':'fa-user-check',        'c':'#db2777','bg':'#fdf2f8','n':'Bireysel Hedef Hizalama',     'd':'Bireysel hedeflerin stratejiyle uyumu'},
-        {'url': '/k-rapor?tab=evm',                                         'icon':'fa-coins',             'c':'#ca8a04','bg':'#fefce8','n':'EVM (Earned Value)',          'd':'PV/EV/AC, CPI/SPI hesapları'},
+        {'url': '/k-rapor?tab=evm',                                         'icon':'fa-coins',             'c':'#ca8a04','bg':'#fefce8','n':'EVM (Kazanılmış Değer)',      'd':'PV/EV/AC, CPI/SPI hesapları'},
         {'url': '/raporlar/initiative-bubble',                              'icon':'fa-rocket',            'c':'#ef4444','bg':'#fef2f2','n':'Stratejik Girişim Portföyü Balon Grafiği',   'd':'Bütçe × ilerleme × öncelik balon grafiği'},
         {'url': '/raporlar/initiative-roadmap',                             'icon':'fa-road',              'c':'#8b5cf6','bg':'#f5f3ff','n':'Stratejik Girişim Yol Haritası',          'd':'Çok yıllık girişim yol haritası'},
-        {'url': '/raporlar/quarterly-review',                               'icon':'fa-calendar-check',    'c':'#16a34a','bg':'#f0fdf4','n':'Çeyreklik Review Hazırlayıcı', 'd':'Üç aylık değerlendirme paketi'},
-        {'url': '/raporlar/okr-cascade',                                    'icon':'fa-stream',            'c':'#0ea5e9','bg':'#ecfeff','n':'OKR Cascade',                 'd':'Şirket → Takım → Birey OKR akışı'},
+        {'url': '/raporlar/quarterly-review',                               'icon':'fa-calendar-check',    'c':'#16a34a','bg':'#f0fdf4','n':'Çeyreklik Değerlendirme Hazırlayıcı', 'd':'Üç aylık değerlendirme paketi'},
+        {'url': '/raporlar/okr-cascade',                                    'icon':'fa-stream',            'c':'#0ea5e9','bg':'#ecfeff','n':'OKR Akışı',                   'd':'Kurum → Takım → Birey OKR akışı'},
         {'url': '/raporlar/sabah-ozeti',                                    'icon':'fa-sun',               'c':'#0d9488','bg':'#f0fdfa','n':'Sabah Operasyonel Özeti',     'd':'Bugün biten/bekleyen faaliyet & kritik PG'},
         {'url': '/raporlar/operasyon-istatistik',                           'icon':'fa-list-ol',           'c':'#0ea5e9','bg':'#ecfeff','n':'Operasyonel İstatistik',      'd':'Operasyonel veri özet istatistikleri'},
         {'url': '/raporlar/muda-analizi',                                   'icon':'fa-recycle',           'c':'#dc2626','bg':'#fef2f2','n':'7 Muda (İsraf) Analizi',      'd':'Yalın 7 israf türü ölçümü'},
@@ -92,17 +92,17 @@
       'color': '#ef4444',
       'cards': [
         {'url': '/k-rapor?tab=risk',                                        'icon':'fa-triangle-exclamation','c':'#dc2626','bg':'#fef2f2','n':'Risk Özeti',                 'd':'Açık riskler ve kritik kayıt sayısı'},
-        {'url': '/raporlar/risk-heatmap',                                   'icon':'fa-fire',              'c':'#ef4444','bg':'#fef2f2','n':'Risk Heatmap (5×5)',          'd':'Olasılık × etki ısı haritası'},
+        {'url': '/raporlar/risk-heatmap',                                   'icon':'fa-fire',              'c':'#ef4444','bg':'#fef2f2','n':'Risk Isı Haritası (5×5)',     'd':'Olasılık × etki ısı haritası'},
         {'url': '/k-rapor?tab=uyari',                                       'icon':'fa-bell',              'c':'#ef4444','bg':'#fef2f2','n':'Aktif Uyarılar',              'd':'Sistem uyarıları ve tetikleyiciler'},
         {'url': '/raporlar/early-warning',                                  'icon':'fa-bell',              'c':'#f59e0b','bg':'#fffbeb','n':'AI Erken Uyarı',              'd':'AI tabanlı erken uyarı sinyalleri'},
-        {'url': '/raporlar/ml-anomaly',                                     'icon':'fa-vials',             'c':'#dc2626','bg':'#fef2f2','n':'ML Anomali (Isolation Forest)','d':'Makine öğrenmesi ile aykırı PG tespiti'},
+        {'url': '/raporlar/ml-anomaly',                                     'icon':'fa-vials',             'c':'#dc2626','bg':'#fef2f2','n':'ML Anomali (İzolasyon Ormanı)','d':'Makine öğrenmesi ile aykırı PG tespiti'},
         {'url': '/k-rapor?tab=veri-durumu',                                 'icon':'fa-circle-check',      'c':'#0d9488','bg':'#f0fdfa','n':'Veri Durumu',                 'd':'PG veri doluluk durumu'},
         {'url': '/raporlar/veri-kalitesi',                                  'icon':'fa-database',          'c':'#0ea5e9','bg':'#e0f2fe','n':'Veri Kalitesi Detay',         'd':'Eksik alan, son giriş tarihi, sıklık'},
         {'url': '/k-rapor?tab=denetim',                                     'icon':'fa-shield-halved',     'c':'#7c3aed','bg':'#f5f3ff','n':'Denetim Kayıtları',           'd':'Aktivite ve değişiklik denetim izleri'},
         {'url': '/k-rapor?tab=bildirim-analiz',                             'icon':'fa-comment-dots',      'c':'#64748b','bg':'#f1f5f9','n':'Bildirim Analizi',            'd':'Bildirim sıklığı ve okuma oranı'},
         {'url': '/raporlar/iki-fa',                                         'icon':'fa-mobile-screen',     'c':'#10b981','bg':'#ecfdf5','n':'2FA Kullanım Raporu',         'd':'İki faktörlü doğrulama kapsama'},
-        {'url': '/raporlar/audit-paketi',                                   'icon':'fa-folder-tree',       'c':'#7c3aed','bg':'#f5f3ff','n':'Audit Çıktı Paketi',          'd':'Denetim için derlenmiş kanıt paketi'},
-        {'url': '/raporlar/onay-zinciri',                                   'icon':'fa-circle-check',      'c':'#16a34a','bg':'#f0fdf4','n':'Onay Zinciri (Workflow)',     'd':'Çok adımlı onay süreçleri'},
+        {'url': '/raporlar/audit-paketi',                                   'icon':'fa-folder-tree',       'c':'#7c3aed','bg':'#f5f3ff','n':'Denetim Çıktı Paketi',        'd':'Denetim için derlenmiş kanıt paketi'},
+        {'url': '/raporlar/onay-zinciri',                                   'icon':'fa-circle-check',      'c':'#16a34a','bg':'#f0fdf4','n':'Onay Zinciri (İş Akışı)',     'd':'Çok adımlı onay süreçleri'},
       ]
     },
     {
@@ -131,27 +131,27 @@
       'color': '#0d9488',
       'cards': [
         {'url': '/raporlar/sektor-benchmark',                               'icon':'fa-chart-line',        'c':'#0ea5e9','bg':'#ecfeff','n':'AI Sektör Benchmark',         'd':'AI ile sektör emsali kıyaslama'},
-        {'url': '/raporlar/cfo-dashboard',                                  'icon':'fa-coins',             'c':'#0d9488','bg':'#f0fdfa','n':'CFO Dashboard',                'd':'Bütçe, gelir, kâr odaklı panel'},
-        {'url': '/raporlar/coo-dashboard',                                  'icon':'fa-cogs',              'c':'#0ea5e9','bg':'#ecfeff','n':'COO Dashboard',                'd':'Operasyon ve verimlilik paneli'},
-        {'url': '/raporlar/chro-dashboard',                                 'icon':'fa-user-tie',          'c':'#db2777','bg':'#fdf2f8','n':'CHRO Dashboard',               'd':'İK ve insan kaynakları paneli'},
+        {'url': '/raporlar/cfo-dashboard',                                  'icon':'fa-coins',             'c':'#0d9488','bg':'#f0fdfa','n':'CFO Paneli',                   'd':'Bütçe, gelir, kâr odaklı panel'},
+        {'url': '/raporlar/coo-dashboard',                                  'icon':'fa-cogs',              'c':'#0ea5e9','bg':'#ecfeff','n':'COO Paneli',                   'd':'Operasyon ve verimlilik paneli'},
+        {'url': '/raporlar/chro-dashboard',                                 'icon':'fa-user-tie',          'c':'#db2777','bg':'#fdf2f8','n':'CHRO Paneli',                  'd':'İK ve insan kaynakları paneli'},
         {'url': '/raporlar/yatirimci-sunum',                                'icon':'fa-handshake',         'c':'#9333ea','bg':'#faf5ff','n':'Yatırımcı Sunumu',            'd':'Yatırımcı için hazır sunum paketi'},
         {'url': '/raporlar/stratejik-yillik',                               'icon':'fa-book',              'c':'#dc2626','bg':'#fef2f2','n':'Stratejik Yıllık Kitap',      'd':'Yıllık stratejik özet kitap formatı'},
         {'url': '/raporlar/esg-rapor',                                      'icon':'fa-leaf',              'c':'#16a34a','bg':'#f0fdf4','n':'ESG Yıllık Rapor',             'd':'Çevre, sosyal, yönetişim raporu'},
-        {'url': '/raporlar/carbon-trend',                                   'icon':'fa-smog',              'c':'#0ea5e9','bg':'#ecfeff','n':'Carbon Footprint Trend',      'd':'Karbon emisyonu zaman analizi'},
+        {'url': '/raporlar/carbon-trend',                                   'icon':'fa-smog',              'c':'#0ea5e9','bg':'#ecfeff','n':'Karbon Ayak İzi Trendi',      'd':'Karbon emisyonu zaman analizi'},
         {'url': '/raporlar/ai-danisman',                                    'icon':'fa-robot',             'c':'#0d9488','bg':'#f0fdfa','n':'AI Strateji Danışmanı',       'd':'Stratejinize AI tabanlı öneri'},
-        {'url': '/raporlar/ai-coach',                                       'icon':'fa-graduation-cap',    'c':'#8b5cf6','bg':'#f5f3ff','n':'AI Coach',                    'd':'Yönetici için AI koçluk asistanı'},
+        {'url': '/raporlar/ai-coach',                                       'icon':'fa-graduation-cap',    'c':'#8b5cf6','bg':'#f5f3ff','n':'AI Koç',                      'd':'Yönetici için AI koçluk asistanı'},
         {'url': '/raporlar/ai-sunum',                                       'icon':'fa-display',           'c':'#dc2626','bg':'#fef2f2','n':'AI Yıl Sonu Sunum Üretici',   'd':'Yıl sonu için AI sunum hazırlama'},
         {'url': '/raporlar/nlp-query',                                      'icon':'fa-comment',           'c':'#0ea5e9','bg':'#ecfeff','n':'AI Doğal Dil Sorgu',          'd':'Türkçe doğal dilde veri sorgulama'},
         {'url': '/raporlar/bireysel-karne-batch',                           'icon':'fa-file-zipper',       'c':'#0d9488','bg':'#f0fdfa','n':'Bireysel Karne Batch (ZIP)',  'd':'Tüm bireysel karneleri toplu PDF'},
-        {'url': '/raporlar/mobile',                                         'icon':'fa-mobile-screen',     'c':'#0ea5e9','bg':'#ecfeff','n':'Mobile Hub (PWA)',            'd':'Mobil uygulama girişi'},
-        {'url': '/raporlar/bi-connector',                                   'icon':'fa-plug',              'c':'#7c3aed','bg':'#f5f3ff','n':'BI Connector',                'd':'Power BI / Tableau bağlantı bilgisi'},
+        {'url': '/raporlar/mobile',                                         'icon':'fa-mobile-screen',     'c':'#0ea5e9','bg':'#ecfeff','n':'Mobil Merkez (PWA)',          'd':'Mobil uygulama girişi'},
+        {'url': '/raporlar/bi-connector',                                   'icon':'fa-plug',              'c':'#7c3aed','bg':'#f5f3ff','n':'BI Bağlayıcı',                'd':'Power BI / Tableau bağlantı bilgisi'},
       ]
     }
   ] %}
 
   {% for g in groups %}
   <div class="kr-hub-group" data-group="{{ g.key }}" style="margin-bottom:28px;">
-    <h3 style="font-size:14px; color:#1e293b; font-weight:700; margin:0 0 4px;">
+    <h3 style="font-size:14px; color:var(--text-default); font-weight:700; margin:0 0 4px;">
       <span style="color:{{ g.color }};">{{ g.title }}</span>
       <span style="font-weight:400; color:#64748b; font-size:12px; margin-left:8px;">{{ g.cards|length }} öğe</span>
     </h3>
@@ -163,7 +163,7 @@
         <div style="width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px; background:{{ it.bg }};">
           <i class="fas {{ it.icon }}" style="color:{{ it.c }};"></i>
         </div>
-        <span style="font-size:13px; font-weight:600; color:#1e293b; margin-bottom:4px;">{{ it.n }}</span>
+        <span style="font-size:13px; font-weight:600; color:var(--text-default); margin-bottom:4px;">{{ it.n }}</span>
         <span style="font-size:11px; color:#94a3b8; line-height:1.4;">{{ it.d }}</span>
       </a>
       {% endfor %}

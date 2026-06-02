@@ -8,8 +8,13 @@
     if (typeof window.showAppToast === "function") {
       window.showAppToast(type, message);
     } else {
-      console.log("[k_radar][" + type + "] " + message);
+      /* fallback: toast gösterilemediğinde sessizce devam et */
     }
+  }
+
+  /** HTML escape — kullanıcı kaynaklı veriyi innerHTML'e yazmadan önce çağır */
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   }
 
   async function getJson(url) {
@@ -177,8 +182,8 @@
           "<tr>" +
           "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\"><span style=\"color:" + badgeColor + "; font-weight:600;\">" + i.state + "</span></td>" +
           "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\">" + i.user_id + "</td>" +
-          "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\">" + when + "</td>" +
-          "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\">" + i.recommendation_text + "</td>" +
+          "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\">" + esc(when) + "</td>" +
+          "<td style=\"padding:6px; border-bottom:1px solid #e5e7eb;\">" + esc(i.recommendation_text) + "</td>" +
           "</tr>"
         );
       })
@@ -291,11 +296,11 @@
       if (!detailWrap || !detailBody || !p) return;
       detailWrap.style.display = "block";
       detailBody.innerHTML =
-        "<strong>" + p.name + "</strong><br>" +
-        "Kategori: " + (p.category || "-") + "<br>" +
-        "Kaynak: " + (p.source || "-") + "<br>" +
-        "Olasilik x Etki: " + p.probability + " x " + p.impact + " = " + p.rpn + "<br>" +
-        "Oneri: " + (p.recommendation || "Yok");
+        "<strong>" + esc(p.name) + "</strong><br>" +
+        "Kategori: " + esc(p.category || "-") + "<br>" +
+        "Kaynak: " + esc(p.source || "-") + "<br>" +
+        "Olasilik x Etki: " + esc(p.probability) + " x " + esc(p.impact) + " = " + esc(p.rpn) + "<br>" +
+        "Oneri: " + esc(p.recommendation || "Yok");
     };
     target.querySelectorAll(".cross-point-btn").forEach((btn) => {
       btn.addEventListener("click", (ev) => {

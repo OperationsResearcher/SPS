@@ -195,8 +195,14 @@ def user_ids_from_form(field: str) -> list[int]:
 
 
 def sync_project_members_observers(project: Project, kid: int) -> None:
-    member_ids = user_ids_from_form("members")
-    observer_ids = user_ids_from_form("observers")
+    # Yalnızca form'da gerçekten gönderilen alanları güncelle
+    # Boş form gönderildiğinde tüm üyeler silinmesini önle
+    if "members" not in request.form and "observers" not in request.form:
+        return
+    member_ids = user_ids_from_form("members") if "members" in request.form else None
+    observer_ids = user_ids_from_form("observers") if "observers" in request.form else None
+    if member_ids is None and observer_ids is None:
+        return
     uid_set = set(member_ids) | set(observer_ids)
 
     valid: set[int] = set()
@@ -226,9 +232,10 @@ def sync_project_members_observers(project: Project, kid: int) -> None:
         db.session.execute(insert(project_observers).values(project_id=project.id, user_id=uid))
 
 
-def load_project(project_id: int) -> Project:
-    # Legacy `user` tablosuna joinedload denemesi PostgreSQL kurulumlarında
-    # "relation user does not exist" hatasına yol açabiliyor. Projeyi yalın yükle.
+def load_project(project_id: int, tenant_id: int = None) -> Project:
+    """Projeyi yükle. tenant_id verilirse sahiplik doğrulaması yapılır."""
+    if tenant_id is not None:
+        return Project.query.filter_by(id=project_id, kurum_id=tenant_id).first_or_404()
     return Project.query.get_or_404(project_id)
 
 

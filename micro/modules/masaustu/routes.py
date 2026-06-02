@@ -105,8 +105,8 @@ def masaustu():
     surec_pg_sorgu = (
         ProcessKpi.query.join(ProcessKpi.process)
         .filter(
-            ProcessKpi.is_active == True,
-            Process.is_active == True,
+            ProcessKpi.is_active.is_(True),
+            Process.is_active.is_(True),
             db.or_(
                 Process.id.in_(member_process_ids),
                 Process.id.in_(leader_process_ids),
@@ -289,7 +289,7 @@ def _processes_for_activity_quick_create(user) -> list[dict]:
                 Process.is_active.is_(True),
             )
             .order_by(Process.name)
-            .limit(400)
+            .limit(100)
             .all()
         )
     else:
@@ -307,7 +307,7 @@ def _processes_for_activity_quick_create(user) -> list[dict]:
                 Process.tenant_id == user.tenant_id,
             )
             .order_by(Process.name)
-            .limit(400)
+            .limit(100)
             .all()
         )
     return [{"id": p.id, "name": (p.name or f"Süreç #{p.id}")} for p in rows]
@@ -321,7 +321,7 @@ def _projects_for_task_quick_create(user) -> list[dict]:
     rows = (
         Project.query.filter(Project.kurum_id == kid, Project.is_archived.is_(False))
         .order_by(Project.name)
-        .limit(500)
+        .limit(100)
         .all()
     )
     out: list[dict] = []

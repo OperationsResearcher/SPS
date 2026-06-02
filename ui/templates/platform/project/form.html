@@ -30,27 +30,27 @@
         <div id="micro-proj-hidden-mem"></div>
         <div id="micro-proj-hidden-obs"></div>
 
-        <label class="mc-label">Proje adı *</label>
-        <input type="text" name="name" class="mc-input" required value="{% if project %}{{ project.name }}{% elif clone_src %}{{ clone_src.name }} (kopya){% endif %}"/>
+        <label class="mc-label" for="pf-name">Proje adı *</label>
+        <input type="text" id="pf-name" name="name" class="mc-input" required value="{% if project %}{{ project.name }}{% elif clone_src %}{{ clone_src.name }} (kopya){% endif %}"/>
 
-        <label class="mc-label mt-3">Açıklama</label>
-        <textarea name="description" class="mc-input" rows="3">{{ pref.description if pref else '' }}</textarea>
+        <label class="mc-label mt-3" for="pf-description">Açıklama</label>
+        <textarea id="pf-description" name="description" class="mc-input" rows="3">{{ pref.description if pref else '' }}</textarea>
 
-        <label class="mc-label mt-3">Öncelik</label>
-        <select name="priority" class="mc-select">
+        <label class="mc-label mt-3" for="pf-priority">Öncelik</label>
+        <select id="pf-priority" name="priority" class="mc-select">
             {% set pr = pref.priority if pref else 'Orta' %}
             {% for o in ['Düşük','Orta','Yüksek','Kritik'] %}
             <option value="{{ o }}" {% if pr == o %}selected{% endif %}>{{ o }}</option>
             {% endfor %}
         </select>
 
-        <label class="mc-label mt-3">
+        <label class="mc-label mt-3" for="pf-initiative">
             Bağlı Olduğu Stratejik Girişim
             <span style="font-size:11px; color:#94a3b8; font-weight:400;" title="Stratejik girişim = çok yıllık hamle. Bu proje hangi büyük hedefin altında? Opsiyonel.">
               <i class="fas fa-circle-info"></i>
             </span>
         </label>
-        <select name="initiative_id" class="mc-select">
+        <select id="pf-initiative" name="initiative_id" class="mc-select">
             <option value="">— Hiçbiri (bağımsız proje) —</option>
             {% for init in initiatives or [] %}
             <option value="{{ init.id }}" {% if project and project.initiative_id == init.id %}selected{% endif %}>
@@ -92,13 +92,13 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
             <div>
-                <label class="mc-label">Başlangıç</label>
-                <input type="date" name="start_date" class="mc-input"
+                <label class="mc-label" for="pf-start">Başlangıç</label>
+                <input type="date" id="pf-start" name="start_date" class="mc-input"
                        value="{{ pref.start_date.strftime('%Y-%m-%d') if pref and pref.start_date else '' }}"/>
             </div>
             <div>
-                <label class="mc-label">Bitiş</label>
-                <input type="date" name="end_date" class="mc-input"
+                <label class="mc-label" for="pf-end">Bitiş</label>
+                <input type="date" id="pf-end" name="end_date" class="mc-input"
                        value="{{ pref.end_date.strftime('%Y-%m-%d') if pref and pref.end_date else '' }}"/>
             </div>
         </div>

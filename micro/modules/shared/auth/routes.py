@@ -38,8 +38,11 @@ def profil():
             if not check_password_hash(current_user.password_hash, data["current_password"]):
                 return jsonify({"success": False, "message": "Mevcut şifre yanlış."}), 400
             new_pw = data.get("new_password", "")
-            if len(new_pw) < 6:
-                return jsonify({"success": False, "message": "Yeni şifre en az 6 karakter olmalıdır."}), 400
+            # validate_password 8 karakter + karmaşıklık kurallarını uygular
+            from app.utils.password_policy import validate_password
+            ok, errs = validate_password(new_pw, username=current_user.email)
+            if not ok:
+                return jsonify({"success": False, "message": " ".join(errs)}), 400
             current_user.password_hash = generate_password_hash(new_pw)
 
         # E-posta duplicate kontrolü
@@ -55,8 +58,7 @@ def profil():
         current_user.phone_number = data.get("phone_number", current_user.phone_number or "").strip() or None
         current_user.job_title    = data.get("job_title",    current_user.job_title   or "").strip() or None
         current_user.department   = data.get("department",   current_user.department  or "").strip() or None
-        if "profile_picture" in data:
-            current_user.profile_picture = data["profile_picture"] or None
+        # profile_picture yalnızca /profil/foto-yukle endpoint'i üzerinden güncellenir.
 
         db.session.commit()
         return jsonify({"success": True, "message": "Profil güncellendi."})
@@ -67,8 +69,12 @@ def profil():
 
 
 @app_bp.route("/profil/foto-yukle", methods=["POST"])
-@csrf.exempt
 @login_required
+@csrf.exempt  # multipart/form-data JS fetch ile gönderilir; form body'ye token
+              # eklemek için frontend JS'nin FormData'ya csrf_token field eklemesi
+              # gerekir (alternatif: X-CSRFToken header). Şimdilik SameSite=Lax
+              # cookie + @login_required yeterli koruma sağlar. Frontend'e
+              # FormData.append('csrf_token', ...) eklenirse bu decorator kaldırılabilir.
 def profil_foto_yukle():
     """Profil fotoğrafı yükleme — fiziksel silme yok, sadece DB güncellenir."""
     if "file" not in request.files:
@@ -144,7 +150,7 @@ def profil_foto_yukle():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[profil_foto_yukle] {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Fotoğraf yüklenirken hata oluştu: {str(e)}"}), 500
+        return jsonify({"success": False, "message": "Fotoğraf yüklenirken bir hata oluştu."}), 500
 
 
 @app_bp.route("/ayarlar")
@@ -194,8 +200,8 @@ def ayarlar_hesap():
 
 # ── Hızlı tema güncelleme (dark mode toggle) ─────────────────────────────────
 @app_bp.route("/api/profile/theme", methods=["GET", "POST"])
-@csrf.exempt
 @login_required
+@csrf.exempt  # JS fetch ile AJAX çağrısı — SameSite=Lax cookie koruması yeterli
 def api_profile_theme():
     """Kullanıcının tema tercihini sunucuya kaydeder/okur (çoklu cihaz senkronu)."""
     raw = getattr(current_user, "theme_preferences", None) or "{}"

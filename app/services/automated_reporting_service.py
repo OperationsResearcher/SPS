@@ -60,8 +60,8 @@ class AutomatedReportingService:
             }
             
         except Exception as e:
-            logger.error(f"Daily digest failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Daily digest failed: {e}")
+            return {'success': False, 'error': 'Günlük özet oluşturulurken hata oluştu.'}
     
     def generate_weekly_summary(self, tenant_id):
         """
@@ -102,8 +102,8 @@ class AutomatedReportingService:
             }
             
         except Exception as e:
-            logger.error(f"Weekly summary failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Weekly summary failed: {e}")
+            return {'success': False, 'error': 'Haftalık özet oluşturulurken hata oluştu.'}
 
     
     def generate_monthly_report(self, tenant_id):
@@ -148,8 +148,8 @@ class AutomatedReportingService:
             }
             
         except Exception as e:
-            logger.error(f"Monthly report failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Monthly report failed: {e}")
+            return {'success': False, 'error': 'Aylık rapor oluşturulurken hata oluştu.'}
     
     def schedule_and_send_reports(self, tenant_id, report_type='daily'):
         """
@@ -198,5 +198,5 @@ class AutomatedReportingService:
             }
             
         except Exception as e:
-            logger.error(f"Schedule and send failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Schedule and send failed: {e}")
+            return {'success': False, 'error': 'Rapor gönderimi sırasında hata oluştu.'}

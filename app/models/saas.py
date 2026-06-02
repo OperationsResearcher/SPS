@@ -14,6 +14,10 @@ class RouteRegistry(db.Model):
     methods = db.Column(db.String(128), nullable=True)  # Örn: GET, POST
     component_slug = db.Column(db.String(128), nullable=True)  # Kullanıcının atadığı bileşen ismi
 
+    def __repr__(self):
+        return f'<RouteRegistry {self.id} {(self.endpoint or "")[:30]}>'
+
+
 # Ara tablolar (Many-to-Many)
 package_modules = db.Table(
     "package_modules",
@@ -32,6 +36,9 @@ class SystemComponent(db.Model):
     code = db.Column(db.String(64), unique=True, nullable=False)
     description = db.Column(db.String(512), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return f'<SystemComponent {self.id} {(self.code or "")[:20]}>'
 
 
 class SystemModule(db.Model):
@@ -53,6 +60,9 @@ class SystemModule(db.Model):
         cascade="all, delete-orphan",
     )
 
+    def __repr__(self):
+        return f'<SystemModule {self.id} {(self.code or "")[:20]}>'
+
 
 class ModuleComponentSlug(db.Model):
     """Modül-Bileşen ilişkisi - bileşen = RouteRegistry.component_slug."""
@@ -61,6 +71,9 @@ class ModuleComponentSlug(db.Model):
 
     module_id = db.Column(db.Integer, db.ForeignKey("system_modules.id"), primary_key=True)
     component_slug = db.Column(db.String(128), primary_key=True)
+
+    def __repr__(self):
+        return f'<ModuleComponentSlug module={self.module_id} slug={self.component_slug[:20]}>'
 
 
 class SubscriptionPackage(db.Model):
@@ -81,3 +94,6 @@ class SubscriptionPackage(db.Model):
         lazy="dynamic",
     )
     tenants = db.relationship("Tenant", back_populates="package")
+
+    def __repr__(self):
+        return f'<SubscriptionPackage {self.id} {(self.name or "")[:20]}>'
