@@ -24,3 +24,7 @@
 ### Tur 4 — Kalite: skor motoru birim testleri
 - **Commit:** skor motoru saf fonksiyonlarına 17 birim testi
 - compute_pg_score / _default_weight / _resolve_target_for_calculation. Sıfır risk, regresyon koruması.
+
+### Tur 5 — Performans: admin kullanıcı sayfası tenant N+1
+- **Commit:** kullanıcı sayfasında tenant eager-load
+- users.html `u.tenant.name` kullanıyor → selectinload(User.tenant). 50 user: 8→3 sorgu.
