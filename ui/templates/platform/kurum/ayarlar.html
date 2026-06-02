@@ -39,15 +39,15 @@
     <div class="mc-card-body">
       <div class="mc-grid-2">
         <div class="mc-form-group">
-          <label class="mc-label">Kurum Adı</label>
+          <label class="mc-label" for="kurum_adi">Kurum Adı</label>
           <input id="kurum_adi" class="mc-input" type="text" value="{{ tenant.name or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Sektör</label>
+          <label class="mc-label" for="sektor">Sektör</label>
           <input id="sektor" class="mc-input" type="text" value="{{ tenant.sector or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Vergi No</label>
+          <label class="mc-label" for="vergi_no">Vergi No</label>
           <input id="vergi_no" class="mc-input" type="text" value="{{ tenant.tax_number or '' }}">
         </div>
       </div>
@@ -63,19 +63,19 @@
     <div class="mc-card-body">
       <div class="mc-grid-2">
         <div class="mc-form-group">
-          <label class="mc-label">Adres</label>
+          <label class="mc-label" for="adres">Adres</label>
           <textarea id="adres" class="mc-textarea" rows="3">{{ tenant.activity_area or '' }}</textarea>
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Telefon</label>
+          <label class="mc-label" for="telefon">Telefon</label>
           <input id="telefon" class="mc-input" type="text" value="{{ tenant.phone_number or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">E-posta</label>
+          <label class="mc-label" for="email">E-posta</label>
           <input id="email" class="mc-input" type="email" value="{{ tenant.contact_email or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Website</label>
+          <label class="mc-label" for="website">Website</label>
           <input id="website" class="mc-input" type="text" value="{{ tenant.website_url or '' }}">
         </div>
       </div>
