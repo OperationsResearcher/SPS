@@ -57,3 +57,6 @@
 
 ### Tur 14 — Performans: process_health KPI verisi N+1
 - **Commit:** calculate_process_health_score KPI verisi bulk-load. 4 KPI: 6→3 sorgu, sonuç aynı.
+
+### Tur 15 — A11y: SMTP ayarları label-for
+- **Commit:** eposta.html 6 label'a for= (input id'leri mevcuttu). Parse OK.
