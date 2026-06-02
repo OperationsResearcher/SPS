@@ -60,3 +60,6 @@
 
 ### Tur 15 — A11y: SMTP ayarları label-for
 - **Commit:** eposta.html 6 label'a for= (input id'leri mevcuttu). Parse OK.
+
+### Tur 16 — Kalite: forecast regresyon matematiği testleri
+- **Commit:** _linear_regression + _standard_error 7 birim testi. Saf matematik.
