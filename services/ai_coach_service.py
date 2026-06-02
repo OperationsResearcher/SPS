@@ -86,7 +86,8 @@ def _heuristic_analysis(data: Dict[str, Any]) -> str:
         "### En yüksek ağırlık × düşük skor stratejiler",
     ]
     for i, s in enumerate(ana, 1):
-        parts.append(f"{i}. **{s.get('ad', f'Strateji {s.get(\"id\")}')}** — skor: {s.get('score', '-')}, ağırlık: {s.get('agirlik', '-')}")
+        ad = s.get('ad', f"Strateji {s.get('id')}")
+        parts.append(f"{i}. **{ad}** — skor: {s.get('score', '-')}, ağırlık: {s.get('agirlik', '-')}")
 
     parts += [
         "",

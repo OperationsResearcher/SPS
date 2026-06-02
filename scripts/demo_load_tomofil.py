@@ -45,10 +45,9 @@ def main(argv):
     print(f"→ Tomofil yükleniyor (tenant_id={tid}) — mevcut tenant verisi temizlenip değiştirilecek…")
 
     with app.app_context():
-        from services import tenant_backup_service as tb
-        from app.models import db
-        result = tb.restore_tenant_data(data)
-        db.session.commit()
+        # FK-drop sarmalı yükleyici: dolu Tomofil'i değiştirirken FK-sıra sorununu aşar
+        from app.services.demo_reset_service import fk_safe_tenant_load
+        result = fk_safe_tenant_load(data)
 
     total = result.get("total_restored")
     if total is None:

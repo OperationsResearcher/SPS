@@ -51,7 +51,7 @@ class BlueOceanCanvas(db.Model):
         }
 
     def __repr__(self):
-        return f"<BlueOceanCanvas {self.id} {(self.name or "")[:20]}>"
+        return f"<BlueOceanCanvas {self.id} {(self.name or '')[:20]}>"
 
 
 class BlueOceanFactor(db.Model):
@@ -85,7 +85,7 @@ class BlueOceanFactor(db.Model):
         }
 
     def __repr__(self):
-        return f"<BlueOceanFactor {self.id} {(self.name or "")[:20]}>"
+        return f"<BlueOceanFactor {self.id} {(self.name or '')[:20]}>"
 
 
 class BlueOceanERRC(db.Model):

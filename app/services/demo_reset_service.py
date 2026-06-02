@@ -153,6 +153,38 @@ def restore_baseline() -> bool:
         conn.close()
 
 
+def fk_safe_tenant_load(data: dict) -> dict:
+    """tenant_backup_service.restore_tenant_data'yı FK-drop sarmalı içinde çalıştırır.
+
+    Dolu bir tenant'ı değiştirirken silme FK-sırası sorununu (process_maturity →
+    processes vb.) aşar: tüm FK'ler geçici kaldırılır → sıra-bağımsız delete+insert →
+    FK'ler geri eklenir → sequence resync. Yalnızca demo modunda.
+    """
+    _assert_demo()
+    from services.tenant_backup_service import restore_tenant_data
+
+    # 1) FK'leri topla ve kaldır (ayrı commit)
+    with db.engine.begin() as conn:
+        fks = _collect_fk_constraints(conn)
+        for conname, tbl, _cdef in fks:
+            conn.execute(text(f'ALTER TABLE public."{tbl}" DROP CONSTRAINT "{conname}"'))
+    logger.info("[demo_reset] tenant load: %d FK geçici kaldırıldı", len(fks))
+
+    result = None
+    try:
+        # 2) FK'siz ortamda tenant restore (delete + insert, sıra-bağımsız)
+        result = restore_tenant_data(data)
+        db.session.commit()
+    finally:
+        # 3) FK'leri her durumda geri ekle + sequence resync
+        with db.engine.begin() as conn:
+            for conname, tbl, cdef in fks:
+                conn.execute(text(f'ALTER TABLE public."{tbl}" ADD CONSTRAINT "{conname}" {cdef}'))
+            _resync_sequences(conn)
+        logger.info("[demo_reset] tenant load: %d FK geri eklendi + sequence resync", len(fks))
+    return result
+
+
 def safe_restore_baseline() -> bool:
     """Tetiklerden çağrılan best-effort sarmalayıcı — istisna yutar, isteği bozmaz."""
     try:

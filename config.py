@@ -20,16 +20,21 @@ def _require_postgres_uri() -> str:
             "SQLite artık geliştirme ve üretim için desteklenmiyor. "
             "SQLALCHEMY_DATABASE_URI değerini PostgreSQL olarak ayarlayın."
         )
-    # Driver normalizasyonu: requirements.txt psycopg3 (psycopg[binary]) kuruyor.
-    # .env'lerde kalmış `+psycopg2` veya çıplak `postgresql://` şemaları, psycopg2
-    # kurulu olmayan ortamda (yeni container) ModuleNotFoundError → her DB sorgusu
-    # 500 verir. Şemayı her zaman kurulu olan psycopg3 dialect'ine sabitle.
-    if raw.startswith("postgresql+psycopg2://"):
-        raw = raw.replace("postgresql+psycopg2://", "postgresql+psycopg://", 1)
-    elif raw.startswith("postgres://"):
-        raw = raw.replace("postgres://", "postgresql+psycopg://", 1)
-    elif raw.startswith("postgresql://"):
-        raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
+    # Driver normalizasyonu: URI'deki `+psycopg2` / çıplak `postgresql://` şeması,
+    # o sürücünün kurulu OLMADIĞI ortamda ModuleNotFoundError → her DB sorgusu 500.
+    # Sürücüyü sabitlemek yerine ortamda KURULU olanı tespit edip ona normalize et
+    # (psycopg3 tercih; yoksa psycopg2). Yerel, demo (psycopg2), yeni container hepsi çalışır.
+    import importlib.util
+    if importlib.util.find_spec("psycopg") is not None:
+        _driver = "psycopg"        # psycopg3
+    elif importlib.util.find_spec("psycopg2") is not None:
+        _driver = "psycopg2"
+    else:
+        _driver = "psycopg"        # hiçbiri yoksa psycopg3 varsay (anlamlı hata mesajı için)
+    for _scheme in ("postgresql+psycopg2://", "postgresql+psycopg://", "postgresql://", "postgres://"):
+        if raw.startswith(_scheme):
+            raw = f"postgresql+{_driver}://" + raw[len(_scheme):]
+            break
     return raw
 
 
