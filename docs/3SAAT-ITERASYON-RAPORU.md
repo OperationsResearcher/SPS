@@ -35,3 +35,6 @@
 
 ### Tur 7 — Kalite: karne ağırlıklı puan testleri
 - **Commit:** ağırlıklı başarı puanı 6 birim testi. Karne test kapsamı tamamlandı.
+
+### Tur 8 — Kalite: cache anahtar format testleri
+- **Commit:** cache anahtarı format 7 birim testi (cache_key_for_model + CACHE_KEYS). Invalidation tutarlılığı koruması.
