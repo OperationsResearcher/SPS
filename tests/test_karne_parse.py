@@ -36,6 +36,20 @@ class TestParseAralikDegeri(unittest.TestCase):
         self.assertIsNone(parse_aralik_degeri("-"))
         self.assertIsNone(parse_aralik_degeri(""))
 
+    def test_negatif_aralik_iki_negatif(self):
+        # Önceki sürümde None dönüyordu (regresyon koruması)
+        self.assertEqual(parse_aralik_degeri("-50--10"), (-50.0, -10.0))
+
+    def test_negatif_aralik_alt_negatif_ust_pozitif(self):
+        self.assertEqual(parse_aralik_degeri("-10-5"), (-10.0, 5.0))
+
+    def test_negatif_aralik_buyuk(self):
+        self.assertEqual(parse_aralik_degeri("-100--50"), (-100.0, -50.0))
+
+    def test_tek_negatif_acik_alt(self):
+        # Tek negatif: açık alt sınır davranışı korunur
+        self.assertEqual(parse_aralik_degeri("-5"), (-5.0, None))
+
 
 if __name__ == "__main__":
     unittest.main()
