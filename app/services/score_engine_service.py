@@ -14,10 +14,10 @@ from typing import Optional, Dict, Any
 
 from flask import current_app
 from sqlalchemy import or_, and_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 from app.models import db
-from app.models.process import Process, ProcessKpi, KpiData
+from app.models.process import Process, ProcessKpi, KpiData, ProcessSubStrategyLink
 from app.models.core import SubStrategy, Strategy
 from app.extensions import cache
 from app.utils.cache_utils import CACHE_KEYS
@@ -350,6 +350,7 @@ def compute_vision_score(
         if plan_year is not None:
             sub_strategies = (
                 SubStrategy.query.join(Strategy)
+                .options(selectinload(SubStrategy.process_sub_strategy_links).joinedload(ProcessSubStrategyLink.process))
                 .filter(
                     Strategy.is_active.is_(True),
                     SubStrategy.is_active.is_(True),
@@ -363,6 +364,7 @@ def compute_vision_score(
         else:
             sub_strategies = (
                 SubStrategy.query.join(Strategy)
+                .options(selectinload(SubStrategy.process_sub_strategy_links).joinedload(ProcessSubStrategyLink.process))
                 .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True))
                 .filter(SubStrategy.is_active.is_(True))
                 .all()
