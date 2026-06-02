@@ -1,0 +1,26 @@
+# 3 Saatlik Otonom İyileştirme Koşusu — 2026-06-03
+
+> Dal: `claude/3saat-iyilestirme` · Deadline epoch: **1780449948**
+> Yalnızca yerel. Her iyileştirme ayrı commit. Geri almak için: `git revert <hash>`.
+
+## Tur Günlüğü
+
+### Tur 1 — Correctness: karne aralık parser ondalık bug
+- **Commit:** karne aralık parser Türkçe ondalık/binlik biçimi
+- **Sorun:** `parse_aralik_degeri` ',' ve '.' ikisini de siliyordu → "4,5" → "45" (yanlış başarı puanı).
+- **Fix:** Türkçe biçim ('.' binlik kaldır, ',' ondalık→'.'). 8 regresyon testi eklendi (`tests/test_karne_parse.py`).
+- **Risk:** Düşük; veri İngilizce-ondalık ("4.5") kullanıyorsa revert edilebilir.
+
+### Tur 2 — Performans: admin kullanıcı listesi N+1
+- **Commit:** admin kullanıcı listelerinde rol eager-load
+- 4 sorgu noktasına `selectinload(User.role)`. 50 user: 5→2 sorgu. Sonuç değişmez.
+- **Risk:** Çok düşük (sadece eager-load).
+
+### Tur 3 — Performans: vision-score N+1
+- **Commit:** vision-score alt-strateji süreçleri eager-load
+- `compute_vision_score` ss.processes lazy → selectinload+joinedload. Sonuç aynı, her raporda çalıştığı için yüksek etki.
+- **Risk:** Çok düşük.
+
+### Tur 4 — Kalite: skor motoru birim testleri
+- **Commit:** skor motoru saf fonksiyonlarına 17 birim testi
+- compute_pg_score / _default_weight / _resolve_target_for_calculation. Sıfır risk, regresyon koruması.
