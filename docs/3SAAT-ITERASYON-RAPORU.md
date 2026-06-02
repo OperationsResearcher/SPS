@@ -69,3 +69,6 @@
 
 ### Tur 18 — Kod: exec-dashboard/quarterly sessiz hatalara logging
 - **Commit:** 4 best-effort except'e logger.error (risk + anomali, exec_dashboard + quarterly). Modül logger eklendi.
+
+### Tur 19 — Kalite + Bulgu: _resolve_target testleri
+- **Commit:** _resolve_target_for_calculation 8 test. **BULGU:** score-engine ('400.000'→400.0) vs karne parser ('400.000'→400000) binlik-ayraç tutarsızlığı (1000x). Riskli/domain kararı → değiştirilmedi, kullanıcı kararına bırakıldı.
