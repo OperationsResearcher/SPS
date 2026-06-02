@@ -38,3 +38,7 @@
 
 ### Tur 8 — Kalite: cache anahtar format testleri
 - **Commit:** cache anahtarı format 7 birim testi (cache_key_for_model + CACHE_KEYS). Invalidation tutarlılığı koruması.
+
+### Tur 9 — Kod: sessiz audit hatalarına logging
+- **Commit:** sessiz audit except'lerine logging (3 yer: 2FA reset, holding drill-down, KpiData delete)
+- `except Exception: pass` → `current_app.logger.error`. CLAUDE.md "her except loglamalı" uyumu + gözlemlenebilirlik. Control flow aynı.
