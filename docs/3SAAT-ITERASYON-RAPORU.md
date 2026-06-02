@@ -54,3 +54,6 @@
 
 ### Tur 13 — Correctness: karne negatif aralık parse (deep-scan C4)
 - **Commit:** negatif sınırlı aralıkları parse et (regex) + 4 test. Mevcut davranış korundu.
+
+### Tur 14 — Performans: process_health KPI verisi N+1
+- **Commit:** calculate_process_health_score KPI verisi bulk-load. 4 KPI: 6→3 sorgu, sonuç aynı.
