@@ -84,3 +84,6 @@
 
 ### Tur 23 — Kalite/Güvenlik: db_sequence testleri
 - **Commit:** is_pk_duplicate + _validate_identifier (SQL injection guard) 9 test.
+
+### Tur 24 — Perf: bireysel zaman çizelgesi N+1
+- **Commit:** contains_eager(individual_activity) — döngü içi lazy-load (≤30 track) elendi.
