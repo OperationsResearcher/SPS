@@ -335,6 +335,86 @@ def sp_tv_mode():
     return render_template("platform/sp/tv.html")
 
 
+# ── Tenant-geneli AI Yönetici Özeti (exec + kurum üstü) ───────────────────────
+
+def _exec_heuristik_ozet(snap):
+    """exec-snapshot dict'inden LLM olmadan da çalışan Türkçe yönetici özeti."""
+    snap = snap or {}
+    kpi = snap.get("kpi") or {}
+    act = snap.get("activity") or {}
+    risk = snap.get("risk") or {}
+    ano = snap.get("anomaly") or {}
+    parts = []
+    hs = snap.get("health_score")
+    if hs is not None:
+        try:
+            parts.append(f"Genel sağlık skoru %{float(hs):.0f}.")
+        except (TypeError, ValueError):
+            pass
+    ot = kpi.get("on_target_pct")
+    if ot is not None:
+        try:
+            parts.append(f"PG'lerin %{float(ot):.0f}'ı hedef üstünde.")
+        except (TypeError, ValueError):
+            pass
+    total = kpi.get("total") or 0
+    wd = kpi.get("with_data")
+    if total and wd is not None and wd < total:
+        parts.append(f"{total} PG'den {total - wd}'ine veri girilmemiş.")
+    flags = []
+    if act.get("overdue"):
+        flags.append(f"{act['overdue']} geciken faaliyet")
+    if risk.get("critical"):
+        flags.append(f"{risk['critical']} kritik risk")
+    if ano.get("high"):
+        flags.append(f"{ano['high']} yüksek anomali")
+    if flags:
+        parts.append("Kırmızı bayraklar: " + ", ".join(flags) + ".")
+    if not parts:
+        parts.append("Özet üretecek yeterli veri yok; PG ve faaliyet verisi girin.")
+    return " ".join(parts)
+
+
+@app_bp.route("/sp/api/exec-ai-ozet")
+@login_required
+def sp_api_exec_ai_ozet():
+    """Tenant-geneli 2-3 cümlelik Türkçe yönetici özeti (exec + kurum üstü).
+
+    Her zaman deterministik heuristik döner; LLM varsa cilalanır (yerelde anahtarsız çalışır).
+    """
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    year = request.args.get("year", type=int)
+    try:
+        snap = build_exec_snapshot(current_user.tenant_id, year=year)
+    except Exception as e:
+        current_app.logger.info(f"[exec-ai-ozet] snapshot fallback ({e})")
+        snap = {}
+
+    ozet = _exec_heuristik_ozet(snap)
+    kaynak = "heuristik"
+    try:
+        from app.services.llm_gateway import call_llm
+        prompt = (
+            "Aşağıdaki kurum performans özetinden, bir üst yöneticinin tek bakışta okuyacağı "
+            "2-3 cümlelik Türkçe özet yaz. Sırasıyla: kazanım(lar), kırmızı bayrak(lar), "
+            "bu hafta odak. Sade ve net.\n\n" + str(snap)
+        )
+        res = call_llm(
+            tenant_id=current_user.tenant_id, endpoint="exec_ozet",
+            prompt=prompt,
+            system_prompt="Sen kısa ve net konuşan bir Türkçe strateji danışmanısın.",
+            user_id=current_user.id, max_output_tokens=260,
+        )
+        if isinstance(res, dict) and res.get("text"):
+            ozet = res["text"].strip()
+            kaynak = "ai"
+    except Exception as e:
+        current_app.logger.info(f"[exec-ai-ozet] LLM fallback ({e})")
+
+    return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})
+
+
 @app_bp.route("/sp/api/templates/<code>/apply", methods=["POST"])
 @csrf.exempt
 @login_required
