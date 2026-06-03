@@ -81,3 +81,6 @@
 
 ### Tur 22 — Kod: efqm KPI-327 sessiz hatasına logging
 - **Commit:** efqm outer except'e logger.error (iç parse-default korundu).
+
+### Tur 23 — Kalite/Güvenlik: db_sequence testleri
+- **Commit:** is_pk_duplicate + _validate_identifier (SQL injection guard) 9 test.
