@@ -119,3 +119,54 @@ def sp_api_scenario_delete(py_id):
         db.session.rollback()
         return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
     return jsonify({"success": True})
+
+
+# ── Senaryo / What-if Kıyas ───────────────────────────────────────────────────
+
+@app_bp.route("/sp/scenarios/kiyas")
+@login_required
+def sp_scenarios_compare_page():
+    """Baseline ⟷ senaryo yan yana kıyas ekranı."""
+    if not _can():
+        return render_template("errors/403.html"), 403
+    return render_template("platform/sp/scenarios_kiyas.html")
+
+
+@app_bp.route("/sp/api/scenarios/compare")
+@login_required
+def sp_api_scenarios_compare():
+    """Seçilen plan yılları/senaryoları için vizyon skorlarını salt-okunur hesaplar.
+
+    Veriyi DEĞİŞTİRMEZ (persist_pg_scores=False).
+    """
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    raw = request.args.get("ids", "")
+    ids = [int(x) for x in raw.split(",") if x.strip().isdigit()][:6]
+    if not ids:
+        return jsonify({"success": False, "message": "ids gerekli"}), 400
+
+    from app.services.score_engine_service import compute_vision_score
+    tid = current_user.tenant_id
+    out = []
+    for pid in ids:
+        py = PlanYear.query.filter_by(id=pid, tenant_id=tid).first()
+        if not py:
+            continue
+        vs = None
+        try:
+            res = compute_vision_score(
+                tid, year=py.year, plan_year=py, persist_pg_scores=False
+            )
+            vs = res.get("vision_score") if isinstance(res, dict) else None
+        except Exception as e:
+            current_app.logger.info(f"[scenario-compare] {pid} skor hatası: {e}")
+        out.append({
+            "id": py.id,
+            "year": py.year,
+            "name": py.name,
+            "label": py.scenario_label or ("baseline" if py.scenario_of_id is None else "senaryo"),
+            "is_scenario": py.scenario_of_id is not None,
+            "vision_score": round(vs, 1) if isinstance(vs, (int, float)) else None,
+        })
+    return jsonify({"success": True, "items": out})
