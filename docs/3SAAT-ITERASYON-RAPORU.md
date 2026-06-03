@@ -126,3 +126,6 @@
 
 ### Tur 37 — Regresyon sağlık doğrulaması
 - **Doğrulama (commit yok):** Bu koşuda eklenen 5 yeni test dosyası topluca → 58 test OK. Branch'te değişen tüm .py dosyaları `py_compile` → temiz. Syntax/regresyon kırılması yok.
+
+### Tur 38 — A11y: tenant + proje + takvim formları label-for (28)
+- **Commit:** admin/tenants (17) + project/form (6) + calendar quick-create (5). Toplam a11y label-for: 127, 10 form.
