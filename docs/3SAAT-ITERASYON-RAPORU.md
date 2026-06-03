@@ -99,3 +99,6 @@
 
 ### Tur 28 — Test: process_utils periyot yardımcıları (19 test)
 - **Commit:** last_day_of_period + data_date_to_period_keys + parse_optional_date + ensure_int_list (artık yıl/çeyrek/half-year sözleşmesi).
+
+### Tur 29 — A11y: RAID formu label-for (12)
+- **Commit:** project/raid.html — RAID öğe formu 12 label-for. Toplam a11y label-for: 54.
