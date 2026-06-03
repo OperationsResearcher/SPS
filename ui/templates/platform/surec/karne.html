@@ -996,8 +996,47 @@
         if (!d || !d.success || !d.ozet) { box.style.display = "none"; return; }
         if (kaynakEl) kaynakEl.textContent = (d.kaynak === "ai") ? "AI" : "otomatik";
         typeOut(d.ozet);
+        if (!confettiFired && typeof d.skor === "number" && d.skor >= 85) {
+          confettiFired = true; fireConfetti();
+        }
       })
       .catch(function() { box.style.display = "none"; });
+  }
+
+  // Sağlıklı karne (skor ≥ 85) için tek seferlik kutlama — kendi kendine temizlenir.
+  var confettiFired = false;
+  function fireConfetti() {
+    try {
+      var cv = document.createElement("canvas");
+      cv.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:9999;";
+      cv.width = window.innerWidth; cv.height = window.innerHeight;
+      document.body.appendChild(cv);
+      var ctx = cv.getContext("2d");
+      var colors = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#0ea5e9"];
+      var parts = [];
+      for (var i = 0; i < 90; i++) parts.push({
+        x: cv.width / 2 + (Math.random() - 0.5) * 140, y: cv.height * 0.28,
+        vx: (Math.random() - 0.5) * 9, vy: Math.random() * -9 - 3,
+        g: 0.22 + Math.random() * 0.1, s: 5 + Math.random() * 5,
+        c: colors[i % colors.length], r: Math.random() * Math.PI
+      });
+      var t0 = null;
+      function frame(ts) {
+        if (!t0) t0 = ts;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var alive = false;
+        parts.forEach(function(p) {
+          p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += 0.1;
+          if (p.y < cv.height + 20) alive = true;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+          ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6);
+          ctx.restore();
+        });
+        if (alive && ts - t0 < 2500) requestAnimationFrame(frame);
+        else cv.remove();
+      }
+      requestAnimationFrame(frame);
+    } catch (e) { /* yok say */ }
   }
 
   load(currentYear());
