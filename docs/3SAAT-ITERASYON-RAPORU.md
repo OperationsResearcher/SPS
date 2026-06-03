@@ -90,3 +90,6 @@
 
 ### Tur 25 — Hijyen: proje sessiz except:pass loglama
 - **Commit:** project_create — plan yılı + notification_settings exception'ları artık logger.warning (MASTER §3).
+
+### Tur 26 — Test: numeric.safe_float (12 test)
+- **Commit:** safe_float davranış sözleşmesi (TR virgül-ondalık, binlik ayraç sınırı, bool→1.0).
