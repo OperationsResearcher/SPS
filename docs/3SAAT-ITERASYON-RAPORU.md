@@ -102,3 +102,6 @@
 
 ### Tur 29 — A11y: RAID formu label-for (12)
 - **Commit:** project/raid.html — RAID öğe formu 12 label-for. Toplam a11y label-for: 54.
+
+### Tur 30 — A11y: OKR formu label-for (11)
+- **Commit:** sp/okr.html — OKR hedef + Key Result formu 11 label-for. Toplam a11y label-for: 65.
