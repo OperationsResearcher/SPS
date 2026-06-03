@@ -57,14 +57,14 @@
         <div class="micro-raid-modal__body">
             <input type="hidden" id="item-id">
             <input type="hidden" id="item-type">
-            <label class="mc-label">Başlık</label>
+            <label class="mc-label" for="item-title">Başlık</label>
             <input type="text" class="mc-input" id="item-title" required>
-            <label class="mc-label mt-3">Açıklama</label>
+            <label class="mc-label mt-3" for="item-description">Açıklama</label>
             <textarea class="mc-input" id="item-description" rows="3" style="min-height:72px;"></textarea>
             <div id="risk-fields" style="display:none;">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
                     <div>
-                        <label class="mc-label">Olasılık (1-5)</label>
+                        <label class="mc-label" for="item-probability">Olasılık (1-5)</label>
                         <select class="mc-select" id="item-probability" style="width:100%;">
                             <option value="1">1 - Düşük</option>
                             <option value="2">2 - Az olası</option>
@@ -74,7 +74,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label">Etki (1-5)</label>
+                        <label class="mc-label" for="item-impact">Etki (1-5)</label>
                         <select class="mc-select" id="item-impact" style="width:100%;">
                             <option value="1">1 - Düşük</option>
                             <option value="2">2 - Az ciddi</option>
@@ -84,38 +84,38 @@
                         </select>
                     </div>
                 </div>
-                <label class="mc-label mt-3">Azaltma stratejisi</label>
+                <label class="mc-label mt-3" for="item-mitigation">Azaltma stratejisi</label>
                 <textarea class="mc-input" id="item-mitigation" rows="3" placeholder="Bu riski nasıl azaltacaksınız?"></textarea>
             </div>
             <div id="assumption-fields" style="display:none;">
-                <label class="mc-label mt-3">Doğrulama tarihi</label>
+                <label class="mc-label mt-3" for="item-validation-date">Doğrulama tarihi</label>
                 <input type="date" class="mc-input" id="item-validation-date">
-                <label class="mc-label mt-3">Doğrulama notları</label>
+                <label class="mc-label mt-3" for="item-assumption-notes">Doğrulama notları</label>
                 <textarea class="mc-input" id="item-assumption-notes" rows="3"></textarea>
             </div>
             <div id="issue-fields" style="display:none;">
-                <label class="mc-label mt-3">Aciliyet</label>
+                <label class="mc-label mt-3" for="item-urgency">Aciliyet</label>
                 <select class="mc-select" id="item-urgency" style="width:100%;">
                     <option value="Düşük">Düşük</option>
                     <option value="Orta" selected>Orta</option>
                     <option value="Yüksek">Yüksek</option>
                     <option value="Kritik">Kritik</option>
                 </select>
-                <label class="mc-label mt-3">Etkilenen çalışma</label>
+                <label class="mc-label mt-3" for="item-affected-work">Etkilenen çalışma</label>
                 <input type="text" class="mc-input" id="item-affected-work" placeholder="Hangi çalışmaları etkiliyor?">
             </div>
             <div id="dependency-fields" style="display:none;">
-                <label class="mc-label mt-3">Bağımlılık tipi</label>
+                <label class="mc-label mt-3" for="item-dependency-type">Bağımlılık tipi</label>
                 <select class="mc-select" id="item-dependency-type" style="width:100%;">
                     <option value="FS">FS - Bitiş-Başlangıç</option>
                     <option value="SS" selected>SS - Başlangıç-Başlangıç</option>
                     <option value="FF">FF - Bitiş-Bitiş</option>
                     <option value="SF">SF - Başlangıç-Bitiş</option>
                 </select>
-                <label class="mc-label mt-3">Bağımlı görev ID</label>
+                <label class="mc-label mt-3" for="item-task-id">Bağımlı görev ID</label>
                 <input type="number" class="mc-input" id="item-task-id" placeholder="Görev numarası">
             </div>
-            <label class="mc-label mt-3">Durum</label>
+            <label class="mc-label mt-3" for="item-status">Durum</label>
             <select class="mc-select" id="item-status" style="width:100%;">
                 <option value="Open">Açık</option>
                 <option value="In Progress">Devam ediyor</option>
