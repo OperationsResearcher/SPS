@@ -87,3 +87,6 @@
 
 ### Tur 24 — Perf: bireysel zaman çizelgesi N+1
 - **Commit:** contains_eager(individual_activity) — döngü içi lazy-load (≤30 track) elendi.
+
+### Tur 25 — Hijyen: proje sessiz except:pass loglama
+- **Commit:** project_create — plan yılı + notification_settings exception'ları artık logger.warning (MASTER §3).
