@@ -1043,5 +1043,34 @@
   if (yearSel) yearSel.addEventListener("change", function() { load(currentYear()); });
 })();
 </script>
+
+<script>
+/* Count-up: karne sağlık skorunu 0'dan değere animasyonla yazar (surec.js'e dokunmaz). */
+(function(){
+  function watch(id){
+    var el=document.getElementById(id); if(!el) return;
+    var lastVal=null, animating=false, obs;
+    function tok(s){ var m=(s||"").match(/-?\d+(?:[.,]\d+)?/); return m?m[0]:null; }
+    function write(t){ obs.disconnect(); el.textContent=t; obs.observe(el,{childList:true,characterData:true,subtree:true}); }
+    function run(to,pre,suf,isInt){
+      animating=true; var dur=850,t0=null;
+      function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); var c=to*e;
+        write(pre+(isInt?Math.round(c):c.toFixed(1))+suf);
+        if(p<1) requestAnimationFrame(step);
+        else { animating=false; write(pre+(isInt?Math.round(to):to.toFixed(1))+suf); } }
+      requestAnimationFrame(step);
+    }
+    obs=new MutationObserver(function(){
+      if(animating) return;
+      var raw=el.textContent, t=tok(raw); if(t===null) return;
+      var v=parseFloat(t.replace(",", ".")); if(!isFinite(v)||v===lastVal) return;
+      var i=raw.indexOf(t); lastVal=v;
+      run(v, raw.slice(0,i), raw.slice(i+t.length), Number.isInteger(v));
+    });
+    obs.observe(el,{childList:true,characterData:true,subtree:true});
+  }
+  watch("karne-health-value");
+})();
+</script>
 {% endblock %}
 
