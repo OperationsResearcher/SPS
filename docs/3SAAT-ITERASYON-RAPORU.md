@@ -123,3 +123,6 @@
 
 ### Tur 36 — A11y: Risk yönetim formu label-for (5)
 - **Commit:** k_radar/risk_management.html — risk öğe formu 5 label-for. Toplam a11y: 99.
+
+### Tur 37 — Regresyon sağlık doğrulaması
+- **Doğrulama (commit yok):** Bu koşuda eklenen 5 yeni test dosyası topluca → 58 test OK. Branch'te değişen tüm .py dosyaları `py_compile` → temiz. Syntax/regresyon kırılması yok.
