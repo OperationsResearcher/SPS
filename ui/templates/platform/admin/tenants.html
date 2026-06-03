@@ -209,7 +209,7 @@
 
         <div class="tm-section-label">Kurum logosu</div>
         <div class="tm-field tm-full" style="margin-bottom:16px;">
-          <label class="mc-form-label">Logo (PNG, JPG, WEBP, GIF, SVG — en fazla 2 MB)</label>
+          <label for="em-logo" class="mc-form-label">Logo (PNG, JPG, WEBP, GIF, SVG — en fazla 2 MB)</label>
           <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
             <input id="em-logo" type="file" class="mc-form-input" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.svg" style="max-width:280px;">
             <img id="em-logo-preview" src="{{ url_for('app_bp.static', filename='platform/img/kokpitim-logo.svg') }}?v={{ config['VERSION'] }}" alt="" width="120" height="40" style="object-fit:contain; max-height:48px; border-radius:6px; background:#f8fafc; padding:4px 8px;">
@@ -220,19 +220,19 @@
         <div class="tm-section-label">Temel Bilgiler</div>
         <div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kurum Adı <span class="req">*</span></label>
+            <label for="em-name" class="mc-form-label">Kurum Adı <span class="req">*</span></label>
             <input id="em-name" class="mc-form-input" placeholder="Kurum adı">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Kısa Ad</label>
+            <label for="em-short" class="mc-form-label">Kısa Ad</label>
             <input id="em-short" class="mc-form-input" placeholder="Kısa ad">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Sektör</label>
+            <label for="em-sector" class="mc-form-label">Sektör</label>
             <input id="em-sector" class="mc-form-input" placeholder="Örn: Danışmanlık">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Faaliyet Alanı</label>
+            <label for="em-activity" class="mc-form-label">Faaliyet Alanı</label>
             <input id="em-activity" class="mc-form-input" placeholder="Faaliyet alanı">
           </div>
         </div>
@@ -240,15 +240,15 @@
         <div class="tm-section-label">İletişim</div>
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label">E-posta</label>
+            <label for="em-email" class="mc-form-label">E-posta</label>
             <input id="em-email" class="mc-form-input" type="email" placeholder="kurum@ornek.com">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Telefon</label>
+            <label for="em-phone" class="mc-form-label">Telefon</label>
             <input id="em-phone" class="mc-form-input" placeholder="+90 212 000 00 00">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Web Adresi</label>
+            <label for="em-web" class="mc-form-label">Web Adresi</label>
             <input id="em-web" class="mc-form-input" placeholder="https://www.ornek.com">
           </div>
         </div>
@@ -256,19 +256,19 @@
         <div class="tm-section-label">Kurumsal & Lisans</div>
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label">Çalışan Sayısı</label>
+            <label for="em-emp" class="mc-form-label">Çalışan Sayısı</label>
             <input id="em-emp" class="mc-form-input" type="number" min="1" placeholder="0">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Maks. Kullanıcı</label>
+            <label for="em-maxu" class="mc-form-label">Maks. Kullanıcı</label>
             <input id="em-maxu" class="mc-form-input" type="number" min="1" placeholder="5">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Lisans Bitiş Tarihi</label>
+            <label for="em-lic" class="mc-form-label">Lisans Bitiş Tarihi</label>
             <input id="em-lic" class="mc-form-input" type="date">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Abonelik Paketi</label>
+            <label for="em-package" class="mc-form-label">Abonelik Paketi</label>
             <select id="em-package" class="mc-form-input">
               <option value="">— Paket Seç —</option>
               {% for p in packages %}
@@ -277,11 +277,11 @@
             </select>
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Vergi Dairesi</label>
+            <label for="em-taxoff" class="mc-form-label">Vergi Dairesi</label>
             <input id="em-taxoff" class="mc-form-input" placeholder="Vergi dairesi">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Vergi No</label>
+            <label for="em-taxno" class="mc-form-label">Vergi No</label>
             <input id="em-taxno" class="mc-form-input" placeholder="Vergi numarası">
           </div>
         </div>
@@ -297,7 +297,7 @@
         </div>
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label">Tenant Tipi</label>
+            <label for="em-tenant-type" class="mc-form-label">Tenant Tipi</label>
             <select id="em-tenant-type" class="mc-form-input">
               <option value="normal">Normal (bağımsız)</option>
               <option value="dealer">Bayi — alt tenant açar, içine girmez</option>
@@ -306,11 +306,11 @@
             <p id="em-type-warn" style="font-size:11px; color:#dc2626; margin-top:4px; display:none;"></p>
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Alt Tenant Limiti <span style="font-size:11px;color:#94a3b8;">(boş = sınırsız)</span></label>
+            <label for="em-sub-limit" class="mc-form-label">Alt Tenant Limiti <span style="font-size:11px;color:#94a3b8;">(boş = sınırsız)</span></label>
             <input id="em-sub-limit" class="mc-form-input" type="number" min="0" placeholder="—">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Parent (Üst) Tenant <span style="font-size:11px;color:#94a3b8;">(sadece alt-tenant için)</span></label>
+            <label for="em-parent-tenant" class="mc-form-label">Parent (Üst) Tenant <span style="font-size:11px;color:#94a3b8;">(sadece alt-tenant için)</span></label>
             <select id="em-parent-tenant" class="mc-form-input">
               <option value="">— Bağımsız (parent yok) —</option>
               {% for p in parent_candidates %}
