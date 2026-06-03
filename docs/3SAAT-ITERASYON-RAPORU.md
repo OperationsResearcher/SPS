@@ -105,3 +105,6 @@
 
 ### Tur 30 — A11y: OKR formu label-for (11)
 - **Commit:** sp/okr.html — OKR hedef + Key Result formu 11 label-for. Toplam a11y label-for: 65.
+
+### Tur 31 — A11y: Proje/görev formu label-for (11)
+- **Commit:** sp/projeler.html — proje + görev düzenleme formu 11 label-for. Toplam a11y label-for: 76.
