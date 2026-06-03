@@ -97,6 +97,20 @@
 
     function band(v) { return v == null ? "" : (v >= 80 ? "c-good" : v >= 50 ? "c-warn" : "c-bad"); }
     function num(v) { return (v == null || isNaN(v)) ? "—" : v; }
+    function countTo(el, to) {
+      if (!el) return;
+      if (to == null) { el.textContent = "—"; return; }
+      var from = 0, dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        var cur = from + (to - from) * e;
+        el.textContent = (to >= 10 ? Math.round(cur) : cur.toFixed(1));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
 
     function clock() {
       var d = new Date();
@@ -114,7 +128,7 @@
     function render(s) {
       loading.style.display = "none";
       var hs = s.health_score;
-      document.getElementById("hero-num").textContent = num(hs);
+      countTo(document.getElementById("hero-num"), (typeof hs === "number") ? hs : null);
       var fill = document.getElementById("hero-fill");
       var pct = (typeof hs === "number") ? Math.max(0, Math.min(100, hs)) : 0;
       var col = pct >= 80 ? "#34d399" : pct >= 50 ? "#fbbf24" : "#f87171";
