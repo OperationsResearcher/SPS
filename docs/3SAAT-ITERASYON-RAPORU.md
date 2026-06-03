@@ -108,3 +108,6 @@
 
 ### Tur 31 — A11y: Proje/görev formu label-for (11)
 - **Commit:** sp/projeler.html — proje + görev düzenleme formu 11 label-for. Toplam a11y label-for: 76.
+
+### Tur 32 — Test: api_response ok/err/paginated (13 test)
+- **Commit:** Merkezi API yanıt sözleşmesi + sayfalama matematiği (ceil pages, has_next/prev).
