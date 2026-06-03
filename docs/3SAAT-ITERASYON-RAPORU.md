@@ -93,3 +93,6 @@
 
 ### Tur 26 — Test: numeric.safe_float (12 test)
 - **Commit:** safe_float davranış sözleşmesi (TR virgül-ondalık, binlik ayraç sınırı, bool→1.0).
+
+### Tur 27 — A11y: profil formu label-for (9)
+- **Commit:** auth/profil.html — profil + şifre değiştir formu 9 label-for bağı. Toplam a11y label-for: 42.
