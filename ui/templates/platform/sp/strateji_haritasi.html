@@ -504,6 +504,50 @@
         network.on("doubleClick", function(params) {
             if (params.nodes.length) fitNetwork();
         });
+
+        setupHealthPulse(nodeList);
+    }
+
+    // ── Canlı sağlık nabzı: kritik (kırmızı) / uyarı (amber) PG düğümlerinde ──
+    // canvas halka animasyonu. Mevcut çizime ek; veriyi/etkileşimi değiştirmez.
+    function setupHealthPulse(nodeList) {
+        var nodeHealth = {};
+        nodeList.forEach(function(n) { if (n.health) nodeHealth[n.id] = n.health; });
+        var pulseIds = nodeList
+            .filter(function(n) { return n.health === "bad" || n.health === "warn"; })
+            .map(function(n) { return n.id; });
+        if (!pulseIds.length || !network) return;
+
+        var pulsePhase = 0, lastPulse = 0, pulseRAF = null;
+        function ringColor(h, a) {
+            return h === "bad" ? "rgba(220,38,38," + a + ")" : "rgba(245,158,11," + a + ")";
+        }
+        network.on("afterDrawing", function(ctx) {
+            if (!network || !nodesDs) return;
+            var pos = network.getPositions(pulseIds);
+            var t = (Math.sin(pulsePhase) + 1) / 2;            // 0..1
+            for (var i = 0; i < pulseIds.length; i++) {
+                var id = pulseIds[i], p = pos[id];
+                if (!p) continue;
+                var nd = nodesDs.get(id);
+                if (nd && (nd.hidden || (nd.opacity !== undefined && nd.opacity < 0.5))) continue;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 24 + t * 18, 0, 2 * Math.PI);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = ringColor(nodeHealth[id] || "warn", 0.5 * (1 - t) + 0.08);
+                ctx.stroke();
+            }
+        });
+
+        function pulseLoop(ts) {
+            pulseRAF = requestAnimationFrame(pulseLoop);
+            if (document.hidden) return;
+            if (ts - lastPulse < 45) return;                   // ~22fps, CPU dostu
+            lastPulse = ts;
+            pulsePhase += 0.22;
+            if (network) network.redraw();
+        }
+        pulseRAF = requestAnimationFrame(pulseLoop);
     }
 
     var res;
