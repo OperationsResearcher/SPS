@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-165 | 2026-06-03 | ✅ Tamamlandı
+
+**Görev:** UX gerçek-boşluk kampanyası — 4 yeni özellik (rakip analizi sonrası, yalnızca eksik olanlar)
+**Modül:** sp (harita, senaryo, exec/tv), surec (karne)
+**Durum:** ✅ Yerelde tamam, derleme + JS sözdizimi doğrulandı. Dal: `claude/ux-gercek-bosluklar` (merge/push bekliyor)
+
+### Değiştirilen / Yeni Dosyalar
+- `micro/modules/sp/helpers.py` → PG düğümüne `score`/`health` + `_harita_health_band` (canlı nabız verisi)
+- `ui/templates/platform/sp/strateji_haritasi.html` → additive `setupHealthPulse` (kritik/uyarı PG canvas nabzı)
+- `micro/modules/surec/routes_karne.py` → `/process/api/karne/<id>/ai-ozet` (heuristik + opsiyonel LLM) + `_karne_heuristik_ozet`
+- `ui/templates/platform/surec/karne.html` → inline AI özet şeridi (daktilo efekti, kendi kendine yeten script)
+- `micro/modules/sp/routes_scenario.py` → `/sp/scenarios/kiyas` + `/sp/api/scenarios/compare` (salt-okunur skor)
+- `ui/templates/platform/sp/scenarios_kiyas.html` (YENİ) → yan yana skor barı + what-if blend slider
+- `ui/templates/platform/sp/scenarios.html` → "Kıyasla" linki
+- `micro/modules/sp/routes_exec_advisor.py` → `/sp/tv` (war-room sayfa route'u)
+- `ui/templates/platform/sp/tv.html` (YENİ) → tam ekran KPI duvarı (exec-snapshot, 30sn yenileme, spotlight, saat)
+- `ui/templates/platform/sp/exec_dashboard.html` → "TV / War Room" linki
+- `docs/ux/ONERI-YERLESIM-HARITASI.md` (YENİ) → öneri→sayfa yerleşim haritası + rakip analizi
+
+### Yapılan İşlem
+Derin kod taraması, önerilerin ~%80'inin (komut paleti, X-Matrix, NLP sorgu, storytelling, evrim filmi, çeyrek review, 40+ rapor hub'ı) ZATEN kurulu olduğunu gösterdi. Yalnızca gerçekten eksik 4 madde uçtan uca eklendi; her biri ayrı commit, mevcut servisleri (process_health, recommendation, score_engine, exec_dashboard, llm_gateway) yeniden kullanır; çalışan davranışa dokunulmadı (additive). LLM yoksa AI özet heuristik'e düşer (yerelde anahtarsız çalışır).
+
+### Notlar
+Görsel doğrulama yerelde kullanıcı tarafında yapılmalı (Flask/LLM bu ortamda koşturulmadı). Geri alma: `git revert <sha>` veya dalı bırak. AI özet kurum/exec'e aynı desenle genişletilebilir.
+
 ## TASK-164 | 2026-06-02 | 🟡 Kısmen (Part 1 kod tamam — deploy/baseline operatör adımı bekliyor)
 
 **Görev:** Demo Tomofil sıfırlama özelliği (KURALLAR §8.4 — Yol B) — yerel kod
