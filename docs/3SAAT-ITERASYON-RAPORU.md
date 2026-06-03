@@ -96,3 +96,6 @@
 
 ### Tur 27 — A11y: profil formu label-for (9)
 - **Commit:** auth/profil.html — profil + şifre değiştir formu 9 label-for bağı. Toplam a11y label-for: 42.
+
+### Tur 28 — Test: process_utils periyot yardımcıları (19 test)
+- **Commit:** last_day_of_period + data_date_to_period_keys + parse_optional_date + ensure_int_list (artık yıl/çeyrek/half-year sözleşmesi).
