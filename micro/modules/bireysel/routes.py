@@ -695,3 +695,73 @@ def bireysel_api_karne_export_pdf():
     except Exception as e:
         current_app.logger.error(f"[bireysel_karne_pdf] {e}", exc_info=True)
         return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
+
+
+# ── Inline AI Özet (bireysel karne üstü) ──────────────────────────────────────
+
+def _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa):
+    """LLM olmadan da çalışan deterministik Türkçe bireysel performans özeti."""
+    parts = []
+    if total_pg:
+        cov = round((pg_with_data / total_pg) * 100) if total_pg else 0
+        parts.append(f"{year} yılında {total_pg} performans göstergen var, %{cov}'ine veri girilmiş.")
+        if pg_with_data < total_pg:
+            parts.append(f"{total_pg - pg_with_data} PG'ye henüz veri girmedin.")
+    else:
+        parts.append(f"{year} için tanımlı performans göstergen yok.")
+    if geciken_fa:
+        parts.append(f"Kırmızı bayrak: {geciken_fa} geciken faaliyet.")
+    elif aktif_fa:
+        parts.append(f"{aktif_fa} aktif faaliyetin sürüyor.")
+    if not parts:
+        parts.append("Özet üretecek yeterli veri yok.")
+    return " ".join(parts)
+
+
+@app_bp.route("/bireysel/api/ai-ozet")
+@login_required
+def bireysel_api_ai_ozet():
+    """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""
+    from datetime import date as _date
+    uid = current_user.id
+    year = request.args.get("year", datetime.now().year, type=int)
+    today = _date.today()
+
+    pg_ids = [r[0] for r in db.session.query(IndividualPerformanceIndicator.id)
+              .filter_by(user_id=uid, is_active=True).all()]
+    total_pg = len(pg_ids)
+    pg_with_data = 0
+    if pg_ids:
+        pg_with_data = (
+            db.session.query(IndividualKpiData.individual_pg_id)
+            .filter(IndividualKpiData.individual_pg_id.in_(pg_ids),
+                    IndividualKpiData.year == year)
+            .distinct().count()
+        )
+
+    acts = IndividualActivity.query.filter_by(user_id=uid, is_active=True).all()
+    aktif_fa = sum(1 for a in acts if a.status != "Tamamlandı")
+    geciken_fa = sum(1 for a in acts if a.status != "Tamamlandı" and a.end_date and a.end_date < today)
+
+    ozet = _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa)
+    kaynak = "heuristik"
+    try:
+        from app.services.llm_gateway import call_llm
+        ad = (current_user.first_name or "").strip() or "Kullanıcı"
+        veri = (f"Kullanıcı: {ad}. Yıl: {year}. PG sayısı: {total_pg}, veri girilen: {pg_with_data}. "
+                f"Aktif faaliyet: {aktif_fa}, geciken: {geciken_fa}.")
+        prompt = ("Aşağıdaki bireysel performans verisinden 2 cümlelik Türkçe özet yaz: "
+                  "ilerleme durumu ve bu hafta odak. Teşvik edici ama abartısız.\n\n" + veri)
+        res = call_llm(
+            tenant_id=current_user.tenant_id, endpoint="bireysel_ozet",
+            prompt=prompt,
+            system_prompt="Sen kısa konuşan bir Türkçe performans koçusun.",
+            user_id=uid, max_output_tokens=200,
+        )
+        if isinstance(res, dict) and res.get("text"):
+            ozet = res["text"].strip()
+            kaynak = "ai"
+    except Exception as e:
+        current_app.logger.info(f"[bireysel-ai-ozet] LLM fallback ({e})")
+
+    return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})
