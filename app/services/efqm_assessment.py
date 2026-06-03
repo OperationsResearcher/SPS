@@ -20,8 +20,11 @@ EFQM Tanınma Seviyeleri (toplam 1000 üzerinden):
 from __future__ import annotations
 
 import datetime as _dt
+import logging
 from sqlalchemy import text
 from extensions import db
+
+logger = logging.getLogger(__name__)
 
 
 CRITERIA = [
@@ -234,8 +237,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
                            "gap": (act - tgt) if act is not None else None}
             except (ValueError, TypeError):
                 pass
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[efqm] KPI-327 özdeğerlendirme verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
     # ── Kriter skorlarını türet (her biri 0-100) ─────────────────────────────
     # K1 — Amaç, Vizyon ve Strateji
