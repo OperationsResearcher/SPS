@@ -78,3 +78,6 @@
 
 ### Tur 21 — Performans: strateji haritası N+1 (yüksek etki)
 - **Commit:** routes_flow links eager-load + KPI bulk-load. 68 süreç: 137→3 sorgu.
+
+### Tur 22 — Kod: efqm KPI-327 sessiz hatasına logging
+- **Commit:** efqm outer except'e logger.error (iç parse-default korundu).
