@@ -75,3 +75,6 @@
 
 ### Tur 20 — A11y: süreç formu label-for
 - **Commit:** surec/index.html süreç ekle/düzenle formunda 10 label'a for=. Parse OK.
+
+### Tur 21 — Performans: strateji haritası N+1 (yüksek etki)
+- **Commit:** routes_flow links eager-load + KPI bulk-load. 68 süreç: 137→3 sorgu.
