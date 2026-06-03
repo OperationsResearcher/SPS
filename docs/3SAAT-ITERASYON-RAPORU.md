@@ -114,3 +114,6 @@
 
 ### Tur 33 — A11y: Kurumsal Skorkart (ks) label-for (10)
 - **Commit:** k_radar/ks.html — OKR + perspektif formu 10 label-for (mc-form-label varyantı). Toplam a11y: 86.
+
+### Tur 34 — Test: karne önceki-yıl ortalaması (8 test)
+- **Commit:** hesapla_onceki_yil_ortalamasi (geçersiz/virgüllü atlama, boş→None). karne_hesaplamalar fonksiyon kapsamı tamam.
