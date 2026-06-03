@@ -113,20 +113,20 @@
 
       <div style="display:grid; gap:12px;">
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Kurum Adı <span style="color:#dc2626;">*</span></label>
+          <label for="ns-name" style="font-size:12px; color:#64748b; font-weight:500;">Kurum Adı <span style="color:#dc2626;">*</span></label>
           <input id="ns-name" class="mc-form-input" placeholder="Örn: ABC Cam">
         </div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Kısa Ad</label>
+          <label for="ns-short" style="font-size:12px; color:#64748b; font-weight:500;">Kısa Ad</label>
           <input id="ns-short" class="mc-form-input" placeholder="Örn: ABCCam">
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
+            <label for="ns-maxu" style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
             <input id="ns-maxu" type="number" class="mc-form-input" placeholder="5" value="5">
           </div>
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Abonelik Paketi</label>
+            <label for="ns-package" style="font-size:12px; color:#64748b; font-weight:500;">Abonelik Paketi</label>
             <select id="ns-package" class="mc-form-input">
               <option value="">— Paket seçilmedi —</option>
               {% for p in packages %}
@@ -138,21 +138,21 @@
         <hr style="margin:6px 0; border:none; border-top:1px solid #e2e8f0;">
         <div style="font-weight:600; color:var(--text-default); font-size:13px;">İlk Admin Bilgileri</div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">E-posta <span style="color:#dc2626;">*</span></label>
+          <label for="ns-admin-email" style="font-size:12px; color:#64748b; font-weight:500;">E-posta <span style="color:#dc2626;">*</span></label>
           <input id="ns-admin-email" type="email" class="mc-form-input" placeholder="admin@abccam.com">
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Ad</label>
+            <label for="ns-admin-fname" style="font-size:12px; color:#64748b; font-weight:500;">Ad</label>
             <input id="ns-admin-fname" class="mc-form-input" placeholder="Ad">
           </div>
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Soyad</label>
+            <label for="ns-admin-lname" style="font-size:12px; color:#64748b; font-weight:500;">Soyad</label>
             <input id="ns-admin-lname" class="mc-form-input" placeholder="Soyad">
           </div>
         </div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Şifre <span style="font-size:11px; color:#94a3b8;">(boş bırakırsanız otomatik üretilir)</span></label>
+          <label for="ns-admin-password" style="font-size:12px; color:#64748b; font-weight:500;">Şifre <span style="font-size:11px; color:#94a3b8;">(boş bırakırsanız otomatik üretilir)</span></label>
           <input id="ns-admin-password" type="text" class="mc-form-input" placeholder="Otomatik üretilecek">
         </div>
       </div>
