@@ -324,6 +324,17 @@ def sp_api_template_get(code):
     return jsonify({"success": True, "template": t})
 
 
+# ── TV / War-room modu ────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/tv")
+@login_required
+def sp_tv_mode():
+    """Tam ekran TV / war-room KPI duvarı (exec-snapshot verisini döngüyle gösterir)."""
+    if not _can():
+        return render_template("errors/403.html"), 403
+    return render_template("platform/sp/tv.html")
+
+
 @app_bp.route("/sp/api/templates/<code>/apply", methods=["POST"])
 @csrf.exempt
 @login_required
