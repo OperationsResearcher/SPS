@@ -120,3 +120,6 @@
 
 ### Tur 35 — A11y: Alt Kurum formu label-for (8)
 - **Commit:** admin/sub_tenants.html — Alt Kurum oluşturma formu 8 label-for (inline-style varyant). Toplam a11y: 94.
+
+### Tur 36 — A11y: Risk yönetim formu label-for (5)
+- **Commit:** k_radar/risk_management.html — risk öğe formu 5 label-for. Toplam a11y: 99.
