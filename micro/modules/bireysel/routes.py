@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app_platform.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
+from sqlalchemy.orm import contains_eager
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import (
     Process,
@@ -511,6 +512,7 @@ def bireysel_api_karne():
             IndividualActivity,
             IndividualActivity.id == IndividualActivityTrack.individual_activity_id,
         )
+        .options(contains_eager(IndividualActivityTrack.individual_activity))
         .filter(
             IndividualActivityTrack.user_id == uid,
             IndividualActivityTrack.year == year,
