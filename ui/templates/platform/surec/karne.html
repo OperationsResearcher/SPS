@@ -1072,5 +1072,30 @@
   watch("karne-health-value");
 })();
 </script>
+
+<script>
+/* Canlı veri farkındalığı (poll): başka biri veri girince 'Yenile' uyarısı. Save yoluna dokunmaz. */
+(function(){
+  var url="{{ url_for('app_bp.api_tenant_last_change') }}";
+  var baseline=null, shown=false;
+  function showToast(){
+    if(shown) return; shown=true;
+    var t=document.createElement("div");
+    t.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
+    t.innerHTML='<i class="fas fa-rotate"></i> Yeni veri girildi <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Yenile</button>';
+    t.querySelector("button").onclick=function(){ location.reload(); };
+    document.body.appendChild(t);
+  }
+  function check(){
+    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){ if(!d||!d.success) return;
+        if(baseline===null){ baseline=d.ts; return; }
+        if(d.ts && d.ts!==baseline){ baseline=d.ts; showToast(); }
+      }).catch(function(){});
+  }
+  check(); setInterval(check, 20000);
+})();
+</script>
 {% endblock %}
 

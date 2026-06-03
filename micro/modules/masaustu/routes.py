@@ -660,6 +660,29 @@ def api_morning_summary():
         return jsonify({"success": False, "message": "Özet yüklenemedi."}), 500
 
 
+@app_bp.route("/api/tenant-last-change")
+@login_required
+def api_tenant_last_change():
+    """Tenant'ın son PG veri değişiklik zaman damgası — canlı yenileme sinyali (poll).
+
+    Hafif: tek max sorgusu. Kayıt yoluna dokunmaz.
+    """
+    from app.models.process import KpiData, ProcessKpi, Process
+    tid = current_user.tenant_id
+    ts = None
+    try:
+        ts = (
+            db.session.query(db.func.max(KpiData.updated_at))
+            .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
+            .join(Process, ProcessKpi.process_id == Process.id)
+            .filter(Process.tenant_id == tid)
+            .scalar()
+        )
+    except Exception as e:
+        current_app.logger.info(f"[tenant-last-change] {e}")
+    return jsonify({"success": True, "ts": ts.isoformat() if ts else None})
+
+
 @app_bp.route("/takvim", methods=["GET"])
 @login_required
 def kurum_takvim():
