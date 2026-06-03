@@ -132,7 +132,16 @@ def sp_api_graph():
     proc_q = Process.query.filter_by(tenant_id=tid, is_active=True)
     if active_py:
         proc_q = filter_by_plan_year(proc_q, Process, active_py.id, include_null=True)
-    processes = proc_q.limit(node_limit).all()
+    processes = proc_q.options(selectinload(Process.process_sub_strategy_links)).limit(node_limit).all()
+
+    # N+1 önlemi: süreçlerin KPI'larını tek sorguda yükle (süreç başına ayrı sorgu yerine).
+    _proc_ids = [p.id for p in processes]
+    _kpis_by_proc = {}
+    if _proc_ids:
+        for _k in ProcessKpi.query.filter(
+            ProcessKpi.process_id.in_(_proc_ids), ProcessKpi.is_active.is_(True)
+        ).all():
+            _kpis_by_proc.setdefault(_k.process_id, []).append(_k)
 
     nodes = []
     edges = []
@@ -160,7 +169,7 @@ def sp_api_graph():
             ss_node_id = f"ss_{link.sub_strategy_id}"
             edges.append({"from": ss_node_id, "to": p_node_id})
 
-        kpis = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).all()
+        kpis = _kpis_by_proc.get(proc.id, [])
         for k in kpis:
             k_node_id = f"kpi_{k.id}"
             nodes.append({"id": k_node_id, "label": k.name, "type": "kpi"})
