@@ -129,3 +129,7 @@
 
 ### Tur 38 — A11y: tenant + proje + takvim formları label-for (28)
 - **Commit:** admin/tenants (17) + project/form (6) + calendar quick-create (5). Toplam a11y label-for: 127, 10 form.
+
+### Tur 39 — Bulgu: sarmalayan-label a11y tuzağı (karne.html geri alındı)
+- **Doğrulama (commit yok):** surec/karne.html'de label'lar input'u SARMALYOR (`<label><input id=.../> Metin</label>`). Otomatik for= ekleyici komşu input id'sini yanlış bağladı → dosya `git checkout` ile geri alındı.
+- **BULGU (a11y devam notu):** Sarmalayan-label kalıbında `for=` GEREKSIZ (zaten ilişkili) ve otomatik script yanlış id atayabilir. Bu formlar (karne.html micro-col-*-chk grubu) elle gözden geçirilmeli; toplu script SADECE ayrık label+input çiftlerinde güvenli.
