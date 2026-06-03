@@ -190,8 +190,8 @@ def project_new():
             from app.services.plan_year_service import get_active_plan_year_for_user
             py = get_active_plan_year_for_user(current_user)
             plan_year_id = py.id if py else None
-        except Exception:
-            pass
+        except Exception as _e:
+            current_app.logger.warning(f"[project_create] aktif plan yılı çözülemedi: {_e}")
 
     # Stratejik girişim bağı (opsiyonel)
     initiative_id = None
@@ -216,8 +216,8 @@ def project_new():
     )
     try:
         proj.notification_settings = json.dumps(notification_settings, ensure_ascii=False)
-    except Exception:
-        pass
+    except Exception as _e:
+        current_app.logger.warning(f"[project_create] notification_settings serileştirilemedi: {_e}")
 
     db.session.add(proj)
     db.session.flush()
