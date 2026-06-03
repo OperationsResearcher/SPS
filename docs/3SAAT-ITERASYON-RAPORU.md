@@ -117,3 +117,6 @@
 
 ### Tur 34 — Test: karne önceki-yıl ortalaması (8 test)
 - **Commit:** hesapla_onceki_yil_ortalamasi (geçersiz/virgüllü atlama, boş→None). karne_hesaplamalar fonksiyon kapsamı tamam.
+
+### Tur 35 — A11y: Alt Kurum formu label-for (8)
+- **Commit:** admin/sub_tenants.html — Alt Kurum oluşturma formu 8 label-for (inline-style varyant). Toplam a11y: 94.
