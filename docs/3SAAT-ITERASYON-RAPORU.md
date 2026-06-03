@@ -133,3 +133,6 @@
 ### Tur 39 — Bulgu: sarmalayan-label a11y tuzağı (karne.html geri alındı)
 - **Doğrulama (commit yok):** surec/karne.html'de label'lar input'u SARMALYOR (`<label><input id=.../> Metin</label>`). Otomatik for= ekleyici komşu input id'sini yanlış bağladı → dosya `git checkout` ile geri alındı.
 - **BULGU (a11y devam notu):** Sarmalayan-label kalıbında `for=` GEREKSIZ (zaten ilişkili) ve otomatik script yanlış id atayabilir. Bu formlar (karne.html micro-col-*-chk grubu) elle gözden geçirilmeli; toplu script SADECE ayrık label+input çiftlerinde güvenli.
+
+### Tur 40 — A11y: süreç formu güvenli label-for (5)
+- **Commit:** surec/index.html — açıklama + lider/üye dual-list etiketleri 5 label-for (sarmalama-güvenli filtre). Toplam a11y: 132, 11 form.
