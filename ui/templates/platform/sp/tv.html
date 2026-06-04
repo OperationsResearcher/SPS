@@ -109,14 +109,22 @@
   <div class="jet-runway" id="jet-runway"></div>
   <div class="jet-runway" id="jet-runway-dep"></div>
   <div id="jet" aria-hidden="true">
-    <svg width="48" height="22" viewBox="-4 0 48 22">
-      <polygon id="jet-flame" points="6,11 -3,8.5 -3,13.5" fill="#fbbf24"/>
-      <path d="M6,11 L30,9.5 L43,11 L30,12.5 Z" fill="#e2e8f0"/>
-      <path d="M24,11 L9,3 L27,10 Z" fill="#cbd5e1"/>
-      <path d="M24,11 L9,19 L27,12 Z" fill="#cbd5e1"/>
-      <path d="M9,11 L3,5 L13,10 Z" fill="#94a3b8"/>
-      <path d="M9,11 L3,17 L13,12 Z" fill="#94a3b8"/>
-      <circle cx="33" cy="11" r="1.6" fill="#38bdf8"/>
+    <svg width="56" height="26" viewBox="-6 0 56 26">
+      <!-- ardyakıt alevi (kuyruk) -->
+      <polygon id="jet-flame" points="6,13 -6,9.5 -6,16.5" fill="#fbbf24"/>
+      <!-- ana delta kanatlar -->
+      <path d="M32,13 L6,3.5 L23,12 Z" fill="#9aa7bd"/>
+      <path d="M32,13 L6,22.5 L23,14 Z" fill="#9aa7bd"/>
+      <!-- kuyruk yatay dengeleyiciler -->
+      <path d="M12,13 L2,7.5 L19,12 Z" fill="#6b7891"/>
+      <path d="M12,13 L2,18.5 L19,14 Z" fill="#6b7891"/>
+      <!-- gövde (sivri burun sağda) -->
+      <path d="M48,13 L20,10 L7,11.4 L7,14.6 L20,16 Z" fill="#e8eef7"/>
+      <!-- hava alıkları / gölge -->
+      <path d="M30,11 L20,10.6 L20,15.4 L30,15 Z" fill="#c7d0e0"/>
+      <!-- kokpit -->
+      <ellipse cx="37" cy="13" rx="4.6" ry="2.1" fill="#38bdf8"/>
+      <ellipse cx="38.5" cy="13" rx="2" ry="1.1" fill="#bae6fd"/>
     </svg>
   </div>
 
@@ -324,17 +332,18 @@
         runwayArr.style.left = (bd.left + bd.width/2 - 58) + "px";
         runwayArr.style.top = (bd.bottom + 10) + "px";
       }
-      if (runwayDep && brand) {
-        var bt = brand.getBoundingClientRect();
-        runwayDep.style.left = bt.left + "px";
-        runwayDep.style.top = (bt.bottom + 10) + "px";
+      var sub = document.getElementById("tv-sub");
+      if (runwayDep && sub) {
+        var bs = sub.getBoundingClientRect();
+        runwayDep.style.left = (bs.right + 14) + "px";
+        runwayDep.style.top = (bs.top + bs.height/2 - 6) + "px";
       }
     }
 
     function parkOn(rect) {
       if (!jet || !rect) return;
-      jet.style.left = (rect.left + 6) + "px";
-      jet.style.top = (rect.top + rect.height/2 - 11) + "px";
+      jet.style.left = (rect.left + 4) + "px";
+      jet.style.top = (rect.top + rect.height/2 - 13) + "px";
       jet.style.transform = "rotate(-8deg)";
     }
 
@@ -388,7 +397,7 @@
         { x: arr.x - 64, y: arr.y - 26 },           // varış yaklaşması
         arr
       ];
-      var DUR = alarm ? 6500 : 9500;   // ~1/3 hız + ekranda ~10sn tur
+      var DUR = alarm ? 13000 : 19000;   // %50 daha yavaş — uzun, ağırbaşlı tur
 
       jetTimer = setTimeout(function() {   // pistte kısa bekleyiş → kalkış belli olsun
         var t0 = null, frame = 0;
@@ -397,12 +406,12 @@
           var u = Math.min(1, (ts - t0)/DUR);
           var p = splineAt(pts, u), q = splineAt(pts, Math.min(1, u + 0.004));
           var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180/Math.PI;
-          jet.style.left = (p.x - 24) + "px";
-          jet.style.top = (p.y - 11) + "px";
+          jet.style.left = (p.x - 28) + "px";
+          jet.style.top = (p.y - 13) + "px";
           jet.style.transform = "rotate(" + ang + "deg)";
           if ((frame++ % 3) === 0) {
             var rad = ang * Math.PI/180;
-            spawnTrail(p.x - 16*Math.cos(rad), p.y - 16*Math.sin(rad), alarm);
+            spawnTrail(p.x - 20*Math.cos(rad), p.y - 20*Math.sin(rad), alarm);
           }
           if (u < 1) jetRAF = requestAnimationFrame(step);
           else { jet.style.transform = "rotate(-8deg)"; parkOn(arrR); }
@@ -418,7 +427,7 @@
       if (sceneNameEl) sceneNameEl.textContent = sceneNames[i];
       launchJet();
     }
-    setInterval(function(){ showScene((curScene + 1) % scenes.length); }, 14000);
+    setInterval(function(){ showScene((curScene + 1) % scenes.length); }, 22000);
 
     function load() {
       Promise.all([
