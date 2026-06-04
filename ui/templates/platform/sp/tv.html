@@ -107,6 +107,7 @@
   </div>
 
   <div class="jet-runway" id="jet-runway"></div>
+  <div class="jet-runway" id="jet-runway-dep"></div>
   <div id="jet" aria-hidden="true">
     <svg width="48" height="22" viewBox="-4 0 48 22">
       <polygon id="jet-flame" points="6,11 -3,8.5 -3,13.5" fill="#fbbf24"/>
@@ -309,27 +310,32 @@
     }
     setInterval(spotlight, 4000);
 
-    // ── Savaş uçağı: her sahne değişiminde KOKPİTİM'den kalkıp piste iner ──
+    // ── Savaş uçağı: kalkış pistinden kalkar, ekranda ~10sn tur atar, varış pistine iner ──
     var jet = document.getElementById("jet");
-    var runway = document.getElementById("jet-runway");
+    var runwayArr = document.getElementById("jet-runway");       // varış (sağ üst — cepheler)
+    var runwayDep = document.getElementById("jet-runway-dep");   // kalkış (sol üst — KOKPİTİM)
     var brand = document.querySelector(".tv-title");
-    var jetRAF = null;
+    var jetRAF = null, jetTimer = null;
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function positionRunway() {
-      if (!runway) return;
-      var box = document.getElementById("scene-dots").getBoundingClientRect();
-      runway.style.left = (box.left + box.width/2 - 58) + "px";
-      runway.style.top = (box.bottom + 10) + "px";
+      if (runwayArr) {
+        var bd = document.getElementById("scene-dots").getBoundingClientRect();
+        runwayArr.style.left = (bd.left + bd.width/2 - 58) + "px";
+        runwayArr.style.top = (bd.bottom + 10) + "px";
+      }
+      if (runwayDep && brand) {
+        var bt = brand.getBoundingClientRect();
+        runwayDep.style.left = bt.left + "px";
+        runwayDep.style.top = (bt.bottom + 10) + "px";
+      }
     }
 
-    function parkJet() {
-      if (!jet || !runway) return;
-      var r = runway.getBoundingClientRect();
-      jet.style.left = (r.left + 6) + "px";
-      jet.style.top = (r.top + r.height/2 - 11) + "px";
+    function parkOn(rect) {
+      if (!jet || !rect) return;
+      jet.style.left = (rect.left + 6) + "px";
+      jet.style.top = (rect.top + rect.height/2 - 11) + "px";
       jet.style.transform = "rotate(-8deg)";
-      jet.style.opacity = "1";
     }
 
     function spawnTrail(x, y, alarm) {
@@ -339,43 +345,70 @@
       if (alarm) d.style.background = "#f87171";
       document.body.appendChild(d);
       requestAnimationFrame(function(){ d.style.opacity = "0"; });
-      setTimeout(function(){ d.remove(); }, 470);
+      setTimeout(function(){ d.remove(); }, 520);
+    }
+
+    function _crp(a,b,c,d,t){ var t2=t*t, t3=t2*t; return 0.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3); }
+    function splineAt(pts, t) {
+      var n = pts.length - 1;
+      var f = Math.max(0, Math.min(0.999999, t)) * n;
+      var i = Math.min(Math.floor(f), n - 1), lt = f - i;
+      var a = pts[Math.max(0,i-1)], b = pts[i], c = pts[i+1], d = pts[Math.min(n,i+2)];
+      return { x: _crp(a.x,b.x,c.x,d.x,lt), y: _crp(a.y,b.y,c.y,d.y,lt) };
     }
 
     function launchJet() {
-      if (!jet || !runway || !brand) return;
-      if (reduceMotion) { parkJet(); return; }
+      if (!jet || !runwayArr || !runwayDep) return;
       if (jetRAF) cancelAnimationFrame(jetRAF);
+      if (jetTimer) clearTimeout(jetTimer);
+      var depR = runwayDep.getBoundingClientRect();
+      var arrR = runwayArr.getBoundingClientRect();
+      // kalkış pistine konuşlan (sıçramayı gizlemek için belirip yerleş)
+      jet.style.opacity = "0";
+      parkOn(depR);
+      requestAnimationFrame(function(){ jet.style.opacity = "1"; });
+      if (reduceMotion) return;
+
       var alarm = document.getElementById("tv-head").classList.contains("alarm");
       jet.classList.toggle("scramble", alarm);
       var flame = document.getElementById("jet-flame");
       if (flame) flame.setAttribute("fill", alarm ? "#f87171" : "#fbbf24");
-      var b = brand.getBoundingClientRect(), r = runway.getBoundingClientRect();
-      var p0 = { x: b.right - 4, y: b.top + b.height/2 };
-      var p1 = { x: r.left + 8, y: r.top + r.height/2 - 4 };
-      var ctrl = { x: (p0.x + p1.x)/2, y: Math.min(p0.y, p1.y) - 90 };
-      var dur = alarm ? 1100 : 1900, t0 = null, frame = 0;
-      jet.style.opacity = "1";
-      function bez(t,a,c,e){ var u=1-t; return u*u*a + 2*u*t*c + t*t*e; }
-      function step(ts) {
-        if (!t0) t0 = ts;
-        var u = Math.min(1, (ts - t0)/dur);
-        var t = 1 - Math.pow(1 - u, 2);
-        var x = bez(t, p0.x, ctrl.x, p1.x), y = bez(t, p0.y, ctrl.y, p1.y);
-        var vx = 2*(1-t)*(ctrl.x-p0.x) + 2*t*(p1.x-ctrl.x);
-        var vy = 2*(1-t)*(ctrl.y-p0.y) + 2*t*(p1.y-ctrl.y);
-        var ang = Math.atan2(vy, vx) * 180/Math.PI;
-        jet.style.left = (x - 24) + "px";
-        jet.style.top = (y - 11) + "px";
-        jet.style.transform = "rotate(" + ang + "deg)";
-        if ((frame++ % 2) === 0) {
-          var rad = ang * Math.PI/180;
-          spawnTrail(x - 16*Math.cos(rad), y - 16*Math.sin(rad), alarm);
+
+      var W = window.innerWidth, H = window.innerHeight;
+      var dep = { x: depR.left + 10, y: depR.top + depR.height/2 };
+      var arr = { x: arrR.left + 8, y: arrR.top + arrR.height/2 };
+      var pts = [
+        dep,
+        { x: depR.right + 40, y: depR.top - 16 },   // kalkış tırmanışı
+        { x: W*0.26, y: H*0.50 },
+        { x: W*0.50, y: H*0.80 },
+        { x: W*0.76, y: H*0.62 },
+        { x: W*0.85, y: H*0.30 },
+        { x: W*0.60, y: H*0.18 },
+        { x: arr.x - 64, y: arr.y - 26 },           // varış yaklaşması
+        arr
+      ];
+      var DUR = alarm ? 6500 : 9500;   // ~1/3 hız + ekranda ~10sn tur
+
+      jetTimer = setTimeout(function() {   // pistte kısa bekleyiş → kalkış belli olsun
+        var t0 = null, frame = 0;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var u = Math.min(1, (ts - t0)/DUR);
+          var p = splineAt(pts, u), q = splineAt(pts, Math.min(1, u + 0.004));
+          var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180/Math.PI;
+          jet.style.left = (p.x - 24) + "px";
+          jet.style.top = (p.y - 11) + "px";
+          jet.style.transform = "rotate(" + ang + "deg)";
+          if ((frame++ % 3) === 0) {
+            var rad = ang * Math.PI/180;
+            spawnTrail(p.x - 16*Math.cos(rad), p.y - 16*Math.sin(rad), alarm);
+          }
+          if (u < 1) jetRAF = requestAnimationFrame(step);
+          else { jet.style.transform = "rotate(-8deg)"; parkOn(arrR); }
         }
-        if (u < 1) jetRAF = requestAnimationFrame(step);
-        else { jet.style.transform = "rotate(-8deg)"; parkJet(); }
-      }
-      jetRAF = requestAnimationFrame(step);
+        jetRAF = requestAnimationFrame(step);
+      }, 600);
     }
 
     function showScene(i) {
