@@ -440,3 +440,97 @@ def sp_api_template_apply(code):
     except Exception as e:
         current_app.logger.error(f"template_apply error: {e}", exc_info=True)
         return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+
+
+# ── Savaş Odası cepheleri: alt strateji + süreç + proje sıralaması ────────────
+
+_SAVAS_NUM = "kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$' AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'"
+
+_SUBSTRAT_SQL = f"""
+    SELECT ss.id, ss.code, ss.title,
+           count(DISTINCT k.id) AS pg_total,
+           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
+           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+    FROM sub_strategies ss
+    JOIN strategies s ON ss.strategy_id = s.id AND s.is_active=true
+    JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
+    JOIN processes p ON p.id = psl.process_id AND p.is_active=true
+    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
+    WHERE s.tenant_id=:t AND ss.is_active=true
+    GROUP BY ss.id, ss.code, ss.title
+    ORDER BY ss.code NULLS LAST
+"""
+
+_PROCESS_SQL = f"""
+    SELECT p.id, p.code, p.name AS title,
+           count(DISTINCT k.id) AS pg_total,
+           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
+           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+    FROM processes p
+    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
+    WHERE p.tenant_id=:t AND p.is_active=true
+    GROUP BY p.id, p.code, p.name
+    ORDER BY p.code NULLS LAST
+"""
+
+
+def _savas_rank(sql, tid, year):
+    from app.extensions import db
+    from sqlalchemy import text as _t
+    rows = db.session.execute(_t(sql), {"t": tid, "y": year}).fetchall()
+    items = []
+    for r in rows:
+        comp = int(r.comparable or 0)
+        on_t = int(r.on_target or 0)
+        pct = round((on_t / comp) * 100, 1) if comp else None
+        items.append({"code": r.code or "", "title": r.title or "",
+                      "on_target_pct": pct, "pg_total": int(r.pg_total or 0)})
+    wd = [x for x in items if x["on_target_pct"] is not None]
+    return {
+        "top": sorted(wd, key=lambda x: x["on_target_pct"], reverse=True)[:5],
+        "bottom": sorted(wd, key=lambda x: x["on_target_pct"])[:5],
+    }
+
+
+@app_bp.route("/sp/api/savas-odasi/fronts")
+@login_required
+def sp_api_savas_odasi_fronts():
+    """Savaş Odası ek cepheleri: alt strateji + süreç (hedef üstü %) + proje (sağlık)."""
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    import datetime as _d
+    year = request.args.get("year", type=int) or _d.date.today().year
+    tid = current_user.tenant_id
+
+    out = {}
+    try:
+        out["sub_strategies"] = _savas_rank(_SUBSTRAT_SQL, tid, year)
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] sub {e}")
+        out["sub_strategies"] = {"top": [], "bottom": []}
+    try:
+        out["processes"] = _savas_rank(_PROCESS_SQL, tid, year)
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] proc {e}")
+        out["processes"] = {"top": [], "bottom": []}
+
+    projects = {"top": [], "bottom": []}
+    try:
+        from app.models.portfolio_project import Project
+        pj = []
+        for p in Project.query.filter_by(tenant_id=tid, is_active=True).all():
+            if getattr(p, "is_archived", False):
+                continue
+            hs = getattr(p, "health_score", None)
+            pj.append({"code": "", "title": p.name or "",
+                       "on_target_pct": (round(float(hs), 1) if hs is not None else None)})
+        wd = [x for x in pj if x["on_target_pct"] is not None]
+        projects["top"] = sorted(wd, key=lambda x: x["on_target_pct"], reverse=True)[:5]
+        projects["bottom"] = sorted(wd, key=lambda x: x["on_target_pct"])[:5]
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] proj {e}")
+    out["projects"] = projects
+
+    return jsonify({"success": True, "data": out})
