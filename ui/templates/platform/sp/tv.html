@@ -105,7 +105,8 @@
 </head>
 <body data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
       data-strategy-url="{{ url_for('app_bp.sp_api_exec_strategy_scores') }}"
-      data-fronts-url="{{ url_for('app_bp.sp_api_savas_odasi_fronts') }}">
+      data-fronts-url="{{ url_for('app_bp.sp_api_savas_odasi_fronts') }}"
+      data-uid="{{ savas_uid }}" data-tid="{{ savas_tid }}">
   <div class="tv-head" id="tv-head">
     <div>
       <div class="tv-title">KOKPİTİM <span class="dot">●</span> SAVAŞ ODASI</div>
@@ -210,7 +211,10 @@
     var DATASET_ORDER = ["strategies","sub_strategies","processes","projects"];
 
     // ── Config ──
-    var STORAGE_KEY = "savasOdasiConfig_v1";
+    // Ayarlar kullanıcıya + kuruma özel (aynı tarayıcıda farklı kullanıcılar karışmaz)
+    var _scope = "_t" + (document.body.getAttribute("data-tid") || "x") + "_u" + (document.body.getAttribute("data-uid") || "x");
+    var STORAGE_KEY = "savasOdasiConfig_v1" + _scope;
+    var ANIM_KEY = "savasAnim" + _scope;
     function defaultConfig() {
       return { duration: 22, fronts: [
         { id:"f1", name:"Genel Sağlık",   type:"metrics", hero:true, tiles: TILE_ORDER.slice() },
@@ -418,7 +422,7 @@
     var brand = document.querySelector(".tv-title");
     var jetRAF = null, jetTimer = null;
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var animOn = true; try { animOn = (localStorage.getItem("savasAnim") !== "0"); } catch (e) {}
+    var animOn = true; try { animOn = (localStorage.getItem(ANIM_KEY) !== "0"); } catch (e) {}
 
     function positionRunway() {
       if (runwayArr) { var bd = document.getElementById("scene-dots").getBoundingClientRect(); runwayArr.style.left = (bd.left + bd.width/2 - 58) + "px"; runwayArr.style.top = (bd.bottom + 10) + "px"; }
@@ -483,7 +487,7 @@
       if (!animOn) { if (jetRAF) cancelAnimationFrame(jetRAF); if (jetTimer) clearTimeout(jetTimer); if (jet && runwayDep) { jet.style.opacity="1"; parkOn(runwayDep.getBoundingClientRect()); } }
       else launchJet();
     }
-    if (animBtn) animBtn.addEventListener("click", function(){ animOn = !animOn; try { localStorage.setItem("savasAnim", animOn ? "1" : "0"); } catch(e){} applyAnim(); });
+    if (animBtn) animBtn.addEventListener("click", function(){ animOn = !animOn; try { localStorage.setItem(ANIM_KEY, animOn ? "1" : "0"); } catch(e){} applyAnim(); });
 
     // ── Ayarlar paneli ──
     var overlay = document.getElementById("settings-overlay");

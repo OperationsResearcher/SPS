@@ -332,7 +332,11 @@ def sp_tv_mode():
     """Tam ekran TV / war-room KPI duvarı (exec-snapshot verisini döngüyle gösterir)."""
     if not _can():
         return render_template("errors/403.html"), 403
-    return render_template("platform/sp/tv.html")
+    return render_template(
+        "platform/sp/tv.html",
+        savas_uid=current_user.id,
+        savas_tid=current_user.tenant_id or 0,
+    )
 
 
 # ── Tenant-geneli AI Yönetici Özeti (exec + kurum üstü) ───────────────────────
