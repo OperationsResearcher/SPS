@@ -102,29 +102,31 @@
         <div class="tv-clock" id="tv-clock">--:--:--</div>
         <div class="tv-meta" id="tv-updated">güncelleniyor…</div>
       </div>
-      <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
+        <button class="tv-fs" id="tv-anim">✈️ Animasyonu kapat</button>
+      </div>
     </div>
   </div>
 
   <div class="jet-runway" id="jet-runway"></div>
   <div class="jet-runway" id="jet-runway-dep"></div>
   <div id="jet" aria-hidden="true">
-    <svg width="56" height="26" viewBox="-6 0 56 26">
-      <!-- ardyakıt alevi (kuyruk) -->
-      <polygon id="jet-flame" points="6,13 -6,9.5 -6,16.5" fill="#fbbf24"/>
-      <!-- ana delta kanatlar -->
-      <path d="M32,13 L6,3.5 L23,12 Z" fill="#9aa7bd"/>
-      <path d="M32,13 L6,22.5 L23,14 Z" fill="#9aa7bd"/>
-      <!-- kuyruk yatay dengeleyiciler -->
-      <path d="M12,13 L2,7.5 L19,12 Z" fill="#6b7891"/>
-      <path d="M12,13 L2,18.5 L19,14 Z" fill="#6b7891"/>
-      <!-- gövde (sivri burun sağda) -->
-      <path d="M48,13 L20,10 L7,11.4 L7,14.6 L20,16 Z" fill="#e8eef7"/>
-      <!-- hava alıkları / gölge -->
-      <path d="M30,11 L20,10.6 L20,15.4 L30,15 Z" fill="#c7d0e0"/>
-      <!-- kokpit -->
-      <ellipse cx="37" cy="13" rx="4.6" ry="2.1" fill="#38bdf8"/>
-      <ellipse cx="38.5" cy="13" rx="2" ry="1.1" fill="#bae6fd"/>
+    {# F-117 Nighthawk tarzı — faceted, açılı stealth silüeti (burun sağda) #}
+    <svg width="64" height="30" viewBox="-8 0 64 30">
+      <!-- ardyakıt (sönük; alarmda kırmızı) -->
+      <polygon id="jet-flame" points="8,15 -8,11 -8,19" fill="#60a5fa" opacity="0.5"/>
+      <!-- ana gövde + kanat (faceted ok ucu, çentikli arka kenar) -->
+      <path d="M52,15 L8,4 L22,13 L18,15 L22,17 L8,26 Z"
+            fill="#262c3a" stroke="#6b7891" stroke-width="0.8" stroke-linejoin="round"/>
+      <!-- üst facet aydınlığı -->
+      <path d="M52,15 L8,4 L23,13 L31,14 Z" fill="#343d4f"/>
+      <!-- V-kuyruklar -->
+      <path d="M19,13 L10,7 L24,13 Z" fill="#1d2331" stroke="#5b6678" stroke-width="0.6" stroke-linejoin="round"/>
+      <path d="M19,17 L10,23 L24,17 Z" fill="#1d2331" stroke="#5b6678" stroke-width="0.6" stroke-linejoin="round"/>
+      <!-- kokpit faceti -->
+      <path d="M41,15 L33,12.5 L33,17.5 Z" fill="#11151f"/>
+      <circle cx="37" cy="15" r="1.3" fill="#7dd3fc" opacity="0.85"/>
     </svg>
   </div>
 
@@ -325,6 +327,7 @@
     var brand = document.querySelector(".tv-title");
     var jetRAF = null, jetTimer = null;
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var animOn = true; try { animOn = (localStorage.getItem("savasAnim") !== "0"); } catch (e) {}
 
     function positionRunway() {
       if (runwayArr) {
@@ -343,7 +346,7 @@
     function parkOn(rect) {
       if (!jet || !rect) return;
       jet.style.left = (rect.left + 4) + "px";
-      jet.style.top = (rect.top + rect.height/2 - 13) + "px";
+      jet.style.top = (rect.top + rect.height/2 - 15) + "px";
       jet.style.transform = "rotate(-8deg)";
     }
 
@@ -376,7 +379,7 @@
       jet.style.opacity = "0";
       parkOn(depR);
       requestAnimationFrame(function(){ jet.style.opacity = "1"; });
-      if (reduceMotion) return;
+      if (reduceMotion || !animOn) return;   // kapalıyken kalkış pistinde sabit kalır
 
       var alarm = document.getElementById("tv-head").classList.contains("alarm");
       jet.classList.toggle("scramble", alarm);
@@ -406,12 +409,12 @@
           var u = Math.min(1, (ts - t0)/DUR);
           var p = splineAt(pts, u), q = splineAt(pts, Math.min(1, u + 0.004));
           var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180/Math.PI;
-          jet.style.left = (p.x - 28) + "px";
-          jet.style.top = (p.y - 13) + "px";
+          jet.style.left = (p.x - 32) + "px";
+          jet.style.top = (p.y - 15) + "px";
           jet.style.transform = "rotate(" + ang + "deg)";
           if ((frame++ % 3) === 0) {
             var rad = ang * Math.PI/180;
-            spawnTrail(p.x - 20*Math.cos(rad), p.y - 20*Math.sin(rad), alarm);
+            spawnTrail(p.x - 24*Math.cos(rad), p.y - 24*Math.sin(rad), alarm);
           }
           if (u < 1) jetRAF = requestAnimationFrame(step);
           else { jet.style.transform = "rotate(-8deg)"; parkOn(arrR); }
@@ -446,14 +449,39 @@
       });
     }
 
-    document.getElementById("tv-fs").addEventListener("click", function() {
-      if (!document.fullscreenElement) { (document.documentElement.requestFullscreen||function(){})(); }
-      else { (document.exitFullscreen||function(){})(); }
+    function goFullscreen() {
+      var el = document.documentElement;
+      var inFs = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      if (!inFs) {
+        var rf = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (rf) { try { rf.call(el); } catch (e) {} }
+      } else {
+        var ef = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (ef) { try { ef.call(document); } catch (e) {} }
+      }
+    }
+    document.getElementById("tv-fs").addEventListener("click", goFullscreen);
+
+    var animBtn = document.getElementById("tv-anim");
+    function applyAnim() {
+      if (animBtn) animBtn.textContent = animOn ? "✈️ Animasyonu kapat" : "✈️ Animasyonu aç";
+      if (!animOn) {
+        if (jetRAF) cancelAnimationFrame(jetRAF);
+        if (jetTimer) clearTimeout(jetTimer);
+        if (jet && runwayDep) { jet.style.opacity = "1"; parkOn(runwayDep.getBoundingClientRect()); }
+      } else {
+        launchJet();
+      }
+    }
+    if (animBtn) animBtn.addEventListener("click", function() {
+      animOn = !animOn;
+      try { localStorage.setItem("savasAnim", animOn ? "1" : "0"); } catch (e) {}
+      applyAnim();
     });
 
     positionRunway();
     window.addEventListener("resize", positionRunway);
-    setTimeout(launchJet, 700);   // açılış intikali
+    setTimeout(applyAnim, 700);   // açılış: anim açıksa kalkış, kapalıysa pistte sabit
 
     load();
     setInterval(load, 30000);
