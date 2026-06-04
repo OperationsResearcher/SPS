@@ -66,6 +66,9 @@ from app.models.llm_usage import LLMUsageLog, LLMQuotaOverride  # noqa: E402
 from app.models.tenant_llm_config import TenantLLMConfig  # noqa: E402
 from app.models.tour import UserTourProgress  # noqa: E402
 from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis  # noqa: E402
+from app.models.okr import OkrObjective, OkrKeyResult  # noqa: E402
+from app.models.bsc import BscKpiPerspective  # noqa: E402
+from app.models.esg import EsgMetric, EsgMetricValue  # noqa: E402
 from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity  # noqa: E402
 from app.models.portfolio_project import (  # noqa: E402
     Project,
