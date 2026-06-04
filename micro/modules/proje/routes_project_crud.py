@@ -180,18 +180,9 @@ def project_new():
         "notify_observers": request.form.get("notification_notify_observers") is not None,
     }
 
-    # Sprint 53 (Ö3): plan_year_id form alanından al veya aktif yıla düşür
-    plan_year_id_raw = request.form.get("plan_year_id")
-    plan_year_id = None
-    if plan_year_id_raw and plan_year_id_raw.isdigit():
-        plan_year_id = int(plan_year_id_raw)
-    else:
-        try:
-            from app.services.plan_year_service import get_active_plan_year_for_user
-            py = get_active_plan_year_for_user(current_user)
-            plan_year_id = py.id if py else None
-        except Exception as _e:
-            current_app.logger.warning(f"[project_create] aktif plan yılı çözülemedi: {_e}")
+    # Not: Project modelinde plan_year_id kolonu yok (proje↔plan-yıl bağı plan_projects'te).
+    # Sprint 53'te eklenen plan_year_id referansı kaldırıldı — model/DB'de karşılığı olmadığı
+    # için proje oluşturmayı 500'le düşürüyordu.
 
     # Stratejik girişim bağı (opsiyonel)
     initiative_id = None
@@ -211,7 +202,6 @@ def project_new():
         priority=priority,
         kurum_id=kid,
         manager_id=leader_ids[0],
-        plan_year_id=plan_year_id,
         initiative_id=initiative_id,
     )
     try:
