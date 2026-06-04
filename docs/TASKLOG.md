@@ -2,6 +2,25 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-168 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Tüm UX + düzeltmelerin YAYIN'a (www.kokpitim.com) deploy'u — Test prova → Yayín
+**Modül:** Deploy / Yayín · 105 commit (44909c6 → HEAD)
+**Durum:** ✅ Tamamlandı, kullanıcı verisine SIFIR zarar (doğrulandı)
+
+### Yapılan İşlem (mutlak kural: önce yedek, veri kırmızı çizgi)
+1. **Yedekler:** Yayín DB (`pg_kokpitim_db_predeploy_20260604_105327.sql.gz`) + eski image tag (`kokpitim_web:pre_deploy_20260604_102801`) + kod commit `44909c6`.
+2. **Analiz:** Yayín şeması `db.create_all` tabanlı (alembic_version YOK, kpi_data varchar). Repodaki veri-migration'ları (`kpi_value_to_float` vb.) UYGULANMADI (model String, varchar doğru). Standart `oracle_safe_deploy.sh` adım 5 = `alembic upgrade head` → alembic_version yokken tehlikeli → KULLANILMADI.
+3. **Test provası** (test.kokpitim.com, Yayín ile birebir aynı şema): tam branch kodu + `db.create_all` (eklenecek tablo yok) + restart → satır sayısı AFTER=BEFORE (kpi_data 92492), smoke 200. Kullanıcı "test uygundur" onayı.
+4. **Yayín:** fresh DB yedek + satır BEFORE → temiz kod tarball (`git archive HEAD`, junk hariç, 21M) extract → `docker build` (üretim eski image'da çalışır) → container yeni image'a geçti (sağlıksızsa otomatik rollback guard'ı vardı) → `db.create_all` (şema değişikliği YOK) → satır AFTER.
+
+### Doğrulama
+**Satır sayıları BEFORE = AFTER birebir:** kpi_data 92492, process_kpis 510, processes 96, strategies 53, project 1, task 0, tenants 7, users 145, process_activities 3 → **hiçbir kullanıcı verisi değişmedi.** Health 200, www.kokpitim.com 200, smoke route'ları 302.
+
+### Notlar
+- ⚠️ `/opt/kokpitim/app` git repo'su tarball extract ile "dirty" durumda (HEAD hâlâ 44909c6, working tree = branch kodu). İleride git-tabanlı deploy için `git reset --hard` veya branch'i main'e merge gerekir. Çalışmayı etkilemez (image build working tree'den).
+- ⚠️ Proje oluşturma + "Tuval" oluşturma: KOD düzeltmeleri gitti ama Yayín DB'de `notifications`/`blue_ocean_canvases` sequence desync varsa hâlâ commit'te UniqueViolation olabilir. Sequence onarımı kullanıcı onayı + yedekle yapılır (kırmızı çizgi).
+
 ## TASK-167 | 2026-06-04 | ✅ Tamamlandı
 
 **Görev:** Birikmiş düzeltmelerin demo.kokpitim.com'a deploy'u (TASK-166 sonrası)
