@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-166 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** UX özelliklerini (Savaş Odası vb.) demo.kokpitim.com'a deploy
+**Modül:** Deploy / Demo ortamı (Yerel → Demo)
+**Durum:** ✅ Tamamlandı, smoke test geçti
+
+### Aktarılan Dosyalar (14 — UX commit aralığı, commit'li HEAD)
+- `micro/modules/sp/{helpers,routes_exec_advisor,routes_scenario}.py`
+- `micro/modules/surec/routes_karne.py`, `micro/modules/bireysel/routes.py`, `micro/modules/masaustu/routes.py`
+- `ui/templates/platform/sp/{tv,scenarios,scenarios_kiyas,exec_dashboard,strateji_haritasi}.html`
+- `ui/templates/platform/{surec/karne,kurum/index,bireysel/karne}.html`
+
+### Yapılan İşlem
+`git archive HEAD <14 dosya>` (400K) → scp → `/opt/kokpitim-demo/app` (bind-mount, git değil) extract → sahiplik 197609 → `docker restart kokpitim-demo-web`. Demo app dizini git repo değil; container kodu bind-mount ile okuyor, image rebuild gerekmedi (yeni pip yok). Yeni Python kodu 3.11-uyumlu doğrulandı. Deploy öncesi 14 dosyanın yedeği alındı: `/tmp/demo-ux-backup-20260604_083505.tar.gz` (rollback).
+
+### Smoke Test
+gunicorn 5080'de temiz başladı (4 worker, import/syntax hatası yok). 6 yeni route + ana sayfa + dış erişim (demo.kokpitim.com) → hepsi 302 (kayıtlı, 404/500 yok).
+
+### Notlar
+- KURALLAR §8.4 kırmızı çizgiler: yalnızca `*-demo` hedefleri; Test/Yayın'a dokunulmadı. DB migration/seed/wipe YOK — demo DB & Tomofil baseline değişmedi. `.env`/`instance` aktarılmadı (korundu).
+- Savaş Odası + exec/senaryo route'ları SP rolü ister; demo Tomofil kullanıcısının rolü kontrol edilmeli (403 → kod hatası değil, yetki).
+- Kaynak dal `claude/ux-gercek-bosluklar` — main'e merge EDİLMEDİ, push EDİLMEDİ.
+
 ## TASK-165 | 2026-06-03 | ✅ Tamamlandı
 
 **Görev:** UX gerçek-boşluk kampanyası — 4 yeni özellik (rakip analizi sonrası, yalnızca eksik olanlar)
