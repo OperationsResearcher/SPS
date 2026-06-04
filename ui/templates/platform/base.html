@@ -145,12 +145,6 @@
                 <span class="sidebar-item-text">Stratejik Planlama</span>
             </a>
 
-            <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank"
-                class="sidebar-item">
-                <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
-                <span class="sidebar-item-text">Savaş Odası</span>
-            </a>
-
 <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
                 <span class="sidebar-item-text">Kurum Paneli</span>
@@ -205,6 +199,13 @@
                 <span class="sidebar-item-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
                 <span class="sidebar-item-text">K-Analiz</span>
             </a>
+
+            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+            <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="sidebar-item">
+                <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
+                <span class="sidebar-item-text">Savaş Odası</span>
+            </a>
+            {% endif %}
 
             <a href="{{ url_for('app_bp.bireysel_karne') }}"
                 class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">
