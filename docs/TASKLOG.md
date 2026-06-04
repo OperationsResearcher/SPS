@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-167 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Birikmiş düzeltmelerin demo.kokpitim.com'a deploy'u (TASK-166 sonrası)
+**Modül:** Deploy / Demo · proje, blue-ocean, nav, savaş odası
+**Durum:** ✅ Tamamlandı, smoke test geçti
+
+### Aktarılan Dosyalar (6 — f8aac82..HEAD, commit'li)
+- `micro/modules/proje/helpers.py`, `routes_project_crud.py` → proje 500 fix (plan_year_id + üye/gözlemci None)
+- `micro/modules/sp/routes_exec_advisor.py`, `ui/.../sp/tv.html` → Savaş Odası ayar scope'u (kullanıcı+kurum)
+- `ui/.../sp/blue_ocean.html` → Yeni Tuval standart mc-modal
+- `ui/.../base.html` → sol bara Savaş Odası linki (K-Analiz altı)
+
+### Yapılan İşlem
+`git archive HEAD <6 dosya>` (150K) → scp → `/opt/kokpitim-demo/app` extract → chown 197609 → `docker restart kokpitim-demo-web`. 3.11 uyumu + py_compile doğrulandı. Yedek: `/tmp/demo-upd-backup-20260604_102221.tar.gz`. Smoke: /project/new, /sp/blue-ocean, /sp/tv, /masaustu, savas-odasi/fronts → hepsi 302; dış erişim 302.
+
+### Notlar
+- KURALLAR §8.4: yalnızca `*-demo`; DB'ye dokunulmadı (saf kod). `.env`/`instance` korundu.
+- ⚠️ Proje 500'ün KOD katmanı düzeltildi; ancak demo DB'de `notifications` sequence desync varsa proje oluşturmada commit'te yine UniqueViolation olabilir (yerelde 5 sequence onarmıştık). Demo DB onarımı kullanıcı onayı ister (kırmızı çizgi).
+- ⚠️ Yayın "Tuval" oluşturma hatası (sequence desync olası) hâlâ askıda — kontrol edilecek.
+- Dal `claude/ux-gercek-bosluklar` — main'e merge/push EDİLMEDİ.
+
 ## TASK-166 | 2026-06-04 | ✅ Tamamlandı
 
 **Görev:** UX özelliklerini (Savaş Odası vb.) demo.kokpitim.com'a deploy
