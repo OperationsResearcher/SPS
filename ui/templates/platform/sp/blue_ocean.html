@@ -35,6 +35,41 @@
   <div id="bo-detail" style="display:none;margin-top:24px;"></div>
 </div>
 
+{# Yeni Tuval — standart mc-modal (KURALLAR §5; SweetAlert2 form modalı yerine) #}
+<div id="modal-bo-new" class="mc-modal-overlay" style="display:none;">
+  <div class="mc-modal-lg" style="max-width:520px;">
+    <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);">
+        <i class="fas fa-water" style="color:#0ea5e9;"></i> Yeni Tuval
+      </h3>
+      <button type="button" class="mc-modal-close" id="bo-modal-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div class="mc-modal-body" style="padding:20px;">
+      <div id="bo-modal-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;"></div>
+      <div class="mc-form-group" style="margin-bottom:14px;">
+        <label class="mc-label" for="bo-c-name">Tuval adı <span style="color:#dc2626;">*</span></label>
+        <input id="bo-c-name" type="text" class="mc-form-input" placeholder="Örn. 2026 Pazar Konumlandırma">
+      </div>
+      <div class="mc-form-group" style="margin-bottom:14px;">
+        <label class="mc-label" for="bo-c-ind">Sektör</label>
+        <input id="bo-c-ind" type="text" class="mc-form-input" placeholder="Örn. Yazılım / Üretim">
+      </div>
+      <div class="mc-form-group" style="margin-bottom:14px;">
+        <label class="mc-label" for="bo-c-desc">Açıklama</label>
+        <textarea id="bo-c-desc" class="mc-form-input" rows="2" placeholder="Kısa açıklama (opsiyonel)"></textarea>
+      </div>
+      <div class="mc-form-group">
+        <label class="mc-label" for="bo-c-comp">Rakipler</label>
+        <input id="bo-c-comp" type="text" class="mc-form-input" placeholder="Virgülle ayırın: Rakip A, Rakip B">
+      </div>
+    </div>
+    <div class="mc-modal-footer" style="padding:14px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;">
+      <button type="button" class="mc-btn mc-btn-secondary" id="bo-modal-cancel">İptal</button>
+      <button type="button" class="mc-btn mc-btn-primary" id="bo-modal-save"><i class="fas fa-check"></i> Oluştur</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 (function(){
@@ -250,35 +285,45 @@
     else Swal.fire({icon:'error',title:'Hata',text:'ERRC öğesi eklenemedi'});
   };
 
-  document.getElementById('bo-new').onclick = async () => {
-    const { value: form } = await Swal.fire({
-      title: 'Yeni Tuval',
-      html: `
-        <input id="bo-c-name" class="swal2-input" placeholder="Tuval adı">
-        <input id="bo-c-ind" class="swal2-input" placeholder="Sektör">
-        <input id="bo-c-comp" class="swal2-input" placeholder="Rakipler (virgülle ayırın)">
-      `,
-      confirmButtonText: 'Oluştur',
-      cancelButtonText: 'İptal',
-      showCancelButton: true,
-      focusConfirm: false,
-      preConfirm: () => {
-        const name = document.getElementById('bo-c-name').value.trim();
-        if (!name) { Swal.showValidationMessage('Tuval adı gerekli'); return false; }
-        return {
-          name,
-          industry: document.getElementById('bo-c-ind').value.trim(),
-          competitor_names: document.getElementById('bo-c-comp').value.trim(),
-        };
-      }
-    });
-    if (!form) return;
-    const r = await fetch(root.dataset.createUrl, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(form),
-    });
-    if (r.ok) load();
-    else Swal.fire({icon:'error',title:'Hata',text:'Tuval oluşturulamadı'});
+  // Yeni Tuval — standart mc-modal (SweetAlert2 form modalı yerine)
+  const boModal = document.getElementById('modal-bo-new');
+  const boErr = document.getElementById('bo-modal-error');
+  function boModalClose(){ boModal.style.display = 'none'; }
+  function boShowErr(msg){ boErr.textContent = msg; boErr.style.display = 'block'; }
+
+  document.getElementById('bo-new').onclick = () => {
+    ['bo-c-name','bo-c-ind','bo-c-desc','bo-c-comp'].forEach(id => { document.getElementById(id).value = ''; });
+    boErr.style.display = 'none';
+    boModal.style.display = 'flex';
+    setTimeout(() => document.getElementById('bo-c-name').focus(), 50);
+  };
+  document.getElementById('bo-modal-close').onclick = boModalClose;
+  document.getElementById('bo-modal-cancel').onclick = boModalClose;
+  boModal.addEventListener('click', (e) => { if (e.target === boModal) boModalClose(); });
+
+  document.getElementById('bo-modal-save').onclick = async () => {
+    const name = document.getElementById('bo-c-name').value.trim();
+    if (!name) { boShowErr('Tuval adı gerekli.'); document.getElementById('bo-c-name').focus(); return; }
+    const form = {
+      name,
+      industry: document.getElementById('bo-c-ind').value.trim(),
+      description: document.getElementById('bo-c-desc').value.trim(),
+      competitor_names: document.getElementById('bo-c-comp').value.trim(),
+    };
+    const btn = document.getElementById('bo-modal-save');
+    btn.disabled = true;
+    try {
+      const r = await fetch(root.dataset.createUrl, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (r.ok) { boModalClose(); load(); }
+      else { boShowErr('Tuval oluşturulamadı.'); }
+    } catch (e) {
+      boShowErr('Sunucu hatası.');
+    } finally {
+      btn.disabled = false;
+    }
   };
 
   load();
