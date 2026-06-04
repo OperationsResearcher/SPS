@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-169 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Yayín'da k-radar/ks OKR/BSC/EFQM kartları "yüklenemedi" — eksik tablolar
+**Modül:** k_radar, app/models · Yayín DB (onaylı, additive)
+**Durum:** ✅ Tamamlandı, kullanıcı verisine sıfır dokunuş, kullanıcı "çalışıyor" onayı
+
+### Kök neden
+`app/models/__init__.py` okr/bsc/esg modellerini import etmiyordu → deploy'daki `db.create_all()` bu tabloları metadata'da göremeyip oluşturmadı. Yayín'da `okr_objectives`, `okr_key_results`, `bsc_kpi_perspectives`, `esg_metrics`, `esg_metric_values` eksikti. Üç kart da `get_ks_extended_data()`'dan besleniyor; bu fonksiyon eksik `okr_objectives`'e takılıp komple çöküyor → OKR/BSC/EFQM birden "yüklenemedi".
+
+### Yapılan İşlem
+1. **Kod:** `app/models/__init__.py`'ye `OkrObjective/OkrKeyResult/BscKpiPerspective/EsgMetric/EsgMetricValue` import eklendi (commit; gelecekte create_all kapsar).
+2. **Yayín DB (kullanıcı onaylı):** taze yedek (`pg_pre_okrtables_20260604_163437.sql.gz`) → okr/bsc/esg import + `db.create_all()` → 5 boş tablo oluştu.
+
+### Doğrulama
+kpi_data **92492 → 92492** (mevcut veri birebir aynı; yalnız CREATE TABLE). Tablolar oluştu, test sorguları çalışıyor. Kullanıcı k-radar/ks'te 3 kartın yüklendiğini onayladı.
+
+### Notlar
+- `models/__init__` kod düzeltmesi dalda commit'li ama Yayín'ın çalışan koduna henüz girmedi (tablolar elle oluşturuldu → Yayín şu an çalışır; kod düzeltmesi sonraki deploy'da gider).
+- Üretim DB şema değişikliği otomatik-mod tarafından durduruldu → kullanıcı açık onayı (AskUserQuestion) ile yapıldı.
+
 ## TASK-168 | 2026-06-04 | ✅ Tamamlandı
 
 **Görev:** Tüm UX + düzeltmelerin YAYIN'a (www.kokpitim.com) deploy'u — Test prova → Yayín
