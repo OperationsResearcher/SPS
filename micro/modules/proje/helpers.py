@@ -203,7 +203,8 @@ def sync_project_members_observers(project: Project, kid: int) -> None:
     observer_ids = user_ids_from_form("observers") if "observers" in request.form else None
     if member_ids is None and observer_ids is None:
         return
-    uid_set = set(member_ids) | set(observer_ids)
+    # member_ids/observer_ids biri None olabilir (yalnız biri form'da) — None'ı güvenli ele al
+    uid_set = set(member_ids or []) | set(observer_ids or [])
 
     valid: set[int] = set()
     if uid_set:
@@ -216,17 +217,20 @@ def sync_project_members_observers(project: Project, kid: int) -> None:
             ).all()
         }
 
-    db.session.execute(delete(project_members).where(project_members.c.project_id == project.id))
-    db.session.execute(delete(project_observers).where(project_observers.c.project_id == project.id))
+    # Yalnızca form'da gönderilen alanı sil/yeniden yaz (gönderilmeyene dokunma)
+    if member_ids is not None:
+        db.session.execute(delete(project_members).where(project_members.c.project_id == project.id))
+    if observer_ids is not None:
+        db.session.execute(delete(project_observers).where(project_observers.c.project_id == project.id))
 
     seen_members: set[int] = set()
-    for uid in member_ids:
+    for uid in (member_ids or []):
         if uid not in valid or uid in seen_members:
             continue
         seen_members.add(uid)
         db.session.execute(insert(project_members).values(project_id=project.id, user_id=uid))
 
-    for uid in observer_ids:
+    for uid in (observer_ids or []):
         if uid not in valid or uid in seen_members:
             continue
         db.session.execute(insert(project_observers).values(project_id=project.id, user_id=uid))
