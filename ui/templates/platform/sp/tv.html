@@ -74,6 +74,13 @@
     .ticker-track .ok { color: #34d399; font-weight: 700; }
     @keyframes scroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
+    /* Savaş uçağı + pist */
+    #jet { position: fixed; z-index: 60; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform, left, top; filter: drop-shadow(0 0 6px rgba(125,211,252,.55)); }
+    #jet.scramble { filter: drop-shadow(0 0 7px rgba(248,113,113,.7)); }
+    .jet-runway { position: fixed; width: 116px; height: 13px; border-radius: 7px; background: linear-gradient(90deg, #243049, #0e1830); border: 1px solid rgba(148,163,184,.22); transform: rotate(-8deg); z-index: 18; overflow: hidden; opacity: .85; }
+    .jet-runway::after { content: ""; position: absolute; top: 50%; left: 8px; right: 8px; height: 0; border-top: 2px dashed rgba(125,211,252,.5); transform: translateY(-50%); }
+    .jet-trail { position: fixed; width: 7px; height: 7px; border-radius: 50%; background: #7dd3fc; opacity: .65; pointer-events: none; z-index: 40; transition: opacity .45s; filter: blur(1px); }
+
     .tv-loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #64748b; }
     .tv-err { position: fixed; bottom: 58px; left: 50%; transform: translateX(-50%); background: #7f1d1d; color: #fecaca; padding: 9px 16px; border-radius: 10px; font-size: 13px; display: none; }
   </style>
@@ -97,6 +104,19 @@
       </div>
       <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
     </div>
+  </div>
+
+  <div class="jet-runway" id="jet-runway"></div>
+  <div id="jet" aria-hidden="true">
+    <svg width="48" height="22" viewBox="-4 0 48 22">
+      <polygon id="jet-flame" points="6,11 -3,8.5 -3,13.5" fill="#fbbf24"/>
+      <path d="M6,11 L30,9.5 L43,11 L30,12.5 Z" fill="#e2e8f0"/>
+      <path d="M24,11 L9,3 L27,10 Z" fill="#cbd5e1"/>
+      <path d="M24,11 L9,19 L27,12 Z" fill="#cbd5e1"/>
+      <path d="M9,11 L3,5 L13,10 Z" fill="#94a3b8"/>
+      <path d="M9,11 L3,17 L13,12 Z" fill="#94a3b8"/>
+      <circle cx="33" cy="11" r="1.6" fill="#38bdf8"/>
+    </svg>
   </div>
 
   <div class="stage">
@@ -289,11 +309,81 @@
     }
     setInterval(spotlight, 4000);
 
+    // ── Savaş uçağı: her sahne değişiminde KOKPİTİM'den kalkıp piste iner ──
+    var jet = document.getElementById("jet");
+    var runway = document.getElementById("jet-runway");
+    var brand = document.querySelector(".tv-title");
+    var jetRAF = null;
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function positionRunway() {
+      if (!runway) return;
+      var box = document.getElementById("scene-dots").getBoundingClientRect();
+      runway.style.left = (box.left + box.width/2 - 58) + "px";
+      runway.style.top = (box.bottom + 10) + "px";
+    }
+
+    function parkJet() {
+      if (!jet || !runway) return;
+      var r = runway.getBoundingClientRect();
+      jet.style.left = (r.left + 6) + "px";
+      jet.style.top = (r.top + r.height/2 - 11) + "px";
+      jet.style.transform = "rotate(-8deg)";
+      jet.style.opacity = "1";
+    }
+
+    function spawnTrail(x, y, alarm) {
+      var d = document.createElement("div");
+      d.className = "jet-trail";
+      d.style.left = (x - 3) + "px"; d.style.top = (y - 3) + "px";
+      if (alarm) d.style.background = "#f87171";
+      document.body.appendChild(d);
+      requestAnimationFrame(function(){ d.style.opacity = "0"; });
+      setTimeout(function(){ d.remove(); }, 470);
+    }
+
+    function launchJet() {
+      if (!jet || !runway || !brand) return;
+      if (reduceMotion) { parkJet(); return; }
+      if (jetRAF) cancelAnimationFrame(jetRAF);
+      var alarm = document.getElementById("tv-head").classList.contains("alarm");
+      jet.classList.toggle("scramble", alarm);
+      var flame = document.getElementById("jet-flame");
+      if (flame) flame.setAttribute("fill", alarm ? "#f87171" : "#fbbf24");
+      var b = brand.getBoundingClientRect(), r = runway.getBoundingClientRect();
+      var p0 = { x: b.right - 4, y: b.top + b.height/2 };
+      var p1 = { x: r.left + 8, y: r.top + r.height/2 - 4 };
+      var ctrl = { x: (p0.x + p1.x)/2, y: Math.min(p0.y, p1.y) - 90 };
+      var dur = alarm ? 1100 : 1900, t0 = null, frame = 0;
+      jet.style.opacity = "1";
+      function bez(t,a,c,e){ var u=1-t; return u*u*a + 2*u*t*c + t*t*e; }
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var u = Math.min(1, (ts - t0)/dur);
+        var t = 1 - Math.pow(1 - u, 2);
+        var x = bez(t, p0.x, ctrl.x, p1.x), y = bez(t, p0.y, ctrl.y, p1.y);
+        var vx = 2*(1-t)*(ctrl.x-p0.x) + 2*t*(p1.x-ctrl.x);
+        var vy = 2*(1-t)*(ctrl.y-p0.y) + 2*t*(p1.y-ctrl.y);
+        var ang = Math.atan2(vy, vx) * 180/Math.PI;
+        jet.style.left = (x - 24) + "px";
+        jet.style.top = (y - 11) + "px";
+        jet.style.transform = "rotate(" + ang + "deg)";
+        if ((frame++ % 2) === 0) {
+          var rad = ang * Math.PI/180;
+          spawnTrail(x - 16*Math.cos(rad), y - 16*Math.sin(rad), alarm);
+        }
+        if (u < 1) jetRAF = requestAnimationFrame(step);
+        else { jet.style.transform = "rotate(-8deg)"; parkJet(); }
+      }
+      jetRAF = requestAnimationFrame(step);
+    }
+
     function showScene(i) {
       curScene = i;
       scenes.forEach(function(sc, idx){ if (sc) sc.classList.toggle("show", idx === i); });
       dots.forEach(function(dt, idx){ dt.classList.toggle("on", idx === i); });
       if (sceneNameEl) sceneNameEl.textContent = sceneNames[i];
+      launchJet();
     }
     setInterval(function(){ showScene((curScene + 1) % scenes.length); }, 14000);
 
@@ -318,6 +408,10 @@
       if (!document.fullscreenElement) { (document.documentElement.requestFullscreen||function(){})(); }
       else { (document.exitFullscreen||function(){})(); }
     });
+
+    positionRunway();
+    window.addEventListener("resize", positionRunway);
+    setTimeout(launchJet, 700);   // açılış intikali
 
     load();
     setInterval(load, 30000);
