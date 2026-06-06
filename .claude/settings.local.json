@@ -7,7 +7,8 @@
       "Bash(pg_restore.exe --list \"c:/kokpitim/backups/vm_pull/20260402_033734_vm_kokpitim_pg.dump\")",
       "Bash(sqlite3 \"c:/kokpitim/backups/vm_pull/20260402_033734_vm_kokpitim_sqlite.db\" \"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;\")",
       "Bash(python -m flask db upgrade)",
-      "Bash(python -c ':*)"
+      "Bash(python -c ':*)",
+      "Bash(ssh -i /c/crt/ssh-key-2026-04-18_v4.key:*)"
     ]
   }
 }

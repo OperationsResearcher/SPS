@@ -16,7 +16,22 @@ from app.services.hoshin_xmatrix_service import build_xmatrix
 from app.services.project_evm_service import compute_project_evm
 from app.services.weekly_digest_service import render_digest_html, render_digest_pdf
 from app.services.plan_year_service import get_active_plan_year_for_user
+from app.utils.db_sequence import add_and_commit_with_retry
 from micro.modules.sp.helpers import _check_sp_role
+
+
+def _to_float(v, default: float = 0.0) -> float:
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_int(v, default: int = 0) -> int:
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return default
 
 
 def _can():
@@ -88,8 +103,7 @@ def sp_api_bo_canvas_create():
         description=d.get("description"),
         competitor_names=d.get("competitor_names"),
     )
-    db.session.add(c)
-    db.session.commit()
+    add_and_commit_with_retry(c, "blue_ocean_canvases")
     return jsonify({"success": True, "item": c.to_dict()}), 201
 
 
@@ -124,14 +138,13 @@ def sp_api_bo_factor_add(cid):
     f = BlueOceanFactor(
         canvas_id=cid,
         name=d.get("name", "").strip(),
-        self_score=float(d.get("self_score") or 5),
-        order_index=int(d.get("order_index") or 0),
+        self_score=_to_float(d.get("self_score"), 5),
+        order_index=_to_int(d.get("order_index"), 0),
         competitor_scores=json.dumps(d.get("competitor_scores") or {}, ensure_ascii=False),
     )
     if not f.name:
         return jsonify({"error": "name zorunlu"}), 400
-    db.session.add(f)
-    db.session.commit()
+    add_and_commit_with_retry(f, "blue_ocean_factors")
     return jsonify({"success": True, "item": f.to_dict()}), 201
 
 
@@ -158,8 +171,7 @@ def sp_api_bo_errc_add(cid):
         rationale=d.get("rationale"),
         impact=d.get("impact"),
     )
-    db.session.add(item)
-    db.session.commit()
+    add_and_commit_with_retry(item, "blue_ocean_errc_items")
     return jsonify({"success": True, "item": item.to_dict()}), 201
 
 
@@ -205,8 +217,7 @@ def sp_api_vrio_create():
         is_organized=bool(d.get("is_organized")),
         note=d.get("note"),
     )
-    db.session.add(r)
-    db.session.commit()
+    add_and_commit_with_retry(r, "vrio_resources")
     return jsonify({"success": True, "item": r.to_dict()}), 201
 
 

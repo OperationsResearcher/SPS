@@ -56,12 +56,22 @@ class AnalyticsService:
             return _empty
         
         # DataFrame'e çevir
-        df = _pd().DataFrame([{
+        pd = _pd()
+        df = pd.DataFrame([{
             'date': d.data_date,
             'actual': d.actual_value,
             'target': d.target_value
         } for d in kpi_data])
-        
+
+        # actual_value/target_value DB'de String(100) — sayısal işlemler (mean,
+        # bölme) öncesi güvenli dönüşüm; ayrıştırılamayan değer NaN olur.
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df['actual'] = pd.to_numeric(df['actual'], errors='coerce')
+        df['target'] = pd.to_numeric(df['target'], errors='coerce')
+        df = df.dropna(subset=['date'])
+        if df.empty:
+            return _empty
+
         # Frekansa göre grupla
         if frequency == 'daily':
             grouped = df
@@ -89,14 +99,22 @@ class AnalyticsService:
         else:
             grouped = df
         
-        # Performans oranını hesapla
-        grouped['performance_rate'] = (grouped['actual'] / grouped['target'] * 100).round(2)
-        
+        # Performans oranını hesapla (hedef 0/NaN → sonsuz/NaN'ı temizle)
+        grouped['performance_rate'] = (grouped['actual'] / grouped['target'] * 100)
+        grouped['performance_rate'] = (
+            grouped['performance_rate']
+            .replace([float('inf'), float('-inf')], pd.NA)
+            .round(2)
+        )
+
+        def _clean(series):
+            return [None if pd.isna(v) else v for v in series.tolist()]
+
         return {
             'dates': grouped['date'].dt.strftime('%Y-%m-%d').tolist(),
-            'actual_values': grouped['actual'].tolist(),
-            'target_values': grouped['target'].tolist(),
-            'performance_rates': grouped['performance_rate'].tolist()
+            'actual_values': _clean(grouped['actual']),
+            'target_values': _clean(grouped['target']),
+            'performance_rates': _clean(grouped['performance_rate'])
         }
 
     

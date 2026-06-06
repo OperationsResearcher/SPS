@@ -65,6 +65,14 @@ from app.models.strategy_frameworks import (  # noqa: E402
 from app.models.llm_usage import LLMUsageLog, LLMQuotaOverride  # noqa: E402
 from app.models.tenant_llm_config import TenantLLMConfig  # noqa: E402
 from app.models.tour import UserTourProgress  # noqa: E402
+# notifications_ext / notification_preferences / push_subscriptions —
+# create_all'ın bu tabloları görebilmesi için kayıt (okr/bsc/esg ile aynı
+# eksik). core.Notification ile isim çakışmasın diye alias.
+from app.models.notification import (  # noqa: E402,F401
+    Notification as NotificationExt,
+    NotificationPreference,
+    PushSubscription,
+)
 from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis  # noqa: E402
 from app.models.okr import OkrObjective, OkrKeyResult  # noqa: E402
 from app.models.bsc import BscKpiPerspective  # noqa: E402

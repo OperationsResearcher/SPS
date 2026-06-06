@@ -49,7 +49,8 @@ class NotificationService:
             metadata: Ek bilgiler
         """
         from app.models.notification import Notification
-        
+        from app.utils.db_sequence import add_and_commit_with_retry
+
         notification = Notification(
             user_id=user_id,
             type=notification_type,
@@ -60,9 +61,8 @@ class NotificationService:
             metadata=metadata,
             is_read=False
         )
-        
-        db.session.add(notification)
-        db.session.commit()
+
+        add_and_commit_with_retry(notification, "notifications_ext")
         
         # Real-time push (WebSocket)
         NotificationService._push_realtime(user_id, notification)
@@ -109,28 +109,33 @@ class NotificationService:
         Döner: oluşturulan bildirim sayısı.
         """
         from app.models.notification import Notification
+        from app.utils.db_sequence import commit_with_retry
 
         if not user_ids:
             return 0
 
         now = datetime.now(timezone.utc)
-        objects = [
-            Notification(
-                user_id=uid,
-                tenant_id=tenant_id,
-                type=notification_type,
-                title=title,
-                message=message,
-                priority=priority,
-                action_url=action_url,
-                is_read=False,
-                created_at=now,
-            )
-            for uid in user_ids
-        ]
-        db.session.bulk_save_objects(objects)
-        db.session.commit()
-        return len(objects)
+
+        def _stage():
+            db.session.bulk_save_objects([
+                Notification(
+                    user_id=uid,
+                    tenant_id=tenant_id,
+                    type=notification_type,
+                    title=title,
+                    message=message,
+                    priority=priority,
+                    action_url=action_url,
+                    is_read=False,
+                    created_at=now,
+                )
+                for uid in user_ids
+            ])
+
+        _stage()
+        # PK sequence desync (import/restore sonrası) → hizala + tekrar dene
+        commit_with_retry("notifications_ext", restage=_stage)
+        return len(user_ids)
 
     @staticmethod
     def send_performance_alert(user_id: int, kpi_name: str, actual: float, target: float, deviation: float):

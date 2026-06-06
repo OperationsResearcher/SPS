@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-170 | 2026-06-06 | ✅ Tamamlandı
+
+**Görev:** Derin tarama sonrası doğrulanmış 6 iyileştirme açığının kapatılması
+**Modül:** sp (Blue Ocean), notification, analytics, k_radar, model katmanı, repo hijyeni
+**Durum:** ✅ Tamamlandı (yerel; Yayín'a dokunulmadı). Python derleme + import + JS kalıntı kontrolü geçti.
+
+### Arka plan
+5 paralel keşif ajanıyla derin tarama yapıldı. Bulguların ~yarısı **yanlış çıktı** (kpi_data index'leri zaten var, models/ paketi mevcut, kpi_value_to_float String kasıtlı, çoğu "hard delete" junction tablo = meşru) → elendi. Doğrulanan 6 gerçek açık kapatıldı.
+
+### Değiştirilen Dosyalar
+- `app/utils/db_sequence.py` → `add_and_commit_with_retry()` + `commit_with_retry()` eklendi (PK sequence desync UniqueViolation'ında hizala+tekrar dene)
+- `micro/modules/sp/routes_frameworks.py` → Blue Ocean Canvas/Faktör/ERRC + VRIO insert'leri retry helper'a geçti; `_to_float/_to_int` ile parse 500 riski kapatıldı
+- `app/services/notification_service.py` → `create_notification` + `bulk_create` retry korumasına alındı
+- `app/models/__init__.py` → notification.py modelleri (notifications_ext/preferences/push) `create_all` için import (alias — core.Notification çakışması yok)
+- `app/services/analytics_service.py` → String değerler pandas öncesi `to_numeric/to_datetime` ile güvenli dönüşüm; sıfır/NaN bölme temizliği
+- `ui/static/platform/js/k_radar.js` → 2× `window.confirm` → SweetAlert2 `confirmDelete`
+- `ui/static/platform/js/project_raid.js` → `confirm` → SweetAlert2 `confirmDelete`
+- `ui/templates/platform/sp/blue_ocean.html` → Faktör + ERRC SweetAlert2 form modalları → mc-modal standardı (KURALLAR §5)
+- Kök dizinden 16 tek-kullanımlık `debug_*.py`/`analyze_*.py`/`analyze_output.txt` silindi (repo hijyeni)
+
+### Notlar
+- #1 ertelenmiş "Yayín'da Tuval oluşturma 500" hatasının kök nedenini (sequence desync) koda karşı kapatır.
+- #2 az önce düzeltilen okr/bsc/esg create_all eksiğinin ikizidir (notification tabloları taze deploy'da atlanırdı).
+- Yayín'a dokunulmadı; canlıya gitmesi sonraki deploy'a bağlı.
+
 ## TASK-169 | 2026-06-04 | ✅ Tamamlandı
 
 **Görev:** Yayín'da k-radar/ks OKR/BSC/EFQM kartları "yüklenemedi" — eksik tablolar

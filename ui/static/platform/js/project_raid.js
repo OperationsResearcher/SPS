@@ -292,8 +292,19 @@
     }
   };
 
+  async function confirmDelete(title, text) {
+    if (typeof Swal === "undefined") return true;
+    var r = await Swal.fire({
+      title: title || "Emin misiniz?", text: text || "Bu işlem geri alınamaz.",
+      icon: "warning", showCancelButton: true,
+      confirmButtonColor: "#dc2626", cancelButtonColor: "#6b7280",
+      confirmButtonText: "Evet, sil", cancelButtonText: "İptal",
+    });
+    return r.isConfirmed;
+  }
+
   window.deleteItem = async function deleteItem(id) {
-    if (!confirm("Bu öğeyi silmek istediğinizden emin misiniz?")) return;
+    if (!(await confirmDelete("RAID öğesi silinsin mi?", "Bu öğeyi silmek istediğinizden emin misiniz?"))) return;
 
     try {
       var csrfDel = document.querySelector('meta[name="csrf-token"]')?.content || "";
