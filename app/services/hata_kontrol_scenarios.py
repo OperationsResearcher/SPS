@@ -222,11 +222,17 @@ def scenario_surec_zinciri(page, base_url):
         pg_ok = page.locator("body", has_text=pgname).count() > 0
         step("PG oluşturuldu (UI tıklama)", pg_ok, pgname)
 
-        # ── PGV (karne veri sihirbazı — en iyi çaba) ──
-        if page.locator("#btn-karne-wizard").count() > 0:
-            step("PGV: karne veri sihirbazı mevcut (giriş UI'ı var)", True, "#btn-karne-wizard")
+        # ── PGV (GERÇEK UI: .btn-kpi-vgs → #modal-kpi-data-entry → değer → #btn-vgs-confirm) ──
+        if page.locator(".btn-kpi-vgs").count() == 0:
+            step("PGV: veri-giriş butonu (.btn-kpi-vgs) bulunamadı", False)
         else:
-            step("PGV: UI giriş tetikleyicisi bu sürümde otomatize edilmedi", True, "not")
+            page.locator(".btn-kpi-vgs").first.click()
+            page.wait_for_selector("#kpi-data-entry-value", state="visible", timeout=12000)
+            page.fill("#kpi-data-entry-value", "80")
+            page.click("#btn-vgs-confirm")
+            page.wait_for_timeout(2500)
+            pgv_ok = not page.locator("#modal-kpi-data-entry").is_visible()
+            step("PGV girildi (UI tıklama)", pgv_ok, "değer=80")
     except Exception as e:
         step("İstisna", False, str(e).splitlines()[0][:120])
     return _result("Süreç/PG/PGV", steps)
