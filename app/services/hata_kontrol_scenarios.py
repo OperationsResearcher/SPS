@@ -67,7 +67,53 @@ def scenario_blue_ocean(page, base_url):
     return _result("Mavi Okyanus CRUD", steps)
 
 
+def scenario_sp_strateji(page, base_url):
+    """SP: Ana strateji oluştur + Alt strateji oluştur (buton+mc-modal+kaydet)."""
+    steps = []
+    def step(n, ok, d=""):
+        steps.append({"step": n, "ok": bool(ok), "detail": d})
+
+    suf = str(int(time.time()))
+    sname = "HK-Strateji-" + suf
+    try:
+        page.goto(base_url + "/sp", wait_until="domcontentloaded", timeout=30000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=4000)
+        except Exception:
+            pass
+        has_btn = page.locator("#btn-strategy-add, #btn-strategy-add-empty").count() > 0
+        step("SP sayfası açıldı", has_btn)
+        if not has_btn:
+            return _result("Strateji CRUD", steps)
+
+        # Ana strateji
+        page.locator("#btn-strategy-add, #btn-strategy-add-empty").first.click()
+        page.wait_for_selector("#sp-modal-add-title", state="visible", timeout=6000)
+        page.fill("#sp-modal-add-title", sname)
+        page.fill("#sp-modal-add-code", "HKS" + suf[-4:])
+        page.click("#mc-modal-form-save")
+        page.wait_for_timeout(2600)  # sp.js ~1200ms sonra reload
+        created = page.locator("body", has_text=sname).count() > 0
+        step("Ana strateji oluşturuldu (buton+form+kaydet)", created, sname)
+
+        # Alt strateji (herhangi bir stratejinin '+' butonu)
+        if page.locator(".btn-sub-add").count() > 0:
+            ssname = "HK-Alt-" + suf
+            page.locator(".btn-sub-add").first.click()
+            page.wait_for_selector("#sp-modal-sub-add-title", state="visible", timeout=6000)
+            page.fill("#sp-modal-sub-add-title", ssname)
+            page.fill("#sp-modal-sub-add-code", "HKA" + suf[-4:])
+            page.click("#mc-modal-form-save")
+            page.wait_for_timeout(2600)
+            sub_ok = page.locator("body", has_text=ssname).count() > 0
+            step("Alt strateji oluşturuldu (buton+form+kaydet)", sub_ok, ssname)
+    except Exception as e:
+        step("İstisna", False, str(e).splitlines()[0][:120])
+    return _result("Strateji CRUD", steps)
+
+
 # Senaryo kütüphanesi — zamanla büyür
 SCENARIOS = [
     scenario_blue_ocean,
+    scenario_sp_strateji,
 ]
