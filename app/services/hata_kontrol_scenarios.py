@@ -9,62 +9,8 @@ Yeni senaryolar SCENARIOS listesine eklenerek büyür.
 """
 from __future__ import annotations
 
-import datetime as _dt
-import json
 import re as _re
 import time
-
-
-def _csrf(page, base_url):
-    """Giriş yapmış sayfadan CSRF token'ı (POST uçları için)."""
-    try:
-        page.goto(base_url + "/masaustu", wait_until="domcontentloaded", timeout=20000)
-    except Exception:
-        pass
-    try:
-        return page.get_attribute('meta[name="csrf-token"]', "content") or ""
-    except Exception:
-        return ""
-
-
-def _post_json(page, base_url, path, payload, token):
-    """POST'u tarayıcının kendi fetch'iyle yap (session çerezi + CSRF doğal gider)."""
-    return page.evaluate(
-        """async (a) => {
-            const r = await fetch(a.path, {method:'POST', credentials:'same-origin',
-              headers:{'Content-Type':'application/json','X-CSRFToken':a.token,'X-Requested-With':'XMLHttpRequest'},
-              body: JSON.stringify(a.payload)});
-            let b=null; try { b = await r.json(); } catch(e) { b = null; }
-            return {status: r.status, ok: r.ok, json: b};
-        }""",
-        {"path": path, "token": token, "payload": payload},
-    )
-
-
-def _get_json(page, path):
-    """GET'i tarayıcının fetch'iyle (session çerezi doğal gider)."""
-    return page.evaluate(
-        """async (p) => {
-            const r = await fetch(p, {credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}});
-            let b=null; try { b = await r.json(); } catch(e) { b = null; }
-            return {status: r.status, ok: r.ok, json: b};
-        }""", path)
-
-
-def _post_form(page, path, formobj, token):
-    """Form POST'u tarayıcının fetch'iyle (redirect'i izler, final url döner)."""
-    return page.evaluate(
-        """async (a) => {
-            const fd = new URLSearchParams();
-            for (const k in a.form) fd.append(k, a.form[k]);
-            fd.append('csrf_token', a.token);
-            const r = await fetch(a.path, {method:'POST', credentials:'same-origin',
-              headers:{'X-CSRFToken':a.token,'Content-Type':'application/x-www-form-urlencoded'},
-              body: fd.toString()});
-            return {status: r.status, ok: r.ok, url: r.url};
-        }""",
-        {"path": path, "form": formobj, "token": token},
-    )
 
 
 def _result(name, steps):

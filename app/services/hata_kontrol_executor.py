@@ -19,12 +19,12 @@ import os
 import threading
 import time
 
-from app.services.tenant_clone_service import SYNTH_ADMIN_EMAIL
+from app.services.tenant_clone_service import SYNTH_ADMIN_EMAIL, SYNTH_ADMIN_PW
 
-SYNTH_ADMIN_PW = "HataKontrol!123"   # tenant_clone_service ile aynı
 DEFAULT_BASE_URL = "http://127.0.0.1:5001"
+_MAX_RUNS = 20   # bellekte tutulacak en son koşu sayısı (sınırsız büyümeyi önler)
 
-# Bellekte koşu durumu (kalıcılık Faz 5'te DB tablosuna taşınacak)
+# Bellekte koşu durumu (kalıcılık: dosya — _persist_run)
 _RUNS: dict[str, dict] = {}
 _RUN_SEQ = {"n": 0}
 _LOCK = threading.Lock()
@@ -33,6 +33,10 @@ _LOCK = threading.Lock()
 def _new_run_id() -> str:
     with _LOCK:
         _RUN_SEQ["n"] += 1
+        # Bellek sınırı: en eski koşuları at (en son _MAX_RUNS kalsın)
+        if len(_RUNS) >= _MAX_RUNS:
+            for old in list(_RUNS.keys())[: len(_RUNS) - _MAX_RUNS + 1]:
+                _RUNS.pop(old, None)
         return f"run{_RUN_SEQ['n']}"
 
 
@@ -171,24 +175,25 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            ctx = browser.new_context(ignore_https_errors=True)
-            page = ctx.new_page()
-            if not _login(page, base_url):
-                st["status"] = "error"
-                st["error"] = "Login başarısız (tomofiltest admini)."
+            try:
+                ctx = browser.new_context(ignore_https_errors=True)
+                page = ctx.new_page()
+                if not _login(page, base_url):
+                    st["status"] = "error"
+                    st["error"] = "Login başarısız (tomofiltest admini)."
+                    return
+                for fn in SCENARIOS:
+                    st["current"] = getattr(fn, "__name__", "senaryo")
+                    try:
+                        res = fn(page, base_url)
+                    except Exception as e:
+                        res = {"name": getattr(fn, "__name__", "senaryo"), "passed": False,
+                               "steps": [{"step": "İstisna", "ok": False, "detail": str(e)[:120]}]}
+                    st["scenarios"].append(res)
+                    st["passed" if res.get("passed") else "failed"] += 1
+                    st["done"] += 1
+            finally:
                 browser.close()
-                return
-            for fn in SCENARIOS:
-                st["current"] = getattr(fn, "__name__", "senaryo")
-                try:
-                    res = fn(page, base_url)
-                except Exception as e:
-                    res = {"name": getattr(fn, "__name__", "senaryo"), "passed": False,
-                           "steps": [{"step": "İstisna", "ok": False, "detail": str(e)[:120]}]}
-                st["scenarios"].append(res)
-                st["passed" if res.get("passed") else "failed"] += 1
-                st["done"] += 1
-            browser.close()
 
         # Senaryolar veri yazdı → tomofiltest'i baseline'a döndür (K8)
         st["current"] = "tomofiltest sıfırlanıyor…"
@@ -233,69 +238,69 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            ctx = browser.new_context(ignore_https_errors=True)
-            page = ctx.new_page()
+            try:
+                ctx = browser.new_context(ignore_https_errors=True)
+                page = ctx.new_page()
 
-            # Sinyal toplayıcılar (her ziyaret öncesi temizlenir)
-            sig = {"js": [], "ajax": []}
-            page.on("pageerror", lambda e: sig["js"].append(str(e)[:200]))
-            page.on("console", lambda m: sig["js"].append(m.text[:200]) if m.type == "error" else None)
-            def _on_resp(resp):
-                try:
-                    rt = resp.request.resource_type
-                    if resp.status >= 500 or (resp.status >= 400 and rt in ("xhr", "fetch")):
-                        sig["ajax"].append(f"{resp.status} {resp.url[:120]}")
-                except Exception:
-                    pass
-            page.on("response", _on_resp)
+                # Sinyal toplayıcılar (her ziyaret öncesi temizlenir)
+                sig = {"js": [], "ajax": []}
+                page.on("pageerror", lambda e: sig["js"].append(str(e)[:200]))
+                page.on("console", lambda m: sig["js"].append(m.text[:200]) if m.type == "error" else None)
+                def _on_resp(resp):
+                    try:
+                        rt = resp.request.resource_type
+                        if resp.status >= 500 or (resp.status >= 400 and rt in ("xhr", "fetch")):
+                            sig["ajax"].append(f"{resp.status} {resp.url[:120]}")
+                    except Exception:
+                        pass
+                page.on("response", _on_resp)
 
-            # 1) Login (tomofiltest sentetik admini)
-            if not _login(page, base_url):
-                st["status"] = "error"
-                st["error"] = "Login başarısız (tomofiltest admini). Sunucu çalışıyor mu / tomofiltest kurulu mu?"
+                # 1) Login (tomofiltest sentetik admini)
+                if not _login(page, base_url):
+                    st["status"] = "error"
+                    st["error"] = "Login başarısız (tomofiltest admini). Sunucu çalışıyor mu / tomofiltest kurulu mu?"
+                    return
+
+                # 2) Sayfaları gez
+                for url in urls:
+                    sig["js"].clear(); sig["ajax"].clear()
+                    st["current"] = url
+                    status = None
+                    html = ""
+                    try:
+                        resp = page.goto(base_url + url, wait_until="domcontentloaded", timeout=30000)
+                        status = resp.status if resp else None
+                        try:
+                            page.wait_for_load_state("networkidle", timeout=2500)
+                        except Exception:
+                            pass
+                        html = page.content()
+                        durum, sebep = _classify(status, sig["js"], sig["ajax"], html, page.url)
+                        # BFS — sayfadaki iç bağlantıları topla
+                        try:
+                            hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.getAttribute('href'))")
+                            for h in hrefs or []:
+                                pth = _norm_href(h, base_url)
+                                if pth and pth not in harvested:
+                                    harvested[pth] = url
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        emsg = str(e).splitlines()[0]
+                        if "Download is starting" in emsg or "net::ERR_ABORTED" in emsg:
+                            durum, sebep = "skip", "indirme/yönlendirme ucu (atlandı)"
+                        elif "Timeout" in emsg or "timeout" in emsg:
+                            durum, sebep = "warn", "zaman aşımı (yavaş yüklenme, >30s)"
+                        else:
+                            durum, sebep = "fail", f"yüklenemedi: {emsg[:80]}"
+                    st["results"].append({
+                        "url": url, "status": status, "durum": durum, "sebep": sebep,
+                        "js": list(sig["js"])[:3], "ajax": list(sig["ajax"])[:3],
+                    })
+                    st["counts"][durum] = st["counts"].get(durum, 0) + 1
+                    st["done"] += 1
+            finally:
                 browser.close()
-                return
-
-            # 2) Sayfaları gez
-            for url in urls:
-                sig["js"].clear(); sig["ajax"].clear()
-                st["current"] = url
-                status = None
-                html = ""
-                try:
-                    resp = page.goto(base_url + url, wait_until="domcontentloaded", timeout=30000)
-                    status = resp.status if resp else None
-                    try:
-                        page.wait_for_load_state("networkidle", timeout=2500)
-                    except Exception:
-                        pass
-                    html = page.content()
-                    durum, sebep = _classify(status, sig["js"], sig["ajax"], html, page.url)
-                    # BFS — sayfadaki iç bağlantıları topla
-                    try:
-                        hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.getAttribute('href'))")
-                        for h in hrefs or []:
-                            pth = _norm_href(h, base_url)
-                            if pth and pth not in harvested:
-                                harvested[pth] = url
-                    except Exception:
-                        pass
-                except Exception as e:
-                    emsg = str(e).splitlines()[0]
-                    if "Download is starting" in emsg or "net::ERR_ABORTED" in emsg:
-                        durum, sebep = "skip", "indirme/yönlendirme ucu (atlandı)"
-                    elif "Timeout" in emsg or "timeout" in emsg:
-                        durum, sebep = "warn", "zaman aşımı (yavaş yüklenme, >30s)"
-                    else:
-                        durum, sebep = "fail", f"yüklenemedi: {emsg[:80]}"
-                st["results"].append({
-                    "url": url, "status": status, "durum": durum, "sebep": sebep,
-                    "js": list(sig["js"])[:3], "ajax": list(sig["ajax"])[:3],
-                })
-                st["counts"][durum] = st["counts"].get(durum, 0) + 1
-                st["done"] += 1
-
-            browser.close()
 
         # BFS sonrası: ölü linkler + yetim sayfalar
         try:

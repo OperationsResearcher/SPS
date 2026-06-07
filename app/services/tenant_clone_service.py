@@ -15,6 +15,8 @@ GÜVENLİK: yalnız non-prod (Yayín'da çağrılmaz — çağıran katman kilit
 """
 from __future__ import annotations
 
+import os
+
 from flask import current_app
 from sqlalchemy import inspect as sa_inspect, text
 
@@ -23,6 +25,12 @@ from extensions import db
 SOURCE_NAME_LIKE = "tomofil"      # kaynak kurum (Tomofil) — ada göre bulunur
 TEST_TENANT_NAME = "tomofiltest"  # hedef izole kurum
 SYNTH_ADMIN_EMAIL = "admin@tomofiltest.local"
+SYNTH_ADMIN_PW = "HataKontrol!123"   # tek kaynak (executor de buradan import eder)
+
+
+def _is_production() -> bool:
+    """Yayın ortamı mı? (klon/wipe için savunma derinliği — route'a ek olarak)."""
+    return (os.environ.get("FLASK_ENV") or "development").lower() == "production"
 
 # Kullanıcıya bağlı / klonlanmayan tablolar (kullanıcılar kopyalanmıyor)
 SKIP_TABLES = {
@@ -98,10 +106,15 @@ def _q(name: str) -> str:
 
 
 def find_source_tenant_id() -> int | None:
+    # tomofiltest'i ASLA kaynak seçme ('%tomofil%' onu da eşler!). Önce tam
+    # short_name eşleşmesi, sonra ada göre — ama hedef adı (tomofiltest) hariç.
     row = db.session.execute(
-        text("SELECT id FROM tenants WHERE lower(coalesce(short_name,'')) = :n "
-             "OR lower(name) LIKE :like ORDER BY id LIMIT 1"),
-        {"n": SOURCE_NAME_LIKE, "like": f"%{SOURCE_NAME_LIKE}%"},
+        text("SELECT id FROM tenants "
+             "WHERE (lower(coalesce(short_name,'')) = :n OR lower(name) LIKE :like) "
+             "  AND lower(name) <> :test AND lower(coalesce(short_name,'')) <> :test "
+             "ORDER BY (lower(coalesce(short_name,'')) = :n) DESC, id "
+             "LIMIT 1"),
+        {"n": SOURCE_NAME_LIKE, "like": f"%{SOURCE_NAME_LIKE}%", "test": TEST_TENANT_NAME},
     ).scalar()
     return int(row) if row else None
 
@@ -139,8 +152,11 @@ def _columns(table: str) -> list[str]:
 # ─── Klon çekirdeği ──────────────────────────────────────────────────────────
 
 def _copy_table(table: str, scope_where: str, source_tid: int, new_tid: int,
-                admin_id: int, clone_set: set[str], existing: set[str]) -> int:
-    """Tek tabloyu kopyalar (küme-temelli id-remap). Kopyalanan satır sayısını döner."""
+                admin_id: int, clone_set: set[str], existing: set[str],
+                made_maps: set[str]) -> int:
+    """Tek tabloyu kopyalar (küme-temelli id-remap). Kopyalanan satır sayısını döner.
+
+    made_maps: bu klon koşusuna ait yerel set (thread-safe; global state yok)."""
     if table not in existing:
         return 0
     cols = _columns(table)
@@ -176,7 +192,7 @@ def _copy_table(table: str, scope_where: str, source_tid: int, new_tid: int,
         if target == "users":
             select_exprs.append(":adminid")        # tüm user FK'leri → sentetik admin
             continue
-        if target and target in clone_set and target in existing and target != table and (f"_map_{target}") in _MADE_MAPS:
+        if target and target in clone_set and target in existing and target != table and (f"_map_{target}") in made_maps:
             jn += 1
             a = f"j{jn}"
             joins.append(f'LEFT JOIN _map_{target} {a} ON {a}.old_id = s.{_q(col)}')
@@ -200,11 +216,8 @@ def _copy_table(table: str, scope_where: str, source_tid: int, new_tid: int,
            f'SELECT {", ".join(select_exprs)} {base_from} {" ".join(joins)}{where}')
     res = db.session.execute(text(sql), {"t": source_tid, "newt": new_tid, "adminid": admin_id})
     if has_id:
-        _MADE_MAPS.add(f"_map_{table}")
+        made_maps.add(f"_map_{table}")
     return res.rowcount or 0
-
-
-_MADE_MAPS: set[str] = set()
 
 
 def _resync_sequences(tables: list[str], existing: set[str]) -> None:
@@ -225,7 +238,11 @@ def clone_tomofiltest(dry_run: bool = True) -> dict:
     dry_run=True: her şey yapılır ama sonunda ROLLBACK (yazma yok) — sayımları görmek için.
     dry_run=False: COMMIT.
     """
-    _MADE_MAPS.clear()
+    # Savunma derinliği: Yayín'da asla (route da kilitler, burada da)
+    if _is_production():
+        return {"ok": False, "error": "Yayín ortamında klon/sıfırlama yapılamaz."}
+
+    made_maps: set[str] = set()   # bu koşuya özel (thread-safe)
     existing = _existing_tables()
     clone_set = {t for t, _ in CLONE_ORDER}
 
@@ -237,6 +254,8 @@ def clone_tomofiltest(dry_run: bool = True) -> dict:
     try:
         # Mevcut tomofiltest'i temizle (wipe + yeniden klonla)
         old_test = find_test_tenant_id()
+        if old_test and old_test == source_tid:
+            return {"ok": False, "error": "Kaynak ve hedef aynı tenant — klon iptal (güvenlik)."}
         if old_test:
             _wipe_test_tenant(old_test, existing)
 
@@ -253,14 +272,14 @@ def clone_tomofiltest(dry_run: bool = True) -> dict:
         admin_id = db.session.execute(text(
             "INSERT INTO users (email, password_hash, first_name, last_name, tenant_id, role_id, is_active) "
             "VALUES (:e, :p, 'Test', 'Admin', :tid, :rid, true) RETURNING id"
-        ), {"e": SYNTH_ADMIN_EMAIL, "p": generate_password_hash("HataKontrol!123"),
+        ), {"e": SYNTH_ADMIN_EMAIL, "p": generate_password_hash(SYNTH_ADMIN_PW),
             "tid": new_tid, "rid": role_id}).scalar()
         report["new_tid"] = new_tid
         report["admin_id"] = admin_id
 
         # Tabloları sırayla kopyala
         for table, scope in CLONE_ORDER:
-            n = _copy_table(table, scope, source_tid, new_tid, admin_id, clone_set, existing)
+            n = _copy_table(table, scope, source_tid, new_tid, admin_id, clone_set, existing, made_maps)
             if n:
                 report["tables"][table] = n
 
@@ -309,6 +328,8 @@ def tomofiltest_status() -> dict:
 
 def _wipe_test_tenant(test_tid: int, existing: set[str]) -> None:
     """tomofiltest verisini siler (sıfırlama için). Sıra: çocuk→ebeveyn (CLONE_ORDER tersi)."""
+    if _is_production():
+        raise RuntimeError("Yayín ortamında wipe yapılamaz (güvenlik).")
     # En basiti: FK'leri geçici kaldırmadan, ters sırada sil. Tüm tablolarda tenant_id yok;
     # bu yüzden id-map yerine doğrudan tenant kapsamı + FK zinciriyle silmek karmaşık.
     # v1: CLONE_ORDER'ı tersine gez, tenant_id'si olanı tenant_id ile, olmayanı atlayıp
