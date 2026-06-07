@@ -117,6 +117,42 @@ def admin_tools_hk_tarama_durum():
     }})
 
 
+@app_bp.route("/admin/araclar/hata-kontrolu/senaryo-baslat", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_hk_senaryo_baslat():
+    """Faz 3d — aktif CRUD senaryolarını arka planda başlatır. Yalnız Admin + Yerel."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    if not _is_local():
+        return jsonify({"success": False, "message": "Senaryolar yalnız Yerel ortamda çalışır."}), 403
+    try:
+        from app.services.hata_kontrol_executor import start_scenarios
+        run_id = start_scenarios(current_app._get_current_object(), base_url=request.host_url.rstrip("/"))
+        return jsonify({"success": True, "run_id": run_id})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] senaryo_baslat: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Senaryolar başlatılamadı."}), 500
+
+
+@app_bp.route("/admin/araclar/hata-kontrolu/senaryo-durum")
+@login_required
+def admin_tools_hk_senaryo_durum():
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.hata_kontrol_executor import get_progress
+    prog = get_progress(request.args.get("run", ""))
+    if not prog:
+        return jsonify({"success": False, "message": "Koşu bulunamadı."}), 404
+    return jsonify({"success": True, "durum": {
+        "id": prog["id"], "status": prog["status"], "total": prog["total"],
+        "done": prog["done"], "current": prog["current"],
+        "passed": prog.get("passed", 0), "failed": prog.get("failed", 0),
+        "scenarios": prog.get("scenarios", []), "reset": prog.get("reset", False),
+        "error": prog["error"],
+    }})
+
+
 @app_bp.route("/admin/araclar/hata-kontrolu/tomofiltest-yenile", methods=["POST"])
 @csrf.exempt
 @login_required

@@ -46,7 +46,14 @@
 - **Ölü link:** hiçbir Flask route'una uymayan href'ler (url_map match; kara liste/static hariç). **Yetim sayfa:** keşfedilen route'a hiçbir sayfadan link verilmemiş (yalnız TAM taramada hesaplanır; limitli koşuda baskılanır).
 - Durum yanıtına + UI'a "Bağlantılar" bölümü (ölü link / yetim, katlanır liste).
 - Doğrulandı (canlı, 40 sayfa): 24 bağlantı toplandı, **1 gerçek ölü link** bulundu — `/admin/yonetim` (kaynak `/admin/notifications`).
-- Kalan (sonraki): aktif CRUD senaryoları, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
+
+### Faz 3d — Aktif CRUD senaryoları ("tam aktif")
+- `app/services/hata_kontrol_scenarios.py`: senaryo kütüphanesi (SCENARIOS). İlk senaryo **Mavi Okyanus CRUD** — gerçek UI: Tuval oluştur (buton+form+AJAX) → aç → Faktör ekle (modal+AJAX), her adım doğrulanır.
+- `hata_kontrol_executor.start_scenarios/_run_scenarios`: login → senaryolar → **otomatik sıfırlama** (tomofiltest wipe+reclone, K8). Senaryo verisi baseline'a döner.
+- `tenant_clone_service._wipe_test_tenant`: users'tan önce kullanıcı-bağlı runtime tablolarını (audit_logs, llm_usage, notifications, vb.) temizler (FK ihlali düzeltildi).
+- Uçlar: `/senaryo-baslat` + `/senaryo-durum`; UI "Aktif CRUD Senaryoları" kartı (canlı adım sonuçları + reset bilgisi). Yalnız Admin + Yerel.
+- Doğrulandı (canlı): Mavi Okyanus senaryosu 4/4 adım GEÇTİ; reset True; sıfırlama sonrası 0 kalıntı.
+- Kalan (opsiyonel): senaryo kütüphanesini büyütme, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
 
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 

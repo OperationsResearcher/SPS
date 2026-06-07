@@ -318,5 +318,26 @@ def _wipe_test_tenant(test_tid: int, existing: set[str]) -> None:
             continue
         if "tenant_id" in _columns(table):
             db.session.execute(text(f'DELETE FROM {_q(table)} WHERE tenant_id = :t'), {"t": test_tid})
+
+    # Kullanıcı-bağlı runtime tabloları (login/işlem sırasında üretilir) — users'tan ÖNCE temizle.
+    _usub = "(SELECT id FROM users WHERE tenant_id = :t)"
+    _user_linked = [
+        f"DELETE FROM audit_logs WHERE tenant_id = :t OR user_id IN {_usub}",
+        "DELETE FROM llm_usage_logs WHERE tenant_id = :t",
+        "DELETE FROM llm_quota_overrides WHERE tenant_id = :t",
+        f"DELETE FROM notifications WHERE tenant_id = :t OR user_id IN {_usub}",
+        f"DELETE FROM notifications_ext WHERE user_id IN {_usub}",
+        f"DELETE FROM push_subscriptions WHERE user_id IN {_usub}",
+        f"DELETE FROM notification_preferences WHERE user_id IN {_usub}",
+        f"DELETE FROM user_tour_progress WHERE user_id IN {_usub}",
+        f"DELETE FROM user_year_assignment WHERE user_id IN {_usub} OR tenant_id = :t",
+        f"DELETE FROM favorite_kpis WHERE user_id IN {_usub}",
+        "DELETE FROM tickets WHERE tenant_id = :t",
+    ]
+    for sql in _user_linked:
+        tbl = sql.split("FROM", 1)[1].split()[0]
+        if tbl in existing:
+            db.session.execute(text(sql), {"t": test_tid})
+
     db.session.execute(text("DELETE FROM users WHERE tenant_id = :t"), {"t": test_tid})
     db.session.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": test_tid})

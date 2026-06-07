@@ -75,6 +75,74 @@ def start_run(app, base_url: str | None = None, limit: int | None = None) -> str
     return run_id
 
 
+def start_scenarios(app, base_url: str | None = None) -> str:
+    """Arka planda aktif CRUD senaryolarını başlatır, run_id döner."""
+    run_id = _new_run_id()
+    _RUNS[run_id] = {
+        "id": run_id, "kind": "scenario", "status": "starting",
+        "total": 0, "done": 0, "current": "", "scenarios": [],
+        "passed": 0, "failed": 0, "reset": False, "error": None,
+        "base_url": base_url or DEFAULT_BASE_URL,
+    }
+    t = threading.Thread(target=_run_scenarios, args=(app, run_id, base_url or DEFAULT_BASE_URL), daemon=True)
+    t.start()
+    return run_id
+
+
+def _run_scenarios(app, run_id: str, base_url: str) -> None:
+    st = _RUNS[run_id]
+    try:
+        from app.services.hata_kontrol_scenarios import SCENARIOS
+        st["total"] = len(SCENARIOS)
+        st["status"] = "running"
+
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            ctx = browser.new_context(ignore_https_errors=True)
+            page = ctx.new_page()
+            if not _login(page, base_url):
+                st["status"] = "error"
+                st["error"] = "Login başarısız (tomofiltest admini)."
+                browser.close()
+                return
+            for fn in SCENARIOS:
+                st["current"] = getattr(fn, "__name__", "senaryo")
+                try:
+                    res = fn(page, base_url)
+                except Exception as e:
+                    res = {"name": getattr(fn, "__name__", "senaryo"), "passed": False,
+                           "steps": [{"step": "İstisna", "ok": False, "detail": str(e)[:120]}]}
+                st["scenarios"].append(res)
+                st["passed" if res.get("passed") else "failed"] += 1
+                st["done"] += 1
+            browser.close()
+
+        # Senaryolar veri yazdı → tomofiltest'i baseline'a döndür (K8)
+        st["current"] = "tomofiltest sıfırlanıyor…"
+        try:
+            with app.app_context():
+                from app.services.tenant_clone_service import clone_tomofiltest
+                rep = clone_tomofiltest(dry_run=False)
+                st["reset"] = bool(rep.get("ok"))
+        except Exception as e:
+            st["reset"] = False
+            try:
+                app.logger.error(f"[hata_kontrol_scenarios] reset hatası: {e}")
+            except Exception:
+                pass
+
+        st["status"] = "done"
+        st["current"] = ""
+    except Exception as e:
+        st["status"] = "error"
+        st["error"] = str(e)[:300]
+        try:
+            app.logger.error(f"[hata_kontrol_scenarios] {e}", exc_info=True)
+        except Exception:
+            pass
+
+
 def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
     st = _RUNS[run_id]
     try:

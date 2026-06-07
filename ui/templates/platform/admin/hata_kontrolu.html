@@ -14,6 +14,8 @@
      data-kesif-url="{{ url_for('app_bp.admin_tools_hk_kesif') }}"
      data-baslat-url="{{ url_for('app_bp.admin_tools_hk_tarama_baslat') }}"
      data-tarama-durum-url="{{ url_for('app_bp.admin_tools_hk_tarama_durum') }}"
+     data-senaryo-baslat-url="{{ url_for('app_bp.admin_tools_hk_senaryo_baslat') }}"
+     data-senaryo-durum-url="{{ url_for('app_bp.admin_tools_hk_senaryo_durum') }}"
      data-is-local="{{ '1' if is_local else '0' }}">
 
   <div class="mc-page-header" style="margin-bottom:16px;">
@@ -97,6 +99,22 @@
     <div id="hk-tara-ozet" style="display:none;margin-bottom:8px;"></div>
     <div id="hk-tara-links" style="display:none;margin-bottom:8px;"></div>
     <div id="hk-tara-sonuc" style="display:none;max-height:420px;overflow:auto;"></div>
+  </div>
+
+  {# ── Adım 4: Aktif CRUD senaryoları ── #}
+  <div class="mc-card" style="padding:18px;margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-flask"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Aktif CRUD Senaryoları</div>
+          <div style="font-size:12px;color:#64748b;">Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince tomofiltest otomatik sıfırlanır.</div>
+        </div>
+      </div>
+      <button id="hk-senaryo" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-vial"></i> Senaryoları Çalıştır</button>
+    </div>
+    <div id="hk-senaryo-info" style="font-size:12.5px;color:#64748b;">Henüz çalıştırılmadı.</div>
+    <div id="hk-senaryo-sonuc" style="display:none;margin-top:8px;"></div>
   </div>
 </div>
 
@@ -263,6 +281,44 @@
       }).catch(function(){info.textContent="Bağlantı hatası.";taraBtn.disabled=!isLocal;});
   }
   if(taraBtn) taraBtn.addEventListener("click", basla);
+
+  // ── Aktif CRUD senaryoları ──
+  var senBaslatUrl=root.dataset.senaryoBaslatUrl, senDurumUrl=root.dataset.senaryoDurumUrl;
+  var senBtn=document.getElementById("hk-senaryo"), senInfo=document.getElementById("hk-senaryo-info"), senSonuc=document.getElementById("hk-senaryo-sonuc");
+  var senTimer=null;
+  function renderSen(d){
+    senInfo.textContent=d.status==="running"
+      ? ("Çalışıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?("Tamamlandı — ✅ "+d.passed+" / ❌ "+d.failed+(d.reset?" · tomofiltest sıfırlandı":"")):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+    var html=(d.scenarios||[]).map(function(s){
+      var col=s.passed?"#16a34a":"#dc2626", ic=s.passed?"fa-circle-check":"fa-circle-xmark";
+      var steps=(s.steps||[]).map(function(st){
+        var sc=st.ok?"#16a34a":"#dc2626";
+        return '<div style="font-size:11.5px;color:#64748b;padding-left:14px;"><i class="fas '+(st.ok?"fa-check":"fa-xmark")+'" style="color:'+sc+';"></i> '+esc(st.step)+(st.detail?(' <span style="color:#94a3b8;">'+esc(st.detail)+'</span>'):"")+'</div>';
+      }).join("");
+      return '<div style="margin-bottom:8px;"><div style="font-size:13px;font-weight:600;color:'+col+';"><i class="fas '+ic+'"></i> '+esc(s.name)+'</div>'+steps+'</div>';
+    }).join("");
+    senSonuc.innerHTML=html; senSonuc.style.display="block";
+  }
+  function senPoll(rid){
+    fetch(senDurumUrl+"?run="+encodeURIComponent(rid),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){clearInterval(senTimer);return;}
+        renderSen(j.durum);
+        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);senBtn.disabled=!isLocal;senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';}
+      }).catch(function(){});
+  }
+  function senBasla(){
+    if(!isLocal) return;
+    senBtn.disabled=true; senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor…';
+    senInfo.textContent="Başlatılıyor…";
+    fetch(senBaslatUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){senInfo.textContent=(j&&j.message)||"Başlatılamadı.";senBtn.disabled=!isLocal;senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';return;}
+        senTimer=setInterval(function(){senPoll(j.run_id);},1500); senPoll(j.run_id);
+      }).catch(function(){senInfo.textContent="Bağlantı hatası.";senBtn.disabled=!isLocal;});
+  }
+  if(senBtn) senBtn.addEventListener("click", senBasla);
 })();
 </script>
 {% endblock %}
