@@ -19,6 +19,7 @@ def _send_notification(user_id: int, title: str, message: str, link: str | None 
     try:
         notif = Notification(
             user_id=user_id,
+            notification_type="pg_performance_deviation",  # NOT NULL — erken uyarı tipi
             title=title,
             message=message,
             link=link or "",

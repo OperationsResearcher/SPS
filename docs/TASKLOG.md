@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-173 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — Aktif CRUD senaryolarını tüm çekirdek entity'lere yayma
+**Modül:** app/services/hata_kontrol_scenarios.py + early_warning_service (bulunan bug)
+**Durum:** ✅ Yerelde tamam; 5/5 senaryo entegre koşuda GEÇTİ, reset temiz. Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Senaryo kütüphanesi (her şey kontrol altında)
+- **Mavi Okyanus** (UI-tıklama): Tuval→aç→Faktör (buton/modal/AJAX)
+- **Strateji** (API): ana + alt strateji create
+- **Vizyon/Misyon** (API): tenant-identity purpose/vision
+- **Süreç→PG→PGV** (API zinciri): süreç→process_kpi→kpi_data (alt-strateji bağlı)
+- **Proje→Task** (form + API): portföy projesi + quick-add görev
+
+### Yöntem kararı
+- Hafif sayfa (Blue Ocean) → gerçek UI-tıklama.
+- Bağlam-ağır / yavaş-render sayfalar (özellikle **/sp** — vizyon skoru 91k+ satır, tekrarlı yüklemede >90s render → UI-otomasyon güvenilmez) ve dinamik süreç sayfası → **API-seviyesi** (giriş yapmış oturumun tarayıcı `fetch`'iyle gerçek uçlar; session+CSRF doğal gider). Yine tomofiltest'e gerçek yazma + validation.
+- Koşu sonunda tomofiltest otomatik sıfırlanır (tüm yeni veri temizlendi — doğrulandı).
+
+### Yan bulgu (gerçek bug, düzeltildi)
+- `services/early_warning_service.py`: `_send_notification` `notification_type` (NOT NULL) set etmiyordu → her gece 02:00 taramasında `NotNullViolation`. `pg_performance_deviation` eklendi.
+
+### Not
+- **/sp performansı** ayrı bir gerçek sorun (büyük tenant'ta çok yavaş) — ileride vizyon skoru cache'lenmeli.
+- Yalnız Yerel; Test/Yayín ayrı onaya bağlı.
+
 ## TASK-172 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Hata Kontrolü taramasının bulduğu gerçek kod kusurlarının düzeltilmesi (15 uç)
