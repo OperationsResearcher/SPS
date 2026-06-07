@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-171 | 2026-06-07 | ✅ Tamamlandı (Faz 1 — klon motoru)
+
+**Görev:** Admin Araçları > Hata Kontrolü — Faz 1: tomofiltest izole klon motoru (yerel)
+**Modül:** app/services/tenant_clone_service.py
+**Durum:** ✅ Yerelde tamam, doğrulandı. Tasarım: `docs/HATA-KONTROLU-TASARIM.md`. Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Yapılan
+- `tenant_clone_service.py`: Tomofil → **tomofiltest** tam klon. Mantık satır-satır id-remap, yürütme küme-temelli (PostgreSQL temp eşleme tabloları + INSERT...SELECT JOIN). Tablo sırası/kapsam elle (wipe'tan doğrulanmış); FK-remap'ler SQLAlchemy introspection ile otomatik.
+- Kullanıcı klonlanmaz → 1 **sentetik admin** (`admin@tomofiltest.local`). Bireysel/bildirim/üyelik tabloları v1'de atlanır.
+- Sıfırlama = **wipe + yeniden klonla** (ayrı snapshot yok).
+
+### Doğrulama (yerel, tenant 27 → tomofiltest)
+- 94.002 satır remap'lendi; users=1, strategies=36, processes=71, process_kpis=221, kpi_data=91.408 (kaynakla birebir).
+- Integrity: yetim sub_strategies 0, sızan kpi_data 0, self-ref parent 0.
+- Reset: ikinci koşu eski tomofiltest'i temiz sildi, tek kopya kaldı (0 kalıntı).
+
+### Notlar
+- **Yalnız Yerel.** Test/Demo/Yayín için ayrı açık onay gerekir (Yayín kalıcı kırmızı çizgi).
+- Sentetik admin şifresi şimdilik koda gömülü (yerel); ileride config'e taşınacak.
+- Sıradaki: Admin Araçları menüsü (yalnız Admin) + Hata Kontrolü iskelet sayfası.
+
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 
 **Görev:** Derin tarama sonrası doğrulanmış 6 iyileştirme açığının kapatılması

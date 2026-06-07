@@ -26,8 +26,8 @@ altına başka admin araçları eklenecek.
 | K4 | Keşif | **Hibrit**: route haritası (474 parametresiz GET) ⊕ ana ekrandan BFS link gezme. |
 | K5 | Parametreli sayfalar | v1'de **atla** (135 adet `/<id>`). Sonra eklenebilir. |
 | K6 | Çalışma biçimi | **Arka planda + canlı ilerleme** (uzun sürer). |
-| K7 | Aktif test verisi | **tomofiltest** adlı izole kurum (Tomofil'den **tam klon**). |
-| K8 | tomofiltest sıfırlama | Klon sonrası kendi **baseline snapshot**'ı; her aktif koşudan sonra geri yükle. |
+| K7 | Aktif test verisi | **tomofiltest** adlı izole kurum (Tomofil'den **tam klon**, **satır-satır id-remap** tekniğiyle). |
+| K8 | tomofiltest sıfırlama | **Wipe + yeniden klonla** (ayrı snapshot yok; her sıfırlamada tomofiltest silinip Tomofil'den taze kopyalanır). |
 | K9 | Ortam kapsamı | **v1 yalnız Yerel.** Test/Demo/Yayín için **her biri ayrı açık onay** gerekir (kullanıcı tek tek onaylar). Hedef mimari her non-prod ortamda kendi tomofiltest'i; ama kurulum **Yerel'den başlar**, diğerlerine ancak ayrı onayla genişler. |
 | K10 | Giriş/kullanıcı | tomofiltest'e **sentetik tek admin** yaratılır; gerçek kullanıcı klonlanmaz. |
 | K11 | İnşa sırası | **Önce tomofiltest klonu**, sonra tarayıcı/crawler. |
