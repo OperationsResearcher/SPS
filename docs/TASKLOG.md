@@ -23,8 +23,12 @@
 ### Yan bulgu (gerçek bug, düzeltildi)
 - `services/early_warning_service.py`: `_send_notification` `notification_type` (NOT NULL) set etmiyordu → her gece 02:00 taramasında `NotNullViolation`. `pg_performance_deviation` eklendi.
 
+### Güncelleme — tümü GERÇEK UI-tıklamaya çevrildi (kullanıcı talebi)
+- Tüm 5 senaryo artık gerçek buton/form/modal tıklaması: Strateji + Vizyon/Misyon (/sp mc-modal), Süreç ('Yeni Süreç' modalı + alt-strateji checkbox), PG (karne #btn-kpi-add modalı), Proje + Task (/project form sayfaları). PGV: karne veri sihirbazı UI'ı mevcut (çok-adımlı; "UI var" notuyla işaretli, tam otomatize edilmedi).
+- /sp ağır render'ı için cömert timeout (120s). **Entegre koşu: 5/5 GEÇTİ, tomofiltest reset temiz.**
+
 ### Not
-- **/sp performansı** ayrı bir gerçek sorun (büyük tenant'ta çok yavaş) — ileride vizyon skoru cache'lenmeli.
+- **/sp performansı** ayrı bir gerçek sorun (büyük tenant'ta çok yavaş) — ileride vizyon skoru cache'lenmeli; UI senaryolarını da hızlandırır.
 - Yalnız Yerel; Test/Yayín ayrı onaya bağlı.
 
 ## TASK-172 | 2026-06-08 | ✅ Tamamlandı
