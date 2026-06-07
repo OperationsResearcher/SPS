@@ -95,6 +95,7 @@
     </div>
 
     <div id="hk-tara-ozet" style="display:none;margin-bottom:8px;"></div>
+    <div id="hk-tara-links" style="display:none;margin-bottom:8px;"></div>
     <div id="hk-tara-sonuc" style="display:none;max-height:420px;overflow:auto;"></div>
   </div>
 </div>
@@ -206,6 +207,24 @@
       '<span style="color:#f59e0b;">⚠️ '+(c.warn||0)+'</span> &nbsp; '+
       '<span style="color:#dc2626;">❌ '+(c.fail||0)+'</span> &nbsp; '+
       '<span style="color:#94a3b8;">⏭️ '+(c.skip||0)+'</span>';
+    // BFS: ölü linkler + yetim sayfalar
+    var lk=d.links||{}, linksEl=document.getElementById("hk-tara-links");
+    if((lk.dead_count||0)>0 || (lk.orphan_count||0)>0){
+      var h='<div style="font-size:12.5px;">'+
+        '<b><i class="fas fa-link-slash" style="color:#dc2626;"></i> Ölü link:</b> '+(lk.dead_count||0)+
+        ' &nbsp; <b><i class="fas fa-ghost" style="color:#94a3b8;"></i> Yetim sayfa:</b> '+(lk.orphan_count||0)+
+        ' <span style="color:#94a3b8;">(toplanan bağlantı: '+(lk.harvested||0)+')</span></div>';
+      if((lk.dead||[]).length){
+        h+='<details style="margin-top:4px;"><summary style="cursor:pointer;font-size:12px;color:#dc2626;">Ölü linkler ('+lk.dead.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+          lk.dead.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.path)+' <span style="color:#cbd5e1;">← '+esc(x.source)+'</span></div>';}).join("")+'</div></details>';
+      }
+      if((lk.orphans||[]).length){
+        h+='<details style="margin-top:2px;"><summary style="cursor:pointer;font-size:12px;color:#64748b;">Yetim sayfalar — hiçbir sayfadan link verilmemiş ('+lk.orphans.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+          lk.orphans.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.url)+' <span style="color:#cbd5e1;">'+esc(x.module||"")+'</span></div>';}).join("")+'</div></details>';
+      }
+      linksEl.innerHTML=h; linksEl.style.display="block";
+    } else { linksEl.style.display="none"; }
+
     // sonuçlar: önce sorunlular (fail, warn), sonra ok, en sona kapsam-dışı (skip)
     var rows=(d.results||[]).slice().sort(function(a,b){var o={fail:0,warn:1,ok:2,skip:3};return o[a.durum]-o[b.durum];});
     sonucEl.style.display="block";

@@ -40,7 +40,13 @@
 - UI: "Taramayı Başlat" + limit + ilerleme çubuğu + canlı sonuç tablosu (sorunlular üstte, kapsam-dışı 403'ler altta).
 - Doğrulandı (canlı, 30 sayfa): gerçek kırıklar yakalandı — 500 `/admin/yonetim-paneli/kullanici-detay`, 503 `/api/v1/ai/recommend`, başarısız AJAX `/admin/yonetim-paneli`. 403 platform-admin sayfaları "kapsam dışı" (skip); indirme uçları kara listede.
 - Not: sentetik admin **tenant_admin** → platform-Admin-only `/admin/*` sayfaları 403 (skip, kapsam dışı; izole tenant tasarımı gereği).
-- Kalan (sonraki): BFS bağlantı gezme, aktif CRUD senaryoları, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
+
+### Faz 3c — BFS bağlantı gezme + ölü link tespiti
+- Executor tarama sırasında her sayfadaki iç `<a href>`'leri toplar (aynı origin, sorgu/fragment atılır).
+- **Ölü link:** hiçbir Flask route'una uymayan href'ler (url_map match; kara liste/static hariç). **Yetim sayfa:** keşfedilen route'a hiçbir sayfadan link verilmemiş (yalnız TAM taramada hesaplanır; limitli koşuda baskılanır).
+- Durum yanıtına + UI'a "Bağlantılar" bölümü (ölü link / yetim, katlanır liste).
+- Doğrulandı (canlı, 40 sayfa): 24 bağlantı toplandı, **1 gerçek ölü link** bulundu — `/admin/yonetim` (kaynak `/admin/notifications`).
+- Kalan (sonraki): aktif CRUD senaryoları, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
 
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 

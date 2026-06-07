@@ -113,6 +113,7 @@ def admin_tools_hk_tarama_durum():
         "done": prog["done"], "current": prog["current"], "counts": prog["counts"],
         "error": prog["error"],
         "results": prog["results"],  # tümü (tek tenant, ~321 satır — yönetilebilir)
+        "links": prog.get("links", {}),
     }})
 
 

@@ -68,6 +68,7 @@ def start_run(app, base_url: str | None = None, limit: int | None = None) -> str
         "id": run_id, "status": "starting", "total": 0, "done": 0,
         "current": "", "results": [], "counts": {"ok": 0, "warn": 0, "fail": 0},
         "error": None, "base_url": base_url or DEFAULT_BASE_URL,
+        "links": {"harvested": 0, "dead": [], "orphans": []},
     }
     t = threading.Thread(target=_run, args=(app, run_id, base_url or DEFAULT_BASE_URL, limit), daemon=True)
     t.start()
@@ -79,9 +80,11 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
     try:
         with app.app_context():
             from app.services.hata_kontrol_service import discover_routes
-            urls = [u["url"] for u in discover_routes()["urls"]]
+            disc_items = discover_routes()["urls"]
+        urls = [u["url"] for u in disc_items]
         if limit:
             urls = urls[:limit]
+        harvested: dict[str, str] = {}   # path -> kaynak sayfa (BFS link toplama)
         st["total"] = len(urls)
         st["status"] = "running"
 
@@ -126,6 +129,15 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                         pass
                     html = page.content()
                     durum, sebep = _classify(status, sig["js"], sig["ajax"], html, page.url)
+                    # BFS — sayfadaki iç bağlantıları topla
+                    try:
+                        hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.getAttribute('href'))")
+                        for h in hrefs or []:
+                            pth = _norm_href(h, base_url)
+                            if pth and pth not in harvested:
+                                harvested[pth] = url
+                    except Exception:
+                        pass
                 except Exception as e:
                     emsg = str(e).splitlines()[0]
                     if "Download is starting" in emsg or "net::ERR_ABORTED" in emsg:
@@ -140,6 +152,12 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                 st["done"] += 1
 
             browser.close()
+
+        # BFS sonrası: ölü linkler + yetim sayfalar
+        try:
+            st["links"] = _compute_links(app, harvested, disc_items, full=(not limit))
+        except Exception as e:
+            app.logger.info(f"[hata_kontrol_executor] link analizi atlandı: {e}")
         st["status"] = "done"
         st["current"] = ""
     except Exception as e:
@@ -149,6 +167,68 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
             app.logger.error(f"[hata_kontrol_executor] {e}", exc_info=True)
         except Exception:
             pass
+
+
+def _norm_href(href: str, base_url: str) -> str | None:
+    """Bir <a href>'i iç yola normalize eder (aynı origin, sorgu/fragment atılır)."""
+    if not href:
+        return None
+    href = href.strip()
+    if href.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
+        return None
+    if href.startswith("http"):
+        if not href.startswith(base_url):
+            return None  # dış bağlantı
+        path = href[len(base_url):]
+    elif href.startswith("/"):
+        path = href
+    else:
+        return None  # göreli/anchor — atla
+    path = path.split("#")[0].split("?")[0]
+    return path or "/"
+
+
+def _compute_links(app, harvested: dict[str, str], disc_items: list[dict], full: bool = True) -> dict:
+    """Toplanan bağlantılardan ölü linkleri ve (tam taramada) yetim sayfaları çıkarır."""
+    from werkzeug.exceptions import NotFound, MethodNotAllowed
+    from app.services.hata_kontrol_service import _BLACKLIST
+
+    adapter = app.url_map.bind("localhost")
+    reached_eps = set()
+    dead = []
+    for path, src in harvested.items():
+        if _BLACKLIST.search(path) or path.startswith("/static"):
+            continue
+        try:
+            ep, _ = adapter.match(path, method="GET")
+            reached_eps.add(ep)
+        except MethodNotAllowed:
+            try:
+                ep, _ = adapter.match(path)
+                reached_eps.add(ep)
+            except Exception:
+                pass
+        except NotFound:
+            dead.append({"path": path, "source": src})
+        except Exception:
+            pass
+
+    # Yetim: keşfedilen (taranabilir) sayfa, hiçbir sayfadan link almıyor
+    # (yalnız TAM taramada anlamlı — limitli koşuda baskılanır)
+    orphans = []
+    if full:
+        orphans = [
+            {"url": it["url"], "module": it["module"]}
+            for it in disc_items
+            if it["endpoint"] not in reached_eps
+        ]
+    return {
+        "harvested": len(harvested),
+        "dead": dead[:100],
+        "orphans": orphans[:150],
+        "dead_count": len(dead),
+        "orphan_count": len(orphans),
+    }
 
 
 def _login(page, base_url: str) -> bool:
