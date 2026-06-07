@@ -27,7 +27,13 @@
 - Templates: `admin/araclar.html` (genişleyebilir araç ızgarası) + `admin/hata_kontrolu.html` (tomofiltest durumu + "Kur/Yenile" butonu, klon motorunu UI'dan tetikler).
 - `base.html`: sol menüde "Admin Araçları" grubu (yalnız Admin).
 - Doğrulandı: Admin oturumuyla 3 sayfa/uç 200; durum tomofiltest'i (tid) doğru gösteriyor.
-- Sıradaki faz: Keşif (route ⊕ BFS) + Playwright tarama.
+
+### Faz 2 — Keşif (route haritası, statik)
+- `app/services/hata_kontrol_service.py` → `discover_routes(active_only=True)`: GET + parametresiz + kara-liste dışı + **yalnız app_bp** (legacy/pazarlama hariç). Modül gruplaması + şeffaf "atlananlar" sayımı.
+- Uç: `/admin/araclar/hata-kontrolu/kesif`; Hata Kontrolü sayfasına "Keşfet" kartı (modül rozetleri + katlanır URL listesi).
+- Doğrulandı: **321 aktif sayfa** keşfedildi (atlanan — parametreli 133, kara liste 25, legacy ~123).
+- BFS (bağlantı gezme) bilinçli olarak Faz 3'e ertelendi (sayfa yükleme motorunu paylaşır).
+- Sıradaki faz: Playwright tarayıcı motoru (pasif gözlem: JS hatası / başarısız AJAX / hata sayfası) + BFS.
 
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 

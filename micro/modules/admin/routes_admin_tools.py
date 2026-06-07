@@ -63,6 +63,20 @@ def admin_tools_tomofiltest_durum():
         return jsonify({"success": False, "message": "Durum alınamadı."}), 500
 
 
+@app_bp.route("/admin/araclar/hata-kontrolu/kesif")
+@login_required
+def admin_tools_hk_kesif():
+    """Faz 2 — taranacak sayfaların keşfi (route haritası, statik)."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    try:
+        from app.services.hata_kontrol_service import discover_routes
+        return jsonify({"success": True, "kesif": discover_routes()})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] kesif: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Keşif başarısız."}), 500
+
+
 @app_bp.route("/admin/araclar/hata-kontrolu/tomofiltest-yenile", methods=["POST"])
 @csrf.exempt
 @login_required
