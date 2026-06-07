@@ -1923,3 +1923,5 @@ def admin_modules_toggle(mod_id):
 from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
 
 from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D
+
+from micro.modules.admin import routes_admin_tools  # noqa: F401, E402  Admin Araçları (Hata Kontrolü)

@@ -259,6 +259,16 @@
             {% endif %}
             {% endif %}
 
+            {% if role_name == 'Admin' %}
+            <!-- Admin Araçları -->
+            <div class="sidebar-section-label">Admin Araçları</div>
+            <a href="{{ url_for('app_bp.admin_tools_home') }}"
+                class="sidebar-item {% if 'admin_tools' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-toolbox"></i></span>
+                <span class="sidebar-item-text">Admin Araçları</span>
+            </a>
+            {% endif %}
+
             <!-- Sistem -->
             <div class="sidebar-section-label">Sistem</div>
 

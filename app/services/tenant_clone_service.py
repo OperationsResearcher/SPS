@@ -284,6 +284,29 @@ def clone_tomofiltest(dry_run: bool = True) -> dict:
     return report
 
 
+def tomofiltest_status() -> dict:
+    """tomofiltest kurumunun mevcut durumu (UI için)."""
+    tid = find_test_tenant_id()
+    if not tid:
+        return {"exists": False}
+
+    def c(sql: str) -> int:
+        try:
+            return int(db.session.execute(text(sql), {"t": tid}).scalar() or 0)
+        except Exception:
+            return 0
+
+    return {
+        "exists": True,
+        "tid": tid,
+        "admin_email": SYNTH_ADMIN_EMAIL,
+        "strategies": c("SELECT count(*) FROM strategies WHERE tenant_id=:t"),
+        "processes": c("SELECT count(*) FROM processes WHERE tenant_id=:t"),
+        "process_kpis": c("SELECT count(*) FROM process_kpis pk JOIN processes p ON pk.process_id=p.id WHERE p.tenant_id=:t"),
+        "kpi_data": c("SELECT count(*) FROM kpi_data kd JOIN process_kpis pk ON kd.process_kpi_id=pk.id JOIN processes p ON pk.process_id=p.id WHERE p.tenant_id=:t"),
+    }
+
+
 def _wipe_test_tenant(test_tid: int, existing: set[str]) -> None:
     """tomofiltest verisini siler (sıfırlama için). Sıra: çocuk→ebeveyn (CLONE_ORDER tersi)."""
     # En basiti: FK'leri geçici kaldırmadan, ters sırada sil. Tüm tablolarda tenant_id yok;

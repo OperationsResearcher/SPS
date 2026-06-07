@@ -21,7 +21,13 @@
 ### Notlar
 - **Yalnız Yerel.** Test/Demo/Yayín için ayrı açık onay gerekir (Yayín kalıcı kırmızı çizgi).
 - Sentetik admin şifresi şimdilik koda gömülü (yerel); ileride config'e taşınacak.
-- Sıradaki: Admin Araçları menüsü (yalnız Admin) + Hata Kontrolü iskelet sayfası.
+
+### Faz 1 UI (aynı task)
+- `micro/modules/admin/routes_admin_tools.py`: `/admin/araclar`, `/admin/araclar/hata-kontrolu` (+ durum/yenile uçları). Yalnız `Admin` + **yalnız Yerel** (FLASK_ENV!=production → Test/Demo/Yayín otomatik 403).
+- Templates: `admin/araclar.html` (genişleyebilir araç ızgarası) + `admin/hata_kontrolu.html` (tomofiltest durumu + "Kur/Yenile" butonu, klon motorunu UI'dan tetikler).
+- `base.html`: sol menüde "Admin Araçları" grubu (yalnız Admin).
+- Doğrulandı: Admin oturumuyla 3 sayfa/uç 200; durum tomofiltest'i (tid) doğru gösteriyor.
+- Sıradaki faz: Keşif (route ⊕ BFS) + Playwright tarama.
 
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 

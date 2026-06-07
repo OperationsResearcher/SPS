@@ -1,0 +1,116 @@
+{% extends "platform/base.html" %}
+{% block title %}Hata Kontrolü — Kokpitim{% endblock %}
+{% block page_title %}Hata Kontrolü{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'Hata Kontrolü', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1000px;margin:0 auto;"
+     id="hk-root"
+     data-durum-url="{{ url_for('app_bp.admin_tools_tomofiltest_durum') }}"
+     data-yenile-url="{{ url_for('app_bp.admin_tools_tomofiltest_yenile') }}"
+     data-is-local="{{ '1' if is_local else '0' }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-stethoscope" style="color:#0284c7;"></i> Hata Kontrolü
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Uygulamayı izole bir test kurumu (<b>tomofiltest</b>) üzerinde otomatik gezip çalışmayan sayfa/özellikleri raporlar.
+      </p>
+    </div>
+  </div>
+
+  {% if not is_local %}
+  <div class="mc-card" style="padding:12px 16px;margin-bottom:16px;border-left:4px solid #dc2626;background:#fef2f2;">
+    <i class="fas fa-lock" style="color:#b91c1c;"></i>
+    <span style="font-size:13px;color:#991b1b;">Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.</span>
+  </div>
+  {% endif %}
+
+  {# ── Adım 1: İzole test kurumu ── #}
+  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#ecfeff;color:#0e7490;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clone"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">İzole Test Kurumu — tomofiltest</div>
+          <div style="font-size:12px;color:#64748b;">Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri etkilenmez.</div>
+        </div>
+      </div>
+      <button id="hk-yenile" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}>
+        <i class="fas fa-rotate"></i> tomofiltest'i Kur / Yenile
+      </button>
+    </div>
+
+    <div id="hk-durum" style="font-size:13px;color:#475569;">Durum yükleniyor…</div>
+    <div id="hk-sonuc" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;font-size:13px;"></div>
+  </div>
+
+  {# ── Adım 2: Tarama (sonraki fazlar) ── #}
+  <div class="mc-card" style="padding:18px;opacity:0.7;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="width:34px;height:34px;border-radius:9px;background:#f1f5f9;color:#94a3b8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-magnifying-glass"></i></span>
+      <div style="font-size:14px;font-weight:700;color:var(--text-default);">Sayfa & Özellik Taraması</div>
+    </div>
+    <p style="font-size:12.5px;color:#64748b;margin:0;">
+      Keşif (route + bağlantı gezme) ve otomatik tarayıcı testi sonraki fazlarda eklenecek.
+      Önce izole test kurumu hazırlanır.
+    </p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById("hk-root"); if(!root) return;
+  var durumUrl=root.dataset.durumUrl, yenileUrl=root.dataset.yenileUrl;
+  var isLocal=root.dataset.isLocal==="1";
+  var durumEl=document.getElementById("hk-durum");
+  var sonucEl=document.getElementById("hk-sonuc");
+  var btn=document.getElementById("hk-yenile");
+
+  function loadDurum(){
+    fetch(durumUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success){durumEl.textContent="Durum alınamadı.";return;}
+        var d=j.durum||{};
+        if(!d.exists){
+          durumEl.innerHTML='<span style="color:#b45309;"><i class="fas fa-circle-exclamation"></i> tomofiltest henüz yok. "Kur / Yenile" ile oluşturun.</span>';
+          return;
+        }
+        durumEl.innerHTML='<span style="color:#15803d;"><i class="fas fa-circle-check"></i> Hazır</span> '+
+          '<span style="color:#64748b;">(id='+d.tid+') — strateji: <b>'+d.strategies+'</b>, süreç: <b>'+d.processes+'</b>, PG: <b>'+d.process_kpis+'</b>, ölçüm: <b>'+(d.kpi_data||0).toLocaleString("tr-TR")+'</b> · admin: '+d.admin_email+'</span>';
+      }).catch(function(){durumEl.textContent="Durum alınamadı.";});
+  }
+
+  function yenile(){
+    if(!isLocal) return;
+    btn.disabled=true; var orig=btn.innerHTML;
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Kuruluyor… (birkaç saniye)';
+    sonucEl.style.display="none";
+    fetch(yenileUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(j&&j.success){
+          sonucEl.style.background="#f0fdf4";sonucEl.style.color="#166534";
+          sonucEl.innerHTML='<i class="fas fa-check"></i> tomofiltest hazır — '+(j.toplam_satir||0).toLocaleString("tr-TR")+' satır kopyalandı (id='+j.tid+').';
+        }else{
+          sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
+          sonucEl.innerHTML='<i class="fas fa-xmark"></i> '+((j&&j.message)||"Hata oluştu.");
+        }
+        sonucEl.style.display="block"; loadDurum();
+      }).catch(function(){
+        sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
+        sonucEl.innerHTML='<i class="fas fa-xmark"></i> Bağlantı hatası.';sonucEl.style.display="block";
+      }).finally(function(){btn.disabled=!isLocal;btn.innerHTML=orig;});
+  }
+
+  if(btn) btn.addEventListener("click", yenile);
+  loadDurum();
+})();
+</script>
+{% endblock %}
