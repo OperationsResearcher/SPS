@@ -16,6 +16,8 @@
      data-tarama-durum-url="{{ url_for('app_bp.admin_tools_hk_tarama_durum') }}"
      data-senaryo-baslat-url="{{ url_for('app_bp.admin_tools_hk_senaryo_baslat') }}"
      data-senaryo-durum-url="{{ url_for('app_bp.admin_tools_hk_senaryo_durum') }}"
+     data-gecmis-url="{{ url_for('app_bp.admin_tools_hk_gecmis') }}"
+     data-gecmis-yukle-url="{{ url_for('app_bp.admin_tools_hk_gecmis_yukle') }}"
      data-is-local="{{ '1' if is_local else '0' }}">
 
   <div class="mc-page-header" style="margin-bottom:16px;">
@@ -331,6 +333,42 @@
       }).catch(function(){senInfo.textContent="Bağlantı hatası.";senBtn.disabled=!isLocal;});
   }
   if(senBtn) senBtn.addEventListener("click", senBasla);
+
+  // ── Geçmiş koşular ──
+  var gecmisUrl=root.dataset.gecmisUrl, gecmisYukleUrl=root.dataset.gecmisYukleUrl;
+  var gecmisListe=document.getElementById("hk-gecmis-liste");
+  var gecmisBtn=document.getElementById("hk-gecmis-yenile");
+  function loadGecmis(){
+    fetch(gecmisUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){gecmisListe.textContent="Geçmiş alınamadı.";return;}
+        var ks=j.kosular||[];
+        if(!ks.length){gecmisListe.textContent="Henüz kayıtlı koşu yok.";return;}
+        gecmisListe.innerHTML=ks.map(function(k){
+          var ts=(k.saved_at||"").replace(/_/g," ");
+          var ozet = (k.kind==="scenario")
+            ? ("senaryo · ✅ "+(k.passed||0)+" / ❌ "+(k.failed||0))
+            : ("tarama · ❌ "+((k.counts&&k.counts.fail)||0)+" ⚠️ "+((k.counts&&k.counts.warn)||0)+" ✅ "+((k.counts&&k.counts.ok)||0));
+          return '<div class="hk-gecmis-row" data-file="'+esc(k.file)+'" style="display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;border:1px solid #eef2f7;margin-bottom:4px;">'+
+            '<span style="font-family:monospace;color:#475569;">'+esc(ts)+'</span>'+
+            '<span style="color:#64748b;">'+esc(ozet)+'</span></div>';
+        }).join("");
+        gecmisListe.querySelectorAll(".hk-gecmis-row").forEach(function(row){
+          row.addEventListener("click", function(){ yukleGecmis(row.dataset.file); });
+        });
+      }).catch(function(){gecmisListe.textContent="Geçmiş alınamadı.";});
+  }
+  function yukleGecmis(file){
+    fetch(gecmisYukleUrl+"?file="+encodeURIComponent(file),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){return;}
+        var d=j.kosu||{};
+        if(d.kind==="scenario"){ renderSen(d); document.getElementById("hk-senaryo-sonuc").scrollIntoView({behavior:"smooth"}); }
+        else { barWrap.style.display="block"; bar.style.width="100%"; renderTara(d); document.getElementById("hk-tara-sonuc").scrollIntoView({behavior:"smooth"}); }
+      }).catch(function(){});
+  }
+  if(gecmisBtn) gecmisBtn.addEventListener("click", loadGecmis);
+  loadGecmis();
 })();
 </script>
 {% endblock %}
