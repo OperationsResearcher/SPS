@@ -353,6 +353,9 @@ def _wipe_test_tenant(test_tid: int, existing: set[str]) -> None:
         f"DELETE FROM user_tour_progress WHERE user_id IN {_usub}",
         f"DELETE FROM user_year_assignment WHERE user_id IN {_usub} OR tenant_id = :t",
         f"DELETE FROM favorite_kpis WHERE user_id IN {_usub}",
+        # bireysel veri: user_id FK'leri CASCADE DEĞİL → users'tan önce sil (audit önce)
+        f"DELETE FROM individual_kpi_data_audits WHERE user_id IN {_usub}",
+        f"DELETE FROM individual_kpi_data WHERE user_id IN {_usub}",
         "DELETE FROM tickets WHERE tenant_id = :t",
     ]
     for sql in _user_linked:
