@@ -112,8 +112,44 @@ def scenario_sp_strateji(page, base_url):
     return _result("Strateji CRUD", steps)
 
 
+def scenario_sp_kimlik(page, base_url):
+    """SP: Misyon ve Vizyon güncelle (kart-düzenle + mc-modal + kaydet)."""
+    steps = []
+    def step(n, ok, d=""):
+        steps.append({"step": n, "ok": bool(ok), "detail": d})
+
+    suf = str(int(time.time()))
+    try:
+        page.goto(base_url + "/sp", wait_until="domcontentloaded", timeout=30000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=4000)
+        except Exception:
+            pass
+
+        for kind, modal_id, label in [
+            ("misyon", "#sp-modal-mission", "Misyon"),
+            ("vizyon", "#sp-modal-vision", "Vizyon"),
+        ]:
+            trig = '.btn-sp-card-edit[data-sp-edit="%s"]' % kind
+            if page.locator(trig).count() == 0:
+                step(f"{label} düzenle butonu yok", False)
+                continue
+            marker = f"HK-{label}-{suf}"
+            page.locator(trig).first.click()
+            page.wait_for_selector(modal_id, state="visible", timeout=6000)
+            page.fill(modal_id, marker)
+            page.click("#mc-modal-form-save")
+            page.wait_for_timeout(1800)  # kaydet + ~800ms reload
+            ok = page.locator("body", has_text=marker).count() > 0
+            step(f"{label} güncellendi (kart-düzenle+modal+kaydet)", ok, marker)
+    except Exception as e:
+        step("İstisna", False, str(e).splitlines()[0][:120])
+    return _result("Vizyon/Misyon", steps)
+
+
 # Senaryo kütüphanesi — zamanla büyür
 SCENARIOS = [
     scenario_blue_ocean,
     scenario_sp_strateji,
+    scenario_sp_kimlik,
 ]
