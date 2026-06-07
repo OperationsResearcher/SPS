@@ -205,8 +205,10 @@ def get_user_activity_stats(tenant_id=None):
     Her kullanıcı için: hesap durumu, çevrimiçi mi, son giriş, 30 günlük giriş/işlem sayısı.
     """
     now_utc = datetime.datetime.now(datetime.timezone.utc)
-    active_cutoff = now_utc - datetime.timedelta(minutes=30)
-    since_30d = now_utc - datetime.timedelta(days=30)
+    # AuditLog.created_at naive UTC saklanıyor → Python karşılaştırması için naive cutoff
+    # (aksi halde "can't compare offset-naive and offset-aware datetimes" TypeError'ı)
+    active_cutoff = (now_utc - datetime.timedelta(minutes=30)).replace(tzinfo=None)
+    since_30d = (now_utc - datetime.timedelta(days=30)).replace(tzinfo=None)
 
     login_predicate = or_(
         AuditLog.action.in_(("OTURUM AÇMA", "LOGIN")),
