@@ -38,6 +38,17 @@ from app.services.plan_year_service import (
 )
 from app.models.tenant_year import TenantYearIdentity
 
+
+def _require_plan_year():
+    """Aktif plan yılını döndürür; yoksa (None, (JSON, 400)) döner.
+
+    Kullanım: ``py, err = _require_plan_year(); if err: return err``
+    """
+    py = get_active_plan_year_for_user(current_user)
+    if not py:
+        return None, (jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400)
+    return py, None
+
 _SP_ROLES = (
     "Admin",
     "admin",

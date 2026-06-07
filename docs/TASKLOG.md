@@ -2,6 +2,37 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-172 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü taramasının bulduğu gerçek kod kusurlarının düzeltilmesi (15 uç)
+**Modül:** sp, raporlar, admin, api, ayarlar, period_report_service
+**Durum:** ✅ Yerelde tamam, hepsi test_client ile doğrulandı (eski 500/503/404 → 200/400). Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Arka plan
+Hata Kontrolü aracı tam tarama (321 sayfa) yaptı; 16 fail + 14 warn çıktı. Sunucu loglarındaki traceback'lerden kök nedenler bulundu. Çoğu bir refactor kalıntısı: eksik import/helper.
+
+### Düzeltmeler
+- `routes_pages.py` → `from datetime import date` (sp_rapor_donemsel `date.today()` NameError)
+- `period_report_service.py` → `get_column_letter()` (MergedCell `.column_letter` yok — donemsel rapor Excel)
+- `routes_llm_quota.py` → eksik `platform/sp/llm_usage.html` şablonu oluşturuldu
+- `routes_alignment.py` → SQL `CAST(:py_id AS INTEGER)` (plan yılı yokken AmbiguousParameter)
+- `helpers.py` → `_require_plan_year()` tanımlandı; `routes_sp_proje.py` import etti (NameError → graceful 400)
+- `routes_strategy.py` → eksik `/sp/api/strategies` GET ucu eklendi (/sp/okr 404 çağrısı)
+- `routes_faz2/faz3/faz4.py` → `timezone` import (cfo/coo-dashboard + diğerleri NameError)
+- `routes_faz3.py` → `_hk_safe_name()` modül helper'ı (yatirimci/esg/audit/bireysel-batch generate'te `_safe_filename` kapsam-dışı NameError)
+- `routes_faz0.py` → `_dt.date.today()` → `_date.today()` (ai-sunum generate AttributeError)
+- `api/routes.py` → `/api/v1/ai/recommend` `get_recommendations`(yok) → `smart_insights` (503 → 200)
+- `admin/routes.py` → kullanici-detay: `tenant_id` yoksa 500 yerine 400
+- `ayarlar/index.html` → `url_for('static')` → `url_for('app_bp.static')` (CSS/JS yanlış MIME/404)
+
+### Doğrulama (Admin oturumu, test_client)
+15 uç: hepsi <500. Örnek: /sp/rapor/donemsel 200, /sp/llm-usage 200, /sp/api/strategy-project-matrix 200, /sp/api/proje 400, /raporlar/api/{cfo,coo}-dashboard 200, /api/v1/ai/recommend 200, /raporlar/api/*/generate 200, /sp/okr 200, /ayarlar 200.
+
+### Notlar
+- "Beklenen" (kusur değil): `404 /demo*` (demo modu kapalı), `400` parametre-isteyen API uçları (validation doğru). Dokunulmadı.
+- `/process` 20 sn timeout = araç tarafı ayar (ağır sayfa); kod kusuru değil — aracın timeout/networkidle ayarı ileride gevşetilebilir.
+- **Yalnız Yerel.** Test/Yayín'a gitmesi ayrı onaya bağlı.
+
 ## TASK-171 | 2026-06-07 | ✅ Tamamlandı (Faz 1 — klon motoru)
 
 **Görev:** Admin Araçları > Hata Kontrolü — Faz 1: tomofiltest izole klon motoru (yerel)

@@ -49,6 +49,29 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
+@app_bp.route("/sp/api/strategies")
+@login_required
+def sp_api_strategies_list():
+    """Ana strateji + alt strateji listesi (OKR vb. dropdown'ları için). Aktif kurum/plan yılı."""
+    if not _check_sp_role(current_user):
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+    tid = current_user.tenant_id
+    py = get_active_plan_year_for_user(current_user)
+    q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    if py:
+        q = q.filter(or_(Strategy.plan_year_id == py.id, Strategy.plan_year_id.is_(None)))
+    rows = q.order_by(Strategy.code).all()
+    data = [{
+        "id": s.id, "code": s.code, "title": s.title,
+        "sub_strategies": [
+            {"id": ss.id, "code": ss.code, "title": ss.title}
+            for ss in sorted((s.sub_strategies or []), key=lambda x: (x.code or ""))
+            if getattr(ss, "is_active", True)
+        ],
+    } for s in rows]
+    return jsonify({"success": True, "data": data})
+
+
 @app_bp.route("/sp/api/strategy/add", methods=["POST"])
 @csrf.exempt
 @login_required

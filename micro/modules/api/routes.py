@@ -277,8 +277,8 @@ def api_reports_dashboard():
 @login_required
 def api_ai_recommend():
     try:
-        from app.api.ai import get_recommendations
-        return get_recommendations()
+        from app.api.ai import smart_insights
+        return smart_insights()
     except Exception as e:
         current_app.logger.error(f"[api_ai_recommend] {e}")
         return jsonify({"success": False, "message": "AI servisi kullanılamıyor."}), 503

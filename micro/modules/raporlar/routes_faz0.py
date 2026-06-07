@@ -1114,7 +1114,7 @@ def raporlar_api_ai_sunum_generate():
 
     # Veri özetleri
     tenant_name = tenant.name if tenant else "Kurum"
-    year_label = str(active_py.year) if active_py else _dt.date.today().year
+    year_label = str(active_py.year) if active_py else _date.today().year
 
     strategies = []
     if active_py:
@@ -1234,7 +1234,7 @@ def raporlar_api_ai_sunum_generate():
     # Slaytları üret
     add_title_slide(prs,
         f"{tenant_name}",
-        f"{year_label} Stratejik Plan Sunumu · {_dt.date.today().strftime('%d %B %Y')}")
+        f"{year_label} Stratejik Plan Sunumu · {_date.today().strftime('%d %B %Y')}")
 
     add_content_slide(prs, 2, "Yönetici Özeti", ai_summary)
 

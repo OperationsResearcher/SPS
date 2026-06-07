@@ -77,6 +77,29 @@ def admin_tools_hk_kesif():
         return jsonify({"success": False, "message": "Keşif başarısız."}), 500
 
 
+@app_bp.route("/admin/araclar/hata-kontrolu/gecmis")
+@login_required
+def admin_tools_hk_gecmis():
+    """Kaydedilmiş koşuların özet listesi."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.hata_kontrol_executor import list_saved_runs
+    return jsonify({"success": True, "kosular": list_saved_runs(current_app._get_current_object())})
+
+
+@app_bp.route("/admin/araclar/hata-kontrolu/gecmis-yukle")
+@login_required
+def admin_tools_hk_gecmis_yukle():
+    """Tek bir kaydedilmiş koşunun tam içeriği."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.hata_kontrol_executor import load_saved_run
+    rec = load_saved_run(current_app._get_current_object(), request.args.get("file", ""))
+    if not rec:
+        return jsonify({"success": False, "message": "Kayıt bulunamadı."}), 404
+    return jsonify({"success": True, "kosu": rec})
+
+
 @app_bp.route("/admin/araclar/hata-kontrolu/tarama-baslat", methods=["POST"])
 @csrf.exempt
 @login_required

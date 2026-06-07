@@ -1,5 +1,6 @@
 """Stratejik Planlama — SP ana sayfa ve kurumsal kimlik."""
 
+from datetime import date
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session

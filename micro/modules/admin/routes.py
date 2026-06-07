@@ -379,6 +379,8 @@ def yonetim_paneli_kullanici_detay():
     try:
         req_tenant_id = request.args.get("tenant_id", type=int)
         tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
+        if not tenant_id:
+            return jsonify({"success": False, "message": "tenant_id parametresi gerekli."}), 400
         data = get_user_activity_stats(tenant_id=tenant_id)
         return jsonify({"success": True, "data": data})
     except Exception as e:

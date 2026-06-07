@@ -13,6 +13,9 @@ Tasarım: docs/HATA-KONTROLU-TASARIM.md (Faz 3, §7 yorumlama kuralları).
 """
 from __future__ import annotations
 
+import datetime
+import json
+import os
 import threading
 import time
 
@@ -35,6 +38,73 @@ def _new_run_id() -> str:
 
 def get_progress(run_id: str) -> dict | None:
     return _RUNS.get(run_id)
+
+
+# ─── Kalıcı kayıt (dosya) ────────────────────────────────────────────────────
+
+def _runs_dir(app) -> str:
+    d = os.path.join(app.instance_path, "hata_kontrol_runs")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _persist_run(app, run_id: str) -> None:
+    """Biten koşuyu JSON dosyasına yazar (yeniden başlatmada kaybolmaz)."""
+    try:
+        st = _RUNS.get(run_id)
+        if not st:
+            return
+        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        kind = st.get("kind", "tarama")
+        fn = f"{ts}_{kind}_{run_id}.json"
+        rec = dict(st)
+        rec["saved_at"] = ts
+        with open(os.path.join(_runs_dir(app), fn), "w", encoding="utf-8") as f:
+            json.dump(rec, f, ensure_ascii=False)
+        st["saved_file"] = fn
+    except Exception as e:
+        try:
+            app.logger.info(f"[hata_kontrol] kayıt atlandı: {e}")
+        except Exception:
+            pass
+
+
+def list_saved_runs(app, limit: int = 30) -> list[dict]:
+    """Kaydedilmiş koşuların özet listesi (yeni→eski)."""
+    out = []
+    try:
+        d = _runs_dir(app)
+        for fn in sorted(os.listdir(d), reverse=True)[:limit]:
+            if not fn.endswith(".json"):
+                continue
+            try:
+                with open(os.path.join(d, fn), encoding="utf-8") as f:
+                    r = json.load(f)
+                out.append({
+                    "file": fn, "kind": r.get("kind", "tarama"),
+                    "saved_at": r.get("saved_at"), "status": r.get("status"),
+                    "counts": r.get("counts"), "total": r.get("total"),
+                    "passed": r.get("passed"), "failed": r.get("failed"),
+                })
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return out
+
+
+def load_saved_run(app, fname: str) -> dict | None:
+    """Tek bir kaydedilmiş koşunun tam içeriği (dosya adı doğrulanır)."""
+    if not fname or "/" in fname or "\\" in fname or not fname.endswith(".json"):
+        return None
+    path = os.path.join(_runs_dir(app), fname)
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
 def _classify(status, js_errors, failed_ajax, html, final_url) -> tuple[str, str]:
@@ -134,6 +204,7 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
 
         st["status"] = "done"
         st["current"] = ""
+        _persist_run(app, run_id)
     except Exception as e:
         st["status"] = "error"
         st["error"] = str(e)[:300]
@@ -141,6 +212,7 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
             app.logger.error(f"[hata_kontrol_scenarios] {e}", exc_info=True)
         except Exception:
             pass
+        _persist_run(app, run_id)
 
 
 def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
@@ -228,6 +300,7 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
             app.logger.info(f"[hata_kontrol_executor] link analizi atlandı: {e}")
         st["status"] = "done"
         st["current"] = ""
+        _persist_run(app, run_id)
     except Exception as e:
         st["status"] = "error"
         st["error"] = str(e)[:300]
