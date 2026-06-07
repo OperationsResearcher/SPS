@@ -16,7 +16,7 @@ from flask import current_app
 # Asla taranmayacak yıkıcı / oturum-bozan / ikili-çıktı uçlar (kara liste).
 _BLACKLIST = re.compile(
     r"(logout|/sil\b|/delete|/remove|/kaldir|/wipe|/reset|/purge|/truncate|"
-    r"export|/indir|/download|\.pdf|\.xlsx|\.csv|/send|e-?posta|/email|"
+    r"export|/indir|/download|\.pdf|\.xlsx|\.csv|excel|/sample|/template|attachment|/send|e-?posta|/email|"
     r"demo/end|/deploy|impersonate|switch[-_]tenant|/become|/hgs|"
     r"tenant-logo|profile-picture|/admin/araclar)",  # kendini tarama
     re.IGNORECASE,

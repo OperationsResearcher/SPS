@@ -33,7 +33,14 @@
 - Uç: `/admin/araclar/hata-kontrolu/kesif`; Hata Kontrolü sayfasına "Keşfet" kartı (modül rozetleri + katlanır URL listesi).
 - Doğrulandı: **321 aktif sayfa** keşfedildi (atlanan — parametreli 133, kara liste 25, legacy ~123).
 - BFS (bağlantı gezme) bilinçli olarak Faz 3'e ertelendi (sayfa yükleme motorunu paylaşır).
-- Sıradaki faz: Playwright tarayıcı motoru (pasif gözlem: JS hatası / başarısız AJAX / hata sayfası) + BFS.
+
+### Faz 3b — Playwright tarayıcı motoru
+- `app/services/hata_kontrol_executor.py`: arka plan thread + headless Chromium. tomofiltest sentetik admini ile login → her sayfayı aç (kuyruk/taze navigasyon) → HTTP + JS konsol hatası + başarısız AJAX + sunucu hata izi yakala → ✅/⚠️/❌/⏭️ sınıflandır.
+- Uçlar: `/tarama-baslat` (POST, arka plan), `/tarama-durum` (canlı ilerleme). base_url = çalışan sunucu (request.host_url). Yalnız Admin + Yerel.
+- UI: "Taramayı Başlat" + limit + ilerleme çubuğu + canlı sonuç tablosu (sorunlular üstte, kapsam-dışı 403'ler altta).
+- Doğrulandı (canlı, 30 sayfa): gerçek kırıklar yakalandı — 500 `/admin/yonetim-paneli/kullanici-detay`, 503 `/api/v1/ai/recommend`, başarısız AJAX `/admin/yonetim-paneli`. 403 platform-admin sayfaları "kapsam dışı" (skip); indirme uçları kara listede.
+- Not: sentetik admin **tenant_admin** → platform-Admin-only `/admin/*` sayfaları 403 (skip, kapsam dışı; izole tenant tasarımı gereği).
+- Kalan (sonraki): BFS bağlantı gezme, aktif CRUD senaryoları, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
 
 ## TASK-170 | 2026-06-06 | ✅ Tamamlandı
 

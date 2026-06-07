@@ -12,6 +12,8 @@
      data-durum-url="{{ url_for('app_bp.admin_tools_tomofiltest_durum') }}"
      data-yenile-url="{{ url_for('app_bp.admin_tools_tomofiltest_yenile') }}"
      data-kesif-url="{{ url_for('app_bp.admin_tools_hk_kesif') }}"
+     data-baslat-url="{{ url_for('app_bp.admin_tools_hk_tarama_baslat') }}"
+     data-tarama-durum-url="{{ url_for('app_bp.admin_tools_hk_tarama_durum') }}"
      data-is-local="{{ '1' if is_local else '0' }}">
 
   <div class="mc-page-header" style="margin-bottom:16px;">
@@ -67,16 +69,33 @@
     <div id="hk-kesif-liste" style="display:none;margin-top:10px;"></div>
   </div>
 
-  {# ── Adım 3: Tarayıcı testi (sonraki faz) ── #}
-  <div class="mc-card" style="padding:18px;opacity:0.65;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-      <span style="width:34px;height:34px;border-radius:9px;background:#f1f5f9;color:#94a3b8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot"></i></span>
-      <div style="font-size:14px;font-weight:700;color:var(--text-default);">Otomatik Tarayıcı Testi</div>
+  {# ── Adım 3: Otomatik tarayıcı testi (Playwright) ── #}
+  <div class="mc-card" style="padding:18px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#f0fdf4;color:#15803d;display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Otomatik Tarayıcı Testi</div>
+          <div style="font-size:12px;color:#64748b;">Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + AJAX hatalarını yakalar.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <label style="font-size:12px;color:#475569;">Limit:
+          <input id="hk-limit" type="number" min="1" placeholder="tümü" style="width:70px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;">
+        </label>
+        <button id="hk-tara" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-play"></i> Taramayı Başlat</button>
+      </div>
     </div>
-    <p style="font-size:12.5px;color:#64748b;margin:0;">
-      Keşfedilen sayfaları otomatik gezip JS hatası / başarısız AJAX / hata sayfalarını
-      raporlama (Playwright) sonraki fazda eklenecek. BFS bağlantı gezme de bu adımla birlikte gelir.
-    </p>
+
+    <div id="hk-tara-bar-wrap" style="display:none;margin-bottom:10px;">
+      <div style="height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+        <div id="hk-tara-bar" style="height:100%;width:0;background:linear-gradient(90deg,#0ea5e9,#2563eb);transition:width .3s;"></div>
+      </div>
+      <div id="hk-tara-info" style="font-size:12px;color:#64748b;margin-top:6px;"></div>
+    </div>
+
+    <div id="hk-tara-ozet" style="display:none;margin-bottom:8px;"></div>
+    <div id="hk-tara-sonuc" style="display:none;max-height:420px;overflow:auto;"></div>
   </div>
 </div>
 
@@ -164,6 +183,67 @@
       .finally(function(){kesfetBtn.disabled=false;kesfetBtn.innerHTML=o;});
   }
   if(kesfetBtn) kesfetBtn.addEventListener("click", kesfet);
+
+  // ── Tarayıcı testi ──
+  var baslatUrl=root.dataset.baslatUrl, taramaDurumUrl=root.dataset.taramaDurumUrl;
+  var taraBtn=document.getElementById("hk-tara"), limitEl=document.getElementById("hk-limit");
+  var barWrap=document.getElementById("hk-tara-bar-wrap"), bar=document.getElementById("hk-tara-bar"), info=document.getElementById("hk-tara-info");
+  var ozetEl=document.getElementById("hk-tara-ozet"), sonucEl=document.getElementById("hk-tara-sonuc");
+  var pollTimer=null;
+  var DURUM_RENK={ok:"#16a34a",warn:"#f59e0b",fail:"#dc2626",skip:"#94a3b8"};
+  var DURUM_IKON={ok:"fa-circle-check",warn:"fa-triangle-exclamation",fail:"fa-circle-xmark",skip:"fa-circle-minus"};
+
+  function renderTara(d){
+    var pct=d.total?Math.round(d.done/d.total*100):0;
+    bar.style.width=pct+"%";
+    info.textContent=d.status==="running"
+      ? ("Taranıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?("Tamamlandı — "+d.done+"/"+d.total):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+    var c=d.counts||{};
+    ozetEl.style.display="block";
+    ozetEl.innerHTML='<span style="font-size:13px;font-weight:600;">Özet:</span> '+
+      '<span style="color:#16a34a;">✅ '+(c.ok||0)+'</span> &nbsp; '+
+      '<span style="color:#f59e0b;">⚠️ '+(c.warn||0)+'</span> &nbsp; '+
+      '<span style="color:#dc2626;">❌ '+(c.fail||0)+'</span> &nbsp; '+
+      '<span style="color:#94a3b8;">⏭️ '+(c.skip||0)+'</span>';
+    // sonuçlar: önce sorunlular (fail, warn), sonra ok, en sona kapsam-dışı (skip)
+    var rows=(d.results||[]).slice().sort(function(a,b){var o={fail:0,warn:1,ok:2,skip:3};return o[a.durum]-o[b.durum];});
+    sonucEl.style.display="block";
+    sonucEl.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12.5px;">'+
+      rows.map(function(r){
+        var col=DURUM_RENK[r.durum]||"#64748b", ic=DURUM_IKON[r.durum]||"fa-circle";
+        var det=(r.sebep||"")+(r.js&&r.js.length?(" · JS: "+esc(r.js[0])):"")+(r.ajax&&r.ajax.length?(" · "+esc(r.ajax[0])):"");
+        return '<tr style="border-bottom:1px solid #f1f5f9;">'+
+          '<td style="padding:5px 6px;width:22px;color:'+col+';"><i class="fas '+ic+'"></i></td>'+
+          '<td style="padding:5px 6px;font-family:monospace;color:#334155;">'+esc(r.url)+'</td>'+
+          '<td style="padding:5px 6px;color:#64748b;">'+esc(det)+'</td></tr>';
+      }).join("")+'</table>';
+  }
+
+  function poll(runId){
+    fetch(taramaDurumUrl+"?run="+encodeURIComponent(runId),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){info.textContent="Durum alınamadı.";clearInterval(pollTimer);return;}
+        renderTara(j.durum);
+        if(j.durum.status==="done"||j.durum.status==="error"){
+          clearInterval(pollTimer); taraBtn.disabled=!isLocal; taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';
+        }
+      }).catch(function(){});
+  }
+
+  function basla(){
+    if(!isLocal) return;
+    taraBtn.disabled=true; taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Başlatılıyor…';
+    barWrap.style.display="block"; bar.style.width="0";
+    var lim=parseInt(limitEl.value); var q=(lim>0)?("?limit="+lim):"";
+    fetch(baslatUrl+q,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){info.textContent=(j&&j.message)||"Başlatılamadı.";taraBtn.disabled=!isLocal;taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';return;}
+        taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Taranıyor…';
+        pollTimer=setInterval(function(){poll(j.run_id);},1500); poll(j.run_id);
+      }).catch(function(){info.textContent="Bağlantı hatası.";taraBtn.disabled=!isLocal;});
+  }
+  if(taraBtn) taraBtn.addEventListener("click", basla);
 })();
 </script>
 {% endblock %}

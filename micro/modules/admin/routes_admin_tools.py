@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import os
 
-from flask import render_template, jsonify, current_app
+from flask import render_template, jsonify, current_app, request
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
@@ -75,6 +75,45 @@ def admin_tools_hk_kesif():
     except Exception as e:
         current_app.logger.error(f"[admin_tools] kesif: {e}", exc_info=True)
         return jsonify({"success": False, "message": "Keşif başarısız."}), 500
+
+
+@app_bp.route("/admin/araclar/hata-kontrolu/tarama-baslat", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_hk_tarama_baslat():
+    """Faz 3b — Playwright tarayıcı taramasını arka planda başlatır. Yalnız Admin + Yerel."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    if not _is_local():
+        return jsonify({"success": False, "message": "Tarama yalnız Yerel ortamda çalışır."}), 403
+    try:
+        from app.services.hata_kontrol_executor import start_run
+        limit = request.args.get("limit", type=int)
+        base_url = request.host_url.rstrip("/")
+        run_id = start_run(current_app._get_current_object(), base_url=base_url, limit=limit)
+        return jsonify({"success": True, "run_id": run_id})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] tarama_baslat: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Tarama başlatılamadı."}), 500
+
+
+@app_bp.route("/admin/araclar/hata-kontrolu/tarama-durum")
+@login_required
+def admin_tools_hk_tarama_durum():
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.hata_kontrol_executor import get_progress
+    run_id = request.args.get("run", "")
+    prog = get_progress(run_id)
+    if not prog:
+        return jsonify({"success": False, "message": "Koşu bulunamadı."}), 404
+    # Sonuç listesi büyük olabilir — özet + son sonuçlar
+    return jsonify({"success": True, "durum": {
+        "id": prog["id"], "status": prog["status"], "total": prog["total"],
+        "done": prog["done"], "current": prog["current"], "counts": prog["counts"],
+        "error": prog["error"],
+        "results": prog["results"],  # tümü (tek tenant, ~321 satır — yönetilebilir)
+    }})
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/tomofiltest-yenile", methods=["POST"])
