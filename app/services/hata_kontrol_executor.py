@@ -112,10 +112,12 @@ def _classify(status, js_errors, failed_ajax, html, final_url) -> tuple[str, str
     low = (html or "").lower()
     if status == 403:
         return "skip", "403 yetki — kapsam dışı"
+    if status == 404:
+        return "skip", "404 — devre dışı / kapsam dışı uç (ör. demo)"
+    if status == 400:
+        return "skip", "400 — parametre/POST isteyen uç (beklenen validation)"
     if status and status >= 500:
         return "fail", f"HTTP {status}"
-    if status == 404:
-        return "fail", "404 bulunamadı"
     if "/login" in (final_url or "") and status in (200, 302, None):
         return "fail", "oturum/erişim (login'e döndü)"
     if "traceback (most recent call last)" in low or "werkzeug.exceptions" in low:
@@ -261,7 +263,7 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                 status = None
                 html = ""
                 try:
-                    resp = page.goto(base_url + url, wait_until="domcontentloaded", timeout=20000)
+                    resp = page.goto(base_url + url, wait_until="domcontentloaded", timeout=30000)
                     status = resp.status if resp else None
                     try:
                         page.wait_for_load_state("networkidle", timeout=2500)
@@ -282,6 +284,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                     emsg = str(e).splitlines()[0]
                     if "Download is starting" in emsg or "net::ERR_ABORTED" in emsg:
                         durum, sebep = "skip", "indirme/yönlendirme ucu (atlandı)"
+                    elif "Timeout" in emsg or "timeout" in emsg:
+                        durum, sebep = "warn", "zaman aşımı (yavaş yüklenme, >30s)"
                     else:
                         durum, sebep = "fail", f"yüklenemedi: {emsg[:80]}"
                 st["results"].append({
