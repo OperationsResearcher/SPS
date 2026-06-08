@@ -2,6 +2,21 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-175 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — Süreç senaryosuna PG ve PGV tam CRUD (düzenle/sil) ekle, gerçek UI tıklama
+**Modül:** hata_kontrol_scenarios
+**Durum:** ✅ Yerelde tamam. Standalone 7/7, tam paket 5/5 GEÇTİ, reset temiz.
+
+### Değiştirilen Dosyalar
+- `app/services/hata_kontrol_scenarios.py` → `scenario_surec_zinciri` 7 adıma çıkarıldı; `_vgs_enter` helper.
+
+### Yapılan İşlem
+İzole tomofiltest içinde OUR sürecin karnesine gidilir (yalnız bizim PG → `.btn-kpi-*` tek anlamlı). PG: oluştur + düzenle (`.btn-kpi-edit`) + sil (`.btn-kpi-delete` → SweetAlert onay). PGV: gir + sil (dinamik `#modal-micro-veri-detay`) + değiştir (sil + yeniden gir; aynı döneme tekrar giriş 409 → önce sil). Hepsi gerçek Playwright tıklamasıyla.
+
+### Notlar
+PG sil **yıl-kapsamlı dışlama** (`upsert_kpi_year_config is_included=False`), hard delete değil — assertion `.count()==0` yerine başarı toast'u (`/kaldırıld|silindi/i`) bekler. Yerel-only; Test/Demo/Yayín ayrı onay bekliyor.
+
 ## TASK-174 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Admin Araçları/Hata Kontrolü detaylı inceleme + düzeltmeler + PGV tam UI + /sp perf değerlendirmesi
