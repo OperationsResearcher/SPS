@@ -29,3 +29,7 @@ skills/
 # OS
 Thumbs.db
 .DS_Store
+
+# Log dosyaları — PII/secret/traceback içerebilir, repoya girmemeli
+*.log
+logs/

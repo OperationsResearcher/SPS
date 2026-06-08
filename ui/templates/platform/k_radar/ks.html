@@ -210,7 +210,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-th-large"></i> SWOT Analizi</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-modal-swot-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -223,7 +223,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Matrisi</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-modal-tows-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -236,7 +236,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-globe"></i> PESTLE Analizi</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-modal-pestle-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -249,7 +249,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-chart-line"></i> GAP Analizi</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-modal-gap-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -263,7 +263,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-crosshairs"></i> OKR — Hedefler ve Anahtar Sonuçlar</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-modal-okr-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -276,16 +276,16 @@
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-bullseye"></i> <span id="ks-okr-obj-modal-title">Hedef Ekle</span></div>
-      <button class="mc-modal-close" id="ks-okr-obj-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close" id="ks-okr-obj-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div class="mc-form-grid">
         <div class="mc-form-group full">
-          <label class="mc-form-label">Hedef Başlığı <span class="req">*</span></label>
+          <label class="mc-form-label" for="okr-obj-title">Hedef Başlığı <span class="req">*</span></label>
           <input type="text" id="okr-obj-title" class="mc-form-input" placeholder="Nereye gitmek istiyoruz?">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label">Çeyrek</label>
+          <label class="mc-form-label" for="okr-obj-quarter">Çeyrek</label>
           <select id="okr-obj-quarter" class="mc-form-input">
             <option value="">Yıllık</option>
             <option value="1">Ç1 — Ocak–Mart</option>
@@ -295,11 +295,11 @@
           </select>
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label">Sorumlu</label>
+          <label class="mc-form-label" for="okr-obj-owner">Sorumlu</label>
           <input type="text" id="okr-obj-owner" class="mc-form-input" placeholder="Kişi veya ekip">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label">Açıklama</label>
+          <label class="mc-form-label" for="okr-obj-desc">Açıklama</label>
           <textarea id="okr-obj-desc" class="mc-form-input" rows="2" placeholder="Opsiyonel açıklama"></textarea>
         </div>
       </div>
@@ -316,28 +316,28 @@
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-key"></i> <span id="ks-okr-kr-modal-title">Anahtar Sonuç Ekle</span></div>
-      <button class="mc-modal-close" id="ks-okr-kr-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close" id="ks-okr-kr-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div class="mc-form-grid">
         <div class="mc-form-group full">
-          <label class="mc-form-label">KR Başlığı <span class="req">*</span></label>
+          <label class="mc-form-label" for="okr-kr-title">KR Başlığı <span class="req">*</span></label>
           <input type="text" id="okr-kr-title" class="mc-form-input" placeholder="Oraya vardığımızı nasıl anlayacağız?">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label">Ölçüm Birimi</label>
+          <label class="mc-form-label" for="okr-kr-metric">Ölçüm Birimi</label>
           <input type="text" id="okr-kr-metric" class="mc-form-input" placeholder="%, adet, puan, TL…">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label">Başlangıç Değeri</label>
+          <label class="mc-form-label" for="okr-kr-start">Başlangıç Değeri</label>
           <input type="number" id="okr-kr-start" class="mc-form-input" placeholder="0" step="any">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label">Hedef Değer <span class="req">*</span></label>
+          <label class="mc-form-label" for="okr-kr-target">Hedef Değer <span class="req">*</span></label>
           <input type="number" id="okr-kr-target" class="mc-form-input" placeholder="100" step="any">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label">Güncel Değer</label>
+          <label class="mc-form-label" for="okr-kr-current">Güncel Değer</label>
           <input type="number" id="okr-kr-current" class="mc-form-input" placeholder="Mevcut ilerleme" step="any">
         </div>
       </div>
@@ -354,7 +354,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-table-cells-large"></i> BSC — Balanced Scorecard</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body" style="padding:0;">
       <div id="ks-modal-bsc-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -367,7 +367,7 @@
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-medal"></i> EFQM Modeli 2025 — Olgunluk Değerlendirmesi</div>
-      <button class="mc-modal-close ks-modal-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body" style="padding:0;">
       <div id="ks-modal-efqm-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
@@ -380,12 +380,12 @@
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
       <div class="mc-modal-title"><i class="fas fa-tag"></i> Perspektif Ata</div>
-      <button class="mc-modal-close" id="ks-bsc-assign-close"><i class="fas fa-times"></i></button>
+      <button class="mc-modal-close" id="ks-bsc-assign-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-bsc-assign-kpi-name" style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:16px;"></div>
+      <div id="ks-bsc-assign-kpi-name" style="font-size:13px;font-weight:600;color:var(--text-default);margin-bottom:16px;"></div>
       <div class="mc-form-group">
-        <label class="mc-form-label">Perspektif</label>
+        <label class="mc-form-label" for="ks-bsc-assign-select">Perspektif</label>
         <select id="ks-bsc-assign-select" class="mc-form-input">
           <option value="">— Atama Kaldır —</option>
           <option value="finansal">Finansal</option>

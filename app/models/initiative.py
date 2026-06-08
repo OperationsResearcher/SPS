@@ -89,6 +89,9 @@ class Initiative(db.Model):
             "milestone_count": len(self.milestones) if self.milestones else 0,
         }
 
+    def __repr__(self):
+        return f'<Initiative {self.id}, self.name[:20]>'
+
 
 class InitiativeMilestone(db.Model):
     """Initiative kilometre taşı."""
@@ -108,6 +111,9 @@ class InitiativeMilestone(db.Model):
     note = db.Column(db.Text, nullable=True)
     order_index = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+
+    def __repr__(self):
+        return f'<InitiativeMilestone {self.id} {(self.name or "")[:20]}>'
 
     def to_dict(self) -> dict:
         return {

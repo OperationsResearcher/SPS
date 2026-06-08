@@ -1,5 +1,6 @@
 """Stratejik Planlama — SP ana sayfa ve kurumsal kimlik."""
 
+from datetime import date
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -9,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from platform_core import app_bp
 from app.extensions import csrf
 from app.models import db
+from app.utils.audit_logger import AuditLogger
 from sqlalchemy import or_
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.k_vektor import KVektorStrategyWeight, KVektorSubStrategyWeight
@@ -88,8 +90,8 @@ def sp():
             from sqlalchemy import func as _func
             best = (
                 db.session.query(Strategy.plan_year_id, _func.count(Strategy.id).label("cnt"))
-                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True,
-                        Strategy.plan_year_id != None)
+                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True),
+                        Strategy.plan_year_id.isnot(None))
                 .group_by(Strategy.plan_year_id)
                 .order_by(_func.count(Strategy.id).desc())
                 .first()
@@ -288,6 +290,11 @@ def sp_api_tenant_identity():
                     setattr(yi, field, data[field])
 
         db.session.commit()
+        # Hangi kart(lar) değişti — new_values'taki anahtarlar Loglar'da etikete dönüşür.
+        changed = {f: (str(data[f])[:80] if data[f] is not None else "") for f in fields if f in data}
+        if changed:
+            AuditLogger.log_update("Kurum Yönetimi", tid, {}, changed,
+                                   description="Stratejik kimlik güncellendi")
         return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -351,7 +358,7 @@ def sp_rapor_donemsel():
             download_name=fname,
         )
     except RuntimeError as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
     except Exception as e:
         current_app.logger.error(f"[sp_rapor_donemsel] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500

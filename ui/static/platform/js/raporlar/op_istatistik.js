@@ -40,7 +40,7 @@
     if (!newYear) return;
     try {
       const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-      await fetch('/sp/api/plan-years/set-active', {
+      await fetch(window.KK.api.planYearsSetActive, {
         method:'POST', credentials:'same-origin',
         headers: {'Content-Type':'application/json', 'X-CSRFToken': csrf},
         body: JSON.stringify({year: newYear})

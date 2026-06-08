@@ -17,7 +17,7 @@ from app.models.portfolio_project import (
 
 
 # Kurum / platform yöneticileri (süreç modülüyle aynı)
-PRIVILEGED_ROLES = frozenset({"Admin", "tenant_admin", "executive_manager"})
+from app.constants.roles import PRIVILEGED_ROLES
 
 
 def role_name(user) -> str | None:

@@ -165,6 +165,7 @@
     addModal?.addEventListener("click", (e) => { if (e.target === addModal) closeAddModal(); });
 
     document.getElementById("btn-add-modal-save")?.addEventListener("click", async () => {
+      const _saveBtn = document.getElementById("btn-add-modal-save");
       const email = document.getElementById("ua-email").value.trim();
       if (!email) { showError("E-posta zorunludur."); document.getElementById("ua-email").focus(); return; }
       const payload = {
@@ -175,11 +176,14 @@
         role_id:    document.getElementById("ua-role").value || null,
         tenant_id:  document.getElementById("ua-tenant")?.value || null,
       };
+      // Çift gönderimi önle (mükerrer kullanıcı oluşumu riski) + yükleniyor durumu
+      if (_saveBtn) { _saveBtn.disabled = true; _saveBtn.dataset._html = _saveBtn.innerHTML; _saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor…'; }
       try {
         const d = await postJson(ADD_URL, payload);
         if (d.success) { closeAddModal(); toastSuccess("Kullanıcı oluşturuldu."); reload(); }
         else showError(d.message || "Kayıt başarısız.");
       } catch (e) { showError("Sunucu hatası: " + e.message); }
+      finally { if (_saveBtn) { _saveBtn.disabled = false; _saveBtn.innerHTML = _saveBtn.dataset._html || '<i class="fas fa-save"></i> Kaydet'; } }
     });
 
     document.getElementById("btn-edit-modal-close")?.addEventListener("click", closeEditModal);

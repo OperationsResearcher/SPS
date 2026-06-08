@@ -511,42 +511,45 @@ function viewFeedback(feedbackId) {
         .then(data => {
             if (data.success) {
                 const feedback = data.feedback;
+                const _esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                const safeUrl = /^https?:\/\//.test(feedback.page_url || '') ? _esc(feedback.page_url) : '#';
+                const safeScreenshot = /^[\w\/\-\.]+$/.test(feedback.screenshot_path || '') ? feedback.screenshot_path : null;
                 const content = `
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <strong>Kullanıcı:</strong><br>
-                            ${feedback.user_name} (${feedback.user_email})
+                            ${_esc(feedback.user_name)} (${_esc(feedback.user_email)})
                         </div>
                         <div class="col-md-6">
                             <strong>Kategori:</strong><br>
-                            <span class="badge bg-secondary">${feedback.category}</span>
+                            <span class="badge bg-secondary">${_esc(feedback.category)}</span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <strong>Durum:</strong><br>
-                            <span class="badge bg-${getStatusColor(feedback.status)}">${feedback.status}</span>
+                            <span class="badge bg-${_esc(getStatusColor(feedback.status))}">${_esc(feedback.status)}</span>
                         </div>
                         <div class="col-md-6">
                             <strong>Tarih:</strong><br>
-                            ${feedback.created_at}
+                            ${_esc(feedback.created_at)}
                         </div>
                     </div>
                     <div class="mb-3">
                         <strong>Sayfa URL:</strong><br>
-                        <a href="${feedback.page_url}" target="_blank">${feedback.page_url}</a>
+                        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${_esc(feedback.page_url)}</a>
                     </div>
                     <div class="mb-3">
                         <strong>Mesaj:</strong><br>
-                        <div class="alert alert-light">${feedback.description.replace(/\n/g, '<br>')}</div>
+                        <div class="alert alert-light">${_esc(feedback.description).replace(/\n/g, '<br>')}</div>
                     </div>
-                    ${feedback.screenshot_path ? `
+                    ${safeScreenshot ? `
                     <div class="mb-3">
                         <strong>Ekran Görüntüsü:</strong><br>
                         <div class="text-center">
-                            <img src="/static/${feedback.screenshot_path}" class="img-fluid rounded shadow-sm mb-2" alt="Ekran Görüntüsü" style="max-height: 400px; cursor: pointer;" onclick="openScreenshotModal('/static/${feedback.screenshot_path}')">
+                            <img src="/static/${_esc(safeScreenshot)}" class="img-fluid rounded shadow-sm mb-2" alt="Ekran Görüntüsü" style="max-height: 400px; cursor: pointer;" onclick="openScreenshotModal('/static/${_esc(safeScreenshot)}')">
                             <br>
-                            <button class="btn btn-sm btn-outline-primary" onclick="openScreenshotModal('/static/${feedback.screenshot_path}')">
+                            <button class="btn btn-sm btn-outline-primary" onclick="openScreenshotModal('/static/${_esc(safeScreenshot)}')">
                                 <i class="fas fa-expand me-2"></i>Tam Ekran Görüntüle
                             </button>
                         </div>
@@ -554,15 +557,15 @@ function viewFeedback(feedbackId) {
                     ` : ''}
                     <div class="mb-3">
                         <strong>Durum:</strong><br>
-                        <span class="badge bg-${getStatusColor(feedback.status)} fs-6">${feedback.status}</span>
-                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="openStatusUpdateModal(${feedbackId}, '${feedback.status}', ${JSON.stringify(feedback.admin_note || '')}); return false;">
+                        <span class="badge bg-${_esc(getStatusColor(feedback.status))} fs-6">${_esc(feedback.status)}</span>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="openStatusUpdateModal(${parseInt(feedbackId)}, '${_esc(feedback.status)}', ${JSON.stringify(feedback.admin_note || '')}); return false;">
                             <i class="fas fa-edit me-1"></i>Durumu Değiştir
                         </button>
                     </div>
                     ${feedback.admin_note ? `
                     <div class="alert alert-info">
                         <strong>Admin Notu:</strong><br>
-                        ${feedback.admin_note.replace(/\n/g, '<br>')}
+                        ${_esc(feedback.admin_note).replace(/\n/g, '<br>')}
                     </div>
                     ` : ''}
                 `;
@@ -574,14 +577,12 @@ function viewFeedback(feedbackId) {
         })
         .catch(error => {
             console.error('Hata:', error);
-            const errorMsg = error.message || 'Geri bildirim detayları yüklenirken bir hata oluştu.';
-            document.getElementById('feedbackDetailContent').innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Hata:</strong> ${errorMsg}
-                    <br><small>Lütfen sayfayı yenileyip tekrar deneyin.</small>
-                </div>
-            `;
+            const el = document.getElementById('feedbackDetailContent');
+            el.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = 'alert alert-danger';
+            div.textContent = 'Geri bildirim detayları yüklenirken bir hata oluştu. Lütfen sayfayı yenileyip tekrar deneyin.';
+            el.appendChild(div);
         });
 }
 

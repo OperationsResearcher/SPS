@@ -29,7 +29,7 @@ def get_vapid_key():
     public_key = os.getenv('VAPID_PUBLIC_KEY')
     
     if not public_key:
-        return jsonify({'error': 'VAPID key not configured'}), 500
+        return jsonify({'success': False, 'message': 'VAPID key not configured'}), 500
     
     return jsonify({'public_key': public_key})
 
@@ -42,7 +42,7 @@ def subscribe():
         subscription_info = request.json
         
         if not subscription_info or 'endpoint' not in subscription_info:
-            return jsonify({'error': 'Invalid subscription data'}), 400
+            return jsonify({'success': False, 'message': 'Invalid subscription data'}), 400
         
         push_service = get_push_service()
         subscription = push_service.subscribe(current_user.id, subscription_info)
@@ -53,8 +53,8 @@ def subscribe():
         })
     
     except Exception as e:
-        current_app.logger.error(f"Push subscription failed: {str(e)}")
-        return jsonify({'error': 'Subscription failed'}), 500
+        current_app.logger.error(f"Push subscription failed: {e}")
+        return jsonify({'success': False, 'message': 'Subscription failed'}), 500
 
 
 
@@ -66,7 +66,7 @@ def unsubscribe():
         subscription_info = request.json
         
         if not subscription_info or 'endpoint' not in subscription_info:
-            return jsonify({'error': 'Invalid subscription data'}), 400
+            return jsonify({'success': False, 'message': 'Invalid subscription data'}), 400
         
         push_service = get_push_service()
         push_service.unsubscribe(current_user.id, subscription_info['endpoint'])
@@ -77,8 +77,8 @@ def unsubscribe():
         })
     
     except Exception as e:
-        current_app.logger.error(f"Push unsubscribe failed: {str(e)}")
-        return jsonify({'error': 'Unsubscribe failed'}), 500
+        current_app.logger.error(f"Push unsubscribe failed: {e}")
+        return jsonify({'success': False, 'message': 'Unsubscribe failed'}), 500
 
 
 @push_bp.route('/test', methods=['POST'])
@@ -106,5 +106,5 @@ def test_notification():
             }), 404
     
     except Exception as e:
-        current_app.logger.error(f"Test notification failed: {str(e)}")
-        return jsonify({'error': 'Test notification failed'}), 500
+        current_app.logger.error(f"Test notification failed: {e}")
+        return jsonify({'success': False, 'message': 'Test notification failed'}), 500

@@ -1,0 +1,68 @@
+{% extends "platform/base.html" %}
+{% block title %}LLM Kullanımı — Kokpitim{% endblock %}
+{% block page_title %}LLM Kullanımı & Kota{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'LLM Kullanımı', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;"
+     id="llm-root"
+     data-summary-url="{{ url_for('app_bp.sp_api_llm_summary') }}"
+     data-recent-url="{{ url_for('app_bp.sp_api_llm_recent') }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-robot" style="color:#6366f1;"></i> LLM Kullanımı & Kota
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">Bu kurumun yapay zekâ çağrı/maliyet kullanımı ve kotaları.</p>
+    </div>
+  </div>
+
+  <div id="llm-ozet" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+    <div class="mc-card" style="padding:16px;color:#64748b;">Yükleniyor…</div>
+  </div>
+
+  <div class="mc-card" style="padding:18px;">
+    <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--text-default);">Son Çağrılar</h3>
+    <div id="llm-recent" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById("llm-root"); if(!root) return;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function card(t,v,sub,col){
+    return '<div class="mc-card" style="padding:16px;border-left:4px solid '+(col||"#6366f1")+';">'+
+      '<div style="font-size:12px;color:#64748b;">'+esc(t)+'</div>'+
+      '<div style="font-size:24px;font-weight:700;color:var(--text-default);">'+esc(v)+'</div>'+
+      (sub?'<div style="font-size:11px;color:#94a3b8;">'+esc(sub)+'</div>':'')+'</div>';
+  }
+  fetch(root.dataset.summaryUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+    .then(function(r){return r.json();}).then(function(j){
+      var box=document.getElementById("llm-ozet");
+      if(!j||!j.success){box.innerHTML='<div class="mc-card" style="padding:16px;color:#94a3b8;">Özet alınamadı.</div>';return;}
+      var s=j.summary||{};
+      box.innerHTML=
+        card("Bugün çağrı",(s.today&&s.today.used||0)+" / "+(s.today&&s.today.limit||0),"%"+(s.today&&s.today.pct||0),"#0ea5e9")+
+        card("Bu ay çağrı",(s.month_calls&&s.month_calls.used||0)+" / "+(s.month_calls&&s.month_calls.limit||0),"%"+(s.month_calls&&s.month_calls.pct||0),"#6366f1")+
+        card("Bu ay maliyet","$"+(s.month_cost&&s.month_cost.used_usd||0),"limit $"+(s.month_cost&&s.month_cost.limit_usd||0)+" · %"+(s.month_cost&&s.month_cost.pct||0),"#10b981")+
+        card("Durum",(s.paused?"Durduruldu":"Aktif"),"",(s.paused?"#dc2626":"#16a34a"));
+    }).catch(function(){});
+  fetch(root.dataset.recentUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+    .then(function(r){return r.json();}).then(function(j){
+      var box=document.getElementById("llm-recent");
+      if(!j||!j.success||!(j.items||[]).length){box.textContent="Kayıt yok.";return;}
+      box.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px;">'+
+        '<tr style="text-align:left;color:#94a3b8;"><th style="padding:4px 6px;">Tarih</th><th>Uç</th><th>Model</th><th>Token</th><th>Durum</th></tr>'+
+        j.items.map(function(it){return '<tr style="border-top:1px solid #f1f5f9;">'+
+          '<td style="padding:4px 6px;">'+esc((it.created_at||"").slice(0,16))+'</td>'+
+          '<td>'+esc(it.endpoint||"")+'</td><td>'+esc(it.model||"")+'</td>'+
+          '<td>'+esc(it.total_tokens||0)+'</td><td>'+esc(it.status||"")+'</td></tr>';}).join("")+'</table>';
+    }).catch(function(){});
+})();
+</script>
+{% endblock %}

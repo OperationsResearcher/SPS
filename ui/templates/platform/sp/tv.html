@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KOKPİTİM — Savaş Odası</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: radial-gradient(1200px 600px at 50% -10%, #16233f 0%, #0b1220 60%);
+      color: #e2e8f0; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+    }
+    .tv-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 34px; border-bottom: 1px solid rgba(148,163,184,.14); transition: box-shadow .4s, border-color .4s; }
+    .tv-head.alarm { border-color: rgba(248,113,113,.6); animation: alarmpulse 1.6s ease-in-out infinite; }
+    @keyframes alarmpulse { 0%,100%{ box-shadow: inset 0 0 0 2px rgba(248,113,113,.18);} 50%{ box-shadow: inset 0 0 0 2px rgba(248,113,113,.55);} }
+    .tv-title { font-size: 21px; font-weight: 800; letter-spacing: .5px; }
+    .tv-title .dot { color: #38bdf8; }
+    .tv-head.alarm .tv-title .dot { color: #f87171; }
+    .tv-sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .tv-right { display: flex; align-items: center; gap: 16px; }
+    .tv-clock { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .tv-meta { font-size: 11.5px; color: #64748b; text-align: right; margin-top: 2px; }
+    .tv-fs { background: rgba(56,189,248,.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,.3); border-radius: 8px; padding: 7px 11px; font-size: 12px; cursor: pointer; }
+    .tv-fs:hover { background: rgba(56,189,248,.2); }
+    .scene-dots { display: flex; gap: 7px; align-items: center; }
+    .scene-dots b { font-size: 12px; color: #7dd3fc; font-weight: 700; margin-right: 8px; min-width: 116px; text-align: right; }
+    .scene-dots #scene-dots-list { display: inline-flex; gap: 7px; }
+    .scene-dots span.dot2 { width: 8px; height: 8px; border-radius: 50%; background: #334155; transition: background .3s, transform .3s; }
+    .scene-dots span.dot2.on { background: #38bdf8; transform: scale(1.3); }
+
+    .stage { flex: 1; position: relative; }
+    .scene { position: absolute; inset: 0; opacity: 0; transition: opacity .6s; pointer-events: none; display: flex; flex-direction: column; padding: 12px 34px; }
+    .scene.show { opacity: 1; pointer-events: auto; }
+    .scene-title { font-size: 12.5px; color: #7dd3fc; letter-spacing: .14em; text-transform: uppercase; margin: 2px 0 10px; font-weight: 700; }
+
+    .hero { display: flex; align-items: center; gap: 36px; margin-bottom: 12px; }
+    .hero-num { font-size: 68px; font-weight: 800; line-height: 1; }
+    .hero-unit { font-size: 24px; color: #64748b; font-weight: 700; }
+    .hero-label { font-size: 11.5px; color: #94a3b8; letter-spacing: .12em; text-transform: uppercase; }
+    .hero-bar { flex: 1; height: 13px; background: #1e293b; border-radius: 9px; overflow: hidden; }
+    .hero-fill { height: 100%; width: 0; border-radius: 9px; transition: width 1s cubic-bezier(.2,.8,.2,1); }
+    .grid { flex: 1; display: grid; gap: 14px; grid-auto-rows: 1fr; }
+    .tile { background: linear-gradient(160deg, #131f37, #0e1830); border: 1px solid rgba(148,163,184,.12); border-radius: 15px; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; transition: transform .5s, box-shadow .5s, border-color .5s; }
+    .tile .t-label { font-size: 11.5px; color: #94a3b8; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 7px; }
+    .tile .t-value { font-size: 42px; font-weight: 800; line-height: 1; }
+    .tile .t-sub { font-size: 12px; color: #64748b; margin-top: 6px; }
+    .tile.spot { transform: scale(1.03); box-shadow: 0 0 0 2px rgba(56,189,248,.5), 0 18px 50px rgba(0,0,0,.5); border-color: rgba(56,189,248,.6); }
+    .c-good { color: #34d399; } .c-warn { color: #fbbf24; } .c-bad { color: #f87171; }
+    .c-blue { color: #60a5fa; } .c-purple { color: #c4b5fd; } .c-sky { color: #7dd3fc; }
+
+    .front { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; min-height: 0; }
+    .front2 { flex: 1; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+    .front-block { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .front-block-h { font-size: 12px; color: #cbd5e1; font-weight: 700; letter-spacing: .06em; margin-bottom: 8px; border-left: 3px solid #38bdf8; padding-left: 8px; }
+    .front-block .front { gap: 24px; }
+    .front-col h4 { font-size: 13px; margin-bottom: 10px; font-weight: 700; }
+    .front-col.good h4 { color: #34d399; } .front-col.bad h4 { color: #f87171; }
+    .srow { margin-bottom: 11px; }
+    .srow-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+    .srow-code { font-weight: 600; color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .srow-pct { font-weight: 800; margin-left: 10px; flex: 0 0 auto; }
+    .srow-bar { height: 11px; background: #1e293b; border-radius: 6px; overflow: hidden; }
+    .srow-fill { height: 100%; width: 0; border-radius: 6px; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+    .front-empty { color: #64748b; font-size: 13px; padding: 16px; }
+
+    .ticker { flex: 0 0 auto; background: #0a101e; border-top: 1px solid rgba(148,163,184,.14); overflow: hidden; white-space: nowrap; }
+    .ticker-track { display: inline-block; padding: 10px 0; font-size: 13.5px; color: #cbd5e1; animation: scroll 36s linear infinite; }
+    .ticker-track span { margin: 0 24px; }
+    .ticker-track .crit { color: #f87171; font-weight: 700; }
+    .ticker-track .ok { color: #34d399; font-weight: 700; }
+    @keyframes scroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+    /* Savaş uçağı + pist */
+    #jet { position: fixed; z-index: 60; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform, left, top; filter: drop-shadow(0 0 6px rgba(125,211,252,.45)); }
+    #jet.scramble { filter: drop-shadow(0 0 7px rgba(248,113,113,.7)); }
+    .jet-runway { position: fixed; width: 116px; height: 13px; border-radius: 7px; background: linear-gradient(90deg, #243049, #0e1830); border: 1px solid rgba(148,163,184,.22); transform: rotate(-8deg); z-index: 18; overflow: hidden; opacity: .85; }
+    .jet-runway::after { content: ""; position: absolute; top: 50%; left: 8px; right: 8px; height: 0; border-top: 2px dashed rgba(125,211,252,.5); transform: translateY(-50%); }
+    .jet-trail { position: fixed; width: 7px; height: 7px; border-radius: 50%; background: #7dd3fc; opacity: .65; pointer-events: none; z-index: 40; transition: opacity .45s; filter: blur(1px); }
+
+    /* Ayarlar paneli */
+    .settings-overlay { position: fixed; inset: 0; background: rgba(2,6,18,.72); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .settings-overlay.show { display: flex; }
+    .settings-panel { width: min(820px, 94vw); max-height: 88vh; overflow: auto; background: #0e1830; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; padding: 22px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+    .settings-panel h2 { font-size: 18px; margin-bottom: 4px; }
+    .settings-panel .s-sub { font-size: 12.5px; color: #94a3b8; margin-bottom: 16px; }
+    .s-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .s-label { font-size: 12.5px; color: #cbd5e1; }
+    .s-input, .s-select { background: #131f37; color: #e2e8f0; border: 1px solid rgba(148,163,184,.25); border-radius: 8px; padding: 7px 10px; font-size: 13px; }
+    .s-front { border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 14px; margin-bottom: 12px; background: #0b1426; }
+    .s-front-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .s-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; background: #1e293b; color: #7dd3fc; }
+    .s-chk { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    .s-chk label { font-size: 12.5px; color: #cbd5e1; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .s-btn { background: #1e293b; color: #cbd5e1; border: 1px solid rgba(148,163,184,.25); border-radius: 8px; padding: 6px 11px; font-size: 12px; cursor: pointer; }
+    .s-btn:hover { background: #28344c; }
+    .s-btn.primary { background: #4338ca; color: #fff; border-color: #4338ca; }
+    .s-btn.danger { color: #fca5a5; border-color: rgba(248,113,113,.3); }
+    .s-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+    .tv-loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #64748b; }
+    .tv-err { position: fixed; bottom: 58px; left: 50%; transform: translateX(-50%); background: #7f1d1d; color: #fecaca; padding: 9px 16px; border-radius: 10px; font-size: 13px; display: none; }
+  </style>
+</head>
+<body data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
+      data-strategy-url="{{ url_for('app_bp.sp_api_exec_strategy_scores') }}"
+      data-fronts-url="{{ url_for('app_bp.sp_api_savas_odasi_fronts') }}"
+      data-uid="{{ savas_uid }}" data-tid="{{ savas_tid }}">
+  <div class="tv-head" id="tv-head">
+    <div>
+      <div class="tv-title">KOKPİTİM <span class="dot">●</span> SAVAŞ ODASI</div>
+      <div class="tv-sub" id="tv-sub">Yönetici Kokpiti — canlı izleme</div>
+    </div>
+    <div class="tv-right">
+      <div class="scene-dots" id="scene-dots">
+        <b id="scene-name">—</b>
+        <span id="scene-dots-list"></span>
+      </div>
+      <div>
+        <div class="tv-clock" id="tv-clock">--:--:--</div>
+        <div class="tv-meta" id="tv-updated">güncelleniyor…</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
+        <button class="tv-fs" id="tv-anim">✈️ Animasyonu kapat</button>
+        <button class="tv-fs" id="tv-settings">⚙️ Cepheleri düzenle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="jet-runway" id="jet-runway"></div>
+  <div class="jet-runway" id="jet-runway-dep"></div>
+  <div id="jet" aria-hidden="true">
+    {# F-117 Nighthawk tarzı — faceted stealth silüeti (burun sağda) #}
+    <svg width="64" height="30" viewBox="-8 0 64 30">
+      <polygon id="jet-flame" points="8,15 -8,11 -8,19" fill="#60a5fa" opacity="0.5"/>
+      <path d="M52,15 L8,4 L22,13 L18,15 L22,17 L8,26 Z" fill="#262c3a" stroke="#6b7891" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="M52,15 L8,4 L23,13 L31,14 Z" fill="#343d4f"/>
+      <path d="M19,13 L10,7 L24,13 Z" fill="#1d2331" stroke="#5b6678" stroke-width="0.6" stroke-linejoin="round"/>
+      <path d="M19,17 L10,23 L24,17 Z" fill="#1d2331" stroke="#5b6678" stroke-width="0.6" stroke-linejoin="round"/>
+      <path d="M41,15 L33,12.5 L33,17.5 Z" fill="#11151f"/>
+      <circle cx="37" cy="15" r="1.3" fill="#7dd3fc" opacity="0.85"/>
+    </svg>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="ticker"><div class="ticker-track" id="ticker">Yükleniyor…</div></div>
+
+  <div class="tv-loading" id="tv-loading">Savaş Odası yükleniyor…</div>
+  <div class="tv-err" id="tv-err"></div>
+
+  {# Ayarlar #}
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel">
+      <h2>⚙️ Cepheleri Düzenle</h2>
+      <div class="s-sub">Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.</div>
+      <div class="s-row">
+        <span class="s-label">Sahne süresi (sn):</span>
+        <input type="number" id="s-duration" class="s-input" min="6" max="120" style="width:80px;">
+      </div>
+      <div id="s-fronts"></div>
+      <div class="s-row">
+        <button class="s-btn" id="s-add-metrics">+ Metrik panosu</button>
+        <button class="s-btn" id="s-add-ranking">+ Sıralama cephesi</button>
+      </div>
+      <div class="s-actions">
+        <button class="s-btn primary" id="s-save">Kaydet</button>
+        <button class="s-btn" id="s-cancel">İptal</button>
+        <button class="s-btn danger" id="s-reset">Varsayılana dön</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    var snapUrl = document.body.getAttribute("data-snapshot-url");
+    var stratUrl = document.body.getAttribute("data-strategy-url");
+    var frontsUrl = document.body.getAttribute("data-fronts-url");
+    var stage = document.getElementById("stage");
+    var loading = document.getElementById("tv-loading");
+    var errEl = document.getElementById("tv-err");
+    var DATA = { snap: null, strat: null, fronts: null };
+    var scenes = [], sceneNames = [], curScene = 0, spotIdx = 0, curTiles = [];
+    var sceneTimer = null;
+
+    function pf(v) { return (v == null || isNaN(v)) ? "—" : v; }
+    function band(v) { return v == null ? "" : (v >= 80 ? "c-good" : v >= 50 ? "c-warn" : "c-bad"); }
+
+    // ── Katalog: metrik tile'ları ──
+    var TILES = {
+      on_target: { label: "Hedef Üstü %", get: function(s){ var k=s.kpi||{}; return { v: pf(k.on_target_pct)+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:"PG hedefin üstünde", cls:band(k.on_target_pct) }; } },
+      coverage: { label: "PG Veri Kapsamı", get: function(s){ var k=s.kpi||{}; var c=k.total?Math.round((k.with_data/k.total)*100):0; return { v: c+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:(k.with_data||0)+" / "+(k.total||0)+" PG", cls:band(c) }; } },
+      strategies: { label: "Strateji Sayısı", get: function(s){ var st=s.strategy||{}; return { v: pf(st.count), sub:(st.sub_count||0)+" alt strateji", cls:"c-purple" }; } },
+      activities_active: { label: "Aktif Faaliyet", get: function(s){ var a=s.activity||{}; return { v: pf(a.active), sub:(a.total||0)+" toplam", cls:"c-blue" }; } },
+      activities_overdue: { label: "Geciken Faaliyet", get: function(s){ var a=s.activity||{}; return { v: pf(a.overdue), sub:"termini geçti", cls:(a.overdue?"c-bad":"c-good") }; } },
+      risk_open: { label: "Açık Risk", get: function(s){ var r=s.risk||{}; return { v: pf(r.open), sub:(r.critical||0)+" kritik", cls:(r.critical?"c-bad":"c-warn") }; } },
+      anomaly_high: { label: "Yüksek Anomali", get: function(s){ var an=s.anomaly||{}; return { v: pf(an.high), sub:(an.medium||0)+" orta", cls:(an.high?"c-bad":"c-good") }; } },
+      triggers: { label: "Tetiklenen Kural (7g)", get: function(s){ var t=s.trigger||{}; return { v: pf(t.fired_last_7d), sub:(t.active||0)+" aktif kural", cls:"c-sky" }; } }
+    };
+    var TILE_ORDER = ["on_target","coverage","strategies","activities_active","activities_overdue","risk_open","anomaly_high","triggers"];
+
+    // ── Katalog: sıralama veri kümeleri ──
+    var DATASETS = {
+      strategies: { label: "Ana Stratejiler", get: function(){ return DATA.strat || {}; } },
+      sub_strategies: { label: "Alt Stratejiler", get: function(){ return (DATA.fronts||{}).sub_strategies || {}; } },
+      processes: { label: "Süreçler", get: function(){ return (DATA.fronts||{}).processes || {}; } },
+      projects: { label: "Projeler (sağlık)", get: function(){ return (DATA.fronts||{}).projects || {}; } }
+    };
+    var DATASET_ORDER = ["strategies","sub_strategies","processes","projects"];
+
+    // ── Config ──
+    // Ayarlar kullanıcıya + kuruma özel (aynı tarayıcıda farklı kullanıcılar karışmaz)
+    var _scope = "_t" + (document.body.getAttribute("data-tid") || "x") + "_u" + (document.body.getAttribute("data-uid") || "x");
+    var STORAGE_KEY = "savasOdasiConfig_v1" + _scope;
+    var ANIM_KEY = "savasAnim" + _scope;
+    function defaultConfig() {
+      return { duration: 22, fronts: [
+        { id:"f1", name:"Genel Sağlık",   type:"metrics", hero:true, tiles: TILE_ORDER.slice() },
+        { id:"f2", name:"Strateji Cephesi", type:"ranking", datasets:["strategies","sub_strategies"], top:true, bottom:true },
+        { id:"f3", name:"Süreç Cephesi",  type:"ranking", datasets:["processes"], top:true, bottom:true },
+        { id:"f4", name:"Proje Cephesi",  type:"ranking", datasets:["projects"], top:true, bottom:true }
+      ]};
+    }
+    function loadConfig() {
+      try { var raw = localStorage.getItem(STORAGE_KEY); if (raw) { var c = JSON.parse(raw); if (c && c.fronts && c.fronts.length) return c; } } catch (e) {}
+      return defaultConfig();
+    }
+    function saveConfig(c) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch (e) {} }
+    var config = loadConfig();
+    var nextId = 100;
+
+    // ── Yapı kurulumu ──
+    function buildMetrics(sec, f) {
+      f._tiles = [];
+      if (f.hero) {
+        var hero = document.createElement("div"); hero.className = "hero";
+        hero.innerHTML = '<div style="display:flex;align-items:baseline;gap:10px;"><span class="hero-num">—</span><span class="hero-unit">/100</span></div>' +
+          '<div style="flex:1;"><div class="hero-label">Genel Sağlık Skoru</div><div class="hero-bar"><div class="hero-fill"></div></div></div>';
+        sec.appendChild(hero);
+        f._heroNum = hero.querySelector(".hero-num");
+        f._heroFill = hero.querySelector(".hero-fill");
+      }
+      var grid = document.createElement("div"); grid.className = "grid";
+      var cols = Math.min(4, Math.max(2, Math.ceil(Math.sqrt((f.tiles||[]).length || 1))));
+      grid.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+      (f.tiles || []).forEach(function(key) {
+        if (!TILES[key]) return;
+        var d = document.createElement("div"); d.className = "tile";
+        d.innerHTML = '<div class="t-label">'+TILES[key].label+'</div><div class="t-value">—</div><div class="t-sub"></div>';
+        grid.appendChild(d);
+        f._tiles.push({ key: key, valEl: d.querySelector(".t-value"), subEl: d.querySelector(".t-sub"), el: d });
+      });
+      sec.appendChild(grid);
+    }
+
+    function buildRanking(sec, f) {
+      f._blocks = [];
+      var dsList = (f.datasets || []).filter(function(k){ return DATASETS[k]; });
+      var wrap = document.createElement("div"); wrap.className = dsList.length > 1 ? "front2" : "front";
+      dsList.forEach(function(dsKey) {
+        var block;
+        if (dsList.length > 1) {
+          block = document.createElement("div"); block.className = "front-block";
+          block.innerHTML = '<div class="front-block-h">'+DATASETS[dsKey].label+'</div>';
+          var fr = document.createElement("div"); fr.className = "front"; block.appendChild(fr);
+          var cols = colsFor(fr, f);
+          wrap.appendChild(block);
+          f._blocks.push({ dataset: dsKey, topEl: cols.top, bottomEl: cols.bottom });
+        } else {
+          var cols2 = colsFor(wrap, f, DATASETS[dsKey].label);
+          f._blocks.push({ dataset: dsKey, topEl: cols2.top, bottomEl: cols2.bottom });
+        }
+      });
+      sec.appendChild(wrap);
+    }
+    function colsFor(parent, f, dsLabel) {
+      var top = null, bottom = null;
+      if (f.top !== false) {
+        var c1 = document.createElement("div"); c1.className = "front-col good";
+        c1.innerHTML = '<h4>▲ En Güçlü'+(dsLabel?" "+dsLabel:"")+'</h4>'; var t = document.createElement("div"); c1.appendChild(t); parent.appendChild(c1); top = t;
+      }
+      if (f.bottom !== false) {
+        var c2 = document.createElement("div"); c2.className = "front-col bad";
+        c2.innerHTML = '<h4>▼ En Zayıf'+(dsLabel?" "+dsLabel:"")+'</h4>'; var b = document.createElement("div"); c2.appendChild(b); parent.appendChild(c2); bottom = b;
+      }
+      return { top: top, bottom: bottom };
+    }
+
+    function renderScenes() {
+      stage.innerHTML = "";
+      config.fronts.forEach(function(f, idx) {
+        var sec = document.createElement("section"); sec.className = "scene" + (idx === 0 ? " show" : "");
+        var title = document.createElement("div"); title.className = "scene-title"; title.textContent = f.name; sec.appendChild(title);
+        if (f.type === "metrics") buildMetrics(sec, f); else buildRanking(sec, f);
+        stage.appendChild(sec);
+      });
+      scenes = Array.prototype.slice.call(stage.querySelectorAll(".scene"));
+      sceneNames = config.fronts.map(function(f){ return f.name; });
+      rebuildDots();
+      curScene = 0;
+      if (sceneNames.length) document.getElementById("scene-name").textContent = sceneNames[0];
+      restartRotation();
+      if (DATA.snap) fillData();
+      setCurTiles();
+    }
+
+    function rebuildDots() {
+      var list = document.getElementById("scene-dots-list"); list.innerHTML = "";
+      config.fronts.forEach(function(f, i) {
+        var sp = document.createElement("span"); sp.className = "dot2" + (i === 0 ? " on" : ""); list.appendChild(sp);
+      });
+    }
+
+    function setCurTiles() {
+      var f = config.fronts[curScene];
+      curTiles = (f && f.type === "metrics" && f._tiles) ? f._tiles.map(function(t){ return t.el; }) : [];
+      spotIdx = 0;
+    }
+
+    // ── Veri doldurma ──
+    function frow(x, good) {
+      var pct = (typeof x.on_target_pct === "number") ? x.on_target_pct : 0;
+      var col = good ? "#34d399" : (pct < 50 ? "#f87171" : "#fbbf24");
+      var label = ((x.code ? x.code+" " : "") + (x.title || "")).trim() || "—";
+      if (label.length > 40) label = label.slice(0, 38) + "…";
+      var row = document.createElement("div"); row.className = "srow";
+      row.innerHTML = '<div class="srow-top"><span class="srow-code">'+label+'</span>' +
+        '<span class="srow-pct" style="color:'+col+'">'+(x.on_target_pct==null?"—":x.on_target_pct+"%")+'</span></div>' +
+        '<div class="srow-bar"><div class="srow-fill" style="background:'+col+'"></div></div>';
+      setTimeout(function(){ row.querySelector(".srow-fill").style.width = Math.max(0,Math.min(100,pct))+"%"; }, 50);
+      return row;
+    }
+    function fillCol(el, list, good) {
+      if (!el) return; el.innerHTML = "";
+      var arr = (list || []).slice(0, 5);
+      if (!arr.length) { el.innerHTML = '<div class="front-empty">Karşılaştırılabilir veri yok.</div>'; return; }
+      arr.forEach(function(x){ el.appendChild(frow(x, good)); });
+    }
+    function countTo(el, to) {
+      if (!el) return;
+      if (to == null) { el.textContent = "—"; return; }
+      var dur = 900, t0 = null;
+      function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); var c=to*e; el.textContent=(to>=10?Math.round(c):c.toFixed(1)); if(p<1)requestAnimationFrame(step); }
+      requestAnimationFrame(step);
+    }
+
+    function fillData() {
+      var s = DATA.snap || {};
+      config.fronts.forEach(function(f) {
+        if (f.type === "metrics") {
+          if (f._heroNum) {
+            var hs = s.health_score;
+            countTo(f._heroNum, (typeof hs === "number") ? hs : null);
+            var pct = (typeof hs === "number") ? Math.max(0,Math.min(100,hs)) : 0;
+            if (f._heroFill) { f._heroFill.style.background = pct>=80?"#34d399":pct>=50?"#fbbf24":"#f87171"; setTimeout(function(){ f._heroFill.style.width = pct+"%"; }, 40); }
+          }
+          (f._tiles || []).forEach(function(t) {
+            var r = TILES[t.key].get(s);
+            t.valEl.innerHTML = r.v; t.valEl.className = "t-value " + (r.cls || ""); if (t.subEl) t.subEl.textContent = r.sub || "";
+          });
+        } else {
+          (f._blocks || []).forEach(function(blk) {
+            var ds = DATASETS[blk.dataset] ? DATASETS[blk.dataset].get() : {};
+            fillCol(blk.topEl, ds.top, true);
+            fillCol(blk.bottomEl, ds.bottom, false);
+          });
+        }
+      });
+      // alarm + güncelleme zamanı
+      var risk = s.risk||{}, ano = s.anomaly||{};
+      document.getElementById("tv-head").classList.toggle("alarm", !!(risk.critical || ano.high));
+      var now = new Date();
+      document.getElementById("tv-updated").textContent = "güncellendi " + ("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2);
+      buildTicker(s, DATA.strat);
+      setCurTiles();
+    }
+
+    function buildTicker(s, strat) {
+      var kpi=s.kpi||{}, act=s.activity||{}, risk=s.risk||{}, ano=s.anomaly||{};
+      var items = [];
+      if (risk.critical) items.push('<span class="crit">🛡️ '+risk.critical+' kritik risk</span>');
+      if (act.overdue) items.push('<span class="crit">⏰ '+act.overdue+' geciken faaliyet</span>');
+      if (ano.high) items.push('<span class="crit">📊 '+ano.high+' yüksek anomali</span>');
+      if (typeof kpi.on_target_pct === "number") items.push('<span>🎯 Hedef üstü %'+kpi.on_target_pct+'</span>');
+      var cov = (kpi.total ? Math.round((kpi.with_data/kpi.total)*100) : 0);
+      items.push('<span>📥 Veri kapsamı %'+cov+'</span>');
+      if (strat && strat.bottom && strat.bottom.length) { var w=strat.bottom[0]; items.push('<span class="crit">🔻 En zayıf strateji: '+((w.code||"")+" "+(w.title||"")).trim()+' %'+(w.on_target_pct==null?"—":w.on_target_pct)+'</span>'); }
+      if (strat && strat.top && strat.top.length) { var b=strat.top[0]; items.push('<span class="ok">🏆 En güçlü strateji: '+((b.code||"")+" "+(b.title||"")).trim()+' %'+(b.on_target_pct==null?"—":b.on_target_pct)+'</span>'); }
+      if (!items.length) items.push('<span class="ok">✅ Tüm cephelerde durum sakin</span>');
+      document.getElementById("ticker").innerHTML = items.join("") + items.join("");
+    }
+
+    // ── Sahne döngüsü + spotlight ──
+    function spotlight() {
+      if (!curTiles.length) return;
+      curTiles.forEach(function(t){ t.classList.remove("spot"); });
+      curTiles[spotIdx % curTiles.length].classList.add("spot");
+      spotIdx++;
+    }
+    setInterval(spotlight, 4000);
+
+    function showScene(i) {
+      curScene = i;
+      scenes.forEach(function(sc, idx){ if (sc) sc.classList.toggle("show", idx === i); });
+      document.querySelectorAll("#scene-dots-list .dot2").forEach(function(dt, idx){ dt.classList.toggle("on", idx === i); });
+      document.getElementById("scene-name").textContent = sceneNames[i] || "";
+      setCurTiles();
+      launchJet();
+    }
+    function restartRotation() {
+      if (sceneTimer) clearInterval(sceneTimer);
+      var ms = Math.max(6000, (config.duration || 22) * 1000);
+      sceneTimer = setInterval(function(){ if (scenes.length) showScene((curScene + 1) % scenes.length); }, ms);
+    }
+
+    // ── Savaş uçağı ──
+    var jet = document.getElementById("jet");
+    var runwayArr = document.getElementById("jet-runway");
+    var runwayDep = document.getElementById("jet-runway-dep");
+    var brand = document.querySelector(".tv-title");
+    var jetRAF = null, jetTimer = null;
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var animOn = true; try { animOn = (localStorage.getItem(ANIM_KEY) !== "0"); } catch (e) {}
+
+    function positionRunway() {
+      if (runwayArr) { var bd = document.getElementById("scene-dots").getBoundingClientRect(); runwayArr.style.left = (bd.left + bd.width/2 - 58) + "px"; runwayArr.style.top = (bd.bottom + 10) + "px"; }
+      var sub = document.getElementById("tv-sub");
+      if (runwayDep && sub) { var bs = sub.getBoundingClientRect(); runwayDep.style.left = (bs.right + 14) + "px"; runwayDep.style.top = (bs.top + bs.height/2 - 6) + "px"; }
+    }
+    function parkOn(rect) { if (!jet || !rect) return; jet.style.left = (rect.left + 4) + "px"; jet.style.top = (rect.top + rect.height/2 - 15) + "px"; jet.style.transform = "rotate(-8deg)"; }
+    function spawnTrail(x, y, alarm) {
+      var d = document.createElement("div"); d.className = "jet-trail"; d.style.left = (x-3)+"px"; d.style.top = (y-3)+"px"; if (alarm) d.style.background = "#f87171";
+      document.body.appendChild(d); requestAnimationFrame(function(){ d.style.opacity="0"; }); setTimeout(function(){ d.remove(); }, 520);
+    }
+    function _crp(a,b,c,d,t){ var t2=t*t,t3=t2*t; return 0.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3); }
+    function splineAt(pts, t) { var n=pts.length-1; var f=Math.max(0,Math.min(0.999999,t))*n; var i=Math.min(Math.floor(f),n-1), lt=f-i; var a=pts[Math.max(0,i-1)],b=pts[i],c=pts[i+1],d=pts[Math.min(n,i+2)]; return { x:_crp(a.x,b.x,c.x,d.x,lt), y:_crp(a.y,b.y,c.y,d.y,lt) }; }
+
+    function launchJet() {
+      if (!jet || !runwayArr || !runwayDep) return;
+      if (jetRAF) cancelAnimationFrame(jetRAF);
+      if (jetTimer) clearTimeout(jetTimer);
+      var depR = runwayDep.getBoundingClientRect(), arrR = runwayArr.getBoundingClientRect();
+      jet.style.opacity = "0"; parkOn(depR); requestAnimationFrame(function(){ jet.style.opacity = "1"; });
+      if (reduceMotion || !animOn) return;
+      var alarm = document.getElementById("tv-head").classList.contains("alarm");
+      jet.classList.toggle("scramble", alarm);
+      var flame = document.getElementById("jet-flame"); if (flame) flame.setAttribute("fill", alarm ? "#f87171" : "#60a5fa");
+      var W = window.innerWidth, H = window.innerHeight;
+      var dep = { x: depR.left+10, y: depR.top+depR.height/2 }, arr = { x: arrR.left+8, y: arrR.top+arrR.height/2 };
+      var pts = [ dep, { x: depR.right+40, y: depR.top-16 }, { x:W*0.26, y:H*0.50 }, { x:W*0.50, y:H*0.80 }, { x:W*0.76, y:H*0.62 }, { x:W*0.85, y:H*0.30 }, { x:W*0.60, y:H*0.18 }, { x: arr.x-64, y: arr.y-26 }, arr ];
+      var DUR = Math.min(alarm ? 13000 : 19000, Math.max(5000, (config.duration||22)*1000 - 2500));
+      jetTimer = setTimeout(function() {
+        var t0 = null, frame = 0;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var u = Math.min(1, (ts - t0)/DUR);
+          var p = splineAt(pts, u), q = splineAt(pts, Math.min(1, u + 0.004));
+          var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180/Math.PI;
+          jet.style.left = (p.x - 32) + "px"; jet.style.top = (p.y - 15) + "px"; jet.style.transform = "rotate(" + ang + "deg)";
+          if ((frame++ % 3) === 0) { var rad = ang * Math.PI/180; spawnTrail(p.x - 24*Math.cos(rad), p.y - 24*Math.sin(rad), alarm); }
+          if (u < 1) jetRAF = requestAnimationFrame(step);
+          else { jet.style.transform = "rotate(-8deg)"; parkOn(arrR); }
+        }
+        jetRAF = requestAnimationFrame(step);
+      }, 600);
+    }
+
+    // ── Saat ──
+    function clock() { var d=new Date(); function p(n){ return (n<10?"0":"")+n; } document.getElementById("tv-clock").textContent = p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds()); }
+    setInterval(clock, 1000); clock();
+
+    // ── Tam ekran ──
+    function goFullscreen() {
+      var el = document.documentElement;
+      var inFs = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      if (!inFs) { var rf = el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen; if (rf) { try { rf.call(el); } catch(e){} } }
+      else { var ef = document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen; if (ef) { try { ef.call(document); } catch(e){} } }
+    }
+    document.getElementById("tv-fs").addEventListener("click", goFullscreen);
+
+    // ── Animasyon aç/kapat ──
+    var animBtn = document.getElementById("tv-anim");
+    function applyAnim() {
+      if (animBtn) animBtn.textContent = animOn ? "✈️ Animasyonu kapat" : "✈️ Animasyonu aç";
+      if (!animOn) { if (jetRAF) cancelAnimationFrame(jetRAF); if (jetTimer) clearTimeout(jetTimer); if (jet && runwayDep) { jet.style.opacity="1"; parkOn(runwayDep.getBoundingClientRect()); } }
+      else launchJet();
+    }
+    if (animBtn) animBtn.addEventListener("click", function(){ animOn = !animOn; try { localStorage.setItem(ANIM_KEY, animOn ? "1" : "0"); } catch(e){} applyAnim(); });
+
+    // ── Ayarlar paneli ──
+    var overlay = document.getElementById("settings-overlay");
+    var draft = null;
+    function uid(){ return "f" + (nextId++); }
+
+    function renderEditor() {
+      document.getElementById("s-duration").value = draft.duration || 22;
+      var host = document.getElementById("s-fronts"); host.innerHTML = "";
+      draft.fronts.forEach(function(f, idx) {
+        var card = document.createElement("div"); card.className = "s-front";
+        var head = '<div class="s-front-head">' +
+          '<input class="s-input s-name" data-i="'+idx+'" value="'+(f.name||"").replace(/"/g,"&quot;")+'" style="flex:1;min-width:160px;">' +
+          '<span class="s-badge">'+(f.type==="metrics"?"Metrik panosu":"Sıralama")+'</span>' +
+          '<button class="s-btn s-up" data-i="'+idx+'">↑</button>' +
+          '<button class="s-btn s-down" data-i="'+idx+'">↓</button>' +
+          '<button class="s-btn danger s-del" data-i="'+idx+'">Sil</button>' +
+          '</div>';
+        var body = "";
+        if (f.type === "metrics") {
+          body += '<label class="s-chk" style="margin-bottom:8px;display:block;"><label><input type="checkbox" class="s-hero" data-i="'+idx+'" '+(f.hero?"checked":"")+'> Büyük sağlık skoru (hero)</label></label>';
+          body += '<div class="s-chk">';
+          TILE_ORDER.forEach(function(k){ body += '<label><input type="checkbox" class="s-tile" data-i="'+idx+'" data-k="'+k+'" '+((f.tiles||[]).indexOf(k)>=0?"checked":"")+'> '+TILES[k].label+'</label>'; });
+          body += '</div>';
+        } else {
+          body += '<div class="s-chk" style="margin-bottom:8px;">';
+          DATASET_ORDER.forEach(function(k){ body += '<label><input type="checkbox" class="s-ds" data-i="'+idx+'" data-k="'+k+'" '+((f.datasets||[]).indexOf(k)>=0?"checked":"")+'> '+DATASETS[k].label+'</label>'; });
+          body += '</div><div class="s-chk">' +
+            '<label><input type="checkbox" class="s-top" data-i="'+idx+'" '+(f.top!==false?"checked":"")+'> En güçlü</label>' +
+            '<label><input type="checkbox" class="s-bottom" data-i="'+idx+'" '+(f.bottom!==false?"checked":"")+'> En zayıf</label>' +
+            '</div>';
+        }
+        card.innerHTML = head + body;
+        host.appendChild(card);
+      });
+      // olay bağlama
+      host.querySelectorAll(".s-name").forEach(function(el){ el.addEventListener("input", function(){ draft.fronts[+el.dataset.i].name = el.value; }); });
+      host.querySelectorAll(".s-up").forEach(function(el){ el.addEventListener("click", function(){ var i=+el.dataset.i; if(i>0){ var a=draft.fronts; var t=a[i-1]; a[i-1]=a[i]; a[i]=t; renderEditor(); } }); });
+      host.querySelectorAll(".s-down").forEach(function(el){ el.addEventListener("click", function(){ var i=+el.dataset.i; var a=draft.fronts; if(i<a.length-1){ var t=a[i+1]; a[i+1]=a[i]; a[i]=t; renderEditor(); } }); });
+      host.querySelectorAll(".s-del").forEach(function(el){ el.addEventListener("click", function(){ if(draft.fronts.length<=1){ return; } draft.fronts.splice(+el.dataset.i,1); renderEditor(); }); });
+      host.querySelectorAll(".s-hero").forEach(function(el){ el.addEventListener("change", function(){ draft.fronts[+el.dataset.i].hero = el.checked; }); });
+      host.querySelectorAll(".s-tile").forEach(function(el){ el.addEventListener("change", function(){ var f=draft.fronts[+el.dataset.i]; f.tiles=f.tiles||[]; var k=el.dataset.k; var p=f.tiles.indexOf(k); if(el.checked&&p<0)f.tiles.push(k); if(!el.checked&&p>=0)f.tiles.splice(p,1); }); });
+      host.querySelectorAll(".s-ds").forEach(function(el){ el.addEventListener("change", function(){ var f=draft.fronts[+el.dataset.i]; f.datasets=f.datasets||[]; var k=el.dataset.k; var p=f.datasets.indexOf(k); if(el.checked&&p<0){ if(f.datasets.length>=2){ el.checked=false; return; } f.datasets.push(k);} if(!el.checked&&p>=0)f.datasets.splice(p,1); }); });
+      host.querySelectorAll(".s-top").forEach(function(el){ el.addEventListener("change", function(){ draft.fronts[+el.dataset.i].top = el.checked; }); });
+      host.querySelectorAll(".s-bottom").forEach(function(el){ el.addEventListener("change", function(){ draft.fronts[+el.dataset.i].bottom = el.checked; }); });
+    }
+    function openSettings() { draft = JSON.parse(JSON.stringify(config)); renderEditor(); overlay.classList.add("show"); }
+    function closeSettings() { overlay.classList.remove("show"); }
+    document.getElementById("tv-settings").addEventListener("click", openSettings);
+    document.getElementById("s-cancel").addEventListener("click", closeSettings);
+    overlay.addEventListener("click", function(e){ if (e.target === overlay) closeSettings(); });
+    document.getElementById("s-add-metrics").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:"Yeni Pano", type:"metrics", hero:false, tiles:["on_target","coverage"] }); renderEditor(); });
+    document.getElementById("s-add-ranking").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:"Yeni Cephe", type:"ranking", datasets:["strategies"], top:true, bottom:true }); renderEditor(); });
+    document.getElementById("s-reset").addEventListener("click", function(){ draft = defaultConfig(); renderEditor(); });
+    document.getElementById("s-save").addEventListener("click", function(){
+      var dv = parseInt(document.getElementById("s-duration").value, 10); draft.duration = (dv && dv >= 6) ? dv : 22;
+      // boş cepheleri temizle
+      draft.fronts = draft.fronts.filter(function(f){ return f.type==="metrics" ? ((f.tiles&&f.tiles.length)||f.hero) : (f.datasets&&f.datasets.length); });
+      if (!draft.fronts.length) draft.fronts = defaultConfig().fronts;
+      config = draft; saveConfig(config); closeSettings(); renderScenes();
+    });
+
+    // ── Veri yükleme ──
+    function load() {
+      Promise.all([
+        fetch(snapUrl, {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+        fetch(stratUrl, {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+        fetch(frontsUrl, {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+      ]).then(function(res){
+        DATA.snap = res[0] && res[0].success ? res[0].snapshot : null;
+        DATA.strat = res[1] && res[1].success ? res[1].data : null;
+        DATA.fronts = res[2] && res[2].success ? res[2].data : null;
+        if (!DATA.snap) { errEl.textContent = "Veri alınamadı — 30 sn sonra tekrar."; errEl.style.display = "block"; loading.style.display = "none"; return; }
+        errEl.style.display = "none"; loading.style.display = "none";
+        fillData();
+      });
+    }
+
+    // ── Başlat ──
+    renderScenes();
+    positionRunway();
+    window.addEventListener("resize", positionRunway);
+    setTimeout(applyAnim, 700);
+    load();
+    setInterval(load, 30000);
+  })();
+  </script>
+</body>
+</html>

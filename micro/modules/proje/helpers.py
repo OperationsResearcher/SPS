@@ -195,9 +195,16 @@ def user_ids_from_form(field: str) -> list[int]:
 
 
 def sync_project_members_observers(project: Project, kid: int) -> None:
-    member_ids = user_ids_from_form("members")
-    observer_ids = user_ids_from_form("observers")
-    uid_set = set(member_ids) | set(observer_ids)
+    # Yalnızca form'da gerçekten gönderilen alanları güncelle
+    # Boş form gönderildiğinde tüm üyeler silinmesini önle
+    if "members" not in request.form and "observers" not in request.form:
+        return
+    member_ids = user_ids_from_form("members") if "members" in request.form else None
+    observer_ids = user_ids_from_form("observers") if "observers" in request.form else None
+    if member_ids is None and observer_ids is None:
+        return
+    # member_ids/observer_ids biri None olabilir (yalnız biri form'da) — None'ı güvenli ele al
+    uid_set = set(member_ids or []) | set(observer_ids or [])
 
     valid: set[int] = set()
     if uid_set:
@@ -210,25 +217,29 @@ def sync_project_members_observers(project: Project, kid: int) -> None:
             ).all()
         }
 
-    db.session.execute(delete(project_members).where(project_members.c.project_id == project.id))
-    db.session.execute(delete(project_observers).where(project_observers.c.project_id == project.id))
+    # Yalnızca form'da gönderilen alanı sil/yeniden yaz (gönderilmeyene dokunma)
+    if member_ids is not None:
+        db.session.execute(delete(project_members).where(project_members.c.project_id == project.id))
+    if observer_ids is not None:
+        db.session.execute(delete(project_observers).where(project_observers.c.project_id == project.id))
 
     seen_members: set[int] = set()
-    for uid in member_ids:
+    for uid in (member_ids or []):
         if uid not in valid or uid in seen_members:
             continue
         seen_members.add(uid)
         db.session.execute(insert(project_members).values(project_id=project.id, user_id=uid))
 
-    for uid in observer_ids:
+    for uid in (observer_ids or []):
         if uid not in valid or uid in seen_members:
             continue
         db.session.execute(insert(project_observers).values(project_id=project.id, user_id=uid))
 
 
-def load_project(project_id: int) -> Project:
-    # Legacy `user` tablosuna joinedload denemesi PostgreSQL kurulumlarında
-    # "relation user does not exist" hatasına yol açabiliyor. Projeyi yalın yükle.
+def load_project(project_id: int, tenant_id: int = None) -> Project:
+    """Projeyi yükle. tenant_id verilirse sahiplik doğrulaması yapılır."""
+    if tenant_id is not None:
+        return Project.query.filter_by(id=project_id, kurum_id=tenant_id).first_or_404()
     return Project.query.get_or_404(project_id)
 
 

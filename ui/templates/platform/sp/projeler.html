@@ -54,15 +54,15 @@
     <div class="mc-modal-body">
       <input type="hidden" id="proje-edit-id">
       <div class="mc-form-group">
-        <label class="mc-label">Proje Adı *</label>
+        <label class="mc-label" for="proje-edit-name">Proje Adı *</label>
         <input type="text" id="proje-edit-name" class="mc-input" placeholder="Proje adı">
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">Açıklama</label>
+        <label class="mc-label" for="proje-edit-desc">Açıklama</label>
         <textarea id="proje-edit-desc" class="mc-input" rows="3" placeholder="Kısa açıklama..."></textarea>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">Durum</label>
+        <label class="mc-label" for="proje-edit-status">Durum</label>
         <select id="proje-edit-status" class="mc-input">
           <option value="Planlandı">Planlandı</option>
           <option value="Devam Ediyor">Devam Ediyor</option>
@@ -73,16 +73,16 @@
       </div>
       <div class="mc-row mc-gap-2">
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label">Başlangıç Tarihi</label>
+          <label class="mc-label" for="proje-edit-start">Başlangıç Tarihi</label>
           <input type="date" id="proje-edit-start" class="mc-input">
         </div>
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label">Bitiş Tarihi</label>
+          <label class="mc-label" for="proje-edit-end">Bitiş Tarihi</label>
           <input type="date" id="proje-edit-end" class="mc-input">
         </div>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">İlerleme (%)</label>
+        <label class="mc-label" for="proje-edit-progress">İlerleme (%)</label>
         <input type="number" min="0" max="100" id="proje-edit-progress" class="mc-input" placeholder="0-100">
       </div>
     </div>
@@ -104,15 +104,15 @@
       <input type="hidden" id="gorev-edit-project-id">
       <input type="hidden" id="gorev-edit-id">
       <div class="mc-form-group">
-        <label class="mc-label">Görev Adı *</label>
+        <label class="mc-label" for="gorev-edit-name">Görev Adı *</label>
         <input type="text" id="gorev-edit-name" class="mc-input">
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">Açıklama</label>
+        <label class="mc-label" for="gorev-edit-desc">Açıklama</label>
         <textarea id="gorev-edit-desc" class="mc-input" rows="2"></textarea>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">Durum</label>
+        <label class="mc-label" for="gorev-edit-status">Durum</label>
         <select id="gorev-edit-status" class="mc-input">
           <option value="Planlandı">Planlandı</option>
           <option value="Devam Ediyor">Devam Ediyor</option>
@@ -121,11 +121,11 @@
       </div>
       <div class="mc-row mc-gap-2">
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label">Başlangıç</label>
+          <label class="mc-label" for="gorev-edit-start">Başlangıç</label>
           <input type="date" id="gorev-edit-start" class="mc-input">
         </div>
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label">Bitiş</label>
+          <label class="mc-label" for="gorev-edit-end">Bitiş</label>
           <input type="date" id="gorev-edit-end" class="mc-input">
         </div>
       </div>

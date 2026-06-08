@@ -187,34 +187,34 @@
           <i class="fas fa-user-plus"></i>
           <span>Yeni Kullanıcı Ekle</span>
         </div>
-        <button class="mc-modal-close" id="btn-add-modal-close"><i class="fas fa-times"></i></button>
+        <button class="mc-modal-close" id="btn-add-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="mc-modal-body">
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label">Ad</label>
+            <label class="mc-form-label" for="ua-fname">Ad</label>
             <input id="ua-fname" class="mc-form-input" placeholder="Ad">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Soyad</label>
+            <label class="mc-form-label" for="ua-lname">Soyad</label>
             <input id="ua-lname" class="mc-form-input" placeholder="Soyad">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">E-posta <span class="req">*</span></label>
+            <label class="mc-form-label" for="ua-email">E-posta <span class="req">*</span></label>
             <input id="ua-email" class="mc-form-input" type="email" placeholder="ornek@kurum.com">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Şifre <span style="font-size:11px;color:#94a3b8;">(boş = varsayılan atanır)</span></label>
+            <label class="mc-form-label" for="ua-pass">Şifre <span style="font-size:11px;color:#94a3b8;">(boş = varsayılan atanır)</span></label>
             <input id="ua-pass" class="mc-form-input" type="password" placeholder="Şifre">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Rol</label>
+            <label class="mc-form-label" for="ua-role">Rol</label>
             <select id="ua-role" class="mc-form-input">
               <option value="">— Rol Seç —</option>
             </select>
           </div>
           <div class="tm-field" id="ua-tenant-wrap">
-            <label class="mc-form-label">Kurum</label>
+            <label class="mc-form-label" for="ua-tenant">Kurum</label>
             <select id="ua-tenant" class="mc-form-input">
               <option value="">— Kurum Seç —</option>
             </select>
@@ -238,35 +238,35 @@
           <i class="fas fa-user-edit"></i>
           <span>Kullanıcı Düzenle</span>
         </div>
-        <button class="mc-modal-close" id="btn-edit-modal-close"><i class="fas fa-times"></i></button>
+        <button class="mc-modal-close" id="btn-edit-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="mc-modal-body">
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label">Ad</label>
+            <label class="mc-form-label" for="ue-fname">Ad</label>
             <input id="ue-fname" class="mc-form-input" placeholder="Ad">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Soyad</label>
+            <label class="mc-form-label" for="ue-lname">Soyad</label>
             <input id="ue-lname" class="mc-form-input" placeholder="Soyad">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">E-posta</label>
+            <label class="mc-form-label" for="ue-email">E-posta</label>
             <input id="ue-email" class="mc-form-input" type="email" readonly
                    style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Yeni Şifre <span style="font-size:11px;color:#94a3b8;">(boş = değişmez)</span></label>
+            <label class="mc-form-label" for="ue-pass">Yeni Şifre <span style="font-size:11px;color:#94a3b8;">(boş = değişmez)</span></label>
             <input id="ue-pass" class="mc-form-input" type="password" placeholder="Değiştirmek için girin">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label">Rol</label>
+            <label class="mc-form-label" for="ue-role">Rol</label>
             <select id="ue-role" class="mc-form-input">
               <option value="">— Rol Seç —</option>
             </select>
           </div>
           <div class="tm-field" id="ue-tenant-wrap">
-            <label class="mc-form-label">Kurum</label>
+            <label class="mc-form-label" for="ue-tenant">Kurum</label>
             <select id="ue-tenant" class="mc-form-input">
               <option value="">— Kurum Seç —</option>
             </select>
@@ -280,7 +280,7 @@
             <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:240px;">
               <i id="ue-2fa-icon" class="fas fa-shield-alt" style="font-size:20px; color:#94a3b8;"></i>
               <div>
-                <div style="font-weight:600; color:#1e293b; font-size:13px;">
+                <div style="font-weight:600; color:var(--text-default); font-size:13px;">
                   İki Faktörlü Doğrulama (2FA)
                 </div>
                 <div id="ue-2fa-status" style="font-size:12px; color:#64748b; margin-top:2px;">—</div>

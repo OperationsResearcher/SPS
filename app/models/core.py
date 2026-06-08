@@ -11,12 +11,16 @@ class Tenant(db.Model):
     """Tenant (organization) model."""
 
     __tablename__ = "tenants"
+    __table_args__ = (
+        # Alt-tenant listelerinde (parent_tenant_id + is_active) sık filtreleniyor
+        db.Index("ix_tenant_parent_active", "parent_tenant_id", "is_active"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     short_name = db.Column(db.String(64), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    package_id = db.Column(db.Integer, db.ForeignKey("subscription_packages.id"), nullable=True)
+    package_id = db.Column(db.Integer, db.ForeignKey("subscription_packages.id"), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Eski kurum formu alanları (snake_case, İngilizce)
@@ -112,8 +116,10 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     first_name = db.Column(db.String(64), nullable=True)
     last_name = db.Column(db.String(64), nullable=True)
+    # Soft delete: is_active=False (deleted_at kolonu KASITLI olarak yok —
+    # sil tarihi/kim sildi gerekirse audit_logs'tan alınabilir)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -195,10 +201,14 @@ class Strategy(db.Model):
     Defines the top-level strategic goals of the institution.
     """
     __tablename__ = "strategies"
+    __table_args__ = (
+        # Sık kullanılan birleşik filtre: tenant + plan_year bazlı listeleme
+        db.Index("idx_strategy_tenant_plan_year", "tenant_id", "plan_year_id"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
-    
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+
     # Code and Title
     code = db.Column(db.String(20), nullable=True, index=True)  # e.g., ST1
     title = db.Column(db.String(200), nullable=False)
@@ -229,7 +239,7 @@ class SubStrategy(db.Model):
     __tablename__ = "sub_strategies"
 
     id = db.Column(db.Integer, primary_key=True)
-    strategy_id = db.Column(db.Integer, db.ForeignKey("strategies.id"), nullable=False, index=True)
+    strategy_id = db.Column(db.Integer, db.ForeignKey("strategies.id", ondelete="CASCADE"), nullable=False, index=True)
     
     # Code and Title
     code = db.Column(db.String(20), nullable=True, index=True)  # e.g., ST1.1

@@ -42,22 +42,29 @@ def _gemini_pricing(model: str) -> tuple[float, float]:
 def _call_gemini(api_key: str, model: str, prompt: str, system_prompt: Optional[str] = None,
                  max_output_tokens: int = 2048) -> tuple[Optional[str], dict]:
     try:
-        import ssl as _ssl
-        import httpx
         import google.generativeai as genai
-        # Windows geliştirme ortamında SSL sertifika doğrulaması başarısız olabilir.
-        # SSL doğrulaması devre dışı bırakılarak REST transport kullanılır.
-        _ssl._create_default_https_context = _ssl._create_unverified_context  # noqa: S501
-        try:
-            import requests, urllib3
+        # DEV_SSL_BYPASS=1 yalnızca yerel geliştirme ortamında kullanılır.
+        # Test ve Yayın ortamlarında bu değişken ASLA set edilmemeli.
+        _flask_env = (os.environ.get("FLASK_ENV") or "development").lower()
+        if os.environ.get("DEV_SSL_BYPASS") == "1" and _flask_env != "development":
+            raise RuntimeError(
+                "DEV_SSL_BYPASS sadece geliştirme ortamında kullanılabilir. "
+                "Test veya Yayın ortamında bu flag yasaktır."
+            )
+        if os.environ.get("DEV_SSL_BYPASS") == "1":
+            import ssl as _ssl
+            import urllib3
+            _ssl._create_default_https_context = _ssl._create_unverified_context  # noqa: S501
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            _orig_send = requests.Session.send
-            def _unverified_send(self, *args, **kwargs):
-                kwargs['verify'] = False
-                return _orig_send(self, *args, **kwargs)
-            requests.Session.send = _unverified_send
-        except Exception:
-            pass
+            try:
+                import requests
+                _orig_send = requests.Session.send
+                def _unverified_send(self, *args, **kwargs):
+                    kwargs['verify'] = False
+                    return _orig_send(self, *args, **kwargs)
+                requests.Session.send = _unverified_send
+            except Exception:
+                pass
         genai.configure(api_key=api_key, transport="rest")
         model_name = model or "gemini-2.5-flash-lite"
         m = genai.GenerativeModel(model_name)
@@ -400,7 +407,7 @@ def test_tenant_config(tenant_id: int) -> dict:
             text, usage = caller(plain, cfg.model, "Reply with single word: OK",
                                  system_prompt=None, max_output_tokens=10)
         ok = bool(text)
-        cfg.last_test_at = _dt.datetime.utcnow()
+        cfg.last_test_at = _dt.datetime.now(_dt.timezone.utc)
         cfg.last_test_status = "ok" if ok else "error"
         cfg.last_test_message = (text or "Boş cevap")[:200]
         from extensions import db
@@ -411,7 +418,7 @@ def test_tenant_config(tenant_id: int) -> dict:
             "tokens_used": usage.get("total_tokens", 0),
         }
     except Exception as e:
-        cfg.last_test_at = _dt.datetime.utcnow()
+        cfg.last_test_at = _dt.datetime.now(_dt.timezone.utc)
         cfg.last_test_status = "error"
         cfg.last_test_message = str(e)[:200]
         from extensions import db

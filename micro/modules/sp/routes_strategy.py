@@ -9,6 +9,7 @@ from sqlalchemy.orm import selectinload
 from platform_core import app_bp
 from app.extensions import csrf
 from app.models import db
+from app.utils.audit_logger import AuditLogger
 from sqlalchemy import or_
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.k_vektor import KVektorStrategyWeight, KVektorSubStrategyWeight
@@ -37,15 +38,10 @@ from app.services.plan_year_service import (
     get_active_plan_year_for_user,
 )
 from app.models.tenant_year import TenantYearIdentity
+from app.constants.roles import PRIVILEGED_ROLES as _PRIVILEGED_ROLES_SET
 
-_SP_ROLES = (
-    "Admin",
-    "admin",
-    "tenant_admin",
-    "executive_manager",
-    "kurum_yoneticisi",
-    "ust_yonetim",
-)
+# Legacy sistem rolleri de dahil (sistem_rol dönüşümü)
+_SP_ROLES = _PRIVILEGED_ROLES_SET | {"admin", "kurum_yoneticisi", "ust_yonetim"}
 from micro.modules.sp.helpers import (
     _check_sp_role,
     sp_manage_required,
@@ -53,6 +49,29 @@ from micro.modules.sp.helpers import (
     _plan_project_to_dict,
     _plan_task_to_dict,
 )
+
+@app_bp.route("/sp/api/strategies")
+@login_required
+def sp_api_strategies_list():
+    """Ana strateji + alt strateji listesi (OKR vb. dropdown'ları için). Aktif kurum/plan yılı."""
+    if not _check_sp_role(current_user):
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+    tid = current_user.tenant_id
+    py = get_active_plan_year_for_user(current_user)
+    q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    if py:
+        q = q.filter(or_(Strategy.plan_year_id == py.id, Strategy.plan_year_id.is_(None)))
+    rows = q.order_by(Strategy.code).all()
+    data = [{
+        "id": s.id, "code": s.code, "title": s.title,
+        "sub_strategies": [
+            {"id": ss.id, "code": ss.code, "title": ss.title}
+            for ss in sorted((s.sub_strategies or []), key=lambda x: (x.code or ""))
+            if getattr(ss, "is_active", True)
+        ],
+    } for s in rows]
+    return jsonify({"success": True, "data": data})
+
 
 @app_bp.route("/sp/api/strategy/add", methods=["POST"])
 @csrf.exempt
@@ -84,6 +103,7 @@ def sp_add_strategy():
         new_strategy = _make_strategy()
         db.session.add(new_strategy)
         db.session.commit()
+        AuditLogger.log_create("Strateji Yönetimi", new_strategy.id, {"name": new_strategy.title, "code": new_strategy.code})
         return jsonify({"success": True, "message": "Strateji eklendi.", "id": new_strategy.id})
     except Exception as e:
         db.session.rollback()
@@ -93,6 +113,7 @@ def sp_add_strategy():
                 new_strategy = _make_strategy()
                 db.session.add(new_strategy)
                 db.session.commit()
+                AuditLogger.log_create("Strateji Yönetimi", new_strategy.id, {"name": new_strategy.title, "code": new_strategy.code})
                 return jsonify({"success": True, "message": "Strateji eklendi.", "id": new_strategy.id})
             except Exception as e2:
                 db.session.rollback()
@@ -131,6 +152,7 @@ def sp_update_strategy(strategy_id):
                 db.session.rollback()
                 return jsonify({"success": False, "message": err}), 400
         db.session.commit()
+        AuditLogger.log_update("Strateji Yönetimi", st.id, {}, {"name": st.title, "code": st.code})
         return jsonify({"success": True, "message": "Ana strateji güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -150,6 +172,7 @@ def sp_delete_strategy(strategy_id):
     try:
         st.is_active = False
         db.session.commit()
+        AuditLogger.log_delete("Strateji Yönetimi", st.id, {"name": st.title, "code": st.code})
         return jsonify({"success": True, "message": "Strateji silindi."})
     except Exception as e:
         db.session.rollback()
@@ -195,6 +218,7 @@ def sp_add_sub_strategy():
         sub = _make_sub()
         db.session.add(sub)
         db.session.commit()
+        AuditLogger.log_create("Strateji Yönetimi", sub.id, {"name": sub.title, "code": sub.code, "strategy_id": sub.strategy_id})
         return jsonify({"success": True, "message": "Alt strateji eklendi.", "id": sub.id})
     except Exception as e:
         db.session.rollback()
@@ -204,6 +228,7 @@ def sp_add_sub_strategy():
                 sub = _make_sub()
                 db.session.add(sub)
                 db.session.commit()
+                AuditLogger.log_create("Strateji Yönetimi", sub.id, {"name": sub.title, "code": sub.code, "strategy_id": sub.strategy_id})
                 return jsonify({"success": True, "message": "Alt strateji eklendi.", "id": sub.id})
             except Exception as e2:
                 db.session.rollback()
@@ -221,7 +246,7 @@ def sp_update_sub_strategy(sub_id):
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
         Strategy.tenant_id == current_user.tenant_id,
-        SubStrategy.is_active == True,
+        SubStrategy.is_active.is_(True),
     ).first_or_404()
 
     data = request.get_json() or {}
@@ -239,6 +264,7 @@ def sp_update_sub_strategy(sub_id):
                 db.session.rollback()
                 return jsonify({"success": False, "message": err}), 400
         db.session.commit()
+        AuditLogger.log_update("Strateji Yönetimi", sub.id, {}, {"name": sub.title, "code": sub.code})
         return jsonify({"success": True, "message": "Alt strateji güncellendi."})
     except Exception as e:
         db.session.rollback()
@@ -259,6 +285,7 @@ def sp_delete_sub_strategy(sub_id):
     try:
         sub.is_active = False
         db.session.commit()
+        AuditLogger.log_delete("Strateji Yönetimi", sub.id, {"name": sub.title, "code": sub.code})
         return jsonify({"success": True, "message": "Alt strateji silindi."})
     except Exception as e:
         db.session.rollback()

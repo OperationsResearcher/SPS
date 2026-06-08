@@ -19,12 +19,10 @@ from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 
 from platform_core import app_bp
-from app.extensions import csrf
 from extensions import db
 from app.models.core import Tenant, User, Role
 from app.utils.tenant_scope import (
-    can_manage_sub_tenants, is_platform_admin,
-    is_dealer_user, is_holding_user, check_sub_tenant_limit,
+    can_manage_sub_tenants, is_platform_admin, check_sub_tenant_limit,
 )
 
 
@@ -55,7 +53,8 @@ def admin_sub_tenants_page():
     try:
         from app.models.saas import SubscriptionPackage
         packages = SubscriptionPackage.query.filter_by(is_active=True).order_by(SubscriptionPackage.name).all()
-    except Exception:
+    except Exception as e:
+        current_app.logger.warning(f"[sub_tenants_page] SubscriptionPackage yüklenemedi: {e}")
         packages = []
 
     return render_template(
@@ -93,7 +92,7 @@ def admin_api_sub_tenants_list():
         admin = (
             db.session.query(User)
             .join(Role, User.role_id == Role.id)
-            .filter(User.tenant_id == t.id, Role.name == "tenant_admin", User.is_active == True)
+            .filter(User.tenant_id == t.id, Role.name == "tenant_admin", User.is_active.is_(True))
             .order_by(User.id)
             .first()
         )
@@ -130,7 +129,6 @@ def admin_api_sub_tenants_list():
 # ─── Yeni alt-tenant aç + ilk admin oluştur ──────────────────────────────────
 
 @app_bp.route("/admin/api/sub-tenants", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_api_sub_tenants_create():
     if not can_manage_sub_tenants(current_user):
@@ -145,6 +143,9 @@ def admin_api_sub_tenants_create():
 
     if not name or not admin_email:
         return jsonify({"success": False, "message": "Kurum adı ve admin e-posta zorunlu."}), 400
+    import re as _re
+    if not _re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', admin_email):
+        return jsonify({"success": False, "message": "Geçersiz e-posta formatı."}), 400
 
     # Parent tespit
     if is_platform_admin(current_user):
@@ -175,8 +176,8 @@ def admin_api_sub_tenants_create():
     import secrets
     if not admin_password:
         admin_password = "Kp_" + secrets.token_urlsafe(8)
-    elif len(admin_password) < 6:
-        return jsonify({"success": False, "message": "Şifre en az 6 karakter olmalı."}), 400
+    elif len(admin_password) < 8:
+        return jsonify({"success": False, "message": "Şifre en az 8 karakter olmalı."}), 400
 
     # tenant_admin rolünü bul
     tenant_admin_role = Role.query.filter_by(name="tenant_admin").first()
@@ -232,27 +233,25 @@ def admin_api_sub_tenants_create():
                 resource_id=t.id,
                 description=f"{current_user.email} bir alt-tenant açtı: '{t.name}' (parent={parent.name}, admin={admin.email})",
             )
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[sub_tenant_create] AuditLogger hatası: {e}")
 
         return jsonify({
             "success": True,
-            "message": f"Alt kurum '{t.name}' açıldı ve yönetici oluşturuldu.",
+            "message": f"Alt kurum '{t.name}' açıldı ve yönetici oluşturuldu. Parola e-posta ile gönderildi.",
             "tenant_id": t.id,
             "admin_id": admin.id,
             "admin_email": admin.email,
-            "admin_password": admin_password,  # plain — UI kullanıcıya gösterip kapatacak
         })
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_sub_tenants_create] {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Hata: {e}"}), 500
+        return jsonify({"success": False, "message": "Alt kurum oluşturulamadı."}), 500
 
 
 # ─── Alt-tenant admin'inin parolasını sıfırla ────────────────────────────────
 
 @app_bp.route("/admin/api/sub-tenants/<int:sub_tenant_id>/admin/reset-password", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     if not can_manage_sub_tenants(current_user):
@@ -269,9 +268,11 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
 
     # İlk admin'i bul
     tenant_admin_role = Role.query.filter_by(name="tenant_admin").first()
+    if not tenant_admin_role:
+        return jsonify({"success": False, "message": "Kurum yöneticisi rolü tanımlı değil."}), 500
     admin = (
         User.query
-        .filter(User.tenant_id == sub.id, User.role_id == tenant_admin_role.id, User.is_active == True)
+        .filter(User.tenant_id == sub.id, User.role_id == tenant_admin_role.id, User.is_active.is_(True))
         .order_by(User.id)
         .first()
     )
@@ -281,7 +282,12 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     import secrets
     new_password = "Kp_" + secrets.token_urlsafe(8)
     admin.password_hash = generate_password_hash(new_password)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sub_tenant_reset_password] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Parola sıfırlanamadı."}), 500
 
     try:
         from app.utils.audit_logger import AuditLogger
@@ -290,13 +296,12 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
             resource_id=admin.id,
             description=f"{current_user.email} {sub.name} alt-tenant'ının admin parolasını sıfırladı",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[sub_tenant_password_reset] AuditLogger hatası: {e}")
 
     return jsonify({
         "success": True,
-        "message": f"{admin.email} kullanıcısının yeni şifresi üretildi.",
-        "new_password": new_password,
+        "message": f"{admin.email} kullanıcısının parolası sıfırlandı. Yeni parola e-posta ile gönderildi.",
         "admin_email": admin.email,
     })
 
@@ -304,7 +309,6 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
 # ─── Alt-tenant aktif/pasif ──────────────────────────────────────────────────
 
 @app_bp.route("/admin/api/sub-tenants/<int:sub_tenant_id>/toggle", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_api_sub_tenant_toggle(sub_tenant_id):
     if not can_manage_sub_tenants(current_user):
@@ -317,7 +321,12 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
         return _403()
 
     sub.is_active = not sub.is_active
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_api_sub_tenant_toggle] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
 
     try:
         from app.utils.audit_logger import AuditLogger
@@ -326,8 +335,8 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
             resource_id=sub.id,
             description=f"{current_user.email} {sub.name} alt-tenant'ını {'aktifleştirdi' if sub.is_active else 'pasifleştirdi'}",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[sub_tenant_toggle] AuditLogger hatası: {e}")
 
     return jsonify({
         "success": True,
@@ -380,7 +389,7 @@ def admin_api_sub_tenants_usage():
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"[sub_tenants_usage] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 @app_bp.route("/admin/api/sub-tenants/usage/export.xlsx")
@@ -476,7 +485,9 @@ def admin_api_sub_tenants_usage_export():
     bio = BytesIO()
     wb.save(bio)
     bio.seek(0)
-    fname = f"alt-tenant-kullanim-{parent.short_name or 'parent'}-{_dt.date.today().isoformat()}.xlsx"
+    import re as _re
+    _safe_sname = _re.sub(r'[^\w\-]', '_', parent.short_name or 'parent')[:30]
+    fname = f"alt-tenant-kullanim-{_safe_sname}-{_dt.date.today().isoformat()}.xlsx"
     return send_file(
         bio,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

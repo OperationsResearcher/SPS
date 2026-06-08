@@ -5,12 +5,27 @@
 /* ── Alpine.js global data ── */
 function microApp() {
     return {
-        darkMode: localStorage.getItem('micro_dark') === 'true',
+        // Tek tema kaynağı: hem System A (micro_dark/class="dark") hem System B
+        // (kk_theme/data-theme) anahtarlarını oku ki eski kullanıcılar da senkron olsun.
+        darkMode: (localStorage.getItem('micro_dark') === 'true') || (localStorage.getItem('kk_theme') === 'dark'),
         sidebarOpen: false,
 
         toggleDark() {
             this.darkMode = !this.darkMode;
             localStorage.setItem('micro_dark', this.darkMode);
+            // System B (data-theme/kk_theme + sunucu senkron) ile birlikte uygula —
+            // aksi halde [data-theme="dark"] kuralları (breadcrumb, mobil dark katmanı,
+            // ayar kutucukları) hiç aktive olmuyordu (kk_theme hiç yazılmıyordu).
+            try {
+                if (window.KKTheme) {
+                    window.KKTheme.apply(this.darkMode ? 'dark' : 'light');
+                } else {
+                    const t = this.darkMode ? 'dark' : 'light';
+                    localStorage.setItem('kk_theme', t);
+                    document.documentElement.setAttribute('data-theme', t);
+                    document.body.setAttribute('data-theme', t);
+                }
+            } catch (e) { /* ignore */ }
             try {
                 document.dispatchEvent(new CustomEvent('micro-theme-changed', { detail: { dark: this.darkMode } }));
             } catch (e) { /* ignore */ }

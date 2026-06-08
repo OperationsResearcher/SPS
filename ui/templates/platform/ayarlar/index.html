@@ -2,6 +2,10 @@
 {% block title %}Ayarlar — Kokpitim{% endblock %}
 {% block page_title %}Ayarlar{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/ayarlar_index.css') }}">
+{% endblock %}
+
 {% block breadcrumb %}
     {{ mc_breadcrumb([{'label': 'Ayarlar', 'url': None}]) }}
 {% endblock %}
@@ -11,7 +15,7 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-cog" style="color:#6366f1;"></i> Ayarlar
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -33,7 +37,7 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #16a34a;">
       <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kurum</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ (current_user.tenant.name if current_user.tenant else '—') }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">tenant #{{ current_user.tenant_id or '—' }}</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">Kurum #{{ current_user.tenant_id or '—' }}</div>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #9333ea;">
       <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Tema</div>
@@ -46,21 +50,6 @@
       <div style="font-size:11px;color:#64748b;margin-top:2px;">aktif abonelik</div>
     </div>
   </div>
-  <script>
-  (function(){
-    const t = (document.documentElement.getAttribute('data-theme') || 'light');
-    const el = document.getElementById('ayarlar-stat-theme');
-    if (el) el.textContent = t === 'dark' ? 'Karanlık' : 'Aydınlık';
-    fetch('/api/scheduled-reports').then(r => r.ok ? r.json() : null).then(j => {
-      if (!j || !j.success) return;
-      const s = j.subscriptions || {};
-      let n = 0;
-      Object.values(s).forEach(v => { if (v && v.enabled) n++; });
-      const el2 = document.getElementById('ayarlar-stat-sched');
-      if (el2) el2.textContent = n;
-    }).catch(()=>{});
-  })();
-  </script>
 
   {# ── Hızlı Arama (B6 standardı) ───────────────────────────────────── #}
   <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
@@ -143,14 +132,6 @@
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
-    <a href="{{ url_for('app_bp.ayarlar_yedekleme') }}" class="ayarlar-tile" data-search="yedekleme backup geri yükleme veritabanı">
-      <div class="ayarlar-tile-icon" style="background:#fef3c7;"><i class="fas fa-database" style="color:#d97706;"></i></div>
-      <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Yedekleme ve Geri Yükleme</div>
-        <div class="ayarlar-tile-desc">Veritabanı ve tam sistem yedekleri</div>
-      </div>
-      <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
-    </a>
 
     <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-tile" data-search="yönetim panel login istatistik aktivite log">
       <div class="ayarlar-tile-icon" style="background:#ecfeff;"><i class="fas fa-chart-line" style="color:#0e7490;"></i></div>
@@ -163,49 +144,9 @@
   </div>
   {% endif %}
 
-  <style>
-    .ayarlar-tile { display:flex; align-items:center; gap:12px; padding:14px 16px; background:#fff; border:1px solid #e2e8f0; border-radius:10px; text-decoration:none; color:#1e293b; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
-    .ayarlar-tile:hover { border-color:#c7d2fe; box-shadow:0 4px 12px rgba(99,102,241,0.10); transform: translateY(-1px); }
-    .ayarlar-tile-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-    .ayarlar-tile-body { flex:1; min-width:0; }
-    .ayarlar-tile-title { font-size:14px; font-weight:600; color:#0f172a; margin-bottom:2px; }
-    .ayarlar-tile-desc { font-size:12px; color:#64748b; line-height:1.4; }
-    .ayarlar-tile-arrow { color:#cbd5e1; font-size:12px; transition: transform 0.15s, color 0.15s; }
-    .ayarlar-tile:hover .ayarlar-tile-arrow { color:#6366f1; transform: translateX(2px); }
-    [data-theme="dark"] .ayarlar-tile { background:#1e293b; border-color:#334155; color:#e2e8f0; }
-    [data-theme="dark"] .ayarlar-tile:hover { border-color:#4338ca; background:#1e1b4b; }
-    [data-theme="dark"] .ayarlar-tile-title { color:#f1f5f9; }
-    [data-theme="dark"] .ayarlar-tile-desc { color:#94a3b8; }
-  </style>
-
-  <script>
-  (function(){
-    const search = document.getElementById('ayarlar-search');
-    const countLbl = document.getElementById('ayarlar-count-label');
-    const tiles = Array.from(document.querySelectorAll('.ayarlar-tile'));
-    const headings = Array.from(document.querySelectorAll('h3'));
-    function apply() {
-      const q = (search?.value || '').trim().toLowerCase();
-      let shown = 0;
-      tiles.forEach(t => {
-        const hay = (t.dataset.search || '') + ' ' + t.textContent.toLowerCase();
-        const ok = !q || hay.toLowerCase().includes(q);
-        t.style.display = ok ? '' : 'none';
-        if (ok) shown++;
-      });
-      // Boş grupları gizle
-      document.querySelectorAll('.ayarlar-grid').forEach(grid => {
-        const anyVisible = Array.from(grid.querySelectorAll('.ayarlar-tile')).some(t => t.style.display !== 'none');
-        grid.style.display = anyVisible ? '' : 'none';
-        const prevH = grid.previousElementSibling;
-        if (prevH && prevH.tagName === 'H3') prevH.style.display = anyVisible ? '' : 'none';
-      });
-      if (countLbl) countLbl.textContent = q ? `${shown} ayar` : '';
-    }
-    search?.addEventListener('input', apply);
-  })();
-  </script>
-
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/ayarlar_index.js') }}"></script>
+{% endblock %}

@@ -333,6 +333,8 @@ def project_task_delete(project_id: int, task_id: int):
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     task.is_archived = True
     db.session.commit()
+    AuditLogger.log_delete("Proje Faaliyeti", task.id,
+                           {"title": task.title, "status": task.status, "project_id": task.project_id})
     flash("Görev silindi.", "success")
     return redirect(url_for("app_bp.project_detail", project_id=project_id))
 

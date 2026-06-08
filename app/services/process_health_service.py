@@ -64,6 +64,18 @@ def calculate_process_health_score(
         is_active=True
     ).all()
 
+    # N+1 önlemi: tüm KPI'ların verisini tek sorguda yükle (KPI başına ayrı sorgu yerine).
+    kpi_ids = [k.id for k in kpis]
+    entries_by_kpi: Dict[int, list] = {}
+    if kpi_ids:
+        for e in (KpiData.query
+                  .filter(KpiData.process_kpi_id.in_(kpi_ids),
+                          KpiData.year == year,
+                          KpiData.is_active.is_(True))
+                  .order_by(KpiData.process_kpi_id, KpiData.data_date.desc())
+                  .all()):
+            entries_by_kpi.setdefault(e.process_kpi_id, []).append(e)
+
     pg_scores = []
     for kpi in kpis:
         target = _parse_float(kpi.target_value)
@@ -72,11 +84,7 @@ def calculate_process_health_score(
                 pg_scores.append(min(100.0, float(kpi.calculated_score)))
             continue
 
-        entries = KpiData.query.filter_by(
-            process_kpi_id=kpi.id,
-            year=year,
-            is_active=True
-        ).order_by(KpiData.data_date.desc()).all()
+        entries = entries_by_kpi.get(kpi.id, [])
 
         if not entries:
             continue

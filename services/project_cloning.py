@@ -85,8 +85,12 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
         # Önce parent görevleri kopyala (parent_id NULL olanlar)
         parent_tasks = [t for t in source_tasks if not t.parent_id]
         
-        def copy_task_recursive(source_task, parent_id=None):
+        _MAX_DEPTH = 50
+
+        def copy_task_recursive(source_task, parent_id=None, _depth=0):
             """Görevi ve alt görevlerini recursive olarak kopyala"""
+            if _depth > _MAX_DEPTH:
+                return None  # Çok derin hiyerarşi — stack overflow önlemi
             # Tamamlanan görevleri atla (eğer keep_completed_tasks False ise)
             if not keep_completed_tasks and source_task.status == 'Tamamlandı':
                 return None
@@ -130,7 +134,7 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
             # Alt görevleri kopyala (recursive)
             child_tasks = [t for t in source_tasks if t.parent_id == source_task.id]
             for child_task in child_tasks:
-                copy_task_recursive(child_task, new_task.id)
+                copy_task_recursive(child_task, new_task.id, _depth + 1)
             
             return new_task.id
         

@@ -20,6 +20,9 @@ class KVektorStrategyWeight(db.Model):
 
     __table_args__ = (db.UniqueConstraint("tenant_id", "strategy_id", name="uq_kv_strat_w_tenant_strategy"),)
 
+    def __repr__(self):
+        return f"<KVektorStrategyWeight {self.id} tenant={self.tenant_id}>"
+
 
 class KVektorSubStrategyWeight(db.Model):
     """Alt strateji ham ağırlığı (ebeveyn ana strateji kotası içinde)."""
@@ -36,6 +39,9 @@ class KVektorSubStrategyWeight(db.Model):
 
     __table_args__ = (db.UniqueConstraint("tenant_id", "sub_strategy_id", name="uq_kv_sub_w_tenant_sub"),)
 
+    def __repr__(self):
+        return f"<KVektorSubStrategyWeight {self.id} tenant={self.tenant_id}>"
+
 
 class KVektorConfigSnapshot(db.Model):
     """Yapılandırma / ağırlık değişikliği anı (denetim)."""
@@ -51,3 +57,6 @@ class KVektorConfigSnapshot(db.Model):
 
     tenant = db.relationship("Tenant", backref=db.backref("k_vektor_snapshots", lazy=True))
     user = db.relationship("User", foreign_keys=[user_id], backref=db.backref("k_vektor_snapshots", lazy=True))
+
+    def __repr__(self):
+        return f"<KVektorConfigSnapshot {self.id} tenant={self.tenant_id} type={self.snapshot_type}>"

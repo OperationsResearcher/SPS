@@ -3,7 +3,7 @@
 import os
 import uuid
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, current_app
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -17,7 +17,7 @@ auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
 
 
 def _write_auth_audit(action, user=None):
-    """Login/Logout audit kaydı (hata olsa da akışı bozmaz)."""
+    """Login/Logout audit kaydı — DB başarısız olsa da dosyaya fallback yazar."""
     try:
         AuditLogger.log(
             action=action,
@@ -26,7 +26,17 @@ def _write_auth_audit(action, user=None):
             description=f"Auth event: {action}",
         )
     except Exception as e:
-        current_app.logger.error(f"[auth_audit:{action}] {e}")
+        current_app.logger.error(f"[auth_audit:{action}] DB audit başarısız: {e}")
+        # Fallback: uygulama log dosyasına yaz (güvenlik izleme için)
+        try:
+            import datetime
+            current_app.logger.warning(
+                f"[SECURITY_AUDIT_FALLBACK] action={action} "
+                f"user_id={user.id if user else None} "
+                f"ts={datetime.datetime.now(datetime.timezone.utc).isoformat()}"
+            )
+        except Exception:
+            pass
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -40,7 +50,11 @@ def login():
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
-        ip = request.remote_addr or "unknown"
+        # X-Real-IP yalnızca güvenilir bir reverse proxy (nginx vb.) arkasında
+        # doğru çalışır. ProxyFix middleware (config.py PROXY_COUNT) doğru
+        # ayarlanmamışsa bu değer istemci tarafından taklit edilebilir (spoof).
+        # Tercih: ProxyFix + request.remote_addr; burada nginx X-Real-IP kullanılıyor.
+        ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
 
         if not email or not password:
             flash("E-posta ve şifre gereklidir.", "danger")
@@ -77,15 +91,23 @@ def login():
 
         # Sprint 26: 2FA enabled ise challenge'a yönlendir
         if user.totp_enabled and user.totp_secret:
-            from flask import session
             session["_pending_2fa_user_id"] = user.id
             return redirect(url_for("totp_bp.totp_challenge"))
 
+        _next = session.get('next')
+        session.clear()
+        if _next:
+            session['next'] = _next
         login_user(user)
         _write_auth_audit("OTURUM AÇMA", user)
         flash("Giriş başarılı.", "success")
         from app.utils.tenant_scope import default_landing_endpoint
-        next_url = request.args.get("next") or url_for(default_landing_endpoint(user))
+        from urllib.parse import urlparse
+        raw_next = request.args.get("next") or ""
+        # Open redirect önlemi: sadece göreceli (local) URL'lere izin ver
+        parsed = urlparse(raw_next)
+        safe_next = raw_next if (raw_next and not parsed.netloc and not parsed.scheme) else None
+        next_url = safe_next or url_for(default_landing_endpoint(user))
         return redirect(next_url)
 
     return render_template("auth/login.html")
@@ -113,7 +135,8 @@ def profile():
         phone_number = (request.form.get("phone_number") or "").strip() or None
         job_title = (request.form.get("job_title") or "").strip() or None
         department = (request.form.get("department") or "").strip() or None
-        profile_picture = (request.form.get("profile_picture") or "").strip() or None
+        _raw_pp = (request.form.get("profile_picture") or "").strip()
+        profile_picture = _raw_pp if _raw_pp.startswith("/static/uploads/profiles/") else None
         current_password = request.form.get("current_password") or ""
         new_password = request.form.get("new_password") or ""
 
@@ -133,8 +156,8 @@ def profile():
             if not check_password_hash(current_user.password_hash, current_password):
                 flash("Mevcut şifre yanlış.", "danger")
                 return redirect(url_for("auth_bp.profile"))
-            if len(new_password) < 6:
-                flash("Yeni şifre en az 6 karakter olmalıdır.", "danger")
+            if len(new_password) < 8:
+                flash("Yeni şifre en az 8 karakter olmalıdır.", "danger")
                 return redirect(url_for("auth_bp.profile"))
 
         current_user.email = email
@@ -184,10 +207,25 @@ def upload_profile_photo():
     file = request.files["file"]
     if not file or file.filename == "":
         return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
-    allowed = {"png", "jpg", "jpeg", "gif", "svg", "webp"}
+    allowed = {"png", "jpg", "jpeg", "gif", "webp"}  # svg XSS riski nedeniyle çıkarıldı
+    allowed_mime = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in allowed:
-        return jsonify({"success": False, "message": "Geçersiz dosya tipi."}), 400
+        return jsonify({"success": False, "message": "Geçersiz dosya tipi. İzin verilenler: PNG, JPG, GIF, WEBP."}), 400
+    # MIME type kontrolü: Content-Type başlığını doğrula. Not: bu başlık
+    # da istemci tarafından gönderilebilir; asıl güvenlik Pillow ile
+    # re-encode yapan micro endpoint'te (profil_foto_yukle) sağlanmaktadır.
+    # Bu legacy endpoint Pillow kullanmıyor; bu nedenle MIME check ek katman sağlar.
+    if file.mimetype and file.mimetype not in allowed_mime:
+        return jsonify({"success": False, "message": "Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir."}), 400
+
+    # Boyut limiti: 5 MB
+    MAX_BYTES = 5 * 1024 * 1024
+    file.seek(0, 2)
+    file_size = file.tell()
+    file.seek(0)
+    if file_size > MAX_BYTES:
+        return jsonify({"success": False, "message": "Dosya boyutu 5 MB'ı aşamaz."}), 400
 
     filename = secure_filename(file.filename) or "photo"
     unique = f"{uuid.uuid4().hex}_{filename}"
@@ -197,12 +235,15 @@ def upload_profile_photo():
     file.save(file_path)
 
     if current_user.profile_picture:
-        old = current_user.profile_picture.lstrip("/")
-        if os.path.exists(old):
-            try:
-                os.remove(old)
-            except OSError:
-                pass
+        from pathlib import Path
+        _base = Path("static/uploads/profiles").resolve()
+        try:
+            old_path = Path(current_user.profile_picture.lstrip("/")).resolve()
+            # Path traversal önlemi: dosya mutlaka base dizin içinde olmalı
+            if old_path.is_relative_to(_base) and old_path.exists():
+                old_path.unlink(missing_ok=True)
+        except (OSError, ValueError):
+            pass
 
     current_user.profile_picture = f"/static/uploads/profiles/{unique}"
     db.session.commit()
@@ -316,7 +357,7 @@ def kvkk_user_data_export():
         ikpidata = IndividualKpiData.query.filter_by(user_id=current_user.id).all()
 
         # Kullanıcının girdiği KpiData kayıtları
-        user_kpi_data = KpiData.query.filter_by(user_id=current_user.id).limit(1000).all()
+        user_kpi_data = KpiData.query.filter_by(user_id=current_user.id).limit(current_app.config.get("MAX_EXPORT_RECORDS", 1000)).all()
 
         # Audit log (son 100)
         my_audits = (
@@ -327,7 +368,7 @@ def kvkk_user_data_export():
 
         data = {
             "_kvkk_madde": "Veri Taşınabilirliği (Madde 11)",
-            "_export_date": _dt.datetime.utcnow().isoformat() + "Z",
+            "_export_date": _dt.datetime.now(_dt.timezone.utc).isoformat() + "Z",
             "user": {
                 "id": current_user.id,
                 "email": current_user.email,
@@ -386,7 +427,8 @@ def kvkk_user_delete():
 
     try:
         # Password confirmation
-        password = (request.form.get("password") or request.json.get("password", "") if request.is_json else request.form.get("password", "")) or ""
+        _json_body = request.get_json(silent=True) or {}
+        password = (request.form.get("password") or _json_body.get("password", "") if request.is_json else request.form.get("password", "")) or ""
         if not check_password_hash(current_user.password_hash, password):
             return jsonify({"success": False, "message": "Şifre yanlış."}), 401
 
@@ -400,7 +442,7 @@ def kvkk_user_delete():
                     User.tenant_id == current_user.tenant_id,
                     User.id != current_user.id,
                     User.role_id == ta_role.id,
-                    User.is_active == True,
+                    User.is_active.is_(True),
                 ).count()
                 if other_admins == 0:
                     return jsonify({

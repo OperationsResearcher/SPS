@@ -79,7 +79,12 @@ from micro.modules.surec.helpers import (
 @login_required
 def surec_api_kpi_data_add():
     data = request.get_json() or {}
-    kpi_id = data.get("kpi_id")
+    try:
+        kpi_id = int(data.get("kpi_id") or 0)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "Geçersiz kpi_id."}), 400
+    if not kpi_id:
+        return jsonify({"success": False, "message": "kpi_id gerekli."}), 400
     kpi = ProcessKpi.query.join(Process).filter(
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id,
@@ -204,7 +209,7 @@ def surec_api_kpi_data_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # Sprint 44 — Bulk Excel import
@@ -216,6 +221,12 @@ def surec_api_kpi_data_bulk_import():
     f = request.files.get("file")
     if not f or not f.filename:
         return jsonify({"success": False, "message": "Dosya seçilmedi"}), 400
+    if not f.filename.lower().endswith((".xlsx", ".xls")):
+        return jsonify({"success": False, "message": "Yalnızca .xlsx / .xls dosyası kabul edilir."}), 400
+    # Content-Length header ile erken boyut kontrolü (tam okumadan önce)
+    content_length = request.content_length
+    if content_length and content_length > 5 * 1024 * 1024:
+        return jsonify({"success": False, "message": "Dosya en fazla 5 MB"}), 400
     dry_run = (request.form.get("dry_run", "true").lower() in ("true", "1", "on"))
     blob = f.read()
     if len(blob) > 5 * 1024 * 1024:
@@ -228,7 +239,7 @@ def surec_api_kpi_data_bulk_import():
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[bulk_import] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 @app_bp.route("/process/api/kpi-data/template.xlsx")
@@ -301,7 +312,7 @@ def surec_api_kpi_data_history(kpi_id):
         abort(403)
 
     entries = (
-        KpiData.query.filter_by(process_kpi_id=kpi.id)
+        KpiData.query.filter_by(process_kpi_id=kpi.id, is_active=True)
         .options(joinedload(KpiData.user))
         .order_by(KpiData.data_date.desc(), KpiData.id.desc())
         .all()
@@ -446,7 +457,7 @@ def surec_api_kpi_data_update(data_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
@@ -497,7 +508,7 @@ def surec_api_kpi_data_delete(data_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/kpi-data/detail", methods=["GET"])
@@ -523,6 +534,7 @@ def surec_api_kpi_data_detail():
 
     entries_raw = (
         KpiData.query.filter_by(process_kpi_id=kpi.id, year=year)
+        .filter(KpiData.is_active.is_(True))
         .order_by(KpiData.data_date.desc())
         .all()
     )
@@ -533,8 +545,6 @@ def surec_api_kpi_data_detail():
         if period_key not in keys:
             continue
         entry_ids.append(e.id)
-        if not e.is_active:
-            continue
         u = e.user
         user_name = _user_display_name(u) if u else "Bilinmiyor"
         rows.append({
@@ -551,6 +561,7 @@ def surec_api_kpi_data_detail():
     if entry_ids:
         audit_rows = (
             KpiDataAudit.query.filter(KpiDataAudit.kpi_data_id.in_(entry_ids))
+            .options(joinedload(KpiDataAudit.user))
             .order_by(KpiDataAudit.created_at.desc())
             .all()
         )
@@ -686,7 +697,7 @@ def surec_api_kpi_bulk_template():
     kpis = (
         ProcessKpi.query
         .join(Process, Process.id == ProcessKpi.process_id)
-        .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+        .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
         .order_by(Process.code, ProcessKpi.code)
         .all()
     )
@@ -750,91 +761,6 @@ def surec_api_kpi_bulk_template():
     )
 
 
-@app_bp.route("/process/api/kpi-data/bulk-import", methods=["POST"])
-@login_required
-def surec_api_kpi_bulk_import():
-    """Doldurulmuş Excel şablonunu işler ve toplu KPI verisi kaydeder."""
-    try:
-        from openpyxl import load_workbook
-    except ImportError:
-        return jsonify({"success": False, "message": "openpyxl kurulu değil."}), 500
-
-    if "file" not in request.files:
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
-    f = request.files["file"]
-    if not f.filename.endswith((".xlsx", ".xls")):
-        return jsonify({"success": False, "message": "Yalnızca .xlsx dosyası kabul edilir."}), 400
-
-    tid = current_user.tenant_id
-    # Tenant'a ait KPI id setini doğrulama için çek
-    valid_kpi_ids = set(
-        row[0] for row in
-        db.session.query(ProcessKpi.id)
-        .join(Process, Process.id == ProcessKpi.process_id)
-        .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
-        .all()
-    )
-
-    try:
-        wb = load_workbook(f, read_only=True, data_only=True)
-        ws = wb.active
-    except Exception as e:
-        return jsonify({"success": False, "message": f"Dosya okunamadı: {e}"}), 400
-
-    saved, errors = 0, []
-    for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-        if not row or row[0] is None:
-            continue
-        try:
-            kpi_id = int(row[0])
-            actual_raw = str(row[6] or "").strip()
-            date_raw = str(row[7] or "").strip()[:10]
-        except (TypeError, ValueError, IndexError):
-            errors.append({"row": row_idx, "reason": "kpi_id veya değer okunamadı"})
-            continue
-
-        if not actual_raw:
-            continue
-        if kpi_id not in valid_kpi_ids:
-            errors.append({"row": row_idx, "reason": f"kpi_id={kpi_id} bu tenant'a ait değil"})
-            continue
-
-        try:
-            data_date = date.fromisoformat(date_raw)
-        except ValueError:
-            data_date = date.today()
-
-        period_type = str(row[8] or "Aylık").strip()
-        description = str(row[9] or "").strip() or None
-
-        entry = KpiData(
-            process_kpi_id=kpi_id,
-            year=data_date.year,
-            data_date=data_date,
-            actual_value=actual_raw,
-            period_type=period_type,
-            period_month=data_date.month,
-            user_id=current_user.id,
-            is_active=True,
-            description=description,
-        )
-        db.session.add(entry)
-        saved += 1
-
-    if saved:
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            current_app.logger.error(f"[bulk_import] commit hatası: {e}", exc_info=True)
-            return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
-
-    return jsonify({
-        "success": True,
-        "saved": saved,
-        "errors": errors[:20],
-        "message": f"{saved} satır kaydedildi." + (f" {len(errors)} hata." if errors else ""),
-    })
 
 
 # ──────────────────────────────────────────────────

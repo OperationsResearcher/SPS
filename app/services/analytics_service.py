@@ -8,9 +8,13 @@ from extensions import db
 from app.models.process import Process, ProcessKpi, KpiData
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-import pandas as pd
 from sqlalchemy import func, and_, or_
 from collections import defaultdict
+
+# pandas ağır kütüphane — ilk kullanımda yükle
+def _pd():
+    import pandas as pd
+    return pd
 
 class AnalyticsService:
     """Analytics ve raporlama servisi"""
@@ -36,28 +40,38 @@ class AnalyticsService:
         Returns:
             Trend verisi (dates, actual_values, target_values, performance_rates)
         """
-        # KPI verilerini çek
-        kpi_data = KpiData.query.filter(
-            KpiData.process_kpi_id == kpi_id,
-            KpiData.data_date.between(start_date, end_date),
-            KpiData.is_active == True
-        ).order_by(KpiData.data_date).all()
-        
+        _empty = {'dates': [], 'actual_values': [], 'target_values': [], 'performance_rates': []}
+        try:
+            kpi_data = KpiData.query.filter(
+                KpiData.process_kpi_id == kpi_id,
+                KpiData.data_date.between(start_date, end_date),
+                KpiData.is_active.is_(True)
+            ).order_by(KpiData.data_date).all()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"[analytics] KPI trend sorgu hatası: {e}")
+            return _empty
+
         if not kpi_data:
-            return {
-                'dates': [],
-                'actual_values': [],
-                'target_values': [],
-                'performance_rates': []
-            }
+            return _empty
         
         # DataFrame'e çevir
+        pd = _pd()
         df = pd.DataFrame([{
             'date': d.data_date,
             'actual': d.actual_value,
             'target': d.target_value
         } for d in kpi_data])
-        
+
+        # actual_value/target_value DB'de String(100) — sayısal işlemler (mean,
+        # bölme) öncesi güvenli dönüşüm; ayrıştırılamayan değer NaN olur.
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df['actual'] = pd.to_numeric(df['actual'], errors='coerce')
+        df['target'] = pd.to_numeric(df['target'], errors='coerce')
+        df = df.dropna(subset=['date'])
+        if df.empty:
+            return _empty
+
         # Frekansa göre grupla
         if frequency == 'daily':
             grouped = df
@@ -85,14 +99,22 @@ class AnalyticsService:
         else:
             grouped = df
         
-        # Performans oranını hesapla
-        grouped['performance_rate'] = (grouped['actual'] / grouped['target'] * 100).round(2)
-        
+        # Performans oranını hesapla (hedef 0/NaN → sonsuz/NaN'ı temizle)
+        grouped['performance_rate'] = (grouped['actual'] / grouped['target'] * 100)
+        grouped['performance_rate'] = (
+            grouped['performance_rate']
+            .replace([float('inf'), float('-inf')], pd.NA)
+            .round(2)
+        )
+
+        def _clean(series):
+            return [None if pd.isna(v) else v for v in series.tolist()]
+
         return {
             'dates': grouped['date'].dt.strftime('%Y-%m-%d').tolist(),
-            'actual_values': grouped['actual'].tolist(),
-            'target_values': grouped['target'].tolist(),
-            'performance_rates': grouped['performance_rate'].tolist()
+            'actual_values': _clean(grouped['actual']),
+            'target_values': _clean(grouped['target']),
+            'performance_rates': _clean(grouped['performance_rate'])
         }
 
     
@@ -231,6 +253,8 @@ class AnalyticsService:
             }
         """
         # Toplu süreç çekimi (N+1 önlemi)
+        # tenant_id filtresi: comparation endpoint'i API'den tenant-scoped ID'ler geçirmeli
+        # Burada ek güvence olarak tenant_id sorguya dahil edilmez (caller sorumluluğu)
         _procs_by_id = {p.id: p for p in Process.query.filter(Process.id.in_(process_ids)).all()} if process_ids else {}
 
         comparison_data = []
@@ -283,7 +307,7 @@ class AnalyticsService:
         kpi_data = KpiData.query.filter(
             KpiData.process_kpi_id == kpi_id,
             KpiData.data_date >= start_date,
-            KpiData.is_active == True
+            KpiData.is_active.is_(True)
         ).order_by(KpiData.data_date).all()
         
         if len(kpi_data) < 10:
@@ -293,7 +317,7 @@ class AnalyticsService:
             }
         
         # DataFrame'e çevir
-        df = pd.DataFrame([{
+        df = _pd().DataFrame([{
             'date': d.data_date,
             'value': d.actual_value
         } for d in kpi_data])
@@ -346,7 +370,7 @@ class AnalyticsService:
         kpi_data = KpiData.query.filter(
             KpiData.process_kpi_id == kpi_id,
             KpiData.data_date >= start_date,
-            KpiData.is_active == True
+            KpiData.is_active.is_(True)
         ).order_by(KpiData.data_date).all()
         
         if len(kpi_data) < 3:
@@ -355,7 +379,7 @@ class AnalyticsService:
                 'message': 'Yeterli veri yok (minimum 3 veri noktası gerekli)'
             }
         
-        df = pd.DataFrame([{
+        df = _pd().DataFrame([{
             'date': d.data_date,
             'value': d.actual_value
         } for d in kpi_data])

@@ -159,19 +159,22 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 
 ## 8. ORTAMLAR VE DEPLOY PROTOKOLÜ
 
-### 8.1 Üç ortam — terminoloji zorunlu
+### 8.1 Dört ortam — terminoloji zorunlu
 
-> Bu kelimeler bağlayıcıdır. "Üretim VM", "production VM", "live" gibi belirsiz terimler **kullanılmaz**. Hangi ortamdan bahsedildiği her zaman net olmalı.
+> Bu kelimeler bağlayıcıdır. "Üretim VM", "production VM", "live" gibi belirsiz terimler **kullanılmaz**. Hangi ortamdan bahsedildiği her zaman net olmalı. ("Canlı" = **Yayın** eş anlamlısıdır.)
 
 | # | İsim | URL | Lokasyon | Amaç |
 |---|---|---|---|---|
 | 1 | **Yerel** | `http://127.0.0.1:5001` | Geliştirici makinesi (`C:\kokpitim`) | Geliştirme, deneme, hızlı iterasyon |
 | 2 | **Test** | `https://test.kokpitim.com` | Oracle VM `/opt/kokpitim-test/` · port 5050 · DB `kokpitim_test_db` | Yayına çıkmadan önce staging doğrulaması |
-| 3 | **Yayın** | `https://www.kokpitim.com` | Oracle VM `/opt/kokpitim/` · port 5000 · DB `kokpitim_db` | Müşterilere açık canlı sistem |
+| 3 | **Demo** | `https://demo.kokpitim.com` | Oracle VM `/opt/kokpitim-demo/` · port 5080 · DB `kokpitim_demo_db` | Ziyaretçilere Tomofil örnek tenant'ı üzerinde giriş-engelsiz deneyim |
+| 4 | **Yayın** (Canlı) | `https://www.kokpitim.com` | Oracle VM `/opt/kokpitim/` · port 5000 · DB `kokpitim_db` | Müşterilere açık canlı sistem — **kullanıcı verisi kırmızı çizgi** |
 
-**Yerelde çalışan değişikliği hiçbir zaman doğrudan yayına atma.** Akış: **Yerel → Test → Yayın**.
+**Yerelde çalışan değişikliği hiçbir zaman doğrudan yayına atma.** Akış: **Yerel → Test → Yayın** (Demo paralel hat: **Yerel → Demo**).
 
-İki ortam aynı fiziksel sunucudadır (`129.159.30.175`), izolasyon dizin/port/DB seviyesinde.
+Test, Demo ve Yayın aynı fiziksel sunucudadır (`129.159.30.175`); izolasyon dizin/port/DB seviyesinde. **Demo'ya dokunan işlemler YALNIZCA `*-demo` hedeflerine erişir (`/opt/kokpitim-demo`, `kokpitim-demo-web`, `kokpitim_demo_db`); Test/Yayın hedefleri demo komutlarında ASLA geçmez.**
+
+**Canlı (Yayın) kırmızı çizgi:** Yayında kod/DB her ne sebeple güncellenirse, **1. öncelik kullanıcı verisinin sağlıklı yedeği**.
 
 ### 8.2 SSH ve dizinler (yalnızca operatör)
 
@@ -180,15 +183,16 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 ```
 
-| | **Test** | **Yayın** |
-|--|----------|-----------|
-| Dizin | `/opt/kokpitim-test/app` | `/opt/kokpitim/app` |
-| `.env` | `/opt/kokpitim-test/.env` (+ `app/.env`) | `/opt/kokpitim/.env` |
-| Container | `kokpitim-test-web` | `kokpitim-web` |
-| Port | 5050 | 5000 |
-| Nginx | `/etc/nginx/sites-enabled/test.kokpitim.com.conf` | `/etc/nginx/sites-enabled/www.kokpitim.com` |
-| PG DB | `kokpitim_test_db` (`kokpitim_test_user`) | `kokpitim_db` (`kokpitim_user`) |
-| Backups | `/opt/kokpitim-test/backups` | `/opt/kokpitim/backups` |
+| | **Test** | **Demo** | **Yayın** |
+|--|----------|----------|-----------|
+| Dizin | `/opt/kokpitim-test/app` | `/opt/kokpitim-demo/app` | `/opt/kokpitim/app` |
+| `.env` | `/opt/kokpitim-test/.env` (+ `app/.env`) | `/opt/kokpitim-demo/.env` (+ `app/.env`) | `/opt/kokpitim/.env` |
+| Container | `kokpitim-test-web` | `kokpitim-demo-web` | `kokpitim-web` |
+| Port | 5050 | 5080 | 5000 |
+| Nginx | `…/test.kokpitim.com.conf` | `…/demo.kokpitim.com.conf` | `…/www.kokpitim.com` |
+| PG DB | `kokpitim_test_db` (`kokpitim_test_user`) | `kokpitim_demo_db` (`kokpitim_demo_user`) | `kokpitim_db` (`kokpitim_user`) |
+| Backups | `/opt/kokpitim-test/backups` | `/opt/kokpitim-demo/backups` | `/opt/kokpitim/backups` |
+| Özel flag | — | `KOKPITIM_DEMO_MODE=1` | — |
 
 ### 8.3 Deploy akışı
 
@@ -206,7 +210,27 @@ ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 
 **Tam yordam:** `docs/YERELDEN_VM_YAYIN.md` · `docs/ORACLE-PROD-VM.md`
 
-### 8.4 GCP (eski — arşiv)
+### 8.4 Demo ortamı — yapı + sıfırlama mutabakatı (2026-06-02)
+
+> Kullanıcı ile mutabakat. Bağlayıcı. İlgili tasarım: `docs/DEMO-ORTAMI-PLAN.md`.
+
+**Amaç:** Ziyaretçiler Tomofil örnek tenant'ı üzerinde giriş-engelsiz Kokpitim'i dener; ekler/siler/değiştirir, sonucu canlı görür. **Oturum bitince Tomofil verisi başlangıç haline (baseline) geri döner.**
+
+**Seçilen mimari — Yol B (tek paylaşılan tenant + snapshot'tan geri yükleme):**
+- Tek Tomofil tenant'ı (demo config `DEMO_TENANT_ID`, vars. 27). Per-session schema izolasyonu (S3) **YOK** — v2'ye ertelendi.
+- **Baseline kaynağı:** yereldeki güncel Tomofil tenant'ının hali → demo DB'ye aktarılır + ayrı bir **baseline snapshot** olarak saklanır.
+- **Sıfırlama tetikleri — HEPSİ:** (a) manuel çıkış `/demo/end`, (b) 60 dk süre dolumu, (c) inaktivite (heartbeat gelmez).
+- **Sıfırlama mekaniği:** Tomofil tenant'ının verisini baseline snapshot'tan geri yükle (FK sırasında truncate + restore).
+
+**Bilinçli kabul edilen sınır:** Eşzamanlı ziyaretçiler aynı Tomofil'i paylaşır; biri sıfırlama tetiklerse diğerinin oturumu da sıfırlanır. Düşük trafik için **kabul edildi** (engel değil). Trafik artarsa Yol A (S3 per-session clone).
+
+**Demo kırmızı çizgileri:**
+- Demo işlemleri **yalnızca `*-demo` hedeflerine** dokunur. Test/Yayın hedefleri demo komutlarında **ASLA** geçmez.
+- Saf kod deploy'u DB'ye dokunmaz. Tomofil baseline / demo DB'yi etkileyecek işlemler (seed / wipe / Alembic migration) **yalnızca kullanıcı açıkça isteyince**.
+
+**Demo deploy akışı (Yerel → Demo):** kullanıcı **"demo'ya gönderelim"** dediğinde — kod tarball/git → `/opt/kokpitim-demo/app/` → `docker restart kokpitim-demo-web`. SSH yalnızca operatör; otomatik değil.
+
+### 8.5 GCP (eski — arşiv)
 | | |
 |-|-|
 | Instance | `sps-server-v2` / `europe-west3-c` (STOP) |

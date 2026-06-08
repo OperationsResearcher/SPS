@@ -129,7 +129,7 @@ def analiz_api_comparison():
         p.id for p in Process.query.filter(
             Process.id.in_(process_ids),
             Process.tenant_id == current_user.tenant_id,
-            Process.is_active == True,
+            Process.is_active.is_(True),
         ).all()
     ]
     try:

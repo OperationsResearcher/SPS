@@ -56,7 +56,7 @@ def holding_api_snapshot():
         return jsonify({"success": True, **snap})
     except Exception as e:
         current_app.logger.error(f"[holding_api_snapshot] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 # ─── Sprint E: Read-Only Drill-Down ──────────────────────────────────────────
@@ -93,8 +93,8 @@ def holding_sub_tenant_view_page(sub_tenant_id):
             resource_id=sub.id,
             description=f"{current_user.email} (holding={holding_id}) → drill-down: {sub.name}",
         )
-    except Exception:
-        pass
+    except Exception as _audit_err:
+        current_app.logger.error("[audit] holding drill-down audit kaydı başarısız: %s", _audit_err)
 
     return render_template(
         "platform/admin/holding_drilldown.html",
@@ -116,4 +116,4 @@ def holding_api_drilldown(sub_tenant_id):
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"[holding_api_drilldown] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500

@@ -49,7 +49,7 @@ def sp_api_exec_snapshot():
         return jsonify({"success": True, "snapshot": snap})
     except Exception as e:
         current_app.logger.error(f"exec_snapshot error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Strateji bazlı performans sıralaması ────────────────────────────────────
@@ -108,7 +108,7 @@ def sp_api_exec_strategy_scores():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_strategy_scores error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── K-Vektör puan gelişimi (günlük/aylık/çeyreklik/yıllık) ─────────────────
@@ -228,7 +228,7 @@ def sp_api_exec_kvektor_trend():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_kvektor_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Son 12 ay sağlık trendi (PG hedef üstü oranı) ───────────────────────────
@@ -271,7 +271,7 @@ def sp_api_exec_trend():
         return jsonify({"success": True, "data": {"labels": labels, "values": values}})
     except Exception as e:
         current_app.logger.error(f"exec_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ def sp_api_ai_pivot():
         return jsonify({"success": True, **result}), status
     except Exception as e:
         current_app.logger.error(f"ai_pivot error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
 
 
 # ─── Template Marketplace ────────────────────────────────────────────────────
@@ -324,6 +324,101 @@ def sp_api_template_get(code):
     return jsonify({"success": True, "template": t})
 
 
+# ── TV / War-room modu ────────────────────────────────────────────────────────
+
+@app_bp.route("/sp/tv")
+@login_required
+def sp_tv_mode():
+    """Tam ekran TV / war-room KPI duvarı (exec-snapshot verisini döngüyle gösterir)."""
+    if not _can():
+        return render_template("errors/403.html"), 403
+    return render_template(
+        "platform/sp/tv.html",
+        savas_uid=current_user.id,
+        savas_tid=current_user.tenant_id or 0,
+    )
+
+
+# ── Tenant-geneli AI Yönetici Özeti (exec + kurum üstü) ───────────────────────
+
+def _exec_heuristik_ozet(snap):
+    """exec-snapshot dict'inden LLM olmadan da çalışan Türkçe yönetici özeti."""
+    snap = snap or {}
+    kpi = snap.get("kpi") or {}
+    act = snap.get("activity") or {}
+    risk = snap.get("risk") or {}
+    ano = snap.get("anomaly") or {}
+    parts = []
+    hs = snap.get("health_score")
+    if hs is not None:
+        try:
+            parts.append(f"Genel sağlık skoru %{float(hs):.0f}.")
+        except (TypeError, ValueError):
+            pass
+    ot = kpi.get("on_target_pct")
+    if ot is not None:
+        try:
+            parts.append(f"PG'lerin %{float(ot):.0f}'ı hedef üstünde.")
+        except (TypeError, ValueError):
+            pass
+    total = kpi.get("total") or 0
+    wd = kpi.get("with_data")
+    if total and wd is not None and wd < total:
+        parts.append(f"{total} PG'den {total - wd}'ine veri girilmemiş.")
+    flags = []
+    if act.get("overdue"):
+        flags.append(f"{act['overdue']} geciken faaliyet")
+    if risk.get("critical"):
+        flags.append(f"{risk['critical']} kritik risk")
+    if ano.get("high"):
+        flags.append(f"{ano['high']} yüksek anomali")
+    if flags:
+        parts.append("Kırmızı bayraklar: " + ", ".join(flags) + ".")
+    if not parts:
+        parts.append("Özet üretecek yeterli veri yok; PG ve faaliyet verisi girin.")
+    return " ".join(parts)
+
+
+@app_bp.route("/sp/api/exec-ai-ozet")
+@login_required
+def sp_api_exec_ai_ozet():
+    """Tenant-geneli 2-3 cümlelik Türkçe yönetici özeti (exec + kurum üstü).
+
+    Her zaman deterministik heuristik döner; LLM varsa cilalanır (yerelde anahtarsız çalışır).
+    """
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    year = request.args.get("year", type=int)
+    try:
+        snap = build_exec_snapshot(current_user.tenant_id, year=year)
+    except Exception as e:
+        current_app.logger.info(f"[exec-ai-ozet] snapshot fallback ({e})")
+        snap = {}
+
+    ozet = _exec_heuristik_ozet(snap)
+    kaynak = "heuristik"
+    try:
+        from app.services.llm_gateway import call_llm
+        prompt = (
+            "Aşağıdaki kurum performans özetinden, bir üst yöneticinin tek bakışta okuyacağı "
+            "2-3 cümlelik Türkçe özet yaz. Sırasıyla: kazanım(lar), kırmızı bayrak(lar), "
+            "bu hafta odak. Sade ve net.\n\n" + str(snap)
+        )
+        res = call_llm(
+            tenant_id=current_user.tenant_id, endpoint="exec_ozet",
+            prompt=prompt,
+            system_prompt="Sen kısa ve net konuşan bir Türkçe strateji danışmanısın.",
+            user_id=current_user.id, max_output_tokens=260,
+        )
+        if isinstance(res, dict) and res.get("text"):
+            ozet = res["text"].strip()
+            kaynak = "ai"
+    except Exception as e:
+        current_app.logger.info(f"[exec-ai-ozet] LLM fallback ({e})")
+
+    return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})
+
+
 @app_bp.route("/sp/api/templates/<code>/apply", methods=["POST"])
 @csrf.exempt
 @login_required
@@ -335,6 +430,8 @@ def sp_api_template_apply(code):
         target_year = int(data.get("target_year"))
     except (TypeError, ValueError):
         return jsonify({"error": "target_year zorunlu"}), 400
+    if not (2000 <= target_year <= 2100):
+        return jsonify({"error": "Geçersiz yıl değeri."}), 400
     overwrite = bool(data.get("overwrite_identity", False))
     try:
         py = apply_template_to_tenant(
@@ -346,4 +443,98 @@ def sp_api_template_apply(code):
         }), 201
     except Exception as e:
         current_app.logger.error(f"template_apply error: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+
+
+# ── Savaş Odası cepheleri: alt strateji + süreç + proje sıralaması ────────────
+
+_SAVAS_NUM = "kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$' AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'"
+
+_SUBSTRAT_SQL = f"""
+    SELECT ss.id, ss.code, ss.title,
+           count(DISTINCT k.id) AS pg_total,
+           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
+           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+    FROM sub_strategies ss
+    JOIN strategies s ON ss.strategy_id = s.id AND s.is_active=true
+    JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
+    JOIN processes p ON p.id = psl.process_id AND p.is_active=true
+    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
+    WHERE s.tenant_id=:t AND ss.is_active=true
+    GROUP BY ss.id, ss.code, ss.title
+    ORDER BY ss.code NULLS LAST
+"""
+
+_PROCESS_SQL = f"""
+    SELECT p.id, p.code, p.name AS title,
+           count(DISTINCT k.id) AS pg_total,
+           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
+           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+    FROM processes p
+    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
+    WHERE p.tenant_id=:t AND p.is_active=true
+    GROUP BY p.id, p.code, p.name
+    ORDER BY p.code NULLS LAST
+"""
+
+
+def _savas_rank(sql, tid, year):
+    from app.extensions import db
+    from sqlalchemy import text as _t
+    rows = db.session.execute(_t(sql), {"t": tid, "y": year}).fetchall()
+    items = []
+    for r in rows:
+        comp = int(r.comparable or 0)
+        on_t = int(r.on_target or 0)
+        pct = round((on_t / comp) * 100, 1) if comp else None
+        items.append({"code": r.code or "", "title": r.title or "",
+                      "on_target_pct": pct, "pg_total": int(r.pg_total or 0)})
+    wd = [x for x in items if x["on_target_pct"] is not None]
+    return {
+        "top": sorted(wd, key=lambda x: x["on_target_pct"], reverse=True)[:5],
+        "bottom": sorted(wd, key=lambda x: x["on_target_pct"])[:5],
+    }
+
+
+@app_bp.route("/sp/api/savas-odasi/fronts")
+@login_required
+def sp_api_savas_odasi_fronts():
+    """Savaş Odası ek cepheleri: alt strateji + süreç (hedef üstü %) + proje (sağlık)."""
+    if not _can():
+        return jsonify({"error": "yetki yok"}), 403
+    import datetime as _d
+    year = request.args.get("year", type=int) or _d.date.today().year
+    tid = current_user.tenant_id
+
+    out = {}
+    try:
+        out["sub_strategies"] = _savas_rank(_SUBSTRAT_SQL, tid, year)
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] sub {e}")
+        out["sub_strategies"] = {"top": [], "bottom": []}
+    try:
+        out["processes"] = _savas_rank(_PROCESS_SQL, tid, year)
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] proc {e}")
+        out["processes"] = {"top": [], "bottom": []}
+
+    projects = {"top": [], "bottom": []}
+    try:
+        from app.models.portfolio_project import Project
+        pj = []
+        for p in Project.query.filter_by(tenant_id=tid, is_active=True).all():
+            if getattr(p, "is_archived", False):
+                continue
+            hs = getattr(p, "health_score", None)
+            pj.append({"code": "", "title": p.name or "",
+                       "on_target_pct": (round(float(hs), 1) if hs is not None else None)})
+        wd = [x for x in pj if x["on_target_pct"] is not None]
+        projects["top"] = sorted(wd, key=lambda x: x["on_target_pct"], reverse=True)[:5]
+        projects["bottom"] = sorted(wd, key=lambda x: x["on_target_pct"])[:5]
+    except Exception as e:
+        current_app.logger.info(f"[savas-fronts] proj {e}")
+    out["projects"] = projects
+
+    return jsonify({"success": True, "data": out})

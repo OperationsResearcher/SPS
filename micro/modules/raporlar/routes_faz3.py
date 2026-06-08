@@ -1,8 +1,9 @@
 """Faz 3 — Premium dosya ürünleri (stratejik yıllık, yatırımcı sunum, ESG, audit, bireysel karne batch)."""
 from __future__ import annotations
 
+import re as _re
 from collections import defaultdict
-from datetime import datetime, timedelta, date as _date
+from datetime import datetime, timedelta, timezone, date as _date
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
@@ -10,6 +11,16 @@ from sqlalchemy import func, and_, or_, text, select
 
 from platform_core import app_bp
 from app.models import db
+
+
+def _hk_safe_name() -> str:
+    """Aktif kurumun dosya-güvenli adı (rapor dosya adlarında). Fonksiyon-kapsamı
+    sorununu önler — eskiden yerel `_safe_filename` değişkeni başka fonksiyonlarda
+    NameError veriyordu."""
+    from app.models.core import Tenant
+    tid = getattr(current_user, "tenant_id", None)
+    t = db.session.get(Tenant, tid) if tid else None
+    return _re.sub(r'[^\w\-]', '_', (t.name if t and t.name else "Kurum"))[:50]
 from app.models.core import User, Strategy, SubStrategy, Tenant
 from app.models.process import (
     Process, ProcessKpi, KpiData, IndividualPerformanceIndicator,
@@ -102,7 +113,11 @@ def raporlar_api_stratejik_yillik_generate():
     tenant = db.session.get(Tenant, tid)
     active_py = get_active_plan_year_for_user(current_user)
     year_label = active_py.year if active_py else _date.today().year
-    tname = tenant.name if tenant else "Kurum"
+    from html import escape as _he
+    import re as _re
+    _raw_name = tenant.name if tenant else "Kurum"
+    tname = _he(_raw_name)  # ReportLab Paragraph markup injection koruması
+    _safe_filename = _re.sub(r'[^\w\-]', '_', _raw_name)[:50]
 
     # Veri toplama
     strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
@@ -302,7 +317,7 @@ def raporlar_api_stratejik_yillik_generate():
     doc.build(elems)
     buf.seek(0)
 
-    filename = f"{tname.replace(' ', '_')}_{year_label}_stratejik_yillik.pdf"
+    filename = f"{_safe_filename}_{year_label}_stratejik_yillik.pdf"
     return send_file(buf, mimetype="application/pdf",
                      as_attachment=True, download_name=filename)
 
@@ -505,7 +520,7 @@ def raporlar_api_yatirimci_sunum_generate():
     add_footer(s, 13)
 
     buf = io.BytesIO(); prs.save(buf); buf.seek(0)
-    filename = f"{tname.replace(' ', '_')}_{year_label}_yatirimci_sunum.pptx"
+    filename = f"{_hk_safe_name()}_{year_label}_yatirimci_sunum.pptx"
     return send_file(buf,
         mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation",
         as_attachment=True, download_name=filename)
@@ -658,7 +673,7 @@ def raporlar_api_esg_rapor_generate():
                        textColor=h["colors"].HexColor("#64748b"))))
 
     doc.build(elems); buf.seek(0)
-    filename = f"{tname.replace(' ', '_')}_ESG_Raporu_{year}.pdf"
+    filename = f"{_hk_safe_name()}_ESG_Raporu_{year}.pdf"
     return send_file(buf, mimetype="application/pdf",
                      as_attachment=True, download_name=filename)
 
@@ -756,7 +771,7 @@ def raporlar_api_audit_paketi_generate():
 
     # 3. Audit log son 90 gün
     elems.append(P("3. Audit Log — Son 90 Gün", h1))
-    last_90 = datetime.utcnow() - timedelta(days=90)
+    last_90 = datetime.now(timezone.utc) - timedelta(days=90)
     audit_logs = AuditLog.query.filter(
         AuditLog.tenant_id == tid, AuditLog.created_at >= last_90,
     ).order_by(AuditLog.created_at.desc()).limit(50).all()
@@ -814,7 +829,7 @@ def raporlar_api_audit_paketi_generate():
                    h["ParagraphStyle"]("Foot", parent=small, alignment=h["TA_CENTER"])))
 
     doc.build(elems); buf.seek(0)
-    filename = f"{tname.replace(' ', '_')}_Audit_Paketi_{year}.pdf"
+    filename = f"{_hk_safe_name()}_Audit_Paketi_{year}.pdf"
     return send_file(buf, mimetype="application/pdf",
                      as_attachment=True, download_name=filename)
 
@@ -954,7 +969,7 @@ def raporlar_api_bireysel_karne_batch_generate():
             zf.writestr(f"{safe_name}_karne.pdf", pdf_buf.read())
 
     zip_buf.seek(0)
-    filename = f"{tname.replace(' ', '_')}_bireysel_karne_batch.zip"
+    filename = f"{_hk_safe_name()}_bireysel_karne_batch.zip"
     return send_file(zip_buf, mimetype="application/zip",
                      as_attachment=True, download_name=filename)
 

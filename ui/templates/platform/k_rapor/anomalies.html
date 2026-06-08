@@ -26,11 +26,11 @@
                     <input type="text" class="form-control form-control-sm" id="slack-webhook" placeholder="https://hooks.slack.com/..." />
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">Severity ≥</label>
+                    <label class="form-label small">Önem Eşiği ≥</label>
                     <select class="form-select" id="severity-min">
-                        <option value="low">Low (tümü)</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High (sadece kritik)</option>
+                        <option value="low">Düşük (tümü)</option>
+                        <option value="medium" selected>Orta</option>
+                        <option value="high">Yüksek (sadece kritik)</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
@@ -90,9 +90,9 @@ function renderAnomalies(data) {
     summary.innerHTML = `
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-body d-flex justify-content-around text-center">
-                <div><div class="fs-3 fw-bold text-danger">${bySev.high}</div><small class="text-muted">High</small></div>
-                <div><div class="fs-3 fw-bold text-warning">${bySev.medium}</div><small class="text-muted">Medium</small></div>
-                <div><div class="fs-3 fw-bold text-info">${bySev.low}</div><small class="text-muted">Low</small></div>
+                <div><div class="fs-3 fw-bold text-danger">${bySev.high}</div><small class="text-muted">Yüksek</small></div>
+                <div><div class="fs-3 fw-bold text-warning">${bySev.medium}</div><small class="text-muted">Orta</small></div>
+                <div><div class="fs-3 fw-bold text-info">${bySev.low}</div><small class="text-muted">Düşük</small></div>
                 <div><div class="fs-3 fw-bold">${data.count}</div><small class="text-muted">Toplam</small></div>
             </div>
         </div>`;

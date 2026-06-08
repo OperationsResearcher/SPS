@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Ayarlar', 'url': url_for('app_bp.ayarlar_index')}, {'label': 'E-posta', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': 'Ayarlar', 'url': url_for('app_bp.ayarlar')}, {'label': 'E-posta', 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -63,36 +63,36 @@
     <div id="smtp-fields" class="eposta-smtp-fields {% if not cfg or not cfg.use_custom_smtp %}eposta-hidden{% endif %}">
       <div class="eposta-grid">
         <div class="mc-form-group">
-          <label class="mc-label">SMTP Sunucu Adresi</label>
+          <label class="mc-label" for="smtp_host">SMTP Sunucu Adresi</label>
           <input type="text" id="smtp_host" class="mc-input"
                  placeholder="smtp.gmail.com"
                  value="{{ cfg.smtp_host or '' if cfg else '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Port</label>
+          <label class="mc-label" for="smtp_port">Port</label>
           <input type="number" id="smtp_port" class="mc-input"
                  placeholder="587"
                  value="{{ cfg.smtp_port or 587 if cfg else 587 }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Kullanıcı Adı / E-posta</label>
+          <label class="mc-label" for="smtp_username">Kullanıcı Adı / E-posta</label>
           <input type="text" id="smtp_username" class="mc-input"
                  placeholder="bildirim@firma.com"
                  value="{{ cfg.smtp_username or '' if cfg else '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Şifre</label>
+          <label class="mc-label" for="smtp_password">Şifre</label>
           <input type="password" id="smtp_password" class="mc-input"
                  placeholder="Değiştirmek için girin">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Gönderici Adı</label>
+          <label class="mc-label" for="sender_name">Gönderici Adı</label>
           <input type="text" id="sender_name" class="mc-input"
                  placeholder="Firma Adı Bildirimleri"
                  value="{{ cfg.sender_name or '' if cfg else '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Gönderici E-posta</label>
+          <label class="mc-label" for="sender_email">Gönderici E-posta</label>
           <input type="email" id="sender_email" class="mc-input"
                  placeholder="bildirim@firma.com"
                  value="{{ cfg.sender_email or '' if cfg else '' }}">

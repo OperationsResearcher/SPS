@@ -38,6 +38,17 @@ from app.services.plan_year_service import (
 )
 from app.models.tenant_year import TenantYearIdentity
 
+
+def _require_plan_year():
+    """Aktif plan yılını döndürür; yoksa (None, (JSON, 400)) döner.
+
+    Kullanım: ``py, err = _require_plan_year(); if err: return err``
+    """
+    py = get_active_plan_year_for_user(current_user)
+    if not py:
+        return None, (jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400)
+    return py, None
+
 _SP_ROLES = (
     "Admin",
     "admin",
@@ -158,6 +169,22 @@ def _harita_short_label(text: str, max_len: int = 36) -> str:
     return t[: max_len - 1].rstrip() + "…"
 
 
+def _harita_health_band(score):
+    """0-100 başarı skorunu sağlık bandına çevirir (canlı nabız animasyonu için).
+
+    None / sayı-değil → None (nabız atmaz). <50 bad · 50-80 warn · ≥80 good.
+    """
+    try:
+        s = float(score)
+    except (TypeError, ValueError):
+        return None
+    if s < 50:
+        return "bad"
+    if s < 80:
+        return "warn"
+    return "good"
+
+
 def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
     """Strateji haritası vis-network düğüm/kenar listesi.
 
@@ -248,12 +275,15 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
                     if pg_id not in seen_pg:
                         seen_pg.add(pg_id)
                         pg_label = pg.code or _harita_short_label(pg.name or "", 20)
+                        _pg_score = getattr(pg, "calculated_score", None)
                         nodes.append({
                             "id": pg_id,
                             "label": pg_label,
                             "group": "pg",
                             "level": 4,
                             "title": f"{pg.code or ''} {pg.name or ''}".strip(),
+                            "score": _pg_score,
+                            "health": _harita_health_band(_pg_score),
                         })
                     edges.append({"from": p_id, "to": pg_id})
 

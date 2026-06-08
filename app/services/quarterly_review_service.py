@@ -10,11 +10,14 @@ Bu servis: bir tenant+yıl+çeyrek için consolidate edilmiş review data üreti
 from __future__ import annotations
 
 import datetime as _dt
+import logging
 from dataclasses import dataclass, field
 from typing import Optional
 
 from extensions import db
 from sqlalchemy import text
+
+logger = logging.getLogger(__name__)
 
 
 QUARTER_MONTHS = {1: (1, 3), 2: (4, 6), 3: (7, 9), 4: (10, 12)}
@@ -129,7 +132,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         from app.services.plan_year_service import get_plan_year
         py = get_plan_year(tenant_id, year)
         py_id = py.id if py else None
-    except Exception:
+    except Exception as e:
+        import logging; logging.getLogger(__name__).warning(f"[quarterly_review] plan_year lookup hatası: {e}")
         py_id = None
 
     # KPI (plan_year_id varsa o yıla ait süreçlerin KPI'larını say)
@@ -198,8 +202,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
                 progresses.append(sum(pcts) / len(pcts))
         if progresses:
             data.okr_avg_progress = sum(progresses) / len(progresses)
-    except Exception:
-        pass
+    except Exception as e:
+        import logging; logging.getLogger(__name__).warning(f"[quarterly_review] OKR query hatası: {e}")
 
     # Süreç + Faaliyet (plan_year filtre)
     proc_py_clause = "AND plan_year_id = :py" if py_id else ""
@@ -233,8 +237,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
             1 for r in risks
             if (r.probability or 0) * (r.impact or 0) >= 16
         )
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[quarterly] risk verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
     # Anomali
     try:
@@ -242,8 +246,8 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
         anomalies = detect_anomalies_for_tenant(tenant_id, threshold=2.0, limit=100)
         data.anomaly_high = sum(1 for a in anomalies if a.severity == "high")
         data.anomaly_medium = sum(1 for a in anomalies if a.severity == "medium")
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[quarterly] anomali tespiti başarısız (tenant=%s): %s", tenant_id, _e)
 
     # Heuristik öneriler
     if data.kpi_on_target_pct < 50:

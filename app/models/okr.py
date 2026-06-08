@@ -20,7 +20,10 @@ class OkrObjective(db.Model):
     owner         = db.Column(db.String(200), nullable=True)           # Sorumlu kişi/ekip
     order_no      = db.Column(db.Integer, default=0)
 
-    # Sprint 17: Strateji bağlama (her ikisi de opsiyonel; her ikisi de set edilebilir veya boş bırakılabilir)
+    # Strateji bağlama — TASARIM KARARI:
+    # Her iki FK da NULL olabilir (standalone OKR).
+    # linked_sub_strategy_id set ise linked_strategy_id da set olmalı (öneri, zorunluluk değil).
+    # Uygulama katmanında kontrol: routes/sp_okr'de validation yapılıyor.
     linked_strategy_id     = db.Column(db.Integer, db.ForeignKey("strategies.id", ondelete="SET NULL"), nullable=True, index=True)
     linked_sub_strategy_id = db.Column(db.Integer, db.ForeignKey("sub_strategies.id", ondelete="SET NULL"), nullable=True, index=True)
 

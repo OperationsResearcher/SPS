@@ -139,8 +139,8 @@ def _resolve_process_by_source_chain(proc: Process, target_plan_year_id: int):
         Process.query
         .filter(
             Process.tenant_id == tid,
-            Process.is_active == True,
-            Process.source_process_id != None,
+            Process.is_active.is_(True),
+            Process.source_process_id.isnot(None),
         )
         .with_entities(
             Process.id,
@@ -261,7 +261,7 @@ def surec_api_karne(process_id):
             .filter(
                 KpiData.process_kpi_id.in_(kpi_ids),
                 KpiData.year.in_([year, prev_y]),
-                KpiData.is_active == True,
+                KpiData.is_active.is_(True),
             )
             .order_by(KpiData.process_kpi_id, KpiData.data_date)
             .all()
@@ -526,3 +526,114 @@ def surec_api_karne_export_xlsx(process_id):
         as_attachment=True,
         download_name=fname,
     )
+
+
+# ── Inline AI Yönetici Özeti (karne üstü) ─────────────────────────────────────
+
+def _karne_heuristik_ozet(p, year, skor, durum, detay, recs):
+    """LLM olmadan da çalışan deterministik Türkçe yönetici özeti."""
+    ad = (p.name or "Süreç").strip()
+    detay = detay or {}
+    parts = []
+    if skor is not None:
+        try:
+            parts.append(f"{ad} {year} sağlık skoru %{float(skor):.0f}"
+                         + (f" ({durum})." if durum else "."))
+        except (TypeError, ValueError):
+            pass
+    ulasma = detay.get("pg_hedef_ulasma_orani")
+    if ulasma is not None:
+        try:
+            parts.append(f"PG hedef ulaşma oranı %{float(ulasma):.0f}.")
+        except (TypeError, ValueError):
+            pass
+    pg_sayisi = detay.get("pg_sayisi") or 0
+    veri = detay.get("veri_girilen_pg")
+    if pg_sayisi and veri is not None and veri < pg_sayisi:
+        parts.append(f"{pg_sayisi} PG'den {pg_sayisi - veri}'ine veri girilmemiş — "
+                     "veri disiplinini güçlendirin.")
+    yuksek = [r for r in (recs or []) if r.get("priority") == "high"]
+    kaynak_rec = yuksek[0] if yuksek else ((recs or [None])[0])
+    if kaynak_rec:
+        msg = (kaynak_rec.get("message") or kaynak_rec.get("action")
+               or kaynak_rec.get("title") or "").strip()
+        if msg:
+            etiket = "Kırmızı bayrak" if yuksek else "Öneri"
+            parts.append(f"{etiket}: {msg.rstrip('.')}.")
+    if not parts:
+        parts.append(f"{ad} için {year} yılında özet üretecek yeterli veri yok; PG verisi girin.")
+    return " ".join(parts)
+
+
+@app_bp.route("/process/api/karne/<int:process_id>/ai-ozet", methods=["GET"])
+@login_required
+def surec_api_karne_ai_ozet(process_id):
+    """Karne üstü 2-3 cümlelik Türkçe yönetici özeti.
+
+    Her zaman deterministik heuristik döner; LLM yapılandırılmışsa onunla cilalanır.
+    Bu sayede yerelde LLM anahtarı olmadan da çalışır.
+    """
+    p = _process_for_user(process_id)
+    if not p:
+        abort(404)
+    if not user_can_access_process(current_user, p):
+        abort(403)
+    year = request.args.get("year", datetime.now().year, type=int)
+
+    # 1) Hazır hesaplama servislerinden metrikleri topla
+    skor = durum = None
+    detay = {}
+    try:
+        from app.services.process_health_service import calculate_process_health_score
+        h = calculate_process_health_score(process_id, year) or {}
+        skor = h.get("skor")
+        durum = h.get("durum")
+        detay = h.get("detay") or {}
+    except Exception as e:
+        current_app.logger.info(f"[karne-ai-ozet] health fallback ({e})")
+
+    recs = []
+    try:
+        from app.services.recommendation_service import RecommendationService
+        rr = RecommendationService().get_process_recommendations(process_id)
+        if isinstance(rr, dict) and rr.get("success"):
+            recs = rr.get("recommendations") or []
+    except Exception as e:
+        current_app.logger.info(f"[karne-ai-ozet] rec fallback ({e})")
+
+    # 2) Deterministik heuristik (her zaman üretilir)
+    ozet = _karne_heuristik_ozet(p, year, skor, durum, detay, recs)
+    kaynak = "heuristik"
+
+    # 3) Opsiyonel LLM cilası (anahtar yoksa heuristik kalır)
+    try:
+        from app.services.llm_gateway import call_llm
+        veri_ozeti = (
+            f"Süreç: {p.name}. Yıl: {year}. Sağlık skoru: {skor}. Durum: {durum}. "
+            f"PG hedef ulaşma: {detay.get('pg_hedef_ulasma_orani')}. "
+            f"PG sayısı: {detay.get('pg_sayisi')}, veri girilen: {detay.get('veri_girilen_pg')}. "
+            "Öneriler: " + "; ".join(
+                (r.get('message') or r.get('title') or '') for r in recs[:4]
+            )
+        )
+        prompt = (
+            "Aşağıdaki süreç performans verisinden, bir yöneticinin tek bakışta okuyacağı "
+            "2-3 cümlelik Türkçe özet yaz. Sırasıyla: kazanım(lar), kırmızı bayrak(lar) ve "
+            "bu hafta odaklanılacak tek konu. Sade, net, abartısız.\n\n" + veri_ozeti
+        )
+        res = call_llm(
+            tenant_id=current_user.tenant_id, endpoint="karne_ozet",
+            prompt=prompt,
+            system_prompt="Sen kısa ve net konuşan bir Türkçe strateji danışmanısın.",
+            user_id=current_user.id, max_output_tokens=240,
+        )
+        if isinstance(res, dict) and res.get("text"):
+            ozet = res["text"].strip()
+            kaynak = "ai"
+    except Exception as e:
+        current_app.logger.info(f"[karne-ai-ozet] LLM fallback ({e})")
+
+    return jsonify({
+        "success": True, "ozet": ozet, "kaynak": kaynak,
+        "skor": skor, "durum": durum, "year": year,
+    })

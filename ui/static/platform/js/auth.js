@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmButtonColor: '#4F46E5',
                 confirmButtonText: 'Tamam'
             });
+            return;
+        }
+        // Geçerli → çift gönderimi önle, "Giriş yapılıyor" durumu göster
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Giriş yapılıyor…';
         }
     });
 });

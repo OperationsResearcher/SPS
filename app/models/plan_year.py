@@ -1,4 +1,12 @@
-"""Plan Year models — yıllık stratejik planlama dönem sistemi (Faz 1-6)."""
+"""Plan Year models — yıllık stratejik planlama dönem sistemi (Faz 1-6).
+
+EDGE CASE NOTU:
+  plan_year=None durumu normaldir (feature flag kapalı veya yeni tenant).
+  Route'larda MUTLAKA `if active_py:` kontrolü yapılmalı, active_py.id/year
+  direkt erişilmemelidir. Güvenli pattern:
+      py_id = active_py.id if active_py else None
+      year  = active_py.year if active_py else datetime.now().year
+"""
 from datetime import datetime, timezone
 
 from extensions import db

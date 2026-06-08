@@ -50,6 +50,9 @@ class BlueOceanCanvas(db.Model):
             "errc_count": len(self.errc_items) if self.errc_items else 0,
         }
 
+    def __repr__(self):
+        return f"<BlueOceanCanvas {self.id} {(self.name or '')[:20]}>"
+
 
 class BlueOceanFactor(db.Model):
     """Rekabet faktörü (Fiyat, Kalite, Hız vb.) + kendi & rakip puanları (1-10)."""
@@ -81,6 +84,9 @@ class BlueOceanFactor(db.Model):
             "competitor_scores": comp,
         }
 
+    def __repr__(self):
+        return f"<BlueOceanFactor {self.id} {(self.name or '')[:20]}>"
+
 
 class BlueOceanERRC(db.Model):
     """ERRC (Eliminate / Reduce / Raise / Create) öğesi."""
@@ -108,6 +114,9 @@ class BlueOceanERRC(db.Model):
             "impact": self.impact,
             "order_index": self.order_index,
         }
+
+    def __repr__(self):
+        return f"<BlueOceanERRC {self.id} action={self.action}>"
 
 
 # ─── VRIO ────────────────────────────────────────────────────────────────────
@@ -166,3 +175,6 @@ class VRIOResource(db.Model):
             "note": self.note,
             "competitive_label": self.competitive_label,
         }
+
+    def __repr__(self):
+        return f"<VRIOResource {self.id} {(self.name or '')[:20]}>"

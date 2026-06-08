@@ -5,9 +5,12 @@
 from __future__ import annotations
 
 import datetime as _dt
+import logging
 from sqlalchemy import text
 
 from extensions import db
+
+logger = logging.getLogger(__name__)
 
 
 def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
@@ -102,8 +105,8 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
         if risk_row:
             risk_data = {"open": int(risk_row.open_c or 0), "critical": int(risk_row.crit_c or 0)}
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[exec_dashboard] risk verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
     # Trigger
     trig_row = db.session.execute(text("""
@@ -126,8 +129,8 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         anomalies = detect_anomalies_for_tenant(tenant_id, threshold=2.0, limit=100)
         anomaly_data["high"] = sum(1 for a in anomalies if a.severity == "high")
         anomaly_data["medium"] = sum(1 for a in anomalies if a.severity == "medium")
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.error("[exec_dashboard] anomali tespiti başarısız (tenant=%s): %s", tenant_id, _e)
 
     # Sağlık skoru (basit ağırlıklı)
     health = 0.0
@@ -153,7 +156,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
     return {
         "tenant_id": tenant_id,
         "year": year,
-        "generated_at": _dt.datetime.utcnow().isoformat(),
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "health_score": health_score,
         "kpi": {
             "total": int(kpi_row.total or 0) if kpi_row else 0,

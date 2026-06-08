@@ -9,6 +9,27 @@ from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
 from extensions import db
+from app.constants.roles import PLATFORM_ADMIN_ROLES, PRIVILEGED_ROLES as _PRIVILEGED_ROLES
+import re as _re
+import ipaddress as _ipaddress
+
+
+def _check_webhook_url(url: str):
+    """SSRF koruması: özel IP aralıklarını ve güvensiz schemalar'ı reddet."""
+    import urllib.parse
+    if not url:
+        return False, "webhook_url gerekli"
+    p = urllib.parse.urlparse(url)
+    if p.scheme not in ("https", "http"):
+        return False, "Yalnızca http/https URL'ler kabul edilir"
+    hostname = p.hostname or ""
+    try:
+        addr = _ipaddress.ip_address(hostname)
+        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+            return False, "İç ağ adreslerine webhook gönderilemez"
+    except ValueError:
+        pass  # hostname, IP değil — DNS riski kabul edilebilir
+    return True, ""
 
 
 # ── Sprint 50: Custom Dashboard Builder — Widget Registry ────────────────────
@@ -52,7 +73,7 @@ def k_rapor_api_forecast(kpi_id):
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[forecast] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 # ── Ana Sayfa ─────────────────────────────────────────────────────────────────
@@ -82,13 +103,13 @@ def k_rapor():
     surec_sayisi = Process.query.filter_by(tenant_id=tid, is_active=True).count()
     pg_sayisi    = (
         ProcessKpi.query.join(Process)
-        .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+        .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
         .count()
     )
     strateji_sayisi = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
     veri_sayisi = (
         KpiData.query.join(ProcessKpi).join(Process)
-        .filter(Process.tenant_id == tid, KpiData.is_active == True, KpiData.year == year)
+        .filter(Process.tenant_id == tid, KpiData.is_active.is_(True), KpiData.year == year)
         .count()
     )
 
@@ -123,7 +144,7 @@ def k_rapor_api_kurumsal():
         if process_scores:
             processes = Process.query.filter(
                 Process.id.in_(list(process_scores.keys())),
-                Process.is_active == True,
+                Process.is_active.is_(True),
             ).all()
             proc_map = {p.id: p for p in processes}
             sorted_scores = sorted(
@@ -197,7 +218,7 @@ def k_rapor_api_surec_pg():
 
         kpi_q = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
         )
         if plan_year_id:
             kpi_q = kpi_q.filter(or_(Process.plan_year_id == plan_year_id,
@@ -224,7 +245,7 @@ def k_rapor_api_surec_pg():
                     KpiData.process_kpi_id.in_(kpi_ids),
                     KpiData.year == year,
                     KpiData.period_type == period,
-                    KpiData.is_active == True,
+                    KpiData.is_active.is_(True),
                 )
                 .all()
             )
@@ -241,7 +262,7 @@ def k_rapor_api_surec_pg():
                         KpiData.process_kpi_id.in_(kpi_ids),
                         KpiData.year == year,
                         KpiData.period_type == "aylik",
-                        KpiData.is_active == True,
+                        KpiData.is_active.is_(True),
                     )
                     .all()
                 )
@@ -328,7 +349,7 @@ def k_rapor_api_trend(kpi_id):
     kpi = (
         ProcessKpi.query.join(Process)
         .filter(ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id,
-                Process.is_active == True, ProcessKpi.is_active == True)
+                Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
         .first_or_404()
     )
     try:
@@ -446,8 +467,8 @@ def k_rapor_api_faaliyet():
             ProcessActivity.query.join(Process)
             .filter(
                 Process.tenant_id == tid,
-                Process.is_active == True,
-                ProcessActivity.is_active == True,
+                Process.is_active.is_(True),
+                ProcessActivity.is_active.is_(True),
             )
             .all()
         )
@@ -469,7 +490,7 @@ def k_rapor_api_faaliyet():
             .filter(
                 Process.tenant_id == tid,
                 ActivityTrack.year == year,
-                ActivityTrack.completed == True,
+                ActivityTrack.completed.is_(True),
             )
             .all()
         )
@@ -566,12 +587,12 @@ def k_rapor_api_bireysel():
         py = PlanYear.query.filter_by(tenant_id=tid, year=year).first()
         if py:
             pgs = IPI.query.filter(
-                IPI.user_id.in_(uid_list), IPI.is_active == True, IPI.plan_year_id == py.id
+                IPI.user_id.in_(uid_list), IPI.is_active.is_(True), IPI.plan_year_id == py.id
             ).all()
             if not pgs:
-                pgs = IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active == True).all()
+                pgs = IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active.is_(True)).all()
         else:
-            pgs = IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active == True).all()
+            pgs = IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active.is_(True)).all()
 
         pg_ids = [pg.id for pg in pgs]
         pg_by_user: dict = {}
@@ -682,8 +703,8 @@ def k_rapor_api_veri_durumu():
             ProcessKpi.query.join(Process)
             .filter(
                 Process.tenant_id == tid,
-                Process.is_active == True,
-                ProcessKpi.is_active == True,
+                Process.is_active.is_(True),
+                ProcessKpi.is_active.is_(True),
             )
             .all()
         )
@@ -695,7 +716,7 @@ def k_rapor_api_veri_durumu():
             .filter(
                 KpiData.process_kpi_id.in_(kpi_ids),
                 KpiData.year == year,
-                KpiData.is_active == True,
+                KpiData.is_active.is_(True),
             )
             .order_by(KpiData.data_date.desc())
             .all()
@@ -854,7 +875,7 @@ def k_rapor_api_denetim():
     tid = current_user.tenant_id
     gun = request.args.get("gun", 30, type=int)
     gun = min(gun, 180)
-    since = _dt.datetime.utcnow() - _dt.timedelta(days=gun)
+    since = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=gun)
     try:
         from app.models.audit import AuditLog
 
@@ -925,7 +946,7 @@ def k_rapor_api_uyari():
         # ── Kritik PG'ler (gerçekleşen %50'nin altında) ────────────────────────
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         )
         kpi_map = {k.id: k for k in kpis}
@@ -934,7 +955,7 @@ def k_rapor_api_uyari():
         kpi_ids = [k.id for k in kpis]
         data_rows = (
             KpiData.query
-            .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active == True)
+            .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active.is_(True))
             .order_by(KpiData.data_date.desc())
             .all()
         ) if kpi_ids else []
@@ -945,7 +966,7 @@ def k_rapor_api_uyari():
                 latest_kpi[d.process_kpi_id] = d
 
         proc_map = {p.id: p for p in Process.query.filter(
-            Process.id.in_({k.process_id for k in kpis}), Process.is_active == True
+            Process.id.in_({k.process_id for k in kpis}), Process.is_active.is_(True)
         ).all()} if kpis else {}
 
         kritik_pg = []
@@ -983,8 +1004,8 @@ def k_rapor_api_uyari():
             ProcessActivity.query.options(joinedload(ProcessActivity.process))
             .join(Process)
             .filter(
-                Process.tenant_id == tid, Process.is_active == True,
-                ProcessActivity.is_active == True,
+                Process.tenant_id == tid, Process.is_active.is_(True),
+                ProcessActivity.is_active.is_(True),
                 ProcessActivity.status.notin_(["Tamamlandı", "İptal"]),
             ).all()
         )
@@ -1012,7 +1033,7 @@ def k_rapor_api_uyari():
                 "status":      _RISK_STATUS_TR.get((r.status or "").lower(), r.status or "—"),
             } for r in (
                 RiskHeatmapItem.query
-                .filter(RiskHeatmapItem.tenant_id == tid, RiskHeatmapItem.is_active == True,
+                .filter(RiskHeatmapItem.tenant_id == tid, RiskHeatmapItem.is_active.is_(True),
                         RiskHeatmapItem.rpn > 10)
                 .order_by(RiskHeatmapItem.rpn.desc()).limit(15).all()
             )]
@@ -1090,8 +1111,8 @@ def k_rapor_api_k_vektor():
             sub_list = (
                 SubStrategy.query.join(Strategy)
                 .filter(
-                    Strategy.is_active == True,
-                    SubStrategy.is_active == True,
+                    Strategy.is_active.is_(True),
+                    SubStrategy.is_active.is_(True),
                 )
             )
             # Sprint 53: helper kullanımı (Ö2) — tenant-aware NULL legacy uyum
@@ -1102,7 +1123,7 @@ def k_rapor_api_k_vektor():
         else:
             sub_list = (
                 SubStrategy.query.join(Strategy)
-                .filter(Strategy.tenant_id == tid, Strategy.is_active == True, SubStrategy.is_active == True)
+                .filter(Strategy.tenant_id == tid, Strategy.is_active.is_(True), SubStrategy.is_active.is_(True))
                 .all()
             )
 
@@ -1147,8 +1168,8 @@ def k_rapor_api_evm():
                 from app.models.project import Project as ProjModel
                 for p in ProjModel.query.filter(ProjModel.id.in_(proj_ids)).all():
                     proj_names[p.id] = p.name
-            except Exception:
-                pass
+            except Exception as _e:
+                current_app.logger.error("[k_rapor] proje adları yüklenemedi: %s", _e)
         data = [{
             "id":            s.id,
             "project_id":    s.project_id,
@@ -1410,12 +1431,12 @@ def k_rapor_api_export_excel():
             from app.models.process import Process, ProcessKpi, KpiData
             from app.models.core import User
             kpis = (ProcessKpi.query.join(Process)
-                    .filter(Process.tenant_id == tid, Process.is_active == True,
-                            ProcessKpi.is_active == True).all())
+                    .filter(Process.tenant_id == tid, Process.is_active.is_(True),
+                            ProcessKpi.is_active.is_(True)).all())
             kpi_ids = [k.id for k in kpis]
             latest_data = (KpiData.query
                            .filter(KpiData.process_kpi_id.in_(kpi_ids),
-                                   KpiData.year == year, KpiData.is_active == True)
+                                   KpiData.year == year, KpiData.is_active.is_(True))
                            .order_by(KpiData.data_date.desc()).all())
             latest_by_kpi = {}
             for d in latest_data:
@@ -1449,7 +1470,7 @@ def k_rapor_api_export_excel():
             uid_list = [u.id for u in users]
             py  = PlanYear.query.filter_by(tenant_id=tid, year=year).first()
             pgs = IPI.query.filter(
-                IPI.user_id.in_(uid_list), IPI.is_active == True,
+                IPI.user_id.in_(uid_list), IPI.is_active.is_(True),
                 *([IPI.plan_year_id == py.id] if py else [])
             ).all()
             pg_ids    = [pg.id for pg in pgs]
@@ -1488,8 +1509,8 @@ def k_rapor_api_export_excel():
             today      = _dt.date.today()
             activities = (ProcessActivity.query.options(joinedload(ProcessActivity.process))
                           .join(Process)
-                          .filter(Process.tenant_id == tid, Process.is_active == True,
-                                  ProcessActivity.is_active == True).all())
+                          .filter(Process.tenant_id == tid, Process.is_active.is_(True),
+                                  ProcessActivity.is_active.is_(True)).all())
             _hdr(ws, ["Faaliyet", "Süreç", "Durum", "Başlangıç", "Bitiş", "İlerleme %", "Gecikme (gün)"])
             for a in activities:
                 gecikme = (
@@ -1518,7 +1539,7 @@ def k_rapor_api_export_excel():
             proc_map       = {}
             if process_scores:
                 for p in Process.query.filter(
-                    Process.id.in_(list(process_scores.keys())), Process.is_active == True
+                    Process.id.in_(list(process_scores.keys())), Process.is_active.is_(True)
                 ).all():
                     proc_map[p.id] = p
             _hdr(ws, ["Süreç Kodu", "Süreç Adı", "Skor", "Durum"])
@@ -1586,13 +1607,16 @@ def k_rapor_webhook_test():
 
     Body: {"provider": "slack|teams|discord", "webhook_url": "...", "message": "Test"}
     """
+    if not current_user.role or current_user.role.name not in _PRIVILEGED_ROLES:
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
     payload = request.get_json(silent=True) or {}
     provider = (payload.get("provider") or "slack").lower()
     url = (payload.get("webhook_url") or "").strip()
-    msg = payload.get("message") or f"🚀 Kokpitim test mesajı — {current_user.email}"
+    msg = payload.get("message") or f"Kokpitim test mesajı — {current_user.email}"
 
-    if not url:
-        return jsonify({"success": False, "message": "webhook_url gerekli"}), 400
+    ok, err = _check_webhook_url(url)
+    if not ok:
+        return jsonify({"success": False, "message": err}), 400
 
     from app.services.slack_notification import dispatch_webhook
     result = dispatch_webhook(provider, msg, url)
@@ -1610,12 +1634,15 @@ def k_rapor_anomalies_notify_webhook():
     from app.services.kpi_anomaly_service import detect_anomalies_for_tenant
     from app.services.slack_notification import dispatch_webhook
 
+    if not current_user.role or current_user.role.name not in _PRIVILEGED_ROLES:
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
     tid = current_user.tenant_id
     payload = request.get_json(silent=True) or {}
     provider = (payload.get("provider") or "slack").lower()
     webhook = (payload.get("webhook_url") or "").strip()
-    if not webhook:
-        return jsonify({"success": False, "message": "webhook_url gerekli"}), 400
+    ok, err = _check_webhook_url(webhook)
+    if not ok:
+        return jsonify({"success": False, "message": err}), 400
 
     sev_min = payload.get("severity_min", "medium").lower()
     limit = int(payload.get("limit", 5))
@@ -1641,7 +1668,7 @@ def k_rapor_anomalies_notify_webhook():
         return jsonify({**result, "anomaly_count": len(filtered)})
     except Exception as e:
         current_app.logger.error(f"[notify_webhook] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 @app_bp.route("/k-rapor/api/anomalies/notify-slack", methods=["POST"])
@@ -1712,7 +1739,7 @@ def k_rapor_digest_preview():
         return html  # render HTML
     except Exception as e:
         current_app.logger.error(f"[digest_preview] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 @app_bp.route("/k-rapor/api/digest/send", methods=["POST"])
@@ -1723,8 +1750,7 @@ def k_rapor_digest_send():
     Sadece tenant_admin + executive_manager + Admin role'leri tetikleyebilir.
     Payload (opsiyonel): {"recipients": ["email1", "email2"]}
     """
-    _MANAGE = ("tenant_admin", "executive_manager", "Admin")
-    if not current_user.role or current_user.role.name not in _MANAGE:
+    if not current_user.role or current_user.role.name not in _PRIVILEGED_ROLES:
         return jsonify({"success": False, "message": "Yetkisiz"}), 403
 
     from app.services.email_digest_service import send_digest
@@ -1736,7 +1762,7 @@ def k_rapor_digest_send():
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[digest_send] {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1769,7 +1795,7 @@ def k_rapor_api_export_pdf():
         process_count = Process.query.filter_by(tenant_id=tid, is_active=True).count()
         kpi_count = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, ProcessKpi.is_active.is_(True))
             .count()
         )
 
@@ -1829,7 +1855,7 @@ def k_rapor_api_pg_dagilim():
 
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         )
         kpi_ids = [k.id for k in kpis]
@@ -1838,7 +1864,7 @@ def k_rapor_api_pg_dagilim():
 
         latest_data = (
             KpiData.query
-            .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active == True)
+            .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active.is_(True))
             .order_by(KpiData.data_date.desc())
             .all()
         )
@@ -1923,7 +1949,7 @@ def k_rapor_api_faaliyet_matris():
 
         all_acts = (
             ProcessActivity.query
-            .filter(ProcessActivity.process_id.in_(proc_ids), ProcessActivity.is_active == True)
+            .filter(ProcessActivity.process_id.in_(proc_ids), ProcessActivity.is_active.is_(True))
             .all()
         )
         if year:
@@ -1987,7 +2013,7 @@ def k_rapor_api_aktivite_takvim():
         # Süreç PG verileri
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         )
         kpi_ids = [k.id for k in kpis]
@@ -2000,7 +2026,7 @@ def k_rapor_api_aktivite_takvim():
                 .filter(
                     KpiData.process_kpi_id.in_(kpi_ids),
                     KpiData.year == year,
-                    KpiData.is_active == True,
+                    KpiData.is_active.is_(True),
                 )
                 .group_by(KpiData.data_date)
                 .all()
@@ -2015,7 +2041,7 @@ def k_rapor_api_aktivite_takvim():
             from app.models.core import User
             uid_list = [u.id for u in User.query.filter_by(tenant_id=tid, is_active=True).all()]
             if uid_list:
-                ipi_ids = [pg.id for pg in IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active == True).all()]
+                ipi_ids = [pg.id for pg in IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active.is_(True)).all()]
                 if ipi_ids:
                     ipi_rows = (
                         db.session.query(IndividualKpiData.data_date, func.count(IndividualKpiData.id))
@@ -2062,7 +2088,7 @@ def k_rapor_api_kurum_karsilastirma():
         from app.models.core import Tenant
 
         # Admin tüm kurumları görür, diğerleri sadece kendi kurumunu
-        if role_name == "Admin":
+        if role_name in PLATFORM_ADMIN_ROLES:
             tenants = Tenant.query.filter_by(is_active=True).all()
         else:
             tenants = Tenant.query.filter_by(id=current_user.tenant_id, is_active=True).all()
@@ -2073,7 +2099,7 @@ def k_rapor_api_kurum_karsilastirma():
         _all_kpis = (
             ProcessKpi.query.options(joinedload(ProcessKpi.process))
             .join(Process)
-            .filter(Process.tenant_id.in_(_tenant_ids), Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id.in_(_tenant_ids), Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         ) if _tenant_ids else []
         _kpis_by_tenant = _dd(list)
@@ -2086,7 +2112,7 @@ def k_rapor_api_kurum_karsilastirma():
             for d in KpiData.query.filter(
                 KpiData.process_kpi_id.in_(_all_kpi_ids),
                 KpiData.year == year,
-                KpiData.is_active == True,
+                KpiData.is_active.is_(True),
             ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
                 if d.process_kpi_id not in _data_by_kpi:
                     _data_by_kpi[d.process_kpi_id] = d
@@ -2143,7 +2169,7 @@ def k_rapor_api_kurum_karsilastirma():
             })
 
         results.sort(key=lambda x: x["ort_basari"] or -1, reverse=True)
-        return jsonify({"success": True, "data": results, "year": year, "is_admin": role_name == "Admin"})
+        return jsonify({"success": True, "data": results, "year": year, "is_admin": role_name in PLATFORM_ADMIN_ROLES})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_kurum_karsilastirma] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Kurum karşılaştırma verisi alınamadı."}), 500
@@ -2174,7 +2200,7 @@ def k_rapor_api_strateji_kapsama():
         strategies = strat_q.order_by(Strategy.code).all()
 
         sub_q = SubStrategy.query.join(Strategy).filter(
-            Strategy.tenant_id == tid, Strategy.is_active == True, SubStrategy.is_active == True
+            Strategy.tenant_id == tid, Strategy.is_active.is_(True), SubStrategy.is_active.is_(True)
         )
         if py_id:
             sub_q = sub_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
@@ -2271,7 +2297,7 @@ def k_rapor_api_sorumlu_analiz():
             ProcessActivityAssignee.query
             .join(ProcessActivity)
             .join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessActivity.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessActivity.is_active.is_(True))
             .all()
         )
 

@@ -9,6 +9,8 @@ from app.services.ml_service import MLService
 from app.services.anomaly_service import AnomalyService
 from app.services.recommendation_service import RecommendationService
 from app.services.automated_reporting_service import AutomatedReportingService
+from app.models.process import ProcessKpi, Process
+from extensions import db
 
 ai_bp = Blueprint('ai_api', __name__, url_prefix='/api/ai')
 
@@ -19,10 +21,27 @@ recommendation_service = RecommendationService()
 reporting_service = AutomatedReportingService()
 
 
+def _check_kpi_tenant(kpi_id):
+    """KPI'nın current_user tenant'ına ait olduğunu doğrula. Ait değilse None döner."""
+    return (
+        ProcessKpi.query
+        .join(Process, ProcessKpi.process_id == Process.id)
+        .filter(ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id)
+        .first()
+    )
+
+
+def _check_process_tenant(process_id):
+    """Process'in current_user tenant'ına ait olduğunu doğrula."""
+    return Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first()
+
+
 @ai_bp.route('/forecast/<int:kpi_id>', methods=['GET'])
 @login_required
 def forecast_kpi(kpi_id):
     """KPI tahmini"""
+    if not _check_kpi_tenant(kpi_id):
+        return jsonify({'success': False, 'error': 'Erişim reddedildi.'}), 403
     periods = request.args.get('periods', 3, type=int)
     result = ml_service.forecast_kpi(kpi_id, periods)
     return jsonify(result)
@@ -32,6 +51,8 @@ def forecast_kpi(kpi_id):
 @login_required
 def achievement_probability(kpi_id):
     """Hedef başarı olasılığı"""
+    if not _check_kpi_tenant(kpi_id):
+        return jsonify({'success': False, 'error': 'Erişim reddedildi.'}), 403
     target = request.args.get('target', type=float)
     result = ml_service.calculate_achievement_probability(kpi_id, target)
     return jsonify(result)
@@ -41,6 +62,8 @@ def achievement_probability(kpi_id):
 @login_required
 def detect_seasonality(kpi_id):
     """Mevsimsellik analizi"""
+    if not _check_kpi_tenant(kpi_id):
+        return jsonify({'success': False, 'error': 'Erişim reddedildi.'}), 403
     result = ml_service.detect_seasonality(kpi_id)
     return jsonify(result)
 
@@ -49,6 +72,8 @@ def detect_seasonality(kpi_id):
 @login_required
 def detect_anomalies(kpi_id):
     """Anomali tespiti"""
+    if not _check_kpi_tenant(kpi_id):
+        return jsonify({'success': False, 'error': 'Erişim reddedildi.'}), 403
     method = request.args.get('method', 'zscore')
     threshold = request.args.get('threshold', 2.5, type=float)
     result = anomaly_service.detect_anomalies(kpi_id, method, threshold)
@@ -59,6 +84,8 @@ def detect_anomalies(kpi_id):
 @login_required
 def process_recommendations(process_id):
     """Süreç önerileri"""
+    if not _check_process_tenant(process_id):
+        return jsonify({'success': False, 'error': 'Erişim reddedildi.'}), 403
     result = recommendation_service.get_process_recommendations(process_id)
     return jsonify(result)
 

@@ -49,6 +49,7 @@ _SP_ROLES = (
 from micro.modules.sp.helpers import (
     _check_sp_role,
     sp_manage_required,
+    _require_plan_year,
     _plan_year_to_dict,
     _plan_project_to_dict,
     _plan_task_to_dict,

@@ -13,7 +13,7 @@ def _ks_swot_summary(tenant_id: int) -> dict:
     try:
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tenant_id, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         )
         kpi_ids = [k.id for k in kpis]
@@ -21,7 +21,7 @@ def _ks_swot_summary(tenant_id: int) -> dict:
         if kpi_ids:
             rows = (
                 KpiData.query
-                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.is_active == True)
+                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.is_active.is_(True))
                 .all()
             )
             for r in rows:

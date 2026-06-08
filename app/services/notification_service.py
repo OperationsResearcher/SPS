@@ -49,7 +49,8 @@ class NotificationService:
             metadata: Ek bilgiler
         """
         from app.models.notification import Notification
-        
+        from app.utils.db_sequence import add_and_commit_with_retry
+
         notification = Notification(
             user_id=user_id,
             type=notification_type,
@@ -57,12 +58,11 @@ class NotificationService:
             message=message,
             priority=priority,
             action_url=action_url,
-            extra_data=metadata,
+            metadata=metadata,
             is_read=False
         )
-        
-        db.session.add(notification)
-        db.session.commit()
+
+        add_and_commit_with_retry(notification, "notifications_ext")
         
         # Real-time push (WebSocket)
         NotificationService._push_realtime(user_id, notification)
@@ -90,8 +90,53 @@ class NotificationService:
                 room=f'user_{user_id}'
             )
         except Exception as e:
-            print(f"Real-time push error: {e}")
+            import logging
+            logging.getLogger(__name__).warning(f"Real-time push error: {e}")
     
+    @staticmethod
+    def bulk_create(
+        user_ids: List[int],
+        notification_type: str,
+        title: str,
+        message: str,
+        priority: str = "medium",
+        action_url: Optional[str] = None,
+        tenant_id: Optional[int] = None,
+    ) -> int:
+        """Birden fazla kullanıcıya aynı bildirimi toplu oluşturur.
+
+        For döngüsü yerine tek sorguda INSERT — N+1 önlemi.
+        Döner: oluşturulan bildirim sayısı.
+        """
+        from app.models.notification import Notification
+        from app.utils.db_sequence import commit_with_retry
+
+        if not user_ids:
+            return 0
+
+        now = datetime.now(timezone.utc)
+
+        def _stage():
+            db.session.bulk_save_objects([
+                Notification(
+                    user_id=uid,
+                    tenant_id=tenant_id,
+                    type=notification_type,
+                    title=title,
+                    message=message,
+                    priority=priority,
+                    action_url=action_url,
+                    is_read=False,
+                    created_at=now,
+                )
+                for uid in user_ids
+            ])
+
+        _stage()
+        # PK sequence desync (import/restore sonrası) → hizala + tekrar dene
+        commit_with_retry("notifications_ext", restage=_stage)
+        return len(user_ids)
+
     @staticmethod
     def send_performance_alert(user_id: int, kpi_name: str, actual: float, target: float, deviation: float):
         """Performans uyarısı gönder"""
@@ -107,7 +152,7 @@ class NotificationService:
             title=title,
             message=message,
             priority=priority,
-            extra_data={'kpi_name': kpi_name, 'actual': actual, 'target': target, 'deviation': deviation}
+            metadata={'kpi_name': kpi_name, 'actual': actual, 'target': target, 'deviation': deviation}
         )
     
     @staticmethod
@@ -131,7 +176,7 @@ class NotificationService:
             title=title,
             message=message,
             priority=priority,
-            extra_data={'task': task_description, 'due_date': due_date.isoformat(), 'days_remaining': days_remaining}
+            metadata={'task': task_description, 'due_date': due_date.isoformat(), 'days_remaining': days_remaining}
         )
     
     @staticmethod
@@ -146,7 +191,7 @@ class NotificationService:
             title=title,
             message=message,
             priority=NotificationService.PRIORITY_LOW,
-            extra_data={'actor': actor_name, 'action': action, 'resource': resource}
+            metadata={'actor': actor_name, 'action': action, 'resource': resource}
         )
     
     @staticmethod
@@ -161,7 +206,7 @@ class NotificationService:
             title=title,
             message=message,
             priority=NotificationService.PRIORITY_LOW,
-            extra_data={'achievement': achievement}
+            metadata={'achievement': achievement}
         )
     
     @staticmethod
@@ -177,14 +222,17 @@ class NotificationService:
         return query.order_by(Notification.created_at.desc()).limit(limit).all()
     
     @staticmethod
-    def mark_as_read(notification_id: int):
-        """Bildirimi okundu olarak işaretle"""
+    def mark_as_read(notification_id: int, user_id: int = None):
+        """Bildirimi okundu olarak işaretle — user_id verilirse sahiplik doğrulanır."""
         from app.models.notification import Notification
-        
-        notification = Notification.query.get(notification_id)
+
+        q = Notification.query.filter_by(id=notification_id)
+        if user_id is not None:
+            q = q.filter_by(user_id=user_id)
+        notification = q.first()
         if notification:
             notification.is_read = True
-            notification.read_at = datetime.utcnow()
+            notification.read_at = datetime.now(timezone.utc)
             db.session.commit()
     
     @staticmethod
@@ -197,7 +245,7 @@ class NotificationService:
             is_read=False
         ).update({
             'is_read': True,
-            'read_at': datetime.utcnow()
+            'read_at': datetime.now(timezone.utc)
         })
         db.session.commit()
     

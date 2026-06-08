@@ -74,7 +74,7 @@ def sp_api_swot_get():
             }})
         def _parse(f):
             try: return _json.loads(f or "[]")
-            except: return []
+            except (ValueError, TypeError): return []
         return jsonify({"success": True, "data": {
             "id": swot.id,
             "plan_year_id": swot.plan_year_id,
@@ -140,7 +140,7 @@ def sp_api_tows_get():
             }})
         def _parse(f):
             try: return _json.loads(f or "[]")
-            except: return []
+            except (ValueError, TypeError): return []
         return jsonify({"success": True, "data": {
             "id": tows.id,
             "plan_year_id": tows.plan_year_id,
@@ -202,7 +202,7 @@ def sp_api_pestle_get():
             return jsonify({"success": True, "data": {**empty, "plan_year_id": active_py.id if active_py else None}})
         def _parse(f):
             try: return _json.loads(f or "[]")
-            except: return []
+            except (ValueError, TypeError): return []
         return jsonify({"success": True, "data": {
             "id": pestle.id,
             "plan_year_id": pestle.plan_year_id,
@@ -357,6 +357,22 @@ def sp_api_okr_objective_create():
         title = (payload.get("title") or "").strip()
         if not title:
             return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+
+        # H-14: cross-tenant doğrulama
+        linked_strategy_id = payload.get("linked_strategy_id") or None
+        linked_sub_strategy_id = payload.get("linked_sub_strategy_id") or None
+        if linked_strategy_id:
+            if not Strategy.query.filter_by(id=linked_strategy_id, tenant_id=tid, is_active=True).first():
+                return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+        if linked_sub_strategy_id:
+            valid_ss = SubStrategy.query.join(Strategy).filter(
+                SubStrategy.id == linked_sub_strategy_id,
+                Strategy.tenant_id == tid, Strategy.is_active.is_(True),
+                SubStrategy.is_active.is_(True),
+            ).first()
+            if not valid_ss:
+                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+
         obj = OkrObjective(
             tenant_id=tid, plan_year_id=active_py.id,
             title=title,
@@ -365,8 +381,8 @@ def sp_api_okr_objective_create():
             owner=(payload.get("owner") or "").strip() or None,
             order_no=payload.get("order_no") or 0,
             # Sprint 17: strateji bağı
-            linked_strategy_id=payload.get("linked_strategy_id") or None,
-            linked_sub_strategy_id=payload.get("linked_sub_strategy_id") or None,
+            linked_strategy_id=linked_strategy_id,
+            linked_sub_strategy_id=linked_sub_strategy_id,
         )
         db.session.add(obj)
         db.session.commit()
@@ -394,11 +410,24 @@ def sp_api_okr_objective_update(obj_id):
         obj.description = (payload.get("description") or "").strip() or None
         obj.quarter     = payload.get("quarter") or None
         obj.owner       = (payload.get("owner") or "").strip() or None
-        # Sprint 17: strateji bağı (None gönderirse temizler)
+        # Sprint 17: strateji bağı (None gönderirse temizler) — H-14: cross-tenant doğrulama
         if "linked_strategy_id" in payload:
-            obj.linked_strategy_id = payload.get("linked_strategy_id") or None
+            new_sid = payload.get("linked_strategy_id") or None
+            if new_sid:
+                if not Strategy.query.filter_by(id=new_sid, tenant_id=tid, is_active=True).first():
+                    return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+            obj.linked_strategy_id = new_sid
         if "linked_sub_strategy_id" in payload:
-            obj.linked_sub_strategy_id = payload.get("linked_sub_strategy_id") or None
+            new_ssid = payload.get("linked_sub_strategy_id") or None
+            if new_ssid:
+                valid_ss = SubStrategy.query.join(Strategy).filter(
+                    SubStrategy.id == new_ssid,
+                    Strategy.tenant_id == tid, Strategy.is_active.is_(True),
+                    SubStrategy.is_active.is_(True),
+                ).first()
+                if not valid_ss:
+                    return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+            obj.linked_sub_strategy_id = new_ssid
         db.session.commit()
         return jsonify({"success": True})
     except Exception as e:
@@ -466,7 +495,7 @@ def sp_api_okr_kr_update(kr_id):
         from app.models.okr import OkrKeyResult, OkrObjective
         payload = request.get_json(silent=True) or {}
         kr = (OkrKeyResult.query.join(OkrObjective)
-              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active == True)
+              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active.is_(True))
               .first_or_404())
         if "title" in payload:
             kr.title = (payload["title"] or "").strip() or kr.title
@@ -495,7 +524,7 @@ def sp_api_okr_kr_delete(kr_id):
     try:
         from app.models.okr import OkrKeyResult, OkrObjective
         kr = (OkrKeyResult.query.join(OkrObjective)
-              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active == True)
+              .filter(OkrKeyResult.id == kr_id, OkrObjective.tenant_id == tid, OkrKeyResult.is_active.is_(True))
               .first_or_404())
         kr.is_active = False
         db.session.commit()
@@ -527,7 +556,7 @@ def sp_api_bsc_get():
         # Tüm aktif KPI'lar
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True, ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
             .all()
         )
         kpi_map = {k.id: k for k in kpis}
@@ -543,7 +572,7 @@ def sp_api_bsc_get():
         if kpi_ids:
             rows = (
                 KpiData.query
-                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active == True)
+                .filter(KpiData.process_kpi_id.in_(kpi_ids), KpiData.year == year, KpiData.is_active.is_(True))
                 .order_by(KpiData.data_date.desc())
                 .all()
             )
@@ -554,7 +583,7 @@ def sp_api_bsc_get():
         # Strateji hiyerarşisi
         strategies = Strategy.query.filter_by(tenant_id=tid, is_active=True).order_by(Strategy.code).all()
         sub_strats = SubStrategy.query.join(Strategy).filter(
-            Strategy.tenant_id == tid, Strategy.is_active == True, SubStrategy.is_active == True
+            Strategy.tenant_id == tid, Strategy.is_active.is_(True), SubStrategy.is_active.is_(True)
         ).all()
         strat_map = {s.id: s for s in strategies}
         sub_map   = {ss.id: ss for ss in sub_strats}
@@ -688,6 +717,13 @@ def sp_api_bsc_assign():
         if not kpi_id:
             return jsonify({"success": False, "message": "kpi_id zorunludur."}), 400
 
+        # H-13: cross-tenant doğrulama
+        kpi_owner = ProcessKpi.query.join(Process).filter(
+            ProcessKpi.id == kpi_id, Process.tenant_id == tid
+        ).first()
+        if not kpi_owner:
+            return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+
         row = BscKpiPerspective.query.filter_by(
             tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
         ).first()
@@ -729,6 +765,17 @@ def sp_api_bsc_assign_bulk():
         active_py   = get_active_plan_year_for_user(current_user)
         if not active_py:
             return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        # H-13: cross-tenant doğrulama — yalnızca bu tenant'a ait kpi_id'lere izin ver
+        if kpi_ids:
+            valid_ids = {
+                row.id for row in ProcessKpi.query.join(Process).filter(
+                    ProcessKpi.id.in_(kpi_ids), Process.tenant_id == tid
+                ).all()
+            }
+            invalid = [kid for kid in kpi_ids if kid not in valid_ids]
+            if invalid:
+                return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
 
         # Mevcut row'ları tek sorguda topla (N+1 önlemi)
         _existing_rows = {r.process_kpi_id: r for r in BscKpiPerspective.query.filter(
@@ -779,8 +826,8 @@ def sp_api_bsc_auto_suggest():
 
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True,
-                    ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True),
+                    ProcessKpi.is_active.is_(True))
             .all()
         )
         proc_map = {p.id: p for p in Process.query.filter_by(tenant_id=tid, is_active=True).all()}
@@ -840,8 +887,8 @@ def sp_api_bsc_auto_assign():
 
         kpis = (
             ProcessKpi.query.join(Process)
-            .filter(Process.tenant_id == tid, Process.is_active == True,
-                    ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tid, Process.is_active.is_(True),
+                    ProcessKpi.is_active.is_(True))
             .all()
         )
         proc_map = {p.id: p for p in Process.query.filter_by(tenant_id=tid, is_active=True).all()}

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kokpitim Broşür</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue:      #1a4a7a;
+    --blue-mid:  #2563a8;
+    --blue-light:#e8f0f9;
+    --blue-pale: #f4f8fd;
+    --accent:    #f0a500;
+    --text:      #1e293b;
+    --muted:     #64748b;
+    --white:     #ffffff;
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #dde3ea;
+    color: var(--text);
+  }
+
+  /* ── SAYFA ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--white);
+    margin: 10mm auto;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--blue);
+    padding: 28px 36px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo img {
+    height: 44px;
+    filter: brightness(0) invert(1);
+  }
+  .header-logo-text {
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .header-tag {
+    background: var(--accent);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+    padding: 36px 36px 32px;
+    color: var(--white);
+    position: relative;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 20px;
+    background: var(--white);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    max-width: 480px;
+  }
+  .hero p {
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.88;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+
+  /* ── CARDS ROW ── */
+  .cards-row {
+    display: flex;
+    gap: 12px;
+    padding: 28px 36px 0;
+  }
+  .card {
+    flex: 1;
+    background: var(--blue-pale);
+    border-top: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 16px 14px;
+    text-align: center;
+  }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .card h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 22px 36px 0;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-left: 3px solid var(--accent);
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+
+  /* ── FEATURES GRID ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--blue-pale);
+    border-radius: 6px;
+  }
+  .feature-check {
+    width: 18px;
+    height: 18px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .feature-check::after {
+    content: '✓';
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .feature-item span {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  /* ── STEPS ── */
+  .steps-row {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .step {
+    flex: 1;
+    text-align: center;
+    padding: 0 8px;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -10px;
+    top: 14px;
+    color: var(--blue-mid);
+    font-size: 18px;
+    font-weight: 300;
+  }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    background: var(--blue);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 auto 8px;
+  }
+  .step h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+  .step p {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── AUDIENCE ── */
+  .audience-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .audience-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #dde8f5;
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text);
+  }
+  .audience-item span:first-child { font-size: 16px; }
+
+  /* ── QUOTE ── */
+  .quote {
+    margin: 20px 36px 0;
+    background: var(--blue);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: var(--white);
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ── TECH TRUST ── */
+  .tech-trust {
+    margin: 16px 36px 0;
+    padding: 12px 16px;
+    background: var(--blue-light);
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+  }
+  .tech-trust-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  .tech-badge {
+    font-size: 10px;
+    color: var(--blue-mid);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .tech-badge::before { content: '●'; font-size: 7px; color: var(--blue-mid); }
+
+  /* ── CTA ── */
+  .cta {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+    margin: 16px 36px 0;
+    border-radius: 8px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--white);
+  }
+  .cta-left h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .cta-left p {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+  .cta-right {
+    text-align: right;
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  .cta-right a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin: 14px 36px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .footer-brand {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+  }
+  .footer-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .footer-right {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* ── PARTNER SPECIFIC ── */
+  .partner-profiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .profile-card {
+    background: var(--blue-pale);
+    border-radius: 8px;
+    padding: 14px;
+    border-left: 3px solid var(--blue-mid);
+  }
+  .profile-card h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .profile-card p {
+    font-size: 10.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .partner-benefits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+    padding: 8px 10px;
+    background: var(--blue-pale);
+    border-radius: 6px;
+  }
+  .benefit-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .onboarding-steps {
+    display: flex;
+    gap: 8px;
+    counter-reset: step-counter;
+  }
+  .onboarding-step {
+    flex: 1;
+    background: var(--blue-pale);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+    position: relative;
+  }
+  .onboarding-step-num {
+    width: 26px;
+    height: 26px;
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 7px;
+  }
+  .onboarding-step p {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: none; }
+    .page { margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     SAYFA 1 — KURUMSAL MÜŞTERİ
+════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="../logoK.png" alt="Kokpitim Logo">
+      <span class="header-logo-text">KOKPİTİM</span>
+    </div>
+    <span class="header-tag">Kurumsal Çözüm</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Kurumsal Performansınızı<br>Tek Ekrandan Yönetin</h1>
+    <p>Strateji, süreç ve KPI yönetimini birleştiren akıllı yönetim platformu.<br>
+       Hedeften sapmayı oluşmadan önce görün, aksiyona anında geçin.</p>
+  </div>
+
+  <!-- 3 Kart -->
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h3>Strateji</h3>
+      <p>Stratejik hedeflerinizi kuruma yayın, departmanlarla ilişkilendirin, takip edin.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <h3>Süreç</h3>
+      <p>Süreçlerinizi tanımlayın, sahiplerini atayın, aktiviteleri izleyin.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>Performans</h3>
+      <p>KPI'larınızı gerçek zamanlı izleyin, sapmaları anında görün.</p>
+    </div>
+  </div>
+
+  <!-- Özellikler -->
+  <div class="section">
+    <div class="section-title">Temel Özellikler</div>
+    <div class="features-grid">
+      <div class="feature-item"><div class="feature-check"></div><span>Balanced Scorecard &amp; OKR desteği</span></div>
+      <div class="feature-item"><div class="feature-check"></div><span>Süreç haritası ve aktivite takibi</span></div>
+      <div class="feature-item"><div class="feature-check"></div><span>Otomatik raporlama ve uyarılar</span></div>
+      <div class="feature-item"><div class="feature-check"></div><span>Çok kurumlu (multi-tenant) yapı</span></div>
+      <div class="feature-item"><div class="feature-check"></div><span>Rol bazlı yetki yönetimi</span></div>
+      <div class="feature-item"><div class="feature-check"></div><span>Türkçe arayüz, yerel destek</span></div>
+    </div>
+  </div>
+
+  <!-- Nasıl Çalışır -->
+  <div class="section" style="margin-top: 18px;">
+    <div class="section-title">Nasıl Çalışır?</div>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Strateji Tanımlayın</h4>
+        <p>Hedeflerinizi girin, departman ve süreçlere bağlayın.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>KPI'ları İzleyin</h4>
+        <p>Ölçüm kriterlerini belirleyin, veri girişi yapın.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Rapor Alın</h4>
+        <p>Otomatik raporlar ve yönetici dashboardları.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kimler Kullanır -->
+  <div class="section" style="margin-top: 18px;">
+    <div class="section-title">Kimler Kullanır?</div>
+    <div class="audience-grid">
+      <div class="audience-item"><span>🏢</span><span>Stratejik Planlama &amp; Kalite Birimleri</span></div>
+      <div class="audience-item"><span>👔</span><span>Üst Yönetim ve İcra Kurulları</span></div>
+      <div class="audience-item"><span>📋</span><span>Süreç ve Performans Yöneticileri</span></div>
+      <div class="audience-item"><span>🏛️</span><span>Çok Şirketli Holding Yapıları</span></div>
+    </div>
+  </div>
+
+  <!-- Alıntı -->
+  <div class="quote">
+    "Hedeften sapmayı oluşmadan önce görün."
+  </div>
+
+  <!-- Teknik Güven -->
+  <div class="tech-trust">
+    <div class="tech-trust-label">Teknik Altyapı</div>
+    <div class="tech-badge">Bulut tabanlı</div>
+    <div class="tech-badge">SSL şifreli</div>
+    <div class="tech-badge">Rol bazlı erişim</div>
+    <div class="tech-badge">Düzenli yedekleme</div>
+    <div class="tech-badge">KVKK uyumlu altyapı</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Demo Talep Edin</h3>
+      <p>Size özel demo ve sunum için iletişime geçin.</p>
+    </div>
+    <div class="cta-right">
+      🌐 www.kokpitim.com<br>
+      📧 info@kokpitim.com
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <div class="footer-brand">KOKPİTİM</div>
+      <div class="footer-sub">Kurumsal Performans Yönetim Platformu</div>
+    </div>
+    <div class="footer-right">www.kokpitim.com</div>
+  </div>
+
+</div><!-- /page 1 -->
+
+
+<!-- ════════════════════════════════════════════════════
+     SAYFA 2 — PARTNER / İŞ ORTAĞI
+════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="../logoK.png" alt="Kokpitim Logo">
+      <span class="header-logo-text">KOKPİTİM</span>
+    </div>
+    <span class="header-tag">İş Ortaklığı</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Müşterilerinize Değer Katın,<br>Gelirinizi Büyütün</h1>
+    <p>Kokpitim iş ortaklığı ile kurumsal performans yönetimi çözümlerini<br>
+       kendi müşteri portföyünüze taşıyın.</p>
+  </div>
+
+  <!-- Partner Neden -->
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-icon">💼</div>
+      <h3>Geniş Pazar</h3>
+      <p>Her ölçekteki kurumun ihtiyacı. Danışmanlık, ERP veya yazılım satışı yapan firmalar için doğal tamamlayıcı.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔧</div>
+      <h3>Kolay Kurulum</h3>
+      <p>Hızlı müşteri kurulumu, Türkçe arayüz, teknik destek bizden.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <h3>Tekrar Eden Gelir</h3>
+      <p>Abonelik modeli sayesinde müşteri kazandıkça sürekli gelir elde edin.</p>
+    </div>
+  </div>
+
+  <!-- Partner Avantajları -->
+  <div class="section">
+    <div class="section-title">Partner Olarak Ne Alırsınız?</div>
+    <div class="partner-benefits">
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Özel demo ortamı ve eğitim erişimi</span></div>
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Hazır satış ve teknik dokümanlar</span></div>
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Müşteri başına ayrı tenant yönetimi</span></div>
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Ortak marka (co-branding) seçeneği</span></div>
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Öncelikli teknik destek hattı</span></div>
+      <div class="benefit-item"><div class="benefit-dot"></div><span>Referans müşteri geliştirme desteği</span></div>
+    </div>
+  </div>
+
+  <!-- Partner Profilleri -->
+  <div class="section" style="margin-top: 18px;">
+    <div class="section-title">Hangi Firmalar Partner Olabilir?</div>
+    <div class="partner-profiles">
+      <div class="profile-card">
+        <h4>🏢 Yönetim Danışmanlığı</h4>
+        <p>Strateji, süreç iyileştirme veya kurumsal dönüşüm projelerinde dijital araç olarak kullanın.</p>
+      </div>
+      <div class="profile-card">
+        <h4>💻 Yazılım / ERP Satıcıları</h4>
+        <p>Portföyünüzü performans yönetimi modülüyle tamamlayın, çapraz satış yapın.</p>
+      </div>
+      <div class="profile-card">
+        <h4>📚 Eğitim &amp; Akademi</h4>
+        <p>Kurumsal eğitim programlarınıza ölçüm ve takip altyapısı ekleyin.</p>
+      </div>
+      <div class="profile-card">
+        <h4>🔗 Sistem Entegratörleri</h4>
+        <p>Dijitalleşme projelerinde tamamlayıcı çözüm olarak sunun.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Başlangıç Adımları -->
+  <div class="section" style="margin-top: 18px;">
+    <div class="section-title">Nasıl Başlarsınız?</div>
+    <div class="onboarding-steps">
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">1</div>
+        <p>İletişime geçin</p>
+      </div>
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">2</div>
+        <p>Demo toplantısı planlayalım</p>
+      </div>
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">3</div>
+        <p>Pilot müşteri ile başlayın</p>
+      </div>
+      <div class="onboarding-step">
+        <div class="onboarding-step-num">4</div>
+        <p>Ortaklık anlaşması imzalayalım</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alıntı -->
+  <div class="quote">
+    "Müşterilerinizin performans yönetimini dönüştürün — birlikte büyüyelim."
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>İş Ortaklığı Görüşmesi</h3>
+      <p>Sizi dinlemek ve birlikte değerlendirmek için hazırız.</p>
+    </div>
+    <div class="cta-right">
+      🌐 www.kokpitim.com<br>
+      📧 partner@kokpitim.com
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <div class="footer-brand">KOKPİTİM</div>
+      <div class="footer-sub">Kurumsal Performans Yönetim Platformu</div>
+    </div>
+    <div class="footer-right">www.kokpitim.com</div>
+  </div>
+
+</div><!-- /page 2 -->
+
+</body>
+</html>

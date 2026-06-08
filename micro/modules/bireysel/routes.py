@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app_platform.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
+from sqlalchemy.orm import contains_eager
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import (
     Process,
@@ -130,7 +131,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
-            return jsonify({"success": False, "message": str(e)}), 400
+            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/add", methods=["POST"])
@@ -167,7 +168,7 @@ def bireysel_api_pg_add():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_add] {e}")
-            return jsonify({"success": False, "message": str(e)}), 400
+            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])
@@ -191,7 +192,7 @@ def bireysel_api_pg_update(pg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/pg/delete/<int:pg_id>", methods=["POST"])
@@ -207,7 +208,7 @@ def bireysel_api_pg_delete(pg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Veri Girişi ─────────────────────────────────────────────────
@@ -275,7 +276,7 @@ def bireysel_api_veri_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_veri_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Faaliyet CRUD ───────────────────────────────────────────────
@@ -302,7 +303,7 @@ def bireysel_api_faaliyet_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/update/<int:act_id>", methods=["POST"])
@@ -326,7 +327,7 @@ def bireysel_api_faaliyet_update(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/delete/<int:act_id>", methods=["POST"])
@@ -342,7 +343,7 @@ def bireysel_api_faaliyet_delete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/bireysel/api/faaliyet/track/<int:act_id>", methods=["POST"])
@@ -374,7 +375,7 @@ def bireysel_api_faaliyet_track(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_track] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Favori PG toggle ─────────────────────────────────────────────────────
@@ -384,20 +385,26 @@ def bireysel_api_faaliyet_track(act_id):
 def bireysel_api_favori_toggle(kpi_id):
     """Favori KPI oluştur veya soft delete."""
     try:
+        # Tenant isolation: yalnızca bu tenant'a ait KPI favorilere eklenebilir
+        kpi = (ProcessKpi.query.join(Process)
+               .filter(ProcessKpi.id == kpi_id,
+                       Process.tenant_id == current_user.tenant_id,
+                       ProcessKpi.is_active.is_(True))
+               .first_or_404())
         fav = FavoriteKpi.query.filter_by(
-            user_id=current_user.id, process_kpi_id=kpi_id
+            user_id=current_user.id, process_kpi_id=kpi.id
         ).first()
         if fav:
             fav.is_active = not fav.is_active
         else:
-            fav = FavoriteKpi(user_id=current_user.id, process_kpi_id=kpi_id, is_active=True)
+            fav = FavoriteKpi(user_id=current_user.id, process_kpi_id=kpi.id, is_active=True)
             db.session.add(fav)
         db.session.commit()
         return jsonify({"success": True, "is_favorite": fav.is_active})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_favori_toggle] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 # ── API: Bireysel Karne AJAX ──────────────────────────────────────────────────
@@ -505,6 +512,7 @@ def bireysel_api_karne():
             IndividualActivity,
             IndividualActivity.id == IndividualActivityTrack.individual_activity_id,
         )
+        .options(contains_eager(IndividualActivityTrack.individual_activity))
         .filter(
             IndividualActivityTrack.user_id == uid,
             IndividualActivityTrack.year == year,
@@ -687,3 +695,73 @@ def bireysel_api_karne_export_pdf():
     except Exception as e:
         current_app.logger.error(f"[bireysel_karne_pdf] {e}", exc_info=True)
         return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
+
+
+# ── Inline AI Özet (bireysel karne üstü) ──────────────────────────────────────
+
+def _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa):
+    """LLM olmadan da çalışan deterministik Türkçe bireysel performans özeti."""
+    parts = []
+    if total_pg:
+        cov = round((pg_with_data / total_pg) * 100) if total_pg else 0
+        parts.append(f"{year} yılında {total_pg} performans göstergen var, %{cov}'ine veri girilmiş.")
+        if pg_with_data < total_pg:
+            parts.append(f"{total_pg - pg_with_data} PG'ye henüz veri girmedin.")
+    else:
+        parts.append(f"{year} için tanımlı performans göstergen yok.")
+    if geciken_fa:
+        parts.append(f"Kırmızı bayrak: {geciken_fa} geciken faaliyet.")
+    elif aktif_fa:
+        parts.append(f"{aktif_fa} aktif faaliyetin sürüyor.")
+    if not parts:
+        parts.append("Özet üretecek yeterli veri yok.")
+    return " ".join(parts)
+
+
+@app_bp.route("/bireysel/api/ai-ozet")
+@login_required
+def bireysel_api_ai_ozet():
+    """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""
+    from datetime import date as _date
+    uid = current_user.id
+    year = request.args.get("year", datetime.now().year, type=int)
+    today = _date.today()
+
+    pg_ids = [r[0] for r in db.session.query(IndividualPerformanceIndicator.id)
+              .filter_by(user_id=uid, is_active=True).all()]
+    total_pg = len(pg_ids)
+    pg_with_data = 0
+    if pg_ids:
+        pg_with_data = (
+            db.session.query(IndividualKpiData.individual_pg_id)
+            .filter(IndividualKpiData.individual_pg_id.in_(pg_ids),
+                    IndividualKpiData.year == year)
+            .distinct().count()
+        )
+
+    acts = IndividualActivity.query.filter_by(user_id=uid, is_active=True).all()
+    aktif_fa = sum(1 for a in acts if a.status != "Tamamlandı")
+    geciken_fa = sum(1 for a in acts if a.status != "Tamamlandı" and a.end_date and a.end_date < today)
+
+    ozet = _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa)
+    kaynak = "heuristik"
+    try:
+        from app.services.llm_gateway import call_llm
+        ad = (current_user.first_name or "").strip() or "Kullanıcı"
+        veri = (f"Kullanıcı: {ad}. Yıl: {year}. PG sayısı: {total_pg}, veri girilen: {pg_with_data}. "
+                f"Aktif faaliyet: {aktif_fa}, geciken: {geciken_fa}.")
+        prompt = ("Aşağıdaki bireysel performans verisinden 2 cümlelik Türkçe özet yaz: "
+                  "ilerleme durumu ve bu hafta odak. Teşvik edici ama abartısız.\n\n" + veri)
+        res = call_llm(
+            tenant_id=current_user.tenant_id, endpoint="bireysel_ozet",
+            prompt=prompt,
+            system_prompt="Sen kısa konuşan bir Türkçe performans koçusun.",
+            user_id=uid, max_output_tokens=200,
+        )
+        if isinstance(res, dict) and res.get("text"):
+            ozet = res["text"].strip()
+            kaynak = "ai"
+    except Exception as e:
+        current_app.logger.info(f"[bireysel-ai-ozet] LLM fallback ({e})")
+
+    return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})

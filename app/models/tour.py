@@ -1,6 +1,6 @@
 """Kule yardımcı sistemi — kullanıcı tur durum modeli."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.extensions import db
 
@@ -25,12 +25,16 @@ class UserTourProgress(db.Model):
     seen_count = db.Column(db.Integer, nullable=False, default=0)
     completed_at = db.Column(db.DateTime, nullable=True)
     dismissed_at = db.Column(db.DateTime, nullable=True)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False,
+                           default=lambda: datetime.now(timezone.utc),
+                           onupdate=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
         db.UniqueConstraint("user_id", "tour_key", name="uq_user_tour"),
     )
+
+    def __repr__(self):
+        return f"<UserTourProgress user={self.user_id} tour={self.tour_key} status={self.status}>"
 
     def to_dict(self) -> dict:
         return {

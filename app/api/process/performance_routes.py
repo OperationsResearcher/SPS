@@ -44,7 +44,7 @@ def api_surec_karne_performans(surec_id):
         return jsonify(e.to_dict()), e.status_code
     except Exception as e:
         current_app.logger.error(f'Performans verileri getirilemedi: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 from app.utils.security_decorators import require_process_access
 from extensions import csrf
@@ -61,7 +61,7 @@ def api_surec_karne_faaliyetler(surec_id):
         return jsonify(e.to_dict()), e.status_code
     except Exception as e:
         current_app.logger.error(f'Faaliyet verileri getirilemedi: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/surec/<int:surec_id>/faaliyet/<int:surec_faaliyet_id>/create-bireysel', methods=['POST'])
 @login_required
@@ -75,7 +75,7 @@ def api_create_bireysel_faaliyet_from_surec(surec_id, surec_faaliyet_id):
         return jsonify(e.to_dict()), e.status_code
     except Exception as e:
         current_app.logger.error(f'Bireysel faaliyet oluşturma hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/faaliyet/<int:faaliyet_id>/takip', methods=['POST'])
 @login_required
@@ -92,10 +92,10 @@ def api_faaliyet_takip_kaydet(faaliyet_id):
     except KokpitimError as e:
         return jsonify(e.to_dict()), e.status_code
     except ValueError as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
     except Exception as e:
         current_app.logger.error(f'Faaliyet takip kaydetme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/surec/<int:surec_id>/karne/kaydet', methods=['POST'])
 @login_required
@@ -113,10 +113,10 @@ def api_surec_karne_kaydet(surec_id):
     except KokpitimError as e:
         return jsonify(e.to_dict()), e.status_code
     except ValueError as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({'success': False, 'message': 'İşlem tamamlanamadı.'}), 400
     except Exception as e:
         current_app.logger.error(f'Süreç karne kaydedilemedi: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 
 
@@ -141,7 +141,7 @@ def route_get_pg_veri_detay_list():
         if isinstance(data, tuple) and hasattr(data[0], 'keys'): return jsonify(data[0]), data[1]
         return jsonify(data)
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/export/surec_karnesi/excel', methods=['GET'])
 @login_required
@@ -166,7 +166,7 @@ def route_export_surec_karnesi_excel():
             return send_file(output, as_attachment=True, download_name=filename, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         return jsonify(data[0]), data[1]
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/pg-veri/detay/<int:veri_id>', methods=['GET'])
 @login_required
@@ -176,7 +176,7 @@ def route_get_pg_veri_detay(veri_id):
         if isinstance(data, tuple) and hasattr(data[0], 'keys'): return jsonify(data[0]), data[1]
         return jsonify(data)
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 from extensions import csrf
 @process_performance_bp.route('/api/pg-veri/detay/toplu', methods=['POST'])
@@ -190,7 +190,7 @@ def route_get_pg_veri_detay_toplu():
         if isinstance(res, tuple) and hasattr(res[0], 'keys'): return jsonify(res[0]), res[1]
         return jsonify(res)
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500
 
 @process_performance_bp.route('/api/pg-veri/guncelle/<int:veri_id>', methods=['PUT'])
 @login_required
@@ -204,4 +204,4 @@ def route_update_pg_veri(veri_id):
         if isinstance(res, tuple) and hasattr(res[0], 'keys'): return jsonify(res[0]), res[1]
         return jsonify(res)
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({'success': False, 'message': 'Sunucu hatası oluştu.'}), 500

@@ -147,6 +147,22 @@
     </div>
   </header>
 
+  {# ── Inline AI Yönetici Özeti (karne üstü, otomatik) ── #}
+  <div id="karne-ai-ozet" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+    <div style="display:flex; align-items:flex-start; gap:12px; padding:14px 18px;">
+      <span style="flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px;">
+        <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+      </span>
+      <div style="flex:1 1 auto; min-width:0;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
+          <span style="font-size:12px; font-weight:700; color:#4338ca; letter-spacing:.02em;">AI YÖNETİCİ ÖZETİ</span>
+          <span id="karne-ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
+        </div>
+        <p id="karne-ai-ozet-metin" style="font-size:13.5px; line-height:1.6; color:#1e293b; margin:0;">…</p>
+      </div>
+    </div>
+  </div>
+
   {# ── Genel bilgiler: sağlık skoru, KPI dağılımı, faaliyet/KPI ilerlemesi ── #}
   <div class="mc-card karne-overview-card">
     <div class="karne-section-head karne-section-head--info">
@@ -941,5 +957,145 @@
 <script src="{{ url_for('app_bp.static', filename='platform/js/surec_vgs.js') }}?v={{ config.get('VERSION', '1') }}"></script>
 <script src="{{ url_for('app_bp.static', filename='platform/js/pg_tablo_modal.js') }}?v={{ config.get('VERSION', '1') }}"></script>
 <script src="{{ url_for('app_bp.static', filename='platform/js/surec.js') }}?v={{ config.get('VERSION', '1') }}"></script>
+<script>
+/* Inline AI Yönetici Özeti — kendi kendine yeten; surec.js'e dokunmaz. */
+(function() {
+  var root = document.getElementById("karne-root");
+  var box = document.getElementById("karne-ai-ozet");
+  if (!root || !box) return;
+  var apiBase = root.getAttribute("data-karne-api-url");
+  if (!apiBase) return;
+  var metin = document.getElementById("karne-ai-ozet-metin");
+  var kaynakEl = document.getElementById("karne-ai-ozet-kaynak");
+  var yearSel = document.getElementById("year-select");
+  var typeTimer = null;
+
+  function typeOut(text) {
+    if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+    metin.textContent = "";
+    var i = 0;
+    typeTimer = setInterval(function() {
+      metin.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(typeTimer); typeTimer = null; }
+    }, 12);
+  }
+
+  function currentYear() {
+    return (yearSel && yearSel.value) || root.getAttribute("data-current-year") || "";
+  }
+
+  function load(year) {
+    box.style.display = "block";
+    if (kaynakEl) kaynakEl.textContent = "";
+    if (metin) metin.textContent = "Özet hazırlanıyor…";
+    var url = apiBase.replace(/\/$/, "") + "/ai-ozet"
+            + (year ? ("?year=" + encodeURIComponent(year)) : "");
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (!d || !d.success || !d.ozet) { box.style.display = "none"; return; }
+        if (kaynakEl) kaynakEl.textContent = (d.kaynak === "ai") ? "AI" : "otomatik";
+        typeOut(d.ozet);
+        if (!confettiFired && typeof d.skor === "number" && d.skor >= 85) {
+          confettiFired = true; fireConfetti();
+        }
+      })
+      .catch(function() { box.style.display = "none"; });
+  }
+
+  // Sağlıklı karne (skor ≥ 85) için tek seferlik kutlama — kendi kendine temizlenir.
+  var confettiFired = false;
+  function fireConfetti() {
+    try {
+      var cv = document.createElement("canvas");
+      cv.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:9999;";
+      cv.width = window.innerWidth; cv.height = window.innerHeight;
+      document.body.appendChild(cv);
+      var ctx = cv.getContext("2d");
+      var colors = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#0ea5e9"];
+      var parts = [];
+      for (var i = 0; i < 90; i++) parts.push({
+        x: cv.width / 2 + (Math.random() - 0.5) * 140, y: cv.height * 0.28,
+        vx: (Math.random() - 0.5) * 9, vy: Math.random() * -9 - 3,
+        g: 0.22 + Math.random() * 0.1, s: 5 + Math.random() * 5,
+        c: colors[i % colors.length], r: Math.random() * Math.PI
+      });
+      var t0 = null;
+      function frame(ts) {
+        if (!t0) t0 = ts;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var alive = false;
+        parts.forEach(function(p) {
+          p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += 0.1;
+          if (p.y < cv.height + 20) alive = true;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+          ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6);
+          ctx.restore();
+        });
+        if (alive && ts - t0 < 2500) requestAnimationFrame(frame);
+        else cv.remove();
+      }
+      requestAnimationFrame(frame);
+    } catch (e) { /* yok say */ }
+  }
+
+  load(currentYear());
+  if (yearSel) yearSel.addEventListener("change", function() { load(currentYear()); });
+})();
+</script>
+
+<script>
+/* Count-up: karne sağlık skorunu 0'dan değere animasyonla yazar (surec.js'e dokunmaz). */
+(function(){
+  function watch(id){
+    var el=document.getElementById(id); if(!el) return;
+    var lastVal=null, animating=false, obs;
+    function tok(s){ var m=(s||"").match(/-?\d+(?:[.,]\d+)?/); return m?m[0]:null; }
+    function write(t){ obs.disconnect(); el.textContent=t; obs.observe(el,{childList:true,characterData:true,subtree:true}); }
+    function run(to,pre,suf,isInt){
+      animating=true; var dur=850,t0=null;
+      function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); var c=to*e;
+        write(pre+(isInt?Math.round(c):c.toFixed(1))+suf);
+        if(p<1) requestAnimationFrame(step);
+        else { animating=false; write(pre+(isInt?Math.round(to):to.toFixed(1))+suf); } }
+      requestAnimationFrame(step);
+    }
+    obs=new MutationObserver(function(){
+      if(animating) return;
+      var raw=el.textContent, t=tok(raw); if(t===null) return;
+      var v=parseFloat(t.replace(",", ".")); if(!isFinite(v)||v===lastVal) return;
+      var i=raw.indexOf(t); lastVal=v;
+      run(v, raw.slice(0,i), raw.slice(i+t.length), Number.isInteger(v));
+    });
+    obs.observe(el,{childList:true,characterData:true,subtree:true});
+  }
+  watch("karne-health-value");
+})();
+</script>
+
+<script>
+/* Canlı veri farkındalığı (poll): başka biri veri girince 'Yenile' uyarısı. Save yoluna dokunmaz. */
+(function(){
+  var url="{{ url_for('app_bp.api_tenant_last_change') }}";
+  var baseline=null, shown=false;
+  function showToast(){
+    if(shown) return; shown=true;
+    var t=document.createElement("div");
+    t.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
+    t.innerHTML='<i class="fas fa-rotate"></i> Yeni veri girildi <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Yenile</button>';
+    t.querySelector("button").onclick=function(){ location.reload(); };
+    document.body.appendChild(t);
+  }
+  function check(){
+    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){ if(!d||!d.success) return;
+        if(baseline===null){ baseline=d.ts; return; }
+        if(d.ts && d.ts!==baseline){ baseline=d.ts; showToast(); }
+      }).catch(function(){});
+  }
+  check(); setInterval(check, 20000);
+})();
+</script>
 {% endblock %}
 

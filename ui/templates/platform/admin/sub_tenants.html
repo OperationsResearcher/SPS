@@ -113,20 +113,20 @@
 
       <div style="display:grid; gap:12px;">
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Kurum Adı <span style="color:#dc2626;">*</span></label>
+          <label for="ns-name" style="font-size:12px; color:#64748b; font-weight:500;">Kurum Adı <span style="color:#dc2626;">*</span></label>
           <input id="ns-name" class="mc-form-input" placeholder="Örn: ABC Cam">
         </div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Kısa Ad</label>
+          <label for="ns-short" style="font-size:12px; color:#64748b; font-weight:500;">Kısa Ad</label>
           <input id="ns-short" class="mc-form-input" placeholder="Örn: ABCCam">
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
+            <label for="ns-maxu" style="font-size:12px; color:#64748b; font-weight:500;">Maks. Kullanıcı</label>
             <input id="ns-maxu" type="number" class="mc-form-input" placeholder="5" value="5">
           </div>
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Abonelik Paketi</label>
+            <label for="ns-package" style="font-size:12px; color:#64748b; font-weight:500;">Abonelik Paketi</label>
             <select id="ns-package" class="mc-form-input">
               <option value="">— Paket seçilmedi —</option>
               {% for p in packages %}
@@ -136,23 +136,23 @@
           </div>
         </div>
         <hr style="margin:6px 0; border:none; border-top:1px solid #e2e8f0;">
-        <div style="font-weight:600; color:#1e293b; font-size:13px;">İlk Admin Bilgileri</div>
+        <div style="font-weight:600; color:var(--text-default); font-size:13px;">İlk Admin Bilgileri</div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">E-posta <span style="color:#dc2626;">*</span></label>
+          <label for="ns-admin-email" style="font-size:12px; color:#64748b; font-weight:500;">E-posta <span style="color:#dc2626;">*</span></label>
           <input id="ns-admin-email" type="email" class="mc-form-input" placeholder="admin@abccam.com">
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Ad</label>
+            <label for="ns-admin-fname" style="font-size:12px; color:#64748b; font-weight:500;">Ad</label>
             <input id="ns-admin-fname" class="mc-form-input" placeholder="Ad">
           </div>
           <div>
-            <label style="font-size:12px; color:#64748b; font-weight:500;">Soyad</label>
+            <label for="ns-admin-lname" style="font-size:12px; color:#64748b; font-weight:500;">Soyad</label>
             <input id="ns-admin-lname" class="mc-form-input" placeholder="Soyad">
           </div>
         </div>
         <div>
-          <label style="font-size:12px; color:#64748b; font-weight:500;">Şifre <span style="font-size:11px; color:#94a3b8;">(boş bırakırsanız otomatik üretilir)</span></label>
+          <label for="ns-admin-password" style="font-size:12px; color:#64748b; font-weight:500;">Şifre <span style="font-size:11px; color:#94a3b8;">(boş bırakırsanız otomatik üretilir)</span></label>
           <input id="ns-admin-password" type="text" class="mc-form-input" placeholder="Otomatik üretilecek">
         </div>
       </div>
@@ -177,12 +177,12 @@
       </h3>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
-      <p id="success-msg" style="margin:0 0 14px; color:#1e293b;">—</p>
+      <p id="success-msg" style="margin:0 0 14px; color:var(--text-default);">—</p>
       <div id="credentials-box" style="background:#fef3c7; border-left:3px solid #f59e0b; padding:12px 14px; border-radius:4px; display:none;">
         <div style="font-weight:600; color:#92400e; font-size:13px; margin-bottom:8px;">
           ⚠️ Geçici Şifre — Şimdi Kaydet
         </div>
-        <div style="font-family:monospace; font-size:13px; color:#1e293b;">
+        <div style="font-family:monospace; font-size:13px; color:var(--text-default);">
           E-posta: <span id="cred-email">—</span><br>
           Şifre: <span id="cred-password" style="background:#fff; padding:2px 8px; border-radius:4px; border:1px solid #f59e0b;">—</span>
         </div>
@@ -198,6 +198,9 @@
   </div>
 </div>
 
+<script>
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s??''); return d.innerHTML; }
+</script>
 <script>
 (function() {
   const root = document.getElementById("subtenants-root");
@@ -230,17 +233,17 @@
 
   function renderRow(t) {
     const adminInfo = t.admin
-      ? `<div style="font-weight:500;">${t.admin.email}</div>
-         <div style="font-size:11px; color:#94a3b8;">${(t.admin.first_name || "") + " " + (t.admin.last_name || "")}</div>`
+      ? `<div style="font-weight:500;">${esc(t.admin.email)}</div>
+         <div style="font-size:11px; color:#94a3b8;">${esc((t.admin.first_name || "") + " " + (t.admin.last_name || ""))}</div>`
       : `<span style="color:#94a3b8; font-size:12px;">Admin yok</span>`;
     const pkgBadge = t.package
-      ? `<span class="mc-badge mc-badge-indigo">${t.package.name}</span>`
+      ? `<span class="mc-badge mc-badge-indigo">${esc(t.package.name)}</span>`
       : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
     return `
       <tr>
-        <td style="font-weight:600; color:#1e293b;">
-          ${t.name}
-          ${t.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${t.short_name}</div>` : ""}
+        <td style="font-weight:600; color:var(--text-default);">
+          ${esc(t.name)}
+          ${t.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${esc(t.short_name)}</div>` : ""}
         </td>
         <td style="font-size:13px; color:#475569;">${adminInfo}</td>
         <td>${pkgBadge}</td>
@@ -386,21 +389,33 @@
     if (resetBtn) {
       const id = resetBtn.dataset.id;
       if (!confirm("Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?")) return;
-      const j = await postJson(`/admin/api/sub-tenants/${id}/admin/reset-password`);
-      if (!j.success) { alert(j.message || "Hata"); return; }
-      document.getElementById("success-msg").textContent = j.message;
-      document.getElementById("credentials-box").style.display = "block";
-      document.getElementById("cred-email").textContent = j.admin_email;
-      document.getElementById("cred-password").textContent = j.new_password;
-      document.getElementById("modal-success").style.display = "flex";
+      resetBtn.disabled = true;
+      resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      try {
+        const j = await postJson(`/admin/api/sub-tenants/${id}/admin/reset-password`);
+        if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.message||'İşlem başarısız'}); return; }
+        document.getElementById("success-msg").textContent = j.message;
+        document.getElementById("credentials-box").style.display = "block";
+        document.getElementById("cred-email").textContent = j.admin_email;
+        document.getElementById("cred-password").textContent = j.new_password;
+        document.getElementById("modal-success").style.display = "flex";
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.innerHTML = '<i class="fas fa-key"></i>';
+      }
     }
     if (toggleBtn) {
       const id = toggleBtn.dataset.id;
       const active = toggleBtn.dataset.active === "true";
       if (!confirm(active ? "Bu alt kurumu pasifleştirmek istiyor musunuz?" : "Bu alt kurumu aktifleştirmek istiyor musunuz?")) return;
-      const j = await postJson(`/admin/api/sub-tenants/${id}/toggle`);
-      if (!j.success) { alert(j.message || "Hata"); return; }
-      loadList();
+      toggleBtn.disabled = true;
+      try {
+        const j = await postJson(`/admin/api/sub-tenants/${id}/toggle`);
+        if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.message||'İşlem başarısız'}); return; }
+        loadList();
+      } finally {
+        toggleBtn.disabled = false;
+      }
     }
   });
 

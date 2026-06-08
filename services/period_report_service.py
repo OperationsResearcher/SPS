@@ -138,9 +138,10 @@ def generate_period_report(tenant_id: int, year: int, compare_year: int | None =
             row_idx += 1
 
     # Sütun genişlikleri
+    from openpyxl.utils import get_column_letter
     widths = [10, 28, 10, 30, 8, 10, 14, 12, 14, 12, 12]
     for i, w in enumerate(widths[:ws.max_column], 1):
-        ws.column_dimensions[ws.cell(row=1, column=i).column_letter].width = w
+        ws.column_dimensions[get_column_letter(i)].width = w
 
     bio = BytesIO()
     wb.save(bio)

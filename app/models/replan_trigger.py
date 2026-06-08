@@ -52,6 +52,9 @@ class ReplanTrigger(db.Model):
         server_default=db.func.now(), onupdate=db.func.now(),
     )
 
+    def __repr__(self):
+        return f"<ReplanTrigger {self.id} {(self.name or '')[:20]}>"
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -89,6 +92,9 @@ class ReplanTriggerEvent(db.Model):
         db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
     )
+
+    def __repr__(self):
+        return f"<ReplanTriggerEvent {self.id} trigger={self.trigger_id}>"
 
     def to_dict(self) -> dict:
         return {

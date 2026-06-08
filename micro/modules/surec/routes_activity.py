@@ -80,7 +80,10 @@ from micro.modules.surec.helpers import (
 def surec_api_activity_add():
     data = request.get_json() or {}
     process_id = data.get("process_id")
-    p = _process_for_user(int(process_id)) if process_id else None
+    try:
+        p = _process_for_user(int(process_id)) if process_id else None
+    except (TypeError, ValueError):
+        abort(400)
     if not p:
         abort(404)
     if not _user_can_add_activity(current_user, p):
@@ -182,6 +185,7 @@ def surec_api_activity_add():
             r_seen.add(m)
             reminder_offsets.append(m)
 
+        active_py = get_active_plan_year_for_user(current_user)
         act = None
         for attempt in (1, 2):
             act = ProcessActivity(
@@ -266,7 +270,7 @@ def surec_api_activity_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/get/<int:act_id>", methods=["GET"])
@@ -422,7 +426,7 @@ def surec_api_activity_update(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/delete/<int:act_id>", methods=["POST"])
@@ -443,7 +447,7 @@ def surec_api_activity_delete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/cancel/<int:act_id>", methods=["POST"])
@@ -465,7 +469,7 @@ def surec_api_activity_cancel(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_cancel] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/postpone/<int:act_id>", methods=["POST"])
@@ -484,10 +488,24 @@ def surec_api_activity_postpone(act_id):
     end_at_str = data.get("end_at", "")
     if not start_at_str or not end_at_str:
         return jsonify({"success": False, "message": "Başlangıç ve bitiş tarihi zorunludur."}), 400
+    def _safe_parse_dt(val):
+        txt = str(val).strip()
+        for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(txt, fmt)
+            except ValueError:
+                continue
+        return None
+
+    new_start = _safe_parse_dt(start_at_str)
+    new_end = _safe_parse_dt(end_at_str)
+    if not new_start or not new_end:
+        return jsonify({"success": False, "message": "Tarih formatı geçersiz (YYYY-AA-GG veya ISO 8601)."}), 400
+    if new_end <= new_start:
+        return jsonify({"success": False, "message": "Bitiş başlangıçtan sonra olmalıdır."}), 400
     try:
-        from dateutil.parser import parse as parse_dt
-        act.start_at = parse_dt(start_at_str)
-        act.end_at = parse_dt(end_at_str)
+        act.start_at = new_start
+        act.end_at = new_end
         act.status = "Ertelendi"
         act.postponed_at = datetime.now(timezone.utc)
         db.session.commit()
@@ -495,7 +513,7 @@ def surec_api_activity_postpone(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_postpone] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
@@ -518,7 +536,7 @@ def surec_api_activity_complete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_complete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/activity/track/<int:act_id>", methods=["POST"])
@@ -558,5 +576,5 @@ def surec_api_activity_track(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_activity_track] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 

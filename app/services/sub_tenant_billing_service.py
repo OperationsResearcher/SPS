@@ -7,11 +7,14 @@ Kokpitim'e karşı kullanım durumunu görebilir.
 from __future__ import annotations
 
 import datetime as _dt
+import logging as _logging
 
 from sqlalchemy import func, text
 
 from extensions import db
 from app.models.core import Tenant, User
+
+_log = _logging.getLogger(__name__)
 
 
 def build_consolidated_usage(parent_tenant_id: int) -> dict:
@@ -29,7 +32,7 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
     llm_by_tenant = {}
     if sub_ids:
         try:
-            month_start = _dt.datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            month_start = _dt.datetime.now(_dt.timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
             rows = db.session.execute(text("""
                 SELECT tenant_id,
                        count(*) FILTER (WHERE status='ok') as calls,
@@ -45,8 +48,8 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
                     "tokens": int(r.tokens or 0),
                     "cost_usd": float(r.cost or 0),
                 }
-        except Exception:
-            pass
+        except Exception as e:
+            _log.warning(f"[billing] LLM usage query hatası: {e}")
 
     # ─── KPI sayıları ──────────────────────────────────────────────────────
     kpi_by_tenant = {}
@@ -62,8 +65,8 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
             """), {"ids": sub_ids}).fetchall()
             for r in rows:
                 kpi_by_tenant[r.tenant_id] = int(r.kpi_count or 0)
-        except Exception:
-            pass
+        except Exception as e:
+            _log.warning(f"[billing] KPI count query hatası: {e}")
 
     # ─── Kullanıcı sayıları (tek query) ────────────────────────────────────
     user_by_tenant = {}
@@ -71,7 +74,7 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
         rows = db.session.query(
             User.tenant_id, func.count(User.id)
         ).filter(
-            User.tenant_id.in_(sub_ids), User.is_active == True
+            User.tenant_id.in_(sub_ids), User.is_active.is_(True)
         ).group_by(User.tenant_id).all()
         for tid, count in rows:
             user_by_tenant[tid] = int(count)
@@ -84,7 +87,7 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
             rows = db.session.query(
                 Initiative.tenant_id, func.count(Initiative.id)
             ).filter(
-                Initiative.tenant_id.in_(sub_ids), Initiative.is_active == True
+                Initiative.tenant_id.in_(sub_ids), Initiative.is_active.is_(True)
             ).group_by(Initiative.tenant_id).all()
             for tid, count in rows:
                 init_by_tenant[tid] = int(count)
@@ -155,8 +158,8 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
             "tenant_type": parent.tenant_type,
         },
         "period": {
-            "month_start": _dt.datetime.utcnow().replace(day=1).strftime("%Y-%m-01"),
-            "now": _dt.datetime.utcnow().isoformat(),
+            "month_start": _dt.datetime.now(_dt.timezone.utc).replace(day=1).strftime("%Y-%m-01"),
+            "now": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         },
         "sub_tenants": rows_out,
         "totals": totals,

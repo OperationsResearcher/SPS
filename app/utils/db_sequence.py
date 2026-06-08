@@ -79,6 +79,50 @@ def sync_kpi_data_related_sequences() -> None:
     sync_pg_sequence_if_needed("kpi_data_audits", "id")
 
 
+def add_and_commit_with_retry(obj, table_name: str, pk_column: str = "id"):
+    """Tek nesneyi ekle + commit; PK sequence desync'i (import/restore sonrası)
+    UniqueViolation verirse sequence'i hizalayıp bir kez daha dener.
+
+    kpi_data için var olan inline retry döngüsünün tek-noktadan, yeniden
+    kullanılabilir hali. Blue Ocean / bildirim gibi insert yollarında
+    "duplicate key value violates unique constraint" hatasını önler.
+    """
+    from sqlalchemy.exc import IntegrityError
+
+    try:
+        db.session.add(obj)
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        if is_pk_duplicate(e, table_name):
+            sync_pg_sequence_if_needed(table_name, pk_column)
+            db.session.add(obj)
+            db.session.commit()
+        else:
+            raise
+    return obj
+
+
+def commit_with_retry(table_name: str, restage=None, pk_column: str = "id") -> None:
+    """Bekleyen oturumu commit et; PK desync UniqueViolation'ında sequence'i
+    hizalayıp tekrar dener. Bulk insert için `restage`, rollback sonrası
+    nesneleri yeniden hazırlayan bir callable olmalı (yoksa yalnız commit).
+    """
+    from sqlalchemy.exc import IntegrityError
+
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        if is_pk_duplicate(e, table_name):
+            sync_pg_sequence_if_needed(table_name, pk_column)
+            if restage is not None:
+                restage()
+            db.session.commit()
+        else:
+            raise
+
+
 def sync_many_sequences(pairs: list[tuple[str, str]] | None = None) -> dict[str, bool]:
     """Verilen tablo/kolon çiftleri için sequence hizalaması uygula."""
     items = pairs or []

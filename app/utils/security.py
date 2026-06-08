@@ -27,9 +27,9 @@ def init_limiter(app):
         if redis_url and str(redis_url).startswith("redis"):
             storage_uri = redis_url
         else:
-            app.logger.warning(
+            app.logger.error(
                 "[rate-limit] RATELIMIT_STORAGE_URL=memory:// kullanılıyor (REDIS_URL tanımsız). "
-                "Çoklu worker'da limit izolasyonu KIRIK — production'da Redis tanımlanmalı."
+                "Çoklu worker'da limit izolasyonu KIRIK — Yayın ortamında RATELIMIT_STORAGE_URL=redis://... tanımlanmalı."
             )
     limiter = Limiter(
         app=app,
@@ -47,6 +47,9 @@ def set_security_headers(response):
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = (
+        'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=()'
+    )
 
     # HSTS yalnızca gerçek HTTPS isteklerde. request.url kullanılmaz: Werkzeug boş/şüpheli
     # Host başlığında SecurityError üretebilir; after_request içinde bu yanıtı keser (CF 524).

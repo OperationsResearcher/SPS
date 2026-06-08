@@ -16,9 +16,43 @@
      data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
      data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
 
+  {# ── Inline AI Yönetici Özeti (tenant geneli) ── #}
+  <div id="ai-ozet-serit" data-ozet-url="{{ url_for('app_bp.sp_api_exec_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+    <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 18px;">
+      <span style="flex:0 0 auto; width:32px; height:32px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-wand-magic-sparkles"></i></span>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+          <span style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">AI YÖNETİCİ ÖZETİ</span>
+          <span id="ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
+        </div>
+        <p id="ai-ozet-metin" style="font-size:13px; line-height:1.55; color:#1e293b; margin:0;">…</p>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var box=document.getElementById("ai-ozet-serit"); if(!box) return;
+    var url=box.getAttribute("data-ozet-url"); if(!url) return;
+    var metin=document.getElementById("ai-ozet-metin"), kEl=document.getElementById("ai-ozet-kaynak");
+    var ys=document.getElementById("exec-year-select");
+    box.style.display="block"; metin.textContent="Özet hazırlanıyor…";
+    function load(){
+      var y=(ys&&ys.value)?("?year="+encodeURIComponent(ys.value)):"";
+      fetch(url+y,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(d){ if(!d||!d.success||!d.ozet){box.style.display="none";return;}
+          if(kEl)kEl.textContent=(d.kaynak==="ai")?"AI":"otomatik";
+          var i=0,t=d.ozet; metin.textContent="";
+          var tm=setInterval(function(){metin.textContent=t.slice(0,++i); if(i>=t.length)clearInterval(tm);},12);
+        }).catch(function(){box.style.display="none";});
+    }
+    load(); if(ys)ys.addEventListener("change",load);
+  })();
+  </script>
+
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:#1e293b;margin:0 0 4px;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-tachometer-alt" style="color:#6366f1;"></i> Yönetici Paneli
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
@@ -56,6 +90,9 @@
 
   {# ── Hızlı Eylemler ── #}
   <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+    <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="mc-btn mc-btn-sm" style="background:#0b1220;color:#7dd3fc;border:1px solid #1e293b;">
+      <i class="fas fa-tv"></i> Savaş Odası
+    </a>
     <a href="{{ url_for('app_bp.sp_xmatrix_page') }}" class="mc-btn mc-btn-sm" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;">
       <i class="fas fa-th-large"></i> X-Matrix
     </a>
@@ -181,7 +218,7 @@
       <div id="exec-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/k-radar/risk-management" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
+    <a href="/k-radar/risk" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="risk" title="Risk yönetimine git">
       <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">Kritik Risk</div>
@@ -216,7 +253,7 @@
   <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
       <div>
-        <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+        <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
           <i class="fas fa-vector-square" style="color:#8b5cf6; margin-right:6px;"></i>
           K-Vektör Vizyon Puanı — Gelişim
         </h3>
@@ -265,7 +302,7 @@
   {# ── 12 Aylık Sağlık Trendi ──────────────────────────────────────── #}
   <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
         <i class="fas fa-chart-line" style="color:#6366f1; margin-right:6px;"></i>
         Son 12 Ay PG Hedef Üstü Oranı
       </h3>
@@ -296,7 +333,7 @@
   <div class="mc-card" id="exec-highlights" style="padding:14px 18px; margin-bottom:18px; border-left:4px solid #0ea5e9; display:none;">
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
       <i class="fas fa-lightbulb" style="color:#0ea5e9;"></i>
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:#1e293b;">Bu Hafta Dikkat Edilmesi Gerekenler</h3>
+      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">Bu Hafta Dikkat Edilmesi Gerekenler</h3>
     </div>
     <div id="exec-highlights-list" style="display:grid; gap:6px;"></div>
   </div>
@@ -658,7 +695,7 @@
       const render = (items, color) => items.length ? items.map(it => `
         <div style="display:flex; align-items:center; gap:8px; padding:6px 8px; background:#f8fafc; border-radius:6px; font-size:12.5px;">
           <span style="background:#fff; border:1px solid #e2e8f0; padding:2px 6px; border-radius:4px; font-family:monospace; font-size:11px; color:#475569;">${it.code || '·'}</span>
-          <span style="flex:1; color:#1e293b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
+          <span style="flex:1; color:var(--text-default); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
           <span style="color:${color}; font-weight:700;">%${it.on_target_pct}</span>
           <span style="color:#94a3b8; font-size:11px;">(${it.pg_total} PG)</span>
         </div>`).join('') : '<div style="font-size:12px; color:#94a3b8; padding:6px;">Veri yok</div>';
@@ -835,6 +872,60 @@
   });
 
   loadAll();
+})();
+</script>
+
+<script>
+/* Count-up: hero sağlık skorunu 0'dan değere animasyonla yazar (mevcut JS'e dokunmaz). */
+(function(){
+  function watch(id){
+    var el=document.getElementById(id); if(!el) return;
+    var lastVal=null, animating=false, obs;
+    function tok(s){ var m=(s||"").match(/-?\d+(?:[.,]\d+)?/); return m?m[0]:null; }
+    function write(t){ obs.disconnect(); el.textContent=t; obs.observe(el,{childList:true,characterData:true,subtree:true}); }
+    function run(to,pre,suf,isInt){
+      animating=true; var dur=850,t0=null;
+      function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); var c=to*e;
+        write(pre+(isInt?Math.round(c):c.toFixed(1))+suf);
+        if(p<1) requestAnimationFrame(step);
+        else { animating=false; write(pre+(isInt?Math.round(to):to.toFixed(1))+suf); } }
+      requestAnimationFrame(step);
+    }
+    obs=new MutationObserver(function(){
+      if(animating) return;
+      var raw=el.textContent, t=tok(raw); if(t===null) return;
+      var v=parseFloat(t.replace(",", ".")); if(!isFinite(v)||v===lastVal) return;
+      var i=raw.indexOf(t); lastVal=v;
+      run(v, raw.slice(0,i), raw.slice(i+t.length), Number.isInteger(v));
+    });
+    obs.observe(el,{childList:true,characterData:true,subtree:true});
+  }
+  watch("exec-health");
+})();
+</script>
+
+<script>
+/* Canlı veri farkındalığı (poll): başka biri veri girince 'Yenile' uyarısı. Save yoluna dokunmaz. */
+(function(){
+  var url="{{ url_for('app_bp.api_tenant_last_change') }}";
+  var baseline=null, shown=false;
+  function showToast(){
+    if(shown) return; shown=true;
+    var t=document.createElement("div");
+    t.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
+    t.innerHTML='<i class="fas fa-rotate"></i> Yeni veri girildi <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Yenile</button>';
+    t.querySelector("button").onclick=function(){ location.reload(); };
+    document.body.appendChild(t);
+  }
+  function check(){
+    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){ if(!d||!d.success) return;
+        if(baseline===null){ baseline=d.ts; return; }
+        if(d.ts && d.ts!==baseline){ baseline=d.ts; showToast(); }
+      }).catch(function(){});
+  }
+  check(); setInterval(check, 20000);
 })();
 </script>
 {% endblock %}

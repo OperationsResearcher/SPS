@@ -85,8 +85,9 @@ def maintenance_active(app: Flask) -> bool:
         return True
     try:
         return maintenance_db_enabled(app)
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        import logging; logging.getLogger(__name__).warning(f"[maintenance_active] DB kontrol hatası: {e}")
         return False
 
 
@@ -106,8 +107,9 @@ def maintenance_status_for_admin(app: Flask) -> dict:
     db_en = False
     try:
         db_en = maintenance_db_enabled(app, force_refresh=True)
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        import logging; logging.getLogger(__name__).warning(f"[maintenance_status_for_admin] DB kontrol hatası: {e}")
     env_f = maintenance_env_force(app)
     ov = maintenance_override_off(app)
     return {

@@ -30,7 +30,7 @@ def kule_send():
         ticket = Ticket(
             user_id=current_user.id,
             tenant_id=current_user.tenant_id,
-            page_url=page_url[:500] if page_url else None,
+            page_url=page_url[:500] if page_url else None,  # 500 = Ticket.page_url VARCHAR(500) max uzunluğu
             subject=subject[:50],
             message=message,
             status="Bekliyor"
@@ -58,4 +58,5 @@ def kule_send():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "message": f"Kule bağlantı hatası: {str(e)}"}), 500
+        current_app.logger.error(f"[kule_send] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Bilet gönderilemedi, lütfen tekrar deneyin."}), 500

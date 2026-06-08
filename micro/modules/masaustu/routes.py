@@ -105,8 +105,8 @@ def masaustu():
     surec_pg_sorgu = (
         ProcessKpi.query.join(ProcessKpi.process)
         .filter(
-            ProcessKpi.is_active == True,
-            Process.is_active == True,
+            ProcessKpi.is_active.is_(True),
+            Process.is_active.is_(True),
             db.or_(
                 Process.id.in_(member_process_ids),
                 Process.id.in_(leader_process_ids),
@@ -289,7 +289,7 @@ def _processes_for_activity_quick_create(user) -> list[dict]:
                 Process.is_active.is_(True),
             )
             .order_by(Process.name)
-            .limit(400)
+            .limit(100)
             .all()
         )
     else:
@@ -307,7 +307,7 @@ def _processes_for_activity_quick_create(user) -> list[dict]:
                 Process.tenant_id == user.tenant_id,
             )
             .order_by(Process.name)
-            .limit(400)
+            .limit(100)
             .all()
         )
     return [{"id": p.id, "name": (p.name or f"Süreç #{p.id}")} for p in rows]
@@ -321,7 +321,7 @@ def _projects_for_task_quick_create(user) -> list[dict]:
     rows = (
         Project.query.filter(Project.kurum_id == kid, Project.is_archived.is_(False))
         .order_by(Project.name)
-        .limit(500)
+        .limit(100)
         .all()
     )
     out: list[dict] = []
@@ -658,6 +658,29 @@ def api_morning_summary():
     except Exception as e:
         current_app.logger.error(f"[morning_summary] {e}", exc_info=True)
         return jsonify({"success": False, "message": "Özet yüklenemedi."}), 500
+
+
+@app_bp.route("/api/tenant-last-change")
+@login_required
+def api_tenant_last_change():
+    """Tenant'ın son PG veri değişiklik zaman damgası — canlı yenileme sinyali (poll).
+
+    Hafif: tek max sorgusu. Kayıt yoluna dokunmaz.
+    """
+    from app.models.process import KpiData, ProcessKpi, Process
+    tid = current_user.tenant_id
+    ts = None
+    try:
+        ts = (
+            db.session.query(db.func.max(KpiData.updated_at))
+            .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
+            .join(Process, ProcessKpi.process_id == Process.id)
+            .filter(Process.tenant_id == tid)
+            .scalar()
+        )
+    except Exception as e:
+        current_app.logger.info(f"[tenant-last-change] {e}")
+    return jsonify({"success": True, "ts": ts.isoformat() if ts else None})
 
 
 @app_bp.route("/takvim", methods=["GET"])

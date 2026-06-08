@@ -105,6 +105,9 @@ def surec_api_kpi_add():
             onceki_yil_ortalamasi=float(data["onceki_yil_ortalamasi"]) if data.get("onceki_yil_ortalamasi") else None,
         )
         if data.get("sub_strategy_id"):
+            tid = current_user.tenant_id
+            if not validate_same_tenant_sub_strategies(tid, [int(data["sub_strategy_id"])]):
+                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
             kpi.sub_strategy_id = int(data["sub_strategy_id"])
         if data.get("start_date"):
             kpi.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
@@ -133,7 +136,7 @@ def surec_api_kpi_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_add] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
@@ -198,6 +201,9 @@ def surec_api_kpi_update(kpi_id):
             v = data["onceki_yil_ortalamasi"]
             kpi.onceki_yil_ortalamasi = float(v) if v not in (None, "") else None
         if data.get("sub_strategy_id"):
+            tid = current_user.tenant_id
+            if not validate_same_tenant_sub_strategies(tid, [int(data["sub_strategy_id"])]):
+                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
             kpi.sub_strategy_id = int(data["sub_strategy_id"])
         elif "sub_strategy_id" in data and not data["sub_strategy_id"]:
             kpi.sub_strategy_id = None
@@ -223,7 +229,7 @@ def surec_api_kpi_update(kpi_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_update] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
@@ -264,7 +270,7 @@ def surec_api_kpi_delete(kpi_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_delete] {e}")
-        return jsonify({"success": False, "message": str(e)}), 400
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
 @app_bp.route("/process/api/kpi/list/<int:process_id>", methods=["GET"])

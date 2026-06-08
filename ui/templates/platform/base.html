@@ -80,7 +80,13 @@
     <script>
     (function() {
         try {
-            const t = localStorage.getItem("kk_theme") || "light";
+            // kk_theme yoksa eski System A anahtarından (micro_dark) türet ve yaz —
+            // böylece data-theme tabanlı dark kuralları ilk yüklemede de doğru aktive olur.
+            let t = localStorage.getItem("kk_theme");
+            if (!t) {
+                t = (localStorage.getItem("micro_dark") === "true") ? "dark" : "light";
+                localStorage.setItem("kk_theme", t);
+            }
             document.documentElement.setAttribute("data-theme", t);
             if (document.body) document.body.setAttribute("data-theme", t);
         } catch(e) {}
@@ -194,6 +200,13 @@
                 <span class="sidebar-item-text">K-Analiz</span>
             </a>
 
+            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
+            <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="sidebar-item">
+                <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
+                <span class="sidebar-item-text">Savaş Odası</span>
+            </a>
+            {% endif %}
+
             <a href="{{ url_for('app_bp.bireysel_karne') }}"
                 class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-id-card-clip"></i></span>
@@ -246,6 +259,16 @@
             {% endif %}
             {% endif %}
 
+            {% if role_name == 'Admin' %}
+            <!-- Admin Araçları -->
+            <div class="sidebar-section-label">Admin Araçları</div>
+            <a href="{{ url_for('app_bp.admin_tools_home') }}"
+                class="sidebar-item {% if 'admin_tools' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-toolbox"></i></span>
+                <span class="sidebar-item-text">Admin Araçları</span>
+            </a>
+            {% endif %}
+
             <!-- Sistem -->
             <div class="sidebar-section-label">Sistem</div>
 
@@ -274,6 +297,7 @@
                 <div class="sidebar-avatar">
                     {% if current_user.profile_picture %}
                     <img src="{{ current_user.profile_picture }}"
+                        alt="{{ current_user.first_name or current_user.email }} profil fotoğrafı"
                         style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                     {% else %}
                     {{ (current_user.first_name or current_user.email)[0]|upper }}
@@ -372,6 +396,7 @@
                         <div class="mc-avatar mc-avatar-sm">
                             {% if current_user.profile_picture %}
                             <img src="{{ current_user.profile_picture }}"
+                                alt="{{ current_user.first_name or current_user.email }} profil fotoğrafı"
                                 style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                             {% else %}
                             {{ (current_user.first_name or current_user.email)[0]|upper }}
@@ -576,6 +601,17 @@
     {% endif %} #}
 
     {% block extra_js %}{% endblock %}
+    <script>
+    /* Merkezi API URL konfigürasyonu */
+    window.KK = window.KK || {};
+    window.KK.api = {
+      planYearsSetActive: "{{ url_for('app_bp.sp_api_plan_years_set_active') }}",
+    };
+    /* Production'da console.log sustur; console.error/warn bilgi sızdırmaz ama bırakılır */
+    {% if config.get('ENV','production') == 'production' %}
+    (function(){ const _noop = function(){}; window.console.log = _noop; })();
+    {% endif %}
+    </script>
 </body>
 
 </html>

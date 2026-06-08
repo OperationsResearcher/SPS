@@ -78,16 +78,18 @@ class RecommendationService:
             }
             
         except Exception as e:
-            logger.error(f"Process recommendations failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Process recommendations failed: {e}")
+            return {'success': False, 'error': 'Öneri oluşturulurken hata oluştu.'}
 
     
     def _analyze_kpi_performance(self, kpi):
         """KPI performans analizi"""
         recommendations = []
         
-        # Son 3 ay verisi
-        three_months_ago = datetime.now() - timedelta(days=90)
+        # Son 3 ay verisi (ANALYTICS_MID_LOOKBACK_DAYS config sabiti)
+        from flask import current_app
+        _lookback = current_app.config.get("ANALYTICS_MID_LOOKBACK_DAYS", 90)
+        three_months_ago = datetime.now() - timedelta(days=_lookback)
         recent_data = KpiData.query.filter(
             KpiData.process_kpi_id == kpi.id,
             KpiData.data_date >= three_months_ago,
@@ -168,7 +170,7 @@ class RecommendationService:
             return None
             
         except Exception as e:
-            logger.error(f"Trend analysis failed: {str(e)}")
+            logger.error(f"Trend analysis failed: {e}")
             return None
     
     def _check_kpi_anomalies(self, kpi):
@@ -192,7 +194,7 @@ class RecommendationService:
                 })
         
         except Exception as e:
-            logger.error(f"Anomaly check failed: {str(e)}")
+            logger.error(f"Anomaly check failed: {e}")
         
         return recommendations
     
@@ -300,5 +302,5 @@ class RecommendationService:
             }
             
         except Exception as e:
-            logger.error(f"Smart insights failed: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            logger.error(f"Smart insights failed: {e}")
+            return {'success': False, 'error': 'Anlık analiz oluşturulamadı.'}

@@ -57,6 +57,9 @@ class LLMUsageLog(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
+    def __repr__(self):
+        return f"<LLMUsageLog {self.id} tenant={self.tenant_id}>"
+
 
 class LLMQuotaOverride(db.Model):
     """Tenant'a özel kota overide (varsayılan paket limitlerini ezer)."""
@@ -77,3 +80,6 @@ class LLMQuotaOverride(db.Model):
         db.DateTime, nullable=False,
         server_default=db.func.now(), onupdate=db.func.now(),
     )
+
+    def __repr__(self):
+        return f"<LLMQuotaOverride {self.id} tenant={self.tenant_id}>"

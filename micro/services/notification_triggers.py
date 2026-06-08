@@ -77,8 +77,9 @@ def _send_email(to_user, title, message, tenant_id, notification_type, link=None
         return
     try:
         from app_platform.services.email_service import send_notification_email
+        from html import escape as _he
         action_btn = _ACTION_BTN.format(link=link) if link else ""
-        html = _EMAIL_TEMPLATE.format(title=title, message=message, action_btn=action_btn)
+        html = _EMAIL_TEMPLATE.format(title=_he(title), message=_he(message), action_btn=action_btn)
         text = f"{title}\n\n{message}\n\n{link or ''}"
         ok, err = send_notification_email(
             to_email=to_user.email,

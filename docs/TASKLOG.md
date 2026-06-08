@@ -1,7 +1,867 @@
 # TASKLOG — Kokpitim Görev Takip Defteri
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
+
+## TASK-180 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Yedekleme bileşeni — eski tooling kaldırıldı, yeni Admin Araçları > Yedekleme kuruldu
+**Modül:** yedekleme_service, routes_admin_tools, yedekleme.html, app/__init__ scheduler
+**Durum:** ✅ Yerelde tamam, uçtan uca doğrulandı.
+
+### Kaldırılanlar (kullanıcı onayı, kalıcı)
+- Servisler: `admin_backup_service.py`, `backup_scheduler_service.py`, `yedekleyici.py`, `scripts/post_migration_assert.py`.
+- UI/route: `ayarlar/yedekleme.html`, admin/routes.py backup route'ları (448-819) + middleware + importlar, ayarlar menü kartı.
+- `__init__` eski scheduler hook, `instance/backup_schedule.json`.
+- **Yedek verisi:** `backups/` + `Yedekler/` (7,5 GB) — kullanıcı iki kez bilgilendirilmiş onayıyla kalıcı silindi.
+- **KORUNAN:** `tenant_backup_service.py` (demo_reset_service + ops scriptleri bağımlı — silinirse demo reset çöker).
+
+### Yeni bileşen
+- `app/services/yedekleme_service.py`: pg_dump (-Fc tam DB), kod tar.gz (tam/mtime-fark), rotasyon (son 14), `run_auto_backup`, `restore_db` (pg_restore --clean), `list_auto_backups`, `auto_status`. pg_dump yolu sürüm-bilincli seçilir (sunucu PG 18 → `C:\pgdata\bin`).
+- Gece 02:00 APScheduler işi (`_init_yedekleme_scheduler`): tam DB + kod (haftada bir tam baseline, diğer günler fark).
+- Route'lar (Admin-only): sayfa, manuel DB indir, manuel kod indir, dosya indir, otomatik-çalıştır, DB geri-yükle (şifre + onay metni `KOKPITIM-DB-GERIYUKLE`).
+- `yedekleme.html` + Admin Araçları kartı. Çıktı: `instance/yedekler/otomatik/` (gitignored).
+
+### Doğrulama
+pg_dump 18 ile DB 3,4 MB / kod tam 111 MB üretildi; `run_auto_backup` DB+kod+rotasyon çalıştı; `pg_restore --list` ile dump geçerli+restore-edilebilir doğrulandı (1550 TOC, 162 tablo); scheduler 02:00 başladı; sayfa 302.
+
+### Notlar
+DB=PostgreSQL (yerelde de). Yerel `instance/kokpitim.db` 0 byte/ölü. Salt Admin; ortam kilidi yok → Test/Yayín'a deploy edilince çalışır (gece yedeği asıl orada anlamlı). Yerel-only; deploy ayrı onayla.
+
+## TASK-179 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Loglar → kurum detay sayfası (kategori bazlı zaman çizelgesi) + eksik audit instrumentasyonu
+**Modül:** admin_logs_service, routes_admin_tools, loglar_kurum.html, sp/routes_strategy, sp/routes_pages, proje/routes_tasks, proje/routes_project_crud
+**Durum:** ✅ Yerelde tamam, uçtan uca doğrulandı.
+
+### Detay sayfası
+- Loglar'daki "Kurum Bazında" satırına tıkla → `/admin/araclar/loglar/kurum/<id>`.
+- 6 kategori (her biri AuditLog'dan): **Stratejik Plan** (Strateji+Kurum Yönetimi), **Süreç**, **PG (Gösterge)** (PG+KPI Yönetimi), **PG Verisi** (PG+KPI Veri Girişi), **Proje**, **Proje Görevi** (Proje Faaliyeti).
+- Her kategori: son değişiklik özeti + katlanabilir zaman çizelgesi (son 15, eylem/varlık/kim/ne zaman). `new_values`'tan varlık adı + /sp kimlik kartı (Vizyon/Misyon/Değerler) etiketi çıkarılır. Saatler tarayıcı saatine.
+
+### Audit instrumentasyonu — 9 yeni nokta (eksik kategoriler kapatıldı)
+- `sp/routes_strategy.py` → strateji & alt strateji **ekle/güncelle/sil** (6 nokta) = "Strateji Yönetimi".
+- `sp/routes_pages.py::sp_api_tenant_identity` → vizyon/misyon/amaç/değerler/etik **değişikliği** = "Kurum Yönetimi" (değişen kart anahtarları new_values'a yazılır → /sp kart-bazlı izleme).
+- `proje/routes_tasks.py::project_task_delete` → görev **silme** = "Proje Faaliyeti" (create/update zaten vardı).
+- `proje/routes_project_crud.py::project_delete` → proje **silme** = "Proje Yönetimi".
+- AuditLogger.log_* kendi commit'i + try/except'i olduğu için işlem commit'inden sonra güvenle çağrıldı.
+
+### Doğrulama
+Playwright ile gerçek `/sp/api/strategy/add` → AuditLog CREATE "Strateji Yönetimi" `{name, code}` yazıldı (uçtan uca). Detay sayfası 6 kategoriyi gerçek veriyle render etti (Kayseri: PG 338, PG Verisi 326 kayıt).
+
+### Notlar
+Salt-okuma sayfa; instrumentasyon yalnız audit YAZAR (mevcut davranışı değiştirmez). Yerel-only; Test/Yayín ayrı onayla.
+
+## TASK-178 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları > Loglar bölümü — kurum bazında + genel giriş/veri hareketi logları
+**Modül:** admin_logs_service, routes_admin_tools, loglar.html, araclar.html
+**Durum:** ✅ Yerelde tamam, gerçek veriyle doğrulandı.
+
+### Eklenen / Değiştirilen Dosyalar
+- `app/services/admin_logs_service.py` (YENİ) → `collect_logs()`.
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/loglar` route'u.
+- `ui/templates/platform/admin/loglar.html` (YENİ) → özet kartları + kurum tablosu + katlanabilir listeler + saat dilimi JS.
+- `ui/templates/platform/admin/araclar.html` → Loglar kartı.
+
+### Gösterilen metrikler
+1. **Son giriş** (kim, ne zaman) + **Toplam giriş sayısı** → `AuditLog` (action="OTURUM AÇMA").
+2. **Son veri hareketi** (ne, kim, ne zaman) → `AuditLog` (CRUD, güvenlik dışı) ∪ `KpiData` (PG verisi) — en yenisi.
+3. **Hiç giriş yapmamış kullanıcılar** (sayı + katlanabilir liste) → login audit'i olmayan aktif User'lar.
+4. **Son hareketler akışı** (genel, son 25) → AuditLog ∪ KpiData.
+Yerel doğrulama: 169 giriş · 125 hiç girmemiş · kurum bazlı son giriş/son veri çalışıyor.
+
+### Önemli teknik kararlar
+- **PG verisi AuditLog'a yazılmıyor** (yalnız KpiData/KpiDataAudit) → "son veri hareketi" iki kaynağın birleşimi.
+- **Saat dilimi:** tüm zamanlar UTC ISO basılır, `data-utc` + JS ile **admin'in tarayıcı saat dilimine** çevrilir (kullanıcı isteği).
+- tz-aware/naive karışımı `_cmp()` ile normalize edildi (TypeError önlendi).
+- Kurum başına değil metrik başına toplu sorgu (subquery-max-join) → N+1 yok.
+
+### Notlar
+Salt-okuma; yalnız _is_admin() korur, ortam kilidi yok → sonra Test/Yayín'a deploy edilince çalışır.
+Yerel-only (henüz deploy edilmedi). Test/Yayín ayrı onayla.
+
+## TASK-177 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları > İstatistikler bölümü — kurum bazında sistem sayımları
+**Modül:** admin_stats_service, routes_admin_tools, istatistikler.html, araclar.html
+**Durum:** ✅ Yerelde tamam, doğrulandı.
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/services/admin_stats_service.py` (YENİ) → `collect_statistics()`: metrik başına tek `GROUP BY tenant_id` sorgusu (N+1 yok).
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/istatistikler` route'u (`_is_admin()`, salt-okuma).
+- `ui/templates/platform/admin/istatistikler.html` (YENİ) → özet kartları + kurum bazlı tablo + TOPLAM satırı.
+- `ui/templates/platform/admin/araclar.html` → İstatistikler kartı eklendi.
+
+### Sayılan metrikler (aktif kayıtlar)
+Kurum (Tenant), Kullanıcı (User), Ana Strateji (Strategy), Alt Strateji (SubStrategy),
+Süreç (Process), PG (ProcessKpi), PG Verisi (KpiData), Portföy Proje (Project), Proje Task (Task).
+Yerel doğrulama: 5 kurum · 141 kullanıcı · 90/229 strateji · 161 süreç · 644 PG · 183.581 PG verisi.
+
+### Hiyerarşik kırılım (kullanıcı isteği)
+Bayi (`tenant_type='dealer'`) / Holding (`tenant_type='holding'`) üst kurumları, altında
+açtıkları kurumlarla (`parent_tenant_id`) **iç içe** gösterilir: üst kurum → girintili alt
+kurumlar → **grup ara toplamı** (kendisi + alt kurumlar). Bayi/Holding rozeti eklendi.
+Servis hiyerarşik ağaç kurar (çok seviyeli, DFS); tablo girinti + ara toplam render eder.
+Doğrulama: geçici (rollback'li) parent ataması ile nesting + ara toplam matematiği teyit edildi.
+
+### Notlar
+Proje türü kararı: yalnız **Portföy** (Project/Task) — SP/Plan projeleri hariç (kullanıcı tercihi).
+Ortam kilidi YOK (salt-okuma); yalnız _is_admin() korur → sonra Test/Yayín'a deploy edilince doğrudan çalışır.
+Yerel-only (henüz deploy edilmedi). Test/Yayín deploy'u ayrı onayla.
+
+## TASK-176 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — eşzamanlılık kilidi (tarama/senaryo/yenile aynı anda çalışamaz)
+**Modül:** hata_kontrol_executor, routes_admin_tools, hata_kontrolu.html
+**Durum:** ✅ Yerelde tamam, kilit uçtan uca doğrulandı.
+
+### Kök neden (244/210 sahte-FAIL)
+Üç işlem (tarama, "Kur/Yenile", senaryolar) aynı izole `tomofiltest`'i paylaşıyor. Biri çalışırken
+diğeri tomofiltest'i sıfırlarsa (wipe + reclone → sentetik admin silinir) **çalışan koşunun oturumu
+ölür**. Log kanıtı: tarama 104 sayfa OK sonra senaryo reset'i (10:41:49) admini silince kalan 210
+sayfa komple `/login`'e döndü. Kod hatası değildi — eşzamanlılık koruması eksikti.
+
+### Değiştirilen Dosyalar
+- `app/services/hata_kontrol_executor.py` → `_BUSY` + `busy_label()/try_acquire()/release()`; `start_run`/`start_scenarios` meşgulse `None`; thread'lerde `finally: release()`.
+- `micro/modules/admin/routes_admin_tools.py` → tarama/senaryo/yenile route'ları meşgulse **HTTP 409** + etiket.
+- `ui/templates/platform/admin/hata_kontrolu.html` → `setBusy()`; bir işlem çalışırken üç buton da kilitli; 409 mesajı gösterilir.
+
+### Doğrulama
+Tarama çalışırken senaryo/ikinci-tarama → reddedildi (None/409). Tarama bitince kilit serbest, senaryo başlayabildi. Tek başına tam tarama: 290 OK / 0 FAIL.
+
+### Notlar
+:5001 reloader'sız yeniden başlatıldı (çift dinleyici tuzağı). Yerel-only; Test/Demo/Yayín ayrı onay.
+
+## TASK-175 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — Süreç senaryosuna PG ve PGV tam CRUD (düzenle/sil) ekle, gerçek UI tıklama
+**Modül:** hata_kontrol_scenarios
+**Durum:** ✅ Yerelde tamam. Standalone 7/7, tam paket 5/5 GEÇTİ, reset temiz.
+
+### Değiştirilen Dosyalar
+- `app/services/hata_kontrol_scenarios.py` → `scenario_surec_zinciri` 7 adıma çıkarıldı; `_vgs_enter` helper.
+
+### Yapılan İşlem
+İzole tomofiltest içinde OUR sürecin karnesine gidilir (yalnız bizim PG → `.btn-kpi-*` tek anlamlı). PG: oluştur + düzenle (`.btn-kpi-edit`) + sil (`.btn-kpi-delete` → SweetAlert onay). PGV: gir + sil (dinamik `#modal-micro-veri-detay`) + değiştir (sil + yeniden gir; aynı döneme tekrar giriş 409 → önce sil). Hepsi gerçek Playwright tıklamasıyla.
+
+### Notlar
+PG sil **yıl-kapsamlı dışlama** (`upsert_kpi_year_config is_included=False`), hard delete değil — assertion `.count()==0` yerine başarı toast'u (`/kaldırıld|silindi/i`) bekler. Yerel-only; Test/Demo/Yayín ayrı onay bekliyor.
+
+## TASK-174 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları/Hata Kontrolü detaylı inceleme + düzeltmeler + PGV tam UI + /sp perf değerlendirmesi
+**Modül:** tenant_clone_service, hata_kontrol_executor, hata_kontrol_scenarios
+**Durum:** ✅ Yerelde tamam, doğrulandı. Tam paket 5/5 GEÇTİ, reset temiz.
+
+### Detaylı inceleme (2 paralel ajan) — doğrulanan düzeltmeler
+- **KRİTİK:** `find_source_tenant_id` `'%tomofil%'` ile "tomofiltest"i de eşliyordu → hariç tutuldu + `source==test` guard (yanlış kurumu klonlama/silme riski).
+- **Savunma derinliği:** clone/wipe servis katmanında da Yayín kilidi (`_is_production`).
+- **Thread-safety:** `_MADE_MAPS` global → koşuya özel yerel `made_maps`.
+- **Bellek:** `_RUNS` sınırsız büyüyordu → son 20 (`_MAX_RUNS`).
+- **Kaynak yönetimi:** Playwright browser `try/finally` ile garanti kapatma.
+- **DRY:** sentetik admin şifresi tek kaynak.
+- **Temizlik:** ölü fetch helper'ları + kullanılmayan import'lar silindi.
+- **Elenen (yanlış/abartılı):** pg_get_serial_sequence injection yok (adlar şemadan); FK sırası zaten doğru (0 sızıntı doğrulanmıştı).
+
+### PGV tam UI otomasyonu
+- Karne `.btn-kpi-vgs` → `#modal-kpi-data-entry` → `#kpi-data-entry-value` → `#btn-vgs-confirm`. Artık Süreç/PG/PGV 3 adım da gerçek tıklama.
+
+### Reset (wipe) FK düzeltmesi
+- `individual_kpi_data(_audits).user_id` CASCADE değil → senaryo PGV verisi sentetik admine bağlanınca `DELETE users` takılıyordu. Wipe'a eklendi → reset güvenilir.
+
+### /sp performans — DEĞERLENDİRİLDİ, gerek YOK
+- Ölçüm: /sp route **0.87s soğuk / 0.02s sıcak**. Önceki "91k yüzünden yavaş" iddiası YANLIŞ.
+- Vizyon/Misyon UI senaryosunun ara sıra flake'i = **test sırasındaki DB çekişmesi** (gece 02:00 `early_warning` zamanlayıcısı + çoklu test sunucusu), /sp perf değil. Çekişmesiz koşuda 5/5 geçti.
+
+## TASK-173 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — Aktif CRUD senaryolarını tüm çekirdek entity'lere yayma
+**Modül:** app/services/hata_kontrol_scenarios.py + early_warning_service (bulunan bug)
+**Durum:** ✅ Yerelde tamam; 5/5 senaryo entegre koşuda GEÇTİ, reset temiz. Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Senaryo kütüphanesi (her şey kontrol altında)
+- **Mavi Okyanus** (UI-tıklama): Tuval→aç→Faktör (buton/modal/AJAX)
+- **Strateji** (API): ana + alt strateji create
+- **Vizyon/Misyon** (API): tenant-identity purpose/vision
+- **Süreç→PG→PGV** (API zinciri): süreç→process_kpi→kpi_data (alt-strateji bağlı)
+- **Proje→Task** (form + API): portföy projesi + quick-add görev
+
+### Yöntem kararı
+- Hafif sayfa (Blue Ocean) → gerçek UI-tıklama.
+- Bağlam-ağır / yavaş-render sayfalar (özellikle **/sp** — vizyon skoru 91k+ satır, tekrarlı yüklemede >90s render → UI-otomasyon güvenilmez) ve dinamik süreç sayfası → **API-seviyesi** (giriş yapmış oturumun tarayıcı `fetch`'iyle gerçek uçlar; session+CSRF doğal gider). Yine tomofiltest'e gerçek yazma + validation.
+- Koşu sonunda tomofiltest otomatik sıfırlanır (tüm yeni veri temizlendi — doğrulandı).
+
+### Yan bulgu (gerçek bug, düzeltildi)
+- `services/early_warning_service.py`: `_send_notification` `notification_type` (NOT NULL) set etmiyordu → her gece 02:00 taramasında `NotNullViolation`. `pg_performance_deviation` eklendi.
+
+### Güncelleme — tümü GERÇEK UI-tıklamaya çevrildi (kullanıcı talebi)
+- Tüm 5 senaryo artık gerçek buton/form/modal tıklaması: Strateji + Vizyon/Misyon (/sp mc-modal), Süreç ('Yeni Süreç' modalı + alt-strateji checkbox), PG (karne #btn-kpi-add modalı), Proje + Task (/project form sayfaları). PGV: karne veri sihirbazı UI'ı mevcut (çok-adımlı; "UI var" notuyla işaretli, tam otomatize edilmedi).
+- /sp ağır render'ı için cömert timeout (120s). **Entegre koşu: 5/5 GEÇTİ, tomofiltest reset temiz.**
+
+### Not
+- **/sp performansı** ayrı bir gerçek sorun (büyük tenant'ta çok yavaş) — ileride vizyon skoru cache'lenmeli; UI senaryolarını da hızlandırır.
+- Yalnız Yerel; Test/Yayín ayrı onaya bağlı.
+
+## TASK-172 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü taramasının bulduğu gerçek kod kusurlarının düzeltilmesi (15 uç)
+**Modül:** sp, raporlar, admin, api, ayarlar, period_report_service
+**Durum:** ✅ Yerelde tamam, hepsi test_client ile doğrulandı (eski 500/503/404 → 200/400). Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Arka plan
+Hata Kontrolü aracı tam tarama (321 sayfa) yaptı; 16 fail + 14 warn çıktı. Sunucu loglarındaki traceback'lerden kök nedenler bulundu. Çoğu bir refactor kalıntısı: eksik import/helper.
+
+### Düzeltmeler
+- `routes_pages.py` → `from datetime import date` (sp_rapor_donemsel `date.today()` NameError)
+- `period_report_service.py` → `get_column_letter()` (MergedCell `.column_letter` yok — donemsel rapor Excel)
+- `routes_llm_quota.py` → eksik `platform/sp/llm_usage.html` şablonu oluşturuldu
+- `routes_alignment.py` → SQL `CAST(:py_id AS INTEGER)` (plan yılı yokken AmbiguousParameter)
+- `helpers.py` → `_require_plan_year()` tanımlandı; `routes_sp_proje.py` import etti (NameError → graceful 400)
+- `routes_strategy.py` → eksik `/sp/api/strategies` GET ucu eklendi (/sp/okr 404 çağrısı)
+- `routes_faz2/faz3/faz4.py` → `timezone` import (cfo/coo-dashboard + diğerleri NameError)
+- `routes_faz3.py` → `_hk_safe_name()` modül helper'ı (yatirimci/esg/audit/bireysel-batch generate'te `_safe_filename` kapsam-dışı NameError)
+- `routes_faz0.py` → `_dt.date.today()` → `_date.today()` (ai-sunum generate AttributeError)
+- `api/routes.py` → `/api/v1/ai/recommend` `get_recommendations`(yok) → `smart_insights` (503 → 200)
+- `admin/routes.py` → kullanici-detay: `tenant_id` yoksa 500 yerine 400
+- `ayarlar/index.html` → `url_for('static')` → `url_for('app_bp.static')` (CSS/JS yanlış MIME/404)
+
+### Doğrulama (Admin oturumu, test_client)
+15 uç: hepsi <500. Örnek: /sp/rapor/donemsel 200, /sp/llm-usage 200, /sp/api/strategy-project-matrix 200, /sp/api/proje 400, /raporlar/api/{cfo,coo}-dashboard 200, /api/v1/ai/recommend 200, /raporlar/api/*/generate 200, /sp/okr 200, /ayarlar 200.
+
+### Notlar
+- "Beklenen" (kusur değil): `404 /demo*` (demo modu kapalı), `400` parametre-isteyen API uçları (validation doğru). Dokunulmadı.
+- `/process` 20 sn timeout = araç tarafı ayar (ağır sayfa); kod kusuru değil — aracın timeout/networkidle ayarı ileride gevşetilebilir.
+- **Yalnız Yerel.** Test/Yayín'a gitmesi ayrı onaya bağlı.
+
+## TASK-171 | 2026-06-07 | ✅ Tamamlandı (Faz 1 — klon motoru)
+
+**Görev:** Admin Araçları > Hata Kontrolü — Faz 1: tomofiltest izole klon motoru (yerel)
+**Modül:** app/services/tenant_clone_service.py
+**Durum:** ✅ Yerelde tamam, doğrulandı. Tasarım: `docs/HATA-KONTROLU-TASARIM.md`. Dal: `claude/admin-araclari-hata-kontrolu`.
+
+### Yapılan
+- `tenant_clone_service.py`: Tomofil → **tomofiltest** tam klon. Mantık satır-satır id-remap, yürütme küme-temelli (PostgreSQL temp eşleme tabloları + INSERT...SELECT JOIN). Tablo sırası/kapsam elle (wipe'tan doğrulanmış); FK-remap'ler SQLAlchemy introspection ile otomatik.
+- Kullanıcı klonlanmaz → 1 **sentetik admin** (`admin@tomofiltest.local`). Bireysel/bildirim/üyelik tabloları v1'de atlanır.
+- Sıfırlama = **wipe + yeniden klonla** (ayrı snapshot yok).
+
+### Doğrulama (yerel, tenant 27 → tomofiltest)
+- 94.002 satır remap'lendi; users=1, strategies=36, processes=71, process_kpis=221, kpi_data=91.408 (kaynakla birebir).
+- Integrity: yetim sub_strategies 0, sızan kpi_data 0, self-ref parent 0.
+- Reset: ikinci koşu eski tomofiltest'i temiz sildi, tek kopya kaldı (0 kalıntı).
+
+### Notlar
+- **Yalnız Yerel.** Test/Demo/Yayín için ayrı açık onay gerekir (Yayín kalıcı kırmızı çizgi).
+- Sentetik admin şifresi şimdilik koda gömülü (yerel); ileride config'e taşınacak.
+
+### Faz 1 UI (aynı task)
+- `micro/modules/admin/routes_admin_tools.py`: `/admin/araclar`, `/admin/araclar/hata-kontrolu` (+ durum/yenile uçları). Yalnız `Admin` + **yalnız Yerel** (FLASK_ENV!=production → Test/Demo/Yayín otomatik 403).
+- Templates: `admin/araclar.html` (genişleyebilir araç ızgarası) + `admin/hata_kontrolu.html` (tomofiltest durumu + "Kur/Yenile" butonu, klon motorunu UI'dan tetikler).
+- `base.html`: sol menüde "Admin Araçları" grubu (yalnız Admin).
+- Doğrulandı: Admin oturumuyla 3 sayfa/uç 200; durum tomofiltest'i (tid) doğru gösteriyor.
+
+### Faz 2 — Keşif (route haritası, statik)
+- `app/services/hata_kontrol_service.py` → `discover_routes(active_only=True)`: GET + parametresiz + kara-liste dışı + **yalnız app_bp** (legacy/pazarlama hariç). Modül gruplaması + şeffaf "atlananlar" sayımı.
+- Uç: `/admin/araclar/hata-kontrolu/kesif`; Hata Kontrolü sayfasına "Keşfet" kartı (modül rozetleri + katlanır URL listesi).
+- Doğrulandı: **321 aktif sayfa** keşfedildi (atlanan — parametreli 133, kara liste 25, legacy ~123).
+- BFS (bağlantı gezme) bilinçli olarak Faz 3'e ertelendi (sayfa yükleme motorunu paylaşır).
+
+### Faz 3b — Playwright tarayıcı motoru
+- `app/services/hata_kontrol_executor.py`: arka plan thread + headless Chromium. tomofiltest sentetik admini ile login → her sayfayı aç (kuyruk/taze navigasyon) → HTTP + JS konsol hatası + başarısız AJAX + sunucu hata izi yakala → ✅/⚠️/❌/⏭️ sınıflandır.
+- Uçlar: `/tarama-baslat` (POST, arka plan), `/tarama-durum` (canlı ilerleme). base_url = çalışan sunucu (request.host_url). Yalnız Admin + Yerel.
+- UI: "Taramayı Başlat" + limit + ilerleme çubuğu + canlı sonuç tablosu (sorunlular üstte, kapsam-dışı 403'ler altta).
+- Doğrulandı (canlı, 30 sayfa): gerçek kırıklar yakalandı — 500 `/admin/yonetim-paneli/kullanici-detay`, 503 `/api/v1/ai/recommend`, başarısız AJAX `/admin/yonetim-paneli`. 403 platform-admin sayfaları "kapsam dışı" (skip); indirme uçları kara listede.
+- Not: sentetik admin **tenant_admin** → platform-Admin-only `/admin/*` sayfaları 403 (skip, kapsam dışı; izole tenant tasarımı gereği).
+
+### Faz 3c — BFS bağlantı gezme + ölü link tespiti
+- Executor tarama sırasında her sayfadaki iç `<a href>`'leri toplar (aynı origin, sorgu/fragment atılır).
+- **Ölü link:** hiçbir Flask route'una uymayan href'ler (url_map match; kara liste/static hariç). **Yetim sayfa:** keşfedilen route'a hiçbir sayfadan link verilmemiş (yalnız TAM taramada hesaplanır; limitli koşuda baskılanır).
+- Durum yanıtına + UI'a "Bağlantılar" bölümü (ölü link / yetim, katlanır liste).
+- Doğrulandı (canlı, 40 sayfa): 24 bağlantı toplandı, **1 gerçek ölü link** bulundu — `/admin/yonetim` (kaynak `/admin/notifications`).
+
+### Faz 3d — Aktif CRUD senaryoları ("tam aktif")
+- `app/services/hata_kontrol_scenarios.py`: senaryo kütüphanesi (SCENARIOS). İlk senaryo **Mavi Okyanus CRUD** — gerçek UI: Tuval oluştur (buton+form+AJAX) → aç → Faktör ekle (modal+AJAX), her adım doğrulanır.
+- `hata_kontrol_executor.start_scenarios/_run_scenarios`: login → senaryolar → **otomatik sıfırlama** (tomofiltest wipe+reclone, K8). Senaryo verisi baseline'a döner.
+- `tenant_clone_service._wipe_test_tenant`: users'tan önce kullanıcı-bağlı runtime tablolarını (audit_logs, llm_usage, notifications, vb.) temizler (FK ihlali düzeltildi).
+- Uçlar: `/senaryo-baslat` + `/senaryo-durum`; UI "Aktif CRUD Senaryoları" kartı (canlı adım sonuçları + reset bilgisi). Yalnız Admin + Yerel.
+- Doğrulandı (canlı): Mavi Okyanus senaryosu 4/4 adım GEÇTİ; reset True; sıfırlama sonrası 0 kalıntı.
+- Kalan (opsiyonel): senaryo kütüphanesini büyütme, kalıcı koşu geçmişi (DB), zamanlanmış koşu.
+
+## TASK-170 | 2026-06-06 | ✅ Tamamlandı
+
+**Görev:** Derin tarama sonrası doğrulanmış 6 iyileştirme açığının kapatılması
+**Modül:** sp (Blue Ocean), notification, analytics, k_radar, model katmanı, repo hijyeni
+**Durum:** ✅ Tamamlandı (yerel; Yayín'a dokunulmadı). Python derleme + import + JS kalıntı kontrolü geçti.
+
+### Arka plan
+5 paralel keşif ajanıyla derin tarama yapıldı. Bulguların ~yarısı **yanlış çıktı** (kpi_data index'leri zaten var, models/ paketi mevcut, kpi_value_to_float String kasıtlı, çoğu "hard delete" junction tablo = meşru) → elendi. Doğrulanan 6 gerçek açık kapatıldı.
+
+### Değiştirilen Dosyalar
+- `app/utils/db_sequence.py` → `add_and_commit_with_retry()` + `commit_with_retry()` eklendi (PK sequence desync UniqueViolation'ında hizala+tekrar dene)
+- `micro/modules/sp/routes_frameworks.py` → Blue Ocean Canvas/Faktör/ERRC + VRIO insert'leri retry helper'a geçti; `_to_float/_to_int` ile parse 500 riski kapatıldı
+- `app/services/notification_service.py` → `create_notification` + `bulk_create` retry korumasına alındı
+- `app/models/__init__.py` → notification.py modelleri (notifications_ext/preferences/push) `create_all` için import (alias — core.Notification çakışması yok)
+- `app/services/analytics_service.py` → String değerler pandas öncesi `to_numeric/to_datetime` ile güvenli dönüşüm; sıfır/NaN bölme temizliği
+- `ui/static/platform/js/k_radar.js` → 2× `window.confirm` → SweetAlert2 `confirmDelete`
+- `ui/static/platform/js/project_raid.js` → `confirm` → SweetAlert2 `confirmDelete`
+- `ui/templates/platform/sp/blue_ocean.html` → Faktör + ERRC SweetAlert2 form modalları → mc-modal standardı (KURALLAR §5)
+- Kök dizinden 16 tek-kullanımlık `debug_*.py`/`analyze_*.py`/`analyze_output.txt` silindi (repo hijyeni)
+
+### Notlar
+- #1 ertelenmiş "Yayín'da Tuval oluşturma 500" hatasının kök nedenini (sequence desync) koda karşı kapatır.
+- #2 az önce düzeltilen okr/bsc/esg create_all eksiğinin ikizidir (notification tabloları taze deploy'da atlanırdı).
+- Yayín'a dokunulmadı; canlıya gitmesi sonraki deploy'a bağlı.
+
+## TASK-169 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Yayín'da k-radar/ks OKR/BSC/EFQM kartları "yüklenemedi" — eksik tablolar
+**Modül:** k_radar, app/models · Yayín DB (onaylı, additive)
+**Durum:** ✅ Tamamlandı, kullanıcı verisine sıfır dokunuş, kullanıcı "çalışıyor" onayı
+
+### Kök neden
+`app/models/__init__.py` okr/bsc/esg modellerini import etmiyordu → deploy'daki `db.create_all()` bu tabloları metadata'da göremeyip oluşturmadı. Yayín'da `okr_objectives`, `okr_key_results`, `bsc_kpi_perspectives`, `esg_metrics`, `esg_metric_values` eksikti. Üç kart da `get_ks_extended_data()`'dan besleniyor; bu fonksiyon eksik `okr_objectives`'e takılıp komple çöküyor → OKR/BSC/EFQM birden "yüklenemedi".
+
+### Yapılan İşlem
+1. **Kod:** `app/models/__init__.py`'ye `OkrObjective/OkrKeyResult/BscKpiPerspective/EsgMetric/EsgMetricValue` import eklendi (commit; gelecekte create_all kapsar).
+2. **Yayín DB (kullanıcı onaylı):** taze yedek (`pg_pre_okrtables_20260604_163437.sql.gz`) → okr/bsc/esg import + `db.create_all()` → 5 boş tablo oluştu.
+
+### Doğrulama
+kpi_data **92492 → 92492** (mevcut veri birebir aynı; yalnız CREATE TABLE). Tablolar oluştu, test sorguları çalışıyor. Kullanıcı k-radar/ks'te 3 kartın yüklendiğini onayladı.
+
+### Notlar
+- `models/__init__` kod düzeltmesi dalda commit'li ama Yayín'ın çalışan koduna henüz girmedi (tablolar elle oluşturuldu → Yayín şu an çalışır; kod düzeltmesi sonraki deploy'da gider).
+- Üretim DB şema değişikliği otomatik-mod tarafından durduruldu → kullanıcı açık onayı (AskUserQuestion) ile yapıldı.
+
+## TASK-168 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Tüm UX + düzeltmelerin YAYIN'a (www.kokpitim.com) deploy'u — Test prova → Yayín
+**Modül:** Deploy / Yayín · 105 commit (44909c6 → HEAD)
+**Durum:** ✅ Tamamlandı, kullanıcı verisine SIFIR zarar (doğrulandı)
+
+### Yapılan İşlem (mutlak kural: önce yedek, veri kırmızı çizgi)
+1. **Yedekler:** Yayín DB (`pg_kokpitim_db_predeploy_20260604_105327.sql.gz`) + eski image tag (`kokpitim_web:pre_deploy_20260604_102801`) + kod commit `44909c6`.
+2. **Analiz:** Yayín şeması `db.create_all` tabanlı (alembic_version YOK, kpi_data varchar). Repodaki veri-migration'ları (`kpi_value_to_float` vb.) UYGULANMADI (model String, varchar doğru). Standart `oracle_safe_deploy.sh` adım 5 = `alembic upgrade head` → alembic_version yokken tehlikeli → KULLANILMADI.
+3. **Test provası** (test.kokpitim.com, Yayín ile birebir aynı şema): tam branch kodu + `db.create_all` (eklenecek tablo yok) + restart → satır sayısı AFTER=BEFORE (kpi_data 92492), smoke 200. Kullanıcı "test uygundur" onayı.
+4. **Yayín:** fresh DB yedek + satır BEFORE → temiz kod tarball (`git archive HEAD`, junk hariç, 21M) extract → `docker build` (üretim eski image'da çalışır) → container yeni image'a geçti (sağlıksızsa otomatik rollback guard'ı vardı) → `db.create_all` (şema değişikliği YOK) → satır AFTER.
+
+### Doğrulama
+**Satır sayıları BEFORE = AFTER birebir:** kpi_data 92492, process_kpis 510, processes 96, strategies 53, project 1, task 0, tenants 7, users 145, process_activities 3 → **hiçbir kullanıcı verisi değişmedi.** Health 200, www.kokpitim.com 200, smoke route'ları 302.
+
+### Notlar
+- ⚠️ `/opt/kokpitim/app` git repo'su tarball extract ile "dirty" durumda (HEAD hâlâ 44909c6, working tree = branch kodu). İleride git-tabanlı deploy için `git reset --hard` veya branch'i main'e merge gerekir. Çalışmayı etkilemez (image build working tree'den).
+- ⚠️ Proje oluşturma + "Tuval" oluşturma: KOD düzeltmeleri gitti ama Yayín DB'de `notifications`/`blue_ocean_canvases` sequence desync varsa hâlâ commit'te UniqueViolation olabilir. Sequence onarımı kullanıcı onayı + yedekle yapılır (kırmızı çizgi).
+
+## TASK-167 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** Birikmiş düzeltmelerin demo.kokpitim.com'a deploy'u (TASK-166 sonrası)
+**Modül:** Deploy / Demo · proje, blue-ocean, nav, savaş odası
+**Durum:** ✅ Tamamlandı, smoke test geçti
+
+### Aktarılan Dosyalar (6 — f8aac82..HEAD, commit'li)
+- `micro/modules/proje/helpers.py`, `routes_project_crud.py` → proje 500 fix (plan_year_id + üye/gözlemci None)
+- `micro/modules/sp/routes_exec_advisor.py`, `ui/.../sp/tv.html` → Savaş Odası ayar scope'u (kullanıcı+kurum)
+- `ui/.../sp/blue_ocean.html` → Yeni Tuval standart mc-modal
+- `ui/.../base.html` → sol bara Savaş Odası linki (K-Analiz altı)
+
+### Yapılan İşlem
+`git archive HEAD <6 dosya>` (150K) → scp → `/opt/kokpitim-demo/app` extract → chown 197609 → `docker restart kokpitim-demo-web`. 3.11 uyumu + py_compile doğrulandı. Yedek: `/tmp/demo-upd-backup-20260604_102221.tar.gz`. Smoke: /project/new, /sp/blue-ocean, /sp/tv, /masaustu, savas-odasi/fronts → hepsi 302; dış erişim 302.
+
+### Notlar
+- KURALLAR §8.4: yalnızca `*-demo`; DB'ye dokunulmadı (saf kod). `.env`/`instance` korundu.
+- ⚠️ Proje 500'ün KOD katmanı düzeltildi; ancak demo DB'de `notifications` sequence desync varsa proje oluşturmada commit'te yine UniqueViolation olabilir (yerelde 5 sequence onarmıştık). Demo DB onarımı kullanıcı onayı ister (kırmızı çizgi).
+- ⚠️ Yayın "Tuval" oluşturma hatası (sequence desync olası) hâlâ askıda — kontrol edilecek.
+- Dal `claude/ux-gercek-bosluklar` — main'e merge/push EDİLMEDİ.
+
+## TASK-166 | 2026-06-04 | ✅ Tamamlandı
+
+**Görev:** UX özelliklerini (Savaş Odası vb.) demo.kokpitim.com'a deploy
+**Modül:** Deploy / Demo ortamı (Yerel → Demo)
+**Durum:** ✅ Tamamlandı, smoke test geçti
+
+### Aktarılan Dosyalar (14 — UX commit aralığı, commit'li HEAD)
+- `micro/modules/sp/{helpers,routes_exec_advisor,routes_scenario}.py`
+- `micro/modules/surec/routes_karne.py`, `micro/modules/bireysel/routes.py`, `micro/modules/masaustu/routes.py`
+- `ui/templates/platform/sp/{tv,scenarios,scenarios_kiyas,exec_dashboard,strateji_haritasi}.html`
+- `ui/templates/platform/{surec/karne,kurum/index,bireysel/karne}.html`
+
+### Yapılan İşlem
+`git archive HEAD <14 dosya>` (400K) → scp → `/opt/kokpitim-demo/app` (bind-mount, git değil) extract → sahiplik 197609 → `docker restart kokpitim-demo-web`. Demo app dizini git repo değil; container kodu bind-mount ile okuyor, image rebuild gerekmedi (yeni pip yok). Yeni Python kodu 3.11-uyumlu doğrulandı. Deploy öncesi 14 dosyanın yedeği alındı: `/tmp/demo-ux-backup-20260604_083505.tar.gz` (rollback).
+
+### Smoke Test
+gunicorn 5080'de temiz başladı (4 worker, import/syntax hatası yok). 6 yeni route + ana sayfa + dış erişim (demo.kokpitim.com) → hepsi 302 (kayıtlı, 404/500 yok).
+
+### Notlar
+- KURALLAR §8.4 kırmızı çizgiler: yalnızca `*-demo` hedefleri; Test/Yayın'a dokunulmadı. DB migration/seed/wipe YOK — demo DB & Tomofil baseline değişmedi. `.env`/`instance` aktarılmadı (korundu).
+- Savaş Odası + exec/senaryo route'ları SP rolü ister; demo Tomofil kullanıcısının rolü kontrol edilmeli (403 → kod hatası değil, yetki).
+- Kaynak dal `claude/ux-gercek-bosluklar` — main'e merge EDİLMEDİ, push EDİLMEDİ.
+
+## TASK-165 | 2026-06-03 | ✅ Tamamlandı
+
+**Görev:** UX gerçek-boşluk kampanyası — 4 yeni özellik (rakip analizi sonrası, yalnızca eksik olanlar)
+**Modül:** sp (harita, senaryo, exec/tv), surec (karne)
+**Durum:** ✅ Yerelde tamam, derleme + JS sözdizimi doğrulandı. Dal: `claude/ux-gercek-bosluklar` (merge/push bekliyor)
+
+### Değiştirilen / Yeni Dosyalar
+- `micro/modules/sp/helpers.py` → PG düğümüne `score`/`health` + `_harita_health_band` (canlı nabız verisi)
+- `ui/templates/platform/sp/strateji_haritasi.html` → additive `setupHealthPulse` (kritik/uyarı PG canvas nabzı)
+- `micro/modules/surec/routes_karne.py` → `/process/api/karne/<id>/ai-ozet` (heuristik + opsiyonel LLM) + `_karne_heuristik_ozet`
+- `ui/templates/platform/surec/karne.html` → inline AI özet şeridi (daktilo efekti, kendi kendine yeten script)
+- `micro/modules/sp/routes_scenario.py` → `/sp/scenarios/kiyas` + `/sp/api/scenarios/compare` (salt-okunur skor)
+- `ui/templates/platform/sp/scenarios_kiyas.html` (YENİ) → yan yana skor barı + what-if blend slider
+- `ui/templates/platform/sp/scenarios.html` → "Kıyasla" linki
+- `micro/modules/sp/routes_exec_advisor.py` → `/sp/tv` (war-room sayfa route'u)
+- `ui/templates/platform/sp/tv.html` (YENİ) → tam ekran KPI duvarı (exec-snapshot, 30sn yenileme, spotlight, saat)
+- `ui/templates/platform/sp/exec_dashboard.html` → "TV / War Room" linki
+- `docs/ux/ONERI-YERLESIM-HARITASI.md` (YENİ) → öneri→sayfa yerleşim haritası + rakip analizi
+
+### Yapılan İşlem
+Derin kod taraması, önerilerin ~%80'inin (komut paleti, X-Matrix, NLP sorgu, storytelling, evrim filmi, çeyrek review, 40+ rapor hub'ı) ZATEN kurulu olduğunu gösterdi. Yalnızca gerçekten eksik 4 madde uçtan uca eklendi; her biri ayrı commit, mevcut servisleri (process_health, recommendation, score_engine, exec_dashboard, llm_gateway) yeniden kullanır; çalışan davranışa dokunulmadı (additive). LLM yoksa AI özet heuristik'e düşer (yerelde anahtarsız çalışır).
+
+### Notlar
+Görsel doğrulama yerelde kullanıcı tarafında yapılmalı (Flask/LLM bu ortamda koşturulmadı). Geri alma: `git revert <sha>` veya dalı bırak. AI özet kurum/exec'e aynı desenle genişletilebilir.
+
+## TASK-164 | 2026-06-02 | 🟡 Kısmen (Part 1 kod tamam — deploy/baseline operatör adımı bekliyor)
+
+**Görev:** Demo Tomofil sıfırlama özelliği (KURALLAR §8.4 — Yol B) — yerel kod
+**Modül:** app/services/demo_reset_service.py, micro/modules/demo/routes.py, app/__init__.py, config.py, scripts/demo_baseline.py
+**Durum:** 🟡 Part 1 (kod) tamam ve doğrulandı; Part 2-3 (veri aktarımı + deploy) operatör adımı
+
+### Değiştirilen / Yeni Dosyalar
+- `app/services/demo_reset_service.py` (YENİ) → snapshot_baseline / restore_baseline / mark_activity / inactivity_sweep + demir guard
+- `micro/modules/demo/routes.py` → `/demo/end` + süre dolumu → restore; demo_start + heartbeat → mark_activity
+- `config.py` → `DEMO_INACTIVITY_MINUTES` (vars. 15)
+- `app/__init__.py` → demo modunda inaktivite sweeper scheduler (her 5 dk)
+- `scripts/demo_baseline.py` (YENİ) → operatör CLI (snapshot/restore/status)
+
+### Yapılan İşlem
+Yol B: demo DB'nin tüm public tablolarının `demo_baseline` şema kopyası; sıfırlamada FK constraint'leri drop → truncate → baseline'dan insert → FK geri ekle → sequence resync. **session_replication_role kullanılmadı** (non-superuser kokpitim_demo_user yetkisi yok — yerelde test edilip doğrulandı); FK-drop/readd yöntemi throwaway şemalarda (FK+self-ref) kanıtlandı. **Demir guard:** tüm yıkıcı işlemler KOKPITIM_DEMO_MODE=1 şartına bağlı → yerel/Test/Yayın'da ASLA çalışmaz (yerelde RuntimeError ile doğrulandı). Tetikler: çıkış + 60dk süre + inaktivite (hepsi). py_compile 4/4, app normal modda açılıyor, guard kokpitim_db'yi koruyor.
+
+### Veri aktarımı — Yol (b) seçildi: yalnızca Tomofil tenant
+Mevcut `services/tenant_backup_service.py` (83 tablo, FK-grafiği scoped, üretimde admin panel + VM-sync'te kullanılıyor) kullanıldı — sıfırdan extractor yazılmadı.
+- Yerel export ALINDI: `backups/tomofil_baseline_local.json.gz` (1.67 MB, 22 dolu tablo, 101.890 satır; kpi_data 91.408).
+- `scripts/demo_load_tomofil.py` (YENİ, demo-guard'lı) → demo'da bu dosyayı restore_tenant_data ile yükler.
+
+### KALAN operatör adımları (demo VM, yalnızca *-demo hedefleri)
+1. Kod deploy: tarball/git → /opt/kokpitim-demo/app/ → docker restart kokpitim-demo-web.
+2. Artifact'ı demo'ya kopyala → `python -m scripts.demo_load_tomofil <dosya>`.
+3. Baseline: `python -m scripts.demo_baseline snapshot`.
+4. Uçtan uca doğrulama: değişiklik → çıkış → sıfırlandı mı (yerelde test edilemedi; createdb/superuser yok).
+
+## TASK-163 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** UX kalan-iş adım 4 — double-submit loading + 2 pill token (somut/güvenli kısım)
+**Modül:** ui (admin.js, auth.js, masaustu, initiatives)
+**Durum:** ✅ Tamamlandı (somut kazanımlar) — JS-kart kütle teması backlog
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/admin.js` → kullanıcı-ekle Kaydet butonuna disabled+spinner (çift gönderim/mükerrer kullanıcı önlemi), finally ile geri açılır
+- `ui/static/platform/js/auth.js` → login submit'inde geçerli formda buton disabled + "Giriş yapılıyor…" (çift gönderim önlemi)
+- `ui/templates/platform/masaustu/index.html`, `sp/initiatives.html` → 2 pill `background:#fafbfc`→`var(--surface-hover)`, `color:#1e293b`→`var(--text-default)` (dark mode uyumlu)
+
+### Yapılan İşlem
+Step 4'ün düşük-riskli somut kısmı yapıldı: 2 async buton (kullanıcı oluştur, login) artık çift gönderime kapalı + yükleniyor durumu gösteriyor. Step 2'de bırakılan 2 pill bg+text token'a çevrildi (artık platform'da 0 inline color:#1e293b). JS OK, parse OK.
+
+### Notlar
+KASITLI ERTELENEN (yüksek-risk, görsel doğrulama gerektirir): ~15 raporlar/*.js + k_rapor.js/k_radar_ks.js içindeki yüzlerce hardcoded `background:#fff`/`color:#0f172a` (dark'ta beyaz kart — okunur ama tutarsız) ve Chart.js default renkleri. Bunlar dark mode'da tarayıcı doğrulaması olmadan kütle-çevrilirse semantik renkleri bozabilir; ayrı, gözle-doğrulanan iş olarak bırakıldı.
+
+## TASK-162 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** UX kalan-iş adım 3 — label `for=` eşleşmesi (primary CRUD form'ları)
+**Modül:** ui (admin/users, project/form)
+**Durum:** ✅ Tamamlandı (primary form'lar) — kalan ~39 dosya backlog
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/admin/users.html` → 12 label'a `for=` eklendi (input id'leri zaten vardı: ua-*/ue-*)
+- `ui/templates/platform/project/form.html` → 6 alana `id=` + label `for=` eklendi (pf-name/description/priority/initiative/start/end)
+
+### Yapılan İşlem
+Label'lar input'larla ilişkilendirilmemişti (label tıklayınca focus yok, ekran okuyucu duyurmuyor). İki primary CRUD formunda 18 label↔input eşleşmesi kuruldu. admin/users'ta input id'leri mevcuttu, sadece `for=` eklendi; project/form'da hem id hem for. Parse + eşleşme doğrulandı (12 for=, 6 for=/6 id=).
+
+### Notlar
+Sistemik bulgu ~288 label/41 dosya; primary form'lar yapıldı. Kalan ~39 dosya (surec/index 17, project/raid 12, kurum/ayarlar 12, sp/* vb.) backlog — düşük marjinal değer/dosya, gerektiğinde ele alınır. Adım 4 kaldı: JS-enjekte kart teması + double-submit.
+
+## TASK-161 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** UX kalan-iş adım 2 — dark mode görünmez metin: inline `color:#1e293b` → `var(--text-default)`
+**Modül:** ui/templates/platform (54 dosya)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- 54 platform template'inde 101 inline `color:#1e293b` → `color:var(--text-default)` (sed toplu)
+- `masaustu/index.html:207`, `sp/initiatives.html:172` → korundu (sabit `background:#fafbfc` pill; bg ile birlikte step 4'te ele alınacak)
+
+### Yapılan İşlem
+`--text-default` = `#1e293b` (light) / `#e2e8f0` (dark). Dönüşüm light'ta birebir aynı (sıfır görsel değişiklik), dark'ta görünmez metni okunur yapıyor. TASK-159'da aktive edilen dark mode ile birlikte bu kritikti (dark kartlarda koyu metin koyu zeminde görünmüyordu). Aynı element'te sabit açık `background` olan 2 satır hariç tutuldu (orada açık metin açık zeminde görünmez olurdu). 101 dönüşüm, 6 örnek template parse doğrulandı.
+
+### Notlar
+Kalan: 3) label `for=` (primary form'lar), 4) JS-enjekte kart teması (hardcoded #fff/#0f172a — dark'ta beyaz kart) + 2 pill'in bg'si + double-submit.
+
+## TASK-160 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** UX kalan-iş adım 1 — modal close butonlarına aria-label; tablo overflow bulgusu false-positive çıktı
+**Modül:** ui (k_radar, admin, k_rapor)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/k_radar/ks.html` (10), `admin/users.html` (2), `admin/tenants.html` (2), `k_rapor/index.html` (1) → ikon-only `fa-times` close butonlarına `aria-label="Kapat"` + `<i aria-hidden="true">`
+
+### Yapılan İşlem
+Ekran-okuyucuya görünmez olan ikon-only modal-close butonlarına erişilebilir ad eklendi (15 buton). Geniş replace_all pattern'in yanlış buton etiketlemediği doğrulandı (hepsi modal-close). **Tablo overflow bulgusu (10 dosya) incelendiğinde false-positive çıktı:** flagged tabloların hepsi ya zaten `<div style="overflow:auto;">` içinde (yedekleme, cross_paydas, kp_olgunluk, vrio, JS matrisler xmatrix:68 & strategy_project_matrix:42) ya da `width:100%` (kapsayıcıya sığan). Ajan sadece `overflow-x`/`mc-table-wrap` aradığı için `overflow:auto`'yu kaçırmış. Sarma yapılmadı (çift-sarma olurdu).
+
+### Notlar
+Kalan adımlar: 2) `color:#1e293b` → token (dark mode görünmez metin), 3) label `for=` primary form'lar, 4) JS-kart teması + double-submit.
+
+## TASK-159 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** İkinci UX taraması — dark mode split-brain fix + terminoloji/microcopy + avatar alt
+**Modül:** ui (tema, k_radar, admin, sp, raporlar, base)
+**Durum:** ✅ Tamamlandı (dark mode tarayıcıda görsel doğrulama bekliyor)
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/app.js` + `ui/templates/platform/base.html` → dark mode iki sistem (micro_dark/class="dark" + kk_theme/data-theme) senkronlandı
+- `ui/static/platform/js/command_palette.js` → "Çeyreklik Review"→"Çeyreklik Değerlendirme", "Replan Tetikleyiciler"→"Yeniden Planlama Tetikleyicileri", "Blue Ocean"→"Mavi Okyanus", "K-Radar (Raporlar)"→"K-Radar"
+- `k_radar/risk_management.html` → th "Severity"→"Önem", "Heatmap"→"Isı Haritası"
+- `admin/sub_tenants_usage.html` → th "Init"→"Girişim", "Plan Year"→"Plan Yılı"
+- `raporlar/kv_carpiklik.html` → th "Avg Skor"→"Ort. Skor"; `sp/scenarios.html` → option "Baseline"→"Temel Senaryo"
+- `base.html` → 2 avatar `<img>`'e `alt` eklendi (a11y)
+
+### Yapılan İşlem
+3 paralel ikinci-tur UX ajanı (a11y/form, tema/responsive, microcopy/derin-link). **Headline bulgu:** dark mode "split-brain" — görünür toggle `micro_dark`+`class="dark"` yazıyor (191 kural çalışıyor) ama `kk_theme`/`data-theme` hiç yazılmıyordu → 16 `[data-theme="dark"]` kuralı (breadcrumb, tüm mobil dark katmanı, ayar kutucukları, k_rapor bandı) ölüydü. Çalışan toggle KKTheme.apply ile senkronlandı; FOUC script kk_theme yoksa micro_dark'tan türetiyor. `.dark` yolu (çalışan) hiç değişmedi, sadece data-theme additive eklendi. Linkler ikinci turda da TEMİZ çıktı (319 endpoint url_map'le doğrulandı).
+
+### Notlar
+Dark mode fix tarayıcıda görsel doğrulama gerektirir (render edilemiyor). Kalan bulgular (raporlandı, uygulanmadı): label `for=` eksikliği (~288 label/41 dosya — sistemik), 9 close-button aria-label, JS-enjekte kartların hardcoded rengi (dark'ta beyaz kart), ~103 inline `color:#1e293b` (dark'ta görünmez metin), 10 bare table overflow wrapper, double-submit loading state.
+
+## TASK-158 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** Derin UX taraması (linkler/Türkçe/sayfa yapısı) + 3 kritik breadcrumb 500'ü düzeltildi
+**Modül:** ui/templates/platform (ayarlar, kurum)
+**Durum:** ✅ Tamamlandı (kritik kısım) — kalan bulgular raporlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/ayarlar/eposta.html`, `ayarlar/yedekleme.html` → `app_bp.ayarlar_index` (yok) → `app_bp.ayarlar`
+- `ui/templates/platform/kurum/ayarlar.html` → `app_bp.kurum_index` (yok) → `app_bp.kurum`
+- `ui/templates/platform/k_radar/hub.html` → 13 İngilizce kart başlığı Türkçeleştirildi (EVM Kazanılmış Değer, OKR Akışı, Risk Isı Haritası, CFO/COO/CHRO Paneli, Karbon Ayak İzi, AI Koç, Mobil Merkez, BI Bağlayıcı, Denetim Çıktı Paketi, İş Akışı…) + "Şirket"→"Kurum"
+- `ui/templates/platform/ayarlar/index.html`, `project/portfolio.html`, `raporlar/audit_paketi.html` → görünür "tenant"/"Tenant"→"Kurum"
+
+### Yapılan İşlem
+3 paralel UX ajanıyla aktif platform UI (148 template + JS) tarandı. Kritik bulgu: 3 ayar sayfasının breadcrumb'ında var olmayan endpoint'e `url_for` çağrısı → BuildError → her render'da HTTP 500. url_map ile doğrulandı (ayarlar_index/kurum_index YOK, ayarlar/kurum VAR), düzeltildi, build testi geçti. `raporlar_index` referansları (mobile.html, pg_proje_etki.html) kontrol edildi — endpoint VAR, sağlam.
+
+### Notlar
+Raporlanan kalan bulgular (ayrı turda): Türkçe terminoloji (~12 İngilizce K-Radar kart başlığı, 3 "tenant"→"Kurum", "Şirket"→"Kurum", K-Radar/K-Rapor/Cross rename tutarsızlıkları); sayfa yapısı (11 koşulsuz alert()/confirm() §3 ihlali, 42 template inline script, okr.html mc-modal-overlay override, hardcoded JS URL'ler). Bunlar ürün/refactor kararı gerektiriyor.
+
+## TASK-157 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** Derin tarama C2 (KPI'sız leaf None→TypeError) + P1 (score engine N+1) düzeltildi
+**Modül:** app/services/score_engine_service.py
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → (P1) tüm KPI'lar tek `.in_()` sorgusuyla bulk yüklendi; (C2) `compute_process_scores_internal` dönüş dict'inde None→0.0 normalize
+
+### Yapılan İşlem
+- **C2:** KPI'sız leaf süreç recursion'da `None` taşıyor (hiyerarşik ortalamadan dışlama için bilinçli). Ama bu fonksiyonu ~10 tüketici (faz0-5, surec/routes_process, compute_vision_score, k_vektor_engine, k_rapor) doğrudan çağırıp dict'i SAYISAL kabul ediyordu → `sum(None)`/`float(None)`/`sorted(...-None)` → TypeError → boş leaf süreci olan kurumlarda vizyon/k-vektör/kurumsal rapor 500. Çözüm: recursion içi None dışlaması korundu, dönüş dict'i tek noktada None→0.0 normalize edildi (10 tüketicinin hepsi tek editle güvenli).
+- **P1:** `calc_process_score` her leaf süreç için ayrı `ProcessKpi.query.filter_by(...)` çalıştırıyordu (N+1). Recursion öncesi tüm süreçlerin KPI'ları tek `.in_()` sorgusuyla yüklenip map'ten okunuyor.
+
+compute_vision_score uçtan uca test edildi (artık hatasız), dönüşte None yok, calc_process_score'dan ekstra ProcessKpi sorgusu 0.
+
+### Notlar
+Davranış notu: KPI'sız bir süreç DOĞRUDAN bir alt-stratejiye bağlıysa artık o ortalamada 0.0 sayılır (önceki "dışla" niyeti yerine). Önceden bu yol zaten 500 veriyordu, yani çalışan davranış kaybı yok. İleride "dışla" semantiği istenirse ayrı iş.
+
+## TASK-156 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** Derin tarama bulgularından 3 doğrulanmış HIGH düzeltildi (timezone NameError + 2 cross-tenant IDOR)
+**Modül:** app/api, app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/process_performance_service.py` → import'a `timezone` eklendi (C1)
+- `app/api/routes.py` → `create_kpi_data` (V1) ve `get_forecast` (V2) endpoint'lerine tenant sahiplik kontrolü eklendi
+
+### Yapılan İşlem
+4 paralel derin-dalış ajanıyla tüm aktif kod tarandı. Bu turda 3 doğrulanmış HIGH düzeltildi:
+- **C1 (10/10):** `process_performance_service.py` `datetime.now(timezone.utc)` çağırıyordu ama `timezone` import edilmemişti → her süreç-karne PG veri güncellemesi NameError → 500, değer kaydedilmiyordu. Import düzeltildi.
+- **V1 (9/10):** `POST /api/v1/kpi-data` `process_kpi_id`'yi tenant kontrolü yapmadan yazıyordu → cross-tenant veri kirletme. ProcessKpi⋈Process.tenant_id kontrolü eklendi (403).
+- **V2 (9/10):** `GET /api/v1/analytics/forecast/<kpi_id>` tenant kontrolü yoktu → cross-tenant KPI geçmişi/tahmini okuma. first_or_404 tenant-scope kontrolü eklendi.
+
+py_compile + timezone namespace + SQLAlchemy sorgu derleme doğrulandı.
+
+### Notlar
+Derin taramanın KALAN bulguları (ayrı turlarda): C2 (KPI'sız leaf None→TypeError, 3 tüketici), C3/C4 (karne math ondalık/negatif), C5 (azalan-yön negatif), P1-P4 + 3 MEDIUM N+1 (eager-load refactor). Injection ekseni temiz.
+
+## TASK-155 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** 30 dk kod kalitesi / teknik borç taraması — kod temiz çıktı, 9 SQLAlchemy `== None` standarda çevrildi
+**Modül:** sp / surec route'lar
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_donemler.py`, `routes_flow.py`, `routes_pages.py` → `== None`/`!= None` → `.is_(None)`/`.isnot(None)`
+- `micro/modules/surec/routes_karne.py`, `routes_process.py` → aynı
+
+### Yapılan İşlem
+Aktif kod (micro/ + app/) tarandı: console.log=0, bare except=0, except-pass=0, print()=0, mutable default arg=0, eval/exec=0, gerçek Jinja2-in-JS=0 (9 eşleşme yorum/JSDoc false-positive). 548 route'ta @login_required kontrolü: 16 "korumasız" route'un hepsi bilinçli public (marketing, hgs S2 borcu, legacy redirect). Tek somut bulgu: 9 SQLAlchemy NULL filtresi `== None` ile yazılmıştı; proje standardı (.is_()) ile tutarlı olsun diye `.is_(None)`/`.isnot(None)`'a çevrildi (fonksiyonel olarak birebir aynı, IS NULL SQL). py_compile 5/5 OK.
+
+### Notlar
+Kod tabanı stil/latent-bug eksenlerinde temiz çıktı — son turun 300+ değişikliği teknik borç sokmamış. Büyük dosyalar (k_rapor/routes.py 2534 satır) refactor adayı ama ayrı/büyük iş.
+
+## TASK-154 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** 30 dk güvenlik + hijyen sprinti — log sızıntısı temizliği, encryption anahtar loglaması, temp temizliği
+**Modül:** repo hijyeni / encryption
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `.gitignore` → `*.log` ve `logs/` eklendi (PII/secret/traceback sızıntısı önlemi)
+- `app/utils/encryption.py` → dev fallback üretilen Fernet anahtarı artık loga YAZILMIYOR
+- 6 takipli log git'ten çıkarıldı (`--cached`, diskte kaldı): err.log, error.log, logs/stratejik_planlama.log, out.log, server.log, tmp_spsweb.log
+- `_login_err.log` (teşhis temp dosyası) silindi
+
+### Yapılan İşlem
+Repo'da 6 log dosyası takipliydi; tek başına error.log'da parola/token/secret/e-posta/traceback eşleşen 442 satır vardı (13.275 satır toplam). Bunlar git'ten çıkarıldı (diskte korundu, commit edilmedi). encryption.py dev fallback'i üretilen şifreleme anahtarını warning loguna basıyordu — log erişimi olan biri şifreli veriyi çözebilirdi; anahtar değeri logdan kaldırıldı (encrypt/decrypt test edildi, çalışıyor).
+
+**Atlanan (riskli):** CSP `script-src-attr 'none'` sertleştirmesi planlanmıştı ama 72 template inline `onclick`/`onerror` kullanıyor → UI'yı kırardı. Bu, inline handler'lar `data-*`+addEventListener'a taşınınca yapılmalı (gelecek iş).
+
+### Notlar
+git'ten çıkarılan loglar staged-deletion olarak duruyor; commit kullanıcı "commit'le" deyince yapılacak.
+
+## TASK-153 | 2026-06-02 | ✅ Tamamlandı
+
+**Görev:** Derin güvenlik taraması — önceki oturumun değişikliklerinde 2 yeni açık bulundu ve düzeltildi
+**Modül:** admin / sp (frontend)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `_ADMIN_ROLES` artık `PLATFORM_ADMIN_ROLES` ({"Admin"}) sabitinden türüyor (yanlışlıkla `ADMIN_ROLES` = {"Admin","tenant_admin"} kullanılıyordu)
+- `ui/static/platform/js/sp_donemler.js` → `esc()` modül kapsamına taşındı; `item.title`, `cf[1]`, `cf[2]`, `item.y1`, `item.y2` artık escape ediliyor
+
+### Yapılan İşlem
+4 paralel tanımlama + 2 paralel doğrulama alt-ajanıyla 141 dosyalık diff tarandı. İki HIGH bulgu (her biri 9/10 güven):
+1. **Yetki yükseltme / cross-tenant IDOR:** `_is_admin()` kapısı yanlış sabit yüzünden `tenant_admin`'i de platform-admin sayıyordu → tenant_admin tüm kurumların kullanıcı/tenant verisini okuyabiliyor, herhangi bir kurumu düzenleyebiliyor, kendi kurumunu holding/dealer'a yükseltebiliyordu. Tek satır import düzeltmesiyle giderildi.
+2. **Depolanmış XSS:** sp_donemler.js dönem-karşılaştırma render'ında `esc()` `renderResult` içinde tanımlı olduğundan `entityRowFn`/`metaRowFn` erişemiyordu; DB'den gelen strateji/KPI/dönem adları escape'siz innerHTML'e yazılıyordu. esc() modül kapsamına alınıp 7 sink sarıldı.
+
+Diğer ~140 dosya temiz / güvenlik iyileştirmesi çıktı. py_compile + node --check ile doğrulandı.
+
+### Notlar
+İki açık da bu oturumdan önceki büyük değişiklikte (300+ düzeltme) sokulmuştu; tarama bunları yakaladı.
+
+## TASK-152 | 2026-06-01 | ✅ Tamamlandı
+
+**Görev:** Yerel login 500 — kök neden 5001'de takılı kalmış stale süreçler; ayrıca latent psycopg driver tutarsızlığı sertleştirildi
+**Modül:** yerel ortam / config
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `config.py` → `_require_postgres_uri()` içinde URI şeması daima `postgresql+psycopg://` (psycopg3) olacak şekilde normalize ediliyor (latent bug hardening — yerel 500'ün sebebi DEĞİLDİ)
+
+### Yapılan İşlem
+**Yerel login 500'ün gerçek sebebi:** 5001 portunu aynı anda İKİ python süreci dinliyordu (werkzeug `SO_REUSEADDR` + debug reloader child süreci). Kullanıcının Ctrl+C'si eski süreci gerçekten öldürmüyordu; tarayıcı, `session` import'u olmayan ESKİ kodu çalıştıran stale sürece bağlanıp `NameError` → 500 alıyordu. Diskteki kod ise sağlamdı (test client, bypass'lı ve gerçek-parolalı taze sunucu — üçü de 302 başarılı reprodüce edildi). `netstat -ano | grep :5001` ile çift LISTENER tespit edildi; `taskkill` ile temizlenip tek temiz süreç başlatılınca login çalıştı.
+
+**Ayrıca (ayrı, latent bug):** requirements.txt `psycopg[binary]` (psycopg3) kuruyor ama `.env` URI'si `postgresql+psycopg2://` istiyordu. Yeni container deploy'da (psycopg2 yok) `ModuleNotFoundError` → 500 olurdu. URI normalizasyonu ile her ortamda kurulu psycopg3 dialect'ine sabitlendi. Alembic de aynı engine'i kullandığından kapsam içinde.
+
+### Notlar
+Ders: Windows'ta `py app.py` (debug reloader) Ctrl+C ile her zaman tam ölmez; restart öncesi `netstat -ano | grep :5001` ile çift dinleyici kontrol et, gerekirse `taskkill /F /PID`.
 > En yeni kayıt en üstte.
+
+## TASK-151 | 2026-06-01 | ✅ Tamamlandı
+
+**Görev:** H-43 — ProcessKpi.target_value ve KpiData.target_value/actual_value String(100)→Float tip değişikliği
+**Modül:** app/models/process, migrations/versions, app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/process.py` → ProcessKpi.target_value, KpiData.target_value ve actual_value String(100)→Float; actual_value nullable=True yapıldı
+- `migrations/versions/k1l2m3n4o5p6_kpi_value_to_float.py` → Yeni Alembic migration; PostgreSQL USING dönüşümü + SQLite uyumlu fallback; down_revision tuple ile i2j3k4l5m016+a3b4c5d6e008 merge
+- `app/services/bulk_import_service.py` → str(actual)/str(target) → float() dönüşümü
+- `app/services/forecast_service.py` → float(str(...).replace(",",".")) → float(value) temizliği
+- `app/services/kpi_anomaly_service.py` → str+replace+float → float() temizliği
+
+### Yapılan İşlem
+H-43 kapsamında ProcessKpi.target_value, KpiData.target_value ve KpiData.actual_value kolonları String(100)'den Float'a çevrildi. Alembic migration PostgreSQL için NULLIF(TRIM(col),'')::DOUBLE PRECISION USING ifadesi, SQLite için yeni kolon ekle/kopyala/sil yolunu kullanıyor. Skor motorundaki string→float dönüşümleri temizlendi. Migration iki mevcut DB head'ini (i2j3k4l5m016, a3b4c5d6e008) birleştiriyor.
+
+### Notlar
+- PostgreSQL'de sayısal olmayan veri varsa migration kasıtlı olarak hata verir — Test ortamına uygulamadan önce `SELECT * FROM kpi_data WHERE actual_value !~ '^-?[0-9]+\.?[0-9]*$'` ile temizlik yapılmalı.
+- efqm_assessment.py ve exec_dashboard_service.py'deki raw SQL'de `::float` cast ve regex guard'lar artık gereksiz ama zarar vermez; ayrı bir temizlik task'ı olarak bırakıldı.
+
+## TASK-150 | 2026-06-01 | ✅ Tamamlandı
+
+**Görev:** H-40 — SMTP şifresi plaintext DB'de saklanıyordu, Fernet at-rest şifreleme eklendi
+**Modül:** app/models/email_config, app/utils/encryption
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/encryption.py` → Yeni dosya: Fernet encrypt/decrypt yardımcıları, ENCRYPTION_KEY env değişkeni
+- `app/models/email_config.py` → smtp_password alanı hybrid_property ile şeffaf Fernet şifreleme kullanıyor
+- `migrations/versions/k1l2m3n4o015_encrypt_smtp_password.py` → Mevcut plaintext kayıtları şifrelemek için örnek migration
+
+### Yapılan İşlem
+TenantEmailConfig.smtp_password artık DB'de Fernet şifreli (sütun adı değişmedi: smtp_password). Model katmanında hybrid_property ile okuma otomatik decrypt, yazma otomatik encrypt yapar. ENCRYPTION_KEY ortam değişkeni .env'e eklenmesi gerekir; yoksa geliştirme için geçici anahtar üretilir ve uyarı loglanır.
+
+### Notlar
+Mevcut veritabanı kayıtları için migrations/versions/k1l2m3n4o015 örnek migration hazır — çalıştırmadan önce `ENCRYPTION_KEY` .env'de tanımlı olmalı ve DB yedeği alınmalıdır.
+
+## TASK-149 | 2026-06-01 | ✅ Tamamlandı
+
+**Görev:** surec modülü 5 güvenlik/performans düzeltmesi (H-26, H-27, H-28, M-15, M-20)
+**Modül:** micro/modules/surec
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes_process.py` → H-26: surec_api_update'de leader_ids/member_ids döngü N+1 kaldırıldı, tek sorguda users_map
+- `micro/modules/surec/routes_activity.py` → H-27: postpone'da dateutil.parser.parse yerine sabit format listesi + end<=start kontrolü
+- `micro/modules/surec/routes_kpi_data.py` → H-28: kpi_id için güvenli int cast + 400 dönüşü; M-15: kpi_data_detail sorgusuna is_active=True filtresi; M-20: audit sorgusuna joinedload(KpiDataAudit.user)
+
+### Yapılan İşlem
+Beş ayrı kusur tek seferde giderildi: N+1 sorgu (lider/üye döngüsü), kontrolsüz dateutil parse (arbitrary string injection riski + start>=end eksikliği), güvensiz int cast, silinmiş satırların detail endpoint'te görünmesi ve audit lazy-load N+1.
+
+### Notlar
+KpiDataAudit.user ilişkisi modelde mevcut olduğu doğrulandı (app/models/process.py:461).
+
+## TASK-148 | 2026-06-01 | ✅ Tamamlandı — Derin tarama sonrası 10 tur güvenlik + doğruluk düzeltmesi
+
+**Görev:** Workflow derin tarama (143 ajan) bulgularından kalan HIGH/CRITICAL kalemler uygulandı
+**Modül:** Tüm proje
+**Durum:** ✅ Tamamlandı
+
+### Özet (Tur 1-10)
+- Tur 1: H-38 extra_data→metadata TypeError (5×), H-39 mark_as_read IDOR, H-53 int() ValueError
+- Tur 2: H-11/H-12 API analytics/reports tenant isolation (4 endpoint)
+- Tur 3: H-46 k_radar.js XSS (esc() helper + 4 innerHTML), H-49 project_raid.js CSRF token
+- Tur 4: H-15 set-active yetki, H-17 initiative mass-assignment cross-tenant
+- Tur 5: H-20 k_radar tenant_id=None, H-22 FavoriteKpi IDOR
+- Tur 6: H-23 load_project tenant, H-24 boş form üye silme, H-25 soft-delete cascade
+- Tur 7: H-41 email XSS html.escape, H-19 webhook SSRF + rol, H-50 rate limit 50K→300/saat
+- Tur 8: H-36 negatif hedef parse + decreasing=0→100, H-37 KPI'sız süreç None
+- Tur 9: H-32 PPTX filename injection, H-34 ReportLab html.escape (5×), M-14 plan_year_id
+- Tur 10: M-05 Changeme123! → secrets.token_urlsafe, M-12 tenant_admin_role None guard
+
+### Notlar
+Kalan HIGH listesi (manuel/migration gereken): H-40 SMTP plaintext, H-42 cascade delete model değişikliği, H-43 String→Float migration, H-44 core.py FK ondelete migration
+
+## TASK-147 | 2026-06-01 | ✅ Tamamlandı — 10 tur otomatik kod kalitesi döngüsü
+
+**Görev:** Kullanıcı isteğiyle 10 tur arka arkaya tarama + düzeltme
+**Modül:** Tüm proje (app/, micro/, ui/)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (Özet)
+- `app/services/maintenance_service.py` → sessiz except'lere logging eklendi
+- `app/services/holding_consolidated_service.py` → sessiz except'ler + logging modülü
+- `app/services/sub_tenant_billing_service.py` → sessiz except'ler + logging
+- `app/services/quarterly_review_service.py` → sessiz except'ler
+- `app/services/kule_service.py` → timezone import hatası düzeltildi (NameError)
+- `micro/modules/raporlar/routes_faz5.py` → timezone import hatası düzeltildi
+- `app/models/tour.py` → utcnow→lambda + timezone import + __repr__
+- `app/api/routes.py` → request.json→get_json, str(e) temizliği
+- `app/api/auth.py` → request.json→get_json, utcnow, str(e)
+- `app/routes/auth.py` → request.json→get_json, utcnow
+- `app/models/notification.py` → FK ondelete (SET NULL/CASCADE) + utcnow×6
+- `app/models/email_config.py` → FK ondelete (CASCADE/SET NULL)
+- `app/models/k_radar.py` → FK ondelete×2 + __repr__
+- `app/models/k_radar_domain.py` → FK ondelete×4 + __repr__×2 + f-string bug×3
+- `app/models/k_vektor.py` → __repr__×3
+- `app/models/strategy_frameworks.py` → __repr__×4
+- `app/models/llm_usage.py` → __repr__×2
+- `app/models/system_setting.py` → __repr__
+- `app/models/replan_trigger.py` → __repr__×2
+- `app/models/tenant_llm_config.py` → __repr__
+- `app/models/audit.py` → utcnow×1 (sabit pointer→lambda)
+- `app/models/portfolio_project.py` → utcnow×11
+- `app/api/process/performance_routes.py` → str(e)×2
+- `micro/modules/hgs/routes.py` → BOM karakter kaldırıldı
+- `app/services/process_performance_service.py` → len()>0→bool()×2
+- `app/services/report_service.py` → len()>0→bool()
+- `micro/modules/admin/routes.py` → %s logger→f-string×10
+- `app/routes/admin.py` → str(e) format düzeltmesi
+- 19 servis/route dosyası → datetime.utcnow()→now(timezone.utc) toplam 33 adet
+
+### Yapılan İşlem
+10 tur tarama + düzeltme döngüsü: service sessiz exception (logging eklendi), utcnow deprecated kullanım (toplam ~55 adet uygulama genelinde), request.json→get_json, timezone import hataları (runtime crash önlendi), len()>0→bool, f-string logger %s, FK ondelete eksiklikleri, __repr__ eksik modeller, f-string bug (literal değer yerine değişken adı yazıyordu), BOM karakter, sabit pointer datetime.utcnow (lambda'ya çevrildi).
+
+### Notlar
+Scripts/ ve Yedekler/ dizinlerindeki utcnow'lara dokunulmadı (uygulama kodu değil).
+
+## TASK-146 | 2026-06-01 | ✅ Tamamlandı — 6. tur kod kalitesi (str(e) güvenlik sızıntısı + saas.py syntax fix)
+
+**Görev:** 63 adet exception string sızıntısı kapatıldı; saas.py syntax error düzeltildi
+**Modül:** Tüm micro + app/routes
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/saas.py` → RouteRegistry.__repr__ sınıf dışına kaymıştı, içine taşındı; self.slug → self.code düzeltildi
+- `micro/modules/sp/routes_exec_advisor.py` → 6x str(e) 500-level → generic mesaj
+- `micro/modules/bireysel/routes.py` → 10x str(e) 400-level → generic mesaj
+- `micro/modules/surec/routes_activity.py` → 7x str(e) → generic mesaj
+- `micro/modules/surec/routes_kpi_data.py`, `routes_kpi.py`, `routes_process.py` → toplam 9x
+- `micro/modules/k_radar/routes_common.py` → 1x
+- `micro/modules/sp/routes_*.py` (6 dosya) → toplam 12x
+- `micro/modules/shared/auth/routes.py` → profil fotoğraf 500 hatası generic mesaja çevrildi
+- `app/routes/process.py` → 20x str(e) → generic mesaj
+- `app/routes/admin.py` → dosya okuma 500 hatası generic + exc_info eklendi
+- `app/routes/core.py` → Kule ticket 500 hatası generic + exc_info eklendi
+- `micro/modules/sp/routes_analysis.py` → 3x bare except → except (ValueError, TypeError)
+- `micro/modules/surec/routes_process.py` + `raporlar/routes_faz5.py` → SyntaxWarning r"" düzeltmesi
+- `ui/templates/platform/ayarlar/index.html` → inline style + 2 script → harici dosyalara taşındı
+- `ui/static/platform/css/ayarlar_index.css` + `js/ayarlar_index.js` → YENİ dosyalar
+- `ui/static/platform/js/project_raid.js` → alert() → Swal.fire toast
+
+### Yapılan İşlem
+Toplam 63 str(e) sızıntısı kapatıldı — exception detayları artık istemciye ulaşmıyor, logger'a exc_info=True ile yazılıyor. saas.py'deki RouteRegistry.__repr__ syntax hatası (sınıf dışına yerleştirilmişti) acil olarak düzeltildi.
+
+### Notlar
+admin/routes.py:453 pg_err ve proje/routes_project_crud.py flash mesajları admin-only sayfalarda kasıtlı olduğu için dokunulmadı.
+
+## TASK-145 | 2026-06-01 | ✅ Tamamlandı — 5. tur kod kalitesi (saas.py fix + bare except + inline scripts)
+
+**Görev:** saas.py kritik syntax hatası + 3 bare except + alert() + ayarlar inline script/style
+**Modül:** saas, sp/routes_analysis, project_raid.js, ayarlar template
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/saas.py` → RouteRegistry.__repr__ sınıf içine taşındı
+- `micro/modules/sp/routes_analysis.py` → 3x bare except düzeltildi
+- `ui/static/platform/js/project_raid.js` → alert() → Swal.fire
+- `ui/templates/platform/ayarlar/index.html` → inline kod kaldırıldı
+- `ui/static/platform/css/ayarlar_index.css` + `js/ayarlar_index.js` → YENİ
+
+### Yapılan İşlem
+Önceki turda saas.py'ye eklenen __repr__ metodu package_modules tablosunun altına (sınıf dışına) kaymış ve SyntaxError oluşturuyordu. Tüm __repr__ referans hataları da (self.slug → self.code) aynı anda düzeltildi.
+
+### Notlar
+SyntaxWarning: routes_process.py ve routes_faz5.py'de SQL string'leri r"" raw string olarak işaretlendi.
+
+## TASK-144 | 2026-06-01 | ✅ Tamamlandı — Kapsamlı kod kalitesi iyileştirmeleri (15 bulgu)
+
+**Görev:** Kod taraması sonucu tespit edilen 15 iyileştirme noktasının uygulanması
+**Modül:** Çok sayıda modül (admin, surec, k_radar, raporlar, shared, services, models)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes_sub_tenants.py` → except:pass → logger.warning (4 yer)
+- `micro/modules/shared/auth/routes.py` → CSRF decorator sırası düzeltildi + açıklama
+- `micro/modules/admin/routes.py` → int() ValueError yakalandı; limit 500→100; rol sabitler
+- `app/services/notification_service.py` → print→logger; bulk_create metodu eklendi
+- `micro/modules/masaustu/routes.py` → limit 400/500→100
+- `micro/modules/shared/my_tasks/routes.py` → joinedload eklendi (N+1 önlemi)
+- `config.py` → MAX_QUERY_ROWS ve MAX_NOTIFICATION_ROWS sabitleri eklendi
+- `app/utils/api_response.py` → YENİ: ok(), err(), paginated() merkezi wrapper
+- `app/constants/roles.py` → YENİ: ADMIN_ROLES, PRIVILEGED_ROLES, WRITE_ROLES sabitleri
+- `micro/modules/surec/permissions.py` → rol sabiti app/constants'tan import
+- `micro/modules/proje/permissions.py` → rol sabiti app/constants'tan import
+- `micro/modules/k_radar/routes_common.py` → rol sabiti app/constants'tan import
+- `micro/modules/raporlar/helpers.py` → _get_tenant_context() yardımcı eklendi
+- `app/models/core.py` → Composite index ix_tenant_parent_active eklendi
+- `app/services/analytics_service.py` → try/except + pandas lazy import
+- `ui/templates/platform/k_rapor/anomalies.html` → Low/Medium/High → Türkçe
+- `ui/templates/platform/project/task_form.html` → öncelik değerleri Türkçe
+- `ui/templates/platform/calendar/_calendar_quick_create_modal.html` → Türkçe
+- `ui/templates/platform/raporlar/cfo_dashboard.html` → "Status Dağılımı" → "Durum Dağılımı"
+
+### Yapılan İşlem
+15 farklı iyileştirme noktası 4 öncelik katmanında ele alındı: güvenlik/hata yönetimi (acil), performans, kod kalitesi ve optimizasyon. Yeni dosyalar: api_response.py, constants/roles.py.
+
+### Notlar
+Yok.
+
+---
 
 ## TASK-143 | 2026-05-31 | ✅ Tamamlandı — K-Radar toplu navigasyon + yıl filtresi + açıklama standardizasyonu
 

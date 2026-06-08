@@ -1,0 +1,192 @@
+{% extends "platform/base.html" %}
+{% block title %}Senaryo Kıyas — Kokpitim{% endblock %}
+{% block page_title %}Senaryo / What-if Kıyas{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb('Senaryo Kıyas') }}{% endblock %}
+
+{% block content %}
+<div id="senaryo-kiyas-root"
+     data-list-url="{{ url_for('app_bp.sp_api_scenarios_list') }}"
+     data-compare-url="{{ url_for('app_bp.sp_api_scenarios_compare') }}"
+     style="max-width:1100px; margin:0 auto;">
+
+  <div style="margin-bottom:20px;">
+    <h1 style="font-size:21px; font-weight:700; color:var(--text-default); margin:0 0 4px;" class="dark:text-white">
+      <i class="fas fa-code-compare" style="color:#6366f1;"></i> Senaryo / What-if Kıyas
+    </h1>
+    <p style="font-size:13px; color:#64748b; margin:0;">
+      Baseline ve senaryo plan yıllarını seç, vizyon skorlarını yan yana karşılaştır. Kaydırıcı ile iki senaryo arasını harmanla.
+    </p>
+  </div>
+
+  {# Seçim #}
+  <div class="mc-card" style="padding:18px 20px; margin-bottom:18px;">
+    <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:12px;" class="dark:text-white">
+      <i class="fas fa-list-check" style="color:#6366f1;"></i> Karşılaştırılacak plan yılları / senaryolar (2-6)
+    </div>
+    <div id="kiyas-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">
+      <div style="color:#94a3b8; font-size:12.5px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+    </div>
+    <div style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <button id="kiyas-btn" class="mc-btn mc-btn-primary mc-btn-sm" disabled>
+        <i class="fas fa-code-compare"></i> Karşılaştır
+      </button>
+      <span id="kiyas-hint" style="font-size:11.5px; color:#94a3b8;">En az 2 öğe seç.</span>
+    </div>
+  </div>
+
+  {# Sonuç #}
+  <div id="kiyas-sonuc" class="mc-card" style="padding:20px; display:none;">
+    <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:16px;" class="dark:text-white">
+      <i class="fas fa-chart-simple" style="color:#6366f1;"></i> Vizyon skoru karşılaştırması
+    </div>
+    <div id="kiyas-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
+
+    {# What-if blend slider (ilk iki seçim arası) #}
+    <div id="kiyas-blend" style="display:none; margin-top:24px; padding-top:18px; border-top:1px dashed #e2e8f0;">
+      <div style="font-size:12px; font-weight:700; color:#4338ca; margin-bottom:10px;">
+        <i class="fas fa-sliders"></i> What-if harmanı
+      </div>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <span id="blend-a-label" style="font-size:12px; color:#64748b; min-width:120px;">—</span>
+        <input id="blend-slider" type="range" min="0" max="100" value="50" style="flex:1 1 200px; accent-color:#6366f1;">
+        <span id="blend-b-label" style="font-size:12px; color:#64748b; min-width:120px; text-align:right;">—</span>
+      </div>
+      <div style="text-align:center; margin-top:14px;">
+        <div style="font-size:11px; color:#94a3b8; letter-spacing:.04em;">HARMANLANMIŞ VİZYON SKORU</div>
+        <div id="blend-value" style="font-size:34px; font-weight:800; color:#4338ca;">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kiyas-error" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:14px; border-radius:8px; font-size:13px; margin-top:14px;"></div>
+</div>
+
+<script>
+(function() {
+  var root = document.getElementById("senaryo-kiyas-root");
+  if (!root) return;
+  var listUrl = root.getAttribute("data-list-url");
+  var compareUrl = root.getAttribute("data-compare-url");
+  var listEl = document.getElementById("kiyas-list");
+  var btn = document.getElementById("kiyas-btn");
+  var hint = document.getElementById("kiyas-hint");
+  var sonuc = document.getElementById("kiyas-sonuc");
+  var barsEl = document.getElementById("kiyas-bars");
+  var errEl = document.getElementById("kiyas-error");
+  var blendBox = document.getElementById("kiyas-blend");
+  var slider = document.getElementById("blend-slider");
+
+  var PALETTE = ["#6366f1", "#10b981", "#f59e0b", "#db2777", "#0ea5e9", "#8b5cf6"];
+  var lastItems = [];
+
+  function labelText(it) {
+    var l = (it.label || "").toLowerCase();
+    var map = { baseline: "Baseline", optimistic: "İyimser", pessimistic: "Kötümser" };
+    return (map[l] || it.label || "Senaryo");
+  }
+
+  function showError(m) { errEl.textContent = m; errEl.style.display = "block"; }
+
+  function selectedIds() {
+    return Array.prototype.slice
+      .call(listEl.querySelectorAll("input[type=checkbox]:checked"))
+      .map(function(c) { return c.value; });
+  }
+
+  function refreshBtn() {
+    var n = selectedIds().length;
+    btn.disabled = n < 2;
+    hint.textContent = n < 2 ? "En az 2 öğe seç." : (n + " öğe seçili (max 6).");
+  }
+
+  function loadList() {
+    fetch(listUrl, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (!d || !d.success || !d.items || !d.items.length) {
+          listEl.innerHTML = '<div style="color:#94a3b8;font-size:12.5px;">Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun.</div>';
+          return;
+        }
+        listEl.innerHTML = "";
+        d.items.forEach(function(it) {
+          var id = "kiyas-c-" + it.id;
+          var wrap = document.createElement("label");
+          wrap.setAttribute("for", id);
+          wrap.style.cssText = "display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid #e2e8f0;border-radius:9px;cursor:pointer;font-size:12.5px;";
+          var tag = it.is_scenario
+            ? '<span style="font-size:10px;background:#eef2ff;color:#4338ca;border-radius:6px;padding:1px 6px;">' + labelText(it) + '</span>'
+            : '<span style="font-size:10px;background:#f0fdf4;color:#15803d;border-radius:6px;padding:1px 6px;">Plan</span>';
+          wrap.innerHTML =
+            '<input type="checkbox" id="' + id + '" value="' + it.id + '" style="accent-color:#6366f1;">' +
+            '<span style="font-weight:600;color:#0f172a;">' + it.year + '</span>' +
+            '<span style="color:#64748b;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (it.name || "") + '</span>' +
+            tag;
+          listEl.appendChild(wrap);
+        });
+        listEl.addEventListener("change", refreshBtn);
+        refreshBtn();
+      })
+      .catch(function() { showError("Senaryo listesi yüklenemedi."); });
+  }
+
+  function renderBars(items) {
+    lastItems = items.filter(function(x) { return typeof x.vision_score === "number"; });
+    barsEl.innerHTML = "";
+    var maxV = 100;
+    items.forEach(function(it, i) {
+      var c = PALETTE[i % PALETTE.length];
+      var v = (typeof it.vision_score === "number") ? it.vision_score : null;
+      var pct = v === null ? 0 : Math.max(0, Math.min(100, (v / maxV) * 100));
+      var row = document.createElement("div");
+      row.innerHTML =
+        '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">' +
+          '<span style="font-weight:600;color:#0f172a;">' + it.year + ' · ' + labelText(it) + '</span>' +
+          '<span style="font-weight:700;color:' + c + ';">' + (v === null ? "veri yok" : v) + '</span>' +
+        '</div>' +
+        '<div style="height:14px;background:#f1f5f9;border-radius:7px;overflow:hidden;">' +
+          '<div style="height:100%;width:0;background:' + c + ';border-radius:7px;transition:width .8s cubic-bezier(.2,.8,.2,1);"></div>' +
+        '</div>';
+      barsEl.appendChild(row);
+      // animasyonlu dolum
+      var fill = row.querySelector("div > div");
+      requestAnimationFrame(function() { setTimeout(function() { fill.style.width = pct + "%"; }, 30 + i * 80); });
+    });
+    setupBlend();
+  }
+
+  function setupBlend() {
+    if (lastItems.length < 2) { blendBox.style.display = "none"; return; }
+    var a = lastItems[0], b = lastItems[1];
+    document.getElementById("blend-a-label").textContent = a.year + " " + labelText(a) + " (" + a.vision_score + ")";
+    document.getElementById("blend-b-label").textContent = labelText(b) + " " + b.year + " (" + b.vision_score + ")";
+    function upd() {
+      var t = slider.value / 100;
+      var blended = a.vision_score * (1 - t) + b.vision_score * t;
+      document.getElementById("blend-value").textContent = blended.toFixed(1);
+    }
+    slider.oninput = upd;
+    upd();
+    blendBox.style.display = "block";
+  }
+
+  btn.addEventListener("click", function() {
+    var ids = selectedIds();
+    if (ids.length < 2) return;
+    errEl.style.display = "none";
+    btn.disabled = true;
+    hint.textContent = "Hesaplanıyor…";
+    fetch(compareUrl + "?ids=" + encodeURIComponent(ids.join(",")), { headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        btn.disabled = false; refreshBtn();
+        if (!d || !d.success || !d.items) { showError("Karşılaştırma hesaplanamadı."); return; }
+        sonuc.style.display = "block";
+        renderBars(d.items);
+      })
+      .catch(function() { btn.disabled = false; refreshBtn(); showError("Sunucu hatası."); });
+  });
+
+  loadList();
+})();
+</script>
+{% endblock %}

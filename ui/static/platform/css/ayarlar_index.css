@@ -1,0 +1,37 @@
+.ayarlar-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #1e293b;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.ayarlar-tile:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.10);
+  transform: translateY(-1px);
+}
+.ayarlar-tile-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ayarlar-tile-body { flex: 1; min-width: 0; }
+.ayarlar-tile-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 2px; }
+.ayarlar-tile-desc  { font-size: 12px; color: #64748b; line-height: 1.4; }
+.ayarlar-tile-arrow { color: #cbd5e1; font-size: 12px; transition: transform 0.15s, color 0.15s; }
+.ayarlar-tile:hover .ayarlar-tile-arrow { color: #6366f1; transform: translateX(2px); }
+
+[data-theme="dark"] .ayarlar-tile          { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+[data-theme="dark"] .ayarlar-tile:hover    { border-color: #4338ca; background: #1e1b4b; }
+[data-theme="dark"] .ayarlar-tile-title    { color: #f1f5f9; }
+[data-theme="dark"] .ayarlar-tile-desc     { color: #94a3b8; }

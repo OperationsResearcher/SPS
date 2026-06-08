@@ -1,3 +1,4 @@
+import logging as _sio_log
 """
 WebSocket Events
 Sprint 7-9: Real-Time ve Bildirimler
@@ -34,7 +35,7 @@ def handle_connect():
         unread_count = NotificationService.get_unread_count(user_id)
         emit('unread_count', {'count': unread_count})
         
-        print(f"User {user_id} connected to room {room}")
+        _sio_log.getLogger(__name__).debug(f"User {user_id} connected to room {room}")
 
 
 @socketio.on('disconnect')
@@ -42,7 +43,7 @@ def handle_disconnect():
     """Kullanıcı bağlantıyı kesti"""
     if request.sid in active_users:
         user_info = active_users.pop(request.sid)
-        print(f"User {user_info['user_id']} disconnected")
+        _sio_log.getLogger(__name__).debug(f"User {user_info['user_id']} disconnected")
 
 
 @socketio.on('join_process')
@@ -61,7 +62,7 @@ def handle_join_process(data):
             'process_id': process_id
         }, room=room, skip_sid=request.sid)
         
-        print(f"User {current_user.id} joined process {process_id}")
+        _sio_log.getLogger(__name__).debug(f"User {current_user.id} joined process {process_id}")
 
 
 @socketio.on('leave_process')
@@ -80,7 +81,7 @@ def handle_leave_process(data):
             'process_id': process_id
         }, room=room)
         
-        print(f"User {current_user.id} left process {process_id}")
+        _sio_log.getLogger(__name__).debug(f"User {current_user.id} left process {process_id}")
 
 
 @socketio.on('kpi_data_update')
@@ -101,7 +102,7 @@ def handle_kpi_data_update(data):
             'timestamp': None
         }, room=f'process_{process_id}', skip_sid=request.sid)
         
-        print(f"KPI {kpi_id} updated by user {current_user.id}")
+        _sio_log.getLogger(__name__).debug(f"KPI {kpi_id} updated by user {current_user.id}")
 
 
 @socketio.on('typing')

@@ -95,7 +95,7 @@
             {% for t in col_tasks %}
             <a href="{{ url_for('app_bp.project_task_detail', project_id=project.id, task_id=t.id) }}"
                class="mc-card" style="display:block; padding:10px; margin-bottom:8px; text-decoration:none; border:1px solid rgba(0,0,0,.06);">
-                <div style="font-size:13px; font-weight:600; color:#1e293b;" class="dark:text-white">{{ t.title }}</div>
+                <div style="font-size:13px; font-weight:600; color:var(--text-default);" class="dark:text-white">{{ t.title }}</div>
                 {% if t.due_date %}
                 <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><i class="fas fa-calendar"></i> {{ t.due_date.strftime('%d.%m.%Y') }}</div>
                 {% endif %}

@@ -201,6 +201,8 @@ def _parent_options_with_depth(tenant_id: int, plan_year_id: int | None = None):
             ch_map.setdefault(p.parent_id, []).append(p)
 
     def _collect(node_list, depth=0):
+        if depth > 50:  # Circular reference veya çok derin hiyerarşi koruması
+            return []
         out = []
         for p in node_list:
             out.append((p, depth))

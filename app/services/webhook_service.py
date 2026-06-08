@@ -4,6 +4,7 @@ Sprint 13-15: API ve Entegrasyonlar
 Webhook yönetimi ve event dispatching
 """
 
+import logging as _log_tasks
 from extensions import db
 from typing import Dict, List
 import requests
@@ -51,7 +52,7 @@ class WebhookService:
         """
         payload = {
             'event': event_type,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'data': data
         }
         
@@ -173,12 +174,12 @@ class WebhookService:
         #     status_code=status_code,
         #     response_body=response_body,
         #     error=error,
-        #     delivered_at=datetime.utcnow()
+        #     delivered_at=datetime.now(timezone.utc)
         # )
         # db.session.add(log)
         # db.session.commit()
         
-        print(f"Webhook delivery: {webhook_id} - {event_type} - {status_code}")
+        _log_tasks.getLogger(__name__).info(f"Webhook delivery: {webhook_id} - {event_type} - {status_code}")
 
 
 # Helper functions

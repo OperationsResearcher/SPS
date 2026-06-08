@@ -1,3 +1,11 @@
+"""Process ve KPI modelleri.
+
+SOFT DELETE STANDARDI:
+  - is_active=False  : tercih edilen yöntem (tüm yeni tablolar)
+  - deleted_at       : eski tablolarda ek olarak mevcut (Process, KpiData)
+  Kural: yeni tablo eklenirken SADECE is_active kullanılır.
+  deleted_at mevcut tablolarda geriye dönük uyumluluk için korunur.
+"""
 from datetime import datetime, timezone
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import synonym
@@ -77,7 +85,7 @@ class Process(db.Model):
     description = db.Column(db.Text, nullable=True)
     
     # Plan Year FK (Full Clone sistemi)
-    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'), nullable=True, index=True)
     source_process_id = db.Column(db.Integer, db.ForeignKey('processes.id', ondelete='SET NULL'), nullable=True)
 
     # Auditing / Soft Delete
@@ -88,7 +96,7 @@ class Process(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
-    tenant = db.relationship('Tenant', backref=db.backref('processes', lazy=True, cascade="all, delete-orphan"))
+    tenant = db.relationship('Tenant', backref=db.backref('processes', lazy=True, cascade="save-update, merge"))
     parent = db.relationship('Process', remote_side=[id], foreign_keys='[Process.parent_id]', backref=db.backref('sub_processes', lazy='dynamic'))
     
     # Many-to-Many
@@ -168,7 +176,7 @@ class ProcessKpi(db.Model):
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('sub_strategies.id', ondelete='SET NULL'), nullable=True, index=True)
 
     # Plan Year FK (Full Clone sistemi)
-    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'), nullable=True, index=True)
     source_kpi_id = db.Column(db.Integer, db.ForeignKey('process_kpis.id', ondelete='SET NULL'), nullable=True)
 
     start_date = db.Column(db.Date, nullable=True)
@@ -237,7 +245,7 @@ class ProcessActivity(db.Model):
     postponed_at = db.Column(db.DateTime, nullable=True)
 
     # Plan Year FK (Full Clone sistemi)
-    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'), nullable=True, index=True)
     source_activity_id = db.Column(db.Integer, db.ForeignKey('process_activities.id', ondelete='SET NULL'), nullable=True)
 
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
@@ -382,9 +390,8 @@ class KpiData(db.Model):
     period_no = db.Column(db.Integer, nullable=True)
     period_month = db.Column(db.Integer, nullable=True)
     
-    # Values
     target_value = db.Column(db.String(100), nullable=True)
-    actual_value = db.Column(db.String(100), nullable=False)
+    actual_value = db.Column(db.String(100), nullable=True)
     status = db.Column(db.String(50), nullable=True)
     status_percentage = db.Column(db.Float, nullable=True)
     description = db.Column(db.Text, nullable=True)
@@ -498,7 +505,7 @@ class IndividualPerformanceIndicator(db.Model):
     basari_puani_araliklari = db.Column(db.Text, nullable=True)
 
     # Plan Year FK (Full Clone sistemi)
-    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'), nullable=True, index=True)
+    plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'), nullable=True, index=True)
     source_individual_kpi_id = db.Column(db.Integer, db.ForeignKey('individual_performance_indicators.id', ondelete='SET NULL'), nullable=True)
 
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)

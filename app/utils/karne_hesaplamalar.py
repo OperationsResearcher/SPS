@@ -80,14 +80,28 @@ def parse_aralik_degeri(aralik_str: str) -> Optional[tuple]:
     if not aralik_str or aralik_str.strip() in ('-', ''):
         return None
 
+    # Türkçe sayı biçimi: '.' binlik ayraç, ',' ondalık ayraç.
+    # Binlik noktalarını kaldır, ondalık virgülünü standart noktaya çevir.
+    # (Önceki sürüm hem ',' hem '.' siliyordu → "4,5"/"4.5" gibi ondalık aralık
+    #  sınırları "45"e dönüşüp yanlış başarı puanı veriyordu.)
     temiz_str = (
         aralik_str.strip()
         .replace('%', '')
         .replace('TL', '')
-        .replace(',', '')
         .replace('.', '')
+        .replace(',', '.')
         .strip()
     )
+
+    # İki-sayılı aralık (negatif sınırlar dahil): "-50--10", "-10-5", "4.5-9.5", "40-49".
+    # Önceki split-tabanlı mantık negatif alt sınırlı aralıkları parse edemiyordu.
+    import re as _re
+    _m = _re.match(r'^(-?\d+\.?\d*)\s*-\s*(-?\d+\.?\d*)$', temiz_str)
+    if _m:
+        try:
+            return (float(_m.group(1)), float(_m.group(2)))
+        except ValueError:
+            return None
 
     if temiz_str.startswith('-'):
         try:

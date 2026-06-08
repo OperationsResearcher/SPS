@@ -9,8 +9,8 @@ class KRadarRecommendationAction(db.Model):
     __tablename__ = "k_radar_recommendation_actions"
 
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
 
     recommendation_key = db.Column(db.String(64), nullable=False, index=True)
     recommendation_text = db.Column(db.Text, nullable=False)
@@ -32,3 +32,6 @@ class KRadarRecommendationAction(db.Model):
             "tenant_id", "user_id", "recommendation_key", name="uq_k_radar_action_user_key"
         ),
     )
+
+    def __repr__(self):
+        return f"<KRadarRecommendationAction {self.id} tenant={self.tenant_id} state={self.state}>"

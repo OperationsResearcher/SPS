@@ -63,7 +63,7 @@ def api_kpi_data_create():
     kpi = ProcessKpi.query.join(Process).filter(
         ProcessKpi.id == kpi_id,
         Process.tenant_id == current_user.tenant_id,
-        ProcessKpi.is_active == True,
+        ProcessKpi.is_active.is_(True),
     ).first()
     if not kpi:
         return jsonify({"success": False, "message": "PG bulunamadı."}), 404
@@ -114,7 +114,7 @@ def api_kpi_data_get(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     return jsonify({
         "success": True,
@@ -133,7 +133,7 @@ def api_kpi_data_update(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     data = request.get_json() or {}
     try:
@@ -159,7 +159,7 @@ def api_kpi_data_delete(entry_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
         KpiData.id == entry_id,
         Process.tenant_id == current_user.tenant_id,
-        KpiData.is_active == True,
+        KpiData.is_active.is_(True),
     ).first_or_404()
     try:
         entry.is_active = False
@@ -172,8 +172,8 @@ def api_kpi_data_delete(entry_id):
                 action="DELETE", resource_type="KpiData",
                 resource_id=entry.id,
             )
-        except Exception:
-            pass
+        except Exception as _audit_err:
+            current_app.logger.error("[audit] KpiData delete audit kaydı başarısız: %s", _audit_err)
         db.session.commit()
         return jsonify({"success": True, "message": "Silindi."})
     except Exception as e:
@@ -218,7 +218,7 @@ def api_analytics_comparison():
         p.id for p in Process.query.filter(
             Process.id.in_(data.get("process_ids", [])),
             Process.tenant_id == current_user.tenant_id,
-            Process.is_active == True,
+            Process.is_active.is_(True),
         ).all()
     ]
     try:
@@ -277,8 +277,8 @@ def api_reports_dashboard():
 @login_required
 def api_ai_recommend():
     try:
-        from app.api.ai import get_recommendations
-        return get_recommendations()
+        from app.api.ai import smart_insights
+        return smart_insights()
     except Exception as e:
         current_app.logger.error(f"[api_ai_recommend] {e}")
         return jsonify({"success": False, "message": "AI servisi kullanılamıyor."}), 503

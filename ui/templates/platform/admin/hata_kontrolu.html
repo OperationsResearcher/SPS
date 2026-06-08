@@ -1,0 +1,443 @@
+{% extends "platform/base.html" %}
+{% block title %}Hata Kontrolü — Kokpitim{% endblock %}
+{% block page_title %}Hata Kontrolü{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'Hata Kontrolü', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1000px;margin:0 auto;"
+     id="hk-root"
+     data-durum-url="{{ url_for('app_bp.admin_tools_tomofiltest_durum') }}"
+     data-yenile-url="{{ url_for('app_bp.admin_tools_tomofiltest_yenile') }}"
+     data-kesif-url="{{ url_for('app_bp.admin_tools_hk_kesif') }}"
+     data-baslat-url="{{ url_for('app_bp.admin_tools_hk_tarama_baslat') }}"
+     data-tarama-durum-url="{{ url_for('app_bp.admin_tools_hk_tarama_durum') }}"
+     data-senaryo-baslat-url="{{ url_for('app_bp.admin_tools_hk_senaryo_baslat') }}"
+     data-senaryo-durum-url="{{ url_for('app_bp.admin_tools_hk_senaryo_durum') }}"
+     data-gecmis-url="{{ url_for('app_bp.admin_tools_hk_gecmis') }}"
+     data-gecmis-yukle-url="{{ url_for('app_bp.admin_tools_hk_gecmis_yukle') }}"
+     data-is-local="{{ '1' if is_local else '0' }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-stethoscope" style="color:#0284c7;"></i> Hata Kontrolü
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Uygulamayı izole bir test kurumu (<b>tomofiltest</b>) üzerinde otomatik gezip çalışmayan sayfa/özellikleri raporlar.
+      </p>
+    </div>
+  </div>
+
+  {% if not is_local %}
+  <div class="mc-card" style="padding:12px 16px;margin-bottom:16px;border-left:4px solid #dc2626;background:#fef2f2;">
+    <i class="fas fa-lock" style="color:#b91c1c;"></i>
+    <span style="font-size:13px;color:#991b1b;">Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.</span>
+  </div>
+  {% endif %}
+
+  {# ── Adım 1: İzole test kurumu ── #}
+  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#ecfeff;color:#0e7490;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clone"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">İzole Test Kurumu — tomofiltest</div>
+          <div style="font-size:12px;color:#64748b;">Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri etkilenmez.</div>
+        </div>
+      </div>
+      <button id="hk-yenile" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}>
+        <i class="fas fa-rotate"></i> tomofiltest'i Kur / Yenile
+      </button>
+    </div>
+
+    <div id="hk-durum" style="font-size:13px;color:#475569;">Durum yükleniyor…</div>
+    <div id="hk-sonuc" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;font-size:13px;"></div>
+  </div>
+
+  {# ── Adım 2: Keşif — taranacak sayfalar ── #}
+  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;"><i class="fas fa-sitemap"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Keşif — Taranacak Sayfalar</div>
+          <div style="font-size:12px;color:#64748b;">Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve legacy hariç.</div>
+        </div>
+      </div>
+      <button id="hk-kesfet" class="mc-btn mc-btn-secondary"><i class="fas fa-magnifying-glass"></i> Keşfet</button>
+    </div>
+    <div id="hk-kesif" style="font-size:13px;color:#64748b;">Henüz keşif yapılmadı.</div>
+    <div id="hk-kesif-liste" style="display:none;margin-top:10px;"></div>
+  </div>
+
+  {# ── Adım 3: Otomatik tarayıcı testi (Playwright) ── #}
+  <div class="mc-card" style="padding:18px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#f0fdf4;color:#15803d;display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Otomatik Tarayıcı Testi</div>
+          <div style="font-size:12px;color:#64748b;">Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + AJAX hatalarını yakalar.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <label style="font-size:12px;color:#475569;">Limit:
+          <input id="hk-limit" type="number" min="1" placeholder="tümü" style="width:70px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;">
+        </label>
+        <button id="hk-tara" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-play"></i> Taramayı Başlat</button>
+      </div>
+    </div>
+
+    <div id="hk-tara-bar-wrap" style="display:none;margin-bottom:10px;">
+      <div style="height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+        <div id="hk-tara-bar" style="height:100%;width:0;background:linear-gradient(90deg,#0ea5e9,#2563eb);transition:width .3s;"></div>
+      </div>
+      <div id="hk-tara-info" style="font-size:12px;color:#64748b;margin-top:6px;"></div>
+    </div>
+
+    <div id="hk-tara-ozet" style="display:none;margin-bottom:8px;"></div>
+    <div id="hk-tara-links" style="display:none;margin-bottom:8px;"></div>
+    <div id="hk-tara-sonuc" style="display:none;max-height:420px;overflow:auto;"></div>
+  </div>
+
+  {# ── Tarama geçmişi (katlanabilir, varsayılan kapalı) ── #}
+  <div class="mc-card" style="padding:18px;margin-top:16px;">
+    <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#eff6ff;color:#1d4ed8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clock-rotate-left"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Tarama Geçmişi</div>
+          <div style="font-size:12px;color:#64748b;">Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda açılır.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="hk-tara-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
+        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+      </div>
+    </div>
+    <div class="hk-collapse-body" style="display:none;margin-top:12px;">
+      <div id="hk-tara-gecmis-liste" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
+    </div>
+  </div>
+
+  {# ── Adım 4: Aktif CRUD senaryoları ── #}
+  <div class="mc-card" style="padding:18px;margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-flask"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Aktif CRUD Senaryoları</div>
+          <div style="font-size:12px;color:#64748b;">Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince tomofiltest otomatik sıfırlanır.</div>
+        </div>
+      </div>
+      <button id="hk-senaryo" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-vial"></i> Senaryoları Çalıştır</button>
+    </div>
+    <div id="hk-senaryo-info" style="font-size:12.5px;color:#64748b;">Henüz çalıştırılmadı.</div>
+    <div id="hk-senaryo-sonuc" style="display:none;margin-top:8px;"></div>
+  </div>
+
+  {# ── Senaryo geçmişi (katlanabilir, varsayılan kapalı) ── #}
+  <div class="mc-card" style="padding:18px;margin-top:16px;">
+    <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#fffbeb;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-vials"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Senaryo Geçmişi</div>
+          <div style="font-size:12px;color:#64748b;">Yalnız Aktif CRUD senaryo koşuları. Bir kayda tıklayınca yukarıda açılır.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="hk-sen-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
+        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+      </div>
+    </div>
+    <div class="hk-collapse-body" style="display:none;margin-top:12px;">
+      <div id="hk-sen-gecmis-liste" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById("hk-root"); if(!root) return;
+  var durumUrl=root.dataset.durumUrl, yenileUrl=root.dataset.yenileUrl;
+  var isLocal=root.dataset.isLocal==="1";
+  var durumEl=document.getElementById("hk-durum");
+  var sonucEl=document.getElementById("hk-sonuc");
+  var btn=document.getElementById("hk-yenile");
+
+  // Eşzamanlılık: bir işlem (yenile/tarama/senaryo) çalışırken üçü de kilitli.
+  // Sunucu da 409 ile korur; bu sadece UI tarafı erken engel.
+  function setBusy(on){
+    ["hk-yenile","hk-tara","hk-senaryo"].forEach(function(id){
+      var b=document.getElementById(id); if(!b) return;
+      b.disabled = on ? true : !isLocal;
+    });
+  }
+
+  function loadDurum(){
+    fetch(durumUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success){durumEl.textContent="Durum alınamadı.";return;}
+        var d=j.durum||{};
+        if(!d.exists){
+          durumEl.innerHTML='<span style="color:#b45309;"><i class="fas fa-circle-exclamation"></i> tomofiltest henüz yok. "Kur / Yenile" ile oluşturun.</span>';
+          return;
+        }
+        durumEl.innerHTML='<span style="color:#15803d;"><i class="fas fa-circle-check"></i> Hazır</span> '+
+          '<span style="color:#64748b;">(id='+d.tid+') — strateji: <b>'+d.strategies+'</b>, süreç: <b>'+d.processes+'</b>, PG: <b>'+d.process_kpis+'</b>, ölçüm: <b>'+(d.kpi_data||0).toLocaleString("tr-TR")+'</b> · admin: '+d.admin_email+'</span>';
+      }).catch(function(){durumEl.textContent="Durum alınamadı.";});
+  }
+
+  function yenile(){
+    if(!isLocal) return;
+    setBusy(true); var orig=btn.innerHTML;
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Kuruluyor… (birkaç saniye)';
+    sonucEl.style.display="none";
+    fetch(yenileUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(j&&j.success){
+          sonucEl.style.background="#f0fdf4";sonucEl.style.color="#166534";
+          sonucEl.innerHTML='<i class="fas fa-check"></i> tomofiltest hazır — '+(j.toplam_satir||0).toLocaleString("tr-TR")+' satır kopyalandı (id='+j.tid+').';
+        }else{
+          sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
+          sonucEl.innerHTML='<i class="fas fa-xmark"></i> '+((j&&j.message)||"Hata oluştu.");
+        }
+        sonucEl.style.display="block"; loadDurum();
+      }).catch(function(){
+        sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
+        sonucEl.innerHTML='<i class="fas fa-xmark"></i> Bağlantı hatası.';sonucEl.style.display="block";
+      }).finally(function(){setBusy(false);btn.innerHTML=orig;});
+  }
+
+  if(btn) btn.addEventListener("click", yenile);
+  loadDurum();
+
+  // ── Keşif ──
+  var kesifUrl=root.dataset.kesifUrl;
+  var kesfetBtn=document.getElementById("hk-kesfet");
+  var kesifEl=document.getElementById("hk-kesif");
+  var kesifListe=document.getElementById("hk-kesif-liste");
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+
+  function kesfet(){
+    kesfetBtn.disabled=true; var o=kesfetBtn.innerHTML;
+    kesfetBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Keşfediliyor…';
+    fetch(kesifUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success){kesifEl.textContent="Keşif başarısız.";return;}
+        var k=j.kesif||{}, sk=k.skipped||{};
+        kesifEl.innerHTML='<span style="color:#15803d;font-weight:600;"><i class="fas fa-circle-check"></i> '+k.count+' sayfa taranacak.</span>'+
+          ' <span style="color:#94a3b8;">(atlanan — parametreli: '+(sk.param||0)+', kara liste: '+(sk.blacklist||0)+', legacy: '+(sk.legacy||0)+')</span>';
+        // modul rozetleri
+        var bm=k.by_module||{}, chips="";
+        Object.keys(bm).forEach(function(m){
+          chips+='<span style="display:inline-block;background:#eef2ff;color:#4338ca;border-radius:12px;padding:2px 10px;font-size:11.5px;margin:2px 4px 2px 0;">'+esc(m)+': '+bm[m]+'</span>';
+        });
+        // url listesi (modul gruplu, katlanir)
+        var byM={}; (k.urls||[]).forEach(function(u){(byM[u.module]=byM[u.module]||[]).push(u.url);});
+        var list="";
+        Object.keys(byM).forEach(function(m){
+          list+='<details style="margin-bottom:4px;"><summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#334155;">'+esc(m)+' ('+byM[m].length+')</summary>'+
+            '<div style="padding:4px 0 8px 14px;">'+byM[m].map(function(u){return '<div style="font-size:12px;color:#64748b;font-family:monospace;">'+esc(u)+'</div>';}).join("")+'</div></details>';
+        });
+        kesifListe.innerHTML='<div style="margin-bottom:8px;">'+chips+'</div>'+list;
+        kesifListe.style.display="block";
+      }).catch(function(){kesifEl.textContent="Keşif başarısız.";})
+      .finally(function(){kesfetBtn.disabled=false;kesfetBtn.innerHTML=o;});
+  }
+  if(kesfetBtn) kesfetBtn.addEventListener("click", kesfet);
+
+  // ── Tarayıcı testi ──
+  var baslatUrl=root.dataset.baslatUrl, taramaDurumUrl=root.dataset.taramaDurumUrl;
+  var taraBtn=document.getElementById("hk-tara"), limitEl=document.getElementById("hk-limit");
+  var barWrap=document.getElementById("hk-tara-bar-wrap"), bar=document.getElementById("hk-tara-bar"), info=document.getElementById("hk-tara-info");
+  var ozetEl=document.getElementById("hk-tara-ozet"), sonucEl=document.getElementById("hk-tara-sonuc");
+  var pollTimer=null;
+  var DURUM_RENK={ok:"#16a34a",warn:"#f59e0b",fail:"#dc2626",skip:"#94a3b8"};
+  var DURUM_IKON={ok:"fa-circle-check",warn:"fa-triangle-exclamation",fail:"fa-circle-xmark",skip:"fa-circle-minus"};
+
+  function renderTara(d){
+    var pct=d.total?Math.round(d.done/d.total*100):0;
+    bar.style.width=pct+"%";
+    info.textContent=d.status==="running"
+      ? ("Taranıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?("Tamamlandı — "+d.done+"/"+d.total):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+    var c=d.counts||{};
+    ozetEl.style.display="block";
+    ozetEl.innerHTML='<span style="font-size:13px;font-weight:600;">Özet:</span> '+
+      '<span style="color:#16a34a;">✅ '+(c.ok||0)+'</span> &nbsp; '+
+      '<span style="color:#f59e0b;">⚠️ '+(c.warn||0)+'</span> &nbsp; '+
+      '<span style="color:#dc2626;">❌ '+(c.fail||0)+'</span> &nbsp; '+
+      '<span style="color:#94a3b8;">⏭️ '+(c.skip||0)+'</span>';
+    // BFS: ölü linkler + yetim sayfalar
+    var lk=d.links||{}, linksEl=document.getElementById("hk-tara-links");
+    if((lk.dead_count||0)>0 || (lk.orphan_count||0)>0){
+      var h='<div style="font-size:12.5px;">'+
+        '<b><i class="fas fa-link-slash" style="color:#dc2626;"></i> Ölü link:</b> '+(lk.dead_count||0)+
+        ' &nbsp; <b><i class="fas fa-ghost" style="color:#94a3b8;"></i> Yetim sayfa:</b> '+(lk.orphan_count||0)+
+        ' <span style="color:#94a3b8;">(toplanan bağlantı: '+(lk.harvested||0)+')</span></div>';
+      if((lk.dead||[]).length){
+        h+='<details style="margin-top:4px;"><summary style="cursor:pointer;font-size:12px;color:#dc2626;">Ölü linkler ('+lk.dead.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+          lk.dead.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.path)+' <span style="color:#cbd5e1;">← '+esc(x.source)+'</span></div>';}).join("")+'</div></details>';
+      }
+      if((lk.orphans||[]).length){
+        h+='<details style="margin-top:2px;"><summary style="cursor:pointer;font-size:12px;color:#64748b;">Yetim sayfalar — hiçbir sayfadan link verilmemiş ('+lk.orphans.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+          lk.orphans.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.url)+' <span style="color:#cbd5e1;">'+esc(x.module||"")+'</span></div>';}).join("")+'</div></details>';
+      }
+      linksEl.innerHTML=h; linksEl.style.display="block";
+    } else { linksEl.style.display="none"; }
+
+    // sonuçlar: önce sorunlular (fail, warn), sonra ok, en sona kapsam-dışı (skip)
+    var rows=(d.results||[]).slice().sort(function(a,b){var o={fail:0,warn:1,ok:2,skip:3};return o[a.durum]-o[b.durum];});
+    sonucEl.style.display="block";
+    sonucEl.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12.5px;">'+
+      rows.map(function(r){
+        var col=DURUM_RENK[r.durum]||"#64748b", ic=DURUM_IKON[r.durum]||"fa-circle";
+        var det=(r.sebep||"")+(r.js&&r.js.length?(" · JS: "+esc(r.js[0])):"")+(r.ajax&&r.ajax.length?(" · "+esc(r.ajax[0])):"");
+        return '<tr style="border-bottom:1px solid #f1f5f9;">'+
+          '<td style="padding:5px 6px;width:22px;color:'+col+';"><i class="fas '+ic+'"></i></td>'+
+          '<td style="padding:5px 6px;font-family:monospace;color:#334155;">'+esc(r.url)+'</td>'+
+          '<td style="padding:5px 6px;color:#64748b;">'+esc(det)+'</td></tr>';
+      }).join("")+'</table>';
+  }
+
+  function poll(runId){
+    fetch(taramaDurumUrl+"?run="+encodeURIComponent(runId),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){info.textContent="Durum alınamadı.";clearInterval(pollTimer);return;}
+        renderTara(j.durum);
+        if(j.durum.status==="done"||j.durum.status==="error"){
+          clearInterval(pollTimer); setBusy(false); taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';
+        }
+      }).catch(function(){});
+  }
+
+  function basla(){
+    if(!isLocal) return;
+    setBusy(true); taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Başlatılıyor…';
+    barWrap.style.display="block"; bar.style.width="0";
+    var lim=parseInt(limitEl.value); var q=(lim>0)?("?limit="+lim):"";
+    fetch(baslatUrl+q,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){info.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';return;}
+        taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Taranıyor…';
+        pollTimer=setInterval(function(){poll(j.run_id);},1500); poll(j.run_id);
+      }).catch(function(){info.textContent="Bağlantı hatası.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';});
+  }
+  if(taraBtn) taraBtn.addEventListener("click", basla);
+
+  // ── Aktif CRUD senaryoları ──
+  var senBaslatUrl=root.dataset.senaryoBaslatUrl, senDurumUrl=root.dataset.senaryoDurumUrl;
+  var senBtn=document.getElementById("hk-senaryo"), senInfo=document.getElementById("hk-senaryo-info"), senSonuc=document.getElementById("hk-senaryo-sonuc");
+  var senTimer=null;
+  function renderSen(d){
+    senInfo.textContent=d.status==="running"
+      ? ("Çalışıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?("Tamamlandı — ✅ "+d.passed+" / ❌ "+d.failed+(d.reset?" · tomofiltest sıfırlandı":"")):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+    var html=(d.scenarios||[]).map(function(s){
+      var col=s.passed?"#16a34a":"#dc2626", ic=s.passed?"fa-circle-check":"fa-circle-xmark";
+      var steps=(s.steps||[]).map(function(st){
+        var sc=st.ok?"#16a34a":"#dc2626";
+        return '<div style="font-size:11.5px;color:#64748b;padding-left:14px;"><i class="fas '+(st.ok?"fa-check":"fa-xmark")+'" style="color:'+sc+';"></i> '+esc(st.step)+(st.detail?(' <span style="color:#94a3b8;">'+esc(st.detail)+'</span>'):"")+'</div>';
+      }).join("");
+      return '<div style="margin-bottom:8px;"><div style="font-size:13px;font-weight:600;color:'+col+';"><i class="fas '+ic+'"></i> '+esc(s.name)+'</div>'+steps+'</div>';
+    }).join("");
+    senSonuc.innerHTML=html; senSonuc.style.display="block";
+  }
+  function senPoll(rid){
+    fetch(senDurumUrl+"?run="+encodeURIComponent(rid),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){clearInterval(senTimer);return;}
+        renderSen(j.durum);
+        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';}
+      }).catch(function(){});
+  }
+  function senBasla(){
+    if(!isLocal) return;
+    setBusy(true); senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor…';
+    senInfo.textContent="Başlatılıyor…";
+    fetch(senBaslatUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){senInfo.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';return;}
+        senTimer=setInterval(function(){senPoll(j.run_id);},1500); senPoll(j.run_id);
+      }).catch(function(){senInfo.textContent="Bağlantı hatası.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';});
+  }
+  if(senBtn) senBtn.addEventListener("click", senBasla);
+
+  // ── Katlanabilir kartlar ──
+  document.querySelectorAll(".hk-collapse-toggle").forEach(function(tg){
+    var body=tg.parentElement.querySelector(".hk-collapse-body");
+    var chev=tg.querySelector(".hk-collapse-chevron");
+    function apply(){
+      var collapsed=tg.dataset.collapsed==="1";
+      if(body) body.style.display=collapsed?"none":"block";
+      if(chev) chev.style.transform=collapsed?"rotate(-90deg)":"rotate(0deg)";
+    }
+    apply();
+    tg.addEventListener("click", function(){ tg.dataset.collapsed=(tg.dataset.collapsed==="1")?"0":"1"; apply(); });
+  });
+
+  // ── Geçmiş (bölüm bazlı: tarama / senaryo) ──
+  var gecmisUrl=root.dataset.gecmisUrl, gecmisYukleUrl=root.dataset.gecmisYukleUrl;
+  var taraGecmisListe=document.getElementById("hk-tara-gecmis-liste");
+  var taraGecmisBtn=document.getElementById("hk-tara-gecmis-yenile");
+  var senGecmisListe=document.getElementById("hk-sen-gecmis-liste");
+  var senGecmisBtn=document.getElementById("hk-sen-gecmis-yenile");
+
+  function gecmisRow(k){
+    var ts=(k.saved_at||"").replace(/_/g," ");
+    var ozet = (k.kind==="scenario")
+      ? ("✅ "+(k.passed||0)+" / ❌ "+(k.failed||0))
+      : ("❌ "+((k.counts&&k.counts.fail)||0)+" ⚠️ "+((k.counts&&k.counts.warn)||0)+" ✅ "+((k.counts&&k.counts.ok)||0));
+    return '<div class="hk-gecmis-row" data-file="'+esc(k.file)+'" style="display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;border:1px solid #eef2f7;margin-bottom:4px;">'+
+      '<span style="font-family:monospace;color:#475569;">'+esc(ts)+'</span>'+
+      '<span style="color:#64748b;">'+esc(ozet)+'</span></div>';
+  }
+  function bindRows(container){
+    container.querySelectorAll(".hk-gecmis-row").forEach(function(row){
+      row.addEventListener("click", function(){ yukleGecmis(row.dataset.file); });
+    });
+  }
+  function fillGecmis(el, rows, bos){
+    if(!el) return;
+    el.innerHTML = rows.length ? rows.map(gecmisRow).join("") : bos;
+    bindRows(el);
+  }
+  function loadGecmis(){
+    fetch(gecmisUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){
+          if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
+          if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";return;
+        }
+        var ks=j.kosular||[];
+        fillGecmis(taraGecmisListe, ks.filter(function(k){return k.kind!=="scenario";}), "Henüz kayıtlı tarama koşusu yok.");
+        fillGecmis(senGecmisListe, ks.filter(function(k){return k.kind==="scenario";}), "Henüz kayıtlı senaryo koşusu yok.");
+      }).catch(function(){
+        if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
+        if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";
+      });
+  }
+  if(taraGecmisBtn) taraGecmisBtn.addEventListener("click", loadGecmis);
+  if(senGecmisBtn) senGecmisBtn.addEventListener("click", loadGecmis);
+  function yukleGecmis(file){
+    fetch(gecmisYukleUrl+"?file="+encodeURIComponent(file),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
+      .then(function(r){return r.json();}).then(function(j){
+        if(!j||!j.success){return;}
+        var d=j.kosu||{};
+        if(d.kind==="scenario"){ renderSen(d); document.getElementById("hk-senaryo-sonuc").scrollIntoView({behavior:"smooth"}); }
+        else { barWrap.style.display="block"; bar.style.width="100%"; renderTara(d); document.getElementById("hk-tara-sonuc").scrollIntoView({behavior:"smooth"}); }
+      }).catch(function(){});
+  }
+  loadGecmis();
+})();
+</script>
+{% endblock %}

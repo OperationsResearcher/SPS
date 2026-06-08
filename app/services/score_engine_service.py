@@ -14,10 +14,10 @@ from typing import Optional, Dict, Any
 
 from flask import current_app
 from sqlalchemy import or_, and_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 from app.models import db
-from app.models.process import Process, ProcessKpi, KpiData
+from app.models.process import Process, ProcessKpi, KpiData, ProcessSubStrategyLink
 from app.models.core import SubStrategy, Strategy
 from app.extensions import cache
 from app.utils.cache_utils import CACHE_KEYS
@@ -48,14 +48,16 @@ def _resolve_target_for_calculation(raw_target, direction: str = "Increasing") -
     if isinstance(raw_target, (int, float)):
         return float(raw_target)
 
+    import re as _re
     text = str(raw_target).strip()
     if not text:
         return None
 
-    if "-" in text:
-        parts = [p.strip() for p in text.split("-", 1)]
-        left = _parse_float(parts[0])
-        right = _parse_float(parts[1])
+    # Negatif aralıkları doğru parse et: "-5-3", "-10--2", "1-10"
+    m = _re.match(r'^(-?[\d.,]+)\s*-\s*(-?[\d.,]+)$', text)
+    if m:
+        left = _parse_float(m.group(1))
+        right = _parse_float(m.group(2))
         if left is not None and right is not None:
             lo = min(left, right)
             hi = max(left, right)
@@ -82,7 +84,7 @@ def compute_pg_score(
     dir_ = (direction or 'Increasing').strip()
     if dir_.lower() == 'decreasing':
         if gercek_f == 0:
-            return None
+            return 100.0  # Hedef sıfır olmayan değer, gerçekleşen sıfır → tam başarı
         ratio = hedef_f / gercek_f
     else:
         ratio = gercek_f / hedef_f
@@ -117,8 +119,8 @@ def get_pg_scores_from_kpi_data(
             ProcessKpi.query
             .join(Process)
             .filter(
-                ProcessKpi.is_active == True,
-                Process.is_active == True,
+                ProcessKpi.is_active.is_(True),
+                Process.is_active.is_(True),
                 or_(
                     ProcessKpi.plan_year_id == plan_year.id,
                     and_(ProcessKpi.plan_year_id.is_(None), Process.tenant_id == tenant_id),
@@ -130,8 +132,8 @@ def get_pg_scores_from_kpi_data(
         pgs = (
             ProcessKpi.query
             .join(Process)
-            .filter(Process.tenant_id == tenant_id, Process.is_active == True)
-            .filter(ProcessKpi.is_active == True)
+            .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True))
+            .filter(ProcessKpi.is_active.is_(True))
             .all()
         )
 
@@ -154,7 +156,7 @@ def get_pg_scores_from_kpi_data(
             KpiData.query.filter(
                 KpiData.process_kpi_id.in_(_pg_ids),
                 KpiData.year == year,
-                KpiData.is_active == True,
+                KpiData.is_active.is_(True),
                 KpiData.data_date <= as_of,
             ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all()
         ):
@@ -224,7 +226,7 @@ def compute_process_scores_internal(
 
     if plan_year is not None:
         processes = Process.query.filter(
-            Process.is_active == True,
+            Process.is_active.is_(True),
             or_(
                 Process.plan_year_id == plan_year.id,
                 and_(Process.plan_year_id.is_(None), Process.tenant_id == tenant_id),
@@ -241,6 +243,15 @@ def compute_process_scores_internal(
 
     process_scores: Dict[int, float] = {}
 
+    # P1 (N+1 önlemi): tüm süreçlerin aktif KPI'larını süreç-başına sorgu yerine TEK sorguda yükle.
+    _kpis_by_proc: Dict[int, list] = {}
+    if processes:
+        for _k in ProcessKpi.query.filter(
+            ProcessKpi.process_id.in_([p.id for p in processes]),
+            ProcessKpi.is_active.is_(True),
+        ).all():
+            _kpis_by_proc.setdefault(_k.process_id, []).append(_k)
+
     def calc_process_score(process_id: int) -> float:
         if process_id in process_scores:
             return process_scores[process_id]
@@ -254,15 +265,19 @@ def compute_process_scores_internal(
             w_sum = 0.0
             for cid in child_ids:
                 c = next((p for p in processes if p.id == cid), None)
+                child_score = calc_process_score(cid)
+                if child_score is None:
+                    continue  # KPI'sız alt süreç ağırlıklı ortalamaya dahil edilmez
                 w = _default_weight(c.weight if c else None, n)
-                total += calc_process_score(cid) * w
+                total += child_score * w
                 w_sum += w
             process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
             return process_scores[process_id]
-        kpis = ProcessKpi.query.filter_by(process_id=process_id, is_active=True).all()
+        kpis = _kpis_by_proc.get(process_id, [])
         if not kpis:
-            process_scores[process_id] = 0.0
-            return 0.0
+            # KPI'sız süreç ağırlıklı ortalamayı bozmaması için None döndürür
+            process_scores[process_id] = None
+            return None
         n = len(kpis)
         total = 0.0
         w_sum = 0.0
@@ -282,6 +297,11 @@ def compute_process_scores_internal(
         if p.id not in process_scores:
             calc_process_score(p.id)
 
+    # C2: KPI'sız leaf süreçler recursion sırasında None taşır (hiyerarşik ağırlıklı
+    # ortalamadan dışlanmak için — bkz. yukarıdaki `if child_score is None`). Ancak dönüş
+    # dict'i ~10 farklı tüketici (faz0-5, surec, k-vektör, k_rapor) tarafından sayısal kabul
+    # edildiğinden None → 0.0 normalize edilir; aksi halde sum()/float()/sorted() TypeError → 500.
+    process_scores = {k: (0.0 if v is None else v) for k, v in process_scores.items()}
     return process_scores, pg_scores
 
 
@@ -330,9 +350,10 @@ def compute_vision_score(
         if plan_year is not None:
             sub_strategies = (
                 SubStrategy.query.join(Strategy)
+                .options(selectinload(SubStrategy.process_sub_strategy_links).joinedload(ProcessSubStrategyLink.process))
                 .filter(
-                    Strategy.is_active == True,
-                    SubStrategy.is_active == True,
+                    Strategy.is_active.is_(True),
+                    SubStrategy.is_active.is_(True),
                     or_(
                         Strategy.plan_year_id == plan_year.id,
                         and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),
@@ -343,8 +364,9 @@ def compute_vision_score(
         else:
             sub_strategies = (
                 SubStrategy.query.join(Strategy)
-                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active == True)
-                .filter(SubStrategy.is_active == True)
+                .options(selectinload(SubStrategy.process_sub_strategy_links).joinedload(ProcessSubStrategyLink.process))
+                .filter(Strategy.tenant_id == tenant_id, Strategy.is_active.is_(True))
+                .filter(SubStrategy.is_active.is_(True))
                 .all()
             )
         sub_strategy_scores = {}
@@ -361,7 +383,7 @@ def compute_vision_score(
         # N+1 önlemi: st.sub_strategies aşağıda iterate edildiği için selectinload
         if plan_year is not None:
             strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter(
-                Strategy.is_active == True,
+                Strategy.is_active.is_(True),
                 or_(
                     Strategy.plan_year_id == plan_year.id,
                     and_(Strategy.plan_year_id.is_(None), Strategy.tenant_id == tenant_id),

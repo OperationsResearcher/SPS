@@ -4,7 +4,7 @@ Sprint 7-9: Real-Time ve Bildirimler
 """
 
 from extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 
 class Notification(db.Model):
     """Bildirim tablosu"""
@@ -14,7 +14,7 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     # Kullanıcı
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     
     # Bildirim bilgisi
     type = db.Column(db.String(50), nullable=False)  # performance_alert, task_reminder, etc.
@@ -33,7 +33,7 @@ class Notification(db.Model):
     read_at = db.Column(db.DateTime)
     
     # Timestamp
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     
     # İndeksler
     __table_args__ = (
@@ -66,7 +66,7 @@ class NotificationPreference(db.Model):
     __tablename__ = 'notification_preferences'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, unique=True)
     
     # Email bildirimleri
     email_performance_alerts = db.Column(db.Boolean, default=True)
@@ -92,7 +92,7 @@ class NotificationPreference(db.Model):
     weekly_digest = db.Column(db.Boolean, default=True)
     
     # Timestamp
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     def __repr__(self):
         return f'<NotificationPreference for user {self.user_id}>'
@@ -103,13 +103,13 @@ class PushSubscription(db.Model):
     __tablename__ = 'push_subscriptions'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     endpoint = db.Column(db.Text, nullable=False)
     p256dh = db.Column(db.String(255), nullable=False)
     auth = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # İndeksler
     __table_args__ = (

@@ -772,6 +772,18 @@ def clone_full_plan_year(
         )
         .all()
     )
+    # N+1 önlemi: assignee'leri loop öncesi toplu çek ve activity_id'ye göre indexle
+    src_act_ids = [a.id for a in src_activities]
+    if src_act_ids:
+        all_assignees = ProcessActivityAssignee.query.filter(
+            ProcessActivityAssignee.activity_id.in_(src_act_ids)
+        ).all()
+    else:
+        all_assignees = []
+    _assignees_by_activity = {}
+    for _asgn in all_assignees:
+        _assignees_by_activity.setdefault(_asgn.activity_id, []).append(_asgn)
+
     for a in src_activities:
         new_kpi_id = kpi_id_map.get(a.process_kpi_id) if a.process_kpi_id else None
         new_a = ProcessActivity(
@@ -795,8 +807,8 @@ def clone_full_plan_year(
         db.session.add(new_a)
         db.session.flush()
 
-        # Atananları kopyala
-        for assignee_link in (ProcessActivityAssignee.query.filter_by(activity_id=a.id).all()):
+        # Atananları kopyala (toplu çekilen dict'ten — N+1 önlendi)
+        for assignee_link in _assignees_by_activity.get(a.id, []):
             db.session.add(ProcessActivityAssignee(
                 activity_id=new_a.id,
                 user_id=assignee_link.user_id,

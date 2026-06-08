@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timedelta, date as _date
+from datetime import datetime, timedelta, date as _date, timezone
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
@@ -75,7 +75,7 @@ def raporlar_api_mobile_snapshot():
     overdue = ProcessActivity.query.filter(
         ProcessActivity.process_id.in_(proc_ids),
         ProcessActivity.is_active.is_(True),
-        ProcessActivity.end_at < datetime.utcnow(),
+        ProcessActivity.end_at < datetime.now(timezone.utc),
         ProcessActivity.status != "Tamamlandı",
     ).count()
 
@@ -370,24 +370,41 @@ def raporlar_api_pg_proje_etki():
 
         # Süreç başına PG sayısı + hedef üstü/altı dağılım
         if all_proc_ids:
-            pg_rows = _db.session.execute(_t("""
-                SELECT
-                  p.id AS proc_id,
-                  count(DISTINCT k.id) AS pg_total,
-                  count(DISTINCT k.id) FILTER (
-                    WHERE EXISTS (
-                      SELECT 1 FROM kpi_data kd
-                      WHERE kd.process_kpi_id=k.id AND kd.is_active=true
-                        AND kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
-                        AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
-                        AND kd.actual_value::float >= kd.target_value::float
-                    )
-                  ) AS pg_on_target
-                FROM processes p
-                JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
-                WHERE p.id = ANY(:ids)
-                GROUP BY p.id
-            """), {"ids": list(all_proc_ids)}).fetchall()
+            # H-33 fix: ANY(:ids) ve FILTER(WHERE EXISTS...) PostgreSQL-only
+            # → SQLite'ta bu endpoint anlamlı veri üretemiyor, dialect guard ekle
+            from sqlalchemy import inspect as _sqlinspect
+            if _sqlinspect(_db.engine).dialect.name == 'postgresql':
+                from sqlalchemy.dialects.postgresql import array as _pgarray
+                pg_rows = _db.session.execute(_t(r"""
+                    SELECT
+                      p.id AS proc_id,
+                      count(DISTINCT k.id) AS pg_total,
+                      count(DISTINCT k.id) FILTER (
+                        WHERE EXISTS (
+                          SELECT 1 FROM kpi_data kd
+                          WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                            AND kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
+                            AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
+                            AND kd.actual_value::float >= kd.target_value::float
+                        )
+                      ) AS pg_on_target
+                    FROM processes p
+                    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
+                    WHERE p.id = ANY(:ids)
+                    GROUP BY p.id
+                """), {"ids": list(all_proc_ids)}).fetchall()
+            else:
+                # SQLite (Yerel geliştirme): basit ORM sorgusu, regex kontrol yok
+                pg_rows = _db.session.execute(_t("""
+                    SELECT
+                      p.id AS proc_id,
+                      count(DISTINCT k.id) AS pg_total,
+                      0 AS pg_on_target
+                    FROM processes p
+                    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=1
+                    WHERE p.id IN :ids
+                    GROUP BY p.id
+                """), {"ids": tuple(all_proc_ids)}).fetchall()
             pg_by_proc = {r.proc_id: {"total": int(r.pg_total or 0), "on_target": int(r.pg_on_target or 0)} for r in pg_rows}
         else:
             pg_by_proc = {}

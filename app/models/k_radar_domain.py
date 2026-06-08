@@ -8,11 +8,11 @@ from extensions import db
 class ProcessMaturity(db.Model):
     __tablename__ = "process_maturity"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
-    process_id = db.Column(db.Integer, db.ForeignKey("processes.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    process_id = db.Column(db.Integer, db.ForeignKey("processes.id", ondelete="CASCADE"), nullable=False, index=True)
     maturity_level = db.Column(db.Integer, nullable=False)
     dimension = db.Column(db.String(100), nullable=True)
-    assessed_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
+    assessed_by = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     assessed_at = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -23,13 +23,16 @@ class ProcessMaturity(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<ProcessMaturity {self.id}>'
+
 
 class BottleneckLog(db.Model):
     __tablename__ = "bottleneck_log"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
-    process_id = db.Column(db.Integer, db.ForeignKey("processes.id"), nullable=False, index=True)
-    kpi_id = db.Column(db.Integer, db.ForeignKey("process_kpis.id"), nullable=True, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    process_id = db.Column(db.Integer, db.ForeignKey("processes.id", ondelete="CASCADE"), nullable=False, index=True)
+    kpi_id = db.Column(db.Integer, db.ForeignKey("process_kpis.id", ondelete="SET NULL"), nullable=True, index=True)
     severity = db.Column(db.String(20), nullable=True)
     note = db.Column(db.Text, nullable=True)
     triggered_at = db.Column(db.DateTime, nullable=True, index=True)
@@ -43,13 +46,16 @@ class BottleneckLog(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<BottleneckLog {self.id}>'
+
 
 class ValueChainItem(db.Model):
     __tablename__ = "value_chain_items"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     category = db.Column(db.String(20), nullable=False)  # primary/support
-    linked_process_id = db.Column(db.Integer, db.ForeignKey("processes.id"), nullable=True, index=True)
+    linked_process_id = db.Column(db.Integer, db.ForeignKey("processes.id", ondelete="CASCADE"), nullable=True, index=True)
     muda_type = db.Column(db.String(50), nullable=True)
     title = db.Column(db.String(200), nullable=False)
     note = db.Column(db.Text, nullable=True)
@@ -62,12 +68,15 @@ class ValueChainItem(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<ValueChainItem {self.id} {(self.title or "")[:20]}>'
+
 
 class EvmSnapshot(db.Model):
     __tablename__ = "evm_snapshots"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("project.id", ondelete="CASCADE"), nullable=False, index=True)
     snapshot_date = db.Column(db.Date, nullable=False, index=True)
     pv = db.Column(db.Float, nullable=True)
     ev = db.Column(db.Float, nullable=True)
@@ -83,17 +92,20 @@ class EvmSnapshot(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<EvmSnapshot {self.id}>'
+
 
 class RiskHeatmapItem(db.Model):
     __tablename__ = "risk_heatmap_items"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     title = db.Column(db.String(255), nullable=False)
     probability = db.Column(db.Integer, nullable=False)
     impact = db.Column(db.Integer, nullable=False)
     rpn = db.Column(db.Integer, nullable=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     status = db.Column(db.String(50), nullable=True)
     source_type = db.Column(db.String(50), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
@@ -105,11 +117,14 @@ class RiskHeatmapItem(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<RiskHeatmapItem {self.id} {(self.title or "")[:20]}>'
+
 
 class StakeholderMap(db.Model):
     __tablename__ = "stakeholder_maps"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     name = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(100), nullable=True)
@@ -125,11 +140,14 @@ class StakeholderMap(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<StakeholderMap {self.id} {(self.name or "")[:20]}>'
+
 
 class StakeholderSurvey(db.Model):
     __tablename__ = "stakeholder_surveys"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     stakeholder_type = db.Column(db.String(100), nullable=False)
     period = db.Column(db.String(50), nullable=True)
     score = db.Column(db.Float, nullable=True)
@@ -144,11 +162,14 @@ class StakeholderSurvey(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f'<StakeholderSurvey {self.id}>'
+
 
 class A3Report(db.Model):
     __tablename__ = "a3_reports"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     source_type = db.Column(db.String(50), nullable=True)
     source_id = db.Column(db.Integer, nullable=True)
     problem = db.Column(db.Text, nullable=True)
@@ -163,11 +184,14 @@ class A3Report(db.Model):
         nullable=False,
     )
 
+    def __repr__(self):
+        return f"<A3Report {self.id} tenant={self.tenant_id}>"
+
 
 class CompetitorAnalysis(db.Model):
     __tablename__ = "competitor_analyses"
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id"), nullable=False, index=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
     competitor_name = db.Column(db.String(200), nullable=False)
     dimension = db.Column(db.String(100), nullable=True)
@@ -181,3 +205,6 @@ class CompetitorAnalysis(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+    def __repr__(self):
+        return f"<CompetitorAnalysis {self.id} {(self.competitor_name or '')[:20]}>"

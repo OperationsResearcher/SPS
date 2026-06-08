@@ -4,7 +4,7 @@ Portföy proje modelleri (Project, Task, RAID, …).
 Eski konum: models/project.py — yeni import: app.models.portfolio_project
 """
 from extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates, synonym
 from sqlalchemy.exc import ProgrammingError
@@ -83,8 +83,8 @@ class Project(db.Model):
     initiative_id = db.Column(db.Integer, db.ForeignKey('initiatives.id', ondelete='SET NULL'),
                               nullable=True, index=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # İlişkiler
     kurum = db.relationship(
@@ -236,7 +236,7 @@ class Task(db.Model):
     start_date = db.Column(db.Date, nullable=True)
     reminder_date = db.Column(db.DateTime, nullable=True)  # Görev hatılatıcı tarihi/zamanı
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
     # İlişkiler
     project = db.relationship('Project', backref=db.backref('tasks', lazy=True, cascade='all, delete-orphan'))
@@ -328,7 +328,7 @@ class TaskComment(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
     task = db.relationship('Task', backref=db.backref('comments', lazy=True))
     user = db.relationship(CoreUser, backref='task_comments')
@@ -340,7 +340,7 @@ class TaskMention(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     mentioned_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comment_id = db.Column(db.Integer, db.ForeignKey('task_comment.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 class ProjectFile(db.Model):
     """Proje Dosyaları"""
@@ -351,7 +351,7 @@ class ProjectFile(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(500), nullable=False)
     file_type = db.Column(db.String(50))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 class ProjectRisk(db.Model):
     """Proje Riskleri"""
@@ -363,7 +363,7 @@ class ProjectRisk(db.Model):
     probability = db.Column(db.String(20)) # Low, Medium, High
     impact = db.Column(db.String(20)) # Low, Medium, High
     status = db.Column(db.String(20)) # Open, Mitigated, Closed
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 # Faz 2/3 Yeni Proje Modelleri
 class Tag(db.Model):
@@ -395,7 +395,7 @@ class TaskActivity(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     activity_type = db.Column(db.String(50))
     details = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class TaskDependency(db.Model):
@@ -520,7 +520,7 @@ class RaidItem(db.Model):
     dependency_task_id = db.Column(db.Integer, nullable=True)  # Bağımlı görev
     dependency_type = db.Column(db.String(50), nullable=True)  # FS, SS, FF, SF (Critical Path tiplemeleri)
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     project = db.relationship('Project', backref=db.backref('raid_items', lazy=True))
     owner = db.relationship(CoreUser, foreign_keys=[owner_id])
@@ -534,7 +534,7 @@ class TaskBaseline(db.Model):
     planned_start = db.Column(db.Date, nullable=True)
     planned_end = db.Column(db.Date, nullable=True)
     planned_effort = db.Column(db.Float, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     task = db.relationship('Task', backref=db.backref('baseline', uselist=False))
 

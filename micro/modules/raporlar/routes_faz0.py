@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timedelta, date as _date
+from datetime import datetime, timedelta, date as _date, timezone
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
@@ -93,7 +93,7 @@ def raporlar_api_veri_kalitesi():
         kpi_id_to_count[kid] = cnt
 
     # Kategorize: kritik / orta / iyi
-    today = datetime.utcnow().date()
+    today = datetime.now(timezone.utc).date()
     kritik, orta, iyi = [], [], []
 
     for k in all_kpis:
@@ -211,7 +211,7 @@ def raporlar_api_kv_carpiklik():
 
     # Skor motorundan strateji skorları
     try:
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         score_year = active_py.year if active_py else today.year
         proc_scores, _ = compute_process_scores_internal(
             tid, score_year, today, persist_pg_scores=False, plan_year=active_py
@@ -359,6 +359,30 @@ def raporlar_api_hizalama_sankey():
     unaligned_processes = set()
     unaligned_pgs = set()
 
+    # Tüm process id'lerini bir kere topla, sonra tek sorguda ProcessKpi çek
+    all_process_ids = set()
+    for s in strategies:
+        for ss in s.sub_strategies:
+            if not getattr(ss, "is_active", True):
+                continue
+            for pssl in ss.process_sub_strategy_links:
+                p = pssl.process
+                if not p or not p.is_active or p.tenant_id != tid:
+                    continue
+                if py_id and p.plan_year_id is not None and p.plan_year_id != py_id:
+                    continue
+                all_process_ids.add(p.id)
+
+    # Bulk ProcessKpi sorgusu — N+1'i önler
+    kpis_by_process: dict = {}
+    if all_process_ids:
+        bulk_kpis = ProcessKpi.query.filter(
+            ProcessKpi.process_id.in_(all_process_ids),
+            ProcessKpi.is_active.is_(True),
+        ).all()
+        for _k in bulk_kpis:
+            kpis_by_process.setdefault(_k.process_id, []).append(_k)
+
     for s in strategies:
         sid = f"s-{s.id}"
         node_index[sid] = len(nodes)
@@ -410,8 +434,8 @@ def raporlar_api_hizalama_sankey():
                 contrib = pssl.contribution_pct or 1
                 links.append({"source": node_index[ssid], "target": node_index[pid], "value": round(contrib, 1), "strategy_key": sid})
 
-                # PG'ler
-                p_kpis = ProcessKpi.query.filter_by(process_id=p.id, is_active=True).all()
+                # PG'ler (bulk dict'ten oku — N+1 yok)
+                p_kpis = kpis_by_process.get(p.id, [])
                 for k in p_kpis:
                     kid = f"k-{k.id}"
                     if kid not in node_index:
@@ -617,6 +641,10 @@ def raporlar_yonetici_liderlik():
 @login_required
 def raporlar_api_yonetici_liderlik():
     """Süreç liderlerinin liderliğindeki süreçlerin ortalama performans skoru."""
+    allowed = {"tenant_admin", "executive_manager", "Admin", "yonetici"}
+    if not current_user.role or current_user.role.name not in allowed:
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
+
     tid = current_user.tenant_id
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
@@ -672,9 +700,13 @@ def raporlar_api_yonetici_liderlik():
     for uid, pid in rows:
         leader_map[uid].append(pid)
 
+    # Bulk User sorgusu — N+1'i önler
+    all_uids = list(leader_map.keys())
+    users_dict = {u.id: u for u in User.query.filter(User.id.in_(all_uids)).all()}
+
     leaders = []
     for uid, pids in leader_map.items():
-        u = User.query.get(uid)
+        u = users_dict.get(uid)
         if not u or not u.is_active:
             continue
         scores = [proc_scores.get(pid) for pid in pids if proc_scores.get(pid) is not None]
@@ -800,7 +832,7 @@ def raporlar_api_sabah_ozeti():
     overdue = ProcessActivity.query.filter(
         ProcessActivity.process_id.in_(proc_ids_subq),
         ProcessActivity.is_active.is_(True),
-        ProcessActivity.end_at < datetime.utcnow(),
+        ProcessActivity.end_at < datetime.now(timezone.utc),
         ProcessActivity.status != "Tamamlandı",
     ).count()
 
@@ -1082,7 +1114,7 @@ def raporlar_api_ai_sunum_generate():
 
     # Veri özetleri
     tenant_name = tenant.name if tenant else "Kurum"
-    year_label = str(active_py.year) if active_py else _dt.utcnow().year
+    year_label = str(active_py.year) if active_py else _date.today().year
 
     strategies = []
     if active_py:
@@ -1202,7 +1234,7 @@ def raporlar_api_ai_sunum_generate():
     # Slaytları üret
     add_title_slide(prs,
         f"{tenant_name}",
-        f"{year_label} Stratejik Plan Sunumu · {_dt.utcnow().strftime('%d %B %Y')}")
+        f"{year_label} Stratejik Plan Sunumu · {_date.today().strftime('%d %B %Y')}")
 
     add_content_slide(prs, 2, "Yönetici Özeti", ai_summary)
 
@@ -1257,7 +1289,9 @@ def raporlar_api_ai_sunum_generate():
     prs.save(buf)
     buf.seek(0)
 
-    filename = f"{tenant_name.replace(' ', '_')}_{year_label}_yil_sonu_sunum.pptx"
+    import re as _re
+    safe_name = _re.sub(r'[^\w\-]', '_', tenant_name)[:50]
+    filename = f"{safe_name}_{year_label}_yil_sonu_sunum.pptx"
     return send_file(
         buf,
         mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation",

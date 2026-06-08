@@ -41,7 +41,7 @@ def sp_api_strategy_project_matrix():
         strat_rows = db.session.execute(text("""
             SELECT id, code, title FROM strategies
             WHERE tenant_id=:t AND is_active=true
-              AND (:py_id IS NULL OR plan_year_id = :py_id)
+              AND (CAST(:py_id AS INTEGER) IS NULL OR plan_year_id = CAST(:py_id AS INTEGER))
             ORDER BY code NULLS LAST, id
         """), {"t": tid, "py_id": py_id}).fetchall()
         strategies = [{"id": r.id, "code": r.code or "", "title": r.title or ""} for r in strat_rows]
@@ -67,7 +67,7 @@ def sp_api_strategy_project_matrix():
             JOIN sub_strategies ss ON ss.id = psl.sub_strategy_id AND ss.is_active = true
             JOIN strategies s ON s.id = ss.strategy_id AND s.is_active = true
             WHERE p.tenant_id = :t
-              AND (:py_id IS NULL OR s.plan_year_id = :py_id)
+              AND (CAST(:py_id AS INTEGER) IS NULL OR s.plan_year_id = CAST(:py_id AS INTEGER))
             GROUP BY prp.project_id, s.id
         """), {"t": tid, "py_id": py_id}).fetchall()
 
@@ -105,4 +105,4 @@ def sp_api_strategy_project_matrix():
         }})
     except Exception as e:
         current_app.logger.error(f"[strategy_project_matrix] {e}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
