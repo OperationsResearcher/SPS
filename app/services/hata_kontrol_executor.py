@@ -389,6 +389,13 @@ def _login(page, base_url: str) -> bool:
         page.click("button[type='submit'], input[type='submit']")
         page.wait_for_load_state("domcontentloaded", timeout=15000)
         time.sleep(0.4)
+        if "/login" in page.url:
+            return False
+        # Doğrulama: korumalı bir sayfa gerçekten açılıyor mu? URL'nin /login
+        # olmaması yeterli değil — oturum kurulmadan da başka yere savrulabilir.
+        # Açılmazsa (login'e döner) tüm taramanın sahte-FAIL olmasını önler.
+        page.goto(base_url + "/masaustu", wait_until="domcontentloaded", timeout=15000)
+        time.sleep(0.3)
         return "/login" not in page.url
     except Exception:
         return False
