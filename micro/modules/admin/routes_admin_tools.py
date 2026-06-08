@@ -11,9 +11,11 @@ Güvenlik:
 from __future__ import annotations
 
 import os
+import tempfile
 
-from flask import render_template, jsonify, current_app, request
+from flask import render_template, jsonify, current_app, request, send_file, after_this_request
 from flask_login import login_required, current_user
+from werkzeug.security import check_password_hash
 
 from platform_core import app_bp
 from app.extensions import csrf
@@ -89,6 +91,136 @@ def admin_tools_loglar_kurum(tenant_id):
     if detail is None:
         return render_template("errors/404.html"), 404
     return render_template("platform/admin/loglar_kurum.html", detail=detail)
+
+
+# ─── Yedekleme ───────────────────────────────────────────────────────────────
+
+_RESTORE_CONFIRM = "KOKPITIM-DB-GERIYUKLE"
+
+
+@app_bp.route("/admin/araclar/yedekleme")
+@login_required
+def admin_tools_yedekleme():
+    """Yedekleme bölümü — otomatik durum + manuel indir + geri yükle (Admin)."""
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    try:
+        from app.services import yedekleme_service as Y
+        status = Y.auto_status(current_app._get_current_object())
+        backups = Y.list_auto_backups(current_app._get_current_object())
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] yedekleme sayfa: {e}", exc_info=True)
+        status, backups = None, []
+    return render_template("platform/admin/yedekleme.html",
+                           status=status, backups=backups, confirm=_RESTORE_CONFIRM)
+
+
+def _send_temp(path: str, download_name: str, mime: str):
+    @after_this_request
+    def _cleanup(resp):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+        return resp
+    return send_file(path, as_attachment=True, download_name=download_name, mimetype=mime)
+
+
+@app_bp.route("/admin/araclar/yedekleme/indir/db", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_yedekleme_indir_db():
+    """Manuel: anlık tam DB yedeği üret → indir."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    import datetime
+    try:
+        from app.services import yedekleme_service as Y
+        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        fd, path = tempfile.mkstemp(suffix=".dump"); os.close(fd)
+        Y.dump_db(current_app._get_current_object(), path)
+        return _send_temp(path, f"kokpitim_db_{ts}.dump", "application/octet-stream")
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] yedek DB indir: {e}", exc_info=True)
+        return jsonify({"success": False, "message": f"DB yedeği alınamadı: {e}"}), 500
+
+
+@app_bp.route("/admin/araclar/yedekleme/indir/kod", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_yedekleme_indir_kod():
+    """Manuel: anlık tam kod yedeği üret → indir."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    import datetime
+    try:
+        from app.services import yedekleme_service as Y
+        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        fd, path = tempfile.mkstemp(suffix=".tar.gz"); os.close(fd)
+        Y.make_code_archive(path)
+        return _send_temp(path, f"kokpitim_kod_{ts}.tar.gz", "application/gzip")
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] yedek kod indir: {e}", exc_info=True)
+        return jsonify({"success": False, "message": f"Kod yedeği alınamadı: {e}"}), 500
+
+
+@app_bp.route("/admin/araclar/yedekleme/indir-dosya")
+@login_required
+def admin_tools_yedekleme_indir_dosya():
+    """Mevcut otomatik yedek dosyasını indir (yalnız otomatik dizininden)."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services import yedekleme_service as Y
+    name = os.path.basename(request.args.get("file", ""))  # path traversal koruması
+    path = os.path.join(Y.auto_dir(current_app._get_current_object()), name)
+    if not name or not os.path.isfile(path):
+        return jsonify({"success": False, "message": "Dosya bulunamadı."}), 404
+    mime = "application/gzip" if name.endswith(".gz") else "application/octet-stream"
+    return send_file(path, as_attachment=True, download_name=name, mimetype=mime)
+
+
+@app_bp.route("/admin/araclar/yedekleme/otomatik-calistir", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_yedekleme_otomatik_calistir():
+    """Otomatik yedeği şimdi elle tetikle (test/acil)."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    try:
+        from app.services import yedekleme_service as Y
+        res = Y.run_auto_backup(current_app._get_current_object())
+        return jsonify({"success": not res.get("errors"), "result": res})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] otomatik calistir: {e}", exc_info=True)
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@app_bp.route("/admin/araclar/yedekleme/geri-yukle/db", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_yedekleme_geri_yukle_db():
+    """YIKICI: yüklenen .dump'tan DB'yi geri yükle. Admin + şifre + onay metni."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    pw = request.form.get("password", "")
+    confirm = (request.form.get("confirmation") or "").strip()
+    if confirm != _RESTORE_CONFIRM:
+        return jsonify({"success": False, "message": f"Onay metni hatalı. '{_RESTORE_CONFIRM}' yazmalısınız."}), 400
+    if not pw or not check_password_hash(getattr(current_user, "password_hash", "") or "", pw):
+        return jsonify({"success": False, "message": "Şifre hatalı."}), 403
+    f = request.files.get("dump")
+    if not f or not f.filename.endswith(".dump"):
+        return jsonify({"success": False, "message": "Geçerli bir .dump dosyası yükleyin."}), 400
+    try:
+        from app.services import yedekleme_service as Y
+        fd, path = tempfile.mkstemp(suffix=".dump"); os.close(fd)
+        f.save(path)
+        Y.restore_db(current_app._get_current_object(), path)
+        os.remove(path)
+        return jsonify({"success": True, "message": "DB geri yükleme tamamlandı."})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] DB geri yukle: {e}", exc_info=True)
+        return jsonify({"success": False, "message": f"Geri yükleme hatası: {e}"}), 500
 
 
 # ─── Hata Kontrolü ───────────────────────────────────────────────────────────

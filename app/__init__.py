@@ -378,6 +378,7 @@ def create_app(config_class=None):
         init_k_radar_scheduler(app)
         _init_early_warning_scheduler(app)
         _init_weekly_digest_scheduler(app)  # Sprint 18
+        _init_yedekleme_scheduler(app)
         if app.config.get("KOKPITIM_DEMO_MODE"):
             _init_demo_inactivity_sweeper(app)  # KURALLAR §8.4 — demo Tomofil sıfırlama
 
@@ -430,6 +431,30 @@ def _init_weekly_digest_scheduler(app) -> None:
         app.logger.warning("[digest_scheduler] apscheduler kurulu değil.")
     except Exception as e:
         app.logger.error(f"[digest_scheduler] Başlatma hatası: {e}")
+
+
+def _init_yedekleme_scheduler(app) -> None:
+    """Otomatik yedek (tam DB + kod fark) her gece 02:00'de çalışır."""
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.cron import CronTrigger
+        from app.services.yedekleme_service import run_auto_backup
+
+        scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
+        scheduler.add_job(
+            func=run_auto_backup,
+            args=[app],
+            trigger=CronTrigger(hour=2, minute=0),
+            id="yedekleme_nightly",
+            replace_existing=True,
+            misfire_grace_time=3600,
+            coalesce=True,
+        )
+        scheduler.start()
+        app.logger.info("[yedekleme] Otomatik yedek zamanlayıcı başlatıldı (her gece 02:00).")
+    except ImportError:
+        app.logger.warning("[yedekleme] apscheduler yok, otomatik yedek atlandı.")
+    return app
 
 
 def _init_early_warning_scheduler(app) -> None:

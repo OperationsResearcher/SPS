@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-180 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Yedekleme bileşeni — eski tooling kaldırıldı, yeni Admin Araçları > Yedekleme kuruldu
+**Modül:** yedekleme_service, routes_admin_tools, yedekleme.html, app/__init__ scheduler
+**Durum:** ✅ Yerelde tamam, uçtan uca doğrulandı.
+
+### Kaldırılanlar (kullanıcı onayı, kalıcı)
+- Servisler: `admin_backup_service.py`, `backup_scheduler_service.py`, `yedekleyici.py`, `scripts/post_migration_assert.py`.
+- UI/route: `ayarlar/yedekleme.html`, admin/routes.py backup route'ları (448-819) + middleware + importlar, ayarlar menü kartı.
+- `__init__` eski scheduler hook, `instance/backup_schedule.json`.
+- **Yedek verisi:** `backups/` + `Yedekler/` (7,5 GB) — kullanıcı iki kez bilgilendirilmiş onayıyla kalıcı silindi.
+- **KORUNAN:** `tenant_backup_service.py` (demo_reset_service + ops scriptleri bağımlı — silinirse demo reset çöker).
+
+### Yeni bileşen
+- `app/services/yedekleme_service.py`: pg_dump (-Fc tam DB), kod tar.gz (tam/mtime-fark), rotasyon (son 14), `run_auto_backup`, `restore_db` (pg_restore --clean), `list_auto_backups`, `auto_status`. pg_dump yolu sürüm-bilincli seçilir (sunucu PG 18 → `C:\pgdata\bin`).
+- Gece 02:00 APScheduler işi (`_init_yedekleme_scheduler`): tam DB + kod (haftada bir tam baseline, diğer günler fark).
+- Route'lar (Admin-only): sayfa, manuel DB indir, manuel kod indir, dosya indir, otomatik-çalıştır, DB geri-yükle (şifre + onay metni `KOKPITIM-DB-GERIYUKLE`).
+- `yedekleme.html` + Admin Araçları kartı. Çıktı: `instance/yedekler/otomatik/` (gitignored).
+
+### Doğrulama
+pg_dump 18 ile DB 3,4 MB / kod tam 111 MB üretildi; `run_auto_backup` DB+kod+rotasyon çalıştı; `pg_restore --list` ile dump geçerli+restore-edilebilir doğrulandı (1550 TOC, 162 tablo); scheduler 02:00 başladı; sayfa 302.
+
+### Notlar
+DB=PostgreSQL (yerelde de). Yerel `instance/kokpitim.db` 0 byte/ölü. Salt Admin; ortam kilidi yok → Test/Yayín'a deploy edilince çalışır (gece yedeği asıl orada anlamlı). Yerel-only; deploy ayrı onayla.
+
 ## TASK-179 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Loglar → kurum detay sayfası (kategori bazlı zaman çizelgesi) + eksik audit instrumentasyonu
