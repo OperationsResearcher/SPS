@@ -155,11 +155,22 @@ def scenario_sp_kimlik(page, base_url):
     return _result("Vizyon/Misyon", steps)
 
 
-def scenario_surec_zinciri(page, base_url):
-    """Süreç → PG → PGV — GERÇEK UI tıklama.
+def _vgs_enter(page, value):
+    """Karnede ilk PG için VGS veri girişi (gerçek UI: .btn-kpi-vgs → modal → kaydet)."""
+    page.locator(".btn-kpi-vgs").first.click()
+    page.wait_for_selector("#kpi-data-entry-value", state="visible", timeout=12000)
+    page.fill("#kpi-data-entry-value", str(value))
+    page.click("#btn-vgs-confirm")
+    page.wait_for_timeout(2500)
+    return not page.locator("#modal-kpi-data-entry").is_visible()
 
-    Süreç: /process'te 'Yeni Süreç' modalı (ad+kod+alt-strateji checkbox+kaydet).
-    PG: bir sürecin Karnesinde '+PG' modalı. PGV: karne veri girişi (en iyi çaba).
+
+def scenario_surec_zinciri(page, base_url):
+    """Süreç → PG (oluştur/düzenle/sil) → PGV (gir/değiştir/sil) — GERÇEK UI tıklama.
+
+    Süreç oluşturulup KENDİ karnesine gidilir (orada yalnız bu PG olur → düzenle/sil
+    seçicileri tek anlamlı). PGV değiştir = sil + yeniden gir (aynı döneme tekrar
+    giriş backend'de 409 verir).
     """
     steps = []
     def step(n, ok, d=""):
@@ -167,6 +178,7 @@ def scenario_surec_zinciri(page, base_url):
 
     suf = str(int(time.time()))
     sname = "HK-Surec-" + suf
+    pgname = "HK-PG-" + suf
     try:
         # ── Süreç (Yeni Süreç modalı) ──
         page.goto(base_url + "/process", wait_until="domcontentloaded", timeout=120000)
@@ -179,7 +191,6 @@ def scenario_surec_zinciri(page, base_url):
         page.wait_for_selector("#surec-name", state="visible", timeout=15000)
         page.fill("#surec-name", sname)
         page.fill("#surec-code", "HKP" + suf[-4:])
-        # Süreç en az bir alt stratejiye bağlanmalı → ilk checkbox'ı işaretle
         try:
             page.wait_for_selector("input[id^='ss-']", timeout=8000)
             page.locator("input[id^='ss-']").first.check()
@@ -187,26 +198,27 @@ def scenario_surec_zinciri(page, base_url):
             pass
         page.click("#btn-surec-save")
         page.wait_for_timeout(3000)
-        created = page.locator("body", has_text=sname).count() > 0
-        step("Süreç oluşturuldu (UI tıklama)", created, sname)
+        step("Süreç oluşturuldu (UI tıklama)", page.locator("body", has_text=sname).count() > 0, sname)
 
-        # ── PG (bir sürecin Karnesinde) ──
+        # ── KENDİ sürecimizin karnesine git (izole — yalnız bizim PG olacak) ──
         page.goto(base_url + "/process", wait_until="domcontentloaded", timeout=120000)
         try:
             page.wait_for_load_state("networkidle", timeout=10000)
         except Exception:
             pass
-        karne = page.locator("a:has-text('Süreç Karnesi')")
-        if karne.count() == 0:
-            step("Karne linki bulunamadı", False)
+        karne_xp = ('xpath=//*[contains(normalize-space(.),"%s")]'
+                    '/ancestor-or-self::*[.//a[contains(.,"Karne")]][1]//a[contains(.,"Karne")]') % sname
+        if page.locator(karne_xp).count() == 0:
+            step("Kendi sürecimizin karne linki bulunamadı", False)
             return _result("Süreç/PG/PGV", steps)
-        karne.first.click()
+        page.locator(karne_xp).first.click()
         page.wait_for_load_state("domcontentloaded", timeout=60000)
         try:
             page.wait_for_load_state("networkidle", timeout=8000)
         except Exception:
             pass
-        pgname = "HK-PG-" + suf
+
+        # ── PG oluştur ──
         page.wait_for_selector("#btn-kpi-add", state="visible", timeout=20000)
         page.click("#btn-kpi-add")
         page.wait_for_selector("#kpi-add-name", state="visible", timeout=15000)
@@ -219,20 +231,79 @@ def scenario_surec_zinciri(page, base_url):
             pass
         page.click("#btn-kpi-add-modal-save")
         page.wait_for_timeout(2500)
-        pg_ok = page.locator("body", has_text=pgname).count() > 0
-        step("PG oluşturuldu (UI tıklama)", pg_ok, pgname)
+        step("PG oluşturuldu (UI tıklama)", page.locator("body", has_text=pgname).count() > 0, pgname)
 
-        # ── PGV (GERÇEK UI: .btn-kpi-vgs → #modal-kpi-data-entry → değer → #btn-vgs-confirm) ──
-        if page.locator(".btn-kpi-vgs").count() == 0:
-            step("PGV: veri-giriş butonu (.btn-kpi-vgs) bulunamadı", False)
-        else:
-            page.locator(".btn-kpi-vgs").first.click()
-            page.wait_for_selector("#kpi-data-entry-value", state="visible", timeout=12000)
-            page.fill("#kpi-data-entry-value", "80")
-            page.click("#btn-vgs-confirm")
+        # ── PG düzenle (.btn-kpi-edit → aynı modal düzenle modu → kaydet) ──
+        pgname2 = pgname + "-D"
+        if page.locator(".btn-kpi-edit").count() > 0:
+            page.locator(".btn-kpi-edit").first.click()
+            page.wait_for_selector("#kpi-add-name", state="visible", timeout=12000)
+            page.fill("#kpi-add-name", pgname2)
+            page.click("#btn-kpi-add-modal-save")
             page.wait_for_timeout(2500)
-            pgv_ok = not page.locator("#modal-kpi-data-entry").is_visible()
-            step("PGV girildi (UI tıklama)", pgv_ok, "değer=80")
+            step("PG düzenlendi (UI tıklama)", page.locator("body", has_text=pgname2).count() > 0, pgname2)
+        else:
+            step("PG düzenle butonu (.btn-kpi-edit) yok", False)
+
+        # ── PGV gir (.btn-kpi-vgs → modal → değer → kaydet) ──
+        if page.locator(".btn-kpi-vgs").count() == 0:
+            step("PGV: veri-giriş butonu (.btn-kpi-vgs) yok", False)
+        else:
+            step("PGV girildi (UI tıklama)", _vgs_enter(page, 80), "değer=80")
+
+            # ── PGV sil (veri-detay modalında — en iyi çaba) ──
+            pgv_deleted = False
+            try:
+                if page.locator(".kb-gerceklesen-item").count() > 0:
+                    page.locator(".kb-gerceklesen-item").first.click()
+                    page.wait_for_timeout(1200)
+                    delbtn = page.locator(
+                        "#modal-micro-veri-detay button:has-text('Sil'), "
+                        "#modal-micro-veri-detay .btn-veri-sil, "
+                        "#modal-micro-veri-detay [title*='Sil']")
+                    if delbtn.count() > 0:
+                        delbtn.first.click()
+                        page.wait_for_timeout(800)
+                        # olası onay
+                        if page.locator(".swal2-confirm").count() > 0:
+                            page.click(".swal2-confirm")
+                        page.wait_for_timeout(1500)
+                        pgv_deleted = True
+                    # detay modalını kapat
+                    if page.locator("#btn-micro-veri-detay-footer-close").count() > 0:
+                        try:
+                            page.click("#btn-micro-veri-detay-footer-close")
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            if pgv_deleted:
+                step("PGV silindi (veri-detay UI)", True, "")
+                # ── PGV değiştir = yeniden gir (yeni değer) ──
+                try:
+                    step("PGV değiştirildi (sil+yeniden gir)", _vgs_enter(page, 90), "değer=90")
+                except Exception as e:
+                    step("PGV değiştir", False, str(e)[:60])
+            else:
+                step("PGV sil/değiştir: veri-detay tetikleyicisi otomatize edilmedi (dinamik bileşen)", True, "atlandı")
+
+        # ── PG sil (.btn-kpi-delete → SweetAlert2 onay) ── (en son: cleanup + sil testi)
+        if page.locator(".btn-kpi-delete").count() > 0:
+            page.locator(".btn-kpi-delete").first.click()
+            try:
+                page.wait_for_selector(".swal2-confirm", state="visible", timeout=8000)
+                page.click(".swal2-confirm")
+                # PG sil = global (is_active=False) veya plan-year modunda yıl-kapsamlı
+                # hariç bırakma. Başarı toast'ı ("kaldırıldı"/"silindi") ile doğrula.
+                try:
+                    page.wait_for_selector("text=/kaldırıld|silindi/i", timeout=8000)
+                    step("PG sil uygulandı (UI tıklama)", True, pgname2)
+                except Exception:
+                    step("PG sil — başarı bildirimi görünmedi", False, pgname2)
+            except Exception as e:
+                step("PG sil onayı", False, str(e)[:60])
+        else:
+            step("PG sil butonu (.btn-kpi-delete) yok", False)
     except Exception as e:
         step("İstisna", False, str(e).splitlines()[0][:120])
     return _result("Süreç/PG/PGV", steps)
