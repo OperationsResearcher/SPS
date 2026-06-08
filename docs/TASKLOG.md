@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-182 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Alembic squash baseline — deploy'un Alembic adımı sorununu kalıcı çöz
+**Modül:** migrations, oracle_safe_deploy akışı
+**Durum:** ✅ Yerel + Test + Yayın stamp'li, doğrulandı.
+
+### Problem (teşhis)
+Şema yönetimi disiplinsiz hibritti: migration grafiğinde **5 birleşmemiş head**, yerel DB 2 ara-revizyonda, **Yayın'da alembic_version tablosu yok**, kodda otomatik create_all yok. `flask db upgrade` (deploy adımı) iki sebeple patlıyordu: (a) version tablosu yok → baştan başlar → "already exists", (b) 5 head → "multiple heads".
+
+### Çözüm — squash baseline
+- 65 eski migration `migrations/_archive_versions/`'e taşındı; modellerden **tek baseline** üretildi: `f5215370eebd` (161 tablo, down_revision=None). Boş DB'ye hatasız uygulandı (161 tablo = Yayın 161).
+- Model↔DB farkı incelendi: 257 index/FK autogenerate gürültüsü + 13 minör (nullable/genişlik); **tip-uyumsuzluğu yok** → baseline honest, veri riski yok.
+- Yerel + Test + Yayın DB'leri baseline'a **stamp**'lendi (sıfır-DDL; sadece `alembic_version` satırı). **Kritik:** tablo `kokpitim_user`/`kokpitim_test_user` **sahipliğinde** olmalı (yoksa app "permission denied"). 
+- Test container'da `flask db upgrade` temiz **no-op** doğrulandı (mekanizma gerçek altyapıda).
+
+### Doğrulama
+Yayın: git 975dd39, versions/=1 baseline, alembic_version=f5215370eebd, /health 200, veri sabit (7/145/92492). Test: no-op upgrade OK. Yerel: current=head, upgrade no-op.
+
+### Notlar
+- Yayın container'ı bir sonraki deploy'da yeniden build edilince baseline'ı bake eder (şu an çalışan container eski migration'ları içeriyor ama zararsız — startup'ta migration çalışmıyor).
+- Tekrar etmemesi için kural: **tek alembic head disiplini** (paralel dal migration'ları merge edilmeli).
+- Eski 65 migration `_archive_versions/`'te (silinmedi, referans).
+
+
 ## TASK-180 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Yedekleme bileşeni — eski tooling kaldırıldı, yeni Admin Araçları > Yedekleme kuruldu
