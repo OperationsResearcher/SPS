@@ -373,10 +373,7 @@ def create_app(config_class=None):
     app.register_blueprint(push_bp, url_prefix="")
     app.register_blueprint(ai_bp, url_prefix="")
 
-    # Admin backup scheduler (daily/weekly, persisted in instance/backup_schedule.json)
     if not app.testing:
-        from services.backup_scheduler_service import init_backup_scheduler
-        init_backup_scheduler(app)
         from services.k_radar_scheduler_service import init_k_radar_scheduler
         init_k_radar_scheduler(app)
         _init_early_warning_scheduler(app)
