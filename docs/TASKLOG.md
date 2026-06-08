@@ -2,6 +2,32 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-174 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları/Hata Kontrolü detaylı inceleme + düzeltmeler + PGV tam UI + /sp perf değerlendirmesi
+**Modül:** tenant_clone_service, hata_kontrol_executor, hata_kontrol_scenarios
+**Durum:** ✅ Yerelde tamam, doğrulandı. Tam paket 5/5 GEÇTİ, reset temiz.
+
+### Detaylı inceleme (2 paralel ajan) — doğrulanan düzeltmeler
+- **KRİTİK:** `find_source_tenant_id` `'%tomofil%'` ile "tomofiltest"i de eşliyordu → hariç tutuldu + `source==test` guard (yanlış kurumu klonlama/silme riski).
+- **Savunma derinliği:** clone/wipe servis katmanında da Yayín kilidi (`_is_production`).
+- **Thread-safety:** `_MADE_MAPS` global → koşuya özel yerel `made_maps`.
+- **Bellek:** `_RUNS` sınırsız büyüyordu → son 20 (`_MAX_RUNS`).
+- **Kaynak yönetimi:** Playwright browser `try/finally` ile garanti kapatma.
+- **DRY:** sentetik admin şifresi tek kaynak.
+- **Temizlik:** ölü fetch helper'ları + kullanılmayan import'lar silindi.
+- **Elenen (yanlış/abartılı):** pg_get_serial_sequence injection yok (adlar şemadan); FK sırası zaten doğru (0 sızıntı doğrulanmıştı).
+
+### PGV tam UI otomasyonu
+- Karne `.btn-kpi-vgs` → `#modal-kpi-data-entry` → `#kpi-data-entry-value` → `#btn-vgs-confirm`. Artık Süreç/PG/PGV 3 adım da gerçek tıklama.
+
+### Reset (wipe) FK düzeltmesi
+- `individual_kpi_data(_audits).user_id` CASCADE değil → senaryo PGV verisi sentetik admine bağlanınca `DELETE users` takılıyordu. Wipe'a eklendi → reset güvenilir.
+
+### /sp performans — DEĞERLENDİRİLDİ, gerek YOK
+- Ölçüm: /sp route **0.87s soğuk / 0.02s sıcak**. Önceki "91k yüzünden yavaş" iddiası YANLIŞ.
+- Vizyon/Misyon UI senaryosunun ara sıra flake'i = **test sırasındaki DB çekişmesi** (gece 02:00 `early_warning` zamanlayıcısı + çoklu test sunucusu), /sp perf değil. Çekişmesiz koşuda 5/5 geçti.
+
 ## TASK-173 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Hata Kontrolü — Aktif CRUD senaryolarını tüm çekirdek entity'lere yayma
