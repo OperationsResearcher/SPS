@@ -1,0 +1,120 @@
+{% extends "platform/base.html" %}
+{% block title %}İstatistikler — Kokpitim{% endblock %}
+{% block page_title %}İstatistikler{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'İstatistikler', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-chart-column" style="color:#6366f1;"></i> İstatistikler
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır.
+      </p>
+    </div>
+  </div>
+
+  {% if not stats %}
+  <div class="mc-card" style="padding:16px;border-left:4px solid #dc2626;background:#fef2f2;">
+    <i class="fas fa-circle-exclamation" style="color:#b91c1c;"></i>
+    <span style="font-size:13px;color:#991b1b;">İstatistikler alınamadı.</span>
+  </div>
+  {% else %}
+
+  {# ── Özet kartları ── #}
+  {% set t = stats.totals %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px;">
+    {% set cards = [
+      ('Kurum', stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe'),
+      ('Kullanıcı', t.users, 'fa-users', '#7c3aed', '#ede9fe'),
+      ('Ana Strateji', t.strategies, 'fa-bullseye', '#b45309', '#fef3c7'),
+      ('Alt Strateji', t.sub_strategies, 'fa-list-ul', '#b45309', '#fffbeb'),
+      ('Süreç', t.processes, 'fa-diagram-project', '#0e7490', '#ecfeff'),
+      ('PG', t.kpis, 'fa-gauge-high', '#15803d', '#f0fdf4'),
+      ('PG Verisi', t.kpi_data, 'fa-database', '#16a34a', '#f0fdf4'),
+      ('Proje', t.projects, 'fa-folder-open', '#9333ea', '#faf5ff'),
+      ('Proje Task', t.tasks, 'fa-list-check', '#9333ea', '#faf5ff')
+    ] %}
+    {% for label, value, icon, color, bg in cards %}
+    <div class="mc-card" style="padding:14px;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:{{ bg }};color:{{ color }};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;"><i class="fas {{ icon }}"></i></span>
+        <div style="min-width:0;">
+          <div style="font-size:20px;font-weight:800;color:var(--text-default);line-height:1.1;">{{ "{:,}".format(value).replace(",", ".") }}</div>
+          <div style="font-size:11.5px;color:#64748b;white-space:nowrap;">{{ label }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# ── Kurum bazlı tablo ── #}
+  <div class="mc-card" style="padding:0;overflow:hidden;">
+    <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-table" style="color:#475569;"></i>
+      <span style="font-size:14px;font-weight:700;color:var(--text-default);">Kurum Bazında Dağılım</span>
+      <span style="font-size:12px;color:#94a3b8;">({{ stats.tenant_count }} aktif kurum)</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;">
+        <thead>
+          <tr style="background:#f8fafc;color:#475569;text-align:right;">
+            <th style="padding:9px 12px;text-align:left;position:sticky;left:0;background:#f8fafc;">Kurum</th>
+            <th style="padding:9px 12px;">Kullanıcı</th>
+            <th style="padding:9px 12px;">Ana Str.</th>
+            <th style="padding:9px 12px;">Alt Str.</th>
+            <th style="padding:9px 12px;">Süreç</th>
+            <th style="padding:9px 12px;">PG</th>
+            <th style="padding:9px 12px;">PG Verisi</th>
+            <th style="padding:9px 12px;">Proje</th>
+            <th style="padding:9px 12px;">Proje Task</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in stats.rows %}
+          <tr style="border-top:1px solid #f1f5f9;text-align:right;">
+            <td style="padding:8px 12px;text-align:left;position:sticky;left:0;background:#fff;font-weight:600;color:#334155;">
+              {{ r.name }}
+              {% if r.is_sub %}<span style="font-size:10px;color:#94a3b8;font-weight:400;">(alt kurum)</span>{% endif %}
+            </td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.users).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.strategies).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.sub_strategies).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.processes).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.kpis).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.kpi_data).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.projects).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r.tasks).replace(",", ".") }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="9" style="padding:18px;text-align:center;color:#94a3b8;">Aktif kurum yok.</td></tr>
+          {% endfor %}
+        </tbody>
+        {% if stats.rows %}
+        <tfoot>
+          <tr style="border-top:2px solid #e2e8f0;background:#f8fafc;text-align:right;font-weight:700;color:#1e293b;">
+            <td style="padding:10px 12px;text-align:left;position:sticky;left:0;background:#f8fafc;">TOPLAM</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.users).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.strategies).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.sub_strategies).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.processes).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.kpis).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.kpi_data).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.projects).replace(",", ".") }}</td>
+            <td style="padding:10px 12px;">{{ "{:,}".format(t.tasks).replace(",", ".") }}</td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}

@@ -40,6 +40,23 @@ def admin_tools_home():
     return render_template("platform/admin/araclar.html", is_local=_is_local())
 
 
+# ─── İstatistikler ───────────────────────────────────────────────────────────
+
+@app_bp.route("/admin/araclar/istatistikler")
+@login_required
+def admin_tools_istatistikler():
+    """Sistemdeki kurum bazında kullanıcı/strateji/süreç/PG/proje sayıları (salt-okuma)."""
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    try:
+        from app.services.admin_stats_service import collect_statistics
+        stats = collect_statistics()
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] istatistikler: {e}", exc_info=True)
+        stats = None
+    return render_template("platform/admin/istatistikler.html", stats=stats)
+
+
 # ─── Hata Kontrolü ───────────────────────────────────────────────────────────
 
 @app_bp.route("/admin/araclar/hata-kontrolu")

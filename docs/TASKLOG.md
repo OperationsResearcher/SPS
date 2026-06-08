@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-177 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları > İstatistikler bölümü — kurum bazında sistem sayımları
+**Modül:** admin_stats_service, routes_admin_tools, istatistikler.html, araclar.html
+**Durum:** ✅ Yerelde tamam, doğrulandı.
+
+### Değiştirilen / Eklenen Dosyalar
+- `app/services/admin_stats_service.py` (YENİ) → `collect_statistics()`: metrik başına tek `GROUP BY tenant_id` sorgusu (N+1 yok).
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/istatistikler` route'u (`_is_admin()`, salt-okuma).
+- `ui/templates/platform/admin/istatistikler.html` (YENİ) → özet kartları + kurum bazlı tablo + TOPLAM satırı.
+- `ui/templates/platform/admin/araclar.html` → İstatistikler kartı eklendi.
+
+### Sayılan metrikler (aktif kayıtlar)
+Kurum (Tenant), Kullanıcı (User), Ana Strateji (Strategy), Alt Strateji (SubStrategy),
+Süreç (Process), PG (ProcessKpi), PG Verisi (KpiData), Portföy Proje (Project), Proje Task (Task).
+Yerel doğrulama: 5 kurum · 141 kullanıcı · 90/229 strateji · 161 süreç · 644 PG · 183.581 PG verisi.
+
+### Notlar
+Proje türü kararı: yalnız **Portföy** (Project/Task) — SP/Plan projeleri hariç (kullanıcı tercihi).
+Ortam kilidi YOK (salt-okuma); yalnız _is_admin() korur → sonra Test/Yayín'a deploy edilince doğrudan çalışır.
+Yerel-only (henüz deploy edilmedi). Test/Yayín deploy'u ayrı onayla.
+
 ## TASK-176 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Hata Kontrolü — eşzamanlılık kilidi (tarama/senaryo/yenile aynı anda çalışamaz)
