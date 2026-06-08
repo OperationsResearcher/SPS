@@ -103,6 +103,26 @@
     <div id="hk-tara-sonuc" style="display:none;max-height:420px;overflow:auto;"></div>
   </div>
 
+  {# ── Tarama geçmişi (katlanabilir, varsayılan kapalı) ── #}
+  <div class="mc-card" style="padding:18px;margin-top:16px;">
+    <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#eff6ff;color:#1d4ed8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clock-rotate-left"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Tarama Geçmişi</div>
+          <div style="font-size:12px;color:#64748b;">Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda açılır.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="hk-tara-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
+        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+      </div>
+    </div>
+    <div class="hk-collapse-body" style="display:none;margin-top:12px;">
+      <div id="hk-tara-gecmis-liste" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
+    </div>
+  </div>
+
   {# ── Adım 4: Aktif CRUD senaryoları ── #}
   <div class="mc-card" style="padding:18px;margin-top:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
@@ -139,25 +159,6 @@
     </div>
   </div>
 
-  {# ── Geçmiş koşular (katlanabilir) ── #}
-  <div class="mc-card" style="padding:18px;margin-top:16px;">
-    <div class="hk-collapse-toggle" data-collapsed="0" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#f1f5f9;color:#475569;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clock-rotate-left"></i></span>
-        <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Geçmiş Koşular</div>
-          <div style="font-size:12px;color:#64748b;">Tüm tarama ve senaryo koşuları.</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button id="hk-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
-        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
-      </div>
-    </div>
-    <div class="hk-collapse-body" style="margin-top:12px;">
-      <div id="hk-gecmis-liste" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -375,18 +376,18 @@
     tg.addEventListener("click", function(){ tg.dataset.collapsed=(tg.dataset.collapsed==="1")?"0":"1"; apply(); });
   });
 
-  // ── Geçmiş koşular ──
+  // ── Geçmiş (bölüm bazlı: tarama / senaryo) ──
   var gecmisUrl=root.dataset.gecmisUrl, gecmisYukleUrl=root.dataset.gecmisYukleUrl;
-  var gecmisListe=document.getElementById("hk-gecmis-liste");
-  var gecmisBtn=document.getElementById("hk-gecmis-yenile");
+  var taraGecmisListe=document.getElementById("hk-tara-gecmis-liste");
+  var taraGecmisBtn=document.getElementById("hk-tara-gecmis-yenile");
   var senGecmisListe=document.getElementById("hk-sen-gecmis-liste");
   var senGecmisBtn=document.getElementById("hk-sen-gecmis-yenile");
 
   function gecmisRow(k){
     var ts=(k.saved_at||"").replace(/_/g," ");
     var ozet = (k.kind==="scenario")
-      ? ("senaryo · ✅ "+(k.passed||0)+" / ❌ "+(k.failed||0))
-      : ("tarama · ❌ "+((k.counts&&k.counts.fail)||0)+" ⚠️ "+((k.counts&&k.counts.warn)||0)+" ✅ "+((k.counts&&k.counts.ok)||0));
+      ? ("✅ "+(k.passed||0)+" / ❌ "+(k.failed||0))
+      : ("❌ "+((k.counts&&k.counts.fail)||0)+" ⚠️ "+((k.counts&&k.counts.warn)||0)+" ✅ "+((k.counts&&k.counts.ok)||0));
     return '<div class="hk-gecmis-row" data-file="'+esc(k.file)+'" style="display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;border:1px solid #eef2f7;margin-bottom:4px;">'+
       '<span style="font-family:monospace;color:#475569;">'+esc(ts)+'</span>'+
       '<span style="color:#64748b;">'+esc(ozet)+'</span></div>';
@@ -396,22 +397,27 @@
       row.addEventListener("click", function(){ yukleGecmis(row.dataset.file); });
     });
   }
+  function fillGecmis(el, rows, bos){
+    if(!el) return;
+    el.innerHTML = rows.length ? rows.map(gecmisRow).join("") : bos;
+    bindRows(el);
+  }
   function loadGecmis(){
     fetch(gecmisUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){gecmisListe.textContent="Geçmiş alınamadı.";if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";return;}
-        var ks=j.kosular||[];
-        // tüm koşular
-        gecmisListe.innerHTML = ks.length ? ks.map(gecmisRow).join("") : "Henüz kayıtlı koşu yok.";
-        bindRows(gecmisListe);
-        // yalnız senaryo koşuları
-        if(senGecmisListe){
-          var sen=ks.filter(function(k){return k.kind==="scenario";});
-          senGecmisListe.innerHTML = sen.length ? sen.map(gecmisRow).join("") : "Henüz kayıtlı senaryo koşusu yok.";
-          bindRows(senGecmisListe);
+        if(!j||!j.success){
+          if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
+          if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";return;
         }
-      }).catch(function(){gecmisListe.textContent="Geçmiş alınamadı.";if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";});
+        var ks=j.kosular||[];
+        fillGecmis(taraGecmisListe, ks.filter(function(k){return k.kind!=="scenario";}), "Henüz kayıtlı tarama koşusu yok.");
+        fillGecmis(senGecmisListe, ks.filter(function(k){return k.kind==="scenario";}), "Henüz kayıtlı senaryo koşusu yok.");
+      }).catch(function(){
+        if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
+        if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";
+      });
   }
+  if(taraGecmisBtn) taraGecmisBtn.addEventListener("click", loadGecmis);
   if(senGecmisBtn) senGecmisBtn.addEventListener("click", loadGecmis);
   function yukleGecmis(file){
     fetch(gecmisYukleUrl+"?file="+encodeURIComponent(file),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
