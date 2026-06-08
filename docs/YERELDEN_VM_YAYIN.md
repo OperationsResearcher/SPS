@@ -1,3 +1,8 @@
+> ⚠️ **ARŞİV — `docs/SUNUCU-GUNCELLEME-REHBERI.md` ile değiştirildi (2026-06-08).**
+> Güncel canonical yordam (Yerel/Test/Demo/Yayın 4 ortam, Alembic baseline, kod-baked vs bind-mount, tuzaklar) orada. Aşağısı tarihsel referans.
+
+---
+
 # Yerelden VM’e yayın (Kokpitim / kokpitim.com)
 
 Bu dosya, **yerelde yapılan kod değişikliklerinin** üretim **VM**’ine güvenli şekilde alınması için **tek referans yordamdır**.

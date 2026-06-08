@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-183 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Yayın deploy (Yerel→Test→Yayın, sıfır veri kaybı) + kalıcı "Sunucu Güncelleme Rehberi" dokümantasyonu
+**Modül:** docs (SUNUCU-GUNCELLEME-REHBERI.md), deploy operasyonu
+**Durum:** ✅ Yayın canlı, doküman yazıldı.
+
+### Deploy (Admin Araçları + audit + yedekleme + alembic baseline → Yayın)
+- Akış: **Yerel → Test (doğrulandı) → Yayın**. Önce kontrol dosyası (`docs/kontrol/yayinverileri_2026-06-08_1538.md`) + Yayın yedeği (DB+kod).
+- Yayın IMAGE-BAKED → tarball/git + `docker build` + container recreate. Test/Demo BIND-MOUNT → tarball + `docker restart`.
+- Sonuç: **10/10 satır sayısı aynı, veri kaybı YOK**. www.kokpitim.com /health 200.
+
+### Dokümantasyon (kalıcı)
+- `docs/SUNUCU-GUNCELLEME-REHBERI.md` (YENİ, canonical): 4 ortam envanteri (gerçek config doğrulandı), Yerel→Yayın / Yerel→Test / Yerel→Demo yordamları, kırmızı-çizgi ritüeli (kontrol dosyası+yedek), Alembic baseline davranış kuralları (tek head, alembic_version sahipliği, yeni migration), tuzaklar (GCM push, pg_dump sürüm, stale 5001, error.log kilidi).
+- `docs/YERELDEN_VM_YAYIN.md` → ARŞİV notu (yeni dosyaya yönlendirme).
+
+### Notlar
+4 ortamın gerçek yapısı SSH ile teyit edildi: Yayın baked+git; Test/Demo bind-mount+tarball (Demo `kokpitim_test:latest` image paylaşıyor). Bkz. [[project_yedekleme_ve_db]].
+
 ## TASK-182 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Alembic squash baseline — deploy'un Alembic adımı sorununu kalıcı çöz
