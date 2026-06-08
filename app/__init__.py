@@ -259,8 +259,8 @@ def create_app(config_class=None):
             ("/bildirim",          "Bildirimler", "/bildirim"),
             ("/ayarlar",           "Ayarlar", "/ayarlar"),
             ("/kurum",             "Kurum", "/kurum"),
-            ("/admin",             "Yönetim Paneli", "/admin/yonetim"),
-            ("/yonetim",           "Yönetim Paneli", "/admin/yonetim"),
+            ("/admin",             "Yönetim Paneli", "/admin/yonetim-paneli"),
+            ("/yonetim",           "Yönetim Paneli", "/admin/yonetim-paneli"),
             ("/profil",            "Profil", "/profil"),
         ]
         try:
