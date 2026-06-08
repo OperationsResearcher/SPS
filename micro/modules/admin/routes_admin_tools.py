@@ -110,10 +110,13 @@ def admin_tools_hk_tarama_baslat():
     if not _is_local():
         return jsonify({"success": False, "message": "Tarama yalnız Yerel ortamda çalışır."}), 403
     try:
-        from app.services.hata_kontrol_executor import start_run
+        from app.services.hata_kontrol_executor import start_run, busy_label
         limit = request.args.get("limit", type=int)
         base_url = request.host_url.rstrip("/")
         run_id = start_run(current_app._get_current_object(), base_url=base_url, limit=limit)
+        if run_id is None:
+            return jsonify({"success": False, "busy": busy_label(),
+                            "message": f"Başka bir Hata Kontrolü işlemi çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
         return jsonify({"success": True, "run_id": run_id})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] tarama_baslat: {e}", exc_info=True)
@@ -150,8 +153,11 @@ def admin_tools_hk_senaryo_baslat():
     if not _is_local():
         return jsonify({"success": False, "message": "Senaryolar yalnız Yerel ortamda çalışır."}), 403
     try:
-        from app.services.hata_kontrol_executor import start_scenarios
+        from app.services.hata_kontrol_executor import start_scenarios, busy_label
         run_id = start_scenarios(current_app._get_current_object(), base_url=request.host_url.rstrip("/"))
+        if run_id is None:
+            return jsonify({"success": False, "busy": busy_label(),
+                            "message": f"Başka bir Hata Kontrolü işlemi çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
         return jsonify({"success": True, "run_id": run_id})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] senaryo_baslat: {e}", exc_info=True)
@@ -185,6 +191,12 @@ def admin_tools_tomofiltest_yenile():
         return jsonify({"error": "yetki yok"}), 403
     if not _is_local():
         return jsonify({"success": False, "message": "Bu işlem yalnız Yerel ortamda çalışır."}), 403
+    # Yenile = tomofiltest'i sıfırlar → çalışan tarama/senaryonun oturumunu öldürür.
+    # Bu yüzden o işlem bitmeden yenilemeye izin verme (eşzamanlılık koruması).
+    from app.services.hata_kontrol_executor import try_acquire, release, busy_label
+    if not try_acquire("yenile"):
+        return jsonify({"success": False, "busy": busy_label(),
+                        "message": f"Başka bir Hata Kontrolü işlemi çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
     try:
         from app.services.tenant_clone_service import clone_tomofiltest
         rep = clone_tomofiltest(dry_run=False)
@@ -199,3 +211,5 @@ def admin_tools_tomofiltest_yenile():
     except Exception as e:
         current_app.logger.error(f"[admin_tools] tomofiltest_yenile: {e}", exc_info=True)
         return jsonify({"success": False, "message": "Klon sırasında hata."}), 500
+    finally:
+        release()

@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-176 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Hata Kontrolü — eşzamanlılık kilidi (tarama/senaryo/yenile aynı anda çalışamaz)
+**Modül:** hata_kontrol_executor, routes_admin_tools, hata_kontrolu.html
+**Durum:** ✅ Yerelde tamam, kilit uçtan uca doğrulandı.
+
+### Kök neden (244/210 sahte-FAIL)
+Üç işlem (tarama, "Kur/Yenile", senaryolar) aynı izole `tomofiltest`'i paylaşıyor. Biri çalışırken
+diğeri tomofiltest'i sıfırlarsa (wipe + reclone → sentetik admin silinir) **çalışan koşunun oturumu
+ölür**. Log kanıtı: tarama 104 sayfa OK sonra senaryo reset'i (10:41:49) admini silince kalan 210
+sayfa komple `/login`'e döndü. Kod hatası değildi — eşzamanlılık koruması eksikti.
+
+### Değiştirilen Dosyalar
+- `app/services/hata_kontrol_executor.py` → `_BUSY` + `busy_label()/try_acquire()/release()`; `start_run`/`start_scenarios` meşgulse `None`; thread'lerde `finally: release()`.
+- `micro/modules/admin/routes_admin_tools.py` → tarama/senaryo/yenile route'ları meşgulse **HTTP 409** + etiket.
+- `ui/templates/platform/admin/hata_kontrolu.html` → `setBusy()`; bir işlem çalışırken üç buton da kilitli; 409 mesajı gösterilir.
+
+### Doğrulama
+Tarama çalışırken senaryo/ikinci-tarama → reddedildi (None/409). Tarama bitince kilit serbest, senaryo başlayabildi. Tek başına tam tarama: 290 OK / 0 FAIL.
+
+### Notlar
+:5001 reloader'sız yeniden başlatıldı (çift dinleyici tuzağı). Yerel-only; Test/Demo/Yayín ayrı onay.
+
 ## TASK-175 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Hata Kontrolü — Süreç senaryosuna PG ve PGV tam CRUD (düzenle/sil) ekle, gerçek UI tıklama

@@ -170,6 +170,15 @@
   var sonucEl=document.getElementById("hk-sonuc");
   var btn=document.getElementById("hk-yenile");
 
+  // Eşzamanlılık: bir işlem (yenile/tarama/senaryo) çalışırken üçü de kilitli.
+  // Sunucu da 409 ile korur; bu sadece UI tarafı erken engel.
+  function setBusy(on){
+    ["hk-yenile","hk-tara","hk-senaryo"].forEach(function(id){
+      var b=document.getElementById(id); if(!b) return;
+      b.disabled = on ? true : !isLocal;
+    });
+  }
+
   function loadDurum(){
     fetch(durumUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();})
@@ -187,7 +196,7 @@
 
   function yenile(){
     if(!isLocal) return;
-    btn.disabled=true; var orig=btn.innerHTML;
+    setBusy(true); var orig=btn.innerHTML;
     btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Kuruluyor… (birkaç saniye)';
     sonucEl.style.display="none";
     fetch(yenileUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
@@ -204,7 +213,7 @@
       }).catch(function(){
         sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
         sonucEl.innerHTML='<i class="fas fa-xmark"></i> Bağlantı hatası.';sonucEl.style.display="block";
-      }).finally(function(){btn.disabled=!isLocal;btn.innerHTML=orig;});
+      }).finally(function(){setBusy(false);btn.innerHTML=orig;});
   }
 
   if(btn) btn.addEventListener("click", yenile);
@@ -306,22 +315,22 @@
         if(!j||!j.success){info.textContent="Durum alınamadı.";clearInterval(pollTimer);return;}
         renderTara(j.durum);
         if(j.durum.status==="done"||j.durum.status==="error"){
-          clearInterval(pollTimer); taraBtn.disabled=!isLocal; taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';
+          clearInterval(pollTimer); setBusy(false); taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';
         }
       }).catch(function(){});
   }
 
   function basla(){
     if(!isLocal) return;
-    taraBtn.disabled=true; taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Başlatılıyor…';
+    setBusy(true); taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Başlatılıyor…';
     barWrap.style.display="block"; bar.style.width="0";
     var lim=parseInt(limitEl.value); var q=(lim>0)?("?limit="+lim):"";
     fetch(baslatUrl+q,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){info.textContent=(j&&j.message)||"Başlatılamadı.";taraBtn.disabled=!isLocal;taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';return;}
+        if(!j||!j.success){info.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';return;}
         taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Taranıyor…';
         pollTimer=setInterval(function(){poll(j.run_id);},1500); poll(j.run_id);
-      }).catch(function(){info.textContent="Bağlantı hatası.";taraBtn.disabled=!isLocal;});
+      }).catch(function(){info.textContent="Bağlantı hatası.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';});
   }
   if(taraBtn) taraBtn.addEventListener("click", basla);
 
@@ -348,18 +357,18 @@
       .then(function(r){return r.json();}).then(function(j){
         if(!j||!j.success){clearInterval(senTimer);return;}
         renderSen(j.durum);
-        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);senBtn.disabled=!isLocal;senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';}
+        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';}
       }).catch(function(){});
   }
   function senBasla(){
     if(!isLocal) return;
-    senBtn.disabled=true; senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor…';
+    setBusy(true); senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor…';
     senInfo.textContent="Başlatılıyor…";
     fetch(senBaslatUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){senInfo.textContent=(j&&j.message)||"Başlatılamadı.";senBtn.disabled=!isLocal;senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';return;}
+        if(!j||!j.success){senInfo.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';return;}
         senTimer=setInterval(function(){senPoll(j.run_id);},1500); senPoll(j.run_id);
-      }).catch(function(){senInfo.textContent="Bağlantı hatası.";senBtn.disabled=!isLocal;});
+      }).catch(function(){senInfo.textContent="Bağlantı hatası.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';});
   }
   if(senBtn) senBtn.addEventListener("click", senBasla);
 

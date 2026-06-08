@@ -29,6 +29,31 @@ _RUNS: dict[str, dict] = {}
 _RUN_SEQ = {"n": 0}
 _LOCK = threading.Lock()
 
+# Eşzamanlılık koruması: tarama / senaryo / yenile aynı tomofiltest'i paylaşır.
+# Biri çalışırken diğeri tomofiltest'i sıfırlarsa çalışan koşunun oturumu ölür
+# (bkz. 244/210 sahte-FAIL kök nedeni). Aynı anda yalnız BİR işlem.
+_BUSY = {"label": None}
+
+
+def busy_label() -> str | None:
+    """Çalışan Hata Kontrolü işleminin etiketi (tarama/senaryo/yenile) ya da None."""
+    with _LOCK:
+        return _BUSY["label"]
+
+
+def try_acquire(label: str) -> bool:
+    """İşlem kilidini al. Başka işlem çalışıyorsa False döner (başlatma)."""
+    with _LOCK:
+        if _BUSY["label"]:
+            return False
+        _BUSY["label"] = label
+        return True
+
+
+def release() -> None:
+    with _LOCK:
+        _BUSY["label"] = None
+
 
 def _new_run_id() -> str:
     with _LOCK:
@@ -137,8 +162,10 @@ def _classify(status, js_errors, failed_ajax, html, final_url) -> tuple[str, str
     return "warn", f"HTTP {status}"
 
 
-def start_run(app, base_url: str | None = None, limit: int | None = None) -> str:
-    """Arka planda tarama başlatır, run_id döner."""
+def start_run(app, base_url: str | None = None, limit: int | None = None) -> str | None:
+    """Arka planda tarama başlatır, run_id döner. Başka işlem çalışıyorsa None."""
+    if not try_acquire("tarama"):
+        return None
     run_id = _new_run_id()
     _RUNS[run_id] = {
         "id": run_id, "status": "starting", "total": 0, "done": 0,
@@ -151,8 +178,10 @@ def start_run(app, base_url: str | None = None, limit: int | None = None) -> str
     return run_id
 
 
-def start_scenarios(app, base_url: str | None = None) -> str:
-    """Arka planda aktif CRUD senaryolarını başlatır, run_id döner."""
+def start_scenarios(app, base_url: str | None = None) -> str | None:
+    """Arka planda CRUD senaryolarını başlatır, run_id döner. Meşgulse None."""
+    if not try_acquire("senaryo"):
+        return None
     run_id = _new_run_id()
     _RUNS[run_id] = {
         "id": run_id, "kind": "scenario", "status": "starting",
@@ -220,6 +249,8 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
         except Exception:
             pass
         _persist_run(app, run_id)
+    finally:
+        release()
 
 
 def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
@@ -317,6 +348,9 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
             app.logger.error(f"[hata_kontrol_executor] {e}", exc_info=True)
         except Exception:
             pass
+        _persist_run(app, run_id)
+    finally:
+        release()
 
 
 def _norm_href(href: str, base_url: str) -> str | None:
