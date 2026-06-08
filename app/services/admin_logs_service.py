@@ -284,3 +284,99 @@ def collect_logs() -> dict:
         "never_list": never_list,
         "feed": feed,
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Kurum bazlı DETAY logları (kategori bazlı zaman çizelgesi)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Kategori → AuditLog.resource_type eşlemesi. Tümü tek kaynaktan (AuditLog) gelir.
+_CATEGORIES = [
+    {"key": "strateji", "label": "Stratejik Plan", "icon": "fa-bullseye", "color": "#b45309",
+     "rtypes": ["Strateji Yönetimi", "Kurum Yönetimi"]},
+    {"key": "surec", "label": "Süreç", "icon": "fa-diagram-project", "color": "#0e7490",
+     "rtypes": ["Süreç Yönetimi"]},
+    {"key": "pg", "label": "PG (Gösterge)", "icon": "fa-gauge-high", "color": "#15803d",
+     "rtypes": ["PG Yönetimi", "KPI Yönetimi"]},
+    {"key": "pgveri", "label": "PG Verisi", "icon": "fa-database", "color": "#16a34a",
+     "rtypes": ["PG Veri Girişi", "KPI Veri Girişi"]},
+    {"key": "proje", "label": "Proje", "icon": "fa-folder-open", "color": "#9333ea",
+     "rtypes": ["Proje Yönetimi"]},
+    {"key": "gorev", "label": "Proje Görevi", "icon": "fa-list-check", "color": "#7c3aed",
+     "rtypes": ["Proje Faaliyeti"]},
+]
+
+_ACTION_LABEL = {
+    "CREATE": "Eklendi", "UPDATE": "Değiştirildi", "DELETE": "Silindi",
+    "TENANT_TYPE_CHANGE": "Tip değişti",
+}
+# Kurumsal kimlik (/sp kartları) alan → etiket
+_IDENTITY_FIELDS = {
+    "vision": "Vizyon", "mission": "Misyon", "purpose": "Amaç",
+    "core_values": "Değerler", "code_of_ethics": "Etik Kurallar",
+    "quality_policy": "Kalite Politikası",
+}
+
+
+def _entity_label(row) -> str:
+    """new_values/old_values'tan anlamlı bir varlık tanımı çıkarır."""
+    nv = row.new_values if isinstance(row.new_values, dict) else {}
+    ov = row.old_values if isinstance(row.old_values, dict) else {}
+    src = nv or ov
+    # Kurumsal kimlik: hangi kart(lar) değişti
+    ident = [lbl for key, lbl in _IDENTITY_FIELDS.items() if key in src]
+    if ident:
+        return ", ".join(ident)
+    for k in ("name", "Ad", "title", "_migration_record_name", "code"):
+        if src.get(k):
+            return str(src[k])
+    # PG verisi: kpi + dönem
+    if src.get("kpi_id"):
+        per = " ".join(str(src[k]) for k in ("year", "period_type", "period_no") if src.get(k))
+        return f"PG #{src['kpi_id']}" + (f" · {per}" if per else "")
+    return row.description or ""
+
+
+def _event(row) -> dict:
+    act = _ACTION_LABEL.get(row.action, row.action)
+    return {
+        "action": row.action, "action_label": act,
+        "what": _entity_label(row),
+        "who": row.username or "—",
+        "when": _iso(row.created_at),
+    }
+
+
+def collect_tenant_logs(tenant_id: int, per_cat: int = 15) -> dict | None:
+    """Tek kurum için kategori bazlı detaylı log zaman çizelgesi."""
+    t = Tenant.query.get(tenant_id)
+    if not t or (t.name or "").lower() == _TOMOFILTEST_NAME:
+        return None
+
+    categories = []
+    for cat in _CATEGORIES:
+        rows = (
+            db.session.query(AuditLog)
+            .filter(AuditLog.tenant_id == tenant_id,
+                    AuditLog.resource_type.in_(cat["rtypes"]))
+            .order_by(AuditLog.created_at.desc())
+            .limit(per_cat).all()
+        )
+        total = (
+            db.session.query(func.count(AuditLog.id))
+            .filter(AuditLog.tenant_id == tenant_id,
+                    AuditLog.resource_type.in_(cat["rtypes"])).scalar() or 0
+        )
+        events = [_event(r) for r in rows]
+        categories.append({
+            "key": cat["key"], "label": cat["label"],
+            "icon": cat["icon"], "color": cat["color"],
+            "total": total,
+            "last": events[0] if events else None,
+            "events": events,
+        })
+
+    return {
+        "tenant": {"id": t.id, "name": t.name},
+        "categories": categories,
+    }

@@ -74,6 +74,23 @@ def admin_tools_loglar():
     return render_template("platform/admin/loglar.html", logs=logs)
 
 
+@app_bp.route("/admin/araclar/loglar/kurum/<int:tenant_id>")
+@login_required
+def admin_tools_loglar_kurum(tenant_id):
+    """Tek kuruma ilişkin kategori bazlı detaylı log zaman çizelgesi (salt-okuma)."""
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    try:
+        from app.services.admin_logs_service import collect_tenant_logs
+        detail = collect_tenant_logs(tenant_id)
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] loglar_kurum {tenant_id}: {e}", exc_info=True)
+        detail = None
+    if detail is None:
+        return render_template("errors/404.html"), 404
+    return render_template("platform/admin/loglar_kurum.html", detail=detail)
+
+
 # ─── Hata Kontrolü ───────────────────────────────────────────────────────────
 
 @app_bp.route("/admin/araclar/hata-kontrolu")

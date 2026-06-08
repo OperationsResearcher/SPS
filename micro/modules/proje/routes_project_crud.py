@@ -419,6 +419,7 @@ def project_delete(project_id: int):
     proj.deleted_at = datetime.now(timezone.utc)
     proj.deleted_by = current_user.id
     db.session.commit()
+    AuditLogger.log_delete("Proje Yönetimi", proj.id, {"name": name, "status": proj.status})
     flash(f'"{name}" silindi.', "success")
     return redirect(url_for("app_bp.project_list"))
 

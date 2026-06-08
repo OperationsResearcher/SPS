@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-179 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Loglar → kurum detay sayfası (kategori bazlı zaman çizelgesi) + eksik audit instrumentasyonu
+**Modül:** admin_logs_service, routes_admin_tools, loglar_kurum.html, sp/routes_strategy, sp/routes_pages, proje/routes_tasks, proje/routes_project_crud
+**Durum:** ✅ Yerelde tamam, uçtan uca doğrulandı.
+
+### Detay sayfası
+- Loglar'daki "Kurum Bazında" satırına tıkla → `/admin/araclar/loglar/kurum/<id>`.
+- 6 kategori (her biri AuditLog'dan): **Stratejik Plan** (Strateji+Kurum Yönetimi), **Süreç**, **PG (Gösterge)** (PG+KPI Yönetimi), **PG Verisi** (PG+KPI Veri Girişi), **Proje**, **Proje Görevi** (Proje Faaliyeti).
+- Her kategori: son değişiklik özeti + katlanabilir zaman çizelgesi (son 15, eylem/varlık/kim/ne zaman). `new_values`'tan varlık adı + /sp kimlik kartı (Vizyon/Misyon/Değerler) etiketi çıkarılır. Saatler tarayıcı saatine.
+
+### Audit instrumentasyonu — 9 yeni nokta (eksik kategoriler kapatıldı)
+- `sp/routes_strategy.py` → strateji & alt strateji **ekle/güncelle/sil** (6 nokta) = "Strateji Yönetimi".
+- `sp/routes_pages.py::sp_api_tenant_identity` → vizyon/misyon/amaç/değerler/etik **değişikliği** = "Kurum Yönetimi" (değişen kart anahtarları new_values'a yazılır → /sp kart-bazlı izleme).
+- `proje/routes_tasks.py::project_task_delete` → görev **silme** = "Proje Faaliyeti" (create/update zaten vardı).
+- `proje/routes_project_crud.py::project_delete` → proje **silme** = "Proje Yönetimi".
+- AuditLogger.log_* kendi commit'i + try/except'i olduğu için işlem commit'inden sonra güvenle çağrıldı.
+
+### Doğrulama
+Playwright ile gerçek `/sp/api/strategy/add` → AuditLog CREATE "Strateji Yönetimi" `{name, code}` yazıldı (uçtan uca). Detay sayfası 6 kategoriyi gerçek veriyle render etti (Kayseri: PG 338, PG Verisi 326 kayıt).
+
+### Notlar
+Salt-okuma sayfa; instrumentasyon yalnız audit YAZAR (mevcut davranışı değiştirmez). Yerel-only; Test/Yayín ayrı onayla.
+
 ## TASK-178 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Admin Araçları > Loglar bölümü — kurum bazında + genel giriş/veri hareketi logları

@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from platform_core import app_bp
 from app.extensions import csrf
 from app.models import db
+from app.utils.audit_logger import AuditLogger
 from sqlalchemy import or_
 from app.models.core import Strategy, SubStrategy, Tenant
 from app.models.k_vektor import KVektorStrategyWeight, KVektorSubStrategyWeight
@@ -289,6 +290,11 @@ def sp_api_tenant_identity():
                     setattr(yi, field, data[field])
 
         db.session.commit()
+        # Hangi kart(lar) değişti — new_values'taki anahtarlar Loglar'da etikete dönüşür.
+        changed = {f: (str(data[f])[:80] if data[f] is not None else "") for f in fields if f in data}
+        if changed:
+            AuditLogger.log_update("Kurum Yönetimi", tid, {}, changed,
+                                   description="Stratejik kimlik güncellendi")
         return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
     except Exception as e:
         db.session.rollback()

@@ -1,0 +1,99 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ detail.tenant.name }} — Loglar — Kokpitim{% endblock %}
+{% block page_title %}Kurum Logları{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([
+        {'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')},
+        {'label': 'Loglar', 'url': url_for('app_bp.admin_tools_loglar')},
+        {'label': detail.tenant.name, 'url': None}
+    ]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-clipboard-list" style="color:#6366f1;"></i> {{ detail.tenant.name }} — Detaylı Loglar
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Bu kuruma ilişkin son değişiklikler, kategori bazında zaman çizelgesi.
+        <span style="color:#94a3b8;"><i class="fas fa-clock"></i> Saatler tarayıcınızın saat dilimine göre.</span>
+      </p>
+    </div>
+  </div>
+
+  {% set act_color = {'CREATE':'#16a34a','UPDATE':'#2563eb','DELETE':'#dc2626','TENANT_TYPE_CHANGE':'#b45309'} %}
+
+  {% for c in detail.categories %}
+  <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+    {# Kategori başlığı + son değişiklik özeti #}
+    <div class="kl-toggle" data-collapsed="1" style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;border-bottom:1px solid #f1f5f9;">
+      <div style="display:flex;align-items:center;gap:11px;min-width:0;">
+        <span style="width:36px;height:36px;border-radius:9px;background:{{ c.color }}1a;color:{{ c.color }};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><i class="fas {{ c.icon }}"></i></span>
+        <div style="min-width:0;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ c.label }}
+            <span style="font-size:11px;font-weight:500;color:#94a3b8;">({{ c.total }} kayıt)</span>
+          </div>
+          {% if c.last %}
+          <div style="font-size:12px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <span style="font-weight:700;color:{{ act_color.get(c.last.action, '#64748b') }};">{{ c.last.action_label }}</span>
+            {% if c.last.what %}· <span style="color:#334155;">{{ c.last.what }}</span>{% endif %}
+            · {{ c.last.who }} · <span data-utc="{{ c.last.when }}">—</span>
+          </div>
+          {% else %}
+          <div style="font-size:12px;color:#cbd5e1;margin-top:2px;">Kayıt yok</div>
+          {% endif %}
+        </div>
+      </div>
+      {% if c.events %}<i class="fas fa-chevron-down kl-chevron" style="color:#94a3b8;transition:transform .2s;transform:rotate(-90deg);flex-shrink:0;"></i>{% endif %}
+    </div>
+
+    {# Zaman çizelgesi #}
+    {% if c.events %}
+    <div class="kl-body" style="display:none;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <tbody>
+          {% for e in c.events %}
+          <tr style="border-top:1px solid #f6f8fb;">
+            <td style="padding:8px 12px;width:90px;">
+              <span style="font-size:10px;font-weight:700;color:#fff;background:{{ act_color.get(e.action, '#64748b') }};border-radius:9px;padding:2px 8px;white-space:nowrap;">{{ e.action_label }}</span>
+            </td>
+            <td style="padding:8px 12px;color:#334155;">{{ e.what or '—' }}</td>
+            <td style="padding:8px 12px;color:#64748b;text-align:right;white-space:nowrap;">{{ e.who }}</td>
+            <td style="padding:8px 12px;color:#94a3b8;text-align:right;white-space:nowrap;" data-utc="{{ e.when }}">—</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if c.total > c.events|length %}
+      <div style="padding:8px 12px;font-size:11.5px;color:#94a3b8;border-top:1px solid #f1f5f9;">Son {{ c.events|length }} kayıt gösteriliyor (toplam {{ c.total }}).</div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div style="margin-top:16px;">
+    <a href="{{ url_for('app_bp.admin_tools_loglar') }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-arrow-left"></i> Loglar'a dön</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  function fmt(utc){ if(!utc) return "—"; var d=new Date(utc); if(isNaN(d.getTime())) return "—";
+    return d.toLocaleString(undefined,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}); }
+  document.querySelectorAll("[data-utc]").forEach(function(el){ var v=el.getAttribute("data-utc"); if(v) el.textContent=fmt(v); });
+  document.querySelectorAll(".kl-toggle").forEach(function(tg){
+    var body=tg.parentElement.querySelector(".kl-body");
+    var chev=tg.querySelector(".kl-chevron");
+    if(!body) return;
+    function apply(){ var c=tg.dataset.collapsed==="1"; body.style.display=c?"none":"block"; if(chev) chev.style.transform=c?"rotate(-90deg)":"rotate(0deg)"; }
+    apply();
+    tg.addEventListener("click",function(){ tg.dataset.collapsed=(tg.dataset.collapsed==="1")?"0":"1"; apply(); });
+  });
+})();
+</script>
+{% endblock %}
