@@ -25,6 +25,8 @@ from app.models.process import Process, ProcessKpi, KpiData
 _LOGIN_ACTIONS = ("OTURUM AÇMA", "LOGIN")
 # Veri değişikliği sayılmayan (güvenlik) audit kayıtları.
 _SECURITY_RESOURCE = "GÜVENLİK"
+# İzole test kurumu — gerçek loglardan tamamen hariç tutulur.
+_TOMOFILTEST_NAME = "tomofiltest"
 
 
 _EPOCH = datetime.min.replace(tzinfo=timezone.utc)
@@ -57,8 +59,32 @@ def _uname(u: User | None) -> str:
 
 
 def collect_logs() -> dict:
+    # tomofiltest'i her sorgudan hariç tut. Reclone'da tenant id değişebildiği için
+    # hem tenant id'leri hem sentetik admin kullanıcı adı (orphan kayıtlar) elenir.
+    try:
+        from app.services.tenant_clone_service import SYNTH_ADMIN_EMAIL
+    except Exception:
+        SYNTH_ADMIN_EMAIL = "admin@tomofiltest.local"
+    excl_tids = [
+        t.id for t in Tenant.query.filter(
+            func.lower(Tenant.name) == _TOMOFILTEST_NAME).all()
+    ]
+
+    def audit_excl():
+        """AuditLog sorgularına eklenecek tomofiltest hariç-tutma filtresi."""
+        conds = [or_(AuditLog.username.is_(None), AuditLog.username != SYNTH_ADMIN_EMAIL)]
+        if excl_tids:
+            conds.append(or_(AuditLog.tenant_id.is_(None), AuditLog.tenant_id.notin_(excl_tids)))
+        return and_(*conds)
+
+    def kpi_excl():
+        """KpiData sorgularına eklenecek tomofiltest hariç-tutma filtresi (Process.tenant_id)."""
+        return Process.tenant_id.notin_(excl_tids) if excl_tids else True
+
     tenants = (
-        Tenant.query.filter(Tenant.is_active.is_(True))
+        Tenant.query.filter(
+            Tenant.is_active.is_(True),
+            func.lower(Tenant.name) != _TOMOFILTEST_NAME)
         .order_by(Tenant.name.asc()).all()
     )
     tenant_name = {t.id: t.name for t in tenants}
@@ -66,12 +92,12 @@ def collect_logs() -> dict:
     # ── 1) Giriş sayısı (kurum bazlı) ──
     login_counts = dict(
         db.session.query(AuditLog.tenant_id, func.count(AuditLog.id))
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS))
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), audit_excl())
         .group_by(AuditLog.tenant_id).all()
     )
     login_total_global = (
         db.session.query(func.count(AuditLog.id))
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS)).scalar() or 0
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), audit_excl()).scalar() or 0
     )
 
     # ── 2) Son giriş (kurum bazlı): max(created_at) → o satır ──
@@ -79,7 +105,7 @@ def collect_logs() -> dict:
         db.session.query(
             AuditLog.tenant_id.label("tid"),
             func.max(AuditLog.created_at).label("mx"))
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS))
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), audit_excl())
         .group_by(AuditLog.tenant_id).subquery()
     )
     last_login = {}  # tenant_id -> {"who","when"}
@@ -88,7 +114,7 @@ def collect_logs() -> dict:
         .join(login_max_sq, and_(
             AuditLog.tenant_id == login_max_sq.c.tid,
             AuditLog.created_at == login_max_sq.c.mx))
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS)).all()
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), audit_excl()).all()
     ):
         if row.tenant_id not in last_login:
             last_login[row.tenant_id] = {"who": row.username or "—", "when": _iso(row.created_at)}
@@ -98,6 +124,7 @@ def collect_logs() -> dict:
         AuditLog.resource_type.isnot(None),
         AuditLog.resource_type != _SECURITY_RESOURCE,
         AuditLog.action.notin_(_LOGIN_ACTIONS + ("OTURUM KAPATMA", "LOGOUT")),
+        audit_excl(),
     )
     chg_max_sq = (
         db.session.query(
@@ -130,7 +157,7 @@ def collect_logs() -> dict:
         .select_from(KpiData)
         .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
         .join(Process, ProcessKpi.process_id == Process.id)
-        .filter(KpiData.is_active.is_(True))
+        .filter(KpiData.is_active.is_(True), kpi_excl())
         .group_by(Process.tenant_id).subquery()
     )
     kpi_change = {}  # tenant_id -> {"what","who","when","dt"}
@@ -143,7 +170,7 @@ def collect_logs() -> dict:
             kpi_max_sq.c.tid == Process.tenant_id,
             kpi_time == kpi_max_sq.c.mx))
         .outerjoin(User, KpiData.user_id == User.id)
-        .filter(KpiData.is_active.is_(True)).all()
+        .filter(KpiData.is_active.is_(True), kpi_excl()).all()
     ):
         if tid not in kpi_change:
             dt = kd.updated_at or kd.created_at
@@ -161,14 +188,16 @@ def collect_logs() -> dict:
     # ── 4) Hiç giriş yapmamış kullanıcılar ──
     logged_ids_sq = (
         db.session.query(AuditLog.user_id)
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), AuditLog.user_id.isnot(None))
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), AuditLog.user_id.isnot(None), audit_excl())
         .distinct().subquery()
     )
-    never_users = (
-        db.session.query(User)
-        .filter(User.is_active.is_(True), User.id.notin_(db.session.query(logged_ids_sq.c.user_id)))
-        .all()
+    never_q = db.session.query(User).filter(
+        User.is_active.is_(True),
+        User.id.notin_(db.session.query(logged_ids_sq.c.user_id)),
     )
+    if excl_tids:
+        never_q = never_q.filter(or_(User.tenant_id.is_(None), User.tenant_id.notin_(excl_tids)))
+    never_users = never_q.all()
     never_count_by_tenant: dict[int, int] = {}
     never_list = []
     for u in never_users:
@@ -195,7 +224,7 @@ def collect_logs() -> dict:
     # ── Genel özet ──
     g_last_login_row = (
         db.session.query(AuditLog)
-        .filter(AuditLog.action.in_(_LOGIN_ACTIONS))
+        .filter(AuditLog.action.in_(_LOGIN_ACTIONS), audit_excl())
         .order_by(AuditLog.created_at.desc()).first()
     )
     g_last_login = ({"who": g_last_login_row.username or "—",
@@ -213,6 +242,7 @@ def collect_logs() -> dict:
     feed = []
     for row in (
         db.session.query(AuditLog)
+        .filter(audit_excl())
         .order_by(AuditLog.created_at.desc()).limit(25).all()
     ):
         is_login = row.action in _LOGIN_ACTIONS
@@ -230,7 +260,7 @@ def collect_logs() -> dict:
         .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
         .join(Process, ProcessKpi.process_id == Process.id)
         .outerjoin(User, KpiData.user_id == User.id)
-        .filter(KpiData.is_active.is_(True))
+        .filter(KpiData.is_active.is_(True), kpi_excl())
         .order_by(kpi_time.desc()).limit(25).all()
     ):
         dt = kd.updated_at or kd.created_at
