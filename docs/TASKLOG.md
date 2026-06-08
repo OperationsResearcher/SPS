@@ -19,6 +19,13 @@ Kurum (Tenant), Kullanıcı (User), Ana Strateji (Strategy), Alt Strateji (SubSt
 Süreç (Process), PG (ProcessKpi), PG Verisi (KpiData), Portföy Proje (Project), Proje Task (Task).
 Yerel doğrulama: 5 kurum · 141 kullanıcı · 90/229 strateji · 161 süreç · 644 PG · 183.581 PG verisi.
 
+### Hiyerarşik kırılım (kullanıcı isteği)
+Bayi (`tenant_type='dealer'`) / Holding (`tenant_type='holding'`) üst kurumları, altında
+açtıkları kurumlarla (`parent_tenant_id`) **iç içe** gösterilir: üst kurum → girintili alt
+kurumlar → **grup ara toplamı** (kendisi + alt kurumlar). Bayi/Holding rozeti eklendi.
+Servis hiyerarşik ağaç kurar (çok seviyeli, DFS); tablo girinti + ara toplam render eder.
+Doğrulama: geçici (rollback'li) parent ataması ile nesting + ara toplam matematiği teyit edildi.
+
 ### Notlar
 Proje türü kararı: yalnız **Portföy** (Project/Task) — SP/Plan projeleri hariç (kullanıcı tercihi).
 Ortam kilidi YOK (salt-okuma); yalnız _is_admin() korur → sonra Test/Yayín'a deploy edilince doğrudan çalışır.

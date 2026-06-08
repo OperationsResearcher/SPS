@@ -84,32 +84,76 @@ def collect_statistics() -> dict:
         .group_by(Project.tenant_id)
     )
 
-    rows = []
-    totals = {k: 0 for k in (
+    METRICS = (
         "users", "strategies", "sub_strategies", "processes",
         "kpis", "kpi_data", "projects", "tasks",
-    )}
+    )
+    SRC = {
+        "users": users, "strategies": strategies, "sub_strategies": sub_strategies,
+        "processes": processes, "kpis": kpis, "kpi_data": kpi_data,
+        "projects": projects, "tasks": tasks,
+    }
+    TYPE_LABEL = {"dealer": "Bayi", "holding": "Holding"}
+
+    # Kurum başına ham sayım kaydı
+    by_id: dict[int, dict] = {}
     for t in tenants:
-        row = {
+        rec = {
             "id": t.id,
             "name": t.name,
             "short_name": getattr(t, "short_name", None),
-            "is_sub": bool(getattr(t, "parent_tenant_id", None)),
-            "users": users.get(t.id, 0),
-            "strategies": strategies.get(t.id, 0),
-            "sub_strategies": sub_strategies.get(t.id, 0),
-            "processes": processes.get(t.id, 0),
-            "kpis": kpis.get(t.id, 0),
-            "kpi_data": kpi_data.get(t.id, 0),
-            "projects": projects.get(t.id, 0),
-            "tasks": tasks.get(t.id, 0),
+            "tenant_type": getattr(t, "tenant_type", "normal") or "normal",
+            "type_label": TYPE_LABEL.get(getattr(t, "tenant_type", "normal"), ""),
+            "parent_id": getattr(t, "parent_tenant_id", None),
         }
-        for k in totals:
-            totals[k] += row[k]
-        rows.append(row)
+        for k in METRICS:
+            rec[k] = SRC[k].get(t.id, 0)
+        by_id[t.id] = rec
+
+    # Hiyerarşi: parent_tenant_id → çocuklar. Üst kurumu aktif-set dışındaysa kök say.
+    children: dict[int, list] = {}
+    roots: list[dict] = []
+    for rec in by_id.values():
+        pid = rec["parent_id"]
+        if pid and pid in by_id:
+            children.setdefault(pid, []).append(rec)
+        else:
+            roots.append(rec)
+
+    def _sort(recs):
+        return sorted(recs, key=lambda r: (r["name"] or "").lower())
+
+    # Görüntüleme satırları: kök → (girintili) alt kurumlar → grubun ara toplamı
+    display: list[dict] = []
+    grand = {k: 0 for k in METRICS}
+
+    def walk(rec, depth, acc):
+        node = dict(rec)
+        node["depth"] = depth
+        node["kind"] = "tenant"
+        node["has_children"] = bool(children.get(rec["id"]))
+        display.append(node)
+        for k in METRICS:
+            acc[k] += rec[k]
+            grand[k] += rec[k]
+        for ch in _sort(children.get(rec["id"], [])):
+            walk(ch, depth + 1, acc)
+
+    for root in _sort(roots):
+        kids = children.get(root["id"])
+        if kids:
+            acc = {k: 0 for k in METRICS}
+            walk(root, 0, acc)
+            sub = {"kind": "subtotal", "depth": 0,
+                   "name": f"{root['name']} — grup toplamı (kendisi + alt kurumlar)"}
+            sub.update(acc)
+            display.append(sub)
+        else:
+            walk(root, 0, {k: 0 for k in METRICS})
 
     return {
-        "tenant_count": len(rows),
-        "rows": rows,
-        "totals": totals,
+        "tenant_count": len(by_id),
+        "rows": display,
+        "totals": grand,
+        "metrics": list(METRICS),
     }
