@@ -2,6 +2,35 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-178 | 2026-06-08 | ✅ Tamamlandı
+
+**Görev:** Admin Araçları > Loglar bölümü — kurum bazında + genel giriş/veri hareketi logları
+**Modül:** admin_logs_service, routes_admin_tools, loglar.html, araclar.html
+**Durum:** ✅ Yerelde tamam, gerçek veriyle doğrulandı.
+
+### Eklenen / Değiştirilen Dosyalar
+- `app/services/admin_logs_service.py` (YENİ) → `collect_logs()`.
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/loglar` route'u.
+- `ui/templates/platform/admin/loglar.html` (YENİ) → özet kartları + kurum tablosu + katlanabilir listeler + saat dilimi JS.
+- `ui/templates/platform/admin/araclar.html` → Loglar kartı.
+
+### Gösterilen metrikler
+1. **Son giriş** (kim, ne zaman) + **Toplam giriş sayısı** → `AuditLog` (action="OTURUM AÇMA").
+2. **Son veri hareketi** (ne, kim, ne zaman) → `AuditLog` (CRUD, güvenlik dışı) ∪ `KpiData` (PG verisi) — en yenisi.
+3. **Hiç giriş yapmamış kullanıcılar** (sayı + katlanabilir liste) → login audit'i olmayan aktif User'lar.
+4. **Son hareketler akışı** (genel, son 25) → AuditLog ∪ KpiData.
+Yerel doğrulama: 169 giriş · 125 hiç girmemiş · kurum bazlı son giriş/son veri çalışıyor.
+
+### Önemli teknik kararlar
+- **PG verisi AuditLog'a yazılmıyor** (yalnız KpiData/KpiDataAudit) → "son veri hareketi" iki kaynağın birleşimi.
+- **Saat dilimi:** tüm zamanlar UTC ISO basılır, `data-utc` + JS ile **admin'in tarayıcı saat dilimine** çevrilir (kullanıcı isteği).
+- tz-aware/naive karışımı `_cmp()` ile normalize edildi (TypeError önlendi).
+- Kurum başına değil metrik başına toplu sorgu (subquery-max-join) → N+1 yok.
+
+### Notlar
+Salt-okuma; yalnız _is_admin() korur, ortam kilidi yok → sonra Test/Yayín'a deploy edilince çalışır.
+Yerel-only (henüz deploy edilmedi). Test/Yayín ayrı onayla.
+
 ## TASK-177 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Admin Araçları > İstatistikler bölümü — kurum bazında sistem sayımları

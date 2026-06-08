@@ -57,6 +57,23 @@ def admin_tools_istatistikler():
     return render_template("platform/admin/istatistikler.html", stats=stats)
 
 
+# ─── Loglar ──────────────────────────────────────────────────────────────────
+
+@app_bp.route("/admin/araclar/loglar")
+@login_required
+def admin_tools_loglar():
+    """Kurum bazında ve genel giriş/veri hareketi logları (salt-okuma)."""
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    try:
+        from app.services.admin_logs_service import collect_logs
+        logs = collect_logs()
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] loglar: {e}", exc_info=True)
+        logs = None
+    return render_template("platform/admin/loglar.html", logs=logs)
+
+
 # ─── Hata Kontrolü ───────────────────────────────────────────────────────────
 
 @app_bp.route("/admin/araclar/hata-kontrolu")

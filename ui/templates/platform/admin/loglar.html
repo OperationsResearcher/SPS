@@ -1,0 +1,196 @@
+{% extends "platform/base.html" %}
+{% block title %}Loglar — Kokpitim{% endblock %}
+{% block page_title %}Loglar{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'Loglar', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-clipboard-list" style="color:#6366f1;"></i> Loglar
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        Kurum bazında ve genel giriş ve veri hareketi kayıtları. Salt-okuma.
+        <span style="color:#94a3b8;"><i class="fas fa-clock"></i> Saatler tarayıcınızın saat dilimine göre gösterilir.</span>
+      </p>
+    </div>
+  </div>
+
+  {% if not logs %}
+  <div class="mc-card" style="padding:16px;border-left:4px solid #dc2626;background:#fef2f2;">
+    <i class="fas fa-circle-exclamation" style="color:#b91c1c;"></i>
+    <span style="font-size:13px;color:#991b1b;">Loglar alınamadı.</span>
+  </div>
+  {% else %}
+  {% set g = logs.global %}
+
+  {# ── Genel özet kartları ── #}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:18px;">
+    <div class="mc-card" style="padding:14px;">
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:4px;"><i class="fas fa-right-to-bracket" style="color:#0284c7;"></i> Toplam Giriş</div>
+      <div style="font-size:22px;font-weight:800;color:var(--text-default);">{{ "{:,}".format(g.login_total).replace(",", ".") }}</div>
+    </div>
+    <div class="mc-card" style="padding:14px;">
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:4px;"><i class="fas fa-user-clock" style="color:#7c3aed;"></i> Son Giriş</div>
+      {% if g.last_login %}
+      <div style="font-size:13.5px;font-weight:700;color:#334155;">{{ g.last_login.who }}</div>
+      <div style="font-size:11.5px;color:#64748b;">{{ g.last_login.tenant }} · <span data-utc="{{ g.last_login.when }}">—</span></div>
+      {% else %}<div style="font-size:13px;color:#94a3b8;">Kayıt yok</div>{% endif %}
+    </div>
+    <div class="mc-card" style="padding:14px;">
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:4px;"><i class="fas fa-pen-to-square" style="color:#16a34a;"></i> Son Veri Hareketi</div>
+      {% if g.last_change %}
+      <div style="font-size:13px;font-weight:700;color:#334155;line-height:1.3;">{{ g.last_change.what }}</div>
+      <div style="font-size:11.5px;color:#64748b;">{{ g.last_change.who }} · <span data-utc="{{ g.last_change.when }}">—</span></div>
+      {% else %}<div style="font-size:13px;color:#94a3b8;">Kayıt yok</div>{% endif %}
+    </div>
+    <div class="mc-card" style="padding:14px;">
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:4px;"><i class="fas fa-user-slash" style="color:#dc2626;"></i> Hiç Giriş Yapmamış</div>
+      <div style="font-size:22px;font-weight:800;color:var(--text-default);">{{ "{:,}".format(g.never_count).replace(",", ".") }} <span style="font-size:12px;font-weight:400;color:#94a3b8;">kullanıcı</span></div>
+    </div>
+  </div>
+
+  {# ── Kurum bazlı tablo ── #}
+  <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-building" style="color:#475569;"></i>
+      <span style="font-size:14px;font-weight:700;color:var(--text-default);">Kurum Bazında</span>
+      <span style="font-size:12px;color:#94a3b8;">({{ logs.tenant_count }} aktif kurum)</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead>
+          <tr style="background:#f8fafc;color:#475569;">
+            <th style="padding:9px 12px;text-align:left;">Kurum</th>
+            <th style="padding:9px 12px;text-align:left;">Son Giriş</th>
+            <th style="padding:9px 12px;text-align:right;">Toplam Giriş</th>
+            <th style="padding:9px 12px;text-align:left;">Son Veri Hareketi</th>
+            <th style="padding:9px 12px;text-align:right;">Hiç Girmemiş</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in logs.rows %}
+          <tr style="border-top:1px solid #f1f5f9;">
+            <td style="padding:8px 12px;font-weight:600;color:#334155;">{{ r.name }}</td>
+            <td style="padding:8px 12px;color:#475569;">
+              {% if r.last_login %}
+                <span style="color:#334155;">{{ r.last_login.who }}</span><br>
+                <span style="font-size:11px;color:#94a3b8;" data-utc="{{ r.last_login.when }}">—</span>
+              {% else %}<span style="color:#cbd5e1;">—</span>{% endif %}
+            </td>
+            <td style="padding:8px 12px;text-align:right;color:#475569;font-weight:600;">{{ "{:,}".format(r.login_total).replace(",", ".") }}</td>
+            <td style="padding:8px 12px;color:#475569;">
+              {% if r.last_change %}
+                <span style="color:#334155;">{{ r.last_change.what }}</span><br>
+                <span style="font-size:11px;color:#94a3b8;">{{ r.last_change.who }} · <span data-utc="{{ r.last_change.when }}">—</span></span>
+              {% else %}<span style="color:#cbd5e1;">—</span>{% endif %}
+            </td>
+            <td style="padding:8px 12px;text-align:right;">
+              {% if r.never_count %}<span style="color:#b91c1c;font-weight:700;">{{ r.never_count }}</span>{% else %}<span style="color:#16a34a;">0</span>{% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" style="padding:18px;text-align:center;color:#94a3b8;">Aktif kurum yok.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ── Hiç giriş yapmamış kullanıcılar (katlanabilir) ── #}
+  <div class="mc-card" style="padding:18px;margin-bottom:18px;">
+    <div class="lg-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#fef2f2;color:#b91c1c;display:flex;align-items:center;justify-content:center;"><i class="fas fa-user-slash"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Hiç Giriş Yapmamış Kullanıcılar</div>
+          <div style="font-size:12px;color:#64748b;">{{ logs.never_list|length }} kullanıcı — hesabı aktif ama hiç oturum açmamış.</div>
+        </div>
+      </div>
+      <i class="fas fa-chevron-down lg-collapse-chevron" style="color:#94a3b8;transition:transform .2s;transform:rotate(-90deg);"></i>
+    </div>
+    <div class="lg-collapse-body" style="display:none;margin-top:12px;overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead>
+          <tr style="background:#f8fafc;color:#475569;text-align:left;">
+            <th style="padding:8px 12px;">Kurum</th><th style="padding:8px 12px;">Ad Soyad</th>
+            <th style="padding:8px 12px;">E-posta</th><th style="padding:8px 12px;">Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in logs.never_list %}
+          <tr style="border-top:1px solid #f1f5f9;">
+            <td style="padding:7px 12px;color:#64748b;">{{ u.tenant }}</td>
+            <td style="padding:7px 12px;color:#334155;font-weight:600;">{{ u.name }}</td>
+            <td style="padding:7px 12px;color:#475569;font-family:monospace;">{{ u.email }}</td>
+            <td style="padding:7px 12px;color:#64748b;">{{ u.role }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" style="padding:16px;text-align:center;color:#16a34a;">Herkes en az bir kez giriş yapmış. 🎉</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ── Son hareketler akışı (katlanabilir) ── #}
+  <div class="mc-card" style="padding:18px;">
+    <div class="lg-collapse-toggle" data-collapsed="0" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:34px;height:34px;border-radius:9px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;"><i class="fas fa-stream"></i></span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-default);">Son Hareketler</div>
+          <div style="font-size:12px;color:#64748b;">En son {{ logs.feed|length }} giriş ve veri değişikliği (genel).</div>
+        </div>
+      </div>
+      <i class="fas fa-chevron-down lg-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+    </div>
+    <div class="lg-collapse-body" style="margin-top:12px;">
+      {% set kind_color = {'login':'#0284c7','güvenlik':'#b45309','değişiklik':'#16a34a','PG verisi':'#7c3aed'} %}
+      {% for f in logs.feed %}
+      <div style="display:flex;gap:10px;padding:7px 4px;border-bottom:1px solid #f4f7fb;align-items:baseline;">
+        <span style="font-size:10px;font-weight:700;color:#fff;background:{{ kind_color.get(f.kind, '#64748b') }};border-radius:9px;padding:2px 8px;white-space:nowrap;flex-shrink:0;">{{ f.kind }}</span>
+        <span style="flex:1;min-width:0;font-size:12.5px;color:#334155;">{{ f.what }}</span>
+        <span style="font-size:11.5px;color:#64748b;white-space:nowrap;">{{ f.who }} · {{ f.tenant }}</span>
+        <span style="font-size:11px;color:#94a3b8;white-space:nowrap;flex-shrink:0;" data-utc="{{ f.when }}">—</span>
+      </div>
+      {% else %}
+      <div style="padding:16px;text-align:center;color:#94a3b8;">Henüz hareket yok.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  // Saat dilimi: tüm UTC zamanlarını admin'in tarayıcı yerel saatine çevir.
+  function fmt(utc){
+    if(!utc) return "—";
+    var d=new Date(utc); if(isNaN(d.getTime())) return "—";
+    return d.toLocaleString(undefined,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+  }
+  document.querySelectorAll("[data-utc]").forEach(function(el){
+    var v=el.getAttribute("data-utc"); if(v) el.textContent=fmt(v);
+  });
+  // Katlanabilir kartlar
+  document.querySelectorAll(".lg-collapse-toggle").forEach(function(tg){
+    var body=tg.parentElement.querySelector(".lg-collapse-body");
+    var chev=tg.querySelector(".lg-collapse-chevron");
+    function apply(){
+      var c=tg.dataset.collapsed==="1";
+      if(body) body.style.display=c?"none":"block";
+      if(chev) chev.style.transform=c?"rotate(-90deg)":"rotate(0deg)";
+    }
+    apply();
+    tg.addEventListener("click",function(){ tg.dataset.collapsed=(tg.dataset.collapsed==="1")?"0":"1"; apply(); });
+  });
+})();
+</script>
+{% endblock %}
