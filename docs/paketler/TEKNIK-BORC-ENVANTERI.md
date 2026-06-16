@@ -151,6 +151,14 @@ Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIML
   - **Açık iş:** `portfolio_service` ölü legacy fallback'ini sadeleştir (davranış değişmez); `kurum_panel.py` BSC
     okumaları (redirect-ölü route'larda, o dosya url_for bağımlılığıyla bekliyor); `bsc/routes.py` perspective (BSC canlı mı?).
 - **Dalga 4 — Süreç/PG ORM tekilleştirme:** (#9-10) legacy route emekliye. → **KOE boyut 2 açılır.**
+  - **✅ kısmen yapıldı (2026-06-16):** `models/process.py` (379 satır, `Surec`/`SurecPerformansGostergesi`/
+    `SurecFaaliyet` + bireysel, `__tablename__='surec'` vb.) **silindi** — saf dead code. Teyit: hiçbir yerden import
+    edilmiyor (`models/__init__.py` legacy isimleri `app.models.process`'ten alias'lıyor, kendi `.process`'ini değil);
+    "geçici taşı + app kalk + geri getir" testiyle silmenin app'i etkilemediği kanıtlandı (891 route sabit). Silinen
+    sınıflar SQLAlchemy registry'ye hiç girmiyordu (o yüzden `surec` tablosu DB'de yok). `legacy_bridge` modern'e işaret
+    ediyor (`Surec.__tablename__='processes'`), sağlam.
+  - **Açık iş (kozmetik, düşük öncelik):** Türkçe alias kullanımları (`SurecPerformansGostergesi` → `ProcessKpi`) modern
+    isimlere çevrilebilir — ama `legacy_bridge` zaten doğru çalışıyor (modern tabloya yazıyor); mekanik, çok-dosya, düşük değer.
 - **Sürekli (her dalgada fırsatçı):** o dalganın dokunduğu god-file'ı böl, hard-delete'i soft yap, except:pass düzelt, alert→SweetAlert2. "Dokunduğun yeri temizle" — ayrı temizlik turu değil.
 
 **Bilinçli ertelenenler:** User (#1-2 — auth riski yüksek, en sona), legacy-only BSC modelleri (StrategyMapLink/Matrix — BSC kararıyla birlikte), webhook/i18n iskeletleri.
