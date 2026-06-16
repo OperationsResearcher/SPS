@@ -282,13 +282,6 @@
                 <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
                 <span class="sidebar-item-text">Ayarlar</span>
             </a>
-
-            {% if role_name == 'Admin' %}
-            <a href="{{ url_for('app_bp.hgs') }}" class="sidebar-item {% if 'hgs' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-bolt"></i></span>
-                <span class="sidebar-item-text">Hızlı Giriş</span>
-            </a>
-            {% endif %}
         </nav>
 
         <!-- Footer: kullanıcı -->

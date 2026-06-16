@@ -318,7 +318,7 @@ def create_app(config_class=None):
     # ── 3) Uygulama blueprint'leri (tek yapı)
     from app.routes.admin import admin_bp
     # Sprint 9: app.routes.dashboard kaldırıldı — fonksiyonlar micro/masaustu + micro/kurum'a taşındı
-    from app.routes.hgs import hgs_bp
+    # HGS (Hızlı Giriş) tamamen kaldırıldı (2026-06-16)
     # Sprint 25: SSO blueprint
     from app.routes.sso import sso_bp
     # Sprint 26: 2FA TOTP blueprint
@@ -333,7 +333,6 @@ def create_app(config_class=None):
     from app.api.push import push_bp
     from app.api.ai import ai_bp
 
-    app.register_blueprint(hgs_bp, url_prefix="")
     # Sprint 9: LEGACY_DASHBOARD_BP_ENABLED kaldırıldı (dashboard.py silindi)
     app.register_blueprint(admin_bp, url_prefix="/admin")
     # Sprint 25: SSO blueprint kaydı

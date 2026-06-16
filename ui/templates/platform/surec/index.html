@@ -639,6 +639,13 @@
 (function () {
   var sel = document.getElementById("surec-plan-year-select");
   if (!sel) return;
+  function _surecErr(msg) {
+    if (typeof Swal !== "undefined") {
+      Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    } else {
+      alert(msg);
+    }
+  }
   sel.addEventListener("change", async function () {
     var year = parseInt(sel.value, 10);
     if (!year) return;
@@ -654,10 +661,10 @@
       if (j && j.success) {
         window.location.reload();
       } else {
-        alert("Plan dönemi değiştirilemedi: " + (j && j.message || "bilinmeyen hata"));
+        _surecErr("Plan dönemi değiştirilemedi: " + (j && j.message || "bilinmeyen hata"));
       }
     } catch (e) {
-      alert("Sunucuya ulaşılamadı.");
+      _surecErr("Sunucuya ulaşılamadı.");
     }
   });
 })();

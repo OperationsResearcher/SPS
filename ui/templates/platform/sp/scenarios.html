@@ -130,7 +130,7 @@
         body: JSON.stringify({base_plan_year_id, scenario_label}),
       });
       const j = await res.json();
-      if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+      if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
       load();
     } finally {
       btn.disabled = false;

@@ -35,7 +35,6 @@ _SKIP_PREFIXES = (
     "/blog",
     "/demo",
     "/iletisim",
-    "/MfG_hgs",
 )
 
 _PROJELER_VIEW_MAP = {
