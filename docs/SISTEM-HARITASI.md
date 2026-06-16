@@ -103,7 +103,7 @@ Paket→modül kapısı: `get_accessible_modules(user)` (paketleme/L1 için krit
 | Yüzey | Ne | Durum |
 |-------|-----|-------|
 | `main/routes/*` (`main_bp`) | Eski HTML route'ları | Çoğu `legacy_sunset` ile modern'e 301. `strategy_api.py` legacy yazma route'ları **silindi** (Dalga 1). `kurum_panel.py` kısmen temizlendi (Dalga 1.6); `admin_panel()` url_for bağımlılığıyla bekliyor. |
-| `templates/` (kök) | Eski template'ler | Modern `ui/templates/platform/` ile ölü ikiz. Render edilmeyenler arşivleniyor (5 silindi). **Sıradaki temizlik cephesi.** |
+| `templates/` (kök) | Eski template'ler (127→110) | Modern `ui/templates/platform/` ile ölü ikiz. **2026-06-16:** 17 kesin-ölü (hiç render/extends/include yok: `*_backup`/`*_v2`/`*_modern`/`*_old`, eski `project_list`/`project_form` ikizleri) → `ARCHIVE/templates_dead/`. **Kalan iş:** 11 redirect-ölü template (route GET 301'leniyor, runtime teyitli — `dashboard.html`, `kurum_panel.html`, `project_list.html`… render eden route'larla birlikte temizlenecek). **Mock/deney route'ları (`/metaverse`, `/game-theory`, `/crisis`…) CANLI** (302→login, `@login_required`) — silinmez, paketlemede gizlenir. |
 | `app/routes/process.py` | 1806 satır legacy süreç | `LEGACY_PROCESS_BP_ENABLED` flag'e bağlı; micro/surec canonical. |
 | `bsc/`, `v2/`, `v3/` | BSC + eski API stub | BSC perspective canlı mı belirsiz (ayrı dikkat). |
 
