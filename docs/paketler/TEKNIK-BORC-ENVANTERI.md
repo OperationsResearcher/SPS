@@ -142,6 +142,14 @@ Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIML
       `static/js/kurum_panel.js`/`admin_panel.js`.
 - **Dalga 2 — Değerler/Etik/Kalite:** çok-satırlı modern modele yükselt (#6-8). → KOE "kimlik netliği" zenginleşir + onboarding/AI bunu ister.
 - **Dalga 3 — Strateji/Alt-Strateji:** (#3-4) → modern. perspective/weight kararı burada. → **KOE boyut 1 tam.**
+  - **✅ kısmen yapıldı (2026-06-16):** Teşhis: legacy `ana_strateji`/`alt_strateji`/`strategy_process_matrix` **boş**
+    (0/0/0), modern `strategies`/`sub_strategies`/`process_sub_strategy_links` dolu (90/229/250). `micro/proje`'deki iki
+    servis legacy okuyordu: (a) `portfolio_service` fallback'li (legacy boşsa modern'e düşer, davranış doğru) →
+    **dokunulmadı**; (b) `strategy_detail_service` fallback'siz, legacy boş tablodan okuyordu → **stratejik skorlar hep 0
+    (BUG, canlı test ile doğrulandı)**. → modern `Strategy`+`ProcessSubStrategyLink` desenine taşındı (portfolio'nun modern
+    fonksiyonuyla aynı). Çıktı sözleşmesi korundu (template uyumu). Tomofil'de 97 link → artık gerçek skor.
+  - **Açık iş:** `portfolio_service` ölü legacy fallback'ini sadeleştir (davranış değişmez); `kurum_panel.py` BSC
+    okumaları (redirect-ölü route'larda, o dosya url_for bağımlılığıyla bekliyor); `bsc/routes.py` perspective (BSC canlı mı?).
 - **Dalga 4 — Süreç/PG ORM tekilleştirme:** (#9-10) legacy route emekliye. → **KOE boyut 2 açılır.**
 - **Sürekli (her dalgada fırsatçı):** o dalganın dokunduğu god-file'ı böl, hard-delete'i soft yap, except:pass düzelt, alert→SweetAlert2. "Dokunduğun yeri temizle" — ayrı temizlik turu değil.
 
