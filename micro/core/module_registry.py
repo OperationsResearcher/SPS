@@ -76,13 +76,6 @@ MODULES = [
         "description": "Kullanıcı, kurum ve paket yönetimi",
     },
     {
-        "id": "hgs",
-        "name": "Hızlı Giriş",
-        "url": "/MfG_hgs",
-        "icon": "⚡",
-        "description": "Demo/geliştirme ortamı için hızlı kullanıcı girişi",
-    },
-    {
         "id": "api",
         "name": "API Dokümantasyonu",
         "url": "/api/docs",
@@ -149,7 +142,6 @@ _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
 # Rol bazlı kısıtlamalar
 _ROLE_RESTRICTED = {
     "admin":    {"tenant_admin", "executive_manager", "Admin"},
-    "hgs":      {"Admin"},
     # Home sayfasındaki "API Dokümantasyonu" kartı yalnızca Admin'de görünsün.
     "api":      {"Admin"},
     # K-Rapor yalnızca yönetici rolleri için

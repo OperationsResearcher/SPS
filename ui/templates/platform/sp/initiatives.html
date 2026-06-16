@@ -196,7 +196,7 @@
     });
     const j = await res.json();
     if (!res.ok || !j.success) {
-      alert('Hata: ' + (j.error || 'bilinmeyen'));
+      Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'bilinmeyen'), confirmButtonColor: '#dc2626' });
       return;
     }
     modal.style.display = 'none';

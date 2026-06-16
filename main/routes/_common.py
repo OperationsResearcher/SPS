@@ -120,28 +120,6 @@ def offline():
     return render_template('offline.html')
 
 
-@main_bp.route('/hgs')
-def hizli_giris():
-    """Hızlı giriş sayfası - Şifresiz direkt giriş paneli"""
-    if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
-    
-    # Tüm kullanıcıları getir (Kurum bilgisiyle birlikte)
-    kullanicilar = User.query.options(db.joinedload(User.kurum)).order_by(User.kurum_id, User.first_name, User.username).all()
-    
-    # Kullanıcıları kurumlara göre grupla
-    kurum_groups = {}
-    for user in kullanicilar:
-        k_ad = user.kurum.kisa_ad if user.kurum else "Diğer"
-        if k_ad not in kurum_groups: kurum_groups[k_ad] = []
-        kurum_groups[k_ad].append(user)
-    
-    # Grupları alfabetik sırala
-    kurum_groups = dict(sorted(kurum_groups.items()))
-    
-    return render_template('hizli_giris.html', kullanicilar=kullanicilar, kurum_groups=kurum_groups)
-
-
 def get_mock_data():
     """V67 DEPRECATED: Eski mock data fonksiyonu - Fallback için korunuyor.
     Artık Activity.query kullanılmalı. Bu fonksiyon sadece migration script'inde kullanılıyor.

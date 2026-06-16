@@ -186,7 +186,7 @@
       body: JSON.stringify(payload),
     });
     const j = await res.json();
-    if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
+    if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
     Swal.fire({toast:true, position:'top-end', icon:'success',
                title: 'Kaydedildi', showConfirmButton:false, timer: 2500});
     document.getElementById('byok-key').value = '';

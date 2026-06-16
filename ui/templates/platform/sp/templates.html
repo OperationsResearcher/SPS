@@ -109,8 +109,9 @@
         body: JSON.stringify(data),
       });
       const j = await res.json();
-      if (!res.ok) { alert('Hata: ' + (j.error || '')); return; }
-      alert('Şablon uygulandı: PlanYear #' + j.plan_year.id);
+      if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
+      Swal.fire({ toast: true, position: 'top-end', icon: 'success',
+                  title: 'Şablon uygulandı: PlanYear #' + j.plan_year.id, showConfirmButton: false, timer: 2500 });
       modal.style.display = 'none';
     } finally {
       btn.disabled = false; btn.textContent = 'Uygula';

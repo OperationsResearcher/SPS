@@ -148,7 +148,7 @@ Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:
 | Kod | Sorun | Dosya | Not |
 |-----|-------|-------|-----|
 | S1 | Legacy route çift yüzey | `main/`, `app/routes/` | Yeni iş yalnızca `micro/` — `docs/LEGACY_ROUTE_INVENTORY.md` |
-| S2 | HGS hızlı giriş | `micro/modules/hgs/` | Prod: `ProductionConfig` bypass kapalı |
+| ~~S2~~ | ~~HGS hızlı giriş~~ | — | Tamamen kaldırıldı (2026-06-16): modül, route, template, config, registry, sidebar |
 | S3 | Rate limit storage | `config.py` | Prod’da `REDIS_URL` önerilir |
 | ~~S4~~ | ~~FakeLimiter~~ | — | Kaldırıldı (2026-05) |
 | ~~S5~~ | ~~CSP pasif~~ | — | Production’da aktif (2026-05) |
@@ -235,3 +235,14 @@ ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 |-|-|
 | Instance | `sps-server-v2` / `europe-west3-c` (STOP) |
 | Geçiş yedekleri | `backups/oracle_migration/`, `docs/gcp2oraclegecisplani.md` |
+
+---
+
+## 9. DOKÜMANTASYON DÜZENİ
+
+### Kılavuz & Video çekme işi
+> **Sabit yönerge:** Kullanım kılavuzu ve video çekme (Kılavuz & Video Oluşturucu) işiyle ilgili **her türlü dokümantasyon** `docs/kılavuz/` klasöründe toplanır. Senaryo, çekim planı, bölüm metni, anlatım notu vb. buraya `.md` olarak eklenir.
+
+- Klasör indeksi: `docs/kılavuz/README.md`
+- Uzun soluklu iştir; senaryo değişikliği **önce burada** yazılır, **mutabakat sağlanınca** koda yansıtılır.
+- Üretilen binary çıktılar (PDF/video/resim) commit edilmez (`.gitignore`).

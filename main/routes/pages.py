@@ -1411,8 +1411,10 @@ def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
         try:
             from services.score_engine_service import recalc_on_faaliyet_change
             recalc_on_faaliyet_change(getattr(faaliyet, 'surec_pg_id', None), surec.kurum_id)
-        except Exception:
-            pass
+        except Exception as score_err:
+            # Best-effort skor yeniden-hesabı; başarısızsa faaliyet yine de kaydedildi,
+            # skor bir sonraki tetikte güncellenir. Sessiz yutma (KURALLAR §3) yerine logla.
+            current_app.logger.warning(f'[faaliyet_update] skor recalc başarısız: {score_err}')
 
         return jsonify({'success': True, 'message': 'Faaliyet başarıyla güncellendi'})
     except Exception as e:

@@ -31,7 +31,6 @@ from app_platform.modules.shared.scheduled_reports import routes as scheduled_re
 from app_platform.modules.kurum import routes as kurum_routes  # noqa: E402, F401
 from app_platform.modules.bireysel import routes as bireysel_routes  # noqa: E402, F401
 from app_platform.modules.admin import routes as admin_routes  # noqa: E402, F401
-from app_platform.modules.hgs import routes as hgs_routes  # noqa: E402, F401
 from app_platform.modules.api import routes as api_routes  # noqa: E402, F401
 from app_platform.modules.k_rapor import routes as k_rapor_routes  # noqa: E402, F401
 from app_platform.modules.demo import routes as demo_routes  # noqa: E402, F401

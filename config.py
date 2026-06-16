@@ -121,7 +121,6 @@ class Config:
     RATELIMIT_ENABLED = True
     RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "300 per hour; 3000 per day")
     RATELIMIT_LOGIN = os.environ.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour")
-    HGS_BYPASS_ENABLED = os.environ.get('HGS_BYPASS_ENABLED', 'false').lower() == 'true'
 
     # Dalga A: legacy HTML yönlendirme middleware (GET → platform)
     LEGACY_SUNSET_ENABLED = os.environ.get("LEGACY_SUNSET_ENABLED", "true").lower() == "true"
@@ -189,8 +188,6 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Üretim profili (hazırlık scriptleri ve doğrudan kullanım için)."""
     DEBUG = False
-    # Üretimde HGS bypass asla açılmaz (.env yanlış set edilse bile)
-    HGS_BYPASS_ENABLED = False
     # CSP üretimde varsayılan olarak açık; CSP_ENABLED=false ile kapatılabilir
     CSP_ENABLED = os.environ.get("CSP_ENABLED", "true").lower() != "false"
 

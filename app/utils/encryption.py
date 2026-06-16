@@ -28,11 +28,18 @@ _raw_key = os.environ.get("ENCRYPTION_KEY", "").strip()
 if _raw_key:
     _fernet = Fernet(_raw_key.encode())
 else:
+    # Üretimde ENCRYPTION_KEY zorunludur. Tanımsızsa her başlatmada rastgele anahtar
+    # üretilirdi → önceki oturumda şifrelenen veri (SMTP/LLM credential vb.) sessizce
+    # çözülemez hale gelir. Sessiz veri kaybı yerine açıkça başlatmayı durdururuz.
+    if (os.environ.get("FLASK_ENV") or "development").lower() == "production":
+        raise RuntimeError(
+            "ENCRYPTION_KEY ortam değişkeni üretimde zorunludur. "
+            "Üret: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\" "
+            "ve .env'e ekle."
+        )
+    # Geliştirme/test: geçici anahtar üret. Anahtar değeri ASLA loga yazılmaz.
     _generated_key = Fernet.generate_key()
     _fernet = Fernet(_generated_key)
-    # Güvenlik: üretilen anahtar değeri ASLA loga yazılmaz (log erişimi olan biri
-    # şifreli veriyi çözebilirdi). Yerel geliştirmede anahtarı kalıcı yapmak için
-    # .env'e ekleyin: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
     logger.warning(
         "ENCRYPTION_KEY ortam değişkeni tanımlı değil. Geçici anahtar üretildi — "
         "bu oturum dışında şifreli veriler çözülemez. Üretimde .env'e ENCRYPTION_KEY ekleyin."

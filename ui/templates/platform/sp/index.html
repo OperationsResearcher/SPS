@@ -21,7 +21,7 @@
   {% set values_text = year_identity.core_values or '' %}
   {% set ethics_text = year_identity.code_of_ethics or '' %}
 {% else %}
-  {% set mission_text = tenant.mission if tenant and tenant.mission else (tenant.purpose if tenant and tenant.purpose else '') %}
+  {% set mission_text = tenant.purpose if tenant and tenant.purpose else '' %}
   {% set vision_text = tenant.vision if tenant and tenant.vision else '' %}
   {% set values_text = tenant.core_values if tenant and tenant.core_values else '' %}
   {% set ethics_text = tenant.code_of_ethics if tenant and tenant.code_of_ethics else '' %}
