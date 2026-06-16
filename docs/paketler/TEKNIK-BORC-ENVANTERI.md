@@ -113,9 +113,16 @@ Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIML
     veri **tüm tenant'larda boştu** (taşınacak veri 0, DB'de teyit). Yani "veri taşıması" değil, saf kod temizliği oldu.
     `strategy_api.py`'deki **16 ölü legacy yazma route'u** kaldırıldı (ana/alt-strateji, vizyon/amaç, değer, etik, kalite).
     Route 911→895. `/strategy/*` (matrix/projects/kpi) route'larına dokunulmadı (kapsam dışı).
-  - **Devredildi (Dalga 1.5 — legacy okuma yüzeyi):** ölü template/JS (`templates/kurum_panel.html`,
-    `admin_v3.html`, `static/js/kurum_panel.js`) + `main/routes/kurum_panel.py` (750 satır, redirect'le ölü ama
-    içinde vizyon-dışı kod da var → ayrı dikkatli analiz). Bunlar render edilmiyor; silmek kozmetik, kapsam disiplini için ayrıldı.
+  - **Dalga 1.5 — kısmen yapıldı (2026-06-16):** 5 ölü backup template silindi (`templates/admin_panel*.html.backup*`,
+    `admin_panel_backup_broken.html`, `admin_panel_v2.html`, `admin_v3.html`, `kurum_panel_backup.html`) — hiçbir route
+    render etmiyor, extend/include edilmiyor (teyit). **`kurum_panel.py` (1300+ satır) bilinçli BIRAKILDI:** analiz
+    gösterdi ki içinde 3 tip karışık — (A) redirect-ölü GET sayfaları, (B) **CANLI admin upload route'ları**
+    (`/admin/upload-logo`, `upload-profile-photo`, `upload-users-excel`, `download-user-template` — `admin_panel.js`'den
+    çağrılıyor, bazılarının modern karşılığı `micro/modules/admin`'de VAR ama legacy hâlâ çağrılıyor), (C) şüpheli proje
+    alt-sayfaları. Bu dosyayı temizlemek = canlı upload'ları micro/admin'e taşıma + her route'u HTTP-seviyesinde test →
+    **ayrı bir refactor işi** (Dalga 1.6). Statik analiz yetmez; kapsam disiplini için ertelendi.
+    - **Açık iş (Dalga 1.6):** `kurum_panel.py` canlı upload route'larını micro/admin ile birleştir, redirect-ölü
+      GET'leri ve `templates/kurum_panel.html`/`stratejik_planlama_akisi.html` + `static/js/kurum_panel.js`/`admin_panel.js`'i kaldır.
 - **Dalga 2 — Değerler/Etik/Kalite:** çok-satırlı modern modele yükselt (#6-8). → KOE "kimlik netliği" zenginleşir + onboarding/AI bunu ister.
 - **Dalga 3 — Strateji/Alt-Strateji:** (#3-4) → modern. perspective/weight kararı burada. → **KOE boyut 1 tam.**
 - **Dalga 4 — Süreç/PG ORM tekilleştirme:** (#9-10) legacy route emekliye. → **KOE boyut 2 açılır.**
