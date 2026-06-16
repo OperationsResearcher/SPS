@@ -108,6 +108,14 @@ Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIML
 
 - **Dalga 0 — Bedava kazanımlar (riski düşük, izole):** index DDL'leri (B1), kritik eager-load (B2), `tenant.mission` bug fix, encryption key (D), HGS bypass teyidi (D). Veri taşıması yok, anında değer.
 - **Dalga 1 — Kimlik tek-kaynak:** Vizyon/Amaç (#5) → modern. `/kurum/update-amac-vizyon` legacy yazma kapat. → **KOE boyut 1 açılır.**
+  - **✅ YAPILDI (2026-06-16):** Teşhis sonucu beklenenden iyi çıktı — legacy yazma yolu **zaten ölüydü**
+    (`/kurum-paneli` 301 redirect → legacy template hiç render edilmiyor → form/JS ulaşılamaz) ve legacy
+    veri **tüm tenant'larda boştu** (taşınacak veri 0, DB'de teyit). Yani "veri taşıması" değil, saf kod temizliği oldu.
+    `strategy_api.py`'deki **16 ölü legacy yazma route'u** kaldırıldı (ana/alt-strateji, vizyon/amaç, değer, etik, kalite).
+    Route 911→895. `/strategy/*` (matrix/projects/kpi) route'larına dokunulmadı (kapsam dışı).
+  - **Devredildi (Dalga 1.5 — legacy okuma yüzeyi):** ölü template/JS (`templates/kurum_panel.html`,
+    `admin_v3.html`, `static/js/kurum_panel.js`) + `main/routes/kurum_panel.py` (750 satır, redirect'le ölü ama
+    içinde vizyon-dışı kod da var → ayrı dikkatli analiz). Bunlar render edilmiyor; silmek kozmetik, kapsam disiplini için ayrıldı.
 - **Dalga 2 — Değerler/Etik/Kalite:** çok-satırlı modern modele yükselt (#6-8). → KOE "kimlik netliği" zenginleşir + onboarding/AI bunu ister.
 - **Dalga 3 — Strateji/Alt-Strateji:** (#3-4) → modern. perspective/weight kararı burada. → **KOE boyut 1 tam.**
 - **Dalga 4 — Süreç/PG ORM tekilleştirme:** (#9-10) legacy route emekliye. → **KOE boyut 2 açılır.**
