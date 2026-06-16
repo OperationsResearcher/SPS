@@ -23,6 +23,17 @@
 
 ## A. Çift-model çakışmaları (10 kavram)
 
+> **🔑 KRİTİK DÜZELTME (2026-06-16, DB-doğrulanmış):** İlk analiz "10 çakışan kavram, çift canlı yazma" dedi.
+> Gerçek DB sorgusu bunu büyük ölçüde **çürüttü** — asıl tehlikeli senaryo (iki canlı tabloya çatallı yazma)
+> neredeyse **hiç yok.** Veri katmanı zaten modern tek-kaynakta birleşmiş. Tablo varlık+satır kanıtı:
+> - **Kimlik (Vizyon/Değer/Etik):** legacy `kurum`/`deger`/`etik_kural`/`kalite_politikasi` = **0 satır** (boş). Modern `tenants` dolu. → Dalga 1'de yazma route'ları silindi.
+> - **Strateji:** legacy `ana_strateji`/`alt_strateji` = **0/0 satır** (boş). Modern `strategies`/`sub_strategies` = **90/229 satır** (canlı). → zaten modern tek-kaynak.
+> - **Süreç/PG:** legacy `surec`/`surec_performans_gostergesi` **tabloları YOK**. Sadece modern `processes`(167)/`process_kpis`(731). `models/process.py` = `legacy_bridge` ile modern'e **saf alias** (Türkçe isim → aynı tablo).
+>
+> **Sonuç:** Kalan "Dalga 3/4" GERÇEK VERİ TAŞIMASI DEĞİL → **ölü legacy kod + isim/import temizliği.** Migration/yedek riski yok.
+> (Not: ajan raporları burada birkaç kez yanlış çıktı — "strategies tablosu hiç yok" gibi; her iddia DB'de doğrulandı.)
+
+
 Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md). Tarama bunu 7 kavramdan **10'a** genişletti:
 
 | # | Kavram | Legacy | Modern | Risk | Taşıma zorluğu |
@@ -121,8 +132,14 @@ Detay: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](../CIFT-MODEL-BORCU-KURUMSAL-KIML
     çağrılıyor, bazılarının modern karşılığı `micro/modules/admin`'de VAR ama legacy hâlâ çağrılıyor), (C) şüpheli proje
     alt-sayfaları. Bu dosyayı temizlemek = canlı upload'ları micro/admin'e taşıma + her route'u HTTP-seviyesinde test →
     **ayrı bir refactor işi** (Dalga 1.6). Statik analiz yetmez; kapsam disiplini için ertelendi.
-    - **Açık iş (Dalga 1.6):** `kurum_panel.py` canlı upload route'larını micro/admin ile birleştir, redirect-ölü
-      GET'leri ve `templates/kurum_panel.html`/`stratejik_planlama_akisi.html` + `static/js/kurum_panel.js`/`admin_panel.js`'i kaldır.
+    - **Dalga 1.6 — kısmen yapıldı (2026-06-16):** `kurum_panel.py`'den **4 ölü upload route silindi**
+      (download-user-template, upload-users-excel, upload-profile-photo, upload-logo). Teyit: GET /admin-panel
+      runtime'da 301 → app_bp.yonetim_paneli (middleware), tetikleyici admin_panel.html render-ölü; aktif ui'de referans yok;
+      modern karşılıklar canlı (micro/admin). Route 895→891.
+    - **Açık iş (Dalga 1.6 kalanı):** `admin_panel()` route'u + redirect-ölü GET'ler **bırakıldı** — `admin_panel`'e
+      `url_for` bağımlılığı var (`templates/admin/activity_stream.html:60`, `kurum_panel.py` iç redirect'ler) → silmeden önce
+      bu referanslar modern endpoint'e yönlendirilmeli. Ayrıca ölü `templates/kurum_panel.html`, `admin_panel.html`,
+      `static/js/kurum_panel.js`/`admin_panel.js`.
 - **Dalga 2 — Değerler/Etik/Kalite:** çok-satırlı modern modele yükselt (#6-8). → KOE "kimlik netliği" zenginleşir + onboarding/AI bunu ister.
 - **Dalga 3 — Strateji/Alt-Strateji:** (#3-4) → modern. perspective/weight kararı burada. → **KOE boyut 1 tam.**
 - **Dalga 4 — Süreç/PG ORM tekilleştirme:** (#9-10) legacy route emekliye. → **KOE boyut 2 açılır.**
