@@ -43,6 +43,16 @@ Ne yapıyoruz?
 
 ---
 
+## 🗺️ SİSTEM HARİTASI — "neyin ne olduğu"
+
+Kod tabanında kaybolduğunda / "bu dosya canlı mı" sorusunda önce buraya bak:
+**[`docs/SISTEM-HARITASI.md`](docs/SISTEM-HARITASI.md)** — çekirdek (kökte 9 .py), blueprint dağılımı
+(891 route; `app_bp`=556 modern, `main_bp`=136 legacy), modern modüller, model/servis katmanı, legacy yüzey,
+onboarding çekirdeği (~12 dosya). Mimari yön: **strangler** — modern `micro/`+`app/` büyür, legacy erir
+(sıfırdan yazma reddedildi). Tek-seferlik kök scriptler `scripts/_arsiv/`'de.
+
+---
+
 ## 🌿 BRANCH DİSİPLİNİ — ZORUNLU AKIŞ
 
 > Bu kural 2026-05-24'te kullanıcı onayıyla kondu. Baseline: `baseline-2026-05-24`.
