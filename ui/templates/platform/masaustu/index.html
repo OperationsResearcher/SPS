@@ -100,7 +100,28 @@
                 </div>
             </div>
             {% endfor %}
-            <p style="font-size:12px; color:#94a3b8; margin:8px 0 0;">
+
+            {% if koe_danisman %}
+            <div style="margin-top:14px; padding-top:14px; border-top:1px solid #e5e7eb;" class="dark:border-slate-700">
+                <p style="font-size:13px; color:var(--text-default); margin:0 0 10px; font-weight:600;" class="dark:text-white">
+                    <i class="fas fa-robot" style="color:#10b981; margin-right:6px;"></i>{{ koe_danisman.anlati }}
+                </p>
+                {% if koe_danisman.oncelikler %}
+                <p style="font-size:11px; color:#94a3b8; margin:0 0 6px; text-transform:uppercase; letter-spacing:.04em;">Bu dönem önceliklerin</p>
+                {% for _o in koe_danisman.oncelikler %}
+                <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:8px;">
+                    <span style="flex:none; width:18px; height:18px; border-radius:50%; background:#10b981; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px;">{{ loop.index }}</span>
+                    <div style="font-size:12px; line-height:1.5;">
+                        <strong style="color:var(--text-default);" class="dark:text-white">{{ _o.baslik }}</strong>
+                        <span style="color:var(--text-muted);" class="dark:text-slate-300"> — {{ _o.oneri }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <p style="font-size:12px; color:#94a3b8; margin:10px 0 0;">
                 <i class="fas fa-circle-info" style="margin-right:4px;"></i>
                 Yapısal olgunluk — performans verisi (PGV) girmeden mevcut yapıdan hesaplanır.
             </p>

@@ -241,16 +241,19 @@ def masaustu():
     # KOE — Kurumsal Olgunluk Endeksi (L1). Yalnızca yönetici/üst yönetim görür
     # (standart kullanıcı KOE'yi besler ama görmez). Saf okuma, hata sayfayı düşürmez.
     koe = None
+    koe_danisman = None
     if sp_can_manage and tenant_id:
         try:
-            from app.services.koe_service import compute_koe
+            from app.services.koe_service import compute_koe, yapi_danismani
             koe = compute_koe(tenant_id)
+            koe_danisman = yapi_danismani(koe)
         except Exception as koe_err:
             current_app.logger.warning(f"[masaustu] KOE hesaplanamadı: {koe_err}")
 
     return render_template(
         "platform/masaustu/index.html",
         koe=koe,
+        koe_danisman=koe_danisman,
         bireysel_pgs=bireysel_pgs,
         bireysel_faaliyetler=bireysel_faaliyetler,
         surec_pgs=surec_pgs,
