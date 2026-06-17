@@ -96,7 +96,7 @@
                                 <tr>
                                     <td>
                                         {% if entry.task %}
-                                        <a href="{{ url_for('main.proje_detay', project_id=entry.task.project_id) }}">
+                                        <a href="{{ url_for('app_bp.project_detail', project_id=entry.task.project_id) }}">
                                             {{ entry.task.title }}
                                         </a>
                                         {% else %}
