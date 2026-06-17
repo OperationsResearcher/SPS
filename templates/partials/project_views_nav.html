@@ -4,7 +4,7 @@
 
 <div class="btn-group btn-group-sm" role="group" aria-label="Planlama görünümleri">
     <a class="btn {{ active_btn_style if active_view == 'kanban' else btn_style }}"
-       href="{{ url_for('main.proje_detay', project_id=project.id) }}">
+       href="{{ url_for('app_bp.project_detail', project_id=project.id) }}">
         <i class="fas fa-columns me-1"></i>Kanban
     </a>
     <a class="btn {{ active_btn_style if active_view == 'calendar' else btn_style }}"

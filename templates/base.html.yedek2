@@ -739,7 +739,7 @@
         <div class="app-wrapper">
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
-                    <a href="{{ url_for('main.dashboard') }}" class="sidebar-logo">
+                    <a href="{{ url_for('app_bp.masaustu') }}" class="sidebar-logo">
                         <i class="fas fa-chart-line"></i>
                         <span>Stratejik Planlama</span>
             </a>
@@ -752,19 +752,19 @@
                     <div class="nav-section">
                         <span class="nav-section-title">Ana Menü</span>
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('app_bp.masaustu') }}">
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>Gösterge Paneli</span>
                         </a>
                         </div>
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('app_bp.surec') }}">
                                 <i class="bi bi-file-earmark-spreadsheet"></i>
                                 <span>Süreç Karnesi</span>
                             </a>
                         </div>
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.gorevlerim' %}active{% endif %}" href="{{ url_for('main.gorevlerim') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.gorevlerim' %}active{% endif %}" href="{{ url_for('app_bp.bireysel_karne') }}">
                                 <i class="fas fa-tasks"></i>
                                 <span>Görevlerim</span>
                             </a>
@@ -781,20 +781,20 @@
                             </a>
                         </div>
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.stratejik_planlama_akisi' %}active{% endif %}" href="{{ url_for('main.stratejik_planlama_akisi') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_planlama_akisi' %}active{% endif %}" href="{{ url_for('app_bp.sp') }}">
                                 <i class="fas fa-project-diagram"></i>
                                 <span>SP Akış Diyagramı</span>
                             </a>
                         </div>
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.stratejik_asistan' %}active{% endif %}" href="{{ url_for('main.stratejik_asistan') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.stratejik_asistan' %}active{% endif %}" href="{{ url_for('app_bp.sp') }}">
                                 <i class="fas fa-magic"></i>
                                 <span>Stratejik Asistan</span>
                             </a>
                         </div>
                         {% if current_user.sistem_rol == 'admin' %}
                         <div class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.admin_panel' %}active{% endif %}" href="{{ url_for('main.admin_panel') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.admin_panel' %}active{% endif %}" href="{{ url_for('app_bp.yonetim_paneli') }}">
                                 <i class="fas fa-users-cog"></i>
                                 <span>Admin Panel</span>
                             </a>
@@ -906,7 +906,7 @@
         {% if current_user.is_authenticated %}
         <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: var(--primary-gradient);">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+                <a class="navbar-brand" href="{{ url_for('app_bp.masaustu') }}">
                     <i class="fas fa-chart-line"></i>
                     Stratejik Planlama
                 </a>
@@ -916,27 +916,27 @@
                 <div class="collapse navbar-collapse" id="classicNavbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('app_bp.masaustu') }}">
                                 <i class="fas fa-tachometer-alt me-2"></i>Gösterge Paneli
                         </a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.surec_paneli' %}active{% endif %}" href="{{ url_for('main.surec_paneli') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_paneli' %}active{% endif %}" href="{{ url_for('app_bp.surec') }}">
                                 <i class="fas fa-cogs me-2"></i>Süreç Paneli
                         </a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('main.surec_karnesi') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.surec_karnesi' %}active{% endif %}" href="{{ url_for('app_bp.surec') }}">
                                 <i class="bi bi-file-earmark-spreadsheet me-2"></i>Süreç Karnesi
                         </a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.performans_kartim' %}active{% endif %}" href="{{ url_for('main.performans_kartim') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.performans_kartim' %}active{% endif %}" href="{{ url_for('app_bp.bireysel_karne') }}">
                                 <i class="fas fa-tasks me-2"></i>Performans Kartım
                         </a>
                     </li>
                     <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'main.kurum_paneli' %}active{% endif %}" href="{{ url_for('main.kurum_paneli') }}">
+                            <a class="nav-link {% if request.endpoint == 'main.kurum_paneli' %}active{% endif %}" href="{{ url_for('app_bp.kurum') }}">
                                 <i class="fas fa-building me-2"></i>Kurum Paneli
                         </a>
                     </li>
@@ -946,10 +946,10 @@
                                 <i class="fas fa-cog me-2"></i>Yönetim
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_planlama_akisi') }}"><i class="fas fa-project-diagram me-2"></i>SP Akış Diyagramı</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.stratejik_asistan') }}"><i class="fas fa-magic me-2"></i>Stratejik Asistan</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('app_bp.sp') }}"><i class="fas fa-project-diagram me-2"></i>SP Akış Diyagramı</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('app_bp.sp') }}"><i class="fas fa-magic me-2"></i>Stratejik Asistan</a></li>
                     {% if current_user.sistem_rol == 'admin' %}
-                                <li><a class="dropdown-item" href="{{ url_for('main.admin_panel') }}"><i class="fas fa-users-cog me-2"></i>Admin Panel</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('app_bp.yonetim_paneli') }}"><i class="fas fa-users-cog me-2"></i>Admin Panel</a></li>
                                 {% endif %}
                             </ul>
                     </li>

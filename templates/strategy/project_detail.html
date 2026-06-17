@@ -9,7 +9,7 @@
             <a href="{{ url_for('main.strategy_projects') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-arrow-left me-1"></i>Portföye Dön
             </a>
-            <a href="{{ url_for('main.proje_detay', project_id=project.id) }}" class="btn btn-primary btn-sm ms-2">
+            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="btn btn-primary btn-sm ms-2">
                 <i class="fas fa-tasks me-1"></i>Proje Yönetimi (Görevler)
             </a>
         </div>
