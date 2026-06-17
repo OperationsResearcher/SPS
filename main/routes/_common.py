@@ -154,31 +154,3 @@ def get_mock_data():
     return result
 
 
-@main_bp.route('/redmine')
-@login_required
-@legacy_html_to_platform
-def redmine():
-    """
-    Faaliyetler Sayfası (V67 - Güncel)
-    Artık Activity tablosundan veri çekiyor.
-    """
-    from app.models.legacy_bridge import Activity
-    
-    # 1. Veritabanından faaliyetleri çek (en yeni en üstte)
-    db_activities = Activity.query.order_by(Activity.date.desc()).all()
-    
-    # 2. Template için dictionary formatına çevir
-    activities = []
-    for activity in db_activities:
-        activities.append({
-            'id': activity.id,
-            'source': activity.source,
-            'project': activity.project.name if activity.project else activity.project_name or 'N/A',
-            'subject': activity.subject,
-            'status': activity.status,
-            'priority': activity.priority,
-            'date': activity.date.strftime('%Y-%m-%d') if activity.date else None
-        })
-    
-    return render_template('redmine.html', activities=activities)
-

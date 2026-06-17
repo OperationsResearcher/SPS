@@ -28,19 +28,9 @@ def ai_chat():
     return render_template('ai_chat.html')
 
 
-@main_bp.route('/stratejik-asistan')
-@login_required
-@legacy_html_to_platform
-def stratejik_asistan():
-    """Stratejik Asistan sayfası"""
-    try:
-        kurum = current_user.kurum
-        return render_template('stratejik_asistan.html', kurum=kurum)
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'Stratejik Asistan sayfası render hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"Template render hatası: {str(e)}", 500
+# 2026-06-17: /stratejik-asistan kaldırıldı — redirect-ölüydü (GET 301 → /sp,
+# runtime teyit). safe_urls.py fallback: main.stratejik_asistan → app_bp.sp.
+# (ai_chat ve ai_coach CANLI — 302→login, dokunulmadı.)
 
 
 @main_bp.route('/ai-coach')
