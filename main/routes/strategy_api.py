@@ -40,7 +40,7 @@ def ai_coach_page():
     try:
         if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
             flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('app_bp.masaustu'))
         return render_template('ai_coach.html')
     except Exception as e:
         import traceback
@@ -113,7 +113,7 @@ def strategy_matrix():
         current_app.logger.error(f'Strateji Matrisi sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash(f'Matris görüntülenirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/strategy/update_cell', methods=['POST'])
@@ -276,7 +276,7 @@ def strategy_projects():
         current_app.logger.error(f'Stratejik Proje Portföyü hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash(f'Proje portföyü görüntülenirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/strategy/project/<int:id>')
@@ -756,7 +756,7 @@ def strategy_kpis():
         current_app.logger.error(f'KPI Dashboard hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash(f'KPI paneli görüntülenirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/strategy/kpi/add', methods=['POST'])

@@ -43,7 +43,7 @@ def fix_bsc_schema():
     """BSC kolonlarını ve bağlantı tablosunu veri kaybı olmadan ekler."""
     if current_user.sistem_rol != 'admin':
         flash('Bu işlem için yetkiniz yok.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
     try:
         from sqlalchemy import text
@@ -167,7 +167,7 @@ def api_strategic_planning_graph():
         # Nodes / edges for vis-network
         nodes = []
         edges = []
-        kurum_panel_url = url_for('main.kurum_paneli')
+        kurum_panel_url = url_for('app_bp.kurum')
 
         def _label_with_score(prefix: str, name: str, score: int) -> str:
             base = f"{prefix} {name}".strip()

@@ -158,7 +158,7 @@ def proje_analitik():
         current_app.logger.error(f'Proje Analitik sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash('Analitik sayfası yüklenirken hata oluştu.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/zaman-takibi')
@@ -200,7 +200,7 @@ def zaman_takibi():
         current_app.logger.error(f'Zaman Takibi sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash('Zaman takibi sayfası yüklenirken hata oluştu.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/gorev-aktivite-log')
@@ -230,7 +230,7 @@ def gorev_aktivite_log():
         current_app.logger.error(f'Görev Aktivite Log sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash('Aktivite log sayfası yüklenirken hata oluştu.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/sistem-degisiklik-gunlugu')
@@ -240,7 +240,7 @@ def sistem_degisiklik_gunlugu():
     # Sadece yöneticiler erişebilir
     if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
         flash('Bu sayfaya erişim yetkiniz yok.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
     
     try:
         # Filtreleme parametreleri
@@ -302,7 +302,7 @@ def sistem_degisiklik_gunlugu():
     except Exception as e:
         current_app.logger.error(f'Audit log sayfası hatası: {e}', exc_info=True)
         flash('Sistem değişiklik günlüğü yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/akilli-planlama')
@@ -337,565 +337,9 @@ def akilli_planlama():
         current_app.logger.error(f'Akıllı Planlama sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash('Akıllı planlama sayfası yüklenirken hata oluştu.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
-@main_bp.route('/setup_test_pg_automation')
-@login_required
-def setup_test_pg_automation():
-    """Test için PG otomasyonu hazırlama route'u (Geçici)"""
-    try:
-        # 1. İlk görevi bul
-        task = Task.query.first()
-        
-        if not task:
-            return "❌ Görev bulunamadı. Önce bir görev oluşturun."
-        
-        # 2. İlk bireysel PG'yi bul (veya oluştur)
-        pg = BireyselPerformansGostergesi.query.filter_by(user_id=current_user.id).first()
-        
-        if not pg:
-            # Demo PG oluştur
-            pg = BireyselPerformansGostergesi(
-                user_id=current_user.id,
-                ad="Test Performans Göstergesi (Otomasyon)",
-                aciklama="Otomasyon testi için oluşturuldu",
-                hedef_deger="100",
-                olcum_birimi="Adet",
-                periyot="Aylik",
-                kaynak="Bireysel"
-            )
-            db.session.add(pg)
-            db.session.flush()
-        
-        # 3. Görevi ölçülebilir yap ve PG'ye bağla
-        task.is_measurable = True
-        task.planned_output_value = 100.0
-        task.related_indicator_id = pg.id
-        
-        db.session.commit()
-        
-        return f"""
-        ✅ Test görevi hazırlandı!<br><br>
-        <strong>Görev ID:</strong> {task.id}<br>
-        <strong>Görev Adı:</strong> {task.title}<br>
-        <strong>PG ID:</strong> {pg.id}<br>
-        <strong>PG Adı:</strong> {pg.ad}<br>
-        <strong>Planlanan Değer:</strong> {task.planned_output_value}<br><br>
-        <strong>Şimdi yapılacaklar:</strong><br>
-        1. Proje detay sayfasına gidin<br>
-        2. Bu görevi tamamlayın (Bitir butonuna tıklayın)<br>
-        3. Otomatik olarak PG verisi oluşturulacak!<br><br>
-        <a href="/projeler/{task.project_id}">Proje Detay Sayfasına Git</a>
-        """
-        
-    except Exception as e:
-        db.session.rollback()
-        import traceback
-        current_app.logger.error(f'Test setup hatası: {e}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return f"❌ Hata: {str(e)}<br><br>Traceback:<br><pre>{traceback.format_exc()}</pre>"
-
-
-@main_bp.route('/debug/schema_check')
-@login_required
-def debug_schema_check():
-    """Veritabanı şema kontrolü - Task tablosu sütunlarını kontrol et"""
-    try:
-        from sqlalchemy import inspect
-        
-        # Task modelini inspect et
-        inspector = inspect(db.engine)
-        columns = [col['name'] for col in inspector.get_columns('task')]
-        
-        # Kontrol edilecek sütunlar
-        required_columns = ['is_measurable', 'planned_output_value', 'related_indicator_id']
-        
-        result = []
-        result.append("=== VERITABANI SEMA KONTROLU ===\n\n")
-        result.append(f"Task tablosu toplam {len(columns)} sütun içeriyor.\n\n")
-        
-        all_present = True
-        for col_name in required_columns:
-            if col_name in columns:
-                result.append(f"✅ {col_name}: MEVCUT\n")
-            else:
-                result.append(f"❌ {col_name}: EKSIK\n")
-                all_present = False
-        
-        result.append("\n=== SONUC ===\n")
-        if all_present:
-            result.append("✅ Tüm sütunlar mevcut! Otomasyon için hazır.\n")
-        else:
-            result.append("❌ Bazı sütunlar eksik. Migration gerekli.\n")
-        
-        result.append("\n=== TUM SUTUNLAR ===\n")
-        result.append(", ".join(columns))
-        
-        return "<pre>" + "".join(result) + "</pre>"
-        
-    except Exception as e:
-        import traceback
-        return f"<pre>❌ Hata: {str(e)}\n\nTraceback:\n{traceback.format_exc()}</pre>"
-
-
-@main_bp.route('/debug/monitor')
-@login_required
-def debug_monitor():
-    """Canlı izleme paneli - Son görevler ve PG verileri"""
-    try:
-        # Son 5 görev
-        last_tasks = Task.query.order_by(Task.created_at.desc()).limit(5).all()
-        
-        # Son 5 PG verisi (otomasyonla oluşanlar)
-        last_pg_veriler = PerformansGostergeVeri.query.order_by(PerformansGostergeVeri.created_at.desc()).limit(5).all()
-        
-        html = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Debug Monitor - Sistem İzleme</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-                .container { max-width: 1200px; margin: 0 auto; }
-                h1 { color: #333; }
-                table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-                th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-                th { background-color: #4CAF50; color: white; }
-                tr:hover { background-color: #f5f5f5; }
-                .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-                .badge-success { background: #28a745; color: white; }
-                .badge-danger { background: #dc3545; color: white; }
-                .badge-warning { background: #ffc107; color: black; }
-                .badge-info { background: #17a2b8; color: white; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>🔍 Sistem Tanı ve İzleme Paneli</h1>
-                <p><strong>Son Güncelleme:</strong> """ + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + """</p>
-                
-                <h2>📋 Son 5 Görev</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Adı</th>
-                            <th>Durum</th>
-                            <th>Ölçülebilir?</th>
-                            <th>Planlanan Değer</th>
-                            <th>Bağlı PG ID</th>
-                            <th>Tamamlanma Tarihi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        """
-        
-        for task in last_tasks:
-            is_measurable_badge = '<span class="badge badge-success">Evet</span>' if task.is_measurable else '<span class="badge badge-danger">Hayır</span>'
-            status_badge = f'<span class="badge badge-{"success" if task.status == "Tamamlandı" else "warning"}">{task.status}</span>'
-            pg_id = task.related_indicator_id if task.related_indicator_id else '-'
-            planned_value = task.planned_output_value if task.planned_output_value is not None else '-'
-            completed = task.completed_at.strftime('%Y-%m-%d %H:%M') if task.completed_at else '-'
-            
-            html += f"""
-                        <tr>
-                            <td>{task.id}</td>
-                            <td>{task.title}</td>
-                            <td>{status_badge}</td>
-                            <td>{is_measurable_badge}</td>
-                            <td>{planned_value}</td>
-                            <td>{pg_id}</td>
-                            <td>{completed}</td>
-                        </tr>
-            """
-        
-        html += """
-                    </tbody>
-                </table>
-                
-                <h2>📊 Son 5 PG Verisi</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tarih</th>
-                            <th>Değer</th>
-                            <th>Açıklama</th>
-                            <th>PG ID</th>
-                            <th>Kullanıcı</th>
-                            <th>Oluşturulma</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        """
-        
-        for pg_veri in last_pg_veriler:
-            is_auto = 'Otomatik' in (pg_veri.aciklama or '')
-            auto_badge = '<span class="badge badge-info">Otomatik</span>' if is_auto else '<span class="badge">Manuel</span>'
-            user_name = pg_veri.user.first_name + ' ' + pg_veri.user.last_name if pg_veri.user else '-'
-            created = pg_veri.created_at.strftime('%Y-%m-%d %H:%M') if pg_veri.created_at else '-'
-            
-            html += f"""
-                        <tr>
-                            <td>{pg_veri.id}</td>
-                            <td>{pg_veri.veri_tarihi.strftime('%Y-%m-%d') if pg_veri.veri_tarihi else '-'}</td>
-                            <td>{pg_veri.gerceklesen_deger}</td>
-                            <td>{auto_badge} {pg_veri.aciklama[:50] if pg_veri.aciklama else '-'}</td>
-                            <td>{pg_veri.bireysel_pg_id}</td>
-                            <td>{user_name}</td>
-                            <td>{created}</td>
-                        </tr>
-            """
-        
-        html += """
-                    </tbody>
-                </table>
-                
-                <p><a href="/debug/schema_check">🔍 Şema Kontrolü</a> | 
-                   <a href="/dashboard">🏠 Dashboard</a></p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        return html
-        
-    except Exception as e:
-        import traceback
-        return f"<pre>❌ Hata: {str(e)}\n\nTraceback:\n{traceback.format_exc()}</pre>"
-
-
-@main_bp.route('/debug/force_trigger/<int:task_id>')
-@login_required
-def debug_force_trigger(task_id):
-    """Manuel otomasyon tetikleme testi"""
-    try:
-        from datetime import date
-        
-        # Görevi bul
-        task = Task.query.get_or_404(task_id)
-        
-        # Görevi ölçülebilir yap ve değerleri set et
-        task.is_measurable = True
-        task.planned_output_value = 50.0
-        
-        # PG ID'yi kontrol et - eğer yoksa ilk PG'yi bul veya oluştur
-        if not task.related_indicator_id:
-            pg = BireyselPerformansGostergesi.query.filter_by(user_id=current_user.id).first()
-            if not pg:
-                # Demo PG oluştur
-                pg = BireyselPerformansGostergesi(
-                    user_id=current_user.id,
-                    ad="Test Performans Göstergesi (Manuel Tetikleme)",
-                    aciklama="Manuel tetikleme testi için oluşturuldu",
-                    hedef_deger="100",
-                    olcum_birimi="Adet",
-                    periyot="Aylik",
-                    kaynak="Bireysel"
-                )
-                db.session.add(pg)
-                db.session.flush()
-            task.related_indicator_id = pg.id
-        
-        db.session.flush()
-        
-        # Otomasyon mantığını manuel çalıştır
-        result = {
-            'success': False,
-            'task_id': task_id,
-            'task_title': task.title,
-            'is_measurable': task.is_measurable,
-            'planned_output_value': task.planned_output_value,
-            'related_indicator_id': task.related_indicator_id,
-            'pg_created': False,
-            'pg_veri_id': None,
-            'error': None
-        }
-        
-        if task.is_measurable and task.related_indicator_id:
-            try:
-                # İlişkili PG'yi kontrol et
-                related_pg = BireyselPerformansGostergesi.query.get(task.related_indicator_id)
-                if related_pg:
-                    # Yeni performans değeri kaydı oluştur
-                    today = date.today()
-                    
-                    # Değer hesapla
-                    output_value = task.planned_output_value if task.planned_output_value is not None else 1.0
-                    
-                    # PerformansGostergeVeri kaydı oluştur
-                    new_pg_veri = PerformansGostergeVeri(
-                        bireysel_pg_id=task.related_indicator_id,
-                        yil=today.year,
-                        veri_tarihi=today,
-                        giris_periyot_tipi='gunluk',
-                        giris_periyot_no=today.day,
-                        giris_periyot_ay=today.month,
-                        ay=today.month,
-                        gun=today.day,
-                        gerceklesen_deger=str(output_value),
-                        aciklama=f"Otomatik: {task.title} tamamlandı. (Manuel Tetikleme)",
-                        user_id=current_user.id,
-                        created_by=current_user.id,
-                        updated_by=current_user.id
-                    )
-                    db.session.add(new_pg_veri)
-                    db.session.flush()
-                    
-                    result['pg_created'] = True
-                    result['pg_veri_id'] = new_pg_veri.id
-                    result['success'] = True
-                    result['message'] = f'PG verisi başarıyla oluşturuldu (ID: {new_pg_veri.id})'
-                else:
-                    result['error'] = f'İlişkili PG bulunamadı (ID: {task.related_indicator_id})'
-            except Exception as pg_error:
-                result['error'] = f'PG verisi oluşturulurken hata: {str(pg_error)}'
-        else:
-            result['error'] = 'Görev ölçülebilir değil veya PG ID yok'
-        
-        db.session.commit()
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        db.session.rollback()
-        import traceback
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'traceback': traceback.format_exc()
-        }), 500
-
-
-@main_bp.route('/debug/fix_and_reset')
-@login_required
-def debug_fix_and_reset():
-    """Test ortamını sıfırla ve eksik referansları tamamla"""
-    try:
-        result_messages = []
-        
-        # Adım 1: İndikatör Kontrolü (BireyselPerformansGostergesi ID=1)
-        pg = BireyselPerformansGostergesi.query.get(1)
-        if not pg:
-            # ID=1 olan PG yoksa oluştur
-            # Önce mevcut kullanıcının PG'sini kontrol et
-            existing_pg = BireyselPerformansGostergesi.query.filter_by(
-                user_id=current_user.id,
-                ad="Test KPI"
-            ).first()
-            
-            if existing_pg:
-                # Mevcut PG'yi kullan
-                pg = existing_pg
-                result_messages.append(f"ℹ️ Mevcut Test KPI kullanılıyor (ID: {pg.id})")
-            else:
-                # Yeni PG oluştur
-                pg = BireyselPerformansGostergesi(
-                    user_id=current_user.id,
-                    ad="Test KPI",
-                    aciklama="Test ortamı için otomatik oluşturuldu",
-                    hedef_deger="100",
-                    olcum_birimi="Adet",
-                    periyot="Aylik",
-                    kaynak="Bireysel",
-                    durum="Devam Ediyor"
-                )
-                db.session.add(pg)
-                db.session.flush()
-                result_messages.append(f"✅ İndikatör oluşturuldu (ID: {pg.id}): 'Test KPI'")
-        else:
-            result_messages.append(f"ℹ️ İndikatör (ID:1) zaten mevcut: '{pg.ad}'")
-        
-        # Adım 2: Görevi Sıfırla (Task ID=1)
-        task = Task.query.get(1)
-        if not task:
-            # Görev 1 yoksa, ilk görevi bul veya oluştur
-            task = Task.query.first()
-            if not task:
-                # Hiç görev yoksa, bir proje bul ve görev oluştur
-                project = Project.query.first()
-                if project:
-                    task = Task(
-                        project_id=project.id,
-                        title="Test Görevi (Otomasyon Testi)",
-                        description="Otomasyon testi için oluşturuldu",
-                        status="Yapılacak",
-                        priority="Orta"
-                    )
-                    db.session.add(task)
-                    db.session.flush()
-                    result_messages.append("✅ Yeni test görevi oluşturuldu (ID: {})".format(task.id))
-                else:
-                    return "<pre>❌ Hata: Hiç proje bulunamadı. Önce bir proje oluşturun.</pre>"
-            else:
-                result_messages.append(f"ℹ️ Görev 1 bulunamadı, ilk görev kullanılıyor (ID: {task.id})")
-        
-        # Görevi sıfırla
-        task.status = 'Yapılacak'
-        task.completed_at = None
-        task.is_measurable = True
-        task.planned_output_value = 50.0
-        task.related_indicator_id = pg.id  # ID=1 olan PG'ye bağla
-        
-        result_messages.append(f"✅ Görev (ID: {task.id}) sıfırlandı:")
-        result_messages.append(f"   - Durum: 'Yapılacak'")
-        result_messages.append(f"   - Tamamlanma Tarihi: None")
-        result_messages.append(f"   - Ölçülebilir: True")
-        result_messages.append(f"   - Planlanan Değer: 50.0")
-        result_messages.append(f"   - Bağlı PG ID: {pg.id}")
-        
-        # Adım 3: Kaydet
-        db.session.commit()
-        
-        result_messages.append("\n✅ Sistem sıfırlandı ve hazır!")
-        result_messages.append(f"\n📝 Şimdi yapılacaklar:")
-        result_messages.append(f"   1. Proje detay sayfasına gidin: /projeler/{task.project_id}")
-        result_messages.append(f"   2. Görev (ID: {task.id}) 'Bitir' butonuna tıklayın")
-        result_messages.append(f"   3. Otomatik olarak PG verisi oluşturulacak!")
-        
-        return "<pre>" + "\n".join(result_messages) + "</pre>"
-        
-    except Exception as e:
-        db.session.rollback()
-        import traceback
-        return f"<pre>❌ Hata: {str(e)}\n\nTraceback:\n{traceback.format_exc()}</pre>"
-
-
-@main_bp.route('/debug/init_strategy_db')
-@login_required
-def debug_init_strategy_db():
-    """Stratejik Planlama V3.0 veritabanı migration - Yeni tabloları ve ilişkileri oluşturur"""
-    try:
-        from app.models.legacy_bridge import CorporateIdentity, AnaStrateji, AltStrateji, Surec, SurecPerformansGostergesi
-        
-        result_messages = []
-        result_messages.append("=== STRATEJİK PLANLAMA V3.0 VERİTABANI MİGRATİON ===\n")
-        
-        # Tüm tabloları oluştur
-        db.create_all()
-        result_messages.append("✅ Tüm tablolar oluşturuldu (veya zaten mevcut)")
-        
-        # Yeni tabloları kontrol et
-        inspector = db.inspect(db.engine)
-        existing_tables = inspector.get_table_names()
-        
-        # CorporateIdentity tablosu kontrolü
-        if 'corporate_identity' in existing_tables:
-            result_messages.append("✅ corporate_identity tablosu mevcut")
-        else:
-            result_messages.append("⚠️ corporate_identity tablosu bulunamadı (create_all çalıştırıldı)")
-        
-        # Association table'ları kontrol et
-        if 'process_owners' in existing_tables:
-            result_messages.append("✅ process_owners association table mevcut")
-        else:
-            result_messages.append("⚠️ process_owners association table bulunamadı")
-        
-        if 'strategy_process_matrix' in existing_tables:
-            result_messages.append("✅ strategy_process_matrix association table mevcut")
-        else:
-            result_messages.append("⚠️ strategy_process_matrix association table bulunamadı")
-        
-        # Mevcut tablolardaki yeni kolonları kontrol et (PostgreSQL: Alembic önerilir)
-        result_messages.append("\n=== YENİ KOLONLAR KONTROLÜ ===")
-        result_messages.append("⚠️ Not: PostgreSQL'de şema değişiklikleri için Alembic migration kullanın.")
-        result_messages.append("Aşağıdaki kolonlar eklenmeli:")
-        result_messages.append("  - ana_strateji: code, name")
-        result_messages.append("  - alt_strateji: code, name")
-        result_messages.append("  - surec: code, name, weight")
-        result_messages.append("  - surec_performans_gostergesi: calculation_method, target_method, unit, direction")
-        
-        result_messages.append("\n✅ Migration tamamlandı!")
-        result_messages.append("\n📝 Sonraki Adımlar:")
-        result_messages.append("  1. Eksik kolonlar için Alembic revision oluşturup flask db upgrade çalıştırın")
-        result_messages.append("  2. Veya uygun SQL migration scriptini uygulayın")
-        
-        return "<pre>" + "\n".join(result_messages) + "</pre>"
-        
-    except Exception as e:
-        db.session.rollback()
-        import traceback
-        return f"<pre>❌ Hata: {str(e)}\n\nTraceback:\n{traceback.format_exc()}</pre>"
-
-
-@main_bp.route('/debug/init_strategy_v3')
-@login_required
-def debug_init_strategy_v3():
-    """Stratejik Planlama V3.0 veritabanı initialization - Excel yapısına göre tabloları oluşturur"""
-    try:
-        from app.models.legacy_bridge import (
-            CorporateIdentity, AnaStrateji, AltStrateji, Surec,
-            SurecPerformansGostergesi,
-        )
-        
-        result_messages = []
-        result_messages.append("=== STRATEJİK PLANLAMA V3.0 VERİTABANI INITIALIZATION ===\n")
-        result_messages.append("Excel: SP VE SÜREÇ YAPISI dosyasına göre yapılandırılıyor...\n")
-        
-        # Tüm tabloları oluştur
-        db.create_all()
-        result_messages.append("✅ Tüm tablolar oluşturuldu (veya zaten mevcut)")
-        
-        # Yeni tabloları kontrol et
-        inspector = db.inspect(db.engine)
-        existing_tables = inspector.get_table_names()
-        
-        # CorporateIdentity tablosu kontrolü
-        if 'corporate_identity' in existing_tables:
-            result_messages.append("✅ corporate_identity tablosu mevcut (Excel: Misyon, Vizyon, Değerler)")
-        else:
-            result_messages.append("⚠️ corporate_identity tablosu bulunamadı (create_all çalıştırıldı)")
-        
-        # Association table'ları kontrol et
-        if 'process_owners' in existing_tables:
-            result_messages.append("✅ process_owners association table mevcut (Çoklu Süreç Sahipliği)")
-        else:
-            result_messages.append("⚠️ process_owners association table bulunamadı")
-        
-        if 'strategy_process_matrix' in existing_tables:
-            result_messages.append("✅ strategy_process_matrix association table mevcut (Excel: SP - Süreç Matrisi)")
-        else:
-            result_messages.append("⚠️ strategy_process_matrix association table bulunamadı")
-        
-        # Mevcut tablolardaki yeni kolonları kontrol et
-        result_messages.append("\n=== YENİ KOLONLAR KONTROLÜ ===")
-        result_messages.append("⚠️ Not: PostgreSQL'de şema değişiklikleri için Alembic migration kullanın.")
-        result_messages.append("Aşağıdaki kolonlar eklenmeli:")
-        result_messages.append("  - corporate_identity: YENİ TABLO (vizyon, misyon, kalite_politikasi, degerler)")
-        result_messages.append("  - ana_strateji: code (UNIQUE), name")
-        result_messages.append("  - alt_strateji: code, name, target_method")
-        result_messages.append("  - surec: code, name, weight")
-        result_messages.append("  - surec_performans_gostergesi: calculation_method, target_method, unit, direction")
-        result_messages.append("  - strategy_process_matrix: relationship_score (A=9, B=3)")
-        
-        result_messages.append("\n=== EXCEL YAPISI EŞLEŞTİRMESİ ===")
-        result_messages.append("✅ CorporateIdentity ↔ Excel: 'Misyon, Vizyon, Değerler' sayfası")
-        result_messages.append("✅ AnaStrateji ↔ Excel: 'ST1, ST2' yapıları")
-        result_messages.append("✅ AltStrateji ↔ Excel: 'ST1.1' yapıları (target_method ile)")
-        result_messages.append("✅ Surec ↔ Excel: 'KMF Süreçler' sayfası (code, name, weight)")
-        result_messages.append("✅ StrategyProcessMatrix ↔ Excel: 'SP - Süreç Matrisi' (A=9, B=3)")
-        result_messages.append("✅ SurecPerformansGostergesi ↔ Excel: KPI yapısı (calculation_method, target_method)")
-        
-        result_messages.append("\n✅ V3.0 Mimari Kurulumu Tamamlandı!")
-        result_messages.append("\n📝 Sonraki Adımlar:")
-        result_messages.append("  1. Eksik kolonlar için Alembic / SQL migration uygulayın")
-        result_messages.append("  2. Excel verilerini import edin")
-        result_messages.append("  3. CRUD endpoint'lerini kullanarak veri girişi yapın")
-        
-        return "<pre>" + "\n".join(result_messages) + "</pre>"
-        
-    except Exception as e:
-        db.session.rollback()
-        import traceback
-        return f"<pre>❌ Hata: {str(e)}\n\nTraceback:\n{traceback.format_exc()}</pre>"
-
-
-# ============================================
-# FAZ 2: OPERASYONEL MÜKEMMELLİK ROUTE'LARI
-# ============================================
-
-# V59.0 - Hoshin Kanri Paketi
 @main_bp.route('/okr/<int:objective_id>/comment', methods=['POST'])
 @login_required
 def okr_comment(objective_id):
@@ -958,7 +402,7 @@ def mtbp():
     except Exception as e:
         current_app.logger.error(f'MTBP sayfası hatası: {e}')
         flash('MTBP sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/mtbp/add', methods=['POST'])
@@ -1015,7 +459,7 @@ def gemba():
     except Exception as e:
         current_app.logger.error(f'Gemba sayfası hatası: {e}')
         flash('Gemba Walk sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/gemba/add', methods=['POST'])
@@ -1083,7 +527,7 @@ def competencies():
     except Exception as e:
         current_app.logger.error(f'Competencies sayfası hatası: {e}')
         flash('Yetkinlik Matrisi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/risks')
@@ -1108,7 +552,7 @@ def risks():
     except Exception as e:
         current_app.logger.error(f'Risks sayfası hatası: {e}')
         flash('Risk Yönetimi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/risks/add', methods=['POST'])
@@ -1163,7 +607,7 @@ def executive_report():
         # Üst yönetim rolü kontrolü
         if current_user.sistem_rol not in ['admin', 'ust_yonetim', 'kurum_yoneticisi']:
             flash('Bu sayfaya erişim yetkiniz bulunmamaktadır.', 'error')
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('app_bp.masaustu'))
         
         # Özet verileri topla
         stats = {
@@ -1184,7 +628,7 @@ def executive_report():
     except Exception as e:
         current_app.logger.error(f'Executive report hatası: {e}')
         flash('Yönetim Kurulu Özeti sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 # V65.0 - Muda Hunter
@@ -1213,7 +657,7 @@ def muda_hunter():
     except Exception as e:
         current_app.logger.error(f'Muda Hunter sayfası hatası: {e}')
         flash('Muda Hunter sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/api/muda-hunter/analyze/<int:surec_id>', methods=['POST'])
@@ -1274,7 +718,7 @@ def crisis():
     except Exception as e:
         current_app.logger.error(f'Crisis sayfası hatası: {e}')
         flash('Kriz Komuta Merkezi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/crisis/add', methods=['POST'])
@@ -1317,7 +761,7 @@ def succession():
     except Exception as e:
         current_app.logger.error(f'Succession sayfası hatası: {e}')
         flash('Halefiyet Planlaması sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/reorg')
@@ -1334,7 +778,7 @@ def reorg():
     except Exception as e:
         current_app.logger.error(f'Reorg sayfası hatası: {e}')
         flash('Organizasyon Tasarımcısı sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/ona')
@@ -1351,7 +795,7 @@ def ona():
     except Exception as e:
         current_app.logger.error(f'ONA sayfası hatası: {e}')
         flash('ONA sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/market-watch')
@@ -1368,7 +812,7 @@ def market_watch():
     except Exception as e:
         current_app.logger.error(f'Market Watch sayfası hatası: {e}')
         flash('Market Watcher sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 # V62.0 - Corporate Consciousness
@@ -1390,7 +834,7 @@ def wellbeing():
     except Exception as e:
         current_app.logger.error(f'Wellbeing sayfası hatası: {e}')
         flash('Tükenmişlik Kalkanı sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/simulation')
@@ -1407,7 +851,7 @@ def simulation():
     except Exception as e:
         current_app.logger.error(f'Simulation sayfası hatası: {e}')
         flash('Monte Carlo Simülatörü sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/simulation/add', methods=['POST'])
@@ -1532,7 +976,7 @@ def synthetic_lab():
     except Exception as e:
         current_app.logger.error(f'Synthetic Lab sayfası hatası: {e}')
         flash('Sentetik Müşteri Laboratuvarı sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/governance')
@@ -1550,7 +994,7 @@ def governance():
     except Exception as e:
         current_app.logger.error(f'Governance sayfası hatası: {e}')
         flash('DAO Yönetimi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/metaverse')
@@ -1565,7 +1009,7 @@ def metaverse():
     except Exception as e:
         current_app.logger.error(f'Metaverse sayfası hatası: {e}')
         flash('Metaverse Departman İkizi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/legacy-chat')
@@ -1582,7 +1026,7 @@ def legacy_chat():
     except Exception as e:
         current_app.logger.error(f'Legacy Chat sayfası hatası: {e}')
         flash('Kurucu Miras AI sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 # ============================================
@@ -1627,7 +1071,7 @@ def game_theory():
     except Exception as e:
         current_app.logger.error(f'Game Theory sayfası hatası: {e}')
         flash('Oyun Teorisi sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/game-theory/scenario/<int:scenario_id>/calculate-nash', methods=['POST'])
@@ -1693,7 +1137,7 @@ def knowledge_graph():
     except Exception as e:
         current_app.logger.error(f'Knowledge Graph sayfası hatası: {e}')
         flash('Bilgi Grafığı sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/black-swan')
@@ -1710,7 +1154,7 @@ def black_swan():
     except Exception as e:
         current_app.logger.error(f'Black Swan sayfası hatası: {e}')
         flash('Siyah Kuğu Simülatörü sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 @main_bp.route('/library')
@@ -1727,7 +1171,7 @@ def library():
     except Exception as e:
         current_app.logger.error(f'Library sayfası hatası: {e}')
         flash('Omega\'nın Kitabı sayfası yüklenirken bir hata oluştu.', 'error')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
 
 
 # ============================================
@@ -2146,7 +1590,7 @@ def admin_feedback():
     # Yetki kontrolü
     if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi', 'ust_yonetim']:
         flash('Bu sayfaya erişim yetkiniz yok.', 'danger')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('app_bp.masaustu'))
     
     # Sistem admini kontrolü
     is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
