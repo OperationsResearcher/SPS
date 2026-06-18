@@ -2,6 +2,23 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-184 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 3b — Kurumsal kimlik tek-TEXT → çok-satırlı veri taşıma (idempotent script)
+**Modül:** scripts, app/models (tenant_identity)
+**Durum:** ✅ Yerelde uygulandı (Tomofil 12 madde). Test/Yayın/Demo'ya gitmedi.
+
+### Değiştirilen Dosyalar
+- `scripts/migrate_tenant_identity_rows.py` → yeni: TEXT alanlarını satırlara böler (idempotent)
+
+### Yapılan İşlem
+core_values virgülle (5 madde), code_of_ethics & quality_policy cümle bazında (4+3 madde) bölündü.
+Cümle maddelerinde baslik=kırpılmış özet, aciklama=cümlenin tamamı (tam metin korunur). İdempotency:
+tenant+alan başına aktif satır varsa atlanır — 2. koşu 0 yazdı. Eski TEXT kolonlarına dokunulmadı ("temiz kesim").
+
+### Notlar
+DB içerik UTF-8 doğru teyit edildi (konsol cp1254 bozulması yanıltıcıydı). Sıra: 3a✅ 3b✅ → 3c (CRUD UI).
+
 ## TASK-183 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Yayın deploy (Yerel→Test→Yayın, sıfır veri kaybı) + kalıcı "Sunucu Güncelleme Rehberi" dokümantasyonu
