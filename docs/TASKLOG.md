@@ -2,6 +2,45 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-185 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 3c+3d — Kurumsal kimlik çok-satırlı CRUD UI + KOE'nin satırları okuması
+**Modül:** kurum (routes), platform/kurum (template+js), koe_service
+**Durum:** ✅ Yerelde runtime doğrulandı (test_client CRUD + asimetri kanıtı). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/kurum/routes.py` → kimlik maddesi CRUD (list/add/update/delete, kind=values/ethics/quality, tenant izolasyonlu) + kurum() context'e kimlik maddeleri
+- `ui/templates/platform/kurum/index.html` → kimlik_liste Jinja makrosu; 3 tek-TEXT `<p>` yerine madde listesi + ekle/düzenle/sil
+- `ui/static/platform/js/kurum.js` → kimlik CRUD handler'ları (openMcFormModal); eski "Stratejik Kimlik" modal'ı "Amaç & Vizyon" olarak daraltıldı
+- `app/services/koe_service.py` → kimlik doluluğu Değer/Etik/Kalite'yi satır tablolarından okur (eski TEXT okunmaz)
+
+### Yapılan İşlem
+3c: Generic `<kind>` CRUD — 3 tablo tek route seti, soft-delete, executive_manager/tenant_admin rolü.
+Template `kimlik['values']` (dict.values method çakışması düzeltildi). 3d: KOE "Kimlik" boyutu
+purpose+vision (TEXT) + 3 boyut (satır var/yok) üzerinden 5'li doluluk. test_client: list/add/update/
+delete/bad-kind hepsi geçti. Asimetri kanıtı: değer satırları gizlenince doluluk 5/5→4/5 düştü (KOE satır okuyor).
+
+### Notlar
+purpose/vision hâlâ tek-TEXT (Dal 3 kapsamı değil). Eski core_values/code_of_ethics/quality_policy
+TEXT kolonları DB'de duruyor ama hiçbir yerde okunmuyor (temiz kesim tamam).
+
+## TASK-184 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 3b — Kurumsal kimlik tek-TEXT → çok-satırlı veri taşıma (idempotent script)
+**Modül:** scripts, app/models (tenant_identity)
+**Durum:** ✅ Yerelde uygulandı (Tomofil 12 madde). Test/Yayın/Demo'ya gitmedi.
+
+### Değiştirilen Dosyalar
+- `scripts/migrate_tenant_identity_rows.py` → yeni: TEXT alanlarını satırlara böler (idempotent)
+
+### Yapılan İşlem
+core_values virgülle (5 madde), code_of_ethics & quality_policy cümle bazında (4+3 madde) bölündü.
+Cümle maddelerinde baslik=kırpılmış özet, aciklama=cümlenin tamamı (tam metin korunur). İdempotency:
+tenant+alan başına aktif satır varsa atlanır — 2. koşu 0 yazdı. Eski TEXT kolonlarına dokunulmadı ("temiz kesim").
+
+### Notlar
+DB içerik UTF-8 doğru teyit edildi (konsol cp1254 bozulması yanıltıcıydı). Sıra: 3a✅ 3b✅ → 3c (CRUD UI).
+
 ## TASK-183 | 2026-06-08 | ✅ Tamamlandı
 
 **Görev:** Yayın deploy (Yerel→Test→Yayın, sıfır veri kaybı) + kalıcı "Sunucu Güncelleme Rehberi" dokümantasyonu
