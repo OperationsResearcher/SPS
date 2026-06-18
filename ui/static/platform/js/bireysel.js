@@ -18,6 +18,48 @@
   const FAALIYET_DEL_BASE = root.dataset.faaliyetDeleteBase;
   const FAALIYET_TRACK_BASE = root.dataset.faaliyetTrackBase;
   const PG_SERIES_TEMPLATE = root.dataset.pgSeriesUrlTemplate || "";
+  const PG_UPDATE_BASE = root.dataset.pgUpdateBase || "/bireysel/api/pg/update/";
+
+  // L1 Dal 4: stratejik hedef için kurum stratejisi seçenekleri (sayfadan gömülü)
+  let STRATEJI_SECENEKLERI = [];
+  try { STRATEJI_SECENEKLERI = JSON.parse(root.dataset.stratejiSecenekleri || "[]"); }
+  catch (_e) { STRATEJI_SECENEKLERI = []; }
+
+  /** Katman + (koşullu) strateji seçimi için ortak form parçası. */
+  function katmanFormHtml(katman, strategyId) {
+    const isStr = katman === "Stratejik";
+    const opts = STRATEJI_SECENEKLERI.map(
+      (s) => `<option value="${s.id}" ${String(s.id) === String(strategyId) ? "selected" : ""}>${escHtml(s.baslik)}</option>`
+    ).join("");
+    return `<div><label class="block text-xs text-gray-500 mb-1">Katman</label>
+        <select id="pg-katman" class="swal2-select" style="display:block;width:100%;">
+          <option value="Standart" ${!isStr ? "selected" : ""}>Standart (rutin/operasyonel)</option>
+          <option value="Stratejik" ${isStr ? "selected" : ""}>Stratejik (kuruma bağlı)</option>
+        </select></div>
+      <div id="pg-strateji-wrap" style="display:${isStr ? "block" : "none"};">
+        <label class="block text-xs text-gray-500 mb-1">Bağlı strateji (opsiyonel)</label>
+        <select id="pg-strategy-id" class="swal2-select" style="display:block;width:100%;">
+          <option value="">— Seçilmedi —</option>${opts}
+        </select></div>`;
+  }
+
+  /** Katman select'i strateji alanını aç/kapatacak şekilde bağla (Swal didOpen içinde). */
+  function bindKatmanToggle() {
+    const sel = document.getElementById("pg-katman");
+    const wrap = document.getElementById("pg-strateji-wrap");
+    if (!sel || !wrap) return;
+    sel.addEventListener("change", () => {
+      wrap.style.display = sel.value === "Stratejik" ? "block" : "none";
+    });
+  }
+
+  /** Form değerlerinden katman + strategy_id çıkar. */
+  function readKatmanVals() {
+    const katman = (document.getElementById("pg-katman") || {}).value || "Standart";
+    const sidEl = document.getElementById("pg-strategy-id");
+    const strategy_id = katman === "Stratejik" && sidEl && sidEl.value ? sidEl.value : null;
+    return { katman, strategy_id };
+  }
 
   const yearSelect = document.getElementById("year-select");
   const pgTbody = document.getElementById("pg-tbody");
@@ -317,6 +359,7 @@
         <td class="px-3 py-2 text-gray-400">${i + 1}</td>
         <td class="px-3 py-2 font-medium text-gray-800 dark:text-gray-100">${escHtml(pg.name)}
           ${pg.code ? `<span class="process-code-badge">${escHtml(pg.code)}</span>` : ""}
+          ${pg.katman === "Stratejik" ? `<span class="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" title="${pg.strategy_baslik ? escHtml(pg.strategy_baslik) : "Stratejik hedef"}"><i class="fas fa-bullseye text-[9px]"></i>Stratejik</span>` : ""}
         </td>
         <td class="px-3 py-2 text-center">${escHtml(pg.target_value || "—")}</td>
         <td class="px-3 py-2 text-center text-gray-500">${escHtml(pg.unit || "—")}</td>
@@ -371,12 +414,14 @@
           <input id="pg-target" class="swal2-input" placeholder="Örn: 95"></div>
         <div><label class="block text-xs text-gray-500 mb-1">Birim</label>
           <input id="pg-unit" class="swal2-input" placeholder="Örn: %"></div>
+        ${katmanFormHtml("Standart", null)}
       </div>`,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Kaydet",
       cancelButtonText: "İptal",
       confirmButtonColor: "#4f46e5",
+      didOpen: bindKatmanToggle,
       preConfirm: () => {
         const name = document.getElementById("pg-name").value.trim();
         if (!name) {
@@ -387,6 +432,7 @@
           name,
           target_value: document.getElementById("pg-target").value.trim() || null,
           unit: document.getElementById("pg-unit").value.trim() || null,
+          ...readKatmanVals(),
         };
       },
     });
