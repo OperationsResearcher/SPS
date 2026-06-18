@@ -11,6 +11,41 @@
 {% endblock %}
 
 {% block content %}
+
+{# Çok-satırlı kimlik boyutu (Değer / Etik / Kalite) madde listesi #}
+{% macro kimlik_liste(kind, items) %}
+  <div class="px-4 py-3 bg-white dark:bg-slate-900/30" data-kimlik-kind="{{ kind }}">
+    <ul class="kimlik-madde-list space-y-2" data-kimlik-list>
+      {% for it in items %}
+      <li class="kimlik-madde flex items-start gap-2 group" data-item-id="{{ it.id }}">
+        <i class="fas fa-circle text-[5px] mt-2 text-slate-400 shrink-0"></i>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-slate-700 dark:text-slate-200" data-madde-baslik>{{ it.baslik }}</div>
+          {% if it.aciklama %}<div class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" data-madde-aciklama>{{ it.aciklama }}</div>{% endif %}
+        </div>
+        {% if can_edit_kurum %}
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <button type="button" class="btn-kimlik-edit text-slate-400 hover:text-indigo-600 p-1"
+                  data-kind="{{ kind }}" data-item-id="{{ it.id }}"
+                  data-baslik="{{ it.baslik }}" data-aciklama="{{ it.aciklama or '' }}"
+                  title="Düzenle"><i class="fas fa-pen text-xs"></i></button>
+          <button type="button" class="btn-kimlik-delete text-slate-400 hover:text-rose-600 p-1"
+                  data-kind="{{ kind }}" data-item-id="{{ it.id }}" data-baslik="{{ it.baslik }}"
+                  title="Sil"><i class="fas fa-trash text-xs"></i></button>
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="kimlik-bos text-sm text-slate-400 dark:text-slate-500 italic"
+       {% if items %}style="display:none"{% endif %}>Henüz madde eklenmedi.</p>
+    {% if can_edit_kurum %}
+    <button type="button" class="btn-kimlik-add mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
+            data-kind="{{ kind }}"><i class="fas fa-plus text-[10px]"></i>Madde ekle</button>
+    {% endif %}
+  </div>
+{% endmacro %}
+
 <div id="kurum-root"
      data-update-strategy-url="{{ url_for('app_bp.kurum_api_update_strategy') }}"
      data-add-strategy-url="{{ url_for('app_bp.kurum_api_add_strategy') }}"
@@ -20,6 +55,7 @@
      data-update-sub-base="/kurum/api/update-sub-strategy/"
      data-delete-sub-base="/kurum/api/delete-sub-strategy/"
      data-overview-url="{{ url_for('app_bp.kurum_api_overview') }}"
+     data-kimlik-base="/kurum/api/kimlik/"
      data-can-edit="{{ 'true' if can_edit_kurum else 'false' }}"
      style="max-width:1000px; margin:0 auto;">
 
@@ -133,9 +169,7 @@
                x-transition:leave-start="opacity-100"
                x-transition:leave-end="opacity-0"
                class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
-            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
-              <p data-sk-field="core_values" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.core_values or '—' }}</p>
-            </div>
+            {{ kimlik_liste('values', kimlik['values']) }}
           </div>
         </div>
         <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
@@ -155,9 +189,7 @@
                x-transition:leave-start="opacity-100"
                x-transition:leave-end="opacity-0"
                class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
-            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
-              <p data-sk-field="code_of_ethics" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.code_of_ethics or '—' }}</p>
-            </div>
+            {{ kimlik_liste('ethics', kimlik['ethics']) }}
           </div>
         </div>
         <div class="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden">
@@ -177,9 +209,7 @@
                x-transition:leave-start="opacity-100"
                x-transition:leave-end="opacity-0"
                class="border-t border-slate-100 dark:border-slate-700 overflow-hidden">
-            <div class="px-4 py-3 bg-white dark:bg-slate-900/30">
-              <p data-sk-field="quality_policy" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ tenant.quality_policy or '—' }}</p>
-            </div>
+            {{ kimlik_liste('quality', kimlik['quality']) }}
           </div>
         </div>
       </div>

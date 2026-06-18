@@ -18,6 +18,7 @@
   const UPDATE_SUB_BASE     = root.dataset.updateSubBase;
   const DELETE_SUB_BASE     = root.dataset.deleteSubBase;
   const OVERVIEW_URL        = root.dataset.overviewUrl || "";
+  const KIMLIK_BASE         = root.dataset.kimlikBase || "/kurum/api/kimlik/";
   const CAN_EDIT            = root.dataset.canEdit === "true";
 
   // ── Yardımcılar ─────────────────────────────────────────────────────────
@@ -458,33 +459,21 @@
   document.getElementById("btn-identity-edit")?.addEventListener("click", async () => {
     const valsPurpose = readSkField("purpose");
     const valsVision = readSkField("vision");
-    const valsValues = readSkField("core_values");
-    const valsEthics = readSkField("code_of_ethics");
-    const valsQuality = readSkField("quality_policy");
 
     const { value: form } = await Swal.fire({
-      title: "Stratejik Kimlik Düzenle",
+      title: "Amaç & Vizyon Düzenle",
       width: 640,
       html: `<div class="text-left space-y-3 text-sm">
         <div><label class="block text-xs text-gray-500 mb-1">Amaç</label>
           <textarea id="sk-purpose" class="swal2-textarea" rows="2">${escHtml(valsPurpose)}</textarea></div>
         <div><label class="block text-xs text-gray-500 mb-1">Vizyon</label>
           <textarea id="sk-vision" class="swal2-textarea" rows="2">${escHtml(valsVision)}</textarea></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Temel Değerler</label>
-          <textarea id="sk-values" class="swal2-textarea" rows="2">${escHtml(valsValues)}</textarea></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Etik Kurallar</label>
-          <textarea id="sk-ethics" class="swal2-textarea" rows="2">${escHtml(valsEthics)}</textarea></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Kalite Politikası</label>
-          <textarea id="sk-quality" class="swal2-textarea" rows="2">${escHtml(valsQuality)}</textarea></div>
       </div>`,
       focusConfirm: false, showCancelButton: true,
       confirmButtonText: "Kaydet", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
       preConfirm: () => ({
-        purpose:       document.getElementById("sk-purpose").value.trim(),
-        vision:        document.getElementById("sk-vision").value.trim(),
-        core_values:   document.getElementById("sk-values").value.trim(),
-        code_of_ethics: document.getElementById("sk-ethics").value.trim(),
-        quality_policy: document.getElementById("sk-quality").value.trim(),
+        purpose: document.getElementById("sk-purpose").value.trim(),
+        vision:  document.getElementById("sk-vision").value.trim(),
       }),
     });
     if (!form) return;
@@ -544,11 +533,84 @@
   document.getElementById("btn-strategy-add")?.addEventListener("click", onKurumAddStrategyClick);
   document.getElementById("btn-strategy-add-empty")?.addEventListener("click", onKurumAddStrategyClick);
 
+  // ── Kimlik maddeleri (çok-satırlı Değer / Etik / Kalite) CRUD ────────────
+  const KIMLIK_ETIKET = { values: "Değer", ethics: "Etik kural", quality: "Kalite politikası maddesi" };
+
+  function kimlikModalBody(baslik, aciklama) {
+    return `<div class="tm-grid-2">
+        <div class="tm-field tm-full">
+          <label class="mc-form-label">Başlık <span class="req">*</span></label>
+          <input id="kimlik-modal-baslik" type="text" class="mc-form-input" value="${escHtml(baslik || "")}" placeholder="Madde başlığı">
+        </div>
+        <div class="tm-field tm-full">
+          <label class="mc-form-label">Açıklama</label>
+          <textarea id="kimlik-modal-aciklama" class="mc-form-input" rows="3" placeholder="İsteğe bağlı açıklama">${escHtml(aciklama || "")}</textarea>
+        </div>
+      </div>`;
+  }
+
+  function kimlikModalOnConfirm(ctx) {
+    const baslik = document.getElementById("kimlik-modal-baslik").value.trim();
+    if (!baslik) { ctx.showValidation("Başlık zorunludur."); return false; }
+    return { baslik: baslik, aciklama: document.getElementById("kimlik-modal-aciklama").value.trim() || null };
+  }
+
+  async function onKimlikAdd(kind) {
+    const etiket = KIMLIK_ETIKET[kind] || "Madde";
+    const vals = await kurumOpenMcFormModal({
+      title: `${etiket} ekle`, iconClass: "fas fa-plus-circle",
+      bodyHtml: kimlikModalBody("", ""), confirmText: "Kaydet",
+      onConfirm: kimlikModalOnConfirm,
+    });
+    if (vals === null) return;
+    try {
+      const d = await postJson(`${KIMLIK_BASE}${kind}/add`, vals);
+      if (d.success) { toastSuccess(d.message || "Eklendi."); reload(); }
+      else showError(d.message || "Kayıt başarısız.");
+    } catch (e) { showError("Sunucu hatası: " + e.message); }
+  }
+
+  async function onKimlikEdit(btn) {
+    const kind = btn.dataset.kind;
+    const itemId = btn.dataset.itemId;
+    const etiket = KIMLIK_ETIKET[kind] || "Madde";
+    const vals = await kurumOpenMcFormModal({
+      title: `${etiket} düzenle`, iconClass: "fas fa-pen-to-square",
+      bodyHtml: kimlikModalBody(btn.dataset.baslik, btn.dataset.aciklama),
+      confirmText: "Güncelle", onConfirm: kimlikModalOnConfirm,
+    });
+    if (vals === null) return;
+    try {
+      const d = await postJson(`${KIMLIK_BASE}${kind}/update/${itemId}`, vals);
+      if (d.success) { toastSuccess(d.message || "Güncellendi."); reload(); }
+      else showError(d.message || "Güncelleme başarısız.");
+    } catch (e) { showError("Sunucu hatası: " + e.message); }
+  }
+
+  async function onKimlikDelete(btn) {
+    const kind = btn.dataset.kind;
+    const ok = await confirmDelete("Madde silinsin mi?", `"${btn.dataset.baslik}" pasife alınacak.`);
+    if (!ok) return;
+    try {
+      const d = await postJson(`${KIMLIK_BASE}${kind}/delete/${btn.dataset.itemId}`, {});
+      if (d.success) { toastSuccess(d.message || "Silindi."); reload(); }
+      else showError(d.message || "Silme başarısız.");
+    } catch (e) { showError("Sunucu hatası: " + e.message); }
+  }
+
   /* Bubble dinleyicisi kullanılamaz: şablonda @click.stop olayın root’a çıkmasını engelliyor.
      Capture fazında dinleyerek düğmeye inmeden önce yakalıyoruz (stopPropagation kullanmıyoruz). */
   root.addEventListener(
     "click",
     async (e) => {
+    // Kimlik maddesi ekle / düzenle / sil
+    const btnKimlikAdd = e.target.closest(".btn-kimlik-add");
+    if (btnKimlikAdd && root.contains(btnKimlikAdd)) { await onKimlikAdd(btnKimlikAdd.dataset.kind); return; }
+    const btnKimlikEdit = e.target.closest(".btn-kimlik-edit");
+    if (btnKimlikEdit && root.contains(btnKimlikEdit)) { await onKimlikEdit(btnKimlikEdit); return; }
+    const btnKimlikDel = e.target.closest(".btn-kimlik-delete");
+    if (btnKimlikDel && root.contains(btnKimlikDel)) { await onKimlikDelete(btnKimlikDel); return; }
+
     // Alt strateji ekle
     const btnSubAdd = e.target.closest(".btn-sub-add");
     if (btnSubAdd && root.contains(btnSubAdd)) {

@@ -8,6 +8,9 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app.models import db
 from app.models.core import Strategy, SubStrategy, Tenant, User
+from app.models.tenant_identity import (
+    TenantValue, TenantEthicsCode, TenantQualityPolicy,
+)
 from app.services.k_vektor_config_service import (
     add_k_vektor_snapshot,
     k_vektor_weights_get_dict,
@@ -191,6 +194,21 @@ def kurum():
 
     can_edit_kurum = _check_kurum_role()
 
+    # Çok-satırlı kimlik maddeleri (Değer / Etik / Kalite) — canonical kaynak
+    def _kimlik_maddeleri(Model):
+        return (
+            Model.query
+            .filter(Model.tenant_id == tid, Model.is_active.is_(True))
+            .order_by(Model.sira.asc(), Model.id.asc())
+            .all()
+        )
+
+    kimlik = {
+        "values": _kimlik_maddeleri(TenantValue),
+        "ethics": _kimlik_maddeleri(TenantEthicsCode),
+        "quality": _kimlik_maddeleri(TenantQualityPolicy),
+    }
+
     return render_template(
         "platform/kurum/index.html",
         tenant=tenant,
@@ -200,6 +218,7 @@ def kurum():
         strategies=strategies,
         overview=overview,
         can_edit_kurum=can_edit_kurum,
+        kimlik=kimlik,
     )
 
 
@@ -249,6 +268,141 @@ def kurum_api_update_strategy():
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_update_strategy] {e}")
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+
+
+# ── API: Kimlik maddeleri (çok-satırlı Değer / Etik / Kalite) ────────────────
+
+# kind → (Model, insan-okunur etiket)
+_KIMLIK_MODELLERI = {
+    "values": (TenantValue, "Değer"),
+    "ethics": (TenantEthicsCode, "Etik kural"),
+    "quality": (TenantQualityPolicy, "Kalite politikası maddesi"),
+}
+
+
+def _kimlik_model(kind):
+    """kind doğrula → Model döndür ya da None."""
+    pair = _KIMLIK_MODELLERI.get(kind)
+    return pair if pair else (None, None)
+
+
+@app_bp.route("/kurum/api/kimlik/<kind>/list", methods=["GET"])
+@login_required
+def kurum_api_kimlik_list(kind):
+    """Bir kimlik boyutunun aktif maddelerini sıralı döndür."""
+    Model, _etiket = _kimlik_model(kind)
+    if Model is None:
+        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+
+    rows = (
+        Model.query
+        .filter(Model.tenant_id == current_user.tenant_id, Model.is_active.is_(True))
+        .order_by(Model.sira.asc(), Model.id.asc())
+        .all()
+    )
+    return jsonify({
+        "success": True,
+        "items": [
+            {"id": r.id, "baslik": r.baslik, "aciklama": r.aciklama, "sira": r.sira}
+            for r in rows
+        ],
+    })
+
+
+@app_bp.route("/kurum/api/kimlik/<kind>/add", methods=["POST"])
+@login_required
+def kurum_api_kimlik_add(kind):
+    """Yeni kimlik maddesi ekle (sıra = mevcut maks + 1)."""
+    if not _check_kurum_role():
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+    Model, etiket = _kimlik_model(kind)
+    if Model is None:
+        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+
+    data = request.get_json() or {}
+    baslik = (data.get("baslik") or "").strip()
+    if not baslik:
+        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+
+    from sqlalchemy import func
+    son_sira = (
+        db.session.query(func.coalesce(func.max(Model.sira), -1))
+        .filter(Model.tenant_id == current_user.tenant_id, Model.is_active.is_(True))
+        .scalar()
+    )
+    row = Model(
+        tenant_id=current_user.tenant_id,
+        baslik=baslik,
+        aciklama=(data.get("aciklama") or "").strip() or None,
+        sira=int(son_sira) + 1,
+        is_active=True,
+    )
+    try:
+        db.session.add(row)
+        db.session.commit()
+        return jsonify({"success": True, "message": f"{etiket} eklendi.", "id": row.id})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[kurum_api_kimlik_add:{kind}] {e}")
+        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+
+
+@app_bp.route("/kurum/api/kimlik/<kind>/update/<int:item_id>", methods=["POST"])
+@login_required
+def kurum_api_kimlik_update(kind, item_id):
+    """Kimlik maddesini güncelle (tenant izolasyonlu)."""
+    if not _check_kurum_role():
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+    Model, etiket = _kimlik_model(kind)
+    if Model is None:
+        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+
+    row = Model.query.filter_by(
+        id=item_id, tenant_id=current_user.tenant_id, is_active=True,
+    ).first()
+    if row is None:
+        return jsonify({"success": False, "message": "Madde bulunamadı."}), 404
+
+    data = request.get_json() or {}
+    baslik = (data.get("baslik") or "").strip()
+    if not baslik:
+        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+
+    row.baslik = baslik
+    row.aciklama = (data.get("aciklama") or "").strip() or None
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "message": f"{etiket} güncellendi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[kurum_api_kimlik_update:{kind}] {e}")
+        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+
+
+@app_bp.route("/kurum/api/kimlik/<kind>/delete/<int:item_id>", methods=["POST"])
+@login_required
+def kurum_api_kimlik_delete(kind, item_id):
+    """Kimlik maddesini soft-delete (is_active=False)."""
+    if not _check_kurum_role():
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+    Model, etiket = _kimlik_model(kind)
+    if Model is None:
+        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+
+    row = Model.query.filter_by(
+        id=item_id, tenant_id=current_user.tenant_id, is_active=True,
+    ).first()
+    if row is None:
+        return jsonify({"success": False, "message": "Madde bulunamadı."}), 404
+
+    row.is_active = False
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "message": f"{etiket} silindi."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[kurum_api_kimlik_delete:{kind}] {e}")
+        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
 
 
 # ── API: Ana Strateji CRUD ────────────────────────────────────────────────────

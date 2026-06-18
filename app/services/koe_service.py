@@ -16,6 +16,9 @@ from __future__ import annotations
 from extensions import db
 from app.models.core import Tenant, Strategy, SubStrategy
 from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink, ProcessActivity
+from app.models.tenant_identity import (
+    TenantValue, TenantEthicsCode, TenantQualityPolicy,
+)
 
 
 # Boyut ağırlıkları (toplam 1.0). Başlangıçta eşit; veriyle kalibre edilebilir.
@@ -35,13 +38,25 @@ def _pct(part: int, whole: int) -> float:
 def _boyut_kimlik_strateji(tenant_id: int) -> dict:
     """Boyut 1 — Kimlik doluluğu + strateji bütünlüğü. Sistem-hesaplı."""
     t = Tenant.query.get(tenant_id)
-    # Kimlik alanlarının doluluğu (5 alan)
-    kimlik_alanlari = [
-        getattr(t, f, None) if t else None
-        for f in ("purpose", "vision", "core_values", "code_of_ethics", "quality_policy")
+    # Kimlik doluluğu (5 boyut). purpose/vision hâlâ tek-TEXT; Değer/Etik/Kalite
+    # ise çok-satırlı tablolardan (L1 Dal 3 "temiz kesim" — eski TEXT okunmaz):
+    # ilgili tabloda ≥1 aktif madde varsa o boyut "dolu" sayılır.
+    def _madde_var(Model) -> bool:
+        return db.session.query(
+            Model.query
+            .filter(Model.tenant_id == tenant_id, Model.is_active.is_(True))
+            .exists()
+        ).scalar()
+
+    kimlik_durumu = [
+        bool(t and t.purpose and str(t.purpose).strip()),
+        bool(t and t.vision and str(t.vision).strip()),
+        _madde_var(TenantValue),
+        _madde_var(TenantEthicsCode),
+        _madde_var(TenantQualityPolicy),
     ]
-    dolu = sum(1 for v in kimlik_alanlari if v and str(v).strip())
-    kimlik_pct = _pct(dolu, len(kimlik_alanlari))
+    dolu = sum(1 for v in kimlik_durumu if v)
+    kimlik_pct = _pct(dolu, len(kimlik_durumu))
 
     # Strateji bütünlüğü: kaç ana stratejinin ≥1 alt stratejisi var (yetim strateji cezası)
     strategies = Strategy.query.filter_by(tenant_id=tenant_id, is_active=True).all()
