@@ -500,6 +500,12 @@ class IndividualPerformanceIndicator(db.Model):
     source = db.Column(db.String(50), default='Bireysel')
     source_process_id = db.Column(db.Integer, db.ForeignKey('processes.id', ondelete='SET NULL'), nullable=True, index=True)
     source_process_kpi_id = db.Column(db.Integer, db.ForeignKey('process_kpis.id', ondelete='SET NULL'), nullable=True, index=True)
+
+    # L1 Dal 4: hedef katmanı (sınıflandırma) — 'Standart' (rutin/operasyonel) /
+    # 'Stratejik' (kurum stratejisine bağlı). source'tan bağımsız eksen.
+    katman = db.Column(db.String(20), default='Standart', nullable=False, index=True)
+    # Stratejik hedefin opsiyonel kurum stratejisi bağı (yalnızca katman='Stratejik' anlamlı).
+    strategy_id = db.Column(db.Integer, db.ForeignKey('strategies.id', ondelete='SET NULL'), nullable=True, index=True)
     
     direction = db.Column(db.String(20), default='Increasing')
     basari_puani_araliklari = db.Column(db.Text, nullable=True)
@@ -516,6 +522,7 @@ class IndividualPerformanceIndicator(db.Model):
     user = db.relationship('User', backref=db.backref('individual_performance_indicators', lazy=True))
     source_process = db.relationship('Process', foreign_keys=[source_process_id], lazy='select')
     source_process_kpi = db.relationship('ProcessKpi', foreign_keys=[source_process_kpi_id], lazy='select')
+    strategy = db.relationship('Strategy', foreign_keys=[strategy_id], lazy='select')
     
     def __repr__(self):
         return f'<IndividualPerformanceIndicator {self.name}>'
