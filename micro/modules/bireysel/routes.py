@@ -36,6 +36,34 @@ def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
     return is_pk_duplicate(err, "individual_performance_indicators")
 
 
+def _normalize_katman(data) -> tuple:
+    """payload'tan (katman, strategy_id) üret — L1 Dal 4.
+
+    Katman yalnızca 'Standart'/'Stratejik' olabilir (geçersizse 'Standart').
+    strategy_id yalnızca 'Stratejik' iken ve kullanıcının kurumuna ait bir
+    aktif stratejiye işaret ediyorsa korunur; aksi halde None (tenant izolasyonu).
+    """
+    katman = (data.get("katman") or "Standart").strip()
+    if katman not in ("Standart", "Stratejik"):
+        katman = "Standart"
+
+    strategy_id = None
+    if katman == "Stratejik":
+        raw = data.get("strategy_id")
+        if raw not in (None, "", "null"):
+            try:
+                sid = int(raw)
+            except (TypeError, ValueError):
+                sid = None
+            if sid is not None:
+                from app.models.core import Strategy
+                ok = Strategy.query.filter_by(
+                    id=sid, tenant_id=current_user.tenant_id, is_active=True
+                ).first()
+                strategy_id = sid if ok else None
+    return katman, strategy_id
+
+
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
 @app_bp.route("/bireysel/karne")
@@ -43,9 +71,22 @@ def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
 def bireysel_karne():
     """Bireysel karne sayfası."""
     current_year = datetime.now().year
+    # L1 Dal 4: stratejik hedefin opsiyonel kurum stratejisi bağı için liste
+    from app.models.core import Strategy
+    strategies = (
+        Strategy.query
+        .filter_by(tenant_id=current_user.tenant_id, is_active=True)
+        .order_by(Strategy.code)
+        .all()
+    )
+    strateji_secenekleri = [
+        {"id": s.id, "baslik": (f"{s.code} — {s.title}" if s.code else s.title)}
+        for s in strategies
+    ]
     return render_template(
         "platform/bireysel/karne.html",
         current_year=current_year,
+        strateji_secenekleri=strateji_secenekleri,
     )
 
 
@@ -154,6 +195,9 @@ def bireysel_api_pg_add():
                 basari_puani_araliklari=data.get("basari_puani_araliklari"),
                 plan_year_id=active_py.id if active_py else None,
             )
+            katman, strategy_id = _normalize_katman(data)
+            pg.katman = katman
+            pg.strategy_id = strategy_id
             if data.get("start_date"):
                 pg.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
             if data.get("end_date"):
@@ -187,6 +231,8 @@ def bireysel_api_pg_update(pg_id):
         pg.period      = data.get("period", pg.period)
         pg.weight      = float(data.get("weight") or pg.weight or 0)
         pg.direction   = data.get("direction", pg.direction)
+        if "katman" in data:
+            pg.katman, pg.strategy_id = _normalize_katman(data)
         db.session.commit()
         return jsonify({"success": True, "message": "Bireysel PG güncellendi."})
     except Exception as e:
@@ -461,6 +507,9 @@ def bireysel_api_karne():
             "period": pg.period,
             "direction": pg.direction,
             "weight": pg.weight,
+            "katman": pg.katman,
+            "strategy_id": pg.strategy_id,
+            "strategy_baslik": pg.strategy.title if pg.strategy else None,
             "entries": entries_by_period,
         })
 
