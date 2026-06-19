@@ -13,6 +13,8 @@ KOE = boyutların ağırlıklı ortalaması (şimdilik eşit %25).
 """
 from __future__ import annotations
 
+from flask import current_app
+
 from extensions import db
 from app.models.core import Tenant, Strategy, SubStrategy, User
 from app.models.process import (
@@ -232,9 +234,27 @@ def _is_tamamlandi(activity) -> bool:
 # boşlukları tespit eder, önceliklendirir, "bu dönem şuna odaklan" der.
 # Saf fonksiyon — DB'siz, deterministik. Opsiyonel LLM anlatı sonra eklenebilir.
 
+# Boşluk etki seviyeleri — "temel" boşluklar (yapının iskeleti hiç yok) her
+# zaman "kısmi" boşlukların (iskelet var, eksik tamamlanıyor) önüne geçer.
+_ETKI_TEMEL = "temel"   # hiç strateji/süreç/faaliyet/değerlendirme yok
+_ETKI_KISMI = "kismi"   # iskelet var, kısmi eksik
+_ETKI_AGIRLIK = {_ETKI_TEMEL: 100, _ETKI_KISMI: 40}
+
+
+def _oncelik_puani(bosluk: dict) -> float:
+    """Ağırlıklı öncelik = etki × aciliyet. Yüksek puan = daha öncelikli.
+
+    etki: temel(100) > kısmi(40) — yapı iskeleti hiç yoksa her şeyin önünde.
+    aciliyet: (100 - severity) — düşük skorlu boyut daha acil.
+    """
+    etki_w = _ETKI_AGIRLIK.get(bosluk.get("etki"), _ETKI_AGIRLIK[_ETKI_KISMI])
+    aciliyet = 100 - float(bosluk.get("severity", 100))
+    return etki_w + aciliyet  # toplamsal: temel daima kısmının üstünde başlar
+
+
 def _bosluklari_tespit_et(koe: dict) -> list[dict]:
     """KOE detayından somut yapısal boşlukları çıkar. Her biri severity (0-100,
-    düşük skor = yüksek aciliyet) ile döner."""
+    düşük skor = yüksek aciliyet) + etki (temel/kısmi) ile döner."""
     b = koe["boyutlar"]
     bosluklar = []
 
@@ -244,12 +264,14 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         eksik = 5 - k["kimlik_dolu_alan"]
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": k["kimlik_doluluk_pct"],
+            "etki": _ETKI_KISMI,
             "baslik": f"{eksik} kimlik alanı boş",
             "oneri": "Misyon, Vizyon, Değerler, Etik ve Kalite alanlarından eksik olanları doldur.",
         })
     if k["toplam_strateji"] == 0:
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": 0,
+            "etki": _ETKI_TEMEL,
             "baslik": "Hiç stratejin yok",
             "oneri": "En az birkaç ana strateji tanımla — yapının iskeleti budur.",
         })
@@ -257,6 +279,7 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         yetim = k["toplam_strateji"] - k["alt_stratejisi_olan"]
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": k["strateji_butunluk_pct"],
+            "etki": _ETKI_KISMI,
             "baslik": f"{yetim} strateji alt stratejisiz (yetim)",
             "oneri": "Her ana stratejiyi alt stratejilerle somutlaştır.",
         })
@@ -266,6 +289,7 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
     if s["toplam_surec"] == 0:
         bosluklar.append({
             "boyut": "surec_mimarisi", "severity": 0,
+            "etki": _ETKI_TEMEL,
             "baslik": "Hiç sürecin yok",
             "oneri": "Süreçleri tanımla ve stratejilerine bağla.",
         })
@@ -274,6 +298,7 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         if bosta > 0:
             bosluklar.append({
                 "boyut": "surec_mimarisi", "severity": s["bagli_pct"],
+                "etki": _ETKI_KISMI,
                 "baslik": f"{bosta} süreç stratejiye bağlı değil (boşta)",
                 "oneri": "Boştaki süreçleri hizmet ettikleri stratejilere bağla.",
             })
@@ -281,6 +306,7 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         if olcutsuz > 0:
             bosluklar.append({
                 "boyut": "surec_mimarisi", "severity": s["pg_pct"],
+                "etki": _ETKI_KISMI,
                 "baslik": f"{olcutsuz} sürecin ölçütü (PG) tanımsız",
                 "oneri": "Her süreç için neyi ölçeceğini tanımla (PGV girmeden, sadece ölçüt).",
             })
@@ -290,12 +316,14 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
     if o["degerlendirme_sayisi"] == 0:
         bosluklar.append({
             "boyut": "olgunluk", "severity": 0,
+            "etki": _ETKI_TEMEL,
             "baslik": "Hiç olgunluk değerlendirmesi yapılmamış",
             "oneri": "Süreçlerinin olgunluğunu 1-5 arası kendin değerlendir — ilerlemeyi böyle görürsün.",
         })
     elif o["ortalama_seviye"] and o["ortalama_seviye"] < 3:
         bosluklar.append({
             "boyut": "olgunluk", "severity": o["skor"],
+            "etki": _ETKI_KISMI,
             "baslik": f"Ortalama olgunluk düşük ({o['ortalama_seviye']}/5)",
             "oneri": "Düşük olgunluktaki süreçler için iyileştirme faaliyetleri planla.",
         })
@@ -305,6 +333,7 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
     if i["toplam_faaliyet"] == 0:
         bosluklar.append({
             "boyut": "icra_disiplini", "severity": 0,
+            "etki": _ETKI_TEMEL,
             "baslik": "Hiç iyileştirme faaliyetin yok",
             "oneri": "Süreçlerini geliştirmek için somut faaliyetler tanımla ve takip et.",
         })
@@ -312,12 +341,14 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         bekleyen = i["toplam_faaliyet"] - i["tamamlanan"]
         bosluklar.append({
             "boyut": "icra_disiplini", "severity": i["skor"],
+            "etki": _ETKI_KISMI,
             "baslik": f"{bekleyen} faaliyet tamamlanmamış (icra %{int(i['skor'])})",
             "oneri": "Planladığın iyileştirme faaliyetlerini hayata geçir.",
         })
 
-    # En acil önce (düşük severity = yüksek aciliyet)
-    bosluklar.sort(key=lambda x: x["severity"])
+    # Ağırlıklı öncelik: temel boşluklar (iskelet hiç yok) en üstte, sonra
+    # aciliyet (düşük skor). Yüksek öncelik puanı önce.
+    bosluklar.sort(key=_oncelik_puani, reverse=True)
     return bosluklar
 
 
@@ -338,24 +369,103 @@ def _anlati_uret(koe: dict, bosluklar: list[dict]) -> str:
     return f"{durum}. {n} yapısal boşluk tespit edildi; en kritiğinden başla."
 
 
-def yapi_danismani(koe: dict, max_oncelik: int = 3) -> dict:
-    """L1 AI Yapı-Danışmanı (heuristik). KOE detayından boşluk raporu +
-    önceliklendirilmiş öneri + anlatı üretir. Saf fonksiyon, DB'siz.
+def _llm_anlatim(koe: dict, oncelikler: list[dict], heuristik_anlati: str,
+                 tenant_id: int) -> dict | None:
+    """Opsiyonel LLM zenginleştirme — anlatıyı ve öneri cümlelerini yeniden yazar.
+
+    Boşluk TESPİTİ heuristik kalır (LLM bulguyu değiştiremez); LLM yalnızca
+    mevcut bulguların ifadesini doğallaştırır. Gateway provider'sız ya da çıktı
+    bozuksa None döner → caller heuristik metinlerde kalır.
+    """
+    import json as _json
+    from app.services.llm_gateway import call_llm
+
+    # LLM'e yalnızca yapısal bulguları ver; uydurmasını engelle.
+    payload = {
+        "koe_skoru": koe.get("koe"),
+        "oncelikler": [
+            {"no": i + 1, "boyut": o.get("boyut"), "bulgu": o.get("baslik")}
+            for i, o in enumerate(oncelikler)
+        ],
+    }
+    system_prompt = (
+        "Sen bir kurumsal yapı danışmanısın. Sana bir kurumun olgunluk endeksi (KOE) "
+        "ve TESPİT EDİLMİŞ yapısal boşluklar verilir. Görevin yalnızca bu bulguları "
+        "Türkçe, yöneticiye hitap eden, kısa ve somut bir dile çevirmek. "
+        "YENİ bulgu UYDURMA, sayı EKLEME, verilenleri değiştirme. "
+        "Yanıtı SADECE şu JSON formatında ver: "
+        '{\"anlati\": \"tek cümle genel durum\", '
+        '\"oneriler\": [\"1. öncelik için tek cümle öneri\", \"2. için\", ...]}. '
+        "oneriler dizisi öncelik sırasıyla ve öncelik sayısı kadar olmalı."
+    )
+    prompt = _json.dumps(payload, ensure_ascii=False)
+
+    res = call_llm(
+        tenant_id=tenant_id, endpoint="koe_yapi_danismani",
+        prompt=prompt, system_prompt=system_prompt, max_output_tokens=600,
+    )
+    text = res.get("text")
+    if not text:
+        return None  # provider yok / kota / hata → heuristik
+    try:
+        # LLM bazen ```json ... ``` sarar; ilk { ile son } arasını al
+        i, j = text.find("{"), text.rfind("}")
+        if i < 0 or j <= i:
+            return None  # JSON gövdesi yok → heuristik
+        data = _json.loads(text[i:j + 1])
+        anlati = (data.get("anlati") or "").strip()
+        oneriler = data.get("oneriler") or []
+        # "Hem anlatı hem öneri LLM" — ikisi de gelmeli, yoksa tümüyle heuristik
+        if not anlati or not isinstance(oneriler, list) or not oneriler:
+            return None
+        return {"anlati": anlati, "oneriler": [str(x).strip() for x in oneriler]}
+    except Exception as e:
+        if current_app:
+            current_app.logger.warning(f"[koe_yapi_danismani] LLM parse hatası: {e}")
+        return None
+
+
+def yapi_danismani(koe: dict, max_oncelik: int = 3, tenant_id: int | None = None,
+                   use_llm: bool = False) -> dict:
+    """L1 AI Yapı-Danışmanı. KOE detayından boşluk raporu + önceliklendirilmiş
+    öneri + anlatı üretir. Boşluk tespiti her zaman heuristik (deterministik).
+
+    use_llm=True ve tenant_id verilirse anlatı + öneri cümleleri LLM ile
+    zenginleştirilir; provider yoksa/çıktı bozuksa heuristik metne düşülür.
 
     Args:
         koe: compute_koe(tenant_id) çıktısı.
         max_oncelik: kaç öncelikli öneri döndürülecek.
+        tenant_id: LLM çağrısı için (use_llm=True iken zorunlu).
+        use_llm: opsiyonel LLM zenginleştirme.
 
     Returns:
         {
-          "anlati": str,                 # tek cümle durum
-          "oncelikler": [{boyut, baslik, oneri, severity}, ...],  # en kritik N
+          "anlati": str,
+          "oncelikler": [{boyut, baslik, oneri, severity, etki}, ...],
           "toplam_bosluk": int,
+          "kaynak": "heuristik" | "llm",   # anlatının kaynağı
         }
     """
     bosluklar = _bosluklari_tespit_et(koe)
+    oncelikler = bosluklar[:max_oncelik]
+    anlati = _anlati_uret(koe, bosluklar)
+    kaynak = "heuristik"
+
+    if use_llm and tenant_id is not None and oncelikler:
+        llm = _llm_anlatim(koe, oncelikler, anlati, tenant_id)
+        if llm:
+            anlati = llm["anlati"]
+            # LLM önerilerini eşle (sayı tutarsa); heuristik öneri yedek
+            llm_oneriler = llm["oneriler"]
+            for idx, o in enumerate(oncelikler):
+                if idx < len(llm_oneriler) and llm_oneriler[idx]:
+                    o["oneri"] = llm_oneriler[idx]
+            kaynak = "llm"
+
     return {
-        "anlati": _anlati_uret(koe, bosluklar),
-        "oncelikler": bosluklar[:max_oncelik],
+        "anlati": anlati,
+        "oncelikler": oncelikler,
         "toplam_bosluk": len(bosluklar),
+        "kaynak": kaynak,
     }
