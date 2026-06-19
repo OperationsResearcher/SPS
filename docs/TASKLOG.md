@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-189 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 1 — modül gating onarımı (paket motoru fiilen kapalıydı)
+**Modül:** module_registry, scripts (seed), saas (system_modules/package_modules)
+**Durum:** ✅ Yerelde runtime doğrulandı (gating açıldı, modül kaybı yok). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/core/module_registry.py` → _SYSTEM_CODE_TO_LAUNCHER_ID'ye DB gerçeği (`*_modulu` kodları) + 5 yeni modül kodu eşlemesi
+- `scripts/seed_l2_module_gating.py` → yeni: eksik 5 modülü system_modules'a ekler + Master Package'i tam sete tamamlar (idempotent)
+
+### Yapılan İşlem
+Bulgu: system_modules kodları `_modulu` son ekliydi, registry tanımıyordu → _package_modules_to_launcher_ids
+None dönüyordu → paket gating FİİLEN KAPALI (herkes her şeyi görüyordu). Onarım: (a) kod eşlemesi düzeltildi,
+(b) Master Package'e eksik modüller (kurum/bireysel/analiz/k_radar/k_rapor) eklendi ki gating açılınca Master
+tenant'lar modül kaybetmesin. Runtime: Master→8 launcher id (eskiden None), yönetici 11 modül, standart 10,
+paketsiz yönetici 12 — modül kaybı yok. DB öncesi pg_dump yedeği alındı (backups/l2/).
+
+### Notlar
+Bu dal yalnızca gating MOTORUNU çalışır yaptı — Master full davranışı korundu. Gerçek L1/L2 paket ayrımı
+(Başlangıç=PGV kapalı, Yönetim=açık) SONRAKİ dal. musteri_* (CRM) launcher karşılığı yok, eşlenmedi (placeholder).
+
 ## TASK-188 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L1 Dal 6 — AI Yapı-Danışmanı kalibrasyonu + opsiyonel LLM anlatımı (lazy)
