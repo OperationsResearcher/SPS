@@ -134,6 +134,16 @@ def create_app(config_class=None):
     def _inject_safe_url_for():
         return {"safe_url_for": safe_url_for}
 
+    @app.context_processor
+    def _inject_role_labels():
+        """Kanonik rol etiketleri — tek kaynak (app.constants.roles).
+
+        Template: {{ role_label_tr(user.role.name) }}
+        JS gömme: {{ ROLE_LABELS_TR | tojson }}
+        """
+        from app.constants.roles import role_label_tr, ROLE_LABELS_TR
+        return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR}
+
     # K-Radar hub'ındaki kart URL'lerinin grup eşlemesi (breadcrumb için)
     _KRADAR_GROUPS = {
         "performans": "📊 Performans",

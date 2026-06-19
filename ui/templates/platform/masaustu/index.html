@@ -28,13 +28,7 @@
 
     <!-- Karşılama -->
     <div class="masaustu-hero">
-        {% set role_code = current_user.role.name if current_user.role else '' %}
-        {% set role_label = 'Kurum Kullanıcısı' %}
-        {% if role_code == 'tenant_admin' %}
-            {% set role_label = 'Kurum Yöneticisi' %}
-        {% elif role_code in ['executive_manager', 'Admin'] %}
-            {% set role_label = 'Kurum Üst Yönetimi' %}
-        {% endif %}
+        {% set role_label = role_label_tr(current_user.role.name) if current_user.role else 'Kurum Kullanıcısı' %}
 
         <h1 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 2px;" class="dark:text-white">
             Merhaba, {{ current_user.first_name or current_user.email }} 👋

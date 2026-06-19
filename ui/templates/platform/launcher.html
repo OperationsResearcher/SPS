@@ -8,13 +8,7 @@
 
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
-    {% set role_code = current_user.role.name if current_user.role else '' %}
-    {% set role_label = 'Kurum Kullanıcısı' %}
-    {% if role_code == 'tenant_admin' %}
-      {% set role_label = 'Kurum Yöneticisi' %}
-    {% elif role_code in ['executive_manager', 'Admin'] %}
-      {% set role_label = 'Kurum Üst Yönetimi' %}
-    {% endif %}
+    {% set role_label = role_label_tr(current_user.role.name) if current_user.role else 'Kurum Kullanıcısı' %}
 
     <!-- Karşılama -->
     <div style="margin-bottom:28px;">
