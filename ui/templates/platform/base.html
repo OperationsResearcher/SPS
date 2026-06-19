@@ -298,17 +298,7 @@
                 </div>
                 <div style="flex:1; min-width:0;">
                     <div class="sidebar-user-name">{{ current_user.first_name or current_user.email }}</div>
-                    {% set _role_tr = {
-                        'Admin': 'Platform Yöneticisi',
-                        'tenant_admin': 'Kurum Yöneticisi',
-                        'executive_manager': 'Üst Yönetim',
-                        'yonetici': 'Süreç Lideri',
-                        'surec_lideri': 'Süreç Lideri',
-                        'calisan': 'Çalışan',
-                        'kurum_kullanici': 'Kullanıcı',
-                        'izleyici': 'İzleyici',
-                    } %}
-                    <div class="sidebar-user-role">{{ _role_tr.get(current_user.role.name, current_user.role.name) if current_user.role else 'Kullanıcı' }}
+                    <div class="sidebar-user-role">{{ role_label_tr(current_user.role.name) if current_user.role else 'Kullanıcı' }}
                     </div>
                 </div>
                 <i class="fas fa-ellipsis-v" style="color:rgba(255,255,255,0.3); font-size:12px;"></i>

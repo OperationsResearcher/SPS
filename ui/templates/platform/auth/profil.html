@@ -3,14 +3,6 @@
 {% block page_title %}Profilim{% endblock %}
 
 {% block content %}
-{% set rol_etiket = {
-  'Admin': 'Admin',
-  'User': 'Kullanıcı',
-  'tenant_admin': 'Kurum Yöneticisi',
-  'executive_manager': 'Kurum Üst Yönetimi',
-  'standard_user': 'Kurum Kullanıcısı'
-} %}
-
 <div class="profil-wrap"
      data-update-url="{{ url_for('app_bp.profil') }}"
      data-upload-url="{{ url_for('app_bp.profil_foto_yukle') }}">
@@ -51,7 +43,7 @@
         <p class="profil-email">{{ current_user.email }}</p>
         {% if current_user.role %}
         <span class="mc-badge mc-badge-indigo">
-          {{ rol_etiket.get(current_user.role.name, current_user.role.name) }}
+          {{ role_label_tr(current_user.role.name) }}
         </span>
         {% endif %}
       </div>

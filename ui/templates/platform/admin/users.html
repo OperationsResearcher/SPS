@@ -105,19 +105,12 @@
         </tr>
       </thead>
       <tbody>
-        {% set rol_etiket = {
-          'Admin': 'Admin',
-          'User': 'Kullanıcı',
-          'tenant_admin': 'Kurum Yöneticisi',
-          'executive_manager': 'Kurum Üst Yönetimi',
-          'standard_user': 'Kurum Kullanıcısı'
-        } %}
         {% for u in users %}
         <tr data-search="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email ~ ' ' ~ (u.role.name if u.role else '') ~ ' ' ~ (u.tenant.name if u.tenant else ''))|lower }}"
             data-tenant-id="{{ u.tenant_id or '' }}"
             data-sort-name="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or '') ~ ' ' ~ u.email)|lower }}"
             data-sort-email="{{ (u.email or '')|lower }}"
-            data-sort-role="{{ (rol_etiket.get(u.role.name, u.role.name) if u.role else 'zzz')|lower }}"
+            data-sort-role="{{ (role_label_tr(u.role.name) if u.role else 'zzz')|lower }}"
             data-sort-tenant="{{ (u.tenant.name if u.tenant else 'zzz')|lower }}"
             data-sort-status="{{ '0_aktif' if u.is_active else '1_pasif' }}">
           <td>
@@ -129,7 +122,7 @@
           <td style="color:#64748b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
               title="{{ u.email }}">{{ u.email }}</td>
           <td>
-            <span class="mc-badge mc-badge-indigo">{{ rol_etiket.get(u.role.name, u.role.name) if u.role else '—' }}</span>
+            <span class="mc-badge mc-badge-indigo">{{ role_label_tr(u.role.name) if u.role else '—' }}</span>
           </td>
           {% if tenants %}
           <td style="font-size:12px; color:#64748b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"

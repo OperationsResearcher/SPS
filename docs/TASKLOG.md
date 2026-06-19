@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-187 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 5 — rol etiketi terminoloji birleştirme (tek kaynak)
+**Modül:** constants/roles, app context, raporlar, çeşitli template
+**Durum:** ✅ Yerelde runtime doğrulandı (3 rol × çoklu sayfa render). Davranış/yetki DEĞİŞMEDİ.
+
+### Değiştirilen Dosyalar
+- `app/constants/roles.py` → ROLE_LABELS_TR + role_label_tr() (kanonik tek kaynak)
+- `app/__init__.py` → _inject_role_labels context processor (Jinja'ya role_label_tr + ROLE_LABELS_TR)
+- `micro/modules/raporlar/routes_faz2.py` → _ROL_TR map silindi, helper kullanıldı
+- `ui/templates/platform/admin/users.html`, `auth/profil.html`, `base.html`, `launcher.html`, `masaustu/index.html` → dağınık rol map'leri/if-blokları silindi, role_label_tr ile değiştirildi
+- `docs/UI-TERMINOLOJI.md` → kanonik rol etiketleri + "hardcode etme, helper'dan oku" notu
+
+### Yapılan İşlem
+Kanonik etiketler: Admin→Sistem Yöneticisi, tenant_admin→Kurum Yöneticisi, executive_manager→Üst Yönetim,
+standard_user→Kurum Kullanıcısı. 6+ yerde tekrarlanan/çelişen ('Kurum Üst Yönetimi' vs 'Üst Yönetim',
+'Standart Kullanıcı' vs 'Kurum Kullanıcısı') eşlemeler tek kaynağa indirildi. base.html'deki ölü roller
+(yonetici/calisan/izleyici — DB'de yok, teyit edildi) elendi. Yetki mantığına (surec/permissions.py) DOKUNULMADI.
+
+### Notlar
+Devir metnindeki Süreç Üyesi/Lideri/Üst Yönetim altyapısı zaten mevcuttu (members/leaders/owners +
+PRIVILEGED_ROLES); Dal 5 yalnızca etiket tutarlılığıydı. Güvenlik sınırı değişmedi.
+
 ## TASK-186 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L1 Dal 4 — bireysel hedef iki katman (Standart/Stratejik) + opsiyonel strateji bağı + KOE sinyali

@@ -38,6 +38,12 @@ Bu belge **Kokpitim arayüzünde kullanılacak Türkçe terimleri** sözlük ola
 | `parent_tenant` | **Üst Kurum** | "Parent tenant" | "Üst Kurum" |
 | `sub_tenant` | **Alt Kurum** | "Sub-tenant" | "Alt Kurum", "Müşteri Kurumu" |
 | `role` | **Rol** | — | "Rol: Kurum Yöneticisi" |
+| `Admin` (rol) | **Sistem Yöneticisi** | "Platform Admin", "Admin" | "Sistem Yöneticisi" |
+| `tenant_admin` (rol) | **Kurum Yöneticisi** | — | "Kurum Yöneticisi" |
+| `executive_manager` (rol) | **Üst Yönetim** | "Kurum Üst Yönetimi" | "Üst Yönetim" |
+| `standard_user` (rol) | **Kurum Kullanıcısı** | "Standart Kullanıcı" | "Kurum Kullanıcısı" |
+
+> **Rol etiketleri tek kaynak:** Yukarıdaki rol→Türkçe eşlemesi kodda `app/constants/roles.py::ROLE_LABELS_TR` ve `role_label_tr()` ile tutulur. Template'lerde `{{ role_label_tr(user.role.name) }}`, Python'da `from app.constants.roles import role_label_tr`. **UI'da rol etiketini hardcode etme** — helper'dan oku (L1 Dal 5, 2026-06-19).
 | `permission` | **Yetki** | "Permission denied" | "Yetkiniz yok" |
 | `notification` | **Bildirim** | — | "Bildirimler" |
 | `audit log` | **Denetim Kaydı** | "Audit log" | "Denetim Kaydı" |
