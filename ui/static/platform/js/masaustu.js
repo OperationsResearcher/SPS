@@ -394,4 +394,64 @@
       })
       .catch(() => { body.innerHTML = '<p style="color:#94a3b8; font-size:12px;">Özet yüklenemedi.</p>'; });
   }
+
+  // ── KOE Yapı-Danışmanı: opsiyonel LLM zenginleştirme (lazy, butonla) ──────
+  (function initKoeAi() {
+    const box = document.getElementById("koe-danisman-box");
+    const btn = document.getElementById("koe-ai-btn");
+    if (!box || !btn) return;
+    const url = box.dataset.aiUrl;
+    const label = btn.querySelector("[data-koe-ai-label]");
+
+    function escapeHtmlKoe(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    btn.addEventListener("click", async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      const original = label.textContent;
+      label.textContent = "Hazırlanıyor…";
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf() },
+          credentials: "same-origin",
+        });
+        const d = await res.json();
+        if (!d.success) {
+          label.textContent = original;
+          btn.disabled = false;
+          Swal.fire({ icon: "error", title: "Hata", text: d.message || "AI danışman çağrılamadı." });
+          return;
+        }
+        const anlatiEl = box.querySelector("[data-koe-anlati]");
+        if (anlatiEl && d.anlati) {
+          anlatiEl.innerHTML =
+            '<i class="fas fa-robot" style="color:#10b981; margin-right:6px;"></i>' +
+            escapeHtmlKoe(d.anlati);
+        }
+        const oneriEls = box.querySelectorAll("[data-koe-oneri]");
+        (d.oncelikler || []).forEach((o, i) => {
+          if (oneriEls[i] && o.oneri) oneriEls[i].textContent = " — " + o.oneri;
+        });
+        if (d.kaynak === "llm") {
+          label.textContent = "✓ AI ile zenginleştirildi";
+          btn.style.color = "#94a3b8";
+        } else {
+          label.textContent = original;
+          btn.disabled = false;
+          Swal.fire({
+            toast: true, position: "top-end", icon: "info",
+            title: "AI sağlayıcı yapılandırılmamış; mevcut öneriler gösteriliyor.",
+            showConfirmButton: false, timer: 3500, timerProgressBar: true,
+          });
+        }
+      } catch (e) {
+        label.textContent = original;
+        btn.disabled = false;
+        Swal.fire({ icon: "error", title: "Hata", text: String(e.message || e) });
+      }
+    });
+  })();
 })();

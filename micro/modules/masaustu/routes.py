@@ -702,3 +702,44 @@ def api_tenant_last_change():
 def kurum_takvim():
     """Kurum geneli takvim sayfası."""
     return render_template("platform/calendar/index.html")
+
+
+# KOE Yapı-Danışmanı'nı yalnızca yönetici/üst yönetim tetikleyebilir (asimetri).
+_KOE_DANISMAN_ROLES = (
+    "Admin", "admin", "tenant_admin", "executive_manager",
+    "kurum_yoneticisi", "ust_yonetim",
+)
+
+
+@app_bp.route("/masaustu/api/koe-danisman-ai", methods=["POST"])
+@login_required
+def masaustu_koe_danisman_ai():
+    """KOE Yapı-Danışmanı anlatı + önerilerini LLM ile zenginleştirir (lazy).
+
+    Heuristik boşluk tespiti aynı kalır; yalnızca ifade LLM'le doğallaşır.
+    Provider yoksa/çıktı bozuksa heuristik metinle döner (kaynak='heuristik').
+    """
+    rn = current_user.role.name if current_user.role else None
+    if rn not in _KOE_DANISMAN_ROLES:
+        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+
+    tenant_id = current_user.tenant_id
+    if not tenant_id:
+        return jsonify({"success": False, "message": "Kurum bulunamadı."}), 404
+
+    try:
+        from app.services.koe_service import compute_koe, yapi_danismani
+        koe = compute_koe(tenant_id)
+        danisman = yapi_danismani(koe, tenant_id=tenant_id, use_llm=True)
+        return jsonify({
+            "success": True,
+            "kaynak": danisman["kaynak"],
+            "anlati": danisman["anlati"],
+            "oncelikler": [
+                {"baslik": o.get("baslik"), "oneri": o.get("oneri")}
+                for o in danisman["oncelikler"]
+            ],
+        })
+    except Exception as e:
+        current_app.logger.warning(f"[koe-danisman-ai] {e}")
+        return jsonify({"success": False, "message": "AI danışman çağrılamadı."}), 500

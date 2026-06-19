@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-188 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 6 — AI Yapı-Danışmanı kalibrasyonu + opsiyonel LLM anlatımı (lazy)
+**Modül:** koe_service, masaustu (route+UI)
+**Durum:** ✅ Yerelde runtime doğrulandı (kalibrasyon + yetki + LLM fallback). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `app/services/koe_service.py` → boşluklara etki(temel/kısmi); _oncelik_puani (etki×aciliyet) sıralama; _llm_anlatim + yapi_danismani(use_llm) opsiyonel LLM
+- `micro/modules/masaustu/routes.py` → /masaustu/api/koe-danisman-ai (POST, yönetici-only) lazy LLM endpoint
+- `ui/templates/platform/masaustu/index.html` → KOE kartına "AI ile zenginleştir" butonu + data-koe-* işaretçileri
+- `ui/static/platform/js/masaustu.js` → buton handler (CSRF'li fetch, anlatı+öneri DOM güncelleme, fallback bilgisi)
+
+### Yapılan İşlem
+Kalibrasyon: temel boşluklar (hiç strateji/süreç/faaliyet yok) ağırlıklı öncelikle her zaman üstte, kısmi
+eksikler aciliyet (100-severity) sırasıyla. Tomofil: "Hiç faaliyetin yok" (temel, puan 200) en üstte — doğru.
+LLM: heuristik boşluk TESPİTİ değişmez; sadece anlatı+öneri ifadesi LLM'le (llm_gateway.call_llm) doğallaşır.
+Provider yok / kota / bozuk JSON → kaynak='heuristik' graceful fallback. Lazy buton, yönetici-only (standart→403).
+
+### Notlar
+LLM altyapısı zaten mevcuttu (llm_gateway + tenant BYOK). Bu makinede SSL kesme nedeniyle gerçek Gemini
+çağrısı yapılamadı; LLM parse/eşleme yolu mock call_llm ile birim-test edildi (kaynak='llm' doğrulandı).
+L1 dalları (3-6) tamam → sıradaki: kararları docs/paketler/PAKETLEME-STRATEJISI.md'ye yaz.
+
 ## TASK-187 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L1 Dal 5 — rol etiketi terminoloji birleştirme (tek kaynak)
