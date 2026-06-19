@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-191 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 3 — yeni tenant'ta paket seçimi (zaten var) + mevcut tenant'ları full pakete ata
+**Modül:** scripts (atama), admin (doğrulama)
+**Durum:** ✅ Yerelde runtime doğrulandı (7/7 Master, erişim korundu). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `scripts/assign_existing_tenants_to_master.py` → yeni: mevcut tüm tenant'ları master_package'e atar (idempotent)
+
+### Yapılan İşlem
+(1) "Yeni tenant açarken paket seç" özelliği ZATEN MEVCUT — admin_tenants_add route'u package_id'yi işliyor
+(satır 935/973), tenants.html'de paket dropdown'ı (em-package) var. Runtime: /admin/tenants 200, dropdown'da
+4 paket (Başlangıç/Yönetim/Strateji/Master) görünüyor. KOD YAZILMADI, doğrulandı.
+(2) Mevcut 7 tenant (4 paketsiz + 3 Master) → hepsi master_package'e (en kapsamlı, 13 modül). Kullanıcı kararı:
+full erişim korunsun. Runtime: tenant 16 (eski paketsiz) yönetici 11 modül = full, modül kaybı yok. DB öncesi
+tenants tablosu yedeği. İdempotent: 2. koşu 0 değişiklik.
+
+### Notlar
+"En yüksek paket" = Master Package (13 modül, full) seçildi — yeni Strateji tier'ı (8 modül) değil; çünkü
+Master daha kapsamlı ve amaç full erişimi korumaktı. Yeni tenant'lar formdan istedikleri tier'ı seçer.
+
 ## TASK-190 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L2 Dal 2 — gerçek paketleri tanımla (Başlangıç/Yönetim/Strateji)
