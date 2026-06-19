@@ -1,6 +1,6 @@
 # Kokpitim — Paketleme & Segmentasyon Stratejisi (Taslak v0.1)
 
-> **Durum:** İlk-geçiş taslağı, tartışma ve düzeltme için. Mutabakat sonrası `subscription_packages`/`package_modules` verisine + (gerekirse) gating koduna yansıtılır. **L1 "Başlangıç" paketinin çekirdeği (KOE omurgası + Dal 3-6) inşa edildi** — bkz. §4.A.
+> **Durum:** İlk-geçiş taslağı, tartışma ve düzeltme için. **L1 çekirdeği (KOE omurgası + Dal 3-6) inşa edildi** (§4.A); **L2 paket sistemi (gating onarımı + Başlangıç/Yönetim/Strateji tier'ları + tenant atama) inşa edildi** (§4.B). Hepsi yerelde — tüm L paketleri bitmeden Yayın'a çıkılmıyor.
 > **Son güncelleme:** 2026-06-19
 
 ---
@@ -35,10 +35,10 @@
 
 Olgunluk, tier'dan **bağımsız** ilerleyebilmeli (küçük ama olgun firma da var). Kurum tier satın alır; yüzeyi olgunlukla kademeli açar.
 
-### 2.1 Yapısal bulgular (mevcut kod — işi kolaylaştırıyor)
-1. **Yetki kapısı ZATEN çalışıyor:** `micro/core/module_registry.py::get_accessible_modules` → paket → `package_modules` → modül → launcher kartı. Eksik olan sadece **paketleri tanımlamak** (şu an tek `Master Package`, her şey açık).
+### 2.1 Yapısal bulgular (L2'de doğrulandı — bkz. §4.B)
+1. ~~"Yetki kapısı ZATEN çalışıyor"~~ → **DÜZELTME (L2 Dal 1):** Yetki kapısı `get_accessible_modules` vardı ama **fiilen KAPALIYDI** — `system_modules` kodları (`*_modulu` son ekli) `module_registry` eşlemesinde tanınmıyordu → hep `None` → herkes her şeyi görüyordu. Onarıldı; paketler tanımlandı (§4.B).
 2. **"Normal vs İleri" ayrımı zaten var** (`system_modules`): İleri katman = Porter/BCG/Ansoff/VRIO/TOWS/Değer Zinciri/PESTEL. Paket sınırı için hazır fay hattı.
-3. **Açık soru:** Bileşen-içi (kart düzeyi) gating gerçekten zorlanıyor mu, yoksa yalnız katalog mu? (`module_component_slugs` 122 satır var; enforcement doğrulanacak.)
+3. **Açık soru CEVAPLANDI (L2):** Gating yalnızca **launcher/modül düzeyinde** zorlanıyor — bileşen/kart-içi (özellik düzeyi) enforcement YOK. Sonuç: PGV gibi modül-içi yetenekler tek başına gate'lenemez; paket sınırı **modül granülerliğinde** kuruldu (Süreç modülü = PGV ile birlikte L2'ye).
 
 ---
 
@@ -129,6 +129,36 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 
 ---
 
+## 4.B. L2 — Paket sistemi inşa edildi (2026-06-19)
+
+> §3'teki tier modeli + §2.1'deki gating'in **koda yansıması**. PGV'nin paket düzeyinde gerçek sınırı. Karar geçmişi: TASKLOG TASK-189…191. Tümü yerelde inşa+doğrulandı; **deploy YOK** (tüm L paketleri bitmeden Yayın'a çıkılmaz — kullanıcı kararı).
+
+### Dal 1 — Gating motoru onarımı
+- **Bulgu:** Paket gating fiilen kapalıydı (§2.1/1 düzeltmesi). `module_registry._SYSTEM_CODE_TO_LAUNCHER_ID`'ye gerçek DB kodları (`*_modulu`) eklendi.
+- Master Package eksik modüllerle (kurum/bireysel/analiz/k_radar/k_rapor) tamamlandı → gating açılınca mevcut tenant'lar modül kaybetmedi (`scripts/seed_l2_module_gating.py`).
+
+### Dal 2 — Gerçek paketler (kümülatif tier)
+| Paket (code) | Modüller (launcher) | Modül# | PGV? |
+|---|---|---|---|
+| **Başlangıç** (`baslangic`) | kurum, sp *(+ minimum: masaustu/ayarlar/bildirim)* | 5 | ✗ |
+| **Yönetim** (`yonetim`) | + surec, bireysel, proje, analiz, k_rapor | 10 | ✓ |
+| **Strateji** (`strateji`) | + k_radar | 11 | ✓ |
+| Master Package | full (13 system_module) | — | ✓ |
+
+- `scripts/seed_l2_paketler.py` (idempotent, sequence-drift korumalı). Runtime: her paket farklı launcher yüzeyi verdi (5/10/11).
+- **`sp` Başlangıç'ta** (strateji ağacı dahil) — modül-içi ayrım olmadığı için (§2.1/3) ağaç gizlenemez; bilinçli kabul. Kimlik zaten `kurum` modülünde (Dal 3).
+
+### Dal 3 — Tenant atama
+- **Yeni tenant:** admin "Kurum Ekle" formunda paket dropdown'ı **zaten mevcuttu** (`admin_tenants_add` + `tenants.html`); runtime doğrulandı, kod yazılmadı.
+- **Mevcut tenant'lar:** 7/7 **Master Package**'e (full, 13 modül) atandı (`scripts/assign_existing_tenants_to_master.py`). Kullanıcı kararı: full erişim korunsun, kimse modül kaybetmesin. "En yüksek" = en kapsamlı = Master (Strateji'nin 8'i değil).
+
+### L2'nin durumu ve sınırları
+- Paket sistemi **artık gerçekten çalışıyor**; PGV sınırı paket düzeyinde gerçek (Başlangıç PGV'siz, Yönetim PGV'li).
+- **Özellik-düzeyi gating yok** (sadece modül/launcher). `sp`/`surec` gibi karma modüller bütün olarak gate'lenir. Daha ince ayrım gerekirse → ayrı altyapı (ertelendi).
+- Tenant'lar şu an hepsi Master (full); gerçek tier dağılımı (kim Başlangıç, kim Yönetim) ticari karar — henüz uygulanmadı.
+
+---
+
 ## 5. Üç kritik çıkarım
 
 1. **PGV (satır 12) en kritik darboğaz.** En yüksek veri-giriş yükü; "veri girecek personeli yok" segmenti tam buradan kopuyor. Başlangıç paketinin kalbi: PGV'yi minimuma indir (az kritik gösterge + şablon/benchmark varsayılan).
@@ -153,9 +183,10 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 - [ ] **PGV stratejisi (Başlangıç):** gösterge sayısını sınırla mı, yoksa "tam şablon, kullanıcı hiç PG tanımlamaz" mı?
 - [ ] **`mock_*` katmanı:** tamamen kaldır mı, "Lab/İnovasyon" olarak üst pakette gizli mi?
 - [ ] **Teslim modeli (Başlangıç):** tam self-servis mi, insan dokunuşu (kurulum/danışmanlık) kabul mü?
-- [ ] **Kaç tier + isimler:** 3 mü 4 mü; Başlangıç/Yönetim/Strateji/Holding isimleri kesin mi?
+- [x] **Kaç tier + isimler:** ✅ L2 — 3 tier kuruldu: `baslangic` (Başlangıç) / `yonetim` (Yönetim) / `strateji` (Strateji). Holding eklenti ayrı. (§4.B)
 - [ ] **Fiyat modeli:** kullanıcı başı / modül başı / sabit?
-- [ ] **Bileşen-içi gating:** kart düzeyi enforcement var mı (kod doğrulaması)?
+- [x] **Bileşen-içi gating:** ✅ L2 — CEVAP: kart düzeyi enforcement YOK; gating yalnızca modül/launcher düzeyinde. (§2.1/3, §4.B)
+- [ ] **Tenant→tier dağılımı:** mevcut hepsi Master (full); gerçek tier ataması (kim Başlangıç/Yönetim) ticari karar — bekliyor.
 
 ---
 
