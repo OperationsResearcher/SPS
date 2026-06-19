@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-194 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L3 Dal 4 — ESG metrik + değer girişi UI (dead code onarımı)
+**Modül:** raporlar (routes_esg + __init__), platform/raporlar (template + JS)
+**Durum:** ✅ Yerelde runtime doğrulandı (CRUD + yetki + upsert). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/raporlar/routes_esg.py` → yeni: ESG metrik CRUD + yıllık değer girişi (yönetici-only, tenant izolasyonlu)
+- `micro/modules/raporlar/__init__.py` → routes_esg import
+- `ui/templates/platform/raporlar/esg_yonetim.html` → yeni yönetim sayfası
+- `ui/static/platform/js/esg_yonetim.js` → metrik/değer CRUD (E/S/G gruplu, modal formlar)
+- `ui/templates/platform/raporlar/esg_rapor.html` → "Metrikleri Yönet" linki
+
+### Yapılan İşlem
+ESG modeli (EsgMetric/EsgMetricValue) + PDF raporu vardı ama VERİ GİRİŞİ UI'ı yoktu → rapor üretilemez
+"ölü kod" idi. /raporlar/esg-yonetim: metrik ekle/düzenle/sil (E/S/G, scope, hedef, baseline, SDG) + her
+metriğe yıl-değer (upsert). Runtime: sayfa 200, geçersiz kategori→400, değer upsert→aynı id, standart
+kullanıcı ekleme→403. Sentetik test+temizlik (Tomofil 5 metrik korundu — Dal 3 dersini uyguladım).
+
+### Notlar
+Kalan L3: Dal 5 (Ansoff/BCG/Değer Zinciri yeni analizler + K-Vektör — sıfırdan, en büyük).
+
 ## TASK-193 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L3 Dal 2+3 — iskelet analiz UI'ları (SWOT/TOWS/PESTEL/BSC) + Porter route onarımı

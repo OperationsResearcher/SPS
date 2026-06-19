@@ -7,3 +7,4 @@ from . import routes_faz2  # noqa: F401
 from . import routes_faz3  # noqa: F401
 from . import routes_faz4  # noqa: F401
 from . import routes_faz5  # noqa: F401
+from . import routes_esg  # noqa: F401  # L3 Dal 4 — ESG metrik + değer girişi
