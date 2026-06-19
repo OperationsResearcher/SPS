@@ -14,8 +14,11 @@ KOE = boyutların ağırlıklı ortalaması (şimdilik eşit %25).
 from __future__ import annotations
 
 from extensions import db
-from app.models.core import Tenant, Strategy, SubStrategy
-from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink, ProcessActivity
+from app.models.core import Tenant, Strategy, SubStrategy, User
+from app.models.process import (
+    Process, ProcessKpi, ProcessSubStrategyLink, ProcessActivity,
+    IndividualPerformanceIndicator,
+)
 from app.models.tenant_identity import (
     TenantValue, TenantEthicsCode, TenantQualityPolicy,
 )
@@ -75,7 +78,29 @@ def _boyut_kimlik_strateji(tenant_id: int) -> dict:
         strateji_pct = 0.0
         baglanmis = 0
 
-    skor = round((kimlik_pct + strateji_pct) / 2, 1)
+    # L1 Dal 4: stratejinin bireye inmesi — kaç aktif kullanıcının ≥1 aktif
+    # 'Stratejik' bireysel hedefi var (stratejik hizalama sinyali).
+    toplam_kullanici = User.query.filter_by(
+        tenant_id=tenant_id, is_active=True
+    ).count()
+    if toplam_kullanici:
+        stratejik_sahip = (
+            db.session.query(IndividualPerformanceIndicator.user_id)
+            .join(User, User.id == IndividualPerformanceIndicator.user_id)
+            .filter(
+                User.tenant_id == tenant_id,
+                IndividualPerformanceIndicator.is_active.is_(True),
+                IndividualPerformanceIndicator.katman == "Stratejik",
+            )
+            .distinct()
+            .count()
+        )
+        stratejik_hedef_pct = _pct(stratejik_sahip, toplam_kullanici)
+    else:
+        stratejik_hedef_pct = 0.0
+        stratejik_sahip = 0
+
+    skor = round((kimlik_pct + strateji_pct + stratejik_hedef_pct) / 3, 1)
     return {
         "skor": skor,
         "kimlik_doluluk_pct": kimlik_pct,
@@ -83,6 +108,9 @@ def _boyut_kimlik_strateji(tenant_id: int) -> dict:
         "strateji_butunluk_pct": strateji_pct,
         "toplam_strateji": toplam_strateji,
         "alt_stratejisi_olan": baglanmis,
+        "stratejik_hedef_pct": stratejik_hedef_pct,
+        "stratejik_hedef_sahip_kullanici": stratejik_sahip,
+        "toplam_kullanici": toplam_kullanici,
     }
 
 

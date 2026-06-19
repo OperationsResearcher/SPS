@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-186 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L1 Dal 4 — bireysel hedef iki katman (Standart/Stratejik) + opsiyonel strateji bağı + KOE sinyali
+**Modül:** process (model), bireysel (routes+UI), koe_service
+**Durum:** ✅ Yerelde runtime doğrulandı (migration round-trip + izolasyon + KOE asimetri). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `app/models/process.py` → IndividualPerformanceIndicator'a katman + strategy_id (opsiyonel FK)
+- `migrations/versions/b2c3d4e5f6a7_*.py` → 2 kolon + index + FK; heuristik dolum (süreç-PG bağlı → Stratejik)
+- `micro/modules/bireysel/routes.py` → _normalize_katman (tenant izolasyonu); add/update katman kabul; karne payload + strateji listesi
+- `ui/templates/platform/bireysel/karne.html` → strateji seçenekleri (tojson) + pg-update-base
+- `ui/static/platform/js/bireysel.js` → katman seçimi + koşullu strateji dropdown + Stratejik rozeti
+- `app/services/koe_service.py` → Kimlik&Strateji boyutuna 3. bileşen: stratejik_hedef_pct (skor 3'e bölünür)
+
+### Yapılan İşlem
+4a: model+migration, yerel 524 Standart/94 Stratejik, 0 yanlış, down→up round-trip. 4b: ekle/düzenle formu
++ liste rozeti; yabancı strategy_id reddi runtime'da kanıtlandı. 4c: KOE boyut1 = (kimlik+strateji+stratejik_hedef)/3.
+Tomofil: 97 kullanıcının 1'i stratejik hedefli → %1 → boyut 100/100/1 = 67.0. Asimetri: +1 kullanıcı → %2.1 (rollback'li kanıt).
+
+### Notlar
+katman, source'tan bağımsız eksen (source=nereden geldiği, katman=stratejik mi). strategy_id sadece
+katman='Stratejik' iken anlamlı; tenant izolasyonlu. KOE artık bireysel veriyi de okur (Dal 6 kalibrasyonuna girdi).
+
 ## TASK-185 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L1 Dal 3c+3d — Kurumsal kimlik çok-satırlı CRUD UI + KOE'nin satırları okuması
