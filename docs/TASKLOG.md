@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-190 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 2 — gerçek paketleri tanımla (Başlangıç/Yönetim/Strateji)
+**Modül:** scripts (seed), saas (subscription_packages/package_modules)
+**Durum:** ✅ Yerelde runtime doğrulandı (3 paket farklı yüzey veriyor). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `scripts/seed_l2_paketler.py` → yeni: 3 paket + modül bağları (idempotent, sequence drift korumalı)
+
+### Yapılan İşlem
+Paketler (kullanıcı kararı): Başlangıç(L1)=kurum+sp · Yönetim(L2)=+surec/bireysel/proje/analiz/k_rapor ·
+Strateji(L3)=+k_radar. masaustu/ayarlar/bildirim=minimum (otomatik), admin=rol-kısıtlı → pakete eklenmedi.
+Sequence drift (master id=1, seq=1 → PK çakışması) sync_pg_sequence_if_needed ile çözüldü. Runtime
+get_accessible_modules: baslangic→5 modül (PGV YOK), yonetim→10 (PGV açık), strateji→11 (full). DB öncesi yedek.
+
+### Notlar
+'sp' modülü Başlangıç'ta (strateji ağacı dahil — modül-içi ayrım yok, bilinçli kabul). Tenant ataması
+YAPILMADI: mevcut Master Package tenant'ları full kaldı (taşıma ayrı/riskli karar, sonraki dal). PGV
+sınırı artık paket düzeyinde gerçek: Başlangıç'ta süreç/PGV kapalı, Yönetim'de açık.
+
 ## TASK-189 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L2 Dal 1 — modül gating onarımı (paket motoru fiilen kapalıydı)
