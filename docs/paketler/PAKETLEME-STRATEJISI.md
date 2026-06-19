@@ -1,7 +1,7 @@
 # Kokpitim — Paketleme & Segmentasyon Stratejisi (Taslak v0.1)
 
-> **Durum:** İlk-geçiş taslağı, tartışma ve düzeltme için. Mutabakat sonrası `subscription_packages`/`package_modules` verisine + (gerekirse) gating koduna yansıtılır.
-> **Son güncelleme:** 2026-06-09
+> **Durum:** İlk-geçiş taslağı, tartışma ve düzeltme için. Mutabakat sonrası `subscription_packages`/`package_modules` verisine + (gerekirse) gating koduna yansıtılır. **L1 "Başlangıç" paketinin çekirdeği (KOE omurgası + Dal 3-6) inşa edildi** — bkz. §4.A.
+> **Son güncelleme:** 2026-06-19
 
 ---
 
@@ -67,7 +67,7 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 | 3 | Ayarlar + Bildirim | Hepsi | L1 | Düşük | Kolay | Hepsi | ✅ |
 | 4 | Yönetim Paneli (kullanıcı/kurum) | Yön | L1 | Düşük | Kolay | Hepsi | ✅ |
 | **STRATEJİK PLANLAMA** |
-| 5 | Vizyon/Misyon/Amaç/Değer/Etik/Kalite kartları | ÜY | L1 | Düşük | Kolay | Başlangıç+ | ✅ |
+| 5 | Vizyon/Misyon/Amaç/Değer/Etik/Kalite kartları *(Değer/Etik/Kalite çok-satırlı — Dal 3)* | ÜY | L1 | Düşük | Kolay | Başlangıç+ | ✅ |
 | 6 | Ana/Alt strateji ağacı | ÜY | L2 | Orta | Orta | Yönetim+ | ⛔ |
 | 7 | SWOT | ÜY/Yön | L2 | Orta | Orta | Yönetim+ | ⛔ |
 | 8 | TOWS/PESTEL/Porter/BCG/Ansoff/Değer Zinciri/VRIO/Blue Ocean | ÜY/uzman | L3 | Yüksek | **Uzman(AI)** | Strateji | ⛔ |
@@ -91,6 +91,41 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 | 22 | Placeholder system_modules (Proje×2, CRM/Müşteri×2 — 0 bileşen) | — | — | — | — | Henüz ürün değil | — |
 
 \* "Düşük\*" = veri otomatik türetilir (kullanıcı girmez); ama **yorumu** zordur. Satır 13/17/19 tam olarak düşük-yetkinlik segmentinin ihtiyacı: veri girmeden, AI yorumuyla değer.
+
+---
+
+## 4.A. L1 "Başlangıç" paketi — İnşa edilen (2026-06-19)
+
+> §3'teki "Başlangıç paketi = yarı-kurulu + yorumlanmış deneyim" vaadinin **kod tarafına yansıyan ilk somut katmanı**. KOE omurgası + 4 dal. Karar geçmişi: TASKLOG TASK-184…188. Tümü yerelde inşa+doğrulandı; Test/Yayın'a henüz çıkmadı.
+
+### Omurga — KOE (Kurumsal Olgunluk Endeksi)
+- **4 boyut, eşit %25:** Kimlik & Strateji Netliği · Süreç Mimarisi · Olgunluk · İcra Disiplini. `app/services/koe_service.py::compute_koe`.
+- **PGV'siz:** yapıyı ölçer, performansı değil — "veri girecek personeli yok" segmenti için kritik (§5/1). Mevcut yapısal veriden hesaplanır, saf okuma.
+- **Asimetri (bağlayıcı):** KOE'yi yalnızca **Üst Yönetim** görür (`sp_can_manage`). Standart kullanıcı görmez ama **besler** (girdiği yapı KOE'ye akar). Masaüstü kartı yönetici-only.
+
+### Dal 3 — Kimlik çok-satırlı (Değer / Etik / Kalite)
+- Tek-TEXT alanlar → çok-satırlı tablolar (`tenant_values` / `tenant_ethics_codes` / `tenant_quality_policies`). Her madde başlık+açıklama, soft-delete, tenant izolasyonlu.
+- **"Temiz kesim" kararı:** yeni tablolar canonical; eski `tenants.core_values/code_of_ethics/quality_policy` TEXT kolonları DB'de **kalır ama okunmaz/yazılmaz** (geri-dönüş ağı).
+- CRUD UI: Kurum Paneli'nde madde madde ekle/düzenle/sil (Üst Yönetim). KOE "Kimlik" boyutu artık satırları okur (eski TEXT'i değil). → §4 satır 5 bu dalla **çok-satırlıya** evrildi.
+
+### Dal 4 — Bireysel hedef iki katman
+- `IndividualPerformanceIndicator`'a **`katman`** (`Standart` / `Stratejik`) + opsiyonel `strategy_id` (kurum stratejisi bağı, tenant izolasyonlu).
+- `katman`, mevcut `source` ekseninden **bağımsız** (source = nereden geldiği; katman = stratejik mi).
+- KOE "Kimlik & Strateji" boyutuna sinyal: **stratejik hedefi olan çalışan oranı** (stratejinin bireye inmesi). → §4 satır 14'ün L1 sürümü: katman ayrımı L1'de var, tam bireysel performans L2.
+
+### Dal 5 — Rol etiketi tek kaynak
+- Kanonik rol etiketleri tek kaynakta: `app/constants/roles.py::ROLE_LABELS_TR` + `role_label_tr()` + Jinja helper. Dağınık/çelişen literal'lar elendi.
+- Etiketler: Admin→Sistem Yöneticisi, tenant_admin→Kurum Yöneticisi, executive_manager→**Üst Yönetim**, standard_user→**Kurum Kullanıcısı**. Yetki mantığı (`surec/permissions.py`) değişmedi — yalnızca görünüm.
+
+### Dal 6 — AI Yapı-Danışmanı (kalibrasyon + opsiyonel LLM)
+- KOE boşluk raporundan **önceliklendirilmiş öneri + anlatı** (`yapi_danismani`). §3'teki "AI rapor yorumu" vaadinin L1 çekirdeği.
+- **Kalibrasyon:** öncelik = etki × aciliyet — temel boşluklar (iskelet hiç yok) daima üstte.
+- **Opsiyonel LLM:** boşluk *tespiti* heuristik kalır (deterministik); yalnızca *ifade* `llm_gateway` ile doğallaşır. Provider yok/bozuk çıktı → heuristik metne düşer. Lazy buton (yönetici-only).
+
+### L1'in bilinçli sınırları (L2'ye ertelenen)
+- PGV panelleri / performans verisi girişi → **L2** (KOE bilinçli PGV'siz).
+- "L2'de açılır" etiketi **OLMAYACAK** — L2 ayrı paket, L1 yüzeyinde L2 sızıntısı yok.
+- Bireysel hedefte tam performans ölçümü, süreç PG verisi, ileri analizler → L2/L3 (§4 tablosu).
 
 ---
 
