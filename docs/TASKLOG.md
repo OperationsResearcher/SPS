@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-192 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L3 Dal 1 — ileri_* modülleri Strateji paketine bağla (+ L3 keşif belgesi)
+**Modül:** scripts (seed), paketler belgesi
+**Durum:** ✅ Yerelde runtime doğrulandı (Strateji 11 modül, launcher değişmedi). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `scripts/seed_l3_ileri_moduller.py` → yeni: ileri_stratejik/surec/proje modüllerini Strateji paketine bağlar (idempotent)
+- `docs/paketler/PAKETLEME-STRATEJISI.md` → §4.C eklendi (L3 durum haritası + Dal 1 + kalan dallar), §4.B Strateji satırı güncellendi
+
+### Yapılan İşlem
+4 paralel kod keşfiyle L3 durumu DB-teyitli haritalandı: motor büyük ölçüde mevcut, eksikler dağınık (SWOT/
+TOWS/PESTEL/BSC template yok, Porter route kırık, ESG input UI yok, K-Vektör/Ansoff/BCG/Değer Zinciri yok).
+Dal 1: 3 ileri_* modülü Strateji'ye bağlandı (CRM hariç — launcher karşılığı yok). Launcher yüzeyi DEĞİŞMEDİ
+(ileri_*→sp/surec/proje eşleşir); amaç paket tanımının dürüstlüğü. Strateji 8→11 modül. DB öncesi yedek.
+
+### Notlar
+L3 verisi gerçek (DB teyit): OKR 48, BSC 840, ESG 10 satır — iskelet değil. Kalan L3 dalları belgede §4.C'de.
+Bu dal sadece paket tanımını dürüstleştirdi; gerçek L3 yetenek eksikleri (UI'lar) sonraki dallar.
+
 ## TASK-191 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L2 Dal 3 — yeni tenant'ta paket seçimi (zaten var) + mevcut tenant'ları full pakete ata
