@@ -142,7 +142,7 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 |---|---|---|---|
 | **Başlangıç** (`baslangic`) | kurum, sp *(+ minimum: masaustu/ayarlar/bildirim)* | 5 | ✗ |
 | **Yönetim** (`yonetim`) | + surec, bireysel, proje, analiz, k_rapor | 10 | ✓ |
-| **Strateji** (`strateji`) | + k_radar | 11 | ✓ |
+| **Strateji** (`strateji`) | + k_radar *(+ ileri_* modülleri — L3 Dal 1)* | 11+3 | ✓ |
 | Master Package | full (13 system_module) | — | ✓ |
 
 - `scripts/seed_l2_paketler.py` (idempotent, sequence-drift korumalı). Runtime: her paket farklı launcher yüzeyi verdi (5/10/11).
@@ -156,6 +156,31 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 - Paket sistemi **artık gerçekten çalışıyor**; PGV sınırı paket düzeyinde gerçek (Başlangıç PGV'siz, Yönetim PGV'li).
 - **Özellik-düzeyi gating yok** (sadece modül/launcher). `sp`/`surec` gibi karma modüller bütün olarak gate'lenir. Daha ince ayrım gerekirse → ayrı altyapı (ertelendi).
 - Tenant'lar şu an hepsi Master (full); gerçek tier dağılımı (kim Başlangıç, kim Yönetim) ticari karar — henüz uygulanmadı.
+
+---
+
+## 4.C. L3 "Strateji" paketi — keşif + ilk dal (2026-06-19)
+
+> Keşif sonucu: **L3 motoru büyük ölçüde mevcut ve çalışıyor** (4 paralel kod keşfiyle DB-teyitli). Eksikler dağınık ve çoğu UI/yüzey düzeyinde. Karar geçmişi: TASKLOG TASK-192…
+
+### L3 durum haritası (keşif özeti)
+| Alan | Sağlam (çalışıyor) | İskelet (API/model var, UI yok) | Eksik/Kırık |
+|---|---|---|---|
+| **K-Radar** | KS/KP/KPR/Cross/Risk, Anomali, Sankey, AI Koçluk (LLM+fallback) | — | K-Vektör (belgede var, kodda yok) |
+| **İleri strateji** | Blue Ocean, VRIO, OKR, Hoshin X-Matrix | SWOT/TOWS/PESTEL/BSC (template yok) | Porter (route yok), Ansoff/BCG/Değer Zinciri (yok) |
+| **OKR/BSC/ESG** | OKR (tam, 48 kayıt) | BSC (API+840 kayıt, UI yok) | ESG (model+PDF var, **input UI yok**, 10 kayıt) |
+| **Proje portföy** | Gantt, RAID, EVM, CPM, Portföy | Kapasite (DB/API var, UI yok) | Program/portföy Gantt (yok) |
+
+### Dal 1 — ileri_* modülleri Strateji paketine bağlandı
+- `ileri_stratejik_planlama` + `ileri_surec_yonetimi` + `ileri_proje_yonetimi` → Strateji paketine (`scripts/seed_l3_ileri_moduller.py`). Strateji artık 11 modül.
+- `ileri_iliskileri` (CRM) eklenmedi — launcher karşılığı yok (placeholder).
+- **Launcher yüzeyi değişmedi** (ileri_* → sp/surec/proje eşleşir): amaç paket *tanımının* dürüstlüğü, "Strateji ileri yetenekleri içerir" gerçeğini DB'ye yazmak.
+
+### L3 kalan dallar (önerilen, sıralı)
+- **Dal 2:** İskelet UI'ları tamamla (SWOT/TOWS/PESTEL/BSC template — API hazır).
+- **Dal 3:** Porter route'unu bağla (model var, route yok — kırık).
+- **Dal 4:** ESG input UI (model+PDF var, veri girişi yok — dead code riski).
+- **Dal 5 (opsiyonel):** Ansoff/BCG/Değer Zinciri (sıfırdan) + K-Vektör (vaat uyumsuzluğu).
 
 ---
 
