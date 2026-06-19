@@ -2,6 +2,68 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-191 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 3 — yeni tenant'ta paket seçimi (zaten var) + mevcut tenant'ları full pakete ata
+**Modül:** scripts (atama), admin (doğrulama)
+**Durum:** ✅ Yerelde runtime doğrulandı (7/7 Master, erişim korundu). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `scripts/assign_existing_tenants_to_master.py` → yeni: mevcut tüm tenant'ları master_package'e atar (idempotent)
+
+### Yapılan İşlem
+(1) "Yeni tenant açarken paket seç" özelliği ZATEN MEVCUT — admin_tenants_add route'u package_id'yi işliyor
+(satır 935/973), tenants.html'de paket dropdown'ı (em-package) var. Runtime: /admin/tenants 200, dropdown'da
+4 paket (Başlangıç/Yönetim/Strateji/Master) görünüyor. KOD YAZILMADI, doğrulandı.
+(2) Mevcut 7 tenant (4 paketsiz + 3 Master) → hepsi master_package'e (en kapsamlı, 13 modül). Kullanıcı kararı:
+full erişim korunsun. Runtime: tenant 16 (eski paketsiz) yönetici 11 modül = full, modül kaybı yok. DB öncesi
+tenants tablosu yedeği. İdempotent: 2. koşu 0 değişiklik.
+
+### Notlar
+"En yüksek paket" = Master Package (13 modül, full) seçildi — yeni Strateji tier'ı (8 modül) değil; çünkü
+Master daha kapsamlı ve amaç full erişimi korumaktı. Yeni tenant'lar formdan istedikleri tier'ı seçer.
+
+## TASK-190 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 2 — gerçek paketleri tanımla (Başlangıç/Yönetim/Strateji)
+**Modül:** scripts (seed), saas (subscription_packages/package_modules)
+**Durum:** ✅ Yerelde runtime doğrulandı (3 paket farklı yüzey veriyor). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `scripts/seed_l2_paketler.py` → yeni: 3 paket + modül bağları (idempotent, sequence drift korumalı)
+
+### Yapılan İşlem
+Paketler (kullanıcı kararı): Başlangıç(L1)=kurum+sp · Yönetim(L2)=+surec/bireysel/proje/analiz/k_rapor ·
+Strateji(L3)=+k_radar. masaustu/ayarlar/bildirim=minimum (otomatik), admin=rol-kısıtlı → pakete eklenmedi.
+Sequence drift (master id=1, seq=1 → PK çakışması) sync_pg_sequence_if_needed ile çözüldü. Runtime
+get_accessible_modules: baslangic→5 modül (PGV YOK), yonetim→10 (PGV açık), strateji→11 (full). DB öncesi yedek.
+
+### Notlar
+'sp' modülü Başlangıç'ta (strateji ağacı dahil — modül-içi ayrım yok, bilinçli kabul). Tenant ataması
+YAPILMADI: mevcut Master Package tenant'ları full kaldı (taşıma ayrı/riskli karar, sonraki dal). PGV
+sınırı artık paket düzeyinde gerçek: Başlangıç'ta süreç/PGV kapalı, Yönetim'de açık.
+
+## TASK-189 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L2 Dal 1 — modül gating onarımı (paket motoru fiilen kapalıydı)
+**Modül:** module_registry, scripts (seed), saas (system_modules/package_modules)
+**Durum:** ✅ Yerelde runtime doğrulandı (gating açıldı, modül kaybı yok). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/core/module_registry.py` → _SYSTEM_CODE_TO_LAUNCHER_ID'ye DB gerçeği (`*_modulu` kodları) + 5 yeni modül kodu eşlemesi
+- `scripts/seed_l2_module_gating.py` → yeni: eksik 5 modülü system_modules'a ekler + Master Package'i tam sete tamamlar (idempotent)
+
+### Yapılan İşlem
+Bulgu: system_modules kodları `_modulu` son ekliydi, registry tanımıyordu → _package_modules_to_launcher_ids
+None dönüyordu → paket gating FİİLEN KAPALI (herkes her şeyi görüyordu). Onarım: (a) kod eşlemesi düzeltildi,
+(b) Master Package'e eksik modüller (kurum/bireysel/analiz/k_radar/k_rapor) eklendi ki gating açılınca Master
+tenant'lar modül kaybetmesin. Runtime: Master→8 launcher id (eskiden None), yönetici 11 modül, standart 10,
+paketsiz yönetici 12 — modül kaybı yok. DB öncesi pg_dump yedeği alındı (backups/l2/).
+
+### Notlar
+Bu dal yalnızca gating MOTORUNU çalışır yaptı — Master full davranışı korundu. Gerçek L1/L2 paket ayrımı
+(Başlangıç=PGV kapalı, Yönetim=açık) SONRAKİ dal. musteri_* (CRM) launcher karşılığı yok, eşlenmedi (placeholder).
+
 ## TASK-188 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L1 Dal 6 — AI Yapı-Danışmanı kalibrasyonu + opsiyonel LLM anlatımı (lazy)

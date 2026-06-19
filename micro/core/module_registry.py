@@ -134,6 +134,21 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "analiz_merkezi": "analiz",
     "analysis_merkezi": "analiz",
     "k_radar_hub": "k_radar",
+    # DB seed gerçeği (system_modules.code — `_modulu` son ekli). L2 Dal 1:
+    # bu kodlar eskiden None'a düşüyordu → paket gating fiilen kapalıydı.
+    "stratejik_planlama_modulu": "sp",
+    "ileri_stratejik_planlama_modulu": "sp",
+    "surec_yonetimi_modulu": "surec",
+    "ileri_surec_yonetimi_modulu": "surec",
+    "proje_yonetimi_modulu": "proje",
+    "ileri_proje_yonetimi_modulu": "proje",
+    # L2 Dal 1: launcher karşılığı olan ek modüller (seed ile eklenir)
+    "kurum_paneli_modulu": "kurum",
+    "bireysel_performans_modulu": "bireysel",
+    "performans_analitigi_modulu": "analiz",
+    "k_radar_modulu": "k_radar",
+    "k_rapor_modulu": "k_rapor",
+    # musteri_iliskileri_* (CRM) — launcher'da karşılığı yok (placeholder), eşlenmez
 }
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
