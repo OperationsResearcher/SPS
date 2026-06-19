@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-193 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L3 Dal 2+3 — iskelet analiz UI'ları (SWOT/TOWS/PESTEL/BSC) + Porter route onarımı
+**Modül:** sp (routes_analysis + menu), platform/sp (5 template + 3 JS)
+**Durum:** ✅ Yerelde runtime doğrulandı (6 sayfa 200, Porter round-trip, BSC 211 KPI). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_analysis.py` → sayfa route'ları (swot/tows/pestel/bsc/porter) + Porter API (get/save, 1-5 skor validasyonlu upsert)
+- `ui/templates/platform/sp/{swot,tows,pestel,porter,bsc}.html` → yeni 5 template
+- `ui/static/platform/js/{sp_liste_analiz,sp_porter,sp_bsc}.js` → yeni 3 JS bileşeni
+- `ui/templates/platform/sp/menu.html` → 5 analiz linki eklendi (SWOT/TOWS/PESTEL/Porter/BSC)
+
+### Yapılan İşlem
+Dal 2: SWOT/TOWS/PESTEL API'leri vardı, UI yoktu → ortak sp_liste_analiz.js (kategori×madde) + 3 ince template.
+BSC (211 KPI, 4 perspektif) görselleştirme + perspektif atama + otomatik sınıflandır UI. Dal 3: Porter modeli
+vardı ama route YOKTU (kırık) → API (get/save) + sp_porter.js (1-5 baskı skoru + maddeler). Save'lerde 1-5
+validasyonu (geçersiz skor→null teyit edildi). Tüm sayfalar plan-year bazlı, can_edit yetki-bağlı.
+
+### Notlar
+DİKKAT/DERS: Porter round-trip'i Tomofil canlı verisi üstünde test ettim, upsert orijinali ezdi; ham DB
+write ile geri yükledim (Tesla/BYD/VW, diğer PY satırlarıyla tutarlı). Bundan sonra upsert testleri sentetik
+tenant/boş PY'de. Kalan L3: Dal 4 (ESG input UI), Dal 5 (Ansoff/BCG/Değer Zinciri + K-Vektör).
+
 ## TASK-192 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L3 Dal 1 — ileri_* modülleri Strateji paketine bağla (+ L3 keşif belgesi)

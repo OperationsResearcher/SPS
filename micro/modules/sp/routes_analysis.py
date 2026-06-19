@@ -54,6 +54,127 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
+# ── Sayfa route'ları (L3 Dal 2 — iskelet UI'lar) ──────────────────────────────
+
+@app_bp.route("/sp/swot")
+@login_required
+def sp_swot_page():
+    return render_template("platform/sp/swot.html", can_edit=_check_sp_role(current_user))
+
+
+@app_bp.route("/sp/tows")
+@login_required
+def sp_tows_page():
+    return render_template("platform/sp/tows.html", can_edit=_check_sp_role(current_user))
+
+
+@app_bp.route("/sp/pestel")
+@login_required
+def sp_pestel_page():
+    return render_template("platform/sp/pestel.html", can_edit=_check_sp_role(current_user))
+
+
+@app_bp.route("/sp/bsc")
+@login_required
+def sp_bsc_page():
+    return render_template("platform/sp/bsc.html", can_edit=_check_sp_role(current_user))
+
+
+@app_bp.route("/sp/porter")
+@login_required
+def sp_porter_page():
+    return render_template("platform/sp/porter.html", can_edit=_check_sp_role(current_user))
+
+
+# Porter 5 Güç — kuvvet alanları (model: app/models/swot.py::PorterFiveForcesAnalysis)
+_PORTER_FORCES = (
+    "rivalry_intensity", "supplier_power", "buyer_power",
+    "new_entrant_threat", "substitute_threat",
+)
+
+
+@app_bp.route("/sp/api/porter", methods=["GET"])
+@login_required
+def sp_api_porter_get():
+    """Aktif plan year için Porter 5 Güç verisini döner.
+
+    Her kuvvet: {"score": 1-5|null, "items": [str,...]}.
+    """
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import PorterFiveForcesAnalysis
+        import json as _json
+        active_py = get_active_plan_year_for_user(current_user)
+        porter = None
+        if active_py:
+            porter = PorterFiveForcesAnalysis.query.filter_by(
+                tenant_id=tid, plan_year_id=active_py.id).first()
+
+        def _parse(f):
+            try:
+                v = _json.loads(f) if f else None
+            except (ValueError, TypeError):
+                v = None
+            if not isinstance(v, dict):
+                return {"score": None, "items": []}
+            items = v.get("items")
+            return {
+                "score": v.get("score"),
+                "items": items if isinstance(items, list) else [],
+            }
+
+        data = {"plan_year_id": active_py.id if active_py else None}
+        for f in _PORTER_FORCES:
+            data[f] = _parse(getattr(porter, f, None)) if porter else {"score": None, "items": []}
+        if porter:
+            data["id"] = porter.id
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_porter_get] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Porter verisi alınamadı."}), 500
+
+
+@app_bp.route("/sp/api/porter", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_porter_save():
+    """Porter 5 Güç verisini kaydet (upsert)."""
+    tid = current_user.tenant_id
+    try:
+        from app.models.swot import PorterFiveForcesAnalysis
+        import json as _json
+        payload = request.get_json(silent=True) or {}
+        active_py = get_active_plan_year_for_user(current_user)
+        if not active_py:
+            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+
+        porter = PorterFiveForcesAnalysis.query.filter_by(
+            tenant_id=tid, plan_year_id=active_py.id).first()
+        if not porter:
+            porter = PorterFiveForcesAnalysis(tenant_id=tid, plan_year_id=active_py.id)
+            db.session.add(porter)
+
+        for f in _PORTER_FORCES:
+            raw = payload.get(f) or {}
+            score = raw.get("score")
+            try:
+                score = int(score) if score not in (None, "") else None
+                if score is not None and not (1 <= score <= 5):
+                    score = None
+            except (TypeError, ValueError):
+                score = None
+            items = raw.get("items")
+            items = [str(x).strip() for x in items if str(x).strip()] if isinstance(items, list) else []
+            setattr(porter, f, _json.dumps({"score": score, "items": items}, ensure_ascii=False))
+
+        db.session.commit()
+        return jsonify({"success": True, "data": {"id": porter.id}})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[sp_api_porter_save] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Porter kaydedilemedi."}), 500
+
+
 @app_bp.route("/sp/api/swot", methods=["GET"])
 @login_required
 def sp_api_swot_get():
