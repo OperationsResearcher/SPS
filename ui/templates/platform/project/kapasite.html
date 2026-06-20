@@ -1,0 +1,49 @@
+{% extends "platform/base.html" %}
+{% block title %}Kapasite — {{ project.name }} — Kokpitim{% endblock %}
+{% block page_title %}Kapasite — {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_views.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Kapasite Planlama', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+{% set active_view = 'kapasite' %}
+<div style="max-width:1000px; margin:0 auto;" class="pb-4"
+     id="kapasite-root"
+     data-list-url="/api/projeler/{{ project.id }}/kapasite"
+     data-delete-base="/api/projeler/{{ project.id }}/kapasite/"
+     data-ekip='{{ ekip | tojson }}'>
+
+    <div class="micro-project-view-toolbar align-items-center">
+        <div>
+            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> Projeye dön</a>
+            <div class="micro-project-view-title"><i class="fas fa-users-gear" style="color:#0891b2;"></i> Kapasite Planlama</div>
+        </div>
+        {% include "platform/project/_project_views_nav.html" %}
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;">
+        <p style="font-size:13px;color:#64748b;margin:0;">Ekip üyelerine haftalık kapasite (saat) ve dönem ata. Aşırı yüklenme takibi için temel.</p>
+        <button class="mc-btn mc-btn-primary mc-btn-sm" id="kap-add"><i class="fas fa-plus"></i> Kapasite ekle</button>
+    </div>
+
+    <div id="kap-loading" style="text-align:center;padding:24px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+    <div id="kap-table-wrap" style="display:none;">
+      <table class="mc-table" style="width:100%;">
+        <thead><tr>
+          <th>Kişi</th><th style="text-align:right;">Haftalık saat</th><th>Başlangıç</th><th>Bitiş</th><th></th>
+        </tr></thead>
+        <tbody id="kap-tbody"></tbody>
+      </table>
+    </div>
+    <div id="kap-empty" style="display:none;text-align:center;padding:24px;color:#94a3b8;">Henüz kapasite planı yok.</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/project_kapasite.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

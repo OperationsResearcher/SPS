@@ -43,6 +43,29 @@ def project_view_raid(project_id: int):
     return render_template("platform/project/raid.html", project=proj)
 
 
+@app_bp.route("/project/<int:project_id>/views/kapasite")
+@login_required
+def project_view_kapasite(project_id: int):
+    """Kapasite planlama — proje ekibine haftalık saat ayır (L3 eksik tamamlama).
+
+    API (/api/projeler/<id>/kapasite) vardı, UI yoktu.
+    """
+    proj = Project.query.get_or_404(project_id)
+    if not user_can_access_project(current_user, proj):
+        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        return redirect(url_for("app_bp.project_list"))
+    # Kapasite atanabilecek ekip: lider + üye (tekilleştir)
+    ekip = {}
+    for u in list(proj.leaders or []) + list(proj.members or []):
+        if u and u.id not in ekip:
+            ad = ((u.first_name or "") + " " + (u.last_name or "")).strip() or u.email
+            ekip[u.id] = {"id": u.id, "name": ad}
+    return render_template(
+        "platform/project/kapasite.html",
+        project=proj, ekip=list(ekip.values()),
+    )
+
+
 @app_bp.route("/project/<int:project_id>/views/kanban")
 @login_required
 def project_view_kanban(project_id: int):

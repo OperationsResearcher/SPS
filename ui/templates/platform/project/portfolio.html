@@ -6,6 +6,10 @@
     {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Stratejik Portföy', 'url': None}]) }}
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+{% endblock %}
+
 {% block content %}
 <div style="max-width:1100px; margin:0 auto;">
     <div class="mc-page-header">
@@ -31,6 +35,21 @@
         <a href="{{ url_for('app_bp.project_new') }}" class="mc-btn mc-btn-primary mt-2">Yeni proje</a>
     </div>
     {% else %}
+    {# Program zaman çizelgesi — tüm projeler tek Gantt'ta (L3 eksik tamamlama) #}
+    <div class="mc-card" style="margin-bottom:16px;" id="program-gantt-card"
+         data-program='{{ program_gantt | tojson }}'>
+        <div class="mc-card-header" style="display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-stream" style="color:#4f46e5;"></i>
+            <span class="mc-card-title">Program Zaman Çizelgesi</span>
+            <span style="margin-left:auto;font-size:11px;color:#94a3b8;">Tarihi olan projeler</span>
+        </div>
+        <div class="mc-card-body" style="padding:8px 14px;">
+            <div id="program-gantt-empty" style="display:none;color:#94a3b8;font-size:12.5px;padding:8px 0;">
+                Hiçbir projede başlangıç/bitiş tarihi tanımlı değil — çizelge boş.
+            </div>
+            <div style="overflow-x:auto;"><svg id="program-gantt"></svg></div>
+        </div>
+    </div>
     <div class="mc-card mc-table-wrap">
         <table class="mc-table" style="width:100%; font-size:13px;">
             <thead>
@@ -76,5 +95,10 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/program_gantt.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}
 

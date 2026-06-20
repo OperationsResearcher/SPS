@@ -317,10 +317,28 @@ def project_portfolio():
         return redirect(url_for("app_bp.launcher"))
 
     ctx = build_portfolio_context(kid)
+
+    # Program zaman çizelgesi (program-Gantt) — tarihi olan projeler (L3 eksik tamamlama)
+    program_gantt = []
+    for row in ctx["projects_with_scores"]:
+        p = row["project"]
+        sd = getattr(p, "start_date", None)
+        ed = getattr(p, "end_date", None)
+        if not sd and not ed:
+            continue  # tarihsiz proje çizelgede gösterilmez
+        program_gantt.append({
+            "id": p.id,
+            "name": p.name or f"Proje {p.id}",
+            "start": (sd or ed).isoformat(),
+            "end": (ed or sd).isoformat(),
+            "score": row.get("strategic_score", 0),
+        })
+
     return render_template(
         "platform/project/portfolio.html",
         projects_with_scores=ctx["projects_with_scores"],
         process_totals=ctx["process_totals"],
         portfolio_source=ctx.get("portfolio_source", "legacy_matrix"),
+        program_gantt=program_gantt,
     )
 

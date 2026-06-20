@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-195 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** L3 eksiklik tamamlama — Değer Zinciri girişi + Kapasite UI + Program Gantt
+**Modül:** k_radar (routes_kp), proje (routes_views/routes_list), platform UI
+**Durum:** ✅ Yerelde runtime doğrulandı (3 boşluk kapatıldı). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_radar/routes_kp.py` → Değer Zinciri öğe CRUD (birincil/destek, muda, süreç bağı)
+- `ui/templates/platform/k_radar/kp_deger_zinciri.html` + `ui/static/platform/js/vc_items.js` → faaliyet yönetimi UI
+- `micro/modules/proje/routes_views.py` → /project/<id>/views/kapasite route + ekip listesi
+- `ui/templates/platform/project/kapasite.html` + `project_kapasite.js` + `_project_views_nav.html` → kapasite UI + nav sekmesi
+- `micro/modules/proje/routes_list.py` → portföy route'una program_gantt verisi
+- `ui/templates/platform/project/portfolio.html` + `program_gantt.js` → program zaman çizelgesi (Frappe-Gantt)
+
+### Yapılan İşlem
+DB-teyitli 3 boşluk (Dal 5 dersiyle önce doğrulandı): (1) Değer Zinciri — tablo+okuma vardı, GİRİŞ yoktu
+(dead code, 0 satır) → CRUD + UI. (2) Kapasite — API (GET/POST/DELETE) vardı, UI yoktu → tablo+modal UI.
+(3) Program Gantt — portföy sayfası vardı ama çok-proje zaman çizelgesi yoktu → Frappe-Gantt program görünümü
+(proje start/end + skor renkleri). Runtime: 3 sayfa 200, Değer Zinciri+Kapasite CRUD round-trip (sentetik test
++temizlik), yetki 403, program_gantt JSON verisi doğrulandı.
+
+### Notlar
+Kapasite API'si @csrf.exempt ama global before_request CSRF var → JS X-CSRFToken header gönderir (test client
+göndermediği için 400; CSRF kapalı testte 200). Değer Zinciri ESG kalıbıyla yapıldı.
+
 ## TASK-194 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L3 Dal 4 — ESG metrik + değer girişi UI (dead code onarımı)
