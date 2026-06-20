@@ -14,6 +14,7 @@
      data-pkg-toggle-base="/admin/packages/toggle/"
      data-mod-add-url="/admin/modules/add"
      data-mod-toggle-base="/admin/modules/toggle/"
+     data-pkg-modules-base="/admin/packages/"
      style="max-width:1100px; margin:0 auto;">
 
   <div class="mc-page-header">
@@ -43,31 +44,40 @@
       </div>
       <div>
         {% for pkg in packages %}
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
-          <div>
-            <div style="font-size:13.5px; font-weight:500; color:var(--text-default);">{{ pkg.name }}</div>
-            <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ pkg.code }}</div>
-            {% if pkg.description %}
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ pkg.description }}</div>
-            {% endif %}
+        <div style="border-bottom:1px solid #f1f5f9;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px;">
+            <div>
+              <div style="font-size:13.5px; font-weight:500; color:var(--text-default);">{{ pkg.name }}</div>
+              <div style="font-size:11px; color:#94a3b8; font-family:monospace;">{{ pkg.code }}</div>
+              {% if pkg.description %}
+              <div style="font-size:11px; color:#64748b; margin-top:2px;">{{ pkg.description }}</div>
+              {% endif %}
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="mc-badge {% if pkg.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
+                {{ 'Aktif' if pkg.is_active else 'Pasif' }}
+              </span>
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-modules"
+                      data-pkg-id="{{ pkg.id }}" data-pkg-name="{{ pkg.name | e }}">
+                <i class="fas fa-puzzle-piece"></i> Modüller
+              </button>
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-edit"
+                      data-pkg-id="{{ pkg.id }}"
+                      data-name="{{ pkg.name | e }}"
+                      data-description="{{ pkg.description or '' | e }}">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="mc-btn mc-btn-sm {% if pkg.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-pkg-toggle"
+                      data-pkg-id="{{ pkg.id }}"
+                      data-name="{{ pkg.name | e }}"
+                      data-active="{{ 'true' if pkg.is_active else 'false' }}">
+                {{ 'Pasife Al' if pkg.is_active else 'Aktifleştir' }}
+              </button>
+            </div>
           </div>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span class="mc-badge {% if pkg.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
-              {{ 'Aktif' if pkg.is_active else 'Pasif' }}
-            </span>
-            <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-edit"
-                    data-pkg-id="{{ pkg.id }}"
-                    data-name="{{ pkg.name | e }}"
-                    data-description="{{ pkg.description or '' | e }}">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="mc-btn mc-btn-sm {% if pkg.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-pkg-toggle"
-                    data-pkg-id="{{ pkg.id }}"
-                    data-name="{{ pkg.name | e }}"
-                    data-active="{{ 'true' if pkg.is_active else 'false' }}">
-              {{ 'Pasife Al' if pkg.is_active else 'Aktifleştir' }}
-            </button>
-          </div>
+          {# Açılır modül atama paneli (btn-pkg-modules ile doldurulur) #}
+          <div class="pkg-modules-panel" data-pkg-id="{{ pkg.id }}"
+               style="display:none; padding:0 20px 14px; background:#f8fafc;"></div>
         </div>
         {% else %}
         <div class="mc-empty" style="padding:40px 20px;">
@@ -127,5 +137,6 @@
 
 {% block extra_js %}
 <script src="{{ url_for('app_bp.static', filename='platform/js/admin.js') }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/admin_package_modules.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}
 
