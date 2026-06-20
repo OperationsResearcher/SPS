@@ -41,6 +41,63 @@ class SystemComponent(db.Model):
         return f'<SystemComponent {self.id} {(self.code or "")[:20]}>'
 
 
+class SystemCard(db.Model):
+    """KART — hiyerarşinin en alt katmanı (bileşen altındaki kart).
+
+    Örn: 'KPI kartı', 'Performans Trend Analizi kartı'. Bir bileşene bağlı.
+    Otomatik keşifle doldurulur, admin'den yer değiştirilir/düzenlenir.
+    """
+    __tablename__ = "system_cards"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    code = db.Column(db.String(80), unique=True, nullable=False)
+    component_id = db.Column(
+        db.Integer, db.ForeignKey("system_components.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+    sira = db.Column(db.Integer, default=0)  # yer değiştirme (gösterim sırası)
+    description = db.Column(db.String(512), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    data_sources = db.relationship(
+        "CardDataSource", backref="card", lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+
+    def __repr__(self):
+        return f'<SystemCard {self.id} {(self.code or "")[:24]}>'
+
+
+class CardDataSource(db.Model):
+    """KART-İÇİ VERİ → PAKET eşlemesi (çapraz-paket veri farkındalığı).
+
+    Bir kartın içindeki her veri parçası (data_key), hangi bileşene/pakete tabi
+    olduğunu (required_component_code) taşır. Kullanıcının paketinde o bileşen
+    yoksa o veri parçası karttan DÜŞER (kart kalır, kısmi gösterilir).
+    """
+    __tablename__ = "card_data_sources"
+
+    id = db.Column(db.Integer, primary_key=True)
+    card_id = db.Column(
+        db.Integer, db.ForeignKey("system_cards.id", ondelete="CASCADE"),
+        nullable=False, index=True,
+    )
+    data_key = db.Column(db.String(120), nullable=False)   # örn "pgv_kapsami"
+    # Bu verinin gerektirdiği bileşen kodu (system_components.code).
+    # NULL = kartın kendi bileşenine tabi (ek kısıt yok).
+    required_component_code = db.Column(db.String(80), nullable=True, index=True)
+    label = db.Column(db.String(200), nullable=True)        # UI'da görünen ad
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint("card_id", "data_key", name="uq_card_data_key"),
+    )
+
+    def __repr__(self):
+        return f'<CardDataSource card={self.card_id} {self.data_key[:20]}>'
+
+
 class SystemModule(db.Model):
     """System module - bileşenler = RouteRegistry.component_slug (Bileşenler sekmesindeki Bileşen İsmi)."""
 
