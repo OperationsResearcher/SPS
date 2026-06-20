@@ -235,6 +235,8 @@
     </div>
   </div>
 
+  {# Süreç/PG & proje özeti — paket'te süreç bileşeni yoksa gizle (L1'de PGV yok) #}
+  {% if component_visible('surec_performansi_karti') %}
   <!-- Süreç & proje — grafikler + sayılar -->
   <div class="space-y-5 mb-5">
     <div class="mc-card overflow-hidden">
@@ -640,6 +642,7 @@
       </div>
     </div>
   </div>
+  {% endif %}{# /component_visible surec_performansi_karti #}
 
   <!-- Stratejiler — akordeon (her ana strateji bir panel) -->
   <div class="mc-card">
