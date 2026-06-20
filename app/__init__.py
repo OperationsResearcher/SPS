@@ -144,6 +144,25 @@ def create_app(config_class=None):
         from app.constants.roles import role_label_tr, ROLE_LABELS_TR
         return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR}
 
+    @app.context_processor
+    def _inject_sidebar_modules():
+        """Sidebar paket-gating: kullanıcının erişebileceği launcher modül id'leri.
+
+        Sidebar (base.html) bu kümeyle modül linklerini koşullar — launcher
+        kartlarıyla aynı paket kapısı (get_accessible_modules). Giriş yoksa boş.
+        Template: {% if 'surec' in sidebar_module_ids %}
+        """
+        from flask_login import current_user
+        try:
+            if not current_user.is_authenticated:
+                return {"sidebar_module_ids": set()}
+            from app_platform.core.module_registry import get_accessible_modules
+            ids = {m["id"] for m in get_accessible_modules(current_user)}
+        except Exception:
+            # Hata durumunda sidebar'ı kısıtlama (mevcut davranışa düş)
+            return {"sidebar_module_ids": None}
+        return {"sidebar_module_ids": ids}
+
     # K-Radar hub'ındaki kart URL'lerinin grup eşlemesi (breadcrumb için)
     _KRADAR_GROUPS = {
         "performans": "📊 Performans",
