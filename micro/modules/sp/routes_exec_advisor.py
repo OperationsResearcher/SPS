@@ -15,6 +15,7 @@ from app.services.plan_year_template_service import (
     list_templates, get_template, apply_template_to_tenant,
 )
 from micro.modules.sp.helpers import _check_sp_role
+from app.utils.decorators import require_module
 
 
 def _can():
@@ -25,6 +26,7 @@ def _can():
 
 @app_bp.route("/sp/exec-dashboard")
 @login_required
+@require_module("surec")  # süreç PG verisi gösterir → süreç paketi gerekir
 def sp_exec_dashboard():
     if not _can():
         return render_template("errors/403.html"), 403

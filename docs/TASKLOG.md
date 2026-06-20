@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-196 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** Radikal paket gating — paket-içerik yönetim UI (Faz 2) + route-düzeyi enforcement (Faz 3)
+**Modül:** admin (paket-modül UI), decorators, platform_core (before_request), sp (exec-dashboard)
+**Durum:** ✅ Yerelde runtime doğrulandı (tom1/2/3 + Tomofil + Admin regresyon). Sadece YEREL.
+
+### Sorun
+Paket sınırı sadece sidebar/launcher görünürlüğünde; 67 bileşen + 500+ route veriyi doğrudan
+sorguluyordu (exec-dashboard tom1'de PG gösteriyordu). Tek tek kapatmak imkansız.
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → /admin/packages/<id>/modules (GET liste+bileşen) + .../toggle (paket-modül M2M)
+- `ui/templates/platform/admin/packages.html` + `admin_package_modules.js` → "Modüller" açılır panel (checkbox + bileşen önizleme)
+- `app/utils/decorators.py` → require_component bypass'ı SADECE Admin'e daraltıldı + yeni require_module(module_id)
+- `platform_core/__init__.py` → _enforce_package_module_gating before_request (prefix→modül, 500 route toplu gate)
+- `micro/modules/sp/routes_exec_advisor.py` → exec-dashboard @require_module("surec")
+
+### Yapılan İşlem
+Faz 2: paket içeriği UI'dan yönetilebilir (pakete tıkla→modül checkbox + bileşen önizleme). L4/özel paket
+seed'siz kurulabilir. Faz 3: yönetici bypass düzeltildi (sadece platform Admin; tenant_admin/executive_manager
+artık pakete TABİ) + blueprint-bazlı before_request ile /process,/bireysel,/project,/analiz,/k-radar,/k-rapor
+prefix'leri paket'e göre gate'lenir. Runtime: tom1'de 6 modül 302→masaüstü (sp/kurum açık), tom2 süreç/proje
+açık, tom3 k-radar açık, Tomofil(full) hepsini görüyor, Admin bypass çalışıyor. Fail-open (gating çözülemezse engelleme yok).
+
+### Notlar
+Saf bileşen-düzeyi (500 route'a component_slug) yerine pragmatik hibrit: prefix→modül toplu gating + exec-dashboard
+gibi karma sayfalara elle @require_module. require_component (bileşen-düzeyi) altyapısı duruyor, ileride kademeli
+route etiketlemesiyle saf bileşen-düzeyine geçilebilir. Bu sadece SAYFA (GET) gating'i — derin güvenlik için
+API/servis düzeyi ayrı (ertelendi).
+
 ## TASK-195 | 2026-06-20 | ✅ Tamamlandı
 
 **Görev:** L3 eksiklik tamamlama — Değer Zinciri girişi + Kapasite UI + Program Gantt
