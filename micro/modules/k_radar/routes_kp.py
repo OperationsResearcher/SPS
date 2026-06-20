@@ -331,6 +331,140 @@ def k_radar_api_kp_deger_zinciri():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("deger_zinciri", {})}))
 
 
+# ── Değer Zinciri öğe CRUD (L3 eksik tamamlama) ───────────────────────────────
+# value_chain_items tablosu + okuma vardı ama GİRİŞ route'u yoktu (dead code).
+
+_VC_CATEGORIES = ("primary", "support")
+# Yalın üretim 7 muda (israf) — opsiyonel etiket
+_VC_MUDA = ("", "fazla_uretim", "bekleme", "tasima", "fazla_isleme",
+            "stok", "hareket", "hata")
+
+
+def _vc_item_dict(it):
+    return {
+        "id": it.id, "category": it.category, "title": it.title,
+        "note": it.note or "", "muda_type": it.muda_type or "",
+        "linked_process_id": it.linked_process_id,
+    }
+
+
+@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["GET"])
+@login_required
+def k_radar_api_vc_items_list():
+    """Değer zinciri öğeleri (birincil/destek) — liste."""
+    from app.models.k_radar_domain import ValueChainItem
+    tid = _required_tenant_id()
+
+    def _build():
+        items = (ValueChainItem.query
+                 .filter_by(tenant_id=tid, is_active=True)
+                 .order_by(ValueChainItem.category, ValueChainItem.id).all())
+        procs = (Process.query.filter_by(tenant_id=tid, is_active=True)
+                 .order_by(Process.code).all())
+        return jsonify({
+            "success": True,
+            "items": [_vc_item_dict(i) for i in items],
+            "categories": list(_VC_CATEGORIES),
+            "muda_types": list(_VC_MUDA),
+            "processes": [{"id": p.id, "name": p.name, "code": p.code or ""} for p in procs],
+        })
+    return _safe_json(_build)
+
+
+@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["POST"])
+@login_required
+def k_radar_api_vc_item_add():
+    if not _can_manage_k_radar():
+        return _forbidden_json()
+    from app.models.k_radar_domain import ValueChainItem
+    tid = _required_tenant_id()
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    category = (data.get("category") or "").strip()
+    if not title:
+        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+    if category not in _VC_CATEGORIES:
+        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+    try:
+        it = ValueChainItem(
+            tenant_id=tid, title=title, category=category,
+            note=(data.get("note") or "").strip() or None,
+            muda_type=(data.get("muda_type") or "").strip() or None,
+            linked_process_id=_vc_proc(data.get("linked_process_id"), tid),
+            is_active=True,
+        )
+        db.session.add(it)
+        db.session.commit()
+        return jsonify({"success": True, "id": it.id})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[vc_item_add] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Öğe eklenemedi."}), 500
+
+
+@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>", methods=["POST"])
+@login_required
+def k_radar_api_vc_item_update(item_id):
+    if not _can_manage_k_radar():
+        return _forbidden_json()
+    from app.models.k_radar_domain import ValueChainItem
+    tid = _required_tenant_id()
+    it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
+    if not it:
+        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    category = (data.get("category") or it.category or "").strip()
+    if not title:
+        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+    if category not in _VC_CATEGORIES:
+        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+    try:
+        it.title = title
+        it.category = category
+        it.note = (data.get("note") or "").strip() or None
+        it.muda_type = (data.get("muda_type") or "").strip() or None
+        it.linked_process_id = _vc_proc(data.get("linked_process_id"), tid)
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[vc_item_update] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Öğe güncellenemedi."}), 500
+
+
+@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>/delete", methods=["POST"])
+@login_required
+def k_radar_api_vc_item_delete(item_id):
+    if not _can_manage_k_radar():
+        return _forbidden_json()
+    from app.models.k_radar_domain import ValueChainItem
+    tid = _required_tenant_id()
+    it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
+    if not it:
+        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+    try:
+        it.is_active = False  # soft delete (KURALLAR §3)
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[vc_item_delete] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Öğe silinemedi."}), 500
+
+
+def _vc_proc(raw, tid):
+    """linked_process_id'yi tenant izolasyonlu doğrula → id veya None."""
+    if raw in (None, "", "null"):
+        return None
+    try:
+        pid = int(raw)
+    except (TypeError, ValueError):
+        return None
+    ok = Process.query.filter_by(id=pid, tenant_id=tid, is_active=True).first()
+    return pid if ok else None
+
+
 @app_bp.route("/k-radar/api/kp/pareto")
 @login_required
 def k_radar_api_kp_pareto():
