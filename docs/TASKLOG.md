@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-198 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** KART/veri düzenleme katmanı + modül-bileşen eşlemesi onarımı (ağaçta boş bileşen)
+**Modül:** admin (düzenleme API+UI), scripts (remap), saas
+**Durum:** ✅ Yerelde runtime doğrulandı. Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → 5 düzenleme API (kart update, veri-kaynağı CRUD, bileşen listesi)
+- `ui/static/platform/js/admin_hierarchy.js` → inline düzenleme (required_component dropdown, kart düzenle, veri ekle/sil)
+- `scripts/remap_modul_bilesen.py` → yeni: module_component_slugs temizle+doğru dağıt
+
+### Yapılan İşlem
+(1) Düzenleme: admin hiyerarşi ağacında veri-paket eşlemesi (required_component) UI'dan değiştirilebilir.
+Kanıt: process_count kısıtsız yapılınca tom1 anında görüyor, geri alınca gizleniyor (koddan değil DB'den).
+(2) Onarım: module_component_slugs eski/karışıktı (35 bileşen sadece sp+surec'e, mantıksız; kurum/k_radar/
+bireysel/proje 0 bileşen → ağaçta boş görünüyordu). Temizlenip anlamlı dağıtıldı (kullanıcı onaylı):
+kimlik→kurum, SWOT/PESTEL→ileri_sp, PG/PGV→surec vb. 122 eski satır → 35 temiz bağ. Ağaç artık dolu
+(baslangic 18 bileşen, kurum'da 5 kimlik kartı). DB öncesi yedek.
+
+### Notlar
+k_radar/bireysel/proje/analiz/k_rapor modüllerinde hâlâ bileşen yok — onların bileşenleri henüz system_components'ta
+tanımlı değil (ayrı iş). Kullanıcının şikayeti kurum/sp boşluğuydu, o çözüldü. Kart işaretleme kademeli sürüyor.
+
 ## TASK-197 | 2026-06-20 | ✅ Tamamlandı
 
 **Görev:** KART katmanı — otomatik keşif + 4-katman admin hiyerarşi UI
