@@ -1422,6 +1422,68 @@ def admin_packages_toggle(pkg_id):
         return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
 
 
+# ── Paket ↔ Modül atama (paket içeriği yönetimi) ──────────────────────────────
+
+@app_bp.route("/admin/packages/<int:pkg_id>/modules", methods=["GET"])
+@login_required
+def admin_package_modules(pkg_id):
+    """Bir paketin modül atamaları + her modülün bileşenleri.
+
+    UI: pakete tıkla → tüm modüller (içerdikleri işaretli) + bileşen önizleme.
+    """
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SubscriptionPackage, SystemModule
+    pkg = SubscriptionPackage.query.get_or_404(pkg_id)
+    pkg_module_ids = {m.id for m in pkg.modules}
+    modules = SystemModule.query.filter_by(is_active=True).order_by(SystemModule.name).all()
+
+    def _bilesenler(m):
+        try:
+            return sorted(c.component_slug for c in m.component_slugs)
+        except Exception:
+            return []
+
+    return jsonify({
+        "success": True,
+        "package": {"id": pkg.id, "name": pkg.name, "code": pkg.code},
+        "modules": [
+            {
+                "id": m.id, "name": m.name, "code": m.code,
+                "in_package": m.id in pkg_module_ids,
+                "components": _bilesenler(m),
+            }
+            for m in modules
+        ],
+    })
+
+
+@app_bp.route("/admin/packages/<int:pkg_id>/modules/<int:module_id>/toggle", methods=["POST"])
+@login_required
+def admin_package_module_toggle(pkg_id, module_id):
+    """Paket ↔ modül bağını ekle/çıkar (M2M)."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SubscriptionPackage, SystemModule
+    pkg = SubscriptionPackage.query.get_or_404(pkg_id)
+    mod = SystemModule.query.get_or_404(module_id)
+    try:
+        current = {m.id for m in pkg.modules}
+        if module_id in current:
+            pkg.modules.remove(mod)
+            in_package = False
+        else:
+            pkg.modules.append(mod)
+            in_package = True
+        db.session.commit()
+        return jsonify({"success": True, "in_package": in_package,
+                        "message": f"{mod.name} {'eklendi' if in_package else 'çıkarıldı'}."})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_package_module_toggle] {e}")
+        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+
+
 @app_bp.route("/admin/modules/add", methods=["POST"])
 @login_required
 def admin_modules_add():

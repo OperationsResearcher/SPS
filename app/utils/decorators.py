@@ -8,7 +8,10 @@ from flask_login import current_user, login_required
 
 def require_component(component_code):
     """Ensure user's tenant package includes the given component. Use after @login_required.
-    Admin, tenant_admin, executive_manager bypass package check and always have access."""
+
+    Yalnızca platform Admin bypass eder (tüm kurumları yönetir, paketi yok).
+    Kurum rolleri (tenant_admin/executive_manager) paket sınırına TABİDİR
+    — paket gating'i bu rollerde de geçerli (L2/L3 kararı, 2026-06-20)."""
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -16,7 +19,7 @@ def require_component(component_code):
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Unauthorized"}), 401
                 return redirect(url_for("public_login"))
-            if current_user.role and current_user.role.name in ("Admin", "tenant_admin", "executive_manager"):
+            if current_user.role and current_user.role.name == "Admin":
                 return f(*args, **kwargs)
             if not current_user.tenant:
                 if _is_ajax():
@@ -41,6 +44,46 @@ def require_component(component_code):
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Unauthorized"}), 403
                 flash("Bu bileşene erişim yetkiniz yok.", "danger")
+                return redirect(url_for("app_bp.masaustu"))
+            return f(*args, **kwargs)
+
+        return wrapped
+
+    return decorator
+
+
+def require_module(module_id):
+    """Route'u launcher modül kimliğine göre gate'le (paket düzeyi).
+
+    get_accessible_modules ile aynı kapı — sidebar/launcher ile tutarlı.
+    Paket'te modül yoksa: AJAX→403, sayfa→masaüstüne yönlendir + uyarı.
+    Yalnızca platform Admin bypass (tüm kurumlar). Kurum rolleri pakete tabi.
+
+    Kullanım (@login_required'dan SONRA):
+        @app_bp.route("/sp/exec-dashboard")
+        @login_required
+        @require_module("surec")
+        def sp_exec_dashboard(): ...
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            if not current_user.is_authenticated:
+                if _is_ajax():
+                    return jsonify({"success": False, "error": "Unauthorized"}), 401
+                return redirect(url_for("public_login"))
+            if current_user.role and current_user.role.name == "Admin":
+                return f(*args, **kwargs)
+            try:
+                from app_platform.core.module_registry import get_accessible_modules
+                allowed = {m["id"] for m in get_accessible_modules(current_user)}
+            except Exception:
+                # Gating çözülemezse engelleme (mevcut davranışa düş)
+                return f(*args, **kwargs)
+            if module_id not in allowed:
+                if _is_ajax():
+                    return jsonify({"success": False, "error": "Paket kapsamı dışında."}), 403
+                flash("Bu bölüm mevcut paketinizde yer almıyor.", "warning")
                 return redirect(url_for("app_bp.masaustu"))
             return f(*args, **kwargs)
 
