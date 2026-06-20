@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-197 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** KART katmanı — otomatik keşif + 4-katman admin hiyerarşi UI
+**Modül:** saas (model), card_discovery_service, admin (route+UI)
+**Durum:** ✅ Yerelde runtime doğrulandı (keşif sıfırdan kurdu, ağaç render). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `app/services/card_discovery_service.py` → yeni: template data-card-* tarayıp SystemCard+CardDataSource seed (idempotent)
+- `micro/modules/admin/routes.py` → /admin/cards/discover (keşif tetikleyici) + /admin/hierarchy (sayfa) + /admin/api/hierarchy (4-katman ağaç)
+- `ui/templates/platform/admin/hierarchy.html` + `admin_hierarchy.js` → 4-katman ağaç (açılır/kapanır) + keşif butonu + required_component rozeti
+- `ui/templates/platform/admin/packages.html` → "Hiyerarşi" linki
+- `ui/templates/platform/kurum/index.html` → özet kartına data-card-* işaretleri (keşfedilebilir)
+
+### Yapılan İşlem
+İşaretleme şeması: kart=data-card-code, veri=data-card-key + data-requires (gereken bileşen). Keşif servisi
+template'leri tarayıp DB'ye yansıtır (RouteRegistry sync felsefesi: tekrar tetiklenebilir). Admin sayfası
+4 katmanı (paket→modül→bileşen→kart→veri) ağaç olarak gösterir; veri kaynaklarında required_component rozeti
+= çapraz-paket veri farkındalığı görsel. Runtime: kart silinip keşif sıfırdan kurdu (1 kart+3 veri, required
+doğru), ağaç API 4 paket, zincir tam (yonetim>surec>surec_performansi>kurum_ozet_kartlar).
+
+### Notlar
+Keşif kademeli: kartlar çalıştıkça data-card-* ile işaretlenir (şu an /kurum özet kartı işaretli, örnek).
+Admin UI şu an GÖR + KEŞFET; düzenle/taşı (sira değiştir, veri-paket eşlemesi) sonraki adım. 4-katman temeli tam.
+
 ## TASK-196 | 2026-06-20 | ✅ Tamamlandı
 
 **Görev:** Radikal paket gating — paket-içerik yönetim UI (Faz 2) + route-düzeyi enforcement (Faz 3)

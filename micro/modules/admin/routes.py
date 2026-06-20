@@ -1167,6 +1167,82 @@ def admin_packages():
     return render_template("platform/admin/packages.html", packages=packages, modules=modules)
 
 
+# ── Kart Keşfi (SaaS hiyerarşi 4. katman) ─────────────────────────────────────
+
+@app_bp.route("/admin/cards/discover", methods=["POST"])
+@login_required
+def admin_cards_discover():
+    """Template'lerdeki data-card-* işaretlerini tarayıp KART katmanını seed et."""
+    if not _is_admin():
+        return _403()
+    try:
+        from app.services.card_discovery_service import discover_cards
+        r = discover_cards(dry_run=False)
+        if not r.get("ok"):
+            return jsonify({"success": False, "message": r.get("error", "Keşif başarısız.")}), 500
+        return jsonify({
+            "success": True,
+            "message": f"{r['files']} dosya tarandı · {r['cards']} yeni kart · {r['data_sources']} yeni veri kaynağı.",
+            "stats": {"files": r["files"], "cards": r["cards"], "data_sources": r["data_sources"]},
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_cards_discover] {e}", exc_info=True)
+        return jsonify({"success": False, "message": "Kart keşfi sırasında hata oluştu."}), 500
+
+
+@app_bp.route("/admin/hierarchy", methods=["GET"])
+@login_required
+def admin_hierarchy_page():
+    """SaaS 4-katman hiyerarşi yönetim sayfası (gör/keşfet)."""
+    if not _is_admin():
+        return render_template("platform/errors/403.html"), 403
+    return render_template("platform/admin/hierarchy.html")
+
+
+@app_bp.route("/admin/api/hierarchy", methods=["GET"])
+@login_required
+def admin_api_hierarchy():
+    """SaaS 4-katman ağacı: paket → modül → bileşen → kart → veri kaynağı."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import (
+        SubscriptionPackage, SystemComponent, SystemCard, ModuleComponentSlug,
+    )
+    cards_by_comp = {}
+    for card in SystemCard.query.filter_by(is_active=True).order_by(SystemCard.sira, SystemCard.id).all():
+        ds = [
+            {"id": d.id, "data_key": d.data_key, "label": d.label,
+             "required_component_code": d.required_component_code}
+            for d in card.data_sources.filter_by(is_active=True).all()
+        ]
+        cards_by_comp.setdefault(card.component_id, []).append({
+            "id": card.id, "code": card.code, "name": card.name,
+            "sira": card.sira, "data_sources": ds,
+        })
+    comp_by_code = {c.code: c for c in SystemComponent.query.all()}
+    mod_components = {}
+    for mcs in ModuleComponentSlug.query.all():
+        mod_components.setdefault(mcs.module_id, []).append(mcs.component_slug)
+
+    packages = []
+    for pkg in SubscriptionPackage.query.order_by(SubscriptionPackage.id).all():
+        mods = []
+        for m in pkg.modules:
+            comps = []
+            for ccode in sorted(set(mod_components.get(m.id, []))):
+                comp = comp_by_code.get(ccode)
+                comps.append({
+                    "code": ccode,
+                    "name": comp.name if comp else ccode,
+                    "cards": cards_by_comp.get(comp.id, []) if comp else [],
+                })
+            mods.append({"id": m.id, "code": m.code, "name": m.name, "components": comps})
+        packages.append({"id": pkg.id, "code": pkg.code, "name": pkg.name, "modules": mods})
+
+    return jsonify({"success": True, "packages": packages})
+
+
 # ── Bileşen Senkronizasyonu ───────────────────────────────────────────────────
 
 @app_bp.route("/admin/components/sync", methods=["POST"])
