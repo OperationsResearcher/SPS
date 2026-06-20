@@ -176,7 +176,30 @@ def create_app(config_class=None):
                 return True
             return slug in slugs
 
-        return {"component_visible": component_visible}
+        def card_data_visible(card_code, data_key):
+            """Kart-içi veri parçası paket'e göre görünür mü? (KART katmanı).
+
+            CardDataSource.required_component_code → component_visible ile kontrol.
+            Eşleme yoksa görünür (fail-open). slugs None ise (Admin/paketsiz) görünür.
+            """
+            if slugs is None:
+                return True
+            try:
+                from app.models.saas import SystemCard, CardDataSource
+                row = (CardDataSource.query
+                       .join(SystemCard, CardDataSource.card_id == SystemCard.id)
+                       .filter(SystemCard.code == card_code,
+                               CardDataSource.data_key == data_key,
+                               CardDataSource.is_active.is_(True))
+                       .first())
+            except Exception:
+                return True
+            if not row or not row.required_component_code:
+                return True  # eşleme/kısıt yok → göster
+            return row.required_component_code in slugs
+
+        return {"component_visible": component_visible,
+                "card_data_visible": card_data_visible}
 
     @app.context_processor
     def _inject_sidebar_modules():

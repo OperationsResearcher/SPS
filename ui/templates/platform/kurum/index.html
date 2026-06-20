@@ -216,23 +216,29 @@
     </div>
   </div>
 
-  <!-- Özet kartlar -->
+  {# Özet kartlar — her veri parçası kendi paketine tabi (KART katmanı, kart-içi gating) #}
   <div class="mc-grid-3" style="margin-bottom:20px;">
+    {% if card_data_visible('kurum_ozet_kartlar', 'user_count') %}
     <div class="mc-stat-card mc-stat-indigo">
       <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
       <div class="mc-stat-label">Aktif Kullanıcı</div>
       <div class="mc-stat-value" data-ov="user_count">{{ user_count }}</div>
     </div>
+    {% endif %}
+    {% if card_data_visible('kurum_ozet_kartlar', 'process_count') %}
     <div class="mc-stat-card mc-stat-emerald">
       <div class="mc-stat-icon"><i class="fas fa-project-diagram"></i></div>
       <div class="mc-stat-label">Aktif Süreç</div>
       <div class="mc-stat-value" data-ov="process_count">{{ process_count }}</div>
     </div>
+    {% endif %}
+    {% if card_data_visible('kurum_ozet_kartlar', 'strategy_count') %}
     <div class="mc-stat-card mc-stat-purple">
       <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
       <div class="mc-stat-label">Ana Strateji</div>
       <div class="mc-stat-value" data-ov="strategy_count">{{ strategy_count }}</div>
     </div>
+    {% endif %}
   </div>
 
   {# Süreç/PG & proje özeti — paket'te süreç bileşeni yoksa gizle (L1'de PGV yok) #}
