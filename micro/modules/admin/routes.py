@@ -1243,6 +1243,126 @@ def admin_api_hierarchy():
     return jsonify({"success": True, "packages": packages})
 
 
+# ── KART + VERİ katmanı düzenleme (4-katman hiyerarşi) ────────────────────────
+
+@app_bp.route("/admin/api/components/list", methods=["GET"])
+@login_required
+def admin_api_components_list():
+    """Bileşen kodları (dropdown'lar için: kart bileşeni, veri required_component)."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SystemComponent
+    comps = SystemComponent.query.filter_by(is_active=True).order_by(SystemComponent.name).all()
+    return jsonify({"success": True, "components": [
+        {"id": c.id, "code": c.code, "name": c.name} for c in comps
+    ]})
+
+
+@app_bp.route("/admin/api/cards/<int:card_id>", methods=["POST"])
+@login_required
+def admin_api_card_update(card_id):
+    """Kart düzenle: ad, sıra, bileşen (component_code)."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SystemCard, SystemComponent
+    card = SystemCard.query.get_or_404(card_id)
+    data = request.get_json(silent=True) or {}
+    try:
+        if "name" in data:
+            name = (data.get("name") or "").strip()
+            if not name:
+                return jsonify({"success": False, "message": "Kart adı boş olamaz."}), 400
+            card.name = name
+        if "sira" in data:
+            try:
+                card.sira = int(data.get("sira") or 0)
+            except (TypeError, ValueError):
+                pass
+        if "component_code" in data:
+            ccode = (data.get("component_code") or "").strip()
+            if ccode:
+                comp = SystemComponent.query.filter_by(code=ccode).first()
+                card.component_id = comp.id if comp else None
+            else:
+                card.component_id = None
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_api_card_update] {e}")
+        return jsonify({"success": False, "message": "Kart güncellenemedi."}), 500
+
+
+@app_bp.route("/admin/api/data-sources/<int:ds_id>", methods=["POST"])
+@login_required
+def admin_api_data_source_update(ds_id):
+    """Veri kaynağı düzenle: required_component_code (hangi pakete tabi), label."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import CardDataSource
+    ds = CardDataSource.query.get_or_404(ds_id)
+    data = request.get_json(silent=True) or {}
+    try:
+        if "required_component_code" in data:
+            rc = (data.get("required_component_code") or "").strip()
+            ds.required_component_code = rc or None  # boş = kısıtsız
+        if "label" in data:
+            ds.label = (data.get("label") or "").strip() or None
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_api_data_source_update] {e}")
+        return jsonify({"success": False, "message": "Veri kaynağı güncellenemedi."}), 500
+
+
+@app_bp.route("/admin/api/cards/<int:card_id>/data-sources", methods=["POST"])
+@login_required
+def admin_api_data_source_add(card_id):
+    """Karta yeni veri kaynağı ekle."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SystemCard, CardDataSource
+    SystemCard.query.get_or_404(card_id)
+    data = request.get_json(silent=True) or {}
+    dk = (data.get("data_key") or "").strip()
+    if not dk:
+        return jsonify({"success": False, "message": "Veri anahtarı zorunludur."}), 400
+    if CardDataSource.query.filter_by(card_id=card_id, data_key=dk).first():
+        return jsonify({"success": False, "message": "Bu veri anahtarı zaten var."}), 400
+    try:
+        ds = CardDataSource(
+            card_id=card_id, data_key=dk,
+            required_component_code=(data.get("required_component_code") or "").strip() or None,
+            label=(data.get("label") or "").strip() or None, is_active=True,
+        )
+        db.session.add(ds)
+        db.session.commit()
+        return jsonify({"success": True, "id": ds.id})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_api_data_source_add] {e}")
+        return jsonify({"success": False, "message": "Veri kaynağı eklenemedi."}), 500
+
+
+@app_bp.route("/admin/api/data-sources/<int:ds_id>/delete", methods=["POST"])
+@login_required
+def admin_api_data_source_delete(ds_id):
+    """Veri kaynağını sil (soft)."""
+    if not _is_admin():
+        return _403()
+    from app.models.saas import CardDataSource
+    ds = CardDataSource.query.get_or_404(ds_id)
+    try:
+        ds.is_active = False
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[admin_api_data_source_delete] {e}")
+        return jsonify({"success": False, "message": "Silinemedi."}), 500
+
+
 # ── Bileşen Senkronizasyonu ───────────────────────────────────────────────────
 
 @app_bp.route("/admin/components/sync", methods=["POST"])
