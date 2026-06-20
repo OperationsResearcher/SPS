@@ -145,6 +145,40 @@ def create_app(config_class=None):
         return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR}
 
     @app.context_processor
+    def _inject_component_visibility():
+        """Bileşen-düzeyi görünürlük: {% if component_visible('performans_gostergesi') %}.
+
+        Modül açık olsa bile İÇİNDEKİ bileşeni paket'e göre gizlemek için.
+        Kaynak: paket → modül → component_slug (require_component ile aynı zincir).
+        Yalnız platform Admin bypass; kurum rolleri pakete tabi. Bir kez hesaplanır.
+        """
+        from flask_login import current_user
+
+        slugs = None  # None = kısıtlama yok (Admin / hata / paketsiz fail-open)
+        try:
+            if current_user.is_authenticated:
+                if current_user.role and current_user.role.name == "Admin":
+                    slugs = None  # platform admin: her bileşen görünür
+                else:
+                    pkg = getattr(current_user.tenant, "package", None) if current_user.tenant else None
+                    if pkg is not None:
+                        s = set()
+                        for mod in pkg.modules:
+                            for comp in mod.component_slugs:
+                                s.add(comp.component_slug)
+                        slugs = s
+                    # pkg None → slugs None (paketsiz: kısıtlama yok, mevcut davranış)
+        except Exception:
+            slugs = None  # fail-open
+
+        def component_visible(slug):
+            if slugs is None:
+                return True
+            return slug in slugs
+
+        return {"component_visible": component_visible}
+
+    @app.context_processor
     def _inject_sidebar_modules():
         """Sidebar paket-gating: kullanıcının erişebileceği launcher modül id'leri.
 
