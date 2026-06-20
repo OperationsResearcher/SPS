@@ -1,0 +1,46 @@
+{% extends "platform/base.html" %}
+{% block title %}Dengeli Karne (BSC) — Kokpitim{% endblock %}
+{% block page_title %}Dengeli Karne (Balanced Scorecard){% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Dengeli Karne', 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;"
+     id="sp-bsc"
+     data-get-url="{{ url_for('app_bp.sp_api_bsc_get') }}"
+     data-assign-url="{{ url_for('app_bp.sp_api_bsc_assign') }}"
+     data-auto-assign-url="{{ url_for('app_bp.sp_api_bsc_auto_assign') }}"
+     data-can-edit="{{ 'true' if can_edit else 'false' }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-layer-group" style="color:#0d9488;"></i> Dengeli Karne (BSC)
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">Performans göstergelerini 4 BSC perspektifine dağıt — Finansal / Müşteri / İç Süreçler / Öğrenme & Gelişim.</p>
+    </div>
+    {% if can_edit %}
+    <button class="mc-btn mc-btn-secondary" id="bsc-auto"><i class="fas fa-wand-magic-sparkles"></i> Otomatik sınıflandır</button>
+    {% endif %}
+  </div>
+
+  <div id="bsc-loading" style="text-align:center;padding:30px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+
+  {# Perspektif kartları #}
+  <div id="bsc-perspectives" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
+
+  {# Atanmamış KPI'lar #}
+  <div id="bsc-unassigned-wrap" style="margin-top:20px;display:none;">
+    <h3 style="font-size:15px;font-weight:700;color:var(--text-default);margin:0 0 10px;">
+      <i class="fas fa-inbox" style="color:#f59e0b;"></i> Atanmamış Göstergeler (<span id="bsc-unassigned-count">0</span>)
+    </h3>
+    <div id="bsc-unassigned" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/sp_bsc.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

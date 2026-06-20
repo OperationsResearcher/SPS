@@ -2,6 +2,51 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-194 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L3 Dal 4 — ESG metrik + değer girişi UI (dead code onarımı)
+**Modül:** raporlar (routes_esg + __init__), platform/raporlar (template + JS)
+**Durum:** ✅ Yerelde runtime doğrulandı (CRUD + yetki + upsert). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/raporlar/routes_esg.py` → yeni: ESG metrik CRUD + yıllık değer girişi (yönetici-only, tenant izolasyonlu)
+- `micro/modules/raporlar/__init__.py` → routes_esg import
+- `ui/templates/platform/raporlar/esg_yonetim.html` → yeni yönetim sayfası
+- `ui/static/platform/js/esg_yonetim.js` → metrik/değer CRUD (E/S/G gruplu, modal formlar)
+- `ui/templates/platform/raporlar/esg_rapor.html` → "Metrikleri Yönet" linki
+
+### Yapılan İşlem
+ESG modeli (EsgMetric/EsgMetricValue) + PDF raporu vardı ama VERİ GİRİŞİ UI'ı yoktu → rapor üretilemez
+"ölü kod" idi. /raporlar/esg-yonetim: metrik ekle/düzenle/sil (E/S/G, scope, hedef, baseline, SDG) + her
+metriğe yıl-değer (upsert). Runtime: sayfa 200, geçersiz kategori→400, değer upsert→aynı id, standart
+kullanıcı ekleme→403. Sentetik test+temizlik (Tomofil 5 metrik korundu — Dal 3 dersini uyguladım).
+
+### Notlar
+Kalan L3: Dal 5 (Ansoff/BCG/Değer Zinciri yeni analizler + K-Vektör — sıfırdan, en büyük).
+
+## TASK-193 | 2026-06-19 | ✅ Tamamlandı
+
+**Görev:** L3 Dal 2+3 — iskelet analiz UI'ları (SWOT/TOWS/PESTEL/BSC) + Porter route onarımı
+**Modül:** sp (routes_analysis + menu), platform/sp (5 template + 3 JS)
+**Durum:** ✅ Yerelde runtime doğrulandı (6 sayfa 200, Porter round-trip, BSC 211 KPI). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_analysis.py` → sayfa route'ları (swot/tows/pestel/bsc/porter) + Porter API (get/save, 1-5 skor validasyonlu upsert)
+- `ui/templates/platform/sp/{swot,tows,pestel,porter,bsc}.html` → yeni 5 template
+- `ui/static/platform/js/{sp_liste_analiz,sp_porter,sp_bsc}.js` → yeni 3 JS bileşeni
+- `ui/templates/platform/sp/menu.html` → 5 analiz linki eklendi (SWOT/TOWS/PESTEL/Porter/BSC)
+
+### Yapılan İşlem
+Dal 2: SWOT/TOWS/PESTEL API'leri vardı, UI yoktu → ortak sp_liste_analiz.js (kategori×madde) + 3 ince template.
+BSC (211 KPI, 4 perspektif) görselleştirme + perspektif atama + otomatik sınıflandır UI. Dal 3: Porter modeli
+vardı ama route YOKTU (kırık) → API (get/save) + sp_porter.js (1-5 baskı skoru + maddeler). Save'lerde 1-5
+validasyonu (geçersiz skor→null teyit edildi). Tüm sayfalar plan-year bazlı, can_edit yetki-bağlı.
+
+### Notlar
+DİKKAT/DERS: Porter round-trip'i Tomofil canlı verisi üstünde test ettim, upsert orijinali ezdi; ham DB
+write ile geri yükledim (Tesla/BYD/VW, diğer PY satırlarıyla tutarlı). Bundan sonra upsert testleri sentetik
+tenant/boş PY'de. Kalan L3: Dal 4 (ESG input UI), Dal 5 (Ansoff/BCG/Değer Zinciri + K-Vektör).
+
 ## TASK-192 | 2026-06-19 | ✅ Tamamlandı
 
 **Görev:** L3 Dal 1 — ileri_* modülleri Strateji paketine bağla (+ L3 keşif belgesi)

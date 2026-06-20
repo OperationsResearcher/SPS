@@ -176,11 +176,11 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 - `ileri_iliskileri` (CRM) eklenmedi — launcher karşılığı yok (placeholder).
 - **Launcher yüzeyi değişmedi** (ileri_* → sp/surec/proje eşleşir): amaç paket *tanımının* dürüstlüğü, "Strateji ileri yetenekleri içerir" gerçeğini DB'ye yazmak.
 
-### L3 kalan dallar (önerilen, sıralı)
-- **Dal 2:** İskelet UI'ları tamamla (SWOT/TOWS/PESTEL/BSC template — API hazır).
-- **Dal 3:** Porter route'unu bağla (model var, route yok — kırık).
-- **Dal 4:** ESG input UI (model+PDF var, veri girişi yok — dead code riski).
-- **Dal 5 (opsiyonel):** Ansoff/BCG/Değer Zinciri (sıfırdan) + K-Vektör (vaat uyumsuzluğu).
+### L3 dalları — yapılan / iptal
+- **Dal 2 ✅:** SWOT/TOWS/PESTEL/BSC sayfa+template (ortak liste editörü). API'leri hazırdı, UI eklendi.
+- **Dal 3 ✅:** Porter route'u bağlandı (model vardı, route yoktu — kırık onarıldı) + 1-5 skorlu editör.
+- **Dal 4 ✅:** ESG metrik + değer girişi UI (`/raporlar/esg-yonetim`) — dead code onarıldı.
+- **Dal 5 ❌ İPTAL (keşif çürüttü):** "Ansoff/BCG/Değer Zinciri sıfırdan + K-Vektör" varsayımı **YANLIŞTI** (DB teyidi). Gerçek: **K-Vektör tam mevcut** (`app/models/k_vektor.py` + route'lar); **Ansoff/BCG K-Radar'da** (`/k-radar/api/ks/ansoff`, `/bcg` — KS radar sayfasında); **Değer Zinciri K-Radar'da tam sayfa** (`/k-radar/kp/deger-zinciri` + `value_chain_items` tablo, 0 veri). Sıfırdan yazmak duplike/çakışma yaratırdı. Bu analizler L3'te (K-Radar/k_vektor modülleri) zaten erişilebilir. Ajan raporu yanıldı → **DB'de teyit kuralı** (memory) bir kez daha doğrulandı.
 
 ---
 
