@@ -21,5 +21,9 @@
        class="mc-btn mc-btn-sm {% if av == 'raid' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
         <i class="fas fa-shield-alt"></i> RAID
     </a>
+    <a href="{{ url_for('app_bp.project_view_kapasite', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'kapasite' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-users-gear"></i> Kapasite
+    </a>
 </div>
 
