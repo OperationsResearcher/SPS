@@ -60,13 +60,13 @@ def _pdf_helpers():
 
 # ─── ST-16: Stratejik Yıllık Kitap PDF ─────────────────────────────────────
 
-@app_bp.route("/raporlar/stratejik-yillik")
+@app_bp.route("/reports/strategic-annual")
 @login_required
 def raporlar_stratejik_yillik():
-    return render_template("platform/raporlar/stratejik_yillik.html")
+    return render_template("platform/reports/stratejik_yillik.html")
 
 
-@app_bp.route("/raporlar/api/stratejik-yillik/preview")
+@app_bp.route("/reports/api/strategic-annual/preview")
 @login_required
 def raporlar_api_stratejik_yillik_preview():
     tid = _tid_or_none()
@@ -100,7 +100,7 @@ def raporlar_api_stratejik_yillik_preview():
     }})
 
 
-@app_bp.route("/raporlar/api/stratejik-yillik/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/strategic-annual/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_stratejik_yillik_generate():
     from flask import send_file
@@ -324,13 +324,13 @@ def raporlar_api_stratejik_yillik_generate():
 
 # ─── AI-17: Yatırımcı Sunum PPTX ───────────────────────────────────────────
 
-@app_bp.route("/raporlar/yatirimci-sunum")
+@app_bp.route("/reports/investor-presentation")
 @login_required
 def raporlar_yatirimci_sunum():
-    return render_template("platform/raporlar/yatirimci_sunum.html")
+    return render_template("platform/reports/yatirimci_sunum.html")
 
 
-@app_bp.route("/raporlar/api/yatirimci-sunum/preview")
+@app_bp.route("/reports/api/investor-presentation/preview")
 @login_required
 def raporlar_api_yatirimci_sunum_preview():
     tid = _tid_or_none()
@@ -368,7 +368,7 @@ def raporlar_api_yatirimci_sunum_preview():
     }})
 
 
-@app_bp.route("/raporlar/api/yatirimci-sunum/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/investor-presentation/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_yatirimci_sunum_generate():
     from flask import send_file
@@ -528,13 +528,13 @@ def raporlar_api_yatirimci_sunum_generate():
 
 # ─── ES-08: GRI/CDP/TCFD ESG Rapor PDF ─────────────────────────────────────
 
-@app_bp.route("/raporlar/esg-rapor")
+@app_bp.route("/reports/esg-report")
 @login_required
 def raporlar_esg_rapor():
-    return render_template("platform/raporlar/esg_rapor.html")
+    return render_template("platform/reports/esg_rapor.html")
 
 
-@app_bp.route("/raporlar/api/esg-rapor/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/esg-report/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_esg_rapor_generate():
     from flask import send_file
@@ -680,13 +680,13 @@ def raporlar_api_esg_rapor_generate():
 
 # ─── RK-14: Audit Çıktı Paketi PDF ─────────────────────────────────────────
 
-@app_bp.route("/raporlar/audit-paketi")
+@app_bp.route("/reports/audit-package")
 @login_required
 def raporlar_audit_paketi():
-    return render_template("platform/raporlar/audit_paketi.html")
+    return render_template("platform/reports/audit_paketi.html")
 
 
-@app_bp.route("/raporlar/api/audit-paketi/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/audit-package/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_audit_paketi_generate():
     from flask import send_file
@@ -836,13 +836,13 @@ def raporlar_api_audit_paketi_generate():
 
 # ─── HR-01: Bireysel Karne PDF Batch (ZIP) ─────────────────────────────────
 
-@app_bp.route("/raporlar/bireysel-karne-batch")
+@app_bp.route("/reports/individual-scorecard-batch")
 @login_required
 def raporlar_bireysel_karne_batch():
-    return render_template("platform/raporlar/bireysel_karne_batch.html")
+    return render_template("platform/reports/bireysel_karne_batch.html")
 
 
-@app_bp.route("/raporlar/api/bireysel-karne-batch/preview")
+@app_bp.route("/reports/api/individual-scorecard-batch/preview")
 @login_required
 def raporlar_api_bireysel_karne_batch_preview():
     tid = _tid_or_none()
@@ -863,7 +863,7 @@ def raporlar_api_bireysel_karne_batch_preview():
     }})
 
 
-@app_bp.route("/raporlar/api/bireysel-karne-batch/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_bireysel_karne_batch_generate():
     from flask import send_file

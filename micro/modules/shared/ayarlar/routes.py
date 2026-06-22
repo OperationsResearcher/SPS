@@ -20,7 +20,7 @@ def _check_access():
     return role_name in _ALLOWED_ROLES
 
 
-@app_bp.route("/ayarlar/eposta")
+@app_bp.route("/settings/email")
 @login_required
 def ayarlar_eposta():
     """Kurum e-posta ayarları sayfası."""
@@ -34,7 +34,7 @@ def ayarlar_eposta():
     return render_template("platform/ayarlar/eposta.html", cfg=cfg)
 
 
-@app_bp.route("/ayarlar/eposta/api/save", methods=["POST"])
+@app_bp.route("/settings/email/api/save", methods=["POST"])
 @login_required
 def ayarlar_eposta_save():
     """Kurum e-posta ayarlarını kaydet."""
@@ -79,7 +79,7 @@ def ayarlar_eposta_save():
         return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
-@app_bp.route("/ayarlar/eposta/api/test", methods=["POST"])
+@app_bp.route("/settings/email/api/test", methods=["POST"])
 @login_required
 def ayarlar_eposta_test():
     """SMTP bağlantısını test et."""
@@ -103,7 +103,7 @@ def ayarlar_eposta_test():
         return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
-@app_bp.route("/ayarlar/eposta/api/send-test", methods=["POST"])
+@app_bp.route("/settings/email/api/send-test", methods=["POST"])
 @login_required
 def ayarlar_eposta_send_test():
     """Kayıtlı ayarlarla test maili gönder."""

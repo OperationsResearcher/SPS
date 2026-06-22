@@ -34,13 +34,13 @@ def _tid_or_none():
 
 # ─── ST-01: Stratejik Hiyerarşi Sunburst ─────────────────────────────────────
 
-@app_bp.route("/raporlar/sunburst")
+@app_bp.route("/reports/sunburst")
 @login_required
 def raporlar_sunburst():
-    return render_template("platform/raporlar/sunburst.html")
+    return render_template("platform/reports/sunburst.html")
 
 
-@app_bp.route("/raporlar/api/sunburst")
+@app_bp.route("/reports/api/sunburst")
 @login_required
 def raporlar_api_sunburst():
     tid = _tid_or_none()
@@ -101,13 +101,13 @@ def raporlar_api_sunburst():
 
 # ─── ST-06: VRIO Portföy 4-Köşe ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/vrio-portfoy")
+@app_bp.route("/reports/vrio-portfoy")
 @login_required
 def raporlar_vrio_portfoy():
-    return render_template("platform/raporlar/vrio_portfoy.html")
+    return render_template("platform/reports/vrio_portfoy.html")
 
 
-@app_bp.route("/raporlar/api/vrio-portfoy")
+@app_bp.route("/reports/api/vrio-portfoy")
 @login_required
 def raporlar_api_vrio_portfoy():
     from app.models.strategy_frameworks import VRIOResource
@@ -141,13 +141,13 @@ def raporlar_api_vrio_portfoy():
 
 # ─── ST-09: OKR Cascade Görseli ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/okr-cascade")
+@app_bp.route("/reports/okr-cascade")
 @login_required
 def raporlar_okr_cascade():
-    return render_template("platform/raporlar/okr_cascade.html")
+    return render_template("platform/reports/okr_cascade.html")
 
 
-@app_bp.route("/raporlar/api/okr-cascade")
+@app_bp.route("/reports/api/okr-cascade")
 @login_required
 def raporlar_api_okr_cascade():
     from app.models.okr import OkrObjective, OkrKeyResult
@@ -193,13 +193,13 @@ def raporlar_api_okr_cascade():
 
 # ─── ST-11: Initiative Roadmap Gantt ────────────────────────────────────────
 
-@app_bp.route("/raporlar/initiative-roadmap")
+@app_bp.route("/reports/initiative-roadmap")
 @login_required
 def raporlar_initiative_roadmap():
-    return render_template("platform/raporlar/initiative_roadmap.html")
+    return render_template("platform/reports/initiative_roadmap.html")
 
 
-@app_bp.route("/raporlar/api/initiative-roadmap")
+@app_bp.route("/reports/api/initiative-roadmap")
 @login_required
 def raporlar_api_initiative_roadmap():
     from app.models.initiative import InitiativeMilestone
@@ -234,7 +234,7 @@ def raporlar_api_initiative_roadmap():
 
 # ─── OP-04: 7 Muda Waste Analizi ───────────────────────────────────────────
 
-@app_bp.route("/raporlar/muda-analizi")
+@app_bp.route("/reports/muda-analysis")
 @login_required
 def raporlar_muda_analizi():
     from app.services.plan_year_service import list_plan_years
@@ -243,11 +243,11 @@ def raporlar_muda_analizi():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/muda_analizi.html",
+    return render_template("platform/reports/muda_analizi.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/muda-analizi")
+@app_bp.route("/reports/api/muda-analysis")
 @login_required
 def raporlar_api_muda_analizi():
     from app.services.plan_year_service import get_plan_year
@@ -314,7 +314,7 @@ def raporlar_api_muda_analizi():
 
 # ─── OP-15: CMMI Olgunluk Heatmap ──────────────────────────────────────────
 
-@app_bp.route("/raporlar/cmmi-heatmap")
+@app_bp.route("/reports/cmmi-heatmap")
 @login_required
 def raporlar_cmmi_heatmap():
     from app.services.plan_year_service import list_plan_years
@@ -323,11 +323,11 @@ def raporlar_cmmi_heatmap():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/cmmi_heatmap.html",
+    return render_template("platform/reports/cmmi_heatmap.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/cmmi-heatmap")
+@app_bp.route("/reports/api/cmmi-heatmap")
 @login_required
 def raporlar_api_cmmi_heatmap():
     from app.models.k_radar_domain import ProcessMaturity
@@ -422,7 +422,7 @@ def raporlar_api_cmmi_heatmap():
 
 # ─── OP-17: Operasyonel İstatistik Sayfası (süreç bazlı) ───────────────────
 
-@app_bp.route("/raporlar/operasyon-istatistik")
+@app_bp.route("/reports/operation-statistics")
 @login_required
 def raporlar_op_istatistik():
     from app.services.plan_year_service import list_plan_years
@@ -431,11 +431,11 @@ def raporlar_op_istatistik():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/op_istatistik.html",
+    return render_template("platform/reports/op_istatistik.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/operasyon-istatistik")
+@app_bp.route("/reports/api/operation-statistics")
 @login_required
 def raporlar_api_op_istatistik():
     from app.services.plan_year_service import get_plan_year
@@ -486,13 +486,13 @@ def raporlar_api_op_istatistik():
 
 # ─── HR-07: Bireysel Hedef Hizalama ────────────────────────────────────────
 
-@app_bp.route("/raporlar/bireysel-hizalama")
+@app_bp.route("/reports/individual-alignment")
 @login_required
 def raporlar_bireysel_hizalama():
-    return render_template("platform/raporlar/bireysel_hizalama.html")
+    return render_template("platform/reports/bireysel_hizalama.html")
 
 
-@app_bp.route("/raporlar/api/bireysel-hizalama")
+@app_bp.route("/reports/api/individual-alignment")
 @login_required
 def raporlar_api_bireysel_hizalama():
     tid = _tid_or_none()
@@ -538,13 +538,13 @@ def raporlar_api_bireysel_hizalama():
 
 # ─── RK-01: Risk Heatmap Detay ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/risk-heatmap")
+@app_bp.route("/reports/risk-heatmap")
 @login_required
 def raporlar_risk_heatmap():
-    return render_template("platform/raporlar/risk_heatmap.html")
+    return render_template("platform/reports/risk_heatmap.html")
 
 
-@app_bp.route("/raporlar/api/risk-heatmap")
+@app_bp.route("/reports/api/risk-heatmap")
 @login_required
 def raporlar_api_risk_heatmap():
     from app.models.k_radar_domain import RiskHeatmapItem
@@ -596,13 +596,13 @@ def raporlar_api_risk_heatmap():
 
 # ─── RK-08: 2FA Kullanım Raporu ────────────────────────────────────────────
 
-@app_bp.route("/raporlar/iki-fa")
+@app_bp.route("/reports/two-fa")
 @login_required
 def raporlar_iki_fa():
-    return render_template("platform/raporlar/iki_fa.html")
+    return render_template("platform/reports/iki_fa.html")
 
 
-@app_bp.route("/raporlar/api/iki-fa")
+@app_bp.route("/reports/api/two-fa")
 @login_required
 def raporlar_api_iki_fa():
     tid = _tid_or_none()
@@ -633,13 +633,13 @@ def raporlar_api_iki_fa():
 
 # ─── ES-01: Carbon Footprint Toplam Trend ──────────────────────────────────
 
-@app_bp.route("/raporlar/carbon-trend")
+@app_bp.route("/reports/carbon-trend")
 @login_required
 def raporlar_carbon_trend():
-    return render_template("platform/raporlar/carbon_trend.html")
+    return render_template("platform/reports/carbon_trend.html")
 
 
-@app_bp.route("/raporlar/api/carbon-trend")
+@app_bp.route("/reports/api/carbon-trend")
 @login_required
 def raporlar_api_carbon_trend():
     from app.models.esg import EsgMetric, EsgMetricValue
@@ -678,13 +678,13 @@ def raporlar_api_carbon_trend():
 
 # ─── AI-02: AI Strateji Danışmanı ──────────────────────────────────────────
 
-@app_bp.route("/raporlar/ai-danisman")
+@app_bp.route("/reports/ai-advisor")
 @login_required
 def raporlar_ai_danisman():
-    return render_template("platform/raporlar/ai_danisman.html")
+    return render_template("platform/reports/ai_danisman.html")
 
 
-@app_bp.route("/raporlar/api/ai-danisman")
+@app_bp.route("/reports/api/ai-advisor")
 @login_required
 def raporlar_api_ai_danisman():
     tid = _tid_or_none()
@@ -701,13 +701,13 @@ def raporlar_api_ai_danisman():
 
 # ─── AI-04: AI Coach ───────────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/ai-coach")
+@app_bp.route("/reports/ai-coach")
 @login_required
 def raporlar_ai_coach():
-    return render_template("platform/raporlar/ai_coach.html")
+    return render_template("platform/reports/ai_coach.html")
 
 
-@app_bp.route("/raporlar/api/ai-coach")
+@app_bp.route("/reports/api/ai-coach")
 @login_required
 def raporlar_api_ai_coach():
     tid = _tid_or_none()
@@ -783,13 +783,13 @@ def raporlar_api_ai_coach():
 
 # ─── AI-05: AI Early Warning Dashboard ─────────────────────────────────────
 
-@app_bp.route("/raporlar/early-warning")
+@app_bp.route("/reports/early-warning")
 @login_required
 def raporlar_early_warning():
-    return render_template("platform/raporlar/early_warning.html")
+    return render_template("platform/reports/early_warning.html")
 
 
-@app_bp.route("/raporlar/api/early-warning")
+@app_bp.route("/reports/api/early-warning")
 @login_required
 def raporlar_api_early_warning():
     tid = _tid_or_none()

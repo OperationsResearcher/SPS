@@ -12,7 +12,7 @@
       document.getElementById('loading').style.display='';
       document.getElementById('content').style.display='none';
       const y = yearSel?.value || '';
-      const url = '/raporlar/api/muda-analizi' + (y ? '?year=' + encodeURIComponent(y) : '');
+      const url = '/reports/api/muda-analysis' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url,{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';

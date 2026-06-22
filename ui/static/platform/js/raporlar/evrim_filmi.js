@@ -89,7 +89,7 @@
 
   async function load() {
     try {
-      const j = await (await fetch('/raporlar/api/evrim-filmi', {credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/evolution-film', {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       years = j.years;
       if (!years.length) {

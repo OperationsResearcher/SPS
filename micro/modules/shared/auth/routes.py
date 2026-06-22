@@ -21,7 +21,7 @@ from extensions import csrf
 # Giriş: kök `/login` → `public_login` (app factory). Eski micro blueprint giriş view'ı kaldırıldı (URL çakışması).
 
 
-@app_bp.route("/profil", methods=["GET", "POST"])
+@app_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profil():
     """Profil sayfası — GET: form, POST: JSON API güncelleme."""
@@ -68,7 +68,7 @@ def profil():
         return jsonify({"success": False, "message": "Profil güncellenirken hata oluştu."}), 500
 
 
-@app_bp.route("/profil/foto-yukle", methods=["POST"])
+@app_bp.route("/profile/photo-upload", methods=["POST"])
 @login_required
 @csrf.exempt  # multipart/form-data JS fetch ile gönderilir; form body'ye token
               # eklemek için frontend JS'nin FormData'ya csrf_token field eklemesi
@@ -153,14 +153,14 @@ def profil_foto_yukle():
         return jsonify({"success": False, "message": "Fotoğraf yüklenirken bir hata oluştu."}), 500
 
 
-@app_bp.route("/ayarlar")
+@app_bp.route("/settings")
 @login_required
 def ayarlar():
     """Ayarlar hub sayfası."""
     return render_template("platform/ayarlar/index.html")
 
 
-@app_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
+@app_bp.route("/settings/account", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
     """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""

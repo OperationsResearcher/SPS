@@ -6,7 +6,7 @@ yoktu → rapor üretilemez "ölü kod" idi. Bu dosya CRUD + değer girişi sağ
   - Metrik tanımı: ekle/düzenle/sil (E/S/G, scope, hedef, baseline)
   - Yıllık değer girişi: her metriğe yıl bazlı değer
 
-Yönetim sayfası: /raporlar/esg-yonetim
+Yönetim sayfası: /reports/esg-management
 """
 from __future__ import annotations
 
@@ -43,17 +43,17 @@ def _metric_dict(m, values=None):
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/esg-yonetim")
+@app_bp.route("/reports/esg-management")
 @login_required
 def raporlar_esg_yonetim():
     """ESG metrik + değer yönetim sayfası."""
-    return render_template("platform/raporlar/esg_yonetim.html",
+    return render_template("platform/reports/esg_yonetim.html",
                            can_edit=_can_manage_esg())
 
 
 # ── API: Metrik listesi (+ değerler) ──────────────────────────────────────────
 
-@app_bp.route("/raporlar/api/esg/metrics", methods=["GET"])
+@app_bp.route("/reports/api/esg/metrics", methods=["GET"])
 @login_required
 def esg_api_metrics_list():
     tid = current_user.tenant_id
@@ -81,7 +81,7 @@ def esg_api_metrics_list():
 
 # ── API: Metrik CRUD ──────────────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/api/esg/metrics", methods=["POST"])
+@app_bp.route("/reports/api/esg/metrics", methods=["POST"])
 @login_required
 def esg_api_metric_add():
     if not _can_manage_esg():
@@ -115,7 +115,7 @@ def esg_api_metric_add():
         return jsonify({"success": False, "message": "Metrik eklenemedi."}), 500
 
 
-@app_bp.route("/raporlar/api/esg/metrics/<int:metric_id>", methods=["POST"])
+@app_bp.route("/reports/api/esg/metrics/<int:metric_id>", methods=["POST"])
 @login_required
 def esg_api_metric_update(metric_id):
     if not _can_manage_esg():
@@ -150,7 +150,7 @@ def esg_api_metric_update(metric_id):
         return jsonify({"success": False, "message": "Metrik güncellenemedi."}), 500
 
 
-@app_bp.route("/raporlar/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
+@app_bp.route("/reports/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
 @login_required
 def esg_api_metric_delete(metric_id):
     if not _can_manage_esg():
@@ -171,7 +171,7 @@ def esg_api_metric_delete(metric_id):
 
 # ── API: Değer girişi (yıl bazlı upsert) ──────────────────────────────────────
 
-@app_bp.route("/raporlar/api/esg/metrics/<int:metric_id>/value", methods=["POST"])
+@app_bp.route("/reports/api/esg/metrics/<int:metric_id>/value", methods=["POST"])
 @login_required
 def esg_api_value_save(metric_id):
     if not _can_manage_esg():
@@ -203,7 +203,7 @@ def esg_api_value_save(metric_id):
         return jsonify({"success": False, "message": "Değer kaydedilemedi."}), 500
 
 
-@app_bp.route("/raporlar/api/esg/values/<int:value_id>/delete", methods=["POST"])
+@app_bp.route("/reports/api/esg/values/<int:value_id>/delete", methods=["POST"])
 @login_required
 def esg_api_value_delete(value_id):
     if not _can_manage_esg():

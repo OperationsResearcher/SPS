@@ -181,7 +181,7 @@
 
   function markReadUrl(notifId) {
     if (markReadTemplate) return markReadTemplate.replace("888888", String(notifId));
-    return `/bildirim/api/mark-read/${notifId}`;
+    return `/notification/api/mark-read/${notifId}`;
   }
 
   function initMarkRead() {

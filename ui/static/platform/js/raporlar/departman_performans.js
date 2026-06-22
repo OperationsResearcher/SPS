@@ -5,7 +5,7 @@
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/departman-performans',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/department-performance',{credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

@@ -9,7 +9,7 @@ from platform_core import app_bp
 from app.models.process import Process, ProcessKpi
 
 
-@app_bp.route("/analiz")
+@app_bp.route("/analysis")
 @login_required
 def analiz():
     """Analitik özet — tenant süreçleri üzerinden."""
@@ -24,7 +24,7 @@ def analiz():
 
 # ── Trend Analizi ─────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/trend/<int:process_id>")
+@app_bp.route("/analysis/api/trend/<int:process_id>")
 @login_required
 def analiz_api_trend(process_id):
     """Süreçteki tüm aktif PG'ler için trend serileri döner (frontend çoklu seri çizer)."""
@@ -81,7 +81,7 @@ def analiz_api_trend(process_id):
 
 # ── Sağlık Skoru ──────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/health/<int:process_id>")
+@app_bp.route("/analysis/api/health/<int:process_id>")
 @login_required
 def analiz_api_health(process_id):
     Process.query.filter_by(
@@ -100,7 +100,7 @@ def analiz_api_health(process_id):
 
 # ── Tahmin Analizi ────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/forecast/<int:process_id>")
+@app_bp.route("/analysis/api/forecast/<int:process_id>")
 @login_required
 def analiz_api_forecast(process_id):
     Process.query.filter_by(
@@ -119,7 +119,7 @@ def analiz_api_forecast(process_id):
 
 # ── Karşılaştırma Analizi ─────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/comparison", methods=["POST"])
+@app_bp.route("/analysis/api/comparison", methods=["POST"])
 @login_required
 def analiz_api_comparison():
     data = request.get_json() or {}
@@ -143,7 +143,7 @@ def analiz_api_comparison():
 
 # ── Performans Raporu ─────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/report/<int:process_id>")
+@app_bp.route("/analysis/api/report/<int:process_id>")
 @login_required
 def analiz_api_report(process_id):
     Process.query.filter_by(
@@ -176,7 +176,7 @@ def analiz_api_report(process_id):
 
 # ── Anomali Tespiti ───────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/anomalies")
+@app_bp.route("/analysis/api/anomalies")
 @login_required
 def analiz_api_anomalies():
     """Tenant geneli (veya tek süreç) için tüm aktif PG'lerde anomali tarar."""

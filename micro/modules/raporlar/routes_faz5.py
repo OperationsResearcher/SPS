@@ -30,13 +30,13 @@ from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 
 # ─── IF-01: Mobile Hub (PWA-style responsive sayfa) ────────────────────────
 
-@app_bp.route("/raporlar/mobile")
+@app_bp.route("/reports/mobile")
 @login_required
 def raporlar_mobile():
-    return render_template("platform/raporlar/mobile.html")
+    return render_template("platform/reports/mobile.html")
 
 
-@app_bp.route("/raporlar/api/mobile/snapshot")
+@app_bp.route("/reports/api/mobile/snapshot")
 @login_required
 def raporlar_api_mobile_snapshot():
     """Mobile için kompakt veri snapshot — anasayfa metrikleri."""
@@ -99,13 +99,13 @@ def raporlar_api_mobile_snapshot():
 
 # ─── IF-03: BI Connector ───────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/bi-connector")
+@app_bp.route("/reports/bi-connector")
 @login_required
 def raporlar_bi_connector():
-    return render_template("platform/raporlar/bi_connector.html")
+    return render_template("platform/reports/bi_connector.html")
 
 
-@app_bp.route("/raporlar/api/bi/kpi-data.csv")
+@app_bp.route("/reports/api/bi/kpi-data.csv")
 @login_required
 def raporlar_api_bi_kpi_data_csv():
     """KPI ölçümlerini CSV olarak döner (Power BI/Tableau direkt çekebilir)."""
@@ -141,7 +141,7 @@ def raporlar_api_bi_kpi_data_csv():
                     headers={"Content-Disposition": "attachment; filename=kpi_data.csv"})
 
 
-@app_bp.route("/raporlar/api/bi/strategies.json")
+@app_bp.route("/reports/api/bi/strategies.json")
 @login_required
 def raporlar_api_bi_strategies_json():
     """Strateji ağacı + skor JSON (BI tool'lar için)."""
@@ -167,13 +167,13 @@ def raporlar_api_bi_strategies_json():
 
 # ─── IF-05: ML Anomali (IsolationForest) ───────────────────────────────────
 
-@app_bp.route("/raporlar/ml-anomaly")
+@app_bp.route("/reports/ml-anomaly")
 @login_required
 def raporlar_ml_anomaly():
-    return render_template("platform/raporlar/ml_anomaly.html")
+    return render_template("platform/reports/ml_anomaly.html")
 
 
-@app_bp.route("/raporlar/api/ml-anomaly")
+@app_bp.route("/reports/api/ml-anomaly")
 @login_required
 def raporlar_api_ml_anomaly():
     """IsolationForest tabanlı KPI anomali tespiti."""
@@ -257,13 +257,13 @@ def raporlar_api_ml_anomaly():
 
 # ─── IF-06: Workflow MVP — Initiative Onay Zinciri ────────────────────────
 
-@app_bp.route("/raporlar/onay-zinciri")
+@app_bp.route("/reports/approval-chain")
 @login_required
 def raporlar_onay_zinciri():
-    return render_template("platform/raporlar/onay_zinciri.html")
+    return render_template("platform/reports/onay_zinciri.html")
 
 
-@app_bp.route("/raporlar/api/onay-zinciri")
+@app_bp.route("/reports/api/approval-chain")
 @login_required
 def raporlar_api_onay_zinciri():
     """Initiative onay zinciri MVP — durum + sorumlu + işlem."""
@@ -327,14 +327,14 @@ def raporlar_api_onay_zinciri():
 
 # ─── PG × Proje Çapraz Etki Analizi (D2) ─────────────────────────────────────
 
-@app_bp.route("/raporlar/pg-proje-etki")
+@app_bp.route("/reports/pg-project-impact")
 @login_required
 def raporlar_pg_proje_etki():
     """PG × Proje çapraz etki analizi sayfası."""
-    return render_template("platform/raporlar/pg_proje_etki.html")
+    return render_template("platform/reports/pg_proje_etki.html")
 
 
-@app_bp.route("/raporlar/api/pg-proje-etki")
+@app_bp.route("/reports/api/pg-project-impact")
 @login_required
 def raporlar_api_pg_proje_etki():
     """Proje × Süreç × PG matrisini ve özet metrikleri döner."""

@@ -54,7 +54,7 @@ def _get_plan_year_context():
 
 
 @app_bp.route("/launcher")
-@app_bp.route("/masaustu-launcher")
+@app_bp.route("/desktop-launcher")
 @login_required
 def launcher():
     """Modül launcher ekranı."""

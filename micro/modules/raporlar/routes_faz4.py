@@ -76,25 +76,25 @@ SEKTOR_CATALOG = [
 ]
 
 
-@app_bp.route("/raporlar/sektorel")
+@app_bp.route("/reports/sectoral")
 @login_required
 def raporlar_sektorel():
-    return render_template("platform/raporlar/sektorel.html", sektorler=SEKTOR_CATALOG)
+    return render_template("platform/reports/sektorel.html", sektorler=SEKTOR_CATALOG)
 
 
-@app_bp.route("/raporlar/sektorel/<code>")
+@app_bp.route("/reports/sectoral/<code>")
 @login_required
 def raporlar_sektorel_detay(code):
     pkg = _load_sektor(code)
     if not pkg:
-        return render_template("platform/raporlar/sektorel.html",
+        return render_template("platform/reports/sektorel.html",
                                sektorler=SEKTOR_CATALOG,
                                error=f"\"{code}\" sektörü için hazır paket henüz yok."), 404
-    return render_template("platform/raporlar/sektorel_detay.html",
+    return render_template("platform/reports/sektorel_detay.html",
                            code=code, package=pkg)
 
 
-@app_bp.route("/raporlar/api/sektorel/<code>")
+@app_bp.route("/reports/api/sectoral/<code>")
 @login_required
 def raporlar_api_sektorel(code):
     pkg = _load_sektor(code)
@@ -105,10 +105,10 @@ def raporlar_api_sektorel(code):
 
 # ─── AI-01: AI Doğal Dil Sorgu (pattern-based + free) ───────────────────────
 
-@app_bp.route("/raporlar/nlp-query")
+@app_bp.route("/reports/nlp-query")
 @login_required
 def raporlar_nlp_query():
-    return render_template("platform/raporlar/nlp_query.html")
+    return render_template("platform/reports/nlp_query.html")
 
 
 _NLP_PATTERNS = [
@@ -155,13 +155,13 @@ _NLP_PATTERNS = [
 ]
 
 
-@app_bp.route("/raporlar/api/nlp-query/patterns")
+@app_bp.route("/reports/api/nlp-query/patterns")
 @login_required
 def raporlar_api_nlp_patterns():
     return jsonify({"success": True, "patterns": _NLP_PATTERNS})
 
 
-@app_bp.route("/raporlar/api/nlp-query", methods=["GET", "POST"])
+@app_bp.route("/reports/api/nlp-query", methods=["GET", "POST"])
 @login_required
 def raporlar_api_nlp_query():
     """Pattern bazlı + free-form NLP sorgu — tenant filtreli güvenli."""
@@ -314,10 +314,10 @@ def raporlar_api_nlp_query():
 
 # ─── AI-10: AI Sektör Benchmark ────────────────────────────────────────────
 
-@app_bp.route("/raporlar/sektor-benchmark")
+@app_bp.route("/reports/sektor-benchmark")
 @login_required
 def raporlar_sektor_benchmark():
-    return render_template("platform/raporlar/sektor_benchmark.html")
+    return render_template("platform/reports/sektor_benchmark.html")
 
 
 # ─── Mock sektör ortalamaları ───────────────────────────────────────────────
@@ -411,7 +411,7 @@ def _sektor_context(tid, tenant, sektor_override: str | None = None):
     }
 
 
-@app_bp.route("/raporlar/api/sektor-benchmark")
+@app_bp.route("/reports/api/sektor-benchmark")
 @login_required
 def raporlar_api_sektor_benchmark():
     tid = _tid_or_none()
@@ -438,7 +438,7 @@ def raporlar_api_sektor_benchmark():
     }})
 
 
-@app_bp.route("/raporlar/api/sektor-benchmark/ai-yorum", methods=["POST"])
+@app_bp.route("/reports/api/sektor-benchmark/ai-yorum", methods=["POST"])
 @login_required
 @csrf.exempt
 def raporlar_api_sektor_benchmark_ai():
@@ -483,7 +483,7 @@ def raporlar_api_sektor_benchmark_ai():
     return jsonify({"success": True, "yorum": yorum})
 
 
-@app_bp.route("/raporlar/api/ai-status")
+@app_bp.route("/reports/api/ai-status")
 @login_required
 def raporlar_api_ai_status():
     """Kullanıcının AI kota durumu — BYOK vs sistem anahtarı."""

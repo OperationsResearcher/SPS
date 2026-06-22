@@ -3,7 +3,7 @@
   const stat = (l,v,c,sub,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/chro-dashboard',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/chro-dashboard',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

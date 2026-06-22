@@ -14,8 +14,8 @@
   <!-- Endpoint kartları -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:20px;">
     {% set endpoints = [
-      {'name': 'KPI Ölçümleri (CSV)', 'url': '/raporlar/api/bi/kpi-data.csv', 'desc': 'Tüm KPI ölçümleri (max 10K satır)', 'format': 'CSV', 'color': '#16a34a'},
-      {'name': 'Stratejiler (JSON)', 'url': '/raporlar/api/bi/strategies.json', 'desc': 'Strateji ağacı + skor metrikleri', 'format': 'JSON', 'color': '#0ea5e9'},
+      {'name': 'KPI Ölçümleri (CSV)', 'url': '/reports/api/bi/kpi-data.csv', 'desc': 'Tüm KPI ölçümleri (max 10K satır)', 'format': 'CSV', 'color': '#16a34a'},
+      {'name': 'Stratejiler (JSON)', 'url': '/reports/api/bi/strategies.json', 'desc': 'Strateji ağacı + skor metrikleri', 'format': 'JSON', 'color': '#0ea5e9'},
     ] %}
     {% set ep_codes = {'KPI Ölçümleri (CSV)': 'raporlar_bi_connector.kpi_olcumleri_csv', 'Stratejiler (JSON)': 'raporlar_bi_connector.stratejiler_json'} %}
     {% for ep in endpoints %}

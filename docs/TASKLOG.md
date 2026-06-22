@@ -2,6 +2,216 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-204 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — raporlar İÇ Türkçe segmentleri İngilizceye (24 segment, 301 köprülü)
+**Modül:** raporlar (route+template+js), nav, legacy_sunset middleware + config
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (24 segment)
+muda-analizi→muda-analysis, strateji-hikayesi→strategy-story, stratejik-yillik→strategic-annual,
+bireysel-hizalama→individual-alignment, bireysel-karne-batch→individual-scorecard-batch,
+operasyon-istatistik→operation-statistics, hizalama-sankey→alignment-sankey,
+departman-performans→department-performance, yonetici-liderlik→executive-leadership,
+sabah-ozeti→morning-summary, evrim-filmi→evolution-film, ai-sunum→ai-presentation,
+ai-danisman→ai-advisor, yatirimci-sunum→investor-presentation, esg-rapor→esg-report,
+esg-yonetim→esg-management, audit-paketi→audit-package, veri-kalitesi→data-quality,
+k-vektor-carpiklik→k-vector-skewness, hedef-revizyon→target-revision, onay-zinciri→approval-chain,
+pg-proje-etki→pg-project-impact (pg korundu), sektorel→sectoral, iki-fa→two-fa.
+
+### Değiştirilen Dosyalar (126 hit / 32 dosya — toplu script)
+- `scripts/_arsiv/fix_oneshot/rename_reports_segments.py` → çok-eşlemeli, uzun-anahtar-önce,
+  tam-segment sınırlı; köprü dosyaları + docs/htmlcov/ARCHIVE hariç
+- `micro/modules/raporlar/routes*.py` (8) → route string'leri (fonksiyon adları korundu)
+- `ui/templates/.../raporlar/*.html`, `ui/static/.../js/raporlar/*.js`, `k_radar/hub.html` (23),
+  `sp/ceyreklik_review.html`, `app/__init__.py` nav (23)
+- `app/legacy_redirect_config.py` → yeni REPORTS_SEGMENT_REWRITE listesi (24 kural)
+- `app/middleware/legacy_sunset.py` → REPORTS_SEGMENT_REWRITE'ı _should_skip'ten ÖNCE uygula;
+  hem /reports/<TR> hem /reports/api/<TR> (+alt yol) varyantlarını köprüler
+
+### Önemli teknik nokta
+`/reports/` TASK-203'te canonical (redirect muaf) yapılmıştı → iç segment köprüsü normal PREFIX_REWRITE'a
+ULAŞAMIYORDU (404 verdi). Çözüm: özel segment-rewrite bloğunu canonical kontrolünden ÖNCE çalıştır.
+İlk denemede /reports/api/<TR> yakalanmadı (sadece /reports/<TR>); api/ varyantı da eklendi.
+
+### Test
+git grep: canlı kodda Türkçe iç segment kalmadı. Köprüler: /reports/<TR> ve /reports/api/<TR>(+/preview)
+→ 301 yeni EN; çakışma testi (bireysel-hizalama vs -karne-batch) doğru ayrıştı. 37/37 smoke geçti.
+analiz/bireysel regresyon yok. raporlar modülü artık TAMAMEN İngilizce.
+
+### Notlar
+Kalan modüller: sp (~12 TR path, aktif plan-yıl — dikkatli), kurum (/kurum/ayarlar), k-rapor (birkaç),
+admin araçları (hata-kontrolu, kilavuz, yonetim-paneli), kule (domain terimi). Kullanıcı seçimi bekleniyor.
+
+## TASK-203 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — raporlar modülü KÖK segmenti `/raporlar` → `/reports` (95 route, 301 köprülü)
+**Modül:** raporlar (8 route dosyası), ui (template+js), nav, legacy_redirect
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (329 hit / 95 dosya — toplu script)
+- `scripts/_arsiv/fix_oneshot/rename_raporlar_to_reports.py` → tek-seferlik denetlenebilir script
+  (regex `/raporlar` kelime-sınırlı → `/reports`; docs/htmlcov/ARCHIVE/_arsiv + köprü dosyaları HARİÇ)
+- `micro/modules/raporlar/routes*.py` (8 dosya) → tüm `@route("/raporlar*")` → `/reports*`
+- `ui/templates/platform/raporlar/*.html` (44), `ui/static/platform/js/raporlar/*.js` (40+),
+  `k_radar/hub.html` (42 ref), `sp/ceyreklik_review.html`, `command_palette.js`, `app/__init__.py` nav
+- `app/legacy_redirect_config.py` → PREFIX_REWRITE `/raporlar`→`/reports` (301; iç segment korunur)
+- `app/middleware/legacy_sunset.py` → canonical prefix `/reports/`
+
+### Yapılan İşlem
+raporlar ~95 route, çoğu zaten İngilizce; sadece KÖK segment çevrildi. İç Türkçe segmentler
+(muda-analizi, strateji-hikayesi, bireysel-hizalama, sabah-ozeti, ai-sunum, stratejik-yillik vb.)
+BİLİNÇLİ olarak DOKUNULMADI — ayrı tur. 85+ dosyada hardcoded `/raporlar` olduğu için elle değil,
+dry-run ile denetlenen tek-seferlik script kullanıldı. Köprü dosyaları script'ten hariç tutuldu
+(yoksa `/raporlar→/reports` kuralı kendini ezerdi). PREFIX_REWRITE iç segmenti koruyarak köprüler.
+
+### Test
+git grep: canlı kodda `/raporlar` kalmadı (yalnız köprü). Restart: `/reports*` 302 (login gate),
+`/raporlar*` 301→`/reports*` (iç segment korunarak). pytest module+bireysel+admin → 37/37 geçti.
+analiz/bireysel/ayarlar regresyon yok.
+
+### Notlar
+İç Türkçe segmentler sıradaki tur: muda-analizi, strateji-hikayesi, bireysel-hizalama, operasyon-istatistik,
+hizalama-sankey, departman-performans, yonetici-liderlik, sabah-ozeti, evrim-filmi, ai-sunum/danisman,
+stratejik-yillik, yatirimci-sunum, esg-rapor/yonetim, audit-paketi, bireysel-karne-batch, veri-kalitesi,
+k-vektor-carpiklik, hedef-revizyon, onay-zinciri, pg-proje-etki, sektorel, iki-fa. Kullanıcı seçimi bekleniyor.
+
+## TASK-202 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — shared: ayarlar→settings, profil→profile, bildirim→notification (301 köprülü)
+**Modül:** shared/auth, shared/ayarlar, shared/scheduled_reports, shared/bildirim, search, nav/registry, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+ayarlar→settings, hesap→account, eposta→email, zamanlanmis-raporlar→scheduled-reports,
+profil→profile (foto-yukle→photo-upload), bildirim→notification.
+
+### Değiştirilen Dosyalar
+- `micro/modules/shared/auth/routes.py` → /profile, /profile/photo-upload, /settings, /settings/account
+- `micro/modules/shared/ayarlar/routes.py` → /settings/email (+ api/save|test|send-test)
+- `micro/modules/shared/scheduled_reports/routes.py` → /settings/scheduled-reports
+- `micro/modules/shared/bildirim/routes.py` → /notification (+ api/unread-count|mark-read|mark-all-read)
+- `micro/modules/shared/search/routes.py` → kullanıcı arama sonucu link /profile
+- `app/legacy_redirect_config.py` → 6 EXACT_ENDPOINT 301 köprü (eski Türkçe sayfa GET'leri)
+- `app/middleware/legacy_sunset.py` → canonical prefix /settings/ /profile/ /notification/
+- `ui/static/platform/js/command_palette.js` → 3 url; `ui/static/platform/js/masaustu.js` → mark-read base
+- `ui/templates/platform/bildirim/index.html` → href /settings
+- `app/__init__.py` → nav; `micro/core/module_registry.py` → 2 launcher url
+- `app/services/kilavuz_olusturucu_executor.py` → 3 Playwright goto URL
+- `tests/test_module_smoke.py` → /individual/api/scorecard (TASK-201 eksik kalan API satırları)
+- `tests/test_admin_smoke.py` → kırık `/ayarlar/yedekleme` → doğru `/admin/araclar/yedekleme`
+
+### Yapılan İşlem
+base.html'deki TÜM bildirim/profil/ayarlar referansları url_for ile geldiği için (topbar badge,
+sidebar, profil menüsü) fonksiyon adları korunarak otomatik doğru kaldı — sadece 3 hardcoded JS/HTML
+referansı + backend nav/registry güncellendi. API'ler POST → eski path canlı çağrı yok.
+
+### Test
+Restart: 7 yeni route 302 (login gate), 5 eski Türkçe URL 301→yeni hedef. Regresyon yok (analiz/bireysel/
+launcher sağlam). pytest module+bireysel+admin smoke → 25+9 geçti. Bonus: TASK-201'de kaçan
+test_module_smoke API satırları ve önceden kırık admin yedekleme testi düzeltildi.
+
+### Notlar
+İki ayrı profil sistemi var: legacy /profile/* (kök auth_bp, static/js/profile.js) ZATEN İngilizce,
+dokunulmadı. /kurum/ayarlar farklı modül (kurum), kapsam dışı. kule (tur) çevrilmedi. Modül id'leri
+(ayarlar/bildirim, DB/registry) korundu.
+
+## TASK-201 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — `bireysel` modülü → `/individual` (18 route, 301 köprülü)
+**Modül:** bireysel, legacy_redirect, nav/gating/registry, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+bireysel→individual, karne→scorecard, veri→data, faaliyet→activity, favori→favorite,
+hizalama-skoru→alignment-score, ekip-hizalama→team-alignment, ai-ozet→ai-summary. **pg korundu** (KURALLAR).
+
+### Değiştirilen Dosyalar
+- `micro/modules/bireysel/routes.py` → 18 route path `/bireysel*` → `/individual*` (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → EXACT_ENDPOINT'e `/bireysel` + `/bireysel/karne` → `app_bp.bireysel_karne` (301)
+- `app/middleware/legacy_sunset.py` → canonical `/bireysel`/`/bireysel/` → `/individual`
+- `ui/templates/platform/bireysel/karne.html` → 4 `data-*-base` (diğer 5 zaten url_for)
+- `ui/static/platform/js/bireysel.js` → 2 hardcoded fallback `/individual/...`
+- `ui/static/platform/js/command_palette.js` → `/individual/scorecard`
+- `platform_core/__init__.py` → gating prefix `/individual` (modül id `bireysel` korundu)
+- `app/__init__.py` → nav eşlemesi `/individual` / `/individual/scorecard`
+- `micro/core/module_registry.py` → launcher url `/individual/scorecard`
+- `micro/modules/shared/my_tasks/routes.py`, `micro/modules/masaustu/routes.py` → takvim/görev link url
+- `tests/test_bireysel_smoke.py`, `test_module_smoke.py`, `test_e2e_flow.py` → yeni URL'ler
+
+### Yapılan İşlem
+analiz pilotuyla aynı kalıp. 18 route İngilizceye çevrildi, fonksiyon adları korunduğu için url_for'lar
+otomatik doğru. Sayfa GET'leri (`/bireysel`, `/bireysel/karne`) 301 ile köprülendi; API'ler POST olduğu
+için middleware'e takılmaz, frontend güncellendiği için eski API path'lerine canlı çağrı kalmadı.
+Eski alias'lar (`/gorevlerim`, `/performans-kartim`, `/bireysel-panel`) zaten fonksiyona bağlı → çalışmaya devam.
+
+### Test
+Restart sonrası: `/individual*` 302 (login gate), `/bireysel`+`/bireysel/karne` 301→`/individual/scorecard`.
+`pytest tests/test_bireysel_smoke.py` → 6/6 geçti. analiz + launcher regresyon yok.
+
+### Notlar
+Çevrilmedi: `/raporlar/...bireysel-hizalama`, `bireysel-karne-batch` (AYRI raporlar modülü, bireysel değil).
+Modül id `bireysel` (DB/registry) ve `pg` kısaltması korundu. Sıradaki: kullanıcı seçimi.
+
+## TASK-200 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — izole route: `/masaustu-launcher` → `/desktop-launcher` (301 köprülü)
+**Modül:** core/launcher, legacy_redirect, nav
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/core/launcher.py` → alias `/masaustu-launcher` → `/desktop-launcher` (`/launcher` kanonik korundu)
+- `app/legacy_redirect_config.py` → EXACT_ENDPOINT'e `/masaustu-launcher` → `app_bp.launcher` (301)
+- `ui/templates/platform/base.html` → breadcrumb home `/desktop-launcher`
+- `ui/templates/platform/bildirim/index.html` → masaüstü butonu `/desktop-launcher`
+- `ui/static/platform/js/command_palette.js` → komut paleti url `/desktop-launcher`
+- `app/__init__.py` → nav eşlemesi `/desktop-launcher`
+
+### Yapılan İşlem
+`launcher()` fonksiyonu zaten `/launcher` (İngilizce) + `/masaustu-launcher` (Türkçe) alias'ı taşıyordu.
+Türkçe alias `/desktop-launcher`'a çevrildi, 4 canlı referans güncellendi, eski URL 301 ile köprülendi.
+
+### Test
+Restart sonrası: `/desktop-launcher` 302 (login gate), `/masaustu-launcher` 301→`/desktop-launcher`,
+`/launcher` korundu. Pilot `/analysis` ve `/analiz`→301 hâlâ sağlam (regresyon yok).
+
+### Notlar
+sp modülü (~120 route, çoğu İngilizce, aktif plan-yıl işi) riskli bulundu → ertelendi. Sıradaki
+aday: bireysel modülü (orta, izole). Kullanıcı onayı bekleniyor.
+
+## TASK-199 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL Türkçe→İngilizce tek-dil çalışması — PİLOT: `analiz` modülü → `/analysis` (301 köprülü)
+**Modül:** analiz (micro/modules/analiz), legacy_redirect altyapısı
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/analiz/routes.py` → 7 route path `/analiz*` → `/analysis*` (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → PREFIX_REWRITE'a `/analiz`→`/analysis` köprüsü eklendi (301)
+- `app/middleware/legacy_sunset.py` → canonical prefix `/analiz/`→`/analysis/` (yeni URL redirect'ten muaf)
+- `ui/templates/platform/analiz/index.html` → 4 `data-*-base` attribute `/analysis/...`
+- `ui/templates/platform/sp/exec_dashboard.html` → anomali kartı `href="/analysis"`
+- `ui/static/platform/js/command_palette.js` → komut paleti url `/analysis`
+- `app/__init__.py` → nav/breadcrumb eşlemesi `/analysis`
+- `platform_core/__init__.py` → paket gating prefix `/analysis` (modül id `analiz` korundu)
+- `micro/core/module_registry.py` → launcher modül url `/analysis`
+
+### Yapılan İşlem
+Strangler stratejisine uygun olarak modern `analiz` modülü pilot seçildi (7 route, tek endpoint kökü,
+JS data-attribute'tan okuyor → düşük risk). URL path'leri İngilizceye çevrildi; mevcut
+`legacy_sunset` middleware'i kullanılarak eski `/analiz*` yolları 301 ile `/analysis*`'e köprülendi.
+`url_for` endpoint adıyla çalıştığı için fonksiyon adları (analiz_api_*) değiştirilmedi.
+
+### Test
+`pybasla.py` ile restart → `/analysis` 302 (login gate, route kayıtlı), `/analiz` 301→`/analysis/`,
+`/analiz/api/trend/1` 301. Köprü ve yeni URL doğrulandı.
+
+### Notlar
+Bu bir PİLOT — yöntem kanıtlandı. Kalan ~141 Türkçe route faz faz aynı kalıpla çevrilebilir
+(legacy `main_bp`/`api_bp` route'ları strangler ile eridiği için düşük öncelik). Kullanıcının
+sıradaki modül seçimi bekleniyor. Çevrilmedi: marketing `/ozellikler/analiz-merkezi` (ayrı route),
+docs kılavuz HTML'leri.
+
 ## TASK-198 | 2026-06-20 | ✅ Tamamlandı
 
 **Görev:** KART/veri düzenleme katmanı + modül-bileşen eşlemesi onarımı (ağaçta boş bileşen)

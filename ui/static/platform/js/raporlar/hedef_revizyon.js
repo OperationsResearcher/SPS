@@ -32,7 +32,7 @@
 
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/hedef-revizyon',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/target-revision',{credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

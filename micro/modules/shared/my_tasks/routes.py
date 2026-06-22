@@ -73,7 +73,7 @@ def api_my_tasks():
                 "status": a.status or "—",
                 "due_date": a.end_date.isoformat() if a.end_date else None,
                 "days_until": _days_until(a.end_date),
-                "url": "/bireysel/karne",
+                "url": "/individual/scorecard",
             })
 
         # 3) Süreç faaliyetleri (ProcessActivityAssignee aracılığıyla)

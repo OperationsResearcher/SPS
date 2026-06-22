@@ -82,7 +82,7 @@
       document.getElementById('cmmi-content').style.display = 'none';
       document.getElementById('cmmi-error').style.display = 'none';
       const y = yearSel?.value || '';
-      const url = '/raporlar/api/cmmi-heatmap' + (y ? '?year=' + encodeURIComponent(y) : '');
+      const url = '/reports/api/cmmi-heatmap' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message || 'Veri alınamadı');
       document.getElementById('cmmi-loading').style.display = 'none';

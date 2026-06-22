@@ -12,7 +12,7 @@ import pytest
 # Test edilen modüllerin ana sayfaları (login redirect bekleniyor)
 PAGE_ROUTES = [
     "/k-rapor",
-    "/bireysel/karne",
+    "/individual/scorecard",
     "/admin/yonetim-paneli",
     "/admin/users",
     "/admin/tenants",
@@ -29,8 +29,8 @@ API_ROUTES = [
     "/k-rapor/api/surec-pg",
     "/k-rapor/api/uyari",
     "/k-rapor/api/export-pdf",  # Sprint 11.3
-    "/bireysel/api/karne",
-    "/bireysel/api/karne/export-pdf",  # Sprint 11.3
+    "/individual/api/scorecard",
+    "/individual/api/scorecard/export-pdf",  # Sprint 11.3
     "/kurum/api/overview",
     "/sp/api/plan-years",
     "/k-radar/api/hub-summary",

@@ -38,7 +38,7 @@ def _save_subs(subs, prefs_obj):
     db.session.commit()
 
 
-@app_bp.route("/ayarlar/zamanlanmis-raporlar")
+@app_bp.route("/settings/scheduled-reports")
 @login_required
 def scheduled_reports_page():
     subs, _ = _load_subs()

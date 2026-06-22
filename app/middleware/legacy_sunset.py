@@ -15,6 +15,7 @@ from app.legacy_redirect_config import (
     GONE_PREFIXES,
     LEGACY_HGS_DISABLED_EXACT,
     PREFIX_REWRITE,
+    REPORTS_SEGMENT_REWRITE,
 )
 
 _SKIP_PREFIXES = (
@@ -59,11 +60,11 @@ def _should_skip(path: str) -> bool:
 
 def _is_platform_canonical(path: str) -> bool:
     """Platform kök yolları — legacy yönlendirme uygulanmaz (/kurum-paneli vb. hariç)."""
-    if path in ("/kurum", "/bireysel", "/sp", "/launcher", "/masaustu", "/surec"):
+    if path in ("/kurum", "/individual", "/sp", "/launcher", "/masaustu", "/surec"):
         return True
     platform_prefixes = (
         "/kurum/",
-        "/bireysel/",
+        "/individual/",
         "/sp/",
         "/project/",
         "/masaustu/",
@@ -71,9 +72,12 @@ def _is_platform_canonical(path: str) -> bool:
         "/admin/",
         "/k-radar/",
         "/k_rapor/",
-        "/analiz/",
+        "/reports/",
+        "/analysis/",
         "/launcher/",
-        "/ayarlar/",
+        "/settings/",
+        "/profile/",
+        "/notification/",
     )
     return any(path.startswith(p) for p in platform_prefixes)
 
@@ -115,6 +119,21 @@ def init_legacy_sunset(app) -> None:
         if request.method not in ("GET", "HEAD"):
             return None
         path = request.path or "/"
+
+        # raporlar iç Türkçe segmentleri: /reports/ canonical muafiyetinden ÖNCE köprüle (TASK-204).
+        # Hem /reports/<TR> hem /reports/api/<TR> (ve alt yolları) yeni İngilizce segmente 301'lenir.
+        for old_seg, new_seg in REPORTS_SEGMENT_REWRITE:
+            tr = old_seg[len("/reports/"):]      # ör. "muda-analizi"
+            en = new_seg[len("/reports/"):]      # ör. "muda-analysis"
+            for base in ("/reports/", "/reports/api/"):
+                old = base + tr
+                if path == old or path.startswith(old + "/"):
+                    target = base + en + path[len(old):]
+                    qs = request.query_string.decode()
+                    if qs:
+                        target = f"{target}?{qs}"
+                    return redirect(target, code=301)
+
         if _should_skip(path):
             return None
 

@@ -586,7 +586,7 @@ def _collect_calendar_events(start_d: date, end_d: date, *, org_scope: bool) -> 
                 "backgroundColor": "#f59e0b",
                 "borderColor": "#d97706",
                 "textColor": "#ffffff",
-                "url": "/bireysel/karne",
+                "url": "/individual/scorecard",
                 "extendedProps": {"sourceType": "individual_activity"},
             }
         )

@@ -17,7 +17,7 @@
 
   // Statik sayfa katalogu — kullanıcı tıklayınca atlayacak
   const STATIC_PAGES = [
-    { title: "Masaüstü",                url: "/masaustu-launcher", icon: "fa-home",                 group: "Sayfa" },
+    { title: "Masaüstü",                url: "/desktop-launcher", icon: "fa-home",                 group: "Sayfa" },
     { title: "Stratejik Planlama",      url: "/sp",                icon: "fa-bullseye",             group: "Sayfa" },
     { title: "Yönetici Paneli",         url: "/sp/exec-dashboard", icon: "fa-tachometer-alt",       group: "Sayfa" },
     { title: "X-Matrix",                url: "/sp/xmatrix",        icon: "fa-th-large",             group: "Sayfa" },
@@ -35,13 +35,13 @@
     { title: "Proje Gantt",             url: "/project/gantt",     icon: "fa-stream",               group: "Sayfa" },
     { title: "Proje Kanban",            url: "/project/kanban",    icon: "fa-columns",              group: "Sayfa" },
     { title: "K-Analiz",                url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: "Sayfa" },
-    { title: "K-Radar",                 url: "/raporlar",          icon: "fa-satellite-dish",       group: "Sayfa" },
-    { title: "Performans Analitiği",    url: "/analiz",            icon: "fa-chart-bar",            group: "Sayfa" },
-    { title: "Bireysel Karne",          url: "/bireysel/karne",    icon: "fa-user-check",           group: "Sayfa" },
-    { title: "Bildirimler",             url: "/bildirim",          icon: "fa-bell",                 group: "Sayfa" },
+    { title: "K-Radar",                 url: "/reports",          icon: "fa-satellite-dish",       group: "Sayfa" },
+    { title: "Performans Analitiği",    url: "/analysis",          icon: "fa-chart-bar",            group: "Sayfa" },
+    { title: "Bireysel Karne",          url: "/individual/scorecard", icon: "fa-user-check",        group: "Sayfa" },
+    { title: "Bildirimler",             url: "/notification",      icon: "fa-bell",                 group: "Sayfa" },
     { title: "Kurum Ayarları",          url: "/kurum/ayarlar",     icon: "fa-building",             group: "Sayfa" },
-    { title: "Ayarlar",                 url: "/ayarlar",           icon: "fa-cog",                  group: "Sayfa" },
-    { title: "Profil",                  url: "/profil",            icon: "fa-user",                 group: "Sayfa" },
+    { title: "Ayarlar",                 url: "/settings",          icon: "fa-cog",                  group: "Sayfa" },
+    { title: "Profil",                  url: "/profile",           icon: "fa-user",                 group: "Sayfa" },
     { title: "Yönetim Paneli",          url: "/admin/yonetim",     icon: "fa-user-shield",          group: "Sayfa" },
     { title: "Kullanıcılar",            url: "/admin/users",       icon: "fa-users",                group: "Sayfa" },
   ];

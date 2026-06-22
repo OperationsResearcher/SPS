@@ -2,7 +2,7 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/stratejik-yillik/preview',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/strategic-annual/preview',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
@@ -18,7 +18,7 @@
   document.getElementById('dl').addEventListener('click', async()=>{
     const b=document.getElementById('dl'); const o=b.innerHTML; b.disabled=true; b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Üretiliyor (10-30sn)…';
     try {
-      const r=await fetch('/raporlar/api/stratejik-yillik/generate',{credentials:'same-origin'});
+      const r=await fetch('/reports/api/strategic-annual/generate',{credentials:'same-origin'});
       if(!r.ok) throw new Error('HTTP '+r.status);
       const blob=await r.blob(); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;
       const cd=r.headers.get('Content-Disposition')||''; const m=cd.match(/filename="?([^";]+)"?/);

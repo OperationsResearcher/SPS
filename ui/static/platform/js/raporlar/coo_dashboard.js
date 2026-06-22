@@ -4,7 +4,7 @@
   const scoreColor = s => s==null?'#94a3b8':s>=70?'#10b981':s>=50?'#f59e0b':'#dc2626';
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/coo-dashboard',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/coo-dashboard',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

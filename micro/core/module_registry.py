@@ -36,7 +36,7 @@ MODULES = [
     {
         "id": "bireysel",
         "name": "Bireysel Performans",
-        "url": "/bireysel/karne",
+        "url": "/individual/scorecard",
         "icon": "👤",
         "description": "Bireysel PG'ler, faaliyetler ve kişisel karne",
     },
@@ -50,7 +50,7 @@ MODULES = [
     {
         "id": "analiz",
         "name": "Performans Analitiği",
-        "url": "/analiz",
+        "url": "/analysis",
         "icon": "📊",
         "description": "Süreç bazlı trend, sağlık skoru ve performans raporları",
     },
@@ -85,14 +85,14 @@ MODULES = [
     {
         "id": "ayarlar",
         "name": "Ayarlar",
-        "url": "/ayarlar",
+        "url": "/settings",
         "icon": "⚙️",
         "description": "Kurum ve kullanıcı ayarları",
     },
     {
         "id": "bildirim",
         "name": "Bildirim Merkezi",
-        "url": "/bildirim",
+        "url": "/notification",
         "icon": "🔔",
         "description": "Sistem bildirimleri ve uyarılar",
     },

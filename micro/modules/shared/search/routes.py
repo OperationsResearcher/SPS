@@ -164,7 +164,7 @@ def api_global_search():
                 "icon": _icon("user"),
                 "title": full,
                 "subtitle": u.email or "",
-                "url": "/profil",
+                "url": "/profile",
             })
 
     except Exception as e:
