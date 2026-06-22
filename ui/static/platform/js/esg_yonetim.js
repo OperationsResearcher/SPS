@@ -12,7 +12,7 @@
 
   const LIST_URL = root.dataset.listUrl;
   const ADD_URL = root.dataset.addUrl;
-  const UPDATE_BASE = root.dataset.updateBase; // /raporlar/api/esg/metrics/
+  const UPDATE_BASE = root.dataset.updateBase; // /reports/api/esg/metrics/
   const CAN_EDIT = root.dataset.canEdit === "true";
 
   const CAT_META = {
@@ -245,7 +245,7 @@
 
   async function delValue(vid) {
     try {
-      const d = await postJson(`/raporlar/api/esg/values/${vid}/delete`, {});
+      const d = await postJson(`/reports/api/esg/values/${vid}/delete`, {});
       if (d.success) { toast("Değer silindi."); load(); }
       else showError(d.message || "Silinemedi.");
     } catch (e) { showError("Sunucu hatası: " + e.message); }

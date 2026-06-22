@@ -478,7 +478,7 @@
                 {%- endif -%}
             {%- endif -%}
             <nav class="mc-breadcrumb" aria-label="Sayfa konumu">
-                <a href="/masaustu-launcher" class="mc-breadcrumb-home" title="Ana Sayfa">
+                <a href="/desktop-launcher" class="mc-breadcrumb-home" title="Ana Sayfa">
                     <i class="fas fa-home"></i>
                 </a>
                 {%- if current_section -%}
@@ -530,6 +530,14 @@
        short_id ve isim, sayfa yüklenince tek toplu istekle (cards-meta) çözülür. #}
     {% if current_user.is_authenticated %}
     {% set kk_is_admin = (current_user.role and current_user.role.name == 'Admin') %}
+    {% if kk_is_admin %}
+    {# Sayfa ID rozeti — yalnız Admin, sayfa üstünde ortada. Sayfadaki ilk
+       data-card-code'un prefix'inden sayfa kataloğu (system_pages) çözülür. #}
+    <div id="kk-page-badge" style="display:none; position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:9000;
+         font:600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; background:#0f172a; color:#fbbf24;
+         padding:4px 12px; border-radius:0 0 8px 8px; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:default;
+         user-select:all; white-space:nowrap;" title="Sayfa ID (yalnız admin)"></div>
+    {% endif %}
     <div id="kk-card-info-modal-overlay">
       <div id="kk-card-info-modal">
         <div class="kk-h">
@@ -585,6 +593,7 @@
       var IS_ADMIN = {{ 'true' if kk_is_admin else 'false' }};
       var INFO_URL = "{{ url_for('app_bp.admin_api_card_info', code='__CODE__') }}";
       var META_URL = "{{ url_for('app_bp.admin_api_cards_meta') }}";
+      var PAGE_META_URL = "{{ url_for('app_bp.admin_api_page_meta', code='__CODE__') }}";
       var META = {};            // code -> {short_id, name}
       var badges = [];          // admin rozet elemanları (short_id sonra dolar)
 
@@ -673,6 +682,27 @@
           .catch(function () {});
       }
 
+      // Sayfa ID rozeti (yalnız admin) — sayfadaki ilk data-card-code'un prefix'i = sayfa.
+      function loadPageBadge() {
+        if (!IS_ADMIN) return;
+        var badge = document.getElementById("kk-page-badge");
+        if (!badge) return;
+        var first = document.querySelector("[data-card-code]");
+        if (!first) return;
+        var code = first.getAttribute("data-card-code") || "";
+        var prefix = code.indexOf(".") >= 0 ? code.slice(0, code.lastIndexOf(".")) : code;
+        if (!prefix) return;
+        fetch(PAGE_META_URL.replace("__CODE__", encodeURIComponent(prefix)), {headers: {"Accept": "application/json"}})
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j.success && j.found && j.short_id) {
+              badge.textContent = "▼ " + j.short_id + " · " + (j.name || prefix);
+              badge.style.display = "block";
+            }
+          })
+          .catch(function () {});
+      }
+
       function openInfo(code) {
         var ov = document.getElementById("kk-card-info-modal-overlay");
         var codeEl = document.getElementById("kk-card-info-code");
@@ -712,6 +742,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         scan(document);
         loadMeta();
+        loadPageBadge();
         var ov = document.getElementById("kk-card-info-modal-overlay");
         if (ov) {
           ov.addEventListener("click", function (e) { if (e.target === ov) closeInfo(); });

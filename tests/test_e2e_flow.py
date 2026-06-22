@@ -45,7 +45,7 @@ def _seed_user():
     "/surec",
     "/project",
     "/sp",
-    "/bireysel",
+    "/individual",
   ],
 )
 def test_platform_pages_authenticated(client, app, path):
