@@ -19,7 +19,7 @@
   </div>
 
   {# Bilgilendirme #}
-  <div class="mc-card" style="padding:14px 18px; margin-bottom:14px; background:#fef2f2; border-left:4px solid #ef4444;">
+  <div class="mc-card mc-card--accent-danger" style="padding:14px 18px; margin-bottom:14px; background:#fef2f2">
     <div style="font-size:13px; color:#7f1d1d; line-height:1.6;">
       <b>Stratejik Girişim nedir?</b> Bir veya birden fazla stratejik alt hedefi ileriye taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır.
       Bu rapor tüm girişimleri tek görselde gösterir; <b>hangileri sağlıklı ilerliyor, hangileri bütçesini aşıyor, hangileri öncelik almalı</b> sorularına anında yanıt verir.
@@ -28,22 +28,22 @@
 
   {# 4 eksen açıklaması #}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-bottom:14px;">
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #6366f1;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.yatay_eksen_x" style="padding:12px 14px; border-top:3px solid #6366f1;">
       <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Yatay Eksen (X)</div>
       <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">İlerleme %</div>
       <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Sağa gittikçe tamamlanmaya yakın</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #f59e0b;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.dikey_eksen_y" style="padding:12px 14px; border-top:3px solid #f59e0b;">
       <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Dikey Eksen (Y)</div>
       <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Bütçe Kullanımı %</div>
       <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Yukarı çıktıkça bütçesi tükeniyor</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #10b981;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.daire_boyutu" style="padding:12px 14px; border-top:3px solid #10b981;">
       <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Daire Boyutu</div>
       <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Toplam Bütçe</div>
       <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Büyük daire = büyük bütçe</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #ef4444;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.daire_rengi" style="padding:12px 14px; border-top:3px solid #ef4444;">
       <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Daire Rengi</div>
       <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Öncelik Seviyesi</div>
       <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Kırmızı = kritik, mavi = düşük</div>
@@ -51,7 +51,7 @@
   </div>
 
   {# Kadran yorumlama anahtarı #}
-  <details class="mc-card" style="padding:12px 16px; margin-bottom:14px;">
+  <details class="mc-card" data-card-code="raporlar_initiative_bubble.4_kadran_nasil_yorumlanir" style="padding:12px 16px; margin-bottom:14px;">
     <summary style="cursor:pointer; font-size:13px; font-weight:600; color:#0f172a;">
       <i class="fas fa-compass" style="color:#6366f1;"></i> 4 Kadran nasıl yorumlanır?
     </summary>
@@ -82,8 +82,8 @@
   <div id="content" style="display:none;">
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:14px;" id="summary"></div>
 
-    <div class="mc-card" style="padding:18px; margin-bottom:14px;">
-      <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 8px;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.portfoy_balon_grafigi" style="padding:18px; margin-bottom:14px;">
+      <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 8px;">
         <i class="fas fa-chart-scatter" style="color:#ef4444;"></i> Portföy Balon Grafiği
       </h3>
       <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px;">
@@ -99,8 +99,8 @@
       </div>
     </div>
 
-    <div class="mc-card" style="padding:18px; overflow-x:auto;">
-      <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.detay_tablosu" style="padding:18px; overflow-x:auto;">
+      <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
         <i class="fas fa-list" style="color:#6366f1;"></i> Detay Tablosu
       </h3>
       <table style="width:100%; border-collapse:collapse; font-size:12.5px;">

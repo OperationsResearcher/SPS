@@ -1,6 +1,6 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  const stat = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   const fmt = n => new Intl.NumberFormat('tr-TR').format(Math.round(n||0));
   async function load(){
     try {
@@ -10,10 +10,10 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam',s.total,'#0f172a'),
-        stat('Onay Bekliyor',s.pending,s.pending>0?'#f59e0b':'#94a3b8'),
-        stat('Onaylanmış',s.approved,'#10b981'),
-        stat('Reddedilen',s.rejected,s.rejected>0?'#dc2626':'#94a3b8'),
+        stat('Toplam',s.total,'#0f172a','raporlar_onay_zinciri.toplam'),
+        stat('Onay Bekliyor',s.pending,s.pending>0?'#f59e0b':'#94a3b8','raporlar_onay_zinciri.onay_bekliyor'),
+        stat('Onaylanmış',s.approved,'#10b981','raporlar_onay_zinciri.onaylanmis'),
+        stat('Reddedilen',s.rejected,s.rejected>0?'#dc2626':'#94a3b8','raporlar_onay_zinciri.reddedilen'),
       ].join('');
       const prioColor = {'Kritik':'#dc2626','Yüksek':'#f97316','Orta':'#f59e0b','Düşük':'#94a3b8'};
       document.getElementById('tbl').innerHTML = j.items.map(i => {

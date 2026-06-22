@@ -24,6 +24,8 @@ from app.models.process import (
     ProcessKpi,
     ProcessActivity,
     Process,
+    KpiData,
+    FavoriteKpi,
     process_members,
     process_leaders,
 )
@@ -117,6 +119,42 @@ def masaustu():
     surec_pgs = (
         surec_pg_sorgu.order_by(ProcessKpi.updated_at.desc()).limit(5).all()
     )
+
+    # Favori PG'ler — kullanıcının yıldızladığı süreç PG'leri + son ölçüm değeri
+    favori_pg_kayitlari = (
+        ProcessKpi.query
+        .join(FavoriteKpi, FavoriteKpi.process_kpi_id == ProcessKpi.id)
+        .join(ProcessKpi.process)
+        .filter(
+            FavoriteKpi.user_id == user_id,
+            FavoriteKpi.is_active.is_(True),
+            ProcessKpi.is_active.is_(True),
+            Process.is_active.is_(True),
+            Process.tenant_id == current_user.tenant_id,
+        )
+        .order_by(ProcessKpi.updated_at.desc())
+        .all()
+    )
+    favori_pgs = []
+    for _pg in favori_pg_kayitlari:
+        _son = (
+            KpiData.query
+            .filter_by(process_kpi_id=_pg.id, is_active=True)
+            .order_by(KpiData.year.desc(), KpiData.data_date.desc())
+            .first()
+        )
+        favori_pgs.append({
+            "id": _pg.id,
+            "name": _pg.name,
+            "code": _pg.code,
+            "unit": _pg.unit,
+            "target_value": _pg.target_value,
+            "process_id": _pg.process_id,
+            "process_name": _pg.process.name if _pg.process else None,
+            "actual_value": _son.actual_value if _son else None,
+            "status": _son.status if _son else None,
+            "status_percentage": _son.status_percentage if _son else None,
+        })
 
     # Okunmamış bildirimler
     bildirimler = (
@@ -257,6 +295,7 @@ def masaustu():
         bireysel_pgs=bireysel_pgs,
         bireysel_faaliyetler=bireysel_faaliyetler,
         surec_pgs=surec_pgs,
+        favori_pgs=favori_pgs,
         bildirimler=bildirimler,
         stratejiler=stratejiler,
         toplam_bireysel_pg=toplam_bireysel_pg,

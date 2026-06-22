@@ -1,8 +1,8 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const yearSel = document.getElementById('muda-year-select');
-  const stat = (l,v,c,sub) => `<div class="mc-card" style="padding:12px 14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
+  const stat = (l,v,c,sub,code) => `<div class="mc-card" style="padding:12px 14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:800;color:${c};margin-top:3px;">${esc(v)}</div>
     ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(sub)}</div>` : ''}
   </div>`;
@@ -19,9 +19,9 @@
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        stat('Analiz Edilen Süreç', s.total_processes_analyzed, '#0f172a', s.plan_year ? `${s.plan_year} yılı` : ''),
-        stat('Bulgu Olan Süreç', s.processes_with_findings, '#f59e0b', s.total_processes_analyzed ? `%${Math.round(s.processes_with_findings/s.total_processes_analyzed*100)} kapsama` : ''),
-        stat('Toplam Bulgu', s.total_findings, '#dc2626'),
+        stat('Analiz Edilen Süreç', s.total_processes_analyzed, '#0f172a', s.plan_year ? `${s.plan_year} yılı` : '', 'raporlar_muda_analizi.analiz_edilen_surec'),
+        stat('Bulgu Olan Süreç', s.processes_with_findings, '#f59e0b', s.total_processes_analyzed ? `%${Math.round(s.processes_with_findings/s.total_processes_analyzed*100)} kapsama` : '', 'raporlar_muda_analizi.bulgu_olan_surec'),
+        stat('Toplam Bulgu', s.total_findings, '#dc2626', '', 'raporlar_muda_analizi.toplam_bulgu'),
       ].join('');
 
       const max = Math.max(...j.by_muda.map(m=>m.count), 1);

@@ -41,40 +41,40 @@
     </div>
 
     <div class="sh-stats">
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.ana_strateji">
             <div class="sh-stat-icon sh-stat-icon--strategy"><i class="fas fa-bullseye"></i></div>
             <div>
                 <div class="sh-stat-val">{{ strategy_count }}</div>
-                <div class="sh-stat-lbl">Ana Strateji</div>
+                <div class="sh-stat-lbl mc-stat-label">Ana Strateji</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.alt_strateji">
             <div class="sh-stat-icon sh-stat-icon--sub"><i class="fas fa-sitemap"></i></div>
             <div>
                 <div class="sh-stat-val">{{ sub_count }}</div>
-                <div class="sh-stat-lbl">Alt Strateji</div>
+                <div class="sh-stat-lbl mc-stat-label">Alt Strateji</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.surec">
             <div class="sh-stat-icon sh-stat-icon--process"><i class="fas fa-diagram-project"></i></div>
             <div>
                 <div class="sh-stat-val">{{ process_count }}</div>
-                <div class="sh-stat-lbl">Süreç</div>
+                <div class="sh-stat-lbl mc-stat-label">Süreç</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.pg">
             <div class="sh-stat-icon sh-stat-icon--kpi"><i class="fas fa-chart-line"></i></div>
             <div>
                 <div class="sh-stat-val">{{ pg_count }}</div>
-                <div class="sh-stat-lbl">PG</div>
+                <div class="sh-stat-lbl mc-stat-label">PG</div>
             </div>
         </div>
         {% if initiative_count %}
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.str_girisim">
             <div class="sh-stat-icon" style="background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#db2777;"><i class="fas fa-rocket"></i></div>
             <div>
                 <div class="sh-stat-val">{{ initiative_count }}</div>
-                <div class="sh-stat-lbl">Str. Girişim</div>
+                <div class="sh-stat-lbl mc-stat-label">Str. Girişim</div>
             </div>
         </div>
         {% endif %}
@@ -91,7 +91,7 @@
 
     <div id="strateji-harita-error" role="alert"></div>
 
-    <div class="sh-canvas-wrap">
+    <div class="sh-canvas-wrap" data-card-code="sp_strateji_haritasi.strateji_haritasi">
         <div class="sh-flow-strip" aria-hidden="true">
             <span class="sh-flow-col sh-flow-col--v"><span class="sh-flow-dot"></span> Vizyon</span>
             <span class="sh-flow-col sh-flow-col--s"><span class="sh-flow-dot"></span> Strateji</span>

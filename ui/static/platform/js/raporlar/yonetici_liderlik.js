@@ -1,7 +1,7 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const statCard = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
+  const statCard = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   async function load(){
     try {
@@ -16,7 +16,7 @@
         note.innerHTML = '<i class="fas fa-info-circle"></i> '+esc(s.note);
       }
       document.getElementById('summary').innerHTML = [
-        statCard('Yönetici Sayısı', s.total_leaders, '#0f172a'),
+        statCard('Yönetici Sayısı', s.total_leaders, '#0f172a', 'raporlar_yonetici_liderlik.yonetici_sayisi'),
         s.has_leader_data ? statCard('Skor Hesaplanan', s.with_score || 0, '#0ea5e9') : '',
         s.has_leader_data ? statCard('Ortalama Skor', s.avg_score_overall != null ? s.avg_score_overall : '—', '#10b981') : '',
       ].filter(Boolean).join('');

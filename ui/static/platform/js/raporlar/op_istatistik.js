@@ -1,8 +1,8 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const yearSel = document.getElementById('op-year-select');
-  const stat = (l,v,c,sub) => `<div class="mc-card" style="padding:12px 14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
+  const stat = (l,v,c,sub,code) => `<div class="mc-card" style="padding:12px 14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:800;color:${c};margin-top:3px;">${esc(v)}</div>
     ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(sub)}</div>` : ''}
   </div>`;
@@ -18,9 +18,9 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Süreç', s.total_processes, '#0f172a', s.plan_year ? `${s.plan_year} yılı` : ''),
-        stat('Toplam PG', s.total_kpis, '#0ea5e9'),
-        stat('Toplam Faaliyet', s.total_activities, '#0d9488'),
+        stat('Toplam Süreç', s.total_processes, '#0f172a', s.plan_year ? `${s.plan_year} yılı` : '', 'raporlar_operasyon_istatistik.toplam_surec'),
+        stat('Toplam PG', s.total_kpis, '#0ea5e9', '', 'raporlar_operasyon_istatistik.toplam_pg'),
+        stat('Toplam Faaliyet', s.total_activities, '#0d9488', '', 'raporlar_operasyon_istatistik.toplam_faaliyet'),
       ].join('');
       document.getElementById('tbl').innerHTML = j.processes.map(p => `
         <tr style="border-bottom:1px solid #f1f5f9;">

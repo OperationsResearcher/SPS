@@ -45,33 +45,33 @@
     <!-- KPI Dashboard -->
     {% set ov = overview %}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #4f46e5;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Proje</div>
+        <div data-card-code="project.toplam_proje" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #4f46e5;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Proje</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.total_projects or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">
                 {% if ov.avg_health_score is not none %}Sağlık: <b>{{ ov.avg_health_score }}/100</b>{% else %}—{% endif %}
             </div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık Görev</div>
+        <div data-card-code="project.acik_gorev" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık Görev</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.open_tasks or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ ov.total_tasks or 0 }} toplam</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Gecikmiş Görev</div>
+        <div data-card-code="project.gecikmis_gorev" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Gecikmiş Görev</div>
             <div style="font-size:24px;font-weight:800;color:{% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ ov.overdue_tasks or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">acil eylem</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Bu Hafta Biten</div>
+        <div data-card-code="project.bu_hafta_biten" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Bu Hafta Biten</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.tasks_due_7d or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">görev · {{ ov.projects_end_7d or 0 }} proje</div>
         </div>
         {% set _raid = (ov.charts.raid_by_type if ov.charts else None) or {'labels':['Risk','Assumption','Issue','Dependency'],'data':[0,0,0,0]} %}
         {% set _raid_total = (_raid.data | sum) or 0 %}
         {% set _raid_colors = ['#dc2626', '#f59e0b', '#ea580c', '#0ea5e9'] %}
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #ef4444; position:relative;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık RAID</div>
+        <div data-card-code="project.acik_raid" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #ef4444; position:relative;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık RAID</div>
             <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
               {% if _raid_total > 0 %}
               {# Mini donut (conic-gradient) #}
@@ -104,15 +104,15 @@
               </div>
             </div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Sağlık</div>
+        <div data-card-code="project.kritik_saglik" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Sağlık</div>
             <div style="font-size:24px;font-weight:800;color:{% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ ov.low_health_projects or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">sağlık &lt; 50</div>
         </div>
     </div>
 
-    <div class="mb-6">
-        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Proje listesi</h3>
+    <div class="mb-6" data-card-code="project.proje_listesi">
+        <h3 class="mc-card-title text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Proje listesi</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
             Yaklaşık <strong>10 proje</strong> yüksekliği görünür; sayfadaki diğer kayıtlar için alanı <strong>aşağı kaydırın</strong> (kaydırma çubuğu).
         </p>
@@ -340,8 +340,8 @@
         </div>
     </details>
 
-    <section class="mb-6" aria-label="Proje operasyon özeti">
-        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+    <section class="mb-6" aria-label="Proje operasyon özeti" data-card-code="project.operasyon_ozeti">
+        <h3 class="mc-card-title text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
             <i class="fas fa-chart-pie text-indigo-500"></i> Operasyon özeti
         </h3>
 

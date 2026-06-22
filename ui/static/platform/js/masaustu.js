@@ -5,7 +5,9 @@
   "use strict";
 
   const STORAGE_ORDER = "kokpitim_masaustu_widget_order_v1";
-  const STORAGE_HIDDEN = "kokpitim_masaustu_widget_hidden_v1";
+  // Gizleme artık kart kimliği (data-card-code) bazlı — yeni standartla uyumlu.
+  // Eski (widget-id bazlı) v1 key'i bilinçli terk edildi; localStorage kişisel/geçici.
+  const STORAGE_HIDDEN = "kokpitim_masaustu_card_hidden_v1";
   const SCRATCH_KEY = "kokpitim_masaustu_scratch_v1";
 
   const root = document.getElementById("masaustu-root");
@@ -46,18 +48,42 @@
     }
   }
 
-  function applyHiddenWidgets() {
-    let hidden = [];
+  function readHidden() {
     try {
-      hidden = JSON.parse(localStorage.getItem(STORAGE_HIDDEN) || "[]");
+      const h = JSON.parse(localStorage.getItem(STORAGE_HIDDEN) || "[]");
+      return Array.isArray(h) ? h : [];
     } catch (e) {
-      hidden = [];
+      return [];
     }
-    if (!Array.isArray(hidden)) return;
-    hidden.forEach((id) => {
-      const el = document.querySelector(`[data-widget-id="${id}"]`);
+  }
+
+  function applyHiddenWidgets() {
+    readHidden().forEach((code) => {
+      const el = document.querySelector(`[data-card-code="${code}"]`);
       if (el) el.style.display = "none";
     });
+  }
+
+  // Sayfadaki tüm kartları (data-card-code) topla; etiket = kartın görünen başlığı.
+  function collectCards() {
+    const out = [];
+    const seen = new Set();
+    document.querySelectorAll("[data-card-code]").forEach((el) => {
+      const code = el.getAttribute("data-card-code");
+      if (!code || seen.has(code)) return;
+      seen.add(code);
+      // başlık: kartın kendi mc-card-title / mc-stat-label'i (torun kartınki değil)
+      let label = code;
+      const cands = el.querySelectorAll(".mc-card-title, .mc-stat-label, .mc-card-header h3, .mc-card-header h2");
+      for (let i = 0; i < cands.length; i++) {
+        if (cands[i].closest("[data-card-code]") === el) {
+          label = cands[i].textContent.replace(/\s+/g, " ").trim() || code;
+          break;
+        }
+      }
+      out.push({ code: code, label: label });
+    });
+    return out;
   }
 
   function initSortable() {
@@ -73,48 +99,55 @@
     restoreWidgetOrder();
   }
 
-  const WIDGET_LABELS = {
-    calendar: "Takvimim",
-    quick: "Hızlı işlemler",
-    masam: "Benim Masam",
-    alerts: "Dikkat (aylık PG)",
-    scratch: "Karalama defteri",
-    lists: "PG & faaliyet listeleri",
-    surecpg: "Süreç PG",
-    notif: "Bildirimler",
-    strat: "Stratejik hedefler",
-  };
+  function escAttr(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
 
   function openWidgetManager() {
-    const ids = Object.keys(WIDGET_LABELS);
-    let hidden = [];
-    try {
-      hidden = JSON.parse(localStorage.getItem(STORAGE_HIDDEN) || "[]");
-    } catch (e) {
-      hidden = [];
+    const cards = collectCards();
+    if (!cards.length) {
+      Swal.fire({ icon: "info", title: "Kart bulunamadı", text: "Bu sayfada yönetilebilir kart yok." });
+      return;
     }
-    if (!Array.isArray(hidden)) hidden = [];
+    const hidden = readHidden();
 
-    const checks = ids
-      .map((id) => {
-        const on = !hidden.includes(id);
-        return `<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px;">
-          <input type="checkbox" data-wid="${id}" ${on ? "checked" : ""}/> ${WIDGET_LABELS[id] || id}
+    const checks = cards
+      .map((c) => {
+        const on = !hidden.includes(c.code);
+        return `<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px;cursor:pointer;">
+          <input type="checkbox" data-code="${escAttr(c.code)}" ${on ? "checked" : ""}/>
+          <span>${escAttr(c.label)}</span>
         </label>`;
       })
       .join("");
 
     Swal.fire({
-      title: "Widget yönetimi",
-      html: `<div class="text-left">${checks}<p class="mc-page-subtitle" style="margin-top:12px;">Gizlenen kartlar sayfadan kaldırılır. Sıralamayı kart başlığından sürükleyerek değiştirebilirsiniz.</p></div>`,
+      title: "Kart yönetimi",
+      html: `<div class="text-left" style="max-height:55vh;overflow-y:auto;">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button type="button" id="kk-wm-all" class="mc-btn mc-btn-sm mc-btn-secondary">Tümünü aç</button>
+            <button type="button" id="kk-wm-none" class="mc-btn mc-btn-sm mc-btn-secondary">Tümünü kapat</button>
+          </div>
+          ${checks}
+          <p class="mc-page-subtitle" style="margin-top:12px;">Kapatılan kartlar sayfadan gizlenir (yalnız bu tarayıcıda). Sıralamayı kart başlığından sürükleyerek değiştirebilirsiniz.</p>
+        </div>`,
       showCancelButton: true,
       confirmButtonText: "Kaydet",
       cancelButtonText: "İptal",
       confirmButtonColor: "#4f46e5",
+      didOpen: () => {
+        const pop = Swal.getPopup();
+        const boxes = pop.querySelectorAll("input[type=checkbox][data-code]");
+        pop.querySelector("#kk-wm-all")?.addEventListener("click", () =>
+          boxes.forEach((b) => { b.checked = true; }));
+        pop.querySelector("#kk-wm-none")?.addEventListener("click", () =>
+          boxes.forEach((b) => { b.checked = false; }));
+      },
       preConfirm: () => {
         const nextHidden = [];
-        Swal.getPopup().querySelectorAll("input[type=checkbox][data-wid]").forEach((cb) => {
-          if (!cb.checked) nextHidden.push(cb.getAttribute("data-wid"));
+        Swal.getPopup().querySelectorAll("input[type=checkbox][data-code]").forEach((cb) => {
+          if (!cb.checked) nextHidden.push(cb.getAttribute("data-code"));
         });
         return nextHidden;
       },

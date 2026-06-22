@@ -3,9 +3,9 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const yearSel = document.getElementById('cmmi-year-select');
 
-  function statCard(label, value, color, sub) {
-    return `<div class="mc-card" style="padding:12px 14px;">
-      <div style="font-size:10.5px; color:#64748b; font-weight:600; text-transform:uppercase;">${esc(label)}</div>
+  function statCard(label, value, color, sub, code) {
+    return `<div class="mc-card" style="padding:12px 14px;"${code ? ` data-card-code="${code}"` : ''}>
+      <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; font-weight:600; text-transform:uppercase;">${esc(label)}</div>
       <div style="font-size:24px; font-weight:800; color:${color}; margin-top:3px;">${esc(value)}</div>
       ${sub ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">${esc(sub)}</div>` : ''}
     </div>`;
@@ -89,11 +89,11 @@
       document.getElementById('cmmi-content').style.display = '';
       const s = j.summary;
       document.getElementById('cmmi-summary').innerHTML = [
-        statCard('Ölçülen Süreç',       s.total_processes, '#6366f1', `${s.tenant_process_count} toplam`),
-        statCard('Ölçülmemiş',          s.unmeasured_count, s.unmeasured_count > 0 ? '#f59e0b' : '#10b981', 'değerlendirme bekliyor'),
-        statCard('Ortalama Seviye',     s.avg_level, s.overall_color, '/ 5.0'),
-        statCard('Optimize Eden (L5)',  s.level_5_count, '#10b981', 'sınıfın en iyisi'),
-        statCard('Düşük Seviye (L1-L2)', s.low_level_count, s.low_level_count > 0 ? '#dc2626' : '#10b981', 'aksiyon önceliği'),
+        statCard('Ölçülen Süreç',       s.total_processes, '#6366f1', `${s.tenant_process_count} toplam`, 'raporlar_cmmi_heatmap.olculen_surec'),
+        statCard('Ölçülmemiş',          s.unmeasured_count, s.unmeasured_count > 0 ? '#f59e0b' : '#10b981', 'değerlendirme bekliyor', 'raporlar_cmmi_heatmap.olculmemis'),
+        statCard('Ortalama Seviye',     s.avg_level, s.overall_color, '/ 5.0', 'raporlar_cmmi_heatmap.ortalama_seviye'),
+        statCard('Optimize Eden (L5)',  s.level_5_count, '#10b981', 'sınıfın en iyisi', 'raporlar_cmmi_heatmap.optimize_eden_l5'),
+        statCard('Düşük Seviye (L1-L2)', s.low_level_count, s.low_level_count > 0 ? '#dc2626' : '#10b981', 'aksiyon önceliği', 'raporlar_cmmi_heatmap.dusuk_seviye_l1_l2'),
       ].join('');
       renderOverall(s);
       renderDistribution(j.distribution);

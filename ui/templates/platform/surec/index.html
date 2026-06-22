@@ -75,46 +75,55 @@
     {% set _kpi_ns = namespace(n=0) %}
     {% for _p in processes %}{% set _kpi_ns.n = _kpi_ns.n + (_p.kpis|length) %}{% endfor %}
     {% set _total_kpi = _kpi_ns.n %}
-    {% set _ns = namespace(sum=0, cnt=0, low=0, hi=0, no_kpi=0) %}
+    {% set _ns = namespace(sum=0, cnt=0, low=0, hi=0, risk=0, no_data=0, no_kpi=0) %}
     {% for _p in processes %}
-        {% set _s = (process_scores.get(_p.id) or 0)|round|int %}
+        {% set _raw = process_scores.get(_p.id) %}
+        {% set _s = (_raw or 0)|round|int %}
         {% set _ns.sum = _ns.sum + _s %}
         {% set _ns.cnt = _ns.cnt + 1 %}
-        {% if _s < 50 %}{% set _ns.low = _ns.low + 1 %}{% endif %}
-        {% if _s >= 80 %}{% set _ns.hi = _ns.hi + 1 %}{% endif %}
+        {# Sınıflandırma HAM skorla (Kanban kolonlarıyla birebir aynı eşik) #}
+        {% if _raw is none %}
+            {% set _ns.no_data = _ns.no_data + 1 %}
+        {% elif _raw >= 80 %}
+            {% set _ns.hi = _ns.hi + 1 %}
+        {% elif _raw >= 50 %}
+            {% set _ns.risk = _ns.risk + 1 %}
+        {% else %}
+            {% set _ns.low = _ns.low + 1 %}
+        {% endif %}
         {% if (_p.kpis|length) == 0 %}{% set _ns.no_kpi = _ns.no_kpi + 1 %}{% endif %}
     {% endfor %}
     {% set _avg = (_ns.sum / _ns.cnt)|round|int if _ns.cnt else 0 %}
     {% set _root_cnt = roots|length %}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Süreç</div>
+        <div data-card-code="process.toplam_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Süreç</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_p }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _root_cnt }} kök süreç</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam PG</div>
+        <div data-card-code="process.toplam_pg" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam PG</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_kpi }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _ns.no_kpi }} PG'siz süreç</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Ortalama Skor</div>
+        <div data-card-code="process.ortalama_skor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Ortalama Skor</div>
             <div style="font-size:24px;font-weight:800;color:{% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};margin-top:4px;">%{{ _avg }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">tüm süreçler</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Yüksek Performans</div>
+        <div data-card-code="process.yuksek_performans" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Yüksek Performans</div>
             <div style="font-size:24px;font-weight:800;color:#10b981;margin-top:4px;">{{ _ns.hi }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">skor ≥ 80</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Süreç</div>
+        <div data-card-code="process.kritik_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Süreç</div>
             <div style="font-size:24px;font-weight:800;color:{% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ _ns.low }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">skor &lt; 50</div>
         </div>
         {% if k_vektor_enabled %}
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">K-Vektör</div>
+        <div data-card-code="process.k_vektor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">K-Vektör</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:18px;color:#8b5cf6;"></i> Aktif</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">ağırlıklı skorlama</div>
         </div>
@@ -139,6 +148,31 @@
     </div>
 
     {% if roots %}
+    {# ── Süreçler kartı: Ağaç/Kanban içeriğini saran kapsayıcı + durum sayaçları ── #}
+    <div class="mc-card" data-card-code="process.surecler" style="margin-bottom:18px;">
+      <div class="mc-card-header" style="flex-wrap:wrap; gap:10px;">
+        <span class="mc-card-title">
+          <i class="fas fa-sitemap" style="color:#6366f1; margin-right:6px;"></i>Süreçler
+        </span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px;">
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#10b981;"></span>Hedefte {{ _ns.hi }}
+          </span>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>Risk altında {{ _ns.risk }}
+          </span>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>Hedef dışı {{ _ns.low }}
+          </span>
+          {% if _ns.no_data %}
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#cbd5e1;"></span>Veri yok {{ _ns.no_data }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="mc-card-body">
+
     <div id="surec-tree-view" style="display:flex; flex-direction:column; gap:10px;">
         {% macro render_process(p, depth) %}
         <div class="mc-card surec-tree-item" style="{% if depth > 0 %}margin-left:{{ depth * 24 }}px;{% endif %}">
@@ -234,9 +268,7 @@
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--hedefte"></span>
               <h3 class="kb-col-title">Hedefte</h3>
-              <span class="kb-col-count" id="kb-proc-count-hedefte">
-                {{ processes | selectattr('id', 'in', process_scores.keys() | list) | list | length }}
-              </span>
+              <span class="kb-col-count" id="kb-proc-count-hedefte">{{ _ns.hi }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -287,6 +319,7 @@
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--risk"></span>
               <h3 class="kb-col-title">Risk altında</h3>
+              <span class="kb-col-count">{{ _ns.risk }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -337,6 +370,7 @@
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--disi"></span>
               <h3 class="kb-col-title">Hedef dışı</h3>
+              <span class="kb-col-count">{{ _ns.low }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -387,6 +421,7 @@
             <div class="kb-col-head">
               <span class="kb-col-dot" style="background:#cbd5e1;"></span>
               <h3 class="kb-col-title">Veri yok</h3>
+              <span class="kb-col-count">{{ _ns.no_data }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -428,6 +463,9 @@
         </div>
       </div>
     </div>
+
+      </div>{# /mc-card-body #}
+    </div>{# /mc-card process.surecler #}
 
     {% else %}
     <div class="mc-card">

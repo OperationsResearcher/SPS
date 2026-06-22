@@ -32,7 +32,7 @@
   </div>
 
   {# CMMI nedir kutusu — kullanıcı kontekstini anlasın #}
-  <div class="mc-card" style="padding:14px 18px; margin-bottom:14px; background:#eef2ff; border-left:4px solid #6366f1;">
+  <div class="mc-card mc-card--accent-info" style="padding:14px 18px; margin-bottom:14px; background:#eef2ff">
     <div style="font-size:12.5px; color:#3730a3; line-height:1.55;">
       <b>CMMI nedir?</b> Capability Maturity Model Integration — süreçlerin ne kadar disiplinli, ölçülen ve sürekli iyileştiren olduğunu 5 kademede değerlendiren küresel standart.
       Yüksek seviyeler <b>tahmin edilebilirlik, kalite ve verimliliği</b> artırır. Kurumsal olgunluk = süreç olgunluklarının ortalaması.
@@ -49,20 +49,20 @@
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:14px;" id="cmmi-summary"></div>
 
     {# Genel olgunluk yorum kutusu #}
-    <div id="cmmi-overall" class="mc-card" style="padding:18px 22px; margin-bottom:14px; border-left:5px solid #6366f1;"></div>
+    <div id="cmmi-overall" class="mc-card mc-card--accent-info" style="padding:18px 22px; margin-bottom:14px" data-card-code="raporlar_cmmi_heatmap.ortalama_olgunluk"></div>
 
     {# Seviye dağılımı çubukları + açıklamalar #}
-    <div class="mc-card" style="padding:18px; margin-bottom:14px;">
-      <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
+    <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_cmmi_heatmap.seviye_dagilimi_ve_aciklamalar">
+      <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
         <i class="fas fa-chart-column" style="color:#6366f1;"></i> Seviye Dağılımı ve Açıklamalar
       </h3>
       <div id="cmmi-dist" style="display:grid; gap:10px;"></div>
     </div>
 
     {# Süreç ısı haritası #}
-    <div class="mc-card" style="padding:18px; margin-bottom:14px;">
+    <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_cmmi_heatmap.surec_bazli_olgunluk">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-        <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0;">
+        <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0;">
           <i class="fas fa-grip" style="color:#6366f1;"></i> Süreç Bazlı Olgunluk
         </h3>
         <span style="font-size:11.5px; color:#64748b;">Tıkla → süreç karnesine git</span>
@@ -71,7 +71,7 @@
     </div>
 
     {# Ölçülmemiş süreçler #}
-    <div id="cmmi-unmeasured" class="mc-card" style="display:none; padding:14px 18px; background:#fffbeb; border-left:4px solid #f59e0b;">
+    <div id="cmmi-unmeasured" class="mc-card mc-card--accent-warning" style="display:none; padding:14px 18px; background:#fffbeb">
       <div style="font-size:13px; font-weight:600; color:#92400e; margin-bottom:6px;">
         <i class="fas fa-triangle-exclamation"></i> Henüz Olgunluk Değerlendirmesi Yapılmamış Süreçler
       </div>

@@ -16,28 +16,28 @@
       </p>
     </div>
   </div>
-  <div class="mc-card" style="padding:12px 16px; margin-bottom:14px; background:#f0fdf4; border-left:4px solid #16a34a;">
+  <div class="mc-card mc-card--accent-success" style="padding:12px 16px; margin-bottom:14px; background:#f0fdf4">
     <div style="font-size:12.5px; color:#14532d; line-height:1.55;">
       <b>Ne işe yarar?</b> Çeyrek bitiminde toplanan yönetim için: <b>yöneticiye 1 sayfa özet</b>, ekibe tartışılacak gündem maddeleri ve her katılımcının önceden hazırlanacağı sorular. Hepsi son 3 ayın gerçek verisinden AI ile türetilir.
     </div>
   </div>
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">
-    <div id="header" style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:20px;margin-bottom:20px;"></div>
+    <div id="header" style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_quarterly_review.ceyreklik_review_toplantisi"></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;" id="metrics"></div>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-robot" style="color:#16a34a;"></i> AI Yönetici Özeti</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_quarterly_review.ai_yonetici_ozeti">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-robot" style="color:#16a34a;"></i> AI Yönetici Özeti</h3>
       <div id="ai-text" style="font-size:14px;color:#0f172a;line-height:1.7;background:#f8fafc;padding:14px;border-radius:6px;border-left:4px solid #16a34a;"></div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📋 Önerilen Agenda</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_quarterly_review.onerilen_agenda">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📋 Önerilen Agenda</h3>
         <div id="agenda"></div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">❓ Ön Çalışma Soruları</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_quarterly_review.on_calisma_sorulari">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">❓ Ön Çalışma Soruları</h3>
         <div id="prep"></div>
       </div>
     </div>

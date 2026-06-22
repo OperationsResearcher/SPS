@@ -93,17 +93,8 @@
       if (el) el.click();
     }
 
-    function getSpCardHelpMap() {
-      const el = document.getElementById("sp-card-help-json");
-      if (!el) return {};
-      try {
-        return JSON.parse(el.textContent);
-      } catch (err) {
-        return {};
-      }
-    }
-
-    /** Kart gövdesine tıklanınca kalem ile aynı işlem (modal veya yönlendirme) */
+    /** Kart gövdesine tıklanınca kalem ile aynı işlem (modal veya yönlendirme).
+        Kart bilgisi (i) artık merkezî base.html mekanizmasından gelir (data-card-code). */
     spRoot.addEventListener("click", (e) => {
       const wrap = e.target.closest(".mc-sp-card-body-trigger");
       if (!wrap) return;
@@ -116,31 +107,6 @@
       const editBtn = card.querySelector('.btn-sp-card-edit[data-sp-edit="' + kind + '"]');
       if (editBtn) {
         editBtn.click();
-        return;
-      }
-      const infoBtn = card.querySelector(".btn-sp-card-info[data-sp-help]");
-      if (infoBtn) {
-        infoBtn.click();
-      }
-    });
-
-    spRoot.addEventListener("click", async (e) => {
-      const infoBtn = e.target.closest(".btn-sp-card-info");
-      if (infoBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        const key = infoBtn.getAttribute("data-sp-help");
-        if (!key) return;
-        const map = getSpCardHelpMap();
-        const h = map[key];
-        if (!h || !h.title) return;
-        await openMcInfoModal({
-          title: h.title,
-          bodyHtml: h.html || "",
-          iconClass: "fas fa-circle-info",
-          confirmText: "Tamam",
-        });
-        return;
       }
     });
 

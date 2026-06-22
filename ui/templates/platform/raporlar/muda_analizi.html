@@ -28,7 +28,7 @@
     {% endif %}
   </div>
 
-  <div class="mc-card" style="padding:14px 18px; margin-bottom:14px; background:#f0fdf4; border-left:4px solid #16a34a;">
+  <div class="mc-card mc-card--accent-success" style="padding:14px 18px; margin-bottom:14px; background:#f0fdf4">
     <div style="font-size:13px; color:#14532d; line-height:1.6;">
       <b>Muda nedir?</b> Japonca "<i>israf</i>" anlamına gelir. Toyota Üretim Sistemi'nde tanımlanan, müşteriye değer üretmeyen 7 aktivite türü.
       Yalın yönetimde temel ilke: <b>katma değer = toplam zaman − muda zamanı</b>. Mudayı azaltırsanız kalite ve hız aynı anda artar.
@@ -41,8 +41,8 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px;" id="summary"></div>
 
     {# Muda türleri — kart-açıklama bloğu #}
-    <div class="mc-card" style="padding:18px; margin-bottom:14px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 4px;">
+    <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_muda_analizi.7_muda_turu_bulgu_sayilari_aciklamalar">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 4px;">
         <i class="fas fa-chart-bar" style="color:#16a34a;"></i> 7 Muda Türü — Bulgu Sayıları + Açıklamalar
       </h3>
       <p style="font-size:11.5px; color:#94a3b8; margin:0 0 14px;">Her tür için bulgu adedi · tanım · örnek</p>
@@ -50,8 +50,8 @@
     </div>
 
     {# Süreç bazlı bulgular #}
-    <div class="mc-card" style="padding:18px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+    <div class="mc-card" style="padding:18px;" data-card-code="raporlar_muda_analizi.bulgu_saptanan_surecler">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
         <i class="fas fa-sitemap" style="color:#6366f1;"></i> Bulgu Saptanan Süreçler
       </h3>
       <div id="by-process"></div>

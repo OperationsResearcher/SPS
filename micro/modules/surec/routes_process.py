@@ -218,8 +218,10 @@ def surec_karne(process_id):
     from app.utils.plan_year_filter import filter_by_plan_year
     ap_q = Process.query.filter_by(tenant_id=tid, is_active=True)
     if active_py:
-        # Karne dropdown'unda sadece aktif yıl (NULL legacy hariç tutuldu)
-        ap_q = filter_by_plan_year(ap_q, Process, active_py.id, include_null=False)
+        # Karne dropdown'u: aktif yıl + plan yılına bağlanmamış (NULL legacy) süreçler.
+        # include_null=False yapılırsa KMF gibi tüm süreçleri plan_year_id=NULL olan
+        # kurumlarda dropdown TAMAMEN boşalır (görüntülenen süreç bile listelenmez).
+        ap_q = filter_by_plan_year(ap_q, Process, active_py.id, include_null=True)
     ap_q = ap_q.order_by(Process.code)
     all_processes = accessible_processes_filter(ap_q, current_user, tid).all()
 

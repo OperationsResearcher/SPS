@@ -51,25 +51,25 @@
 
   <!-- Özet Skor Kartları -->
   <div class="mc-grid-4" style="margin-bottom:24px;">
-    <div class="mc-stat-card mc-stat-indigo">
+    <div class="mc-stat-card mc-stat-indigo" data-card-code="k_radar_ks.strateji_kapsami">
       <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
       <div class="mc-stat-label">Strateji Kapsamı</div>
       <div class="mc-stat-value" id="ks-kapsam-pct">—</div>
       <div class="mc-stat-sub" id="ks-kapsam-sub">Yükleniyor…</div>
     </div>
-    <div class="mc-stat-card mc-stat-emerald">
+    <div class="mc-stat-card mc-stat-emerald" data-card-code="k_radar_ks.toplam_strateji">
       <div class="mc-stat-icon"><i class="fas fa-sitemap"></i></div>
       <div class="mc-stat-label">Toplam Strateji</div>
       <div class="mc-stat-value" id="ks-strat-count">—</div>
       <div class="mc-stat-sub" id="ks-sub-strat-count">— alt strateji</div>
     </div>
-    <div class="mc-stat-card mc-stat-amber">
+    <div class="mc-stat-card mc-stat-amber" data-card-code="k_radar_ks.genel_pg_basarisi">
       <div class="mc-stat-icon"><i class="fas fa-gauge-high"></i></div>
       <div class="mc-stat-label">Genel PG Başarısı</div>
       <div class="mc-stat-value" id="ks-pg-basari">—</div>
       <div class="mc-stat-sub" id="ks-pg-sub">Yükleniyor…</div>
     </div>
-    <div class="mc-stat-card" id="ks-skor-card">
+    <div class="mc-stat-card" id="ks-skor-card" data-card-code="k_radar_ks.ks_skoru">
       <div class="mc-stat-icon"><i class="fas fa-star"></i></div>
       <div class="mc-stat-label">KS Skoru</div>
       <div class="mc-stat-value" id="ks-skor">—</div>
@@ -81,7 +81,7 @@
   <div class="mc-grid-3" style="margin-bottom:24px;">
 
     <!-- SWOT -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="swot" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="swot" data-card-code="k_radar_ks.swot_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-th-large" style="color:#6366f1;"></i> SWOT Analizi</span>
         <span class="mc-badge mc-badge-indigo" id="ks-swot-badge">—</span>
@@ -98,7 +98,7 @@
     </div>
 
     <!-- TOWS -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="tows" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="tows" data-card-code="k_radar_ks.tows_matrisi" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left" style="color:#8b5cf6;"></i> TOWS Matrisi</span>
         <span class="mc-badge mc-badge-purple" id="ks-tows-badge">—</span>
@@ -115,7 +115,7 @@
     </div>
 
     <!-- PESTLE -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="pestle" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="pestle" data-card-code="k_radar_ks.pestle_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-globe" style="color:#10b981;"></i> PESTLE Analizi</span>
         <span class="mc-badge mc-badge-emerald" id="ks-pestle-badge">—</span>
@@ -127,7 +127,7 @@
     </div>
 
     <!-- GAP -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="gap" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="gap" data-card-code="k_radar_ks.gap_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#f59e0b;"></i> GAP Analizi</span>
         <span class="mc-badge mc-badge-warning" id="ks-gap-badge">—</span>
@@ -143,7 +143,7 @@
     </div>
 
     <!-- OKR -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="okr" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="okr" data-card-code="k_radar_ks.okr" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#3b82f6;"></i> OKR</span>
         <span class="mc-badge mc-badge-indigo" id="ks-okr-badge">—</span>
@@ -155,7 +155,7 @@
     </div>
 
     <!-- BSC -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="bsc" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="bsc" data-card-code="k_radar_ks.bsc" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-table-cells-large" style="color:#ec4899;"></i> BSC</span>
         <span class="mc-badge mc-badge-pink" id="ks-bsc-badge">—</span>
@@ -172,7 +172,7 @@
     </div>
 
     <!-- EFQM -->
-    <div class="mc-card mc-card-lift ks-module-card" data-modal="efqm" style="cursor:pointer;">
+    <div class="mc-card mc-card-lift ks-module-card" data-modal="efqm" data-card-code="k_radar_ks.efqm" style="cursor:pointer;">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-medal" style="color:#f59e0b;"></i> EFQM</span>
         <span class="mc-badge mc-badge-warning" id="ks-efqm-badge">—</span>
@@ -189,7 +189,7 @@
   </div>
 
   <!-- Strateji Kapsama Özeti -->
-  <div class="mc-card">
+  <div class="mc-card" data-card-code="k_radar_ks.strateji_surec_kapsama_ozeti">
     <div class="mc-card-header">
       <span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji → Süreç Kapsama Özeti</span>
       <span id="ks-strat-kapsam-badge" class="mc-badge mc-badge-indigo"></span>

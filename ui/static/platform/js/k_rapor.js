@@ -203,19 +203,19 @@
         const saglik = d.pg_saglik;
         if (saglik && saglik.toplam) {
           setHtml("kr-pg-saglik", `
-            <div class="mc-stat-card mc-stat-emerald">
+            <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_kurumsal.hedefte">
               <div class="mc-stat-icon"><i class="fas fa-circle-check"></i></div>
               <div class="mc-stat-label">Hedefte</div>
               <div class="mc-stat-value">${saglik.yesil}</div>
               <div class="mc-stat-sub">≥%80 başarı (${Math.round(saglik.yesil/saglik.toplam*100)}%)</div>
             </div>
-            <div class="mc-stat-card mc-stat-amber">
+            <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_kurumsal.riskli">
               <div class="mc-stat-icon"><i class="fas fa-circle-half-stroke"></i></div>
               <div class="mc-stat-label">Riskli</div>
               <div class="mc-stat-value">${saglik.sari}</div>
               <div class="mc-stat-sub">%50–79 başarı (${Math.round(saglik.sari/saglik.toplam*100)}%)</div>
             </div>
-            <div class="mc-stat-card" style="background:#fef2f2;">
+            <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_kurumsal.kritik">
               <div class="mc-stat-icon" style="color:#ef4444;"><i class="fas fa-circle-xmark"></i></div>
               <div class="mc-stat-label">Kritik</div>
               <div class="mc-stat-value" style="color:#ef4444;">${saglik.kirmizi}</div>
@@ -417,22 +417,22 @@
         const d = res.data;
 
         setHtml("kr-fal-stats", `
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_faaliyet.tamamlanan">
             <div class="mc-stat-label">Tamamlanan</div>
             <div class="mc-stat-value">${d.tamamlanan}</div>
             <div class="mc-stat-sub">%${d.tamamlanma_orani} tamamlandı</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_faaliyet.devam_ediyor">
             <div class="mc-stat-label">Devam Ediyor</div>
             <div class="mc-stat-value">${d.devam}</div>
             <div class="mc-stat-sub">Aktif faaliyet</div>
           </div>
-          <div class="mc-stat-card" style="background:#fef2f2;">
+          <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_faaliyet.geciken">
             <div class="mc-stat-label">Geciken</div>
             <div class="mc-stat-value" style="color:#ef4444;">${d.geciken}</div>
             <div class="mc-stat-sub">Teslim tarihi geçmiş</div>
           </div>
-          <div class="mc-stat-card mc-stat-indigo">
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_faaliyet.toplam">
             <div class="mc-stat-label">Toplam</div>
             <div class="mc-stat-value">${d.toplam}</div>
             <div class="mc-stat-sub">Tüm faaliyetler</div>
@@ -604,16 +604,16 @@
         const d = res.data;
 
         setHtml("kr-vd-stats", `
-          <div class="mc-stat-card mc-stat-indigo">
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_veri_durumu.toplam_pg">
             <div class="mc-stat-label">Toplam PG</div>
             <div class="mc-stat-value">${d.toplam}</div>
           </div>
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_veri_durumu.veri_girilmis">
             <div class="mc-stat-label">Veri Girilmiş</div>
             <div class="mc-stat-value">${d.girilen_sayisi}</div>
             <div class="mc-stat-sub">%${d.tamamlanma_orani} tamamlandı</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_veri_durumu.eksik">
             <div class="mc-stat-label">Eksik</div>
             <div class="mc-stat-value">${d.girilmeyen_sayisi}</div>
             <div class="mc-stat-sub">Veri girilmemiş PG</div>
@@ -788,19 +788,19 @@
         const oz = d.ozet || {};
 
         setHtml("kr-uyari-stats", `
-          <div class="mc-stat-card" style="background:#fef2f2;">
+          <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_uyari.kritik_pg">
             <div class="mc-stat-icon" style="color:#ef4444;"><i class="fas fa-circle-exclamation"></i></div>
             <div class="mc-stat-label">Kritik PG</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.kritik_pg_sayisi || 0}</div>
             <div class="mc-stat-sub">Başarı &lt;%50</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_uyari.geciken_faaliyet">
             <div class="mc-stat-icon"><i class="fas fa-hourglass-end"></i></div>
             <div class="mc-stat-label">Geciken Faaliyet</div>
             <div class="mc-stat-value">${oz.geciken_faaliyet_sayisi || 0}</div>
             <div class="mc-stat-sub">Bitiş tarihi geçmiş</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_uyari.yuksek_risk">
             <div class="mc-stat-icon"><i class="fas fa-fire"></i></div>
             <div class="mc-stat-label">Yüksek Risk</div>
             <div class="mc-stat-value">${oz.yuksek_risk_sayisi || 0}</div>
@@ -1128,22 +1128,22 @@
         const d = res.data;
         const oz = d.ozet || {};
         setHtml("kr-pgd-ozet", oz.toplam ? `
-          <div class="mc-stat-card mc-stat-indigo">
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_pg_dagilim.toplam_pg">
             <div class="mc-stat-label">Toplam PG</div>
             <div class="mc-stat-value">${oz.toplam}</div>
             <div class="mc-stat-sub">${oz.veri_yok} veri yok</div>
           </div>
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_pg_dagilim.ort_basari">
             <div class="mc-stat-label">Ort. Başarı</div>
             <div class="mc-stat-value" style="color:${scoreColor(oz.ort)}">${oz.ort}%</div>
             <div class="mc-stat-sub">Medyan: ${oz.medyan}%</div>
           </div>
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_pg_dagilim.hedefte_80">
             <div class="mc-stat-label">Hedefte (≥%80)</div>
             <div class="mc-stat-value">${oz.yesil}</div>
             <div class="mc-stat-sub">${oz.toplam ? Math.round(oz.yesil/oz.toplam*100) : 0}%</div>
           </div>
-          <div class="mc-stat-card" style="background:#fef2f2;">
+          <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_pg_dagilim.kritik_50">
             <div class="mc-stat-label">Kritik (&lt;%50)</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.kirmizi}</div>
             <div class="mc-stat-sub">${oz.toplam ? Math.round(oz.kirmizi/oz.toplam*100) : 0}%</div>
@@ -1264,17 +1264,17 @@
         if (!res.success) { setHtml("kr-at-stats", ERROR_HTML); setHtml("kr-at-heatmap", ERROR_HTML); return; }
         const d = res.data;
         setHtml("kr-at-stats", `
-          <div class="mc-stat-card mc-stat-indigo">
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_aktivite_takvim.toplam_giris">
             <div class="mc-stat-label">Toplam Giriş</div>
             <div class="mc-stat-value">${d.toplam_giris}</div>
             <div class="mc-stat-sub">${year} yılı</div>
           </div>
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_aktivite_takvim.aktif_gun">
             <div class="mc-stat-label">Aktif Gün</div>
             <div class="mc-stat-value">${d.toplam_gun}</div>
             <div class="mc-stat-sub">Veri girilen gün sayısı</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_aktivite_takvim.gunluk_ort">
             <div class="mc-stat-label">Günlük Ort.</div>
             <div class="mc-stat-value">${d.toplam_gun ? Math.round(d.toplam_giris / d.toplam_gun) : 0}</div>
             <div class="mc-stat-sub">Aktif günlerde</div>
@@ -1396,17 +1396,17 @@
         const oz = d.ozet || {};
 
         setHtml("kr-sk-ozet", `
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_strateji_kapsama.tam_kapsamli">
             <div class="mc-stat-label">Tam Kapsamlı</div>
             <div class="mc-stat-value">${oz.tam_kapsamli}</div>
             <div class="mc-stat-sub">Tüm alt str. bağlı</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_strateji_kapsama.kismi">
             <div class="mc-stat-label">Kısmi</div>
             <div class="mc-stat-value">${oz.kismi_kapsamli}</div>
             <div class="mc-stat-sub">Bazı alt str. boş</div>
           </div>
-          <div class="mc-stat-card" style="background:#fef2f2;">
+          <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_strateji_kapsama.bos_strateji">
             <div class="mc-stat-label">Boş Strateji</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.bos_strateji}</div>
             <div class="mc-stat-sub">Hiç süreç yok</div>
@@ -1597,21 +1597,21 @@
 
         const okunmaColor = d.okunma_orani >= 80 ? "#10b981" : d.okunma_orani >= 50 ? "#f59e0b" : "#ef4444";
         setHtml("kr-ba-stats", `
-          <div class="mc-stat-card mc-stat-indigo">
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_bildirim_analiz.toplam_bildirim">
             <div class="mc-stat-label">Toplam Bildirim</div>
             <div class="mc-stat-value">${d.toplam}</div>
           </div>
-          <div class="mc-stat-card mc-stat-emerald">
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_bildirim_analiz.okunan">
             <div class="mc-stat-label">Okunan</div>
             <div class="mc-stat-value">${d.okunan}</div>
             <div class="mc-stat-sub" style="color:${okunmaColor};">%${d.okunma_orani} okunma oranı</div>
           </div>
-          <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_bildirim_analiz.okunmayan">
             <div class="mc-stat-label">Okunmayan</div>
             <div class="mc-stat-value">${d.okunmayan}</div>
             <div class="mc-stat-sub">Son 30 günde: ${d.okunmayan_30_gun || 0}</div>
           </div>
-          <div class="mc-stat-card mc-stat-purple">
+          <div class="mc-stat-card mc-stat-purple" data-card-code="k_rapor_bildirim_analiz.son_7_gun">
             <div class="mc-stat-label">Son 7 Gün</div>
             <div class="mc-stat-value">${d.son_7_gun}</div>
             <div class="mc-stat-sub">yeni bildirim</div>

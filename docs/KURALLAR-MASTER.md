@@ -118,6 +118,18 @@ SweetAlert2 yalnızca şunlar için kullanılır:
 
 ---
 
+## 5.1 KART GÖRSEL STANDARDI (ZORUNLU)
+
+> Yeni/değiştirilen **her kart** bu yapıda olmalı. Mekanizma `base.html`'de merkezî.
+> Tam yordam + checklist + sayfa-harf eşlemesi: **`docs/paketler/KART-KATMANI-TASARIM.md` §Kart Görsel Standardı**.
+
+Başlık satırı: **[mini ikon] Kart Başlığı (i)** solda (herkese) · **Kart ID (short_id)** sağ üstte (yalnız Admin).
+- Kart konteynerine `data-card-code="<sayfa>.<kart>"` ekle; başlık `mc-card-title`/`mc-stat-label` taşısın.
+- Keşfet → `system_cards`'a yaz → `short_id` (2 harf+no) + `description` (i butonu gösterir) ata.
+- base.html/route değişince **`python pybasla.py`** ile yeniden başlat (auto-reload bu makinede güvenilmez).
+
+---
+
 ## 6. TASKLOG KAYIT FORMATI
 
 Her görev sonunda `docs/TASKLOG.md` dosyasının **en üstüne** eklenir:

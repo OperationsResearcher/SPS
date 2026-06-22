@@ -1,7 +1,7 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const fmt = n => '₺' + new Intl.NumberFormat('tr-TR').format(Math.round(n||0));
-  const stat = (l,v,c,sub) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:20px;font-weight:700;color:${c};line-height:1.2;">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
+  const stat = (l,v,c,sub,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:20px;font-weight:700;color:${c};line-height:1.2;">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
   async function load(){
     try {
       const j = await (await fetch('/raporlar/api/cfo-dashboard',{credentials:'same-origin'})).json();
@@ -10,12 +10,12 @@
       document.getElementById('content').style.display='block';
       const m=j.metrics;
       document.getElementById('kpis').innerHTML=[
-        stat('Toplam Bütçe', fmt(m.total_budget), '#0f172a', m.initiative_count+' girişim'),
-        stat('Harcanan', fmt(m.total_spent), '#f59e0b', '%'+m.usage_pct+' kullanım'),
-        stat('Kalan', fmt(m.remaining), '#10b981'),
-        stat('Bütçe Aşan', m.over_budget_count, m.over_budget_count>0?'#dc2626':'#10b981'),
-        stat('LLM Maliyet (30g)', '$'+m.llm_cost_30d_usd.toFixed(2), '#6366f1', m.llm_calls_30d+' çağrı'),
-        stat('Recurring Task', m.recurring_count, '#0ea5e9'),
+        stat('Toplam Bütçe', fmt(m.total_budget), '#0f172a', m.initiative_count+' girişim', 'raporlar_cfo_dashboard.toplam_butce'),
+        stat('Harcanan', fmt(m.total_spent), '#f59e0b', '%'+m.usage_pct+' kullanım', 'raporlar_cfo_dashboard.harcanan'),
+        stat('Kalan', fmt(m.remaining), '#10b981', '', 'raporlar_cfo_dashboard.kalan'),
+        stat('Bütçe Aşan', m.over_budget_count, m.over_budget_count>0?'#dc2626':'#10b981', '', 'raporlar_cfo_dashboard.butce_asan'),
+        stat('LLM Maliyet (30g)', '$'+m.llm_cost_30d_usd.toFixed(2), '#6366f1', m.llm_calls_30d+' çağrı', 'raporlar_cfo_dashboard.llm_maliyet_30g'),
+        stat('Recurring Task', m.recurring_count, '#0ea5e9', '', 'raporlar_cfo_dashboard.recurring_task'),
       ].join('');
       document.getElementById('top5').innerHTML = j.top_initiatives.map(i => `
         <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:6px;font-size:12.5px;">

@@ -154,6 +154,23 @@ body {
     border-color: #334155;
 }
 
+/* ── Kart anlamlı vurgu şeridi (sol kenar) ──────────────────────────────
+   Standart kart ŞERİTSİZDİR. Şerit yalnızca öne çıkan/durum bildiren kartlarda
+   kullanılır ve renk ANLAM taşır (dekoratif değil). Tek kalınlık: 4px.
+   Kullanım: <div class="mc-card mc-card--accent-info"> … inline border-left YOK.
+     info    = bilgi / nötr vurgu        (indigo)
+     success = olumlu / skor / tamamlandı (yeşil)
+     warning = dikkat / eksik veri        (amber)
+     danger  = uyarı / risk / kritik      (kırmızı) */
+.mc-card--accent-info,
+.mc-card--accent-success,
+.mc-card--accent-warning,
+.mc-card--accent-danger { border-left-width: 4px; border-left-style: solid; }
+.mc-card--accent-info    { border-left-color: var(--color-primary, #6366f1); }
+.mc-card--accent-success { border-left-color: var(--color-success, #10b981); }
+.mc-card--accent-warning { border-left-color: var(--color-warning, #f59e0b); }
+.mc-card--accent-danger  { border-left-color: var(--color-danger,  #ef4444); }
+
 .mc-card-header {
     display: flex;
     align-items: center;

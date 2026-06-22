@@ -37,16 +37,16 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;margin-bottom:24px;" id="summary-cards"></div>
 
     <!-- Kategori detayları -->
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;" data-card-code="raporlar_veri_kalitesi.kritik_pg_ler">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
         <i class="fas fa-exclamation-circle" style="color:#dc2626;"></i> Kritik PG'ler
         <span class="vk-info" tabindex="0" title="Hiç ölçüm girilmemiş veya 3+ eksik alanı (hedef, birim, başarı aralığı, ölçüm) olan PG'ler. Acil müdahale gerektirir — veri olmadan bu PG puanlanamaz.">i</span>
       </h3>
       <div id="kritik-list"></div>
     </div>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;" data-card-code="raporlar_veri_kalitesi.orta_risk_pg_ler">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
         <i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> Orta Risk PG'ler
         <span class="vk-info" tabindex="0" title="1-2 eksik alanı olan PG'ler (örn. son ölçüm 180 günden eski, hedef tanımsız, birim eksik). Puanlanabilir ama veri kalitesi düşük; eksikler giderilmeli.">i</span>
       </h3>
@@ -54,8 +54,8 @@
     </div>
 
     <!-- Süreç bazlı doluluk -->
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;" data-card-code="raporlar_veri_kalitesi.surec_bazli_doluluk">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
         <i class="fas fa-chart-bar" style="color:#0ea5e9;"></i> Süreç Bazlı Doluluk
         <span class="vk-info" tabindex="0" title="Her sürecin PG'lerinden kaçına ölçüm girildiğinin oranı (dolu/toplam). %80+ yeşil (sağlıklı), %50-80 sarı (orta), %50 altı kırmızı (zayıf). Düşük oranlı süreçler veri girişi için öncelikli.">i</span>
       </h3>

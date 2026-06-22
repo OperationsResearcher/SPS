@@ -1,6 +1,6 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  const stat = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   async function load(){
     try {
       const j = await (await fetch('/raporlar/api/carbon-trend',{credentials:'same-origin'})).json();
@@ -11,10 +11,10 @@
       const delta = s.latest_total - s.first_total;
       const deltaC = delta<=0?'#10b981':'#dc2626';
       document.getElementById('summary').innerHTML=[
-        stat('Metrik Sayısı',s.metrics_count,'#0f172a'),
-        stat('Veri Yılı',s.years_with_data,'#0ea5e9'),
-        stat('Son Yıl Toplam',s.latest_total.toFixed(1)+' tCO₂e','#10b981'),
-        stat('İlk Yıla Göre',(delta>0?'+':'')+delta.toFixed(1),deltaC),
+        stat('Metrik Sayısı',s.metrics_count,'#0f172a','raporlar_carbon_trend.metrik_sayisi'),
+        stat('Veri Yılı',s.years_with_data,'#0ea5e9','raporlar_carbon_trend.veri_yili'),
+        stat('Son Yıl Toplam',s.latest_total.toFixed(1)+' tCO₂e','#10b981','raporlar_carbon_trend.son_yil_toplam'),
+        stat('İlk Yıla Göre',(delta>0?'+':'')+delta.toFixed(1),deltaC,'raporlar_carbon_trend.ilk_yila_gore'),
       ].join('');
       if(j.trend.length===0){
         document.getElementById('empty-note').style.display='block';

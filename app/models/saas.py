@@ -52,6 +52,9 @@ class SystemCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     code = db.Column(db.String(80), unique=True, nullable=False)
+    # Kısa görünen kimlik (2 harf sayfa kısaltması + numara, örn. MA01).
+    # Uzun `code` iç anahtardır; short_id kullanıcıya/admin'e gösterilen etikettir.
+    short_id = db.Column(db.String(12), unique=True, nullable=True, index=True)
     component_id = db.Column(
         db.Integer, db.ForeignKey("system_components.id", ondelete="SET NULL"),
         nullable=True, index=True,

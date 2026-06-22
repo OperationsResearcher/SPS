@@ -17,10 +17,11 @@
       {'name': 'KPI Ölçümleri (CSV)', 'url': '/raporlar/api/bi/kpi-data.csv', 'desc': 'Tüm KPI ölçümleri (max 10K satır)', 'format': 'CSV', 'color': '#16a34a'},
       {'name': 'Stratejiler (JSON)', 'url': '/raporlar/api/bi/strategies.json', 'desc': 'Strateji ağacı + skor metrikleri', 'format': 'JSON', 'color': '#0ea5e9'},
     ] %}
+    {% set ep_codes = {'KPI Ölçümleri (CSV)': 'raporlar_bi_connector.kpi_olcumleri_csv', 'Stratejiler (JSON)': 'raporlar_bi_connector.stratejiler_json'} %}
     {% for ep in endpoints %}
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;" data-card-code="{{ ep_codes.get(ep.name, '') }}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="font-size:14px;font-weight:700;color:#0f172a;">{{ ep.name }}</div>
+        <div class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;">{{ ep.name }}</div>
         <span style="background:{{ ep.color }};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;">{{ ep.format }}</span>
       </div>
       <div style="font-size:12px;color:#64748b;margin-bottom:10px;">{{ ep.desc }}</div>
@@ -35,8 +36,8 @@
   </div>
 
   <!-- Power BI rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-pie" style="color:#f2c811;"></i> Power BI Bağlantı Rehberi</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.power_bi_baglanti_rehberi">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-pie" style="color:#f2c811;"></i> Power BI Bağlantı Rehberi</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
       <li><b>Power BI Desktop</b> → Get Data → <b>Web</b></li>
       <li>URL alanına yukarıdaki "KPI Ölçümleri" CSV bağlantısını yapıştır</li>
@@ -47,8 +48,8 @@
   </div>
 
   <!-- Tableau rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-bar" style="color:#1f5582;"></i> Tableau Bağlantı Rehberi</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.tableau_baglanti_rehberi">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-bar" style="color:#1f5582;"></i> Tableau Bağlantı Rehberi</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
       <li>Tableau Desktop → Connect → <b>To a Server / Text File</b></li>
       <li>URL ile bağlanmak için Tableau Web Data Connector (WDC) gerekir</li>
@@ -58,8 +59,8 @@
   </div>
 
   <!-- Excel rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-file-excel" style="color:#107c41;"></i> Excel / Google Sheets</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.excel_google_sheets">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-file-excel" style="color:#107c41;"></i> Excel / Google Sheets</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
       <li><b>Excel:</b> Data → From Web → URL'yi yapıştır</li>
       <li><b>Google Sheets:</b> <code style="background:#f1f5f9;padding:2px 6px;border-radius:3px;">=IMPORTDATA("URL")</code></li>

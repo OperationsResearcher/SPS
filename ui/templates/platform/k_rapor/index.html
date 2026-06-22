@@ -149,7 +149,7 @@
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Kurumsal Performans:</b> Vizyon skoru ve strateji bazlı ağırlıklı ortalama performans özeti. Yıl seçici ile dönemler arası kıyas yapılabilir.</span></div>
     <div class="mc-grid-3" style="margin-bottom:20px;">
       <div class="mc-card" style="grid-column:span 1;">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-trophy"></i> Vizyon Skoru</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_kurumsal.vizyon_skoru"><span class="mc-card-title"><i class="fas fa-trophy"></i> Vizyon Skoru</span></div>
         <div class="mc-card-body" style="text-align:center; padding:32px 16px;">
           <div id="kr-vizyon-gauge" class="kr-big-score">—</div>
           <div class="kr-big-label">Vizyon Başarı Skoru</div>
@@ -157,7 +157,7 @@
         </div>
       </div>
       <div class="mc-card" style="grid-column:span 2;">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-bar-chart"></i> Strateji Bazlı Başarı</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_kurumsal.strateji_bazli_basari"><span class="mc-card-title"><i class="fas fa-bar-chart"></i> Strateji Bazlı Başarı</span></div>
         <div class="mc-card-body">
           <div id="kr-strateji-bars" class="kr-strateji-bars"><div class="kr-loading">Yükleniyor…</div></div>
         </div>
@@ -169,13 +169,13 @@
     </div>
     <div class="mc-grid-2">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-arrow-trend-up" style="color:#10b981;"></i> En İyi 5 Süreç</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_kurumsal.en_iyi_5_surec"><span class="mc-card-title"><i class="fas fa-arrow-trend-up" style="color:#10b981;"></i> En İyi 5 Süreç</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div id="kr-top5" class="kr-rank-list"><div class="kr-loading">Yükleniyor…</div></div>
         </div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-arrow-trend-down" style="color:#ef4444;"></i> En Düşük 5 Süreç</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_kurumsal.en_dusuk_5_surec"><span class="mc-card-title"><i class="fas fa-arrow-trend-down" style="color:#ef4444;"></i> En Düşük 5 Süreç</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div id="kr-bottom5" class="kr-rank-list"><div class="kr-loading">Yükleniyor…</div></div>
         </div>
@@ -187,7 +187,7 @@
   <div id="kr-panel-surec-pg" class="kr-panel">
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Süreç & PG Tablosu:</b> Süreç × dönem ısı haritası — her süreç için PG hedef/gerçekleşme çapraz tablosu ve renk kodlu durum gösterimi.</span></div>
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_surec_pg.surec_donem_isi_haritasi">
         <span class="mc-card-title"><i class="fas fa-table-cells"></i> Süreç × Dönem Isı Haritası</span>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <select id="kr-pg-period" class="mc-select" style="font-size:12px; padding:4px 8px;">
@@ -209,7 +209,7 @@
   <div id="kr-panel-uyum" class="kr-panel">
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Stratejik Uyum:</b> Strateji → süreç → PG katkı ağacı. Hangi stratejinin hangi süreçlere ve PG'lere bağlı olduğunu gösterir; bağlantısız alanlar boşluk olarak işaretlenir.</span></div>
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_uyum.strateji_surec_katki_agaci">
         <span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji → Süreç Katkı Ağacı</span>
         <div id="kr-uyum-vizyon" class="mc-badge mc-badge-indigo" style="font-size:13px;"></div>
       </div>
@@ -226,11 +226,11 @@
       <div class="kr-loading" style="grid-column:span 4; padding:24px;">Yükleniyor…</div>
     </div>
     <div class="mc-grid-2" style="margin-bottom:20px;">
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_faaliyet.aylik_tamamlanan">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Aylık Tamamlanan</span></div>
         <div class="mc-card-body"><canvas id="kr-fal-chart" height="160"></canvas></div>
       </div>
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_faaliyet.geciken_faaliyetler">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-clock" style="color:#ef4444;"></i> Geciken Faaliyetler</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div class="mc-table-wrap"><table class="mc-table" id="kr-geciken-tablo">
@@ -241,7 +241,7 @@
       </div>
     </div>
     <!-- Proje Portföy -->
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="k_rapor_faaliyet.proje_portfoy_durumu">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-diagram-project"></i> Proje Portföy Durumu</span>
         <div id="kr-proje-ozet-badges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
@@ -264,7 +264,7 @@
     </div>
     <!-- Kullanıcı özet tablosu -->
     <div class="mc-card" style="margin-bottom:16px;">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-ranking-star"></i> Kullanıcı Bazlı PG Başarı Tablosu</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_bireysel.kullanici_bazli_pg_basari_tablosu"><span class="mc-card-title"><i class="fas fa-ranking-star"></i> Kullanıcı Bazlı PG Başarı Tablosu</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap">
           <table class="mc-table">
@@ -276,7 +276,7 @@
     </div>
     <!-- IPI Detay Tablosu -->
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_bireysel.bireysel_pg_detay_listesi">
         <span class="mc-card-title"><i class="fas fa-list-check"></i> Bireysel PG Detay Listesi</span>
         <span id="kr-bir-toplam" class="mc-badge mc-badge-indigo"></span>
       </div>
@@ -299,7 +299,7 @@
     </div>
     <div class="mc-grid-2">
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_veri_durumu.veri_girilen_pg_ler">
           <span class="mc-card-title"><i class="fas fa-circle-check" style="color:#10b981;"></i> Veri Girilen PG'ler</span>
           <span id="kr-vd-girilen-cnt" class="mc-badge mc-badge-success"></span>
         </div>
@@ -311,7 +311,7 @@
         </div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_veri_durumu.veri_girilmeyen_pg_ler">
           <span class="mc-card-title"><i class="fas fa-circle-xmark" style="color:#ef4444;"></i> Veri Girilmeyen PG'ler</span>
           <span id="kr-vd-girilmeyen-cnt" class="mc-badge mc-badge-danger"></span>
         </div>
@@ -339,7 +339,7 @@
       </div>
     </div>
     <div class="mc-grid-3" style="margin-bottom:20px;">
-      <div class="mc-card" style="grid-column:span 2;">
+      <div class="mc-card" style="grid-column:span 2;" data-card-code="k_rapor_risk.risk_tablosu_rpn_sirali">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-triangle-exclamation"></i> Risk Tablosu (RPN Sıralı)</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div class="mc-table-wrap"><table class="mc-table">
@@ -348,7 +348,7 @@
           </table></div>
         </div>
       </div>
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_risk.surec_olgunluk_seviyeleri">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-circle-nodes"></i> Süreç Olgunluk Seviyeleri</span>
         </div>
@@ -360,7 +360,7 @@
         </div>
       </div>
     </div>
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="k_rapor_risk.darbogaz_gecmisi">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i> Darboğaz Geçmişi</span>
         <span style="font-size:11px;color:#94a3b8;margin-left:8px;">Süreçlerde tetiklenen darboğaz kayıtları</span>
@@ -377,11 +377,11 @@
   <!-- ── TAB: Denetim ──────────────────────────────────────────────────────── -->
   <div id="kr-panel-denetim" class="kr-panel">
     <div class="mc-grid-3" style="margin-bottom:20px;">
-      <div class="mc-card" style="grid-column:span 1;">
+      <div class="mc-card" style="grid-column:span 1;" data-card-code="k_rapor_denetim.islem_dagilimi">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-pie"></i> İşlem Dağılımı</span></div>
         <div class="mc-card-body"><canvas id="kr-denetim-chart" height="200"></canvas></div>
       </div>
-      <div class="mc-card" style="grid-column:span 2;">
+      <div class="mc-card" style="grid-column:span 2;" data-card-code="k_rapor_denetim.en_aktif_kullanicilar">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-user-shield"></i> En Aktif Kullanıcılar</span>
           <div style="display:flex; gap:8px; align-items:center;">
@@ -398,7 +398,7 @@
         </div>
       </div>
     </div>
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="k_rapor_denetim.son_islemler">
       <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-history"></i> Son İşlemler</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
@@ -427,7 +427,7 @@
     </div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <!-- Kritik PG'ler -->
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_uyari.kritik_performans_gostergeleri">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-circle-exclamation" style="color:#ef4444;"></i> Kritik Performans Göstergeleri</span>
           <span style="font-size:11px;color:#94a3b8;margin-left:8px;">Başarı oranı %50'nin altında olanlar</span>
@@ -440,7 +440,7 @@
         </div>
       </div>
       <!-- Yüksek Risk -->
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_uyari.yuksek_riskler">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-fire" style="color:#f59e0b;"></i> Yüksek Riskler</span>
           <span style="font-size:11px;color:#94a3b8;margin-left:8px;">RPN &gt; 10 olan öncelikli riskler</span>
@@ -454,7 +454,7 @@
       </div>
     </div>
     <!-- Geciken Faaliyetler -->
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="k_rapor_uyari.geciken_faaliyetler">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-hourglass-end" style="color:#ef4444;"></i> Geciken Faaliyetler</span>
         <span style="font-size:11px;color:#94a3b8;margin-left:8px;">Bitiş tarihi geçmiş ve henüz tamamlanmamış</span>
@@ -472,20 +472,20 @@
   <div id="kr-panel-k-vektor" class="kr-panel">
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%) ile o stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor = en kritik odak noktası.</span></div>
     <div class="mc-grid-2">
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_k_vektor.ana_strateji_agirliklari">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-weight-scale"></i> Ana Strateji Ağırlıkları</span></div>
         <div class="mc-card-body">
           <canvas id="kr-kv-chart" height="220"></canvas>
         </div>
       </div>
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_k_vektor.agirlik_tablosu">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-list-ol"></i> Ağırlık Tablosu</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div id="kr-kv-bars"><div class="kr-loading" style="padding:24px;">Yükleniyor…</div></div>
         </div>
       </div>
     </div>
-    <div class="mc-card" style="margin-top:16px;">
+    <div class="mc-card" style="margin-top:16px;" data-card-code="k_rapor_k_vektor.alt_strateji_agirliklari">
       <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-layer-group"></i> Alt Strateji Ağırlıkları</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
@@ -585,7 +585,7 @@
       </div>
     </details>
 
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="k_rapor_evm.kazanilmis_deger_evm_proje_snapshot_tablosu">
       <div class="mc-card-header">
         <span class="mc-card-title"><i class="fas fa-coins" style="color:#ca8a04;"></i> Kazanılmış Değer (EVM) — Proje Snapshot Tablosu</span>
         <span style="font-size:11.5px; color:#64748b;">En güncel ölçüm her proje için bir satır</span>
@@ -614,7 +614,7 @@
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <!-- SWOT -->
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_stratejik_analiz.swot_analizi">
           <span class="mc-card-title"><i class="fas fa-th-large"></i> SWOT Analizi</span>
           <span id="kr-sa-swot-date" class="mc-badge mc-badge-indigo"></span>
         </div>
@@ -622,7 +622,7 @@
       </div>
       <!-- TOWS -->
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_stratejik_analiz.tows_matrisi">
           <span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Matrisi</span>
           <span id="kr-sa-tows-date" class="mc-badge mc-badge-indigo"></span>
         </div>
@@ -632,7 +632,7 @@
     <div class="mc-grid-2">
       <!-- PESTEL -->
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_stratejik_analiz.pestel_analizi">
           <span class="mc-card-title"><i class="fas fa-globe"></i> PESTEL Analizi</span>
           <span id="kr-sa-pestel-date" class="mc-badge mc-badge-indigo"></span>
         </div>
@@ -640,7 +640,7 @@
       </div>
       <!-- Porter -->
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_stratejik_analiz.porter_5_kuvvet">
           <span class="mc-card-title"><i class="fas fa-chess"></i> Porter 5 Kuvvet</span>
           <span id="kr-sa-porter-date" class="mc-badge mc-badge-indigo"></span>
         </div>
@@ -654,7 +654,7 @@
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Paydaş Haritası:</b> Kilit paydaşların etki-ilgi matrisinde konumlandırılması. Yüksek etki + yüksek ilgi = aktif yönetim gerektiren paydaşlar.</span></div>
     <div class="mc-grid-2">
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_paydas.paydas_haritasi">
           <span class="mc-card-title"><i class="fas fa-people-arrows"></i> Paydaş Haritası</span>
           <span id="kr-pd-toplam" class="mc-badge mc-badge-indigo"></span>
         </div>
@@ -666,7 +666,7 @@
         </div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_paydas.paydas_anket_ozeti">
           <span class="mc-card-title"><i class="fas fa-poll"></i> Paydaş Anket Özeti</span>
           <span id="kr-pd-anket-toplam" class="mc-badge mc-badge-success"></span>
         </div>
@@ -679,7 +679,7 @@
   <div id="kr-panel-rekabet" class="kr-panel">
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Rekabet & A3:</b> Rakip kıyas tablosu ve A3 problem analizi. Rekabetçi konumlandırma ve yapısal iyileştirme alanlarının görsel özeti.</span></div>
     <div class="mc-card" style="margin-bottom:16px;">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_rekabet.rekabetci_analiz">
         <span class="mc-card-title"><i class="fas fa-ranking-star"></i> Rekabetçi Analiz</span>
         <span id="kr-rek-toplam" class="mc-badge mc-badge-indigo"></span>
       </div>
@@ -688,7 +688,7 @@
       </div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_rekabet.a3_raporlari">
         <span class="mc-card-title"><i class="fas fa-file-alt"></i> A3 Raporları</span>
         <span id="kr-a3-toplam" class="mc-badge mc-badge-amber"></span>
       </div>
@@ -709,16 +709,16 @@
     </div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Başarı Yüzdesi Dağılımı (Histogram)</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_pg_dagilim.basari_yuzdesi_dagilimi_histogram"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Başarı Yüzdesi Dağılımı (Histogram)</span></div>
         <div class="mc-card-body"><canvas id="kr-pgd-histogram" height="200"></canvas></div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-circle-dot"></i> PG Dağılım Grafiği</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_pg_dagilim.pg_dagilim_grafigi"><span class="mc-card-title"><i class="fas fa-circle-dot"></i> PG Dağılım Grafiği</span></div>
         <div class="mc-card-body"><canvas id="kr-pgd-bar" height="200"></canvas></div>
       </div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_pg_dagilim.en_dusuk_performansli_pg_ler">
         <span class="mc-card-title"><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> En Düşük Performanslı PG'ler</span>
         <span id="kr-pgd-toplam" class="mc-badge mc-badge-indigo"></span>
       </div>
@@ -764,7 +764,7 @@
       <div class="kr-loading" style="grid-column:span 3;padding:12px;">Yükleniyor…</div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_aktivite_takvim.gunluk_veri_giris_aktivitesi">
         <span class="mc-card-title"><i class="fas fa-calendar-days"></i> Günlük Veri Giriş Aktivitesi</span>
         <span class="mc-badge mc-badge-gray" style="font-size:11px;">GitHub tarzı ısı haritası</span>
       </div>
@@ -773,7 +773,7 @@
       </div>
     </div>
     <div class="mc-card" style="margin-top:16px;">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-line"></i> Son 30 Gün Trend</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_aktivite_takvim.son_30_gun_trend"><span class="mc-card-title"><i class="fas fa-chart-line"></i> Son 30 Gün Trend</span></div>
       <div class="mc-card-body"><canvas id="kr-at-chart" height="120"></canvas></div>
     </div>
   </div>
@@ -782,14 +782,14 @@
   <div id="kr-panel-kurum-karsilastirma" class="kr-panel">
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Kurum Kıyas:</b> Aynı platform üzerindeki diğer kurumlarla anonim performans karşılaştırması — strateji ve süreç skor ortalamaları.</span></div>
     <div class="mc-card" style="margin-bottom:16px;">
-      <div class="mc-card-header">
+      <div class="mc-card-header" data-card-code="k_rapor_kurum_karsilastirma.kurum_performans_karsilastirmasi">
         <span class="mc-card-title"><i class="fas fa-chart-bar"></i> Kurum Performans Karşılaştırması</span>
         <span id="kr-kk-badge" class="mc-badge mc-badge-indigo"></span>
       </div>
       <div class="mc-card-body"><canvas id="kr-kk-chart" height="220"></canvas></div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-table"></i> Kurum Detay Tablosu</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_kurum_karsilastirma.kurum_detay_tablosu"><span class="mc-card-title"><i class="fas fa-table"></i> Kurum Detay Tablosu</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
           <thead><tr><th>#</th><th>Kurum</th><th>PG Sayısı</th><th>Veri Girilen</th><th>Hedefte</th><th>Riskli</th><th>Kritik</th><th>Ort. Başarı</th></tr></thead>
@@ -807,11 +807,11 @@
     </div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji Kapsama Durumu</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_strateji_kapsama.strateji_kapsama_durumu"><span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji Kapsama Durumu</span></div>
         <div class="mc-card-body"><canvas id="kr-sk-chart" height="220"></canvas></div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header">
+        <div class="mc-card-header" data-card-code="k_rapor_strateji_kapsama.stratejisiz_surecler">
           <span class="mc-card-title"><i class="fas fa-unlink" style="color:#ef4444;"></i> Stratejisiz Süreçler</span>
           <span id="kr-sk-stratejisiz-cnt" class="mc-badge mc-badge-danger"></span>
         </div>
@@ -821,7 +821,7 @@
       </div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-table"></i> Strateji Bazlı Kapsama Tablosu</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_strateji_kapsama.strateji_bazli_kapsama_tablosu"><span class="mc-card-title"><i class="fas fa-table"></i> Strateji Bazlı Kapsama Tablosu</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
           <thead><tr><th>Kod</th><th>Strateji</th><th>Alt Str.</th><th>Bağlı Süreç</th><th>Boş Alt Str.</th><th>Durum</th></tr></thead>
@@ -836,18 +836,18 @@
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>Sorumlu Analizi:</b> Kişi başına faaliyet yükü — her kullanıcının atandığı faaliyet sayısı, tamamlanma ve gecikme oranı. İş dağılımı dengesizlikleri görünür.</span></div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Kişi Başına Faaliyet Yükü</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_sorumlu_analiz.kisi_basina_faaliyet_yuku"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Kişi Başına Faaliyet Yükü</span></div>
         <div class="mc-card-body"><canvas id="kr-sa2-chart" height="260"></canvas></div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-hourglass-end" style="color:#ef4444;"></i> En Çok Geciken Kişiler</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_sorumlu_analiz.en_cok_geciken_kisiler"><span class="mc-card-title"><i class="fas fa-hourglass-end" style="color:#ef4444;"></i> En Çok Geciken Kişiler</span></div>
         <div class="mc-card-body" style="padding:0;">
           <div id="kr-sa2-geciken-list" class="kr-rank-list"><div class="kr-loading" style="padding:24px;">Yükleniyor…</div></div>
         </div>
       </div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-users"></i> Sorumlu Detay Tablosu</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_sorumlu_analiz.sorumlu_detay_tablosu"><span class="mc-card-title"><i class="fas fa-users"></i> Sorumlu Detay Tablosu</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
           <thead><tr><th>#</th><th>Kişi</th><th>Toplam</th><th>Tamamlanan</th><th>Geciken</th><th>Devam</th><th>Tamamlanma %</th><th>Gecikme %</th></tr></thead>
@@ -862,16 +862,16 @@
     <div class="kr-info-band"><i class="fas fa-circle-info"></i><span><b>SWOT Trend:</b> SWOT ve TOWS madde sayılarının tüm yıllar boyunca değişimi. Stratejik odak evrimini ve güçlü/zayıf yön dengesini gösterir.</span></div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-th-large"></i> SWOT Madde Sayısı Trendi</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_swot_trend.swot_madde_sayisi_trendi"><span class="mc-card-title"><i class="fas fa-th-large"></i> SWOT Madde Sayısı Trendi</span></div>
         <div class="mc-card-body"><canvas id="kr-st-swot-chart" height="220"></canvas></div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Strateji Sayısı Trendi</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_swot_trend.tows_strateji_sayisi_trendi"><span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Strateji Sayısı Trendi</span></div>
         <div class="mc-card-body"><canvas id="kr-st-tows-chart" height="220"></canvas></div>
       </div>
     </div>
     <div class="mc-card">
-      <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-table"></i> Yıllık SWOT/TOWS Özet Tablosu</span></div>
+      <div class="mc-card-header" data-card-code="k_rapor_swot_trend.yillik_swot_tows_ozet_tablosu"><span class="mc-card-title"><i class="fas fa-table"></i> Yıllık SWOT/TOWS Özet Tablosu</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
           <thead><tr><th>Yıl</th><th>Güçlü</th><th>Zayıf</th><th>Fırsat</th><th>Tehdit</th><th>SWOT Toplam</th><th>SO</th><th>ST</th><th>WO</th><th>WT</th><th>TOWS Toplam</th></tr></thead>
@@ -889,16 +889,16 @@
     </div>
     <div class="mc-grid-2" style="margin-bottom:16px;">
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-pie"></i> Bildirim Türü Dağılımı</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_bildirim_analiz.bildirim_turu_dagilimi"><span class="mc-card-title"><i class="fas fa-chart-pie"></i> Bildirim Türü Dağılımı</span></div>
         <div class="mc-card-body"><canvas id="kr-ba-pie" height="220"></canvas></div>
       </div>
       <div class="mc-card">
-        <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Son 30 Gün Bildirim Trendi</span></div>
+        <div class="mc-card-header" data-card-code="k_rapor_bildirim_analiz.son_30_gun_bildirim_trendi"><span class="mc-card-title"><i class="fas fa-chart-bar"></i> Son 30 Gün Bildirim Trendi</span></div>
         <div class="mc-card-body"><canvas id="kr-ba-trend" height="220"></canvas></div>
       </div>
     </div>
     <div class="mc-grid-2">
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_bildirim_analiz.okunmayan_bildirimlerin_yaslanmasi">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-clock" style="color:#f59e0b;"></i> Okunmayan Bildirimlerin Yaşlanması</span>
           <span style="font-size:11px;color:#94a3b8;margin-left:8px;">Kaç gündür okunmadı?</span>
@@ -907,7 +907,7 @@
           <div class="kr-loading">Yükleniyor…</div>
         </div>
       </div>
-      <div class="mc-card">
+      <div class="mc-card" data-card-code="k_rapor_bildirim_analiz.en_cok_bildirim_alan_kullanicilar">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-users"></i> En Çok Bildirim Alan Kullanıcılar</span>
           <span style="font-size:11px;color:#94a3b8;margin-left:8px;">İlk 10</span>

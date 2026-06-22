@@ -1,0 +1,389 @@
+﻿code;name;boy;sayfa
+masaustu.yonetici_sabah_ozeti;Yönetici Sabah Özeti;tam;/masaustu
+masaustu.kurumsal_olgunluk_endeksi;Kurumsal Olgunluk Endeksi;tam;/masaustu
+masaustu.bugunun_ozeti;Bugünün özeti;tam;/masaustu
+masaustu.benim_gorevlerim;Benim Görevlerim;tam;/masaustu
+masaustu.favori_ve_son_ziyaretlerim;Favori ve Son Ziyaretlerim;tam;/masaustu
+masaustu.hizli_islemler;Hızlı İşlemler;tam;/masaustu
+masaustu.takvimim;Takvimim;tam;/masaustu
+masaustu.benim_masam;Benim Masam;tam;/masaustu
+masaustu.dikkat_donem_verisi;Dikkat: Dönem Verisi;tam;/masaustu
+masaustu.karalama_defteri;Karalama Defteri;tam;/masaustu
+masaustu.ozet_listeler;Özet Listeler;tam;/masaustu
+masaustu.bildirimler;Bildirimler;tam;/masaustu
+masaustu.stratejik_hedefler;Stratejik Hedefler;tam;/masaustu
+masaustu.mini_kartlar;Mini Kartlar;mini;/masaustu
+masaustu.bireysel_pg;Bireysel PG;mini;/masaustu
+masaustu.devam_eden_faaliyet;Devam Eden Faaliyet;mini;/masaustu
+masaustu.surec_pg;Süreç PG;mini;/masaustu
+masaustu.okunmamis_bildirim;Okunmamış Bildirim;mini;/masaustu
+sp.ana_strateji;Ana Strateji;mini;/sp
+sp.akis_olgunlugu;Akış Olgunluğu;mini;/sp
+sp.k_vektor_vizyon;K-Vektör Vizyon;mini;/sp
+sp.plan_donemi;Plan Dönemi;mini;/sp
+sp.etiketsiz_strateji;Etiketsiz Strateji;mini;/sp
+sp.kimlik;Kimlik;mini;/sp
+sp.misyon;Misyon;tam;/sp
+sp.vizyon;Vizyon;tam;/sp
+sp.degerler_ve_etik_kurallar;Değerler ve Etik Kurallar;tam;/sp
+sp.strateji_agirlik_skor_gorsellestirme;Strateji Ağırlık & Skor Görselleştirme;tam;/sp
+sp.strateji_listesi_ana_stratejiler_alt_stratejiler;Strateji Listesi (Ana Stratejiler → Alt Stratejiler);tam;/sp
+sp.surec_iyilestirme_faaliyetleri;Süreç İyileştirme Faaliyetleri;tam;/sp
+sp.bireysel_hedefler;Bireysel Hedefler;tam;/sp
+process.toplam_surec;Toplam Süreç;mini;/process
+process.toplam_pg;Toplam PG;mini;/process
+process.ortalama_skor;Ortalama Skor;mini;/process
+process.yuksek_performans;Yüksek Performans;mini;/process
+process.kritik_surec;Kritik Süreç;mini;/process
+process.k_vektor;K-Vektör;mini;/process
+process_karne.ai_yonetici_ozeti;AI YÖNETİCİ ÖZETİ;tam;/process/1007001/karne
+process_karne.arastirma_ve_gelistirme_sureci_genel_bilgiler;Araştırma ve Geliştirme Süreci — Genel bilgiler;tam;/process/1007001/karne
+process_karne.kpi_performans_trend_analizi;KPI / performans trend analizi;tam;/process/1007001/karne
+process_karne.tmf_sr1_2026_arastirma_ve_gelistirme_sureci_surec_karnesi;TMF-SR1-2026 - Araştırma ve Geliştirme Süreci Süreç Karnesi;tam;/process/1007001/karne
+process_karne.hedefte;Hedefte;ara_1_3;/process/1007001/karne
+process_karne.risk_altinda;Risk altında;ara_1_3;/process/1007001/karne
+process_karne.hedef_disi;Hedef dışı;ara_1_3;/process/1007001/karne
+kurum.ai_yonetici_ozeti;AI YÖNETİCİ ÖZETİ;tam;/kurum
+kurum.kurum_vizyonu;Kurum vizyonu;tam;/kurum
+kurum.amac;Amaç;tam;/kurum
+kurum.temel_degerler;Temel değerler;tam;/kurum
+kurum.etik_kurallar;Etik kurallar;tam;/kurum
+kurum.kalite_politikasi;Kalite politikası;tam;/kurum
+kurum.aktif_kullanici;Aktif Kullanıcı;mini;/kurum
+kurum.aktif_surec;Aktif Süreç;mini;/kurum
+kurum.strateji;Strateji;mini;/kurum
+kurum.surec_ozeti;Süreç özeti;tam;/kurum
+kurum.kurum_geneli_yonetici;Kurum geneli (yönetici);tam;/kurum
+kurum.pg_kapsami_strateji_hizalamasi;PG kapsamı & strateji hizalaması;tam;/kurum
+kurum.operasyonel_hacim;Operasyonel hacim;tam;/kurum
+kurum.risk_uyari;Risk & uyarı;tam;/kurum
+kurum.performans_pg_skoru;Performans (PG skoru);tam;/kurum
+kurum.proje_ozeti;Proje özeti;tam;/kurum
+kurum.proje_bitisi_gorev_dagilimi;Proje bitişi & görev dağılımı;tam;/kurum
+kurum.risk_ve_yuk_gostergeleri;Risk ve yük göstergeleri;tam;/kurum
+kurum.stratejiler;Stratejiler;tam;/kurum
+bireysel_karne.ai_performans_ozeti;AI PERFORMANS ÖZETİ;tam;/bireysel/karne
+bireysel_karne.bireysel_performans_karnem;Bireysel Performans Karnem;tam;/bireysel/karne
+bireysel_karne.toplam_pg;Toplam PG;mini;/bireysel/karne
+bireysel_karne.veri_girilen;Veri Girilen;mini;/bireysel/karne
+bireysel_karne.faaliyetler;Faaliyetler;mini;/bireysel/karne
+bireysel_karne.tamamlanan;Tamamlanan;mini;/bireysel/karne
+bireysel_karne.yil_ozeti_dikkat;Yıl özeti & dikkat;tam;/bireysel/karne
+bireysel_karne.bu_yil_ne_yaptim;Bu yıl ne yaptım?;tam;/bireysel/karne
+bireysel_karne.performans_gostergelerim;Performans Göstergelerim;tam;/bireysel/karne
+bireysel_karne.faaliyetlerim;Faaliyetlerim;tam;/bireysel/karne
+project.toplam_proje;Toplam Proje;mini;/project
+project.acik_gorev;Açık Görev;mini;/project
+project.gecikmis_gorev;Gecikmiş Görev;mini;/project
+project.bu_hafta_biten;Bu Hafta Biten;mini;/project
+project.acik_raid;Açık RAID;mini;/project
+project.kritik_saglik;Kritik Sağlık;mini;/project
+project.proje_listesi;Proje listesi;tam;/project
+project.operasyon_ozeti;Operasyon özeti;tam;/project
+k_rapor_kurumsal.vizyon_skoru;Vizyon Skoru;ara_1_3;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.strateji_bazli_basari;Strateji Bazlı Başarı;ara_2_3;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.hedefte;Hedefte;ara_1_3;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.riskli;Riskli;ara_1_3;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.kritik;Kritik;ara_1_3;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.en_iyi_5_surec;En İyi 5 Süreç;yarim;/k-rapor?tab=kurumsal
+k_rapor_kurumsal.en_dusuk_5_surec;En Düşük 5 Süreç;yarim;/k-rapor?tab=kurumsal
+k_rapor_surec_pg.surec_donem_isi_haritasi;Süreç × Dönem Isı Haritası;tam;/k-rapor?tab=surec-pg
+k_rapor_pg_dagilim.toplam_pg;Toplam PG;mini;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.ort_basari;Ort. Başarı;mini;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.hedefte_80;Hedefte (≥%80);mini;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.kritik_50;Kritik (<%50);mini;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.basari_yuzdesi_dagilimi_histogram;Başarı Yüzdesi Dağılımı (Histogram);yarim;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.pg_dagilim_grafigi;PG Dağılım Grafiği;yarim;/k-rapor?tab=pg-dagilim
+k_rapor_pg_dagilim.en_dusuk_performansli_pg_ler;En Düşük Performanslı PG'ler;tam;/k-rapor?tab=pg-dagilim
+k_rapor_k_vektor.ana_strateji_agirliklari;Ana Strateji Ağırlıkları;yarim;/k-rapor?tab=k-vektor
+k_rapor_k_vektor.agirlik_tablosu;Ağırlık Tablosu;yarim;/k-rapor?tab=k-vektor
+k_rapor_k_vektor.alt_strateji_agirliklari;Alt Strateji Ağırlıkları;tam;/k-rapor?tab=k-vektor
+raporlar_k_vektor_carpiklik.toplam_strateji;Toplam Strateji;mini;/raporlar/k-vektor-carpiklik
+raporlar_k_vektor_carpiklik.dengeli;Dengeli;mini;/raporlar/k-vektor-carpiklik
+raporlar_k_vektor_carpiklik.dengesiz;Dengesiz;mini;/raporlar/k-vektor-carpiklik
+raporlar_k_vektor_carpiklik.plan_yili;Plan Yılı;mini;/raporlar/k-vektor-carpiklik
+raporlar_k_vektor_carpiklik.strateji_basina_agirlik_vs_skor;Strateji başına Ağırlık vs Skor;tam;/raporlar/k-vektor-carpiklik
+raporlar_k_vektor_carpiklik.carpiklik_detay_tablosu;Çarpıklık Detay Tablosu;tam;/raporlar/k-vektor-carpiklik
+k_rapor_uyum.strateji_surec_katki_agaci;Strateji → Süreç Katkı Ağacı;tam;/k-rapor?tab=uyum
+k_rapor_strateji_kapsama.tam_kapsamli;Tam Kapsamlı;ara_1_3;/k-rapor?tab=strateji-kapsama
+k_rapor_strateji_kapsama.kismi;Kısmi;ara_1_3;/k-rapor?tab=strateji-kapsama
+k_rapor_strateji_kapsama.bos_strateji;Boş Strateji;ara_1_3;/k-rapor?tab=strateji-kapsama
+k_rapor_strateji_kapsama.strateji_kapsama_durumu;Strateji Kapsama Durumu;yarim;/k-rapor?tab=strateji-kapsama
+k_rapor_strateji_kapsama.stratejisiz_surecler;Stratejisiz Süreçler;yarim;/k-rapor?tab=strateji-kapsama
+k_rapor_strateji_kapsama.strateji_bazli_kapsama_tablosu;Strateji Bazlı Kapsama Tablosu;tam;/k-rapor?tab=strateji-kapsama
+raporlar_hizalama_sankey.ana_strateji;Ana Strateji;micro;/raporlar/hizalama-sankey
+raporlar_hizalama_sankey.alt_strateji;Alt Strateji;micro;/raporlar/hizalama-sankey
+raporlar_hizalama_sankey.surec;Süreç;micro;/raporlar/hizalama-sankey
+raporlar_hizalama_sankey.pg;PG;micro;/raporlar/hizalama-sankey
+raporlar_hizalama_sankey.baglanti;Bağlantı;micro;/raporlar/hizalama-sankey
+raporlar_hizalama_sankey.hizalanmamis;Hizalanmamış;micro;/raporlar/hizalama-sankey
+sp_strateji_proje_matris.strateji;Strateji;mini;/sp/strateji-proje-matris
+sp_strateji_proje_matris.proje;Proje;mini;/sp/strateji-proje-matris
+sp_strateji_proje_matris.en_guclu_hizalama;En Güçlü Hizalama;mini;/sp/strateji-proje-matris
+sp_strateji_proje_matris.hizalama_kapsama;Hizalama Kapsama;mini;/sp/strateji-proje-matris
+raporlar_departman_performans.departman;Departman;ara_1_3;/raporlar/departman-performans
+raporlar_departman_performans.toplam_calisan;Toplam Çalışan;ara_1_3;/raporlar/departman-performans
+raporlar_departman_performans.toplam_bireysel_pg;Toplam Bireysel PG;ara_1_3;/raporlar/departman-performans
+raporlar_departman_performans.departman_karti;Departman Kartı;tam;/raporlar/departman-performans
+raporlar_yonetici_liderlik.yonetici_sayisi;Yönetici Sayısı;tam;/raporlar/yonetici-liderlik
+raporlar_yonetici_liderlik.yoneticiler_karti;Yöneticiler Kartı;tam;/raporlar/yonetici-liderlik
+raporlar_cmmi_heatmap.olculen_surec;Ölçülen Süreç;micro;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.olculmemis;Ölçülmemiş;micro;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.ortalama_seviye;Ortalama Seviye;micro;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.optimize_eden_l5;Optimize Eden (L5);micro;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.dusuk_seviye_l1_l2;Düşük Seviye (L1-L2);micro;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.ortalama_olgunluk;Ortalama Olgunluk;tam;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.seviye_dagilimi_ve_aciklamalar;Seviye Dağılımı ve Açıklamalar;tam;/raporlar/cmmi-heatmap
+raporlar_cmmi_heatmap.surec_bazli_olgunluk;Süreç Bazlı Olgunluk;tam;/raporlar/cmmi-heatmap
+raporlar_hedef_revizyon.toplam_plan_donemi;Toplam Plan Dönemi;ara_1_3;/raporlar/hedef-revizyon
+raporlar_hedef_revizyon.revizyon_yapilan_yil;Revizyon Yapılan Yıl;ara_1_3;/raporlar/hedef-revizyon
+raporlar_hedef_revizyon.toplam_revizyon;Toplam Revizyon;ara_1_3;/raporlar/hedef-revizyon
+raporlar_hedef_revizyon.yillara_gore_revizyon;Yıllara Göre Revizyon;tam;/raporlar/hedef-revizyon
+raporlar_hedef_revizyon.revize_edilen_pg_ler;Revize Edilen PG'ler;tam;/raporlar/hedef-revizyon
+k_rapor_faaliyet.tamamlanan;Tamamlanan;mini;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.devam_ediyor;Devam Ediyor;mini;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.geciken;Geciken;mini;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.toplam;Toplam;mini;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.aylik_tamamlanan;Aylık Tamamlanan;yarim;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.geciken_faaliyetler;Geciken Faaliyetler;yarim;/k-rapor?tab=faaliyet
+k_rapor_faaliyet.proje_portfoy_durumu;Proje Portföy Durumu;tam;/k-rapor?tab=faaliyet
+k_rapor_aktivite_takvim.toplam_giris;Toplam Giriş;ara_1_3;/k-rapor?tab=aktivite-takvim
+k_rapor_aktivite_takvim.aktif_gun;Aktif Gün;ara_1_3;/k-rapor?tab=aktivite-takvim
+k_rapor_aktivite_takvim.gunluk_ort;Günlük Ort.;ara_1_3;/k-rapor?tab=aktivite-takvim
+k_rapor_aktivite_takvim.gunluk_veri_giris_aktivitesi;Günlük Veri Giriş Aktivitesi;tam;/k-rapor?tab=aktivite-takvim
+k_rapor_aktivite_takvim.son_30_gun_trend;Son 30 Gün Trend;tam;/k-rapor?tab=aktivite-takvim
+k_rapor_sorumlu_analiz.kisi_basina_faaliyet_yuku;Kişi Başına Faaliyet Yükü;yarim;/k-rapor?tab=sorumlu-analiz
+k_rapor_sorumlu_analiz.en_cok_geciken_kisiler;En Çok Geciken Kişiler;yarim;/k-rapor?tab=sorumlu-analiz
+k_rapor_sorumlu_analiz.sorumlu_detay_tablosu;Sorumlu Detay Tablosu;tam;/k-rapor?tab=sorumlu-analiz
+k_rapor_bireysel.kullanici_bazli_pg_basari_tablosu;Kullanıcı Bazlı PG Başarı Tablosu;tam;/k-rapor?tab=bireysel
+k_rapor_bireysel.bireysel_pg_detay_listesi;Bireysel PG Detay Listesi;tam;/k-rapor?tab=bireysel
+raporlar_bireysel_hizalama.genel_hizalama;Genel Hizalama;ara_1_3;/raporlar/bireysel-hizalama
+raporlar_bireysel_hizalama.pg_si_olan_kullanici;PG'si Olan Kullanıcı;ara_1_3;/raporlar/bireysel-hizalama
+raporlar_bireysel_hizalama.toplam_kullanici;Toplam Kullanıcı;ara_1_3;/raporlar/bireysel-hizalama
+raporlar_bireysel_hizalama.bireysel_pg_ler;Bireysel PG'ler;tam;/raporlar/bireysel-hizalama
+k_rapor_evm.planlanan_deger;Planlanan Değer;ara_1_3;/k-rapor?tab=evm
+k_rapor_evm.kazanilmis_deger;Kazanılmış Değer;ara_1_3;/k-rapor?tab=evm
+k_rapor_evm.fiili_maliyet;Fiili Maliyet;ara_1_3;/k-rapor?tab=evm
+k_rapor_evm.zaman_performans_endeksi;Zaman Performans Endeksi;yarim;/k-rapor?tab=evm
+k_rapor_evm.maliyet_performans_endeksi;Maliyet Performans Endeksi;yarim;/k-rapor?tab=evm
+k_rapor_evm.sonuc_kombinasyonlari_nasil_yorumlanir;Sonuç kombinasyonları nasıl yorumlanır?;tam;/k-rapor?tab=evm
+k_rapor_evm.kazanilmis_deger_evm_proje_snapshot_tablosu;Kazanılmış Değer (EVM) — Proje Snapshot Tablosu;tam;/k-rapor?tab=evm
+raporlar_initiative_bubble.yatay_eksen_x;Yatay Eksen (X);mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.dikey_eksen_y;Dikey Eksen (Y);mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.daire_boyutu;Daire Boyutu;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.daire_rengi;Daire Rengi;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.4_kadran_nasil_yorumlanir;4 Kadran nasıl yorumlanır?;tam;/raporlar/initiative-bubble
+raporlar_initiative_bubble.toplam_girisim;Toplam Girişim;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.toplam_butce;Toplam Bütçe;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.harcanan_butce;Harcanan Bütçe;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.ortalama_ilerleme;Ortalama İlerleme;mini;/raporlar/initiative-bubble
+raporlar_initiative_bubble.portfoy_balon_grafigi;Portföy Balon Grafiği;tam;/raporlar/initiative-bubble
+raporlar_initiative_bubble.detay_tablosu;Detay Tablosu;tam;/raporlar/initiative-bubble
+raporlar_initiative_roadmap.toplam_stratejik_girisim;Toplam Stratejik Girişim;ara_1_3;/raporlar/initiative-roadmap
+raporlar_initiative_roadmap.yil_araligi;Yıl Aralığı;ara_1_3;/raporlar/initiative-roadmap
+raporlar_initiative_roadmap.milestone;Milestone;ara_1_3;/raporlar/initiative-roadmap
+raporlar_initiative_roadmap.stratejik_girisimler;Stratejik Girişimler;tam;/raporlar/initiative-roadmap
+raporlar_quarterly_review.ceyreklik_review_toplantisi;Çeyreklik Review Toplantısı;tam;/raporlar/quarterly-review
+raporlar_quarterly_review.olcum_hacmi_q;Ölçüm Hacmi (Q);ara_1_3;/raporlar/quarterly-review
+raporlar_quarterly_review.yeni_stratejik_girisim;Yeni Stratejik Girişim;ara_1_3;/raporlar/quarterly-review
+raporlar_quarterly_review.tamamlanan_stratejik_girisim;Tamamlanan Stratejik Girişim;ara_1_3;/raporlar/quarterly-review
+raporlar_quarterly_review.ai_yonetici_ozeti;AI Yönetici Özeti;tam;/raporlar/quarterly-review
+raporlar_quarterly_review.onerilen_agenda;📋 Önerilen Agenda;yarim;/raporlar/quarterly-review
+raporlar_quarterly_review.on_calisma_sorulari;❓ Ön Çalışma Soruları;yarim;/raporlar/quarterly-review
+raporlar_okr_cascade.objective;Objective;mini;/raporlar/okr-cascade
+raporlar_okr_cascade.key_result;Key Result;mini;/raporlar/okr-cascade
+raporlar_okr_cascade.ort_tamamlanma;Ort. Tamamlanma;mini;/raporlar/okr-cascade
+raporlar_okr_cascade.plan_yili;Plan Yılı;mini;/raporlar/okr-cascade
+raporlar_okr_cascade.global_pazar_payini_buyut_2026;Global Pazar Payını Büyüt — 2026;tam;/raporlar/okr-cascade
+raporlar_okr_cascade.teknoloji_liderligini_pekistir_2026;Teknoloji Liderliğini Pekiştir — 2026;tam;/raporlar/okr-cascade
+raporlar_okr_cascade.operasyonel_verimliligi_artir_2026;Operasyonel Verimliliği Artır — 2026;tam;/raporlar/okr-cascade
+raporlar_sabah_ozeti.geciken_faaliyet;Geciken Faaliyet;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.bugun_bitis;Bugün Bitiş;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.onumuzdeki_7_gun;Önümüzdeki 7 Gün;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.son_7_gun_tamamlanan;Son 7 Gün Tamamlanan;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.bugun_olcum;Bugün Ölçüm;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.son_7_gun_olcum;Son 7 Gün Ölçüm;micro;/raporlar/sabah-ozeti
+raporlar_sabah_ozeti.son_veri_girisleri;Son Veri Girişleri;tam;/raporlar/sabah-ozeti
+raporlar_operasyon_istatistik.toplam_surec;Toplam Süreç;ara_1_3;/raporlar/operasyon-istatistik
+raporlar_operasyon_istatistik.toplam_pg;Toplam PG;ara_1_3;/raporlar/operasyon-istatistik
+raporlar_operasyon_istatistik.toplam_faaliyet;Toplam Faaliyet;ara_1_3;/raporlar/operasyon-istatistik
+raporlar_operasyon_istatistik.surecler;Süreçler;tam;/raporlar/operasyon-istatistik
+raporlar_muda_analizi.analiz_edilen_surec;Analiz Edilen Süreç;ara_1_3;/raporlar/muda-analizi
+raporlar_muda_analizi.bulgu_olan_surec;Bulgu Olan Süreç;ara_1_3;/raporlar/muda-analizi
+raporlar_muda_analizi.toplam_bulgu;Toplam Bulgu;ara_1_3;/raporlar/muda-analizi
+raporlar_muda_analizi.7_muda_turu_bulgu_sayilari_aciklamalar;7 Muda Türü — Bulgu Sayıları + Açıklamalar;tam;/raporlar/muda-analizi
+raporlar_muda_analizi.bulgu_saptanan_surecler;Bulgu Saptanan Süreçler;tam;/raporlar/muda-analizi
+k_rapor_risk.risk_tablosu_rpn_sirali;Risk Tablosu (RPN Sıralı);ara_2_3;/k-rapor?tab=risk
+k_rapor_risk.surec_olgunluk_seviyeleri;Süreç Olgunluk Seviyeleri;ara_1_3;/k-rapor?tab=risk
+k_rapor_risk.darbogaz_gecmisi;Darboğaz Geçmişi;tam;/k-rapor?tab=risk
+raporlar_risk_heatmap.toplam_risk;Toplam Risk;mini;/raporlar/risk-heatmap
+raporlar_risk_heatmap.acik;Açık;mini;/raporlar/risk-heatmap
+raporlar_risk_heatmap.azaltildi;Azaltıldı;mini;/raporlar/risk-heatmap
+raporlar_risk_heatmap.kritik_15;Kritik (≥15);mini;/raporlar/risk-heatmap
+raporlar_risk_heatmap.5_5_risk_matrisi;5×5 Risk Matrisi;yarim;/raporlar/risk-heatmap
+raporlar_risk_heatmap.en_yuksek_rpn_ilk_10;En Yüksek RPN — İlk 10;yarim;/raporlar/risk-heatmap
+k_rapor_uyari.kritik_pg;Kritik PG;ara_1_3;/k-rapor?tab=uyari
+k_rapor_uyari.geciken_faaliyet;Geciken Faaliyet;ara_1_3;/k-rapor?tab=uyari
+k_rapor_uyari.yuksek_risk;Yüksek Risk;ara_1_3;/k-rapor?tab=uyari
+k_rapor_uyari.kritik_performans_gostergeleri;Kritik Performans Göstergeleri;yarim;/k-rapor?tab=uyari
+k_rapor_uyari.yuksek_riskler;Yüksek Riskler;yarim;/k-rapor?tab=uyari
+k_rapor_uyari.geciken_faaliyetler;Geciken Faaliyetler;tam;/k-rapor?tab=uyari
+raporlar_early_warning.kontrol_edilen_pg;Kontrol Edilen PG;ara_1_3;/raporlar/early-warning
+raporlar_early_warning.uyari_sayisi;Uyarı Sayısı;ara_1_3;/raporlar/early-warning
+raporlar_early_warning.yuksek_oncelik;Yüksek Öncelik;ara_1_3;/raporlar/early-warning
+raporlar_early_warning.uyari_listesi;Uyarı Listesi;tam;/raporlar/early-warning
+raporlar_ml_anomaly.analiz_edilen_pg;Analiz Edilen PG;ara_1_3;/raporlar/ml-anomaly
+raporlar_ml_anomaly.yetersiz_veri_atlandi;Yetersiz Veri (Atlandı);ara_1_3;/raporlar/ml-anomaly
+raporlar_ml_anomaly.anomali_tespit_edildi;Anomali Tespit Edildi;ara_1_3;/raporlar/ml-anomaly
+raporlar_ml_anomaly.tespit_edilen_anomaliler;Tespit Edilen Anomaliler;tam;/raporlar/ml-anomaly
+k_rapor_veri_durumu.toplam_pg;Toplam PG;ara_1_3;/k-rapor?tab=veri-durumu
+k_rapor_veri_durumu.veri_girilmis;Veri Girilmiş;ara_1_3;/k-rapor?tab=veri-durumu
+k_rapor_veri_durumu.eksik;Eksik;ara_1_3;/k-rapor?tab=veri-durumu
+k_rapor_veri_durumu.veri_girilen_pg_ler;Veri Girilen PG'ler;yarim;/k-rapor?tab=veri-durumu
+k_rapor_veri_durumu.veri_girilmeyen_pg_ler;Veri Girilmeyen PG'ler;yarim;/k-rapor?tab=veri-durumu
+raporlar_veri_kalitesi.genel_skor;Genel Skor;micro;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.toplam_pg;Toplam PG;micro;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.kritik;Kritik;micro;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.orta_risk;Orta Risk;micro;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.saglikli;Sağlıklı;micro;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.kritik_pg_ler;Kritik PG'ler;tam;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.orta_risk_pg_ler;Orta Risk PG'ler;tam;/raporlar/veri-kalitesi
+raporlar_veri_kalitesi.surec_bazli_doluluk;Süreç Bazlı Doluluk;tam;/raporlar/veri-kalitesi
+k_rapor_denetim.islem_dagilimi;İşlem Dağılımı;ara_1_3;/k-rapor?tab=denetim
+k_rapor_denetim.en_aktif_kullanicilar;En Aktif Kullanıcılar;ara_2_3;/k-rapor?tab=denetim
+k_rapor_denetim.son_islemler;Son İşlemler;tam;/k-rapor?tab=denetim
+k_rapor_bildirim_analiz.toplam_bildirim;Toplam Bildirim;mini;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.okunan;Okunan;mini;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.okunmayan;Okunmayan;mini;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.son_7_gun;Son 7 Gün;mini;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.bildirim_turu_dagilimi;Bildirim Türü Dağılımı;yarim;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.son_30_gun_bildirim_trendi;Son 30 Gün Bildirim Trendi;yarim;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.okunmayan_bildirimlerin_yaslanmasi;Okunmayan Bildirimlerin Yaşlanması;yarim;/k-rapor?tab=bildirim-analiz
+k_rapor_bildirim_analiz.en_cok_bildirim_alan_kullanicilar;En Çok Bildirim Alan Kullanıcılar;yarim;/k-rapor?tab=bildirim-analiz
+raporlar_iki_fa.toplam_kullanici;Toplam Kullanıcı;mini;/raporlar/iki-fa
+raporlar_iki_fa.2fa_etkin;2FA Etkin;mini;/raporlar/iki-fa
+raporlar_iki_fa.2fa_yok;2FA Yok;mini;/raporlar/iki-fa
+raporlar_iki_fa.etkinlik;Etkinlik %;mini;/raporlar/iki-fa
+raporlar_iki_fa.2fa_dagilim;2FA Dağılım;tam;/raporlar/iki-fa
+raporlar_iki_fa.2fa_si_olmayan_yoneticiler_kritik_guvenlik_acigi;⚠ 2FA'sı Olmayan Yöneticiler (kritik güvenlik açığı);tam;/raporlar/iki-fa
+raporlar_audit_paketi.denetci_icin_hazir_pdf;DENETÇİ İÇİN HAZIR · PDF;tam;/raporlar/audit-paketi
+raporlar_audit_paketi.pdf_bolumleri;PDF Bölümleri;yarim;/raporlar/audit-paketi
+raporlar_audit_paketi.kullanim_amaci;Kullanım Amacı;yarim;/raporlar/audit-paketi
+raporlar_onay_zinciri.toplam;Toplam;mini;/raporlar/onay-zinciri
+raporlar_onay_zinciri.onay_bekliyor;Onay Bekliyor;mini;/raporlar/onay-zinciri
+raporlar_onay_zinciri.onaylanmis;Onaylanmış;mini;/raporlar/onay-zinciri
+raporlar_onay_zinciri.reddedilen;Reddedilen;mini;/raporlar/onay-zinciri
+raporlar_onay_zinciri.stratejik_girisim_ler;📝 Stratejik Girişim'ler;tam;/raporlar/onay-zinciri
+k_rapor_stratejik_analiz.swot_analizi;SWOT Analizi;yarim;/k-rapor?tab=stratejik-analiz
+k_rapor_stratejik_analiz.tows_matrisi;TOWS Matrisi;yarim;/k-rapor?tab=stratejik-analiz
+k_rapor_stratejik_analiz.pestel_analizi;PESTEL Analizi;yarim;/k-rapor?tab=stratejik-analiz
+k_rapor_stratejik_analiz.porter_5_kuvvet;Porter 5 Kuvvet;yarim;/k-rapor?tab=stratejik-analiz
+k_rapor_swot_trend.swot_madde_sayisi_trendi;SWOT Madde Sayısı Trendi;yarim;/k-rapor?tab=swot-trend
+k_rapor_swot_trend.tows_strateji_sayisi_trendi;TOWS Strateji Sayısı Trendi;yarim;/k-rapor?tab=swot-trend
+k_rapor_swot_trend.yillik_swot_tows_ozet_tablosu;Yıllık SWOT/TOWS Özet Tablosu;tam;/k-rapor?tab=swot-trend
+raporlar_vrio_portfoy.toplam_kaynak;Toplam Kaynak;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.surdurulebilir;Sürdürülebilir;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.gecici;Geçici;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.kullanilmayan;Kullanılmayan;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.dezavantaj;Dezavantaj;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.gecici_rekabet_avantaji_0;Geçici Rekabet Avantajı 0;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.kullanilmayan_avantaj_0;Kullanılmayan Avantaj 0;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.rekabet_paritesi_0;Rekabet Paritesi 0;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.rekabetci_dezavantaj_0;Rekabetçi Dezavantaj 0;micro;/raporlar/vrio-portfoy
+raporlar_vrio_portfoy.surdurulebilir_rekabet_avantaji_0;Sürdürülebilir Rekabet Avantajı 0;micro;/raporlar/vrio-portfoy
+k_rapor_paydas.paydas_haritasi;Paydaş Haritası;yarim;/k-rapor?tab=paydas
+k_rapor_paydas.paydas_anket_ozeti;Paydaş Anket Özeti;yarim;/k-rapor?tab=paydas
+k_rapor_rekabet.rekabetci_analiz;Rekabetçi Analiz;tam;/k-rapor?tab=rekabet
+k_rapor_rekabet.a3_raporlari;A3 Raporları;tam;/k-rapor?tab=rekabet
+k_rapor_kurum_karsilastirma.kurum_performans_karsilastirmasi;Kurum Performans Karşılaştırması;tam;/k-rapor?tab=kurum-karsilastirma
+k_rapor_kurum_karsilastirma.kurum_detay_tablosu;Kurum Detay Tablosu;tam;/k-rapor?tab=kurum-karsilastirma
+raporlar_sektorel.otomotiv_yan_sanayiotomotivhazir;Otomotiv / Yan SanayiotomotivHAZIR;mini;/raporlar/sektorel
+raporlar_sektorel.saglik_hastanesaglikhazir;Sağlık / HastanesaglikHAZIR;mini;/raporlar/sektorel
+raporlar_sektorel.finans_bankafinansyakinda;Finans / BankafinansYAKINDA;mini;/raporlar/sektorel
+raporlar_sektorel.egitim_universiteegitimyakinda;Eğitim / ÜniversiteegitimYAKINDA;mini;/raporlar/sektorel
+raporlar_sektorel.belediye_kamukamuyakinda;Belediye / KamukamuYAKINDA;mini;/raporlar/sektorel
+raporlar_sektorel.perakende_zincirperakendeyakinda;Perakende / ZincirperakendeYAKINDA;mini;/raporlar/sektorel
+raporlar_sektorel.insaat_muteahhitlikinsaatyakinda;İnşaat / MüteahhitlikinsaatYAKINDA;mini;/raporlar/sektorel
+raporlar_sektorel.hizmet_danismanlik;Hizmet / Danışmanlık;mini;/raporlar/sektorel
+sp_strateji_haritasi.ana_strateji;Ana Strateji;mini;/sp/strateji-haritasi
+sp_strateji_haritasi.alt_strateji;Alt Strateji;mini;/sp/strateji-haritasi
+sp_strateji_haritasi.surec;Süreç;mini;/sp/strateji-haritasi
+sp_strateji_haritasi.pg;PG;mini;/sp/strateji-haritasi
+sp_strateji_haritasi.str_girisim;Str. Girişim;mini;/sp/strateji-haritasi
+sp_strateji_haritasi.strateji_haritasi;Strateji Haritası;tam;/sp/strateji-haritasi
+raporlar_sunburst.stratejik_hiyerarsi_sunburst;Stratejik Hiyerarşi Sunburst;tam;/raporlar/sunburst
+raporlar_evrim_filmi.yillar_arasi_evrim_filmi;Yıllar Arası Evrim Filmi;tam;/raporlar/evrim-filmi
+raporlar_strateji_hikayesi.hikaye;Hikaye;tam;/raporlar/strateji-hikayesi
+raporlar_strateji_hikayesi.yillik_snapshot;📊 Yıllık Snapshot;ara_2_3;/raporlar/strateji-hikayesi
+raporlar_strateji_hikayesi.kirilim_noktalari;⚡ Kırılım Noktaları;ara_1_3;/raporlar/strateji-hikayesi
+raporlar_sektor_benchmark.sektor_otomotiv_yan_sanayi;SEKTÖR: Otomotiv / Yan Sanayi;tam;/raporlar/sektor-benchmark
+raporlar_sektor_benchmark.sektor_ortalamalari;Sektör Ortalamaları;tam;/raporlar/sektor-benchmark
+raporlar_sektor_benchmark.ai_sektor_degerlendirmesi;AI Sektör Değerlendirmesi;tam;/raporlar/sektor-benchmark
+raporlar_cfo_dashboard.toplam_butce;Toplam Bütçe;micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.harcanan;Harcanan;micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.kalan;Kalan;micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.butce_asan;Bütçe Aşan;micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.llm_maliyet_30g;LLM Maliyet (30g);micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.recurring_task;Recurring Task;micro;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.en_buyuk_5_stratejik_girisim;En Büyük 5 Stratejik Girişim;ara_2_3;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.durum_dagilimi;Durum Dağılımı;ara_1_3;/raporlar/cfo-dashboard
+raporlar_cfo_dashboard.strateji_bazli_butce_atifi;Strateji Bazlı Bütçe Atıfı;tam;/raporlar/cfo-dashboard
+raporlar_coo_dashboard.surec;Süreç;micro;/raporlar/coo-dashboard
+raporlar_coo_dashboard.ort_saglik;Ort. Sağlık;micro;/raporlar/coo-dashboard
+raporlar_coo_dashboard.geciken_faaliyet;Geciken Faaliyet;micro;/raporlar/coo-dashboard
+raporlar_coo_dashboard.aktif_darbogaz;Aktif Darboğaz;micro;/raporlar/coo-dashboard
+raporlar_coo_dashboard.ort_cmmi;Ort. CMMI;micro;/raporlar/coo-dashboard
+raporlar_coo_dashboard.surec_saglik_dagilimi;Süreç Sağlık Dağılımı;tam;/raporlar/coo-dashboard
+raporlar_coo_dashboard.surecler_saglik_skoru;Süreçler (Sağlık Skoru);ara_2_3;/raporlar/coo-dashboard
+raporlar_coo_dashboard.aktif_darbogazlar;⚠ Aktif Darboğazlar;ara_1_3;/raporlar/coo-dashboard
+raporlar_chro_dashboard.calisan;Çalışan;micro;/raporlar/chro-dashboard
+raporlar_chro_dashboard.departman;Departman;micro;/raporlar/chro-dashboard
+raporlar_chro_dashboard.bireysel_pg;Bireysel PG;micro;/raporlar/chro-dashboard
+raporlar_chro_dashboard.ort_pg_kisi;Ort. PG / Kişi;micro;/raporlar/chro-dashboard
+raporlar_chro_dashboard.2fa_orani;2FA Oranı;micro;/raporlar/chro-dashboard
+raporlar_chro_dashboard.departman_dagilimi;Departman Dağılımı;yarim;/raporlar/chro-dashboard
+raporlar_chro_dashboard.rol_dagilimi;Rol Dağılımı;yarim;/raporlar/chro-dashboard
+raporlar_chro_dashboard.en_cok_bireysel_pg_sahibi_top_10;🏆 En Çok Bireysel PG Sahibi (Top 10);yarim;/raporlar/chro-dashboard
+raporlar_chro_dashboard.en_cok_surec_uyeligi_top_5;📌 En Çok Süreç Üyeliği (Top 5);yarim;/raporlar/chro-dashboard
+raporlar_yatirimci_sunum.pptx_sunum_16_9;PPTX SUNUM · 16:9;tam;/raporlar/yatirimci-sunum
+raporlar_yatirimci_sunum.slayt_yapisi;🎯 Slayt Yapısı;tam;/raporlar/yatirimci-sunum
+raporlar_stratejik_yillik.premium_pdf_35_sayfa;PREMIUM PDF · ~35 SAYFA;tam;/raporlar/stratejik-yillik
+raporlar_stratejik_yillik.bolum_yapisi;📚 Bölüm Yapısı;tam;/raporlar/stratejik-yillik
+raporlar_esg_rapor.yatirimci_denetci_hazir_pdf;YATIRIMCI / DENETÇI HAZIR · PDF;tam;/raporlar/esg-rapor
+raporlar_esg_rapor.rapor_icerigi;📋 Rapor İçeriği;tam;/raporlar/esg-rapor
+raporlar_carbon_trend.metrik_sayisi;Metrik Sayısı;mini;/raporlar/carbon-trend
+raporlar_carbon_trend.veri_yili;Veri Yılı;mini;/raporlar/carbon-trend
+raporlar_carbon_trend.son_yil_toplam;Son Yıl Toplam;mini;/raporlar/carbon-trend
+raporlar_carbon_trend.ilk_yila_gore;İlk Yıla Göre;mini;/raporlar/carbon-trend
+raporlar_carbon_trend.yillik_trend;Yıllık Trend;tam;/raporlar/carbon-trend
+raporlar_ai_danisman.stratejik_odak_daraltma;Stratejik odak daraltma;tam;/raporlar/ai-danisman
+raporlar_ai_danisman.kritik_risk_mitigasyon_plani;Kritik risk mitigasyon planı;tam;/raporlar/ai-danisman
+raporlar_ai_coach.analiz_edilen_strateji;Analiz Edilen Strateji;yarim;/raporlar/ai-coach
+raporlar_ai_coach.en_dusuk_3;En Düşük 3;yarim;/raporlar/ai-coach
+raporlar_ai_coach.en_dusuk_performansli_3_strateji;🎯 En Düşük Performanslı 3 Strateji;tam;/raporlar/ai-coach
+raporlar_ai_coach.ai_onerisi;AI Önerisi;tam;/raporlar/ai-coach
+raporlar_ai_sunum.sunum_hazir;SUNUM HAZIR;tam;/raporlar/ai-sunum
+raporlar_ai_sunum.sunumda_kullanilacak_veriler;Sunumda Kullanılacak Veriler;tam;/raporlar/ai-sunum
+raporlar_ai_sunum.slayt_yapisi;Slayt Yapısı;tam;/raporlar/ai-sunum
+raporlar_nlp_query.hazir_sorular;⚡ Hazır Sorular;ara_1_3;/raporlar/nlp-query
+raporlar_nlp_query.cevap;Cevap;ara_2_3;/raporlar/nlp-query
+raporlar_bireysel_karne_batch.toplu_uretim_zip;TOPLU ÜRETIM · ZIP;tam;/raporlar/bireysel-karne-batch
+raporlar_bireysel_karne_batch.her_karne_icerigi;⚙ Her Karne İçeriği;tam;/raporlar/bireysel-karne-batch
+raporlar_mobile.mobile_hub;Mobile Hub;tam;/raporlar/mobile
+raporlar_bi_connector.kpi_olcumleri_csv;KPI Ölçümleri (CSV);yarim;/raporlar/bi-connector
+raporlar_bi_connector.stratejiler_json;Stratejiler (JSON);yarim;/raporlar/bi-connector
+raporlar_bi_connector.power_bi_baglanti_rehberi;Power BI Bağlantı Rehberi;tam;/raporlar/bi-connector
+raporlar_bi_connector.tableau_baglanti_rehberi;Tableau Bağlantı Rehberi;tam;/raporlar/bi-connector
+raporlar_bi_connector.excel_google_sheets;Excel / Google Sheets;tam;/raporlar/bi-connector
+k_radar_ks.strateji_kapsami;Strateji Kapsamı;mini;/k-radar/ks
+k_radar_ks.toplam_strateji;Toplam Strateji;mini;/k-radar/ks
+k_radar_ks.genel_pg_basarisi;Genel PG Başarısı;mini;/k-radar/ks
+k_radar_ks.ks_skoru;KS Skoru;mini;/k-radar/ks
+k_radar_ks.swot_analizi;SWOT Analizi;ara_1_3;/k-radar/ks
+k_radar_ks.tows_matrisi;TOWS Matrisi;ara_1_3;/k-radar/ks
+k_radar_ks.pestle_analizi;PESTLE Analizi;ara_1_3;/k-radar/ks
+k_radar_ks.gap_analizi;GAP Analizi;ara_1_3;/k-radar/ks
+k_radar_ks.okr;OKR;ara_1_3;/k-radar/ks
+k_radar_ks.bsc;BSC;ara_1_3;/k-radar/ks
+k_radar_ks.efqm;EFQM;ara_1_3;/k-radar/ks
+k_radar_ks.strateji_surec_kapsama_ozeti;Strateji → Süreç Kapsama Özeti;tam;/k-radar/ks

@@ -148,14 +148,14 @@
   </header>
 
   {# ── Inline AI Yönetici Özeti (karne üstü, otomatik) ── #}
-  <div id="karne-ai-ozet" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+  <div id="karne-ai-ozet" class="no-print" data-card-code="process_karne.ai_yonetici_ozeti" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
     <div style="display:flex; align-items:flex-start; gap:12px; padding:14px 18px;">
       <span style="flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px;">
         <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
       </span>
       <div style="flex:1 1 auto; min-width:0;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
-          <span style="font-size:12px; font-weight:700; color:#4338ca; letter-spacing:.02em;">AI YÖNETİCİ ÖZETİ</span>
+          <span class="mc-card-title" style="font-size:12px; font-weight:700; color:#4338ca; letter-spacing:.02em;">AI YÖNETİCİ ÖZETİ</span>
           <span id="karne-ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
         </div>
         <p id="karne-ai-ozet-metin" style="font-size:13.5px; line-height:1.6; color:#1e293b; margin:0;">…</p>
@@ -164,9 +164,9 @@
   </div>
 
   {# ── Genel bilgiler: sağlık skoru, KPI dağılımı, faaliyet/KPI ilerlemesi ── #}
-  <div class="mc-card karne-overview-card">
+  <div class="mc-card karne-overview-card" data-card-code="process_karne.genel_bilgiler">
     <div class="karne-section-head karne-section-head--info">
-      <span class="karne-section-title">
+      <span class="karne-section-title mc-card-title">
         <i class="fas fa-info-circle" aria-hidden="true"></i>
         {{ process.name }} — Genel bilgiler
       </span>
@@ -253,9 +253,9 @@
   </div>
   {% endif %}
 
-  <div class="mc-card karne-trend-card" id="trend-chart-card">
+  <div class="mc-card karne-trend-card" id="trend-chart-card" data-card-code="process_karne.kpi_performans_trend_analizi">
     <div class="mc-card-header karne-trend-accordion-toggle" id="trend-accordion-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="trend-accordion-panel">
-      <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>KPI / performans trend analizi</span>
+      <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>PG Performans Trend Analizi</span>
       <i class="fas fa-chevron-down karne-trend-accordion-chevron" aria-hidden="true"></i>
     </div>
     <div class="mc-card-body karne-trend-accordion-panel is-collapsed" id="trend-accordion-panel" aria-hidden="true">
@@ -278,7 +278,7 @@
     <div class="mc-empty-text" style="margin-top:8px;">Veriler yükleniyor…</div>
   </div>
 
-  <div class="mc-card karne-kpi-section" id="kpi-section">
+  <div class="mc-card karne-kpi-section" id="kpi-section" data-card-code="process_karne.surec_karnesi">
     <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
       <div class="karne-pg-card-head-text karne-kanban-head-main">
         <span class="mc-card-title karne-kpi-section-title">
@@ -355,26 +355,26 @@
     </div>
     <div id="kanban-gauge-root" class="kb-kanban-root">
       <div class="kb-kanban-grid" id="kb-kanban-grid">
-        <section class="kb-col kb-col--hedefte" aria-labelledby="kb-col-title-hedefte">
+        <section class="kb-col kb-col--hedefte" aria-labelledby="kb-col-title-hedefte" data-card-code="process_karne.hedefte">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--hedefte" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="kb-col-title-hedefte">Hedefte</h3>
+            <h3 class="kb-col-title mc-stat-label" id="kb-col-title-hedefte">Hedefte</h3>
             <span class="kb-col-count" id="kb-count-hedefte">0</span>
           </div>
           <div class="kb-col-body" id="kb-col-hedefte"></div>
         </section>
-        <section class="kb-col kb-col--risk" aria-labelledby="kb-col-title-risk">
+        <section class="kb-col kb-col--risk" aria-labelledby="kb-col-title-risk" data-card-code="process_karne.risk_altinda">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--risk" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="kb-col-title-risk">Risk altında</h3>
+            <h3 class="kb-col-title mc-stat-label" id="kb-col-title-risk">Risk altında</h3>
             <span class="kb-col-count" id="kb-count-risk">0</span>
           </div>
           <div class="kb-col-body" id="kb-col-risk"></div>
         </section>
-        <section class="kb-col kb-col--disi" aria-labelledby="kb-col-title-disi">
+        <section class="kb-col kb-col--disi" aria-labelledby="kb-col-title-disi" data-card-code="process_karne.hedef_disi">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--disi" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="kb-col-title-disi">Hedef dışı</h3>
+            <h3 class="kb-col-title mc-stat-label" id="kb-col-title-disi">Hedef dışı</h3>
             <span class="kb-col-count" id="kb-count-disi">0</span>
           </div>
           <div class="kb-col-body" id="kb-col-disi"></div>
@@ -385,13 +385,13 @@
   </div>
 
   <div class="mc-grid-4" style="margin:20px 0;" id="faaliyet-stats">
-    <div class="mc-stat-card mc-stat-blue">
+    <div class="mc-stat-card mc-stat-blue" data-card-code="process_karne.faaliyet_toplam">
       <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
       <div class="mc-stat-label">Faaliyetler</div>
       <div class="mc-stat-value" id="stat-activities">—</div>
       <div class="mc-stat-sub">Toplam</div>
     </div>
-    <div class="mc-stat-card mc-stat-amber">
+    <div class="mc-stat-card mc-stat-amber" data-card-code="process_karne.faaliyet_tamamlanan">
       <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
       <div class="mc-stat-label">Tamamlanan</div>
       <div class="mc-stat-value" id="stat-done-pct">—</div>
@@ -399,7 +399,7 @@
     </div>
   </div>
 
-  <div class="mc-card karne-kpi-section" id="activity-section">
+  <div class="mc-card karne-kpi-section" id="activity-section" data-card-code="process_karne.surec_faaliyetleri">
     <div class="mc-card-header karne-pg-card-header-micro karne-kanban-card-header">
       <div class="karne-pg-card-head-text karne-kanban-head-main">
         <span class="mc-card-title">
@@ -441,26 +441,26 @@
     </div>
     <div id="activity-kanban-root" class="kb-kanban-root">
       <div class="kb-kanban-grid">
-        <section class="kb-col kb-col--hedefte" aria-labelledby="act-col-title-plan">
+        <section class="kb-col kb-col--hedefte" aria-labelledby="act-col-title-plan" data-card-code="process_karne.faaliyet_planlananlar">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--hedefte" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="act-col-title-plan">Planlananlar</h3>
+            <h3 class="kb-col-title mc-stat-label" id="act-col-title-plan">Planlananlar</h3>
             <span class="kb-col-count" id="act-count-plan">0</span>
           </div>
           <div class="kb-col-body" id="act-col-plan"></div>
         </section>
-        <section class="kb-col kb-col--risk" aria-labelledby="act-col-title-progress">
+        <section class="kb-col kb-col--risk" aria-labelledby="act-col-title-progress" data-card-code="process_karne.faaliyet_devam_edenler">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--risk" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="act-col-title-progress">Devam Edenler</h3>
+            <h3 class="kb-col-title mc-stat-label" id="act-col-title-progress">Devam Edenler</h3>
             <span class="kb-col-count" id="act-count-progress">0</span>
           </div>
           <div class="kb-col-body" id="act-col-progress"></div>
         </section>
-        <section class="kb-col kb-col--disi" aria-labelledby="act-col-title-done">
+        <section class="kb-col kb-col--disi" aria-labelledby="act-col-title-done" data-card-code="process_karne.faaliyet_tamamlanan_iptal">
           <div class="kb-col-head">
             <span class="kb-col-dot kb-col-dot--disi" aria-hidden="true"></span>
-            <h3 class="kb-col-title" id="act-col-title-done">Tamamlanan / İptal</h3>
+            <h3 class="kb-col-title mc-stat-label" id="act-col-title-done">Tamamlanan / İptal</h3>
             <span class="kb-col-count" id="act-count-done">0</span>
           </div>
           <div class="kb-col-body" id="act-col-done"></div>

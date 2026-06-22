@@ -61,3 +61,65 @@ verisi görünür). Kart komple gizlenmez — kısmi çalışır.
 - `component_visible(slug)` helper'ı (BILESEN-GORUNURLUK-KALIBI.md) bu sistemin
   bileşen-düzeyi atası; card_data_visible onun kart-veri düzeyi uzantısı.
 - `route_registry.component_slug` + `admin_components_sync` = keşif felsefesi örneği.
+
+---
+
+## 🎴 KART GÖRSEL STANDARDI — ZORUNLU (2026-06-21, kullanıcı mutabakatı)
+
+> **Bağlayıcı.** Bundan sonra **yeni veya değiştirilen HER kart** bu yapıda olmalı.
+> Mekanizma `ui/templates/platform/base.html` içinde merkezîdir — kart sadece
+> doğru işaretlenirse standart otomatik uygulanır.
+
+### Başlık satırı düzeni
+```
+[mini ikon]  Kart Başlığı  (i)                         [ KART ID ]
+└─ solda ───────────────────┘                          └─ sağ üst köşe ─┘
+   herkese görünür                                       yalnız sistem Admin
+```
+
+| Öğe | Konum | Kim görür | Kaynak |
+|-----|-------|-----------|--------|
+| **Mini ikon** | Başlığın solunda | Herkes | Template'te FontAwesome (`<i class="fas fa-...">`) — konuyla ilgili |
+| **Kart Başlığı** | İkonun sağında | Herkes | Template başlık metni (`mc-card-title` / `mc-stat-label`) |
+| **(i) bilgi butonu** | Başlığın hemen sağında, normal kelime-arası boşlukla | **Herkes** | JS otomatik ekler; tıkla → kartın amacı/içeriği (`system_cards.description`) modalde |
+| **Kart ID (short_id)** | Kartın sağ üst köşesi | **Yalnız `role.name == 'Admin'`** | `system_cards.short_id` (2 harf + numara, örn. MA01) — salt gösterim, tıklanamaz |
+
+### Bir kartı standarda sokmak için (geliştirici checklist)
+1. Kart konteynerine **`data-card-code="<sayfa>.<kart>"`** ekle (örn. `data-card-code="sp.misyon"`).
+2. Başlık elemanı **`mc-card-title`** veya **`mc-stat-label`** sınıfını taşısın (JS başlığı bununla bulur; yoksa (i) köşeye düşer).
+3. Başlığın soluna konuyla ilgili **mini ikon** koy (`<i class="fas fa-...">`).
+4. Admin'den **kart keşfi**ni tetikle (`/admin` → Kartları Keşfet) → kart `system_cards`'a yazılır.
+5. Karta **kısa ID (short_id)** ata: `<HARF><numara>` (sayfa kısaltması + sıra).
+6. **Açıklama (description)** yaz (admin UI'dan veya seed) → (i) bunu gösterir.
+
+### Sayfa → harf eşlemesi (short_id öneki)
+| Sayfa | Harf | | Sayfa | Harf |
+|-------|------|-|-------|------|
+| masaustu | **MA** | | project | **PJ** |
+| sp | **SP** | | k-rapor | **KR** |
+| process | **PR** | | k-radar | **KD** |
+| kurum | **KU** | | raporlar | **RP** |
+| bireysel | **BR** | | | |
+
+### Kart vurgu şeridi (sol kenar) — anlamlı, dekoratif değil
+Standart kart **şeritsizdir** (düz `mc-card`). Sol renkli şerit yalnızca öne çıkan /
+durum bildiren kartlarda kullanılır ve renk **anlam** taşır. İnline `border-left`
+**YASAK** — `components.css`'teki modifier sınıfları kullanılır (tek kalınlık 4px):
+
+| Sınıf | Anlam | Renk |
+|-------|-------|------|
+| `mc-card--accent-info` | bilgi / nötr vurgu | indigo |
+| `mc-card--accent-success` | olumlu / skor / tamamlandı | yeşil |
+| `mc-card--accent-warning` | dikkat / eksik veri | amber |
+| `mc-card--accent-danger` | uyarı / risk / kritik | kırmızı |
+
+Kullanım: `<div class="mc-card mc-card--accent-info">`. Renk token'larından (`--color-*`)
+beslenir; rastgele hex kullanma. **Migrasyon borcu:** sitede ~34 dosyada eski inline
+`border-left` var; kart kart geçerken bu sınıflara çevrilir (toplu değil, kademeli).
+
+### Mekanizma notları (base.html)
+- (i) → `GET /admin/api/card-info/<code>` (CSRF gerektirmez).
+- short_id rozeti → `GET /admin/api/cards-meta?codes=a,b,c` (toplu, salt-okuma, **GET; POST CSRF'e takılır**).
+- Dinamik (AJAX) gelen kartlar MutationObserver ile de yakalanır.
+- **Tuzak:** Bu makinede Flask auto-reload güvenilmez → base.html/route değişince
+  `python pybasla.py` ile **yeniden başlat**, yoksa tarayıcı eski JS'i görür.

@@ -14,8 +14,8 @@
   const trStatus = s => STATUS_TR[s] || s || '—';
   const trPriority = p => PRIORITY_TR[p] || p || '—';
 
-  const statCard = (l,v,c,sub) => `<div class="mc-card" style="padding:12px 14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
+  const statCard = (l,v,c,sub,code) => `<div class="mc-card" style="padding:12px 14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:800;color:${c};margin-top:3px;">${esc(v)}</div>
     ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(sub)}</div>` : ''}
   </div>`;
@@ -104,10 +104,10 @@
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        statCard('Toplam Girişim',    s.total, '#0f172a'),
-        statCard('Toplam Bütçe',      '₺'+fmt(s.total_budget), '#0ea5e9'),
-        statCard('Harcanan Bütçe',    '₺'+fmt(s.total_spent),  '#f59e0b', 'kullanım %'+Math.round(s.total_spent/Math.max(s.total_budget,1)*100)),
-        statCard('Ortalama İlerleme', s.avg_progress+'%',       '#10b981'),
+        statCard('Toplam Girişim',    s.total, '#0f172a', '', 'raporlar_initiative_bubble.toplam_girisim'),
+        statCard('Toplam Bütçe',      '₺'+fmt(s.total_budget), '#0ea5e9', '', 'raporlar_initiative_bubble.toplam_butce'),
+        statCard('Harcanan Bütçe',    '₺'+fmt(s.total_spent),  '#f59e0b', 'kullanım %'+Math.round(s.total_spent/Math.max(s.total_budget,1)*100), 'raporlar_initiative_bubble.harcanan_butce'),
+        statCard('Ortalama İlerleme', s.avg_progress+'%',       '#10b981', '', 'raporlar_initiative_bubble.ortalama_ilerleme'),
       ].join('');
       drawBubble(j.bubbles || []);
       document.getElementById('tbl').innerHTML = (j.bubbles || []).map(b => `

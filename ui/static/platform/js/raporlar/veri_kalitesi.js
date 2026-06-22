@@ -1,9 +1,9 @@
 (function(){
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-  function statCard(label, value, color, sub) {
-    return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px 16px;">
-      <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">${esc(label)}</div>
+  function statCard(label, value, color, sub, code) {
+    return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px 16px;"${code?` data-card-code="${code}"`:''}>
+      <div class="mc-stat-label" style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">${esc(label)}</div>
       <div style="font-size:26px;font-weight:700;color:${color};line-height:1.1;">${esc(value)}</div>
       ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:4px;">${esc(sub)}</div>` : ''}
     </div>`;
@@ -61,11 +61,11 @@
       const s = j.summary;
       const scoreColor = s.score >= 75 ? '#10b981' : s.score >= 50 ? '#f59e0b' : '#dc2626';
       document.getElementById('summary-cards').innerHTML = [
-        statCard('Genel Skor', '%' + s.score, scoreColor, s.plan_year ? `Plan yılı: ${s.plan_year}` : ''),
-        statCard('Toplam PG', s.total_kpi, '#0f172a'),
-        statCard('Kritik', s.kritik_count, '#dc2626', 'acil ilgilenilmesi gerekli'),
-        statCard('Orta Risk', s.orta_count, '#f59e0b', 'eksik alanlar var'),
-        statCard('Sağlıklı', s.iyi_count, '#10b981', 'tam tanımlı'),
+        statCard('Genel Skor', '%' + s.score, scoreColor, s.plan_year ? `Plan yılı: ${s.plan_year}` : '', 'raporlar_veri_kalitesi.genel_skor'),
+        statCard('Toplam PG', s.total_kpi, '#0f172a', '', 'raporlar_veri_kalitesi.toplam_pg'),
+        statCard('Kritik', s.kritik_count, '#dc2626', 'acil ilgilenilmesi gerekli', 'raporlar_veri_kalitesi.kritik'),
+        statCard('Orta Risk', s.orta_count, '#f59e0b', 'eksik alanlar var', 'raporlar_veri_kalitesi.orta_risk'),
+        statCard('Sağlıklı', s.iyi_count, '#10b981', 'tam tanımlı', 'raporlar_veri_kalitesi.saglikli'),
       ].join('');
 
       renderKpiList(j.categories.kritik, document.getElementById('kritik-list'));

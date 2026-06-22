@@ -1258,6 +1258,50 @@ def admin_api_components_list():
     ]})
 
 
+@app_bp.route("/admin/api/card-info/<path:code>", methods=["GET"])
+@login_required
+def admin_api_card_info(code):
+    """Kart bilgi/açıklaması (i butonu) — tüm giriş yapmış kullanıcılara açık.
+
+    data-card-code ile işaretli kartın DB'deki açıklamasını döner. Kart DB'de
+    yoksa (henüz keşfedilmemiş) boş açıklama + bulundu=False döner.
+    short_id de döner (kısa görünen kimlik).
+    """
+    from app.models.saas import SystemCard
+    card = SystemCard.query.filter_by(code=code).first()
+    if not card:
+        return jsonify({"success": True, "found": False, "code": code,
+                        "short_id": None, "name": None, "description": None})
+    return jsonify({"success": True, "found": True, "code": card.code,
+                    "short_id": card.short_id, "name": card.name,
+                    "description": card.description})
+
+
+@app_bp.route("/admin/api/cards-meta", methods=["GET", "POST"])
+@login_required
+def admin_api_cards_meta():
+    """Birden çok kart kodu için meta (short_id, name) toplu döner.
+
+    Tüm kullanıcılara açık. Sayfadaki data-card-code'lar tek istekte çözülür;
+    rozet (short_id) ve (i) başlığı bununla doldurulur. Salt-okuma.
+    GET:  ?codes=a,b,c  (CSRF gerektirmez — önerilen)
+    POST: {"codes": ["a", ...]}  (CSRF muaf — yan etkisiz)
+    """
+    from app.models.saas import SystemCard
+    if request.method == "GET":
+        raw = request.args.get("codes", "")
+        codes = [c for c in raw.split(",") if c]
+    else:
+        data = request.get_json(silent=True) or {}
+        codes = data.get("codes") or []
+        if not isinstance(codes, list):
+            codes = []
+    codes = [str(c) for c in codes][:500]
+    cards = SystemCard.query.filter(SystemCard.code.in_(codes)).all() if codes else []
+    meta = {c.code: {"short_id": c.short_id, "name": c.name} for c in cards}
+    return jsonify({"success": True, "meta": meta})
+
+
 @app_bp.route("/admin/api/cards/<int:card_id>", methods=["POST"])
 @login_required
 def admin_api_card_update(card_id):
@@ -1273,6 +1317,8 @@ def admin_api_card_update(card_id):
             if not name:
                 return jsonify({"success": False, "message": "Kart adı boş olamaz."}), 400
             card.name = name
+        if "description" in data:
+            card.description = (data.get("description") or "").strip() or None
         if "sira" in data:
             try:
                 card.sira = int(data.get("sira") or 0)

@@ -38,8 +38,8 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
       <!-- 5×5 Matris -->
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">5×5 Risk Matrisi</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.5_5_risk_matrisi">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">5×5 Risk Matrisi</h3>
         <p style="font-size:11.5px;color:#64748b;margin:0 0 12px;">Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki (1=Önemsiz, 5=Felaket)</p>
         <div id="rh-grid" style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:3px;font-size:11px;"></div>
         <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:6px;">
@@ -48,8 +48,8 @@
       </div>
 
       <!-- Top 10 -->
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> En Yüksek RPN — İlk 10</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.en_yuksek_rpn_ilk_10">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> En Yüksek RPN — İlk 10</h3>
         <div id="rh-top10"></div>
       </div>
     </div>
@@ -61,8 +61,8 @@
 (function(){
   const STATUS_TR = {"open":"Açık","mitigated":"Azaltıldı","closed":"Kapalı","accepted":"Kabul Edildi","transferred":"Transfer Edildi"};
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l, v, c, desc) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
+  const stat = (l, v, c, desc, code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>
     ${desc ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:2px;">${esc(desc)}</div>` : ''}
   </div>`;
@@ -109,10 +109,10 @@
       document.getElementById('rh-content').style.display = 'block';
       const s = j.summary;
       document.getElementById('rh-summary').innerHTML = [
-        stat('Toplam Risk',    s.total,    '#0f172a', 'Seçili dönemdeki tüm riskler'),
-        stat('Açık',          s.open,     '#dc2626', 'Henüz kapatılmamış riskler'),
-        stat('Azaltıldı',     s.mitigated,'#10b981', 'Önlem alınmış riskler'),
-        stat('Kritik (≥15)',  s.high_rpn, '#f59e0b', 'RPN ≥ 15 olan yüksek öncelikli'),
+        stat('Toplam Risk',    s.total,    '#0f172a', 'Seçili dönemdeki tüm riskler', 'raporlar_risk_heatmap.toplam_risk'),
+        stat('Açık',          s.open,     '#dc2626', 'Henüz kapatılmamış riskler', 'raporlar_risk_heatmap.acik'),
+        stat('Azaltıldı',     s.mitigated,'#10b981', 'Önlem alınmış riskler', 'raporlar_risk_heatmap.azaltildi'),
+        stat('Kritik (≥15)',  s.high_rpn, '#f59e0b', 'RPN ≥ 15 olan yüksek öncelikli', 'raporlar_risk_heatmap.kritik_15'),
       ].join('');
 
       // Grid

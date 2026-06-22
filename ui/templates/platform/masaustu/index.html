@@ -40,7 +40,7 @@
     </div>
 
     <!-- Yerel veri bilgisi -->
-    <div class="mc-card masaustu-bilgi-panel" style="margin-bottom:20px; border-left:4px solid #6366f1;">
+    <div class="mc-card mc-card--accent-info masaustu-bilgi-panel" style="margin-bottom:20px;">
         <div class="mc-card-body" style="padding:14px 18px;">
             <p style="margin:0; font-size:12px; line-height:1.55; color:#64748b;">
                 <i class="fas fa-circle-info" style="color:#6366f1;"></i>
@@ -54,7 +54,7 @@
     <!-- Yönetici Sabah Özeti Widget -->
     {% set role_code = current_user.role.name if current_user.role else '' %}
     {% if role_code in ['tenant_admin', 'executive_manager', 'Admin'] %}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="morning-summary" style="margin-bottom:20px; border-left:4px solid #6366f1;"
+    <div class="mc-card mc-card--accent-info masaustu-widget-panel" data-widget-id="morning-summary" data-card-code="masaustu.yonetici_sabah_ozeti" style="margin-bottom:20px;"
          data-morning-url="{{ url_for('app_bp.api_morning_summary') }}">
         <div class="mc-card-header masaustu-widget-head" style="display:flex; justify-content:space-between; align-items:center;">
             <span class="mc-card-title"><i class="fas fa-sun" style="color:#f59e0b; margin-right:6px;"></i>Yönetici Sabah Özeti</span>
@@ -70,7 +70,7 @@
 
     {# KOE — Kurumsal Olgunluk Endeksi (L1). Yalnızca yönetici/üst yönetime gönderilir. #}
     {% if koe %}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="koe" style="margin-bottom:20px; border-left:4px solid #10b981;">
+    <div class="mc-card mc-card--accent-success masaustu-widget-panel" data-widget-id="koe" data-card-code="masaustu.kurumsal_olgunluk_endeksi" style="margin-bottom:20px;">
         <div class="mc-card-header masaustu-widget-head" style="display:flex; justify-content:space-between; align-items:center;">
             <span class="mc-card-title"><i class="fas fa-gauge-high" style="color:#10b981; margin-right:6px;"></i>Kurumsal Olgunluk Endeksi</span>
             <span style="font-size:24px; font-weight:800; color:var(--text-default);" class="dark:text-white">{{ koe.koe }}<span style="font-size:13px; color:#94a3b8; font-weight:600;">/100</span></span>
@@ -131,7 +131,7 @@
     {% endif %}
 
     <!-- Bugünün özeti -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="command" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="command" data-card-code="masaustu.bugunun_ozeti" style="margin-bottom:20px;">
         <div class="mc-card-header masaustu-widget-head">
             <span class="mc-card-title"><i class="fas fa-compass" style="color:#6366f1; margin-right:6px;"></i>Bugünün özeti</span>
         </div>
@@ -163,26 +163,26 @@
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="mc-grid-4 masaustu-widget-panel" data-widget-id="stats" style="margin-bottom:24px;">
-        <div class="mc-stat-card mc-stat-indigo">
+    <div class="mc-grid-4 masaustu-widget-panel" data-widget-id="stats" data-card-code="masaustu.mini_kartlar" style="margin-bottom:24px;">
+        <div class="mc-stat-card mc-stat-indigo" data-card-code="masaustu.bireysel_pg">
             <div class="mc-stat-icon"><i class="fas fa-chart-bar"></i></div>
             <div class="mc-stat-label">Bireysel PG</div>
             <div class="mc-stat-value">{{ toplam_bireysel_pg }}</div>
             <div class="mc-stat-sub">Aktif gösterge</div>
         </div>
-        <div class="mc-stat-card mc-stat-amber">
+        <div class="mc-stat-card mc-stat-amber" data-card-code="masaustu.devam_eden_faaliyet">
             <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
             <div class="mc-stat-label">Devam Eden Faaliyet</div>
             <div class="mc-stat-value">{{ toplam_faaliyet }}</div>
             <div class="mc-stat-sub">Aktif faaliyet</div>
         </div>
-        <div class="mc-stat-card mc-stat-emerald">
+        <div class="mc-stat-card mc-stat-emerald" data-card-code="masaustu.surec_pg">
             <div class="mc-stat-icon"><i class="fas fa-diagram-project"></i></div>
             <div class="mc-stat-label">Süreç PG</div>
             <div class="mc-stat-value">{{ toplam_surec_pg }}</div>
             <div class="mc-stat-sub">Üye/lider olduğunuz süreçlerdeki toplam aktif PG</div>
         </div>
-        <div class="mc-stat-card mc-stat-red">
+        <div class="mc-stat-card mc-stat-red" data-card-code="masaustu.okunmamis_bildirim">
             <div class="mc-stat-icon"><i class="fas fa-bell"></i></div>
             <div class="mc-stat-label">Okunmamış Bildirim</div>
             <div class="mc-stat-value">{{ toplam_bildirim }}</div>
@@ -193,7 +193,7 @@
     <div id="masaustu-sortable-root">
 
     {# ── Benim Görevlerim (D4) ─────────────────────────────────────── #}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="my-tasks" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="my-tasks" data-card-code="masaustu.benim_gorevlerim" style="margin-bottom:20px;">
       <div class="mc-card-header">
         <span class="mc-card-title">
           <i class="fas fa-list-check" style="color:#6366f1; margin-right:6px;"></i>Benim Görevlerim
@@ -318,7 +318,7 @@
     </script>
 
     {# ── Favoriler & Son Ziyaret Edilenler (B2) ─────────────────────── #}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="favorites" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="favorites" data-card-code="masaustu.favori_ve_son_ziyaretlerim" style="margin-bottom:20px;">
       <div class="mc-card-header">
         <span class="mc-card-title">
           <i class="fas fa-star" style="color:#f59e0b; margin-right:6px;"></i>Favoriler & Son Ziyaret Edilenler
@@ -421,7 +421,7 @@
     </script>
 
     <!-- Hızlı işlemler -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="quick" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="quick" data-card-code="masaustu.hizli_islemler" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-bolt" style="color:#eab308; margin-right:6px;"></i>Hızlı işlemler</span>
         </div>
@@ -438,7 +438,7 @@
     </div>
 
     <!-- Takvimim -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="calendar" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="calendar" data-card-code="masaustu.takvimim" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-calendar-days" style="color:#0ea5e9; margin-right:6px;"></i>Takvimim</span>
             <div class="masaustu-calendar-legend">
@@ -459,7 +459,7 @@
     </div>
 
     <!-- Benim Masam -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="masam" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="masam" data-card-code="masaustu.benim_masam" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-inbox" style="color:#6366f1; margin-right:6px;"></i>Benim Masam</span>
             <a href="{{ url_for('app_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Karnede aç →</a>
@@ -506,7 +506,7 @@
     </div>
 
     <!-- Dikkat + eksik PG -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="alerts" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="alerts" data-card-code="masaustu.dikkat_donem_verisi" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-triangle-exclamation" style="color:#f59e0b; margin-right:6px;"></i>Dikkat: {{ bu_ay_ad }} verisi</span>
         </div>
@@ -526,7 +526,7 @@
     </div>
 
     <!-- Karalama -->
-    <div class="mc-card masaustu-widget-panel masaustu-scratch" data-widget-id="scratch" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel masaustu-scratch" data-widget-id="scratch" data-card-code="masaustu.karalama_defteri" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-note-sticky" style="color:#8b5cf6; margin-right:6px;"></i>Karalama defteri</span>
         </div>
@@ -540,7 +540,7 @@
     </div>
 
     <!-- İki Kolon: PG + Faaliyet -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="lists" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="lists" data-card-code="masaustu.ozet_listeler" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-layer-group" style="color:#64748b; margin-right:6px;"></i>Özet listeler</span>
         </div>
@@ -601,6 +601,42 @@
         </div>
     </div>
 
+    <!-- Favori PG'lerim -->
+    {% if favori_pgs %}
+    <div class="mc-card masaustu-widget-panel" data-widget-id="favpg" data-card-code="masaustu.favori_pglerim" style="margin-bottom:20px;">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-star" style="color:#f59e0b; margin-right:6px;"></i>Favori PG'lerim</span>
+            <span style="font-size:12px; color:#94a3b8;">{{ favori_pgs|length }} gösterge</span>
+        </div>
+        <p class="mc-page-subtitle" style="margin:0 20px 10px;">Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle burada toplanır.</p>
+        <div>
+            {% for pg in favori_pgs %}
+            <a href="{{ url_for('app_bp.surec_karne', process_id=pg.process_id) }}"
+               style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 20px; border-bottom:1px solid #f1f5f9; text-decoration:none; color:inherit;">
+                <div style="min-width:0;">
+                    <div style="font-size:13.5px; font-weight:500; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" class="dark:text-white">
+                        {% if pg.code %}<span style="font-family:monospace; font-size:11px; color:#6366f1; margin-right:4px;">{{ pg.code }}</span>{% endif %}{{ pg.name }}
+                    </div>
+                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.process_name or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    {% if pg.actual_value is not none %}
+                    <div style="font-size:14px; font-weight:700; color:var(--text-default);" class="dark:text-white">{{ pg.actual_value }}{% if pg.unit %} {{ pg.unit }}{% endif %}</div>
+                    {% if pg.status_percentage is not none %}
+                    {% set _p = pg.status_percentage %}
+                    <span class="mc-badge {% if _p >= 80 %}mc-badge-success{% elif _p >= 50 %}mc-badge-warning{% else %}mc-badge-danger{% endif %}" style="font-size:10px;">%{{ _p|round|int }}</span>
+                    {% endif %}
+                    {% else %}
+                    <span style="font-size:11.5px; color:#cbd5e1;">veri yok</span>
+                    {% endif %}
+                    {% if pg.target_value %}<div style="font-size:10.5px; color:#94a3b8; margin-top:2px;">Hedef: {{ pg.target_value }}</div>{% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Süreç PG -->
     {% if surec_pgs %}
     <div class="mc-card masaustu-widget-panel" data-widget-id="surecpg" style="margin-bottom:20px;">
@@ -626,7 +662,7 @@
     {% endif %}
 
     <!-- Bildirimler -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="notif" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="notif" data-card-code="masaustu.bildirimler" style="margin-bottom:20px;">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-bell" style="color:#ef4444; margin-right:6px;"></i>Bildirimler</span>
             <a href="{{ url_for('app_bp.bildirim') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Tümünü Gör →</a>
@@ -652,7 +688,7 @@
 
     <!-- Stratejiler -->
     {% if stratejiler %}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="strat">
+    <div class="mc-card masaustu-widget-panel" data-widget-id="strat" data-card-code="masaustu.stratejik_hedefler">
         <div class="mc-card-header">
             <span class="mc-card-title"><i class="fas fa-bullseye" style="color:#8b5cf6; margin-right:6px;"></i>Stratejik Hedefler</span>
             <a href="{{ url_for('app_bp.sp') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">Stratejik Planlamaya Git →</a>
@@ -677,6 +713,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 <script src="{{ url_for('app_bp.static', filename='platform/js/calendar_quick_create.js') }}"></script>
-<script src="{{ url_for('app_bp.static', filename='platform/js/masaustu.js') }}"></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/masaustu.js') }}?v={{ config['VERSION'] }}"></script>
 {% endblock %}
 

@@ -30,8 +30,8 @@
   </div>
   <div id="ma-content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="ma-summary"></div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Tespit Edilen Anomaliler</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_ml_anomaly.tespit_edilen_anomaliler">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Tespit Edilen Anomaliler</h3>
       <div id="ma-anomalies"></div>
     </div>
   </div>
@@ -41,8 +41,8 @@
 <script>
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l, v, c, desc) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
+  const stat = (l, v, c, desc, code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>
     ${desc ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:2px;">${esc(desc)}</div>` : ''}
   </div>`;
@@ -55,9 +55,9 @@
       document.getElementById('ma-content').style.display = 'block';
       const s = j.summary;
       document.getElementById('ma-summary').innerHTML = [
-        stat('Analiz Edilen PG',       s.kpis_analyzed, '#0f172a',  'IsolationForest modeli çalıştırıldı'),
-        stat('Yetersiz Veri (Atlandı)', s.kpis_skipped,  '#94a3b8',  'En az 6 ölçüm gerekir'),
-        stat('Anomali Tespit Edildi',   s.anomalies_found, s.anomalies_found > 0 ? '#dc2626' : '#10b981', 'Olağandışı ölçüm noktaları'),
+        stat('Analiz Edilen PG',       s.kpis_analyzed, '#0f172a',  'IsolationForest modeli çalıştırıldı', 'raporlar_ml_anomaly.analiz_edilen_pg'),
+        stat('Yetersiz Veri (Atlandı)', s.kpis_skipped,  '#94a3b8',  'En az 6 ölçüm gerekir', 'raporlar_ml_anomaly.yetersiz_veri_atlandi'),
+        stat('Anomali Tespit Edildi',   s.anomalies_found, s.anomalies_found > 0 ? '#dc2626' : '#10b981', 'Olağandışı ölçüm noktaları', 'raporlar_ml_anomaly.anomali_tespit_edildi'),
       ].join('');
 
       const el = document.getElementById('ma-anomalies');
