@@ -47,6 +47,12 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/k-radar/kpr/kaynak-kapasite", "/k-radar/kpr/resource-capacity"),
     ("/k-radar/api/kpr/kaynak-kapasite", "/k-radar/api/kpr/resource-capacity"),
     ("/k-radar/api/ks/strateji-real", "/k-radar/api/ks/strategy-real"),
+    # PG→PI: Performans Göstergesi İngilizcesi PI (Performance Indicator) — URL segmenti (TASK-209).
+    # Kod/DB (pg_id, ProcessKpi), data-* attribute ADLARI ve KART kodları DOKUNULMADI.
+    ("/individual/api/pg/", "/individual/api/pi/"),
+    ("/reports/pg-project-impact", "/reports/pi-project-impact"),
+    ("/reports/api/pg-project-impact", "/reports/api/pi-project-impact"),
+    ("/k-rapor/api/pg-dagilim", "/k-rapor/api/pi-dagilim"),
     # sp iç Türkçe segmentleri (TASK-207). Plan-yıl grubu (sihirbaz/yeni-yil, donemler,
     # donem-karsilastir, rapor/donemsel) + plan-yıl bağımlı api/proje BİLİNÇLİ olarak dışarıda.
     ("/sp/strateji-proje-matris", "/sp/strategy-project-matrix"),
@@ -94,7 +100,7 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/reports/audit-paketi", "/reports/audit-package"),
     ("/reports/veri-kalitesi", "/reports/data-quality"),
     ("/reports/onay-zinciri", "/reports/approval-chain"),
-    ("/reports/pg-proje-etki", "/reports/pg-project-impact"),
+    ("/reports/pg-proje-etki", "/reports/pi-project-impact"),
     ("/reports/sektorel", "/reports/sectoral"),
     ("/reports/iki-fa", "/reports/two-fa"),
 ]

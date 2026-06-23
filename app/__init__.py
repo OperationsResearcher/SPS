@@ -240,7 +240,7 @@ def create_app(config_class=None):
         ("/reports/k-vector-skewness", None): "performans",
         ("/reports/alignment-sankey", None): "performans",
         ("/sp/strategy-project-matrix", None): "performans",
-        ("/reports/pg-project-impact", None): "performans",
+        ("/reports/pi-project-impact", None): "performans",
         ("/reports/department-performance", None): "performans",
         ("/reports/executive-leadership", None): "performans",
         ("/reports/cmmi-heatmap", None): "performans",

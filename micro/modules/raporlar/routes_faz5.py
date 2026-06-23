@@ -327,14 +327,14 @@ def raporlar_api_onay_zinciri():
 
 # ─── PG × Proje Çapraz Etki Analizi (D2) ─────────────────────────────────────
 
-@app_bp.route("/reports/pg-project-impact")
+@app_bp.route("/reports/pi-project-impact")
 @login_required
 def raporlar_pg_proje_etki():
     """PG × Proje çapraz etki analizi sayfası."""
     return render_template("platform/reports/pg_proje_etki.html")
 
 
-@app_bp.route("/reports/api/pg-project-impact")
+@app_bp.route("/reports/api/pi-project-impact")
 @login_required
 def raporlar_api_pg_proje_etki():
     """Proje × Süreç × PG matrisini ve özet metrikleri döner."""

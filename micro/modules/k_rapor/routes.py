@@ -1844,7 +1844,7 @@ def k_rapor_api_export_pdf():
 
 # ── Yeni Rapor 1: PG Performans Dağılımı (Histogram) ─────────────────────────
 
-@app_bp.route("/k-rapor/api/pg-dagilim")
+@app_bp.route("/k-rapor/api/pi-dagilim")
 @login_required
 def k_rapor_api_pg_dagilim():
     """Tüm PG'lerin başarı yüzdesi dağılımı — histogram + özet."""

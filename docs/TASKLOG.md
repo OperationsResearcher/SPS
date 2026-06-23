@@ -2,6 +2,43 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-209 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — PG→PI (Performans Göstergesi = Performance Indicator) URL segmenti (8 route, 301 köprülü)
+**Modül:** bireysel, raporlar, k_rapor, legacy_redirect, nav, frontend
+**Durum:** ✅ Tamamlandı
+
+### Düzeltme (kullanıcı)
+PG İngilizcesi PI'dir. Önceki turlarda pg "korunan kısaltma" sanılıp bırakılmıştı; URL'de pi olmalı.
+KAPSAM: SADECE URL segmentleri. Kod/DB (pg_id, ProcessKpi), data-* attribute ADLARI, KART kodları DOKUNULMADI.
+
+### Çeviri haritası
+/individual/api/pg/* → /individual/api/pi/* (5 route; <int:pg_id> PARAMETRE adı korundu),
+/reports/pg-project-impact (+api) → /reports/pi-project-impact, /k-rapor/api/pg-dagilim → pi-dagilim.
+
+### Değiştirilen Dosyalar
+- `micro/modules/bireysel/routes.py` → 5× /individual/api/pi/
+- `micro/modules/raporlar/routes_faz5.py` → /reports/pi-project-impact (+api)
+- `micro/modules/k_rapor/routes.py` → /k-rapor/api/pi-dagilim
+- `app/legacy_redirect_config.py` → 4 yeni pg→pi köprüsü + TASK-204 pg-proje-etki hedefi pi'ye düzeltildi
+- `app/__init__.py` → component-visibility eşleme (pi-project-impact)
+- `ui/templates/platform/raporlar/pg_proje_etki.html` (fetch), `bireysel/karne.html` (2 data-base değeri),
+  `k_radar/hub.html` (link), `ui/static/platform/js/bireysel.js` (2 fallback değeri)
+
+### Yapılan İşlem
+Sadece URL string değerleri pg→pi. data-pg-*-base attribute ADLARI (JS dataset.pgUpdateBase eşleşmesi)
+ve PG_UPDATE_BASE JS değişken adları KORUNDU — yalnız değerleri /pi/. Template dosya adları (pg_proje_etki.html),
+fonksiyon adları, render hedefleri dokunulmadı. pg-dagilim'de 'dagilim' Türkçe kaldı (ayrı iş). hub.html
+görünen metin "PG × Proje" Türkçe kaldı (kullanıcı metni). İki nesil köprü: pg-proje-etki→pi-project-impact.
+
+### Test
+Restart: pi-* route'ları 302/405(POST), pg-* eski URL'ler 301→pi (pg-proje-etki dahil iki nesil zincir),
+k-radar/individual regresyon yok. pytest bireysel+module+k_rapor smoke → 42/42 geçti.
+
+### Notlar
+Kalan URL işi: sp plan-yıl grubu (aktif iş), kurum kökü /organization, admin araçları, kule, test_smoke_routes
+(/micro prefix kırık). Kod/DB katmanında pg hâlâ korunuyor (sadece URL pi oldu).
+
 ## TASK-208 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — k-radar iç Türkçe segmentleri İngilizceye (11 route, 301 köprülü)

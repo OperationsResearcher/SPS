@@ -18,7 +18,7 @@
   const FAALIYET_DEL_BASE = root.dataset.faaliyetDeleteBase;
   const FAALIYET_TRACK_BASE = root.dataset.faaliyetTrackBase;
   const PG_SERIES_TEMPLATE = root.dataset.pgSeriesUrlTemplate || "";
-  const PG_UPDATE_BASE = root.dataset.pgUpdateBase || "/individual/api/pg/update/";
+  const PG_UPDATE_BASE = root.dataset.pgUpdateBase || "/individual/api/pi/update/";
 
   // L1 Dal 4: stratejik hedef için kurum stratejisi seçenekleri (sayfadan gömülü)
   let STRATEJI_SECENEKLERI = [];
@@ -126,7 +126,7 @@
   }
 
   function seriesUrl(pgId, year) {
-    if (!PG_SERIES_TEMPLATE) return `/individual/api/pg/${pgId}/series?year=${year}`;
+    if (!PG_SERIES_TEMPLATE) return `/individual/api/pi/${pgId}/series?year=${year}`;
     return PG_SERIES_TEMPLATE.replace("999999", String(pgId)) + `?year=${year}`;
   }
 

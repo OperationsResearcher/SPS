@@ -99,7 +99,7 @@ def bireysel():
 
 # ── API: Bireysel PG CRUD ─────────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/pg/ensure-from-process-kpi", methods=["POST"])
+@app_bp.route("/individual/api/pi/ensure-from-process-kpi", methods=["POST"])
 @login_required
 def bireysel_api_pg_ensure_from_process_kpi():
     """
@@ -175,7 +175,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
             return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
-@app_bp.route("/individual/api/pg/add", methods=["POST"])
+@app_bp.route("/individual/api/pi/add", methods=["POST"])
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
@@ -215,7 +215,7 @@ def bireysel_api_pg_add():
             return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
-@app_bp.route("/individual/api/pg/update/<int:pg_id>", methods=["POST"])
+@app_bp.route("/individual/api/pi/update/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_update(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -241,7 +241,7 @@ def bireysel_api_pg_update(pg_id):
         return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
 
 
-@app_bp.route("/individual/api/pg/delete/<int:pg_id>", methods=["POST"])
+@app_bp.route("/individual/api/pi/delete/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_delete(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -599,7 +599,7 @@ def bireysel_api_karne():
     })
 
 
-@app_bp.route("/individual/api/pg/<int:pg_id>/series")
+@app_bp.route("/individual/api/pi/<int:pg_id>/series")
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
