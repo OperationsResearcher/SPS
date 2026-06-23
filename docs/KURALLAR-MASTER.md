@@ -61,7 +61,7 @@ Oku → Plan göster → Onay al → Uygula → Test et → TASKLOG yaz → Dur
 | DB instance | `extensions.py::db` |
 | DB dosyası | `instance/kokpitim.db` |
 | Login view | `auth.login` (kök — micro değil) |
-| PG | Performans Göstergesi (PostgreSQL DEĞİL) |
+| PG | Performans Göstergesi (PostgreSQL DEĞİL). Kod/DB'de `pg` (pg_id, ProcessKpi). **URL'de `pi`** (Performance Indicator) — tek-dil, TASK-209 |
 | Bildirim | SweetAlert2 11 |
 | CSS sistemi | `var(--text-*)`, `var(--color-*)` token'ları |
 

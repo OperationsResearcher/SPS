@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-210 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-rapor KALAN iç API segmentleri İngilizceye (8 route, 301 köprülü)
+**Modül:** k_rapor, legacy_redirect, test, KURALLAR-MASTER
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-rapor ürün adı KORUNDU)
+faaliyet→activity, faaliyet-matris→activity-matrix, bireysel→individual, rekabet→competition,
+aktivite-takvim→activity-calendar, kurum-karsilastirma→org-comparison, sorumlu-analiz→responsible-analysis,
+bildirim-analiz→notification-analysis. (TASK-205'te atlanan kalan segmentler; k-rapor artık tam İngilizce.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 8 route path (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → 8 köprü (faaliyet-matris uzun-önce, faaliyet'ten önce)
+- `tests/test_k_rapor_smoke.py` → rekabet→competition
+- `docs/KURALLAR-MASTER.md` → PG satırına "URL'de pi" istisnası eklendi (TASK-209 kalıcı not)
+
+### Yapılan İşlem
+TASK-205 kalıbı: k_rapor.js apiUrl(name)→dataset["api"+CamelCase(name)] mimarisi; data-api-* DEĞERLERİ
+url_for ile gelir → fonksiyon adları korunduğu için frontend otomatik doğru. apiUrl("faaliyet")/data-api-faaliyet
+ANAHTAR çiftine dokunulmadı (sadece route path + url_for değeri). Hardcoded frontend çağrısı YOK.
+
+### Test
+Restart: 8 yeni İngilizce 302, 8 eski TR köprü 301 (faaliyet-matris doğru hedefe — uzun-önce çalıştı),
+TASK-205(kurumsal) + PG→PI(pg-dagilim) regresyon yok. pytest k_rapor+module smoke → 17+19 geçti.
+
+### Notlar
+k-rapor modülü artık TAM İngilizce. Kalan URL işi: sp plan-yıl grubu (aktif iş), kurum kökü /organization,
+admin araçları, kule, test_smoke_routes (/micro prefix kırık - ayrı borç).
+
 ## TASK-209 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — PG→PI (Performans Göstergesi = Performance Indicator) URL segmenti (8 route, 301 köprülü)

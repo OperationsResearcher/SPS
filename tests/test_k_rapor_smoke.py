@@ -17,7 +17,7 @@ K_RAPOR_APIS = [
     "/k-rapor/api/k-vektor",
     "/k-rapor/api/strategic-analysis",
     "/k-rapor/api/stakeholder",
-    "/k-rapor/api/rekabet",
+    "/k-rapor/api/competition",
     "/k-rapor/api/anomalies",        # Sprint 14
     "/k-rapor/api/digest/preview",   # Sprint 18
     "/k-rapor/api/export-pdf",       # Sprint 11

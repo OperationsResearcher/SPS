@@ -454,7 +454,7 @@ def k_rapor_api_uyum():
 
 # ── Rapor 5: Faaliyet ─────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/faaliyet")
+@app_bp.route("/k-rapor/api/activity")
 @login_required
 def k_rapor_api_faaliyet():
     """Faaliyet tamamlanma oranı, geciken ve tamamlanan."""
@@ -568,7 +568,7 @@ def k_rapor_api_faaliyet():
 
 # ── Rapor 6: Bireysel Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/bireysel")
+@app_bp.route("/k-rapor/api/individual")
 @login_required
 def k_rapor_api_bireysel():
     """Kullanıcı bazlı bireysel PG — özet + detay + sağlık."""
@@ -1342,7 +1342,7 @@ def k_rapor_api_paydas():
 
 # ── Rapor 14: Rekabet & A3 ────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/rekabet")
+@app_bp.route("/k-rapor/api/competition")
 @login_required
 def k_rapor_api_rekabet():
     """Rekabetçi analiz + A3 raporları özeti."""
@@ -1932,7 +1932,7 @@ def k_rapor_api_pg_dagilim():
 
 # ── Yeni Rapor 2: Süreç Faaliyet Matrisi ─────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/faaliyet-matris")
+@app_bp.route("/k-rapor/api/activity-matrix")
 @login_required
 def k_rapor_api_faaliyet_matris():
     """Her süreç için faaliyet durumu dağılımı — yatay bar chart."""
@@ -2000,7 +2000,7 @@ def k_rapor_api_faaliyet_matris():
 
 # ── Yeni Rapor 3: Veri Giriş Aktivite Takvimi ────────────────────────────────
 
-@app_bp.route("/k-rapor/api/aktivite-takvim")
+@app_bp.route("/k-rapor/api/activity-calendar")
 @login_required
 def k_rapor_api_aktivite_takvim():
     """Son 365 günde günlük veri giriş sayısı — GitHub heatmap tarzı."""
@@ -2076,7 +2076,7 @@ def k_rapor_api_aktivite_takvim():
 
 # ── Yeni Rapor 4: Kurum Karşılaştırma ────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/kurum-karsilastirma")
+@app_bp.route("/k-rapor/api/org-comparison")
 @login_required
 def k_rapor_api_kurum_karsilastirma():
     """Kurumları ortalama PG başarısına göre karşılaştır (yalnız Admin)."""
@@ -2277,7 +2277,7 @@ def k_rapor_api_strateji_kapsama():
 
 # ── Yeni Rapor 6: Faaliyet Sorumlu Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/sorumlu-analiz")
+@app_bp.route("/k-rapor/api/responsible-analysis")
 @login_required
 def k_rapor_api_sorumlu_analiz():
     """Kişi başına faaliyet yükü, tamamlanma ve gecikme oranları."""
@@ -2422,7 +2422,7 @@ def k_rapor_api_swot_trend():
 
 # ── Yeni Rapor 8: Bildirim Analizi ───────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/bildirim-analiz")
+@app_bp.route("/k-rapor/api/notification-analysis")
 @login_required
 def k_rapor_api_bildirim_analiz():
     """Bildirim türü dağılımı, okunma oranı, günlük trend, yaşlanma, kullanıcı bazlı."""

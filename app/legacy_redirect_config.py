@@ -47,6 +47,15 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/k-radar/kpr/kaynak-kapasite", "/k-radar/kpr/resource-capacity"),
     ("/k-radar/api/kpr/kaynak-kapasite", "/k-radar/api/kpr/resource-capacity"),
     ("/k-radar/api/ks/strateji-real", "/k-radar/api/ks/strategy-real"),
+    # k-rapor kalan iç API segmentleri (TASK-210). Kök /k-rapor ürün adı KALIR.
+    ("/k-rapor/api/faaliyet-matris", "/k-rapor/api/activity-matrix"),
+    ("/k-rapor/api/faaliyet", "/k-rapor/api/activity"),
+    ("/k-rapor/api/bireysel", "/k-rapor/api/individual"),
+    ("/k-rapor/api/rekabet", "/k-rapor/api/competition"),
+    ("/k-rapor/api/aktivite-takvim", "/k-rapor/api/activity-calendar"),
+    ("/k-rapor/api/kurum-karsilastirma", "/k-rapor/api/org-comparison"),
+    ("/k-rapor/api/sorumlu-analiz", "/k-rapor/api/responsible-analysis"),
+    ("/k-rapor/api/bildirim-analiz", "/k-rapor/api/notification-analysis"),
     # PG→PI: Performans Göstergesi İngilizcesi PI (Performance Indicator) — URL segmenti (TASK-209).
     # Kod/DB (pg_id, ProcessKpi), data-* attribute ADLARI ve KART kodları DOKUNULMADI.
     ("/individual/api/pg/", "/individual/api/pi/"),
