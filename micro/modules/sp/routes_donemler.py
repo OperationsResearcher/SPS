@@ -54,7 +54,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/donemler")
+@app_bp.route("/sp/periods")
 @login_required
 def sp_donemler():
     """SP Dönem yönetimi sayfası."""
@@ -87,7 +87,7 @@ def sp_donemler():
     )
 
 
-@app_bp.route("/sp/api/donem-karsilastir", methods=["GET"])
+@app_bp.route("/sp/api/period-compare", methods=["GET"])
 @login_required
 def sp_api_donem_karsilastir():
     """İki stratejik plan dönemini karşılaştırır ve farkları döner."""

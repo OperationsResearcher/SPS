@@ -340,7 +340,7 @@ def sp_api_strateji_haritasi():
 
 # ── Dönemsel Rapor ────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/rapor/donemsel")
+@app_bp.route("/sp/report/periodic")
 @login_required
 def sp_rapor_donemsel():
     """Dönemsel karşılaştırma raporunu Excel olarak indirir."""

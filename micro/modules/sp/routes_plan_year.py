@@ -303,7 +303,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
 
 # ── Plan Yılı Geçiş Sihirbazı ─────────────────────────────────────────────────
 
-@app_bp.route("/sp/sihirbaz/yeni-yil")
+@app_bp.route("/sp/wizard/new-year")
 @login_required
 @sp_manage_required
 def sp_sihirbaz_yeni_yil():
@@ -316,7 +316,7 @@ def sp_sihirbaz_yeni_yil():
     )
 
 
-@app_bp.route("/sp/api/sihirbaz/yeni-yil/preview", methods=["POST"])
+@app_bp.route("/sp/api/wizard/new-year/preview", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_preview():
@@ -356,7 +356,7 @@ def sp_api_sihirbaz_preview():
     })
 
 
-@app_bp.route("/sp/api/sihirbaz/yeni-yil/uygula", methods=["POST"])
+@app_bp.route("/sp/api/wizard/new-year/apply", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_uygula():

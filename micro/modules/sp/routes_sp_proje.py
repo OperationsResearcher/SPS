@@ -55,7 +55,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/api/proje", methods=["GET"])
+@app_bp.route("/sp/api/project", methods=["GET"])
 @login_required
 def sp_api_proje_list():
     """Aktif dönemin projelerini listeler."""
@@ -70,7 +70,7 @@ def sp_api_proje_list():
     return jsonify({"success": True, "items": [_plan_project_to_dict(p) for p in items]})
 
 
-@app_bp.route("/sp/api/proje", methods=["POST"])
+@app_bp.route("/sp/api/project", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -110,7 +110,7 @@ def sp_api_proje_save():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/sp/api/proje/<int:item_id>", methods=["DELETE"])
+@app_bp.route("/sp/api/project/<int:item_id>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -130,7 +130,7 @@ def sp_api_proje_delete(item_id):
 
 # ── Proje Görevleri ────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/proje/<int:project_id>/gorev", methods=["GET"])
+@app_bp.route("/sp/api/project/<int:project_id>/task", methods=["GET"])
 @login_required
 def sp_api_proje_gorev_list(project_id):
     proj = PlanProject.query.filter_by(
@@ -142,7 +142,7 @@ def sp_api_proje_gorev_list(project_id):
     return jsonify({"success": True, "items": [_plan_task_to_dict(t) for t in items]})
 
 
-@app_bp.route("/sp/api/proje/<int:project_id>/gorev", methods=["POST"])
+@app_bp.route("/sp/api/project/<int:project_id>/task", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -184,7 +184,7 @@ def sp_api_proje_gorev_save(project_id):
         return jsonify({"success": False, "message": "Kayıt hatası."}), 500
 
 
-@app_bp.route("/sp/api/proje/gorev/<int:task_id>", methods=["DELETE"])
+@app_bp.route("/sp/api/project/task/<int:task_id>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 @sp_manage_required

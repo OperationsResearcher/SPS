@@ -67,8 +67,16 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/reports/pg-project-impact", "/reports/pi-project-impact"),
     ("/reports/api/pg-project-impact", "/reports/api/pi-project-impact"),
     ("/k-rapor/api/pg-dagilim", "/k-rapor/api/pi-dagilim"),
-    # sp iç Türkçe segmentleri (TASK-207). Plan-yıl grubu (sihirbaz/yeni-yil, donemler,
-    # donem-karsilastir, rapor/donemsel) + plan-yıl bağımlı api/proje BİLİNÇLİ olarak dışarıda.
+    # sp plan-yıl grubu (TASK-213). Sayfa GET'leri + api. gorev/proje iç segment tam-yol (uzun-önce).
+    ("/sp/sihirbaz/yeni-yil", "/sp/wizard/new-year"),
+    ("/sp/api/sihirbaz/yeni-yil/preview", "/sp/api/wizard/new-year/preview"),
+    ("/sp/api/sihirbaz/yeni-yil/uygula", "/sp/api/wizard/new-year/apply"),
+    ("/sp/donemler", "/sp/periods"),
+    ("/sp/api/donem-karsilastir", "/sp/api/period-compare"),
+    ("/sp/rapor/donemsel", "/sp/report/periodic"),
+    ("/sp/api/proje/gorev/", "/sp/api/project/task/"),
+    ("/sp/api/proje", "/sp/api/project"),
+    # sp iç Türkçe segmentleri (TASK-207). Plan-yıl grubu TASK-213'te çevrildi.
     ("/sp/strateji-proje-matris", "/sp/strategy-project-matrix"),
     ("/sp/strateji-haritasi", "/sp/strategy-map"),
     ("/sp/api/strateji-haritasi", "/sp/api/strategy-map"),

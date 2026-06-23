@@ -2,6 +2,40 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-213 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — sp PLAN-YIL grubu İngilizceye (10 route, 301 köprülü) — kullanıcı onayıyla
+**Modül:** sp (routes_donemler, routes_pages, routes_plan_year, routes_sp_proje), legacy_redirect, frontend
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+donemler→periods, donem-karsilastir→period-compare, rapor/donemsel→report/periodic,
+sihirbaz/yeni-yil→wizard/new-year (uygula→apply), api/proje→api/project, gorev→task.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_sp_proje.py` → 6 route (proje→project, gorev→task)
+- `micro/modules/sp/routes_donemler.py` → periods, period-compare
+- `micro/modules/sp/routes_pages.py` → report/periodic
+- `micro/modules/sp/routes_plan_year.py` → wizard/new-year (+preview/apply)
+- `app/legacy_redirect_config.py` → 8 plan-yıl köprüsü (gorev/ uzun-önce, proje genel)
+- `ui/templates/platform/sp/scenarios.html`, `ceyreklik_review.html` → href /sp/periods
+- `scripts/docs/take_screenshots.py` → /sp/periods
+
+### Yapılan İşlem
+project_sp_yillik_plan aktif işi — kullanıcı onayıyla çevrildi. Sihirbaz preview/apply URL'leri
+inline script'te url_for ile (data-compare-url da url_for) → fonksiyon adları korundu, OTOMATIK doğru.
+PlanProject/PlanProjectTask modeli, _require_plan_year, plan_year_id DOKUNULMADI (URL'den bağımsız).
+JS dosyalarında (sp_donemler, sp_plan_year, launcher/masaustu_plan_year) hardcoded plan-yıl URL'i YOK.
+
+### Test
+Restart: 6 yeni route 302/405(POST), 6 eski TR köprü 301 (uygula→apply, gorev→task iç segment dahil),
+strateji-haritasi/misyon/organization/desktop regresyon yok. pytest sp+module+legacy_sunset → 28/28 geçti.
+
+### Notlar
+sp plan-yıl artık İngilizce. /sp/api/proje/<id>/gorev (GET) köprüsü <id> sonrası gorev'i koruyamıyor
+(prefix sınırı) ama POST+frontend url_for olduğu için canlı etki yok. Kalan URL işi: /proje + /surec
+legacy alias (modern var), admin araçları, kule, test_smoke_routes (/micro kırık).
+
 ## TASK-212 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — masaustu KÖKÜ /masaustu → /desktop (2 route, 301 köprülü)
