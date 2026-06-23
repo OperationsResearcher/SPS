@@ -126,7 +126,7 @@ def k_rapor():
 
 # ── Rapor 1: Kurumsal Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/kurumsal")
+@app_bp.route("/k-rapor/api/corporate")
 @login_required
 def k_rapor_api_kurumsal():
     """Vizyon skoru + strateji bazlı başarı + en iyi/kötü süreçler."""
@@ -193,7 +193,7 @@ def k_rapor_api_kurumsal():
 
 # ── Rapor 2: Süreç & PG Isı Haritası ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/surec-pg")
+@app_bp.route("/k-rapor/api/process-pg")
 @login_required
 def k_rapor_api_surec_pg():
     """Süreçler × dönemler ısı haritası verisi."""
@@ -380,7 +380,7 @@ def k_rapor_api_trend(kpi_id):
 
 # ── Rapor 4: Stratejik Uyum ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/uyum")
+@app_bp.route("/k-rapor/api/compliance")
 @login_required
 def k_rapor_api_uyum():
     """Strateji → Alt Strateji → Süreç katkı ağacı."""
@@ -689,7 +689,7 @@ def k_rapor_api_bireysel():
 
 # ── Rapor 7: Veri Giriş Durumu ────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/veri-durumu")
+@app_bp.route("/k-rapor/api/data-status")
 @login_required
 def k_rapor_api_veri_durumu():
     """Aktif plan yılında cari döneme ait PG veri giriş durumu."""
@@ -868,7 +868,7 @@ def k_rapor_api_risk():
 
 # ── Rapor 9: Denetim ──────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/denetim")
+@app_bp.route("/k-rapor/api/audit")
 @login_required
 def k_rapor_api_denetim():
     """Audit log özeti — kim ne yaptı."""
@@ -928,7 +928,7 @@ def k_rapor_api_denetim():
 
 # ── Rapor 10: Uyarı Merkezi ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/uyari")
+@app_bp.route("/k-rapor/api/alert")
 @login_required
 def k_rapor_api_uyari():
     """Uyarı merkezi — kritik PG'ler, geciken faaliyetler, yüksek riskler."""
@@ -1190,7 +1190,7 @@ def k_rapor_api_evm():
 
 # ── Rapor 12: Stratejik Analiz Özeti ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/stratejik-analiz")
+@app_bp.route("/k-rapor/api/strategic-analysis")
 @login_required
 def k_rapor_api_stratejik_analiz():
     """SWOT / TOWS / PESTEL / Porter özet — yıl yoksa en son analizi döner."""
@@ -1290,7 +1290,7 @@ def k_rapor_api_stratejik_analiz():
 
 # ── Rapor 13: Paydaş Haritası ─────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/paydas")
+@app_bp.route("/k-rapor/api/stakeholder")
 @login_required
 def k_rapor_api_paydas():
     """Paydaş haritası + anket özeti."""
@@ -2177,7 +2177,7 @@ def k_rapor_api_kurum_karsilastirma():
 
 # ── Yeni Rapor 5: Strateji Kapsama Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/strateji-kapsama")
+@app_bp.route("/k-rapor/api/strategy-coverage")
 @login_required
 def k_rapor_api_strateji_kapsama():
     """Hangi stratejilerin altında süreç yok, hangi süreçler stratejisiz."""

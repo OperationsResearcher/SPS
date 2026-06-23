@@ -25,9 +25,9 @@ PAGE_ROUTES = [
 
 # JSON API endpoint'ler (login redirect bekleniyor)
 API_ROUTES = [
-    "/k-rapor/api/kurumsal",
-    "/k-rapor/api/surec-pg",
-    "/k-rapor/api/uyari",
+    "/k-rapor/api/corporate",
+    "/k-rapor/api/process-pg",
+    "/k-rapor/api/alert",
     "/k-rapor/api/export-pdf",  # Sprint 11.3
     "/individual/api/scorecard",
     "/individual/api/scorecard/export-pdf",  # Sprint 11.3

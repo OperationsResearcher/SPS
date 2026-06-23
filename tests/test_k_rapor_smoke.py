@@ -8,15 +8,15 @@ K_RAPOR_PAGES = [
 ]
 
 K_RAPOR_APIS = [
-    "/k-rapor/api/kurumsal",
-    "/k-rapor/api/surec-pg",
-    "/k-rapor/api/uyari",
-    "/k-rapor/api/uyum",
+    "/k-rapor/api/corporate",
+    "/k-rapor/api/process-pg",
+    "/k-rapor/api/alert",
+    "/k-rapor/api/compliance",
     "/k-rapor/api/risk",
-    "/k-rapor/api/denetim",
+    "/k-rapor/api/audit",
     "/k-rapor/api/k-vektor",
-    "/k-rapor/api/stratejik-analiz",
-    "/k-rapor/api/paydas",
+    "/k-rapor/api/strategic-analysis",
+    "/k-rapor/api/stakeholder",
     "/k-rapor/api/rekabet",
     "/k-rapor/api/anomalies",        # Sprint 14
     "/k-rapor/api/digest/preview",   # Sprint 18

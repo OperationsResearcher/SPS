@@ -120,19 +120,15 @@ def init_legacy_sunset(app) -> None:
             return None
         path = request.path or "/"
 
-        # raporlar iç Türkçe segmentleri: /reports/ canonical muafiyetinden ÖNCE köprüle (TASK-204).
-        # Hem /reports/<TR> hem /reports/api/<TR> (ve alt yolları) yeni İngilizce segmente 301'lenir.
+        # İç Türkçe segment köprüleri: canonical (/reports/, /k-rapor/) muafiyetinden ÖNCE (TASK-204/205).
+        # old_seg/new_seg tam yoldur (ör. /k-rapor/api/kurumsal → /k-rapor/api/corporate). Alt yollar da kapsanır.
         for old_seg, new_seg in REPORTS_SEGMENT_REWRITE:
-            tr = old_seg[len("/reports/"):]      # ör. "muda-analizi"
-            en = new_seg[len("/reports/"):]      # ör. "muda-analysis"
-            for base in ("/reports/", "/reports/api/"):
-                old = base + tr
-                if path == old or path.startswith(old + "/"):
-                    target = base + en + path[len(old):]
-                    qs = request.query_string.decode()
-                    if qs:
-                        target = f"{target}?{qs}"
-                    return redirect(target, code=301)
+            if path == old_seg or path.startswith(old_seg + "/"):
+                target = new_seg + path[len(old_seg):]
+                qs = request.query_string.decode()
+                if qs:
+                    target = f"{target}?{qs}"
+                return redirect(target, code=301)
 
         if _should_skip(path):
             return None

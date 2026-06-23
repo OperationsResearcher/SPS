@@ -31,10 +31,21 @@ EXACT_ENDPOINT: dict[str, str] = {
     "/login-user": "public_login",
 }
 
-# raporlar iç Türkçe segment köprüleri (TASK-204). Canonical /reports/ muafiyetinden ÖNCE
-# uygulanır (legacy_sunset _legacy_sunset_redirect başında). Hem /reports/<TR> hem (kök
-# köprüsünden gelen) /raporlar/<TR> bu segmentleri yeni İngilizce karşılığına 301'ler.
+# İç Türkçe segment köprüleri (TASK-204/205). Canonical (/reports/, /k-rapor/) muafiyetinden
+# ÖNCE uygulanır (legacy_sunset _legacy_sunset_redirect başında) — aksi halde canonical yollar
+# redirect'ten muaf tutulur ve köprü çalışmaz. Eski TR segment → yeni İngilizce segment, 301.
 REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
+    # k-rapor iç API segmentleri (TASK-205). Kök /k-rapor ürün adı olarak KALIR.
+    ("/k-rapor/api/kurumsal", "/k-rapor/api/corporate"),
+    ("/k-rapor/api/surec-pg", "/k-rapor/api/process-pg"),
+    ("/k-rapor/api/uyum", "/k-rapor/api/compliance"),
+    ("/k-rapor/api/veri-durumu", "/k-rapor/api/data-status"),
+    ("/k-rapor/api/denetim", "/k-rapor/api/audit"),
+    ("/k-rapor/api/uyari", "/k-rapor/api/alert"),
+    ("/k-rapor/api/stratejik-analiz", "/k-rapor/api/strategic-analysis"),
+    ("/k-rapor/api/strateji-kapsama", "/k-rapor/api/strategy-coverage"),
+    ("/k-rapor/api/paydas", "/k-rapor/api/stakeholder"),
+    # raporlar iç segmentleri (TASK-204):
     ("/reports/bireysel-karne-batch", "/reports/individual-scorecard-batch"),
     ("/reports/bireysel-hizalama", "/reports/individual-alignment"),
     ("/reports/operasyon-istatistik", "/reports/operation-statistics"),

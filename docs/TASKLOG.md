@@ -2,6 +2,39 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-205 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-rapor iç API segmentleri İngilizceye (9 segment, 301 köprülü)
+**Modül:** k_rapor, dashboard_widgets, legacy_redirect/sunset, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-rapor ürün adı olarak KORUNDU)
+kurumsal→corporate, surec-pg→process-pg, uyum→compliance, veri-durumu→data-status,
+denetim→audit, uyari→alert, stratejik-analiz→strategic-analysis, paydas→stakeholder,
+strateji-kapsama→strategy-coverage. (risk/k-vektor/rekabet/anomalies/digest İngilizce — dokunulmadı.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 9 `@route("/k-rapor/api/<TR>")` → İngilizce (fonksiyon adları korundu)
+- `app/services/dashboard_widgets.py` → 2 hardcoded data_endpoint (corporate, stakeholder)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 9 k-rapor köprüsü
+- `app/middleware/legacy_sunset.py` → segment köprü bloğu GENELLEŞTİRİLDİ (tam-yol; /reports + /k-rapor)
+- `tests/test_k_rapor_smoke.py`, `test_module_smoke.py` → yeni segment adları
+
+### Yapılan İşlem
+k_rapor.js `apiUrl(name)` → `dataset["api"+CamelCase(name)]` mimarisi; data-api-* attribute DEĞERLERİ
+url_for ile geliyor → fonksiyon adları korunduğu için frontend otomatik doğru. Sadece route string'leri
++ 2 widget endpoint + testler değişti. `?tab=kurumsal` query/tab anahtarlarına DOKUNULMADI (URL path değil).
+Köprü: TASK-204'teki /reports-özel segment bloğu tam-yol mantığına genelleştirildi (canonical muafiyetinden
+önce çalışır); böylece /k-rapor/api/<TR> de köprülenir, /reports regresyonu yok.
+
+### Test
+Restart: 9 yeni API 302 (login gate), 9 eski TR segment 301→İngilizce. TASK-204 /reports köprü regresyonu
+yok. pytest k_rapor+module+bireysel smoke → 42/42 geçti.
+
+### Notlar
+Kalan: sp (~12 path, aktif plan-yıl — dikkatli), kurum kökü (/kurum → /organization, geniş), admin araçları
+(hata-kontrolu, kilavuz, yonetim-paneli), kule (domain). Kullanıcı seçimi bekleniyor.
+
 ## TASK-204 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — raporlar İÇ Türkçe segmentleri İngilizceye (24 segment, 301 köprülü)
