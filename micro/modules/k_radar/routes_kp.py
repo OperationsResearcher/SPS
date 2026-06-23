@@ -25,7 +25,7 @@ def k_radar_kp_darbogaz():
     return render_template("platform/k_radar/kp_darbogaz.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/deger-zinciri")
+@app_bp.route("/k-radar/kp/value-chain")
 @login_required
 def k_radar_kp_deger_zinciri():
     return render_template("platform/k_radar/kp_deger_zinciri.html", can_manage_k_radar=_can_manage_k_radar())
@@ -61,13 +61,13 @@ def k_radar_kp_vsm():
     return render_template("platform/k_radar/kp_vsm.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/kapasite")
+@app_bp.route("/k-radar/kp/capacity")
 @login_required
 def k_radar_kp_kapasite():
     return render_template("platform/k_radar/kp_kapasite.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/olgunluk")
+@app_bp.route("/k-radar/kp/maturity")
 @login_required
 def k_radar_kp_olgunluk():
     tenant_id = _required_tenant_id()
@@ -90,7 +90,7 @@ def k_radar_kp_olgunluk():
     )
 
 
-@app_bp.route("/k-radar/kp/olgunluk/ekle", methods=["POST"])
+@app_bp.route("/k-radar/kp/maturity/add", methods=["POST"])
 @login_required
 def k_radar_kp_olgunluk_ekle():
     if not _can_manage_k_radar():
@@ -219,7 +219,7 @@ def k_radar_api_kp_radar():
         return jsonify({"success": False, "message": "Radar verisi alınamadı."}), 500
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk")
+@app_bp.route("/k-radar/api/kp/maturity")
 @login_required
 def k_radar_api_kp_olgunluk():
     def _build():
@@ -248,7 +248,7 @@ def k_radar_api_kp_olgunluk():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/maturity", methods=["POST"])
 @login_required
 def k_radar_api_kp_olgunluk_create():
     if not _can_manage_k_radar():
@@ -275,7 +275,7 @@ def k_radar_api_kp_olgunluk_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_kp_olgunluk_update(row_id: int):
     if not _can_manage_k_radar():
@@ -300,7 +300,7 @@ def k_radar_api_kp_olgunluk_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_kp_olgunluk_delete(row_id: int):
     if not _can_manage_k_radar():
@@ -324,7 +324,7 @@ def k_radar_api_kp_darbogaz():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("darbogaz", {})}))
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri")
+@app_bp.route("/k-radar/api/kp/value-chain")
 @login_required
 def k_radar_api_kp_deger_zinciri():
     from services.k_radar_service import get_kp_extended_data
@@ -348,7 +348,7 @@ def _vc_item_dict(it):
     }
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["GET"])
+@app_bp.route("/k-radar/api/kp/value-chain/items", methods=["GET"])
 @login_required
 def k_radar_api_vc_items_list():
     """Değer zinciri öğeleri (birincil/destek) — liste."""
@@ -371,7 +371,7 @@ def k_radar_api_vc_items_list():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_add():
     if not _can_manage_k_radar():
@@ -402,7 +402,7 @@ def k_radar_api_vc_item_add():
         return jsonify({"success": False, "message": "Öğe eklenemedi."}), 500
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_update(item_id):
     if not _can_manage_k_radar():
@@ -433,7 +433,7 @@ def k_radar_api_vc_item_update(item_id):
         return jsonify({"success": False, "message": "Öğe güncellenemedi."}), 500
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>/delete", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>/delete", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_delete(item_id):
     if not _can_manage_k_radar():
@@ -500,7 +500,7 @@ def k_radar_api_kp_vsm():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("vsm", {})}))
 
 
-@app_bp.route("/k-radar/api/kp/kapasite")
+@app_bp.route("/k-radar/api/kp/capacity")
 @login_required
 def k_radar_api_kp_kapasite():
     from services.k_radar_service import get_kp_extended_data

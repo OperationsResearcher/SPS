@@ -2,6 +2,41 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-208 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-radar iç Türkçe segmentleri İngilizceye (11 route, 301 köprülü)
+**Modül:** k_radar (4 route dosyası), legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-radar ürün adı KORUNDU)
+cross/paydas→cross/stakeholder, kp/deger-zinciri→kp/value-chain, kp/kapasite→kp/capacity,
+kp/olgunluk→kp/maturity (+ekle→add), kpr/kaynak-kapasite→kpr/resource-capacity,
+ks/strateji-real→ks/strategy-real. (swot-real/swot-summary/cpm/evm/bcg vb. İngilizce — dokunulmadı.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_radar/routes_cross.py` (paydas→stakeholder)
+- `micro/modules/k_radar/routes_kp.py` (deger-zinciri, kapasite, olgunluk→maturity tamamı)
+- `micro/modules/k_radar/routes_kpr.py` (kaynak-kapasite→resource-capacity)
+- `micro/modules/k_radar/routes_ks.py` (strateji-real→strategy-real)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 11 k-radar köprüsü
+- `ui/templates/platform/k_radar/kp_deger_zinciri.html`, `ui/static/platform/js/vc_items.js` → data-update-base
+- `tests/test_k_radar_regression.py`, `tests/test_smoke_routes.py`, `scripts/k_radar_smoke_check.py`
+
+### Yapılan İşlem
+KART kodları (data-card-code="...paydas_haritasi") ve k-rapor ?tab=paydas anahtarlarına DOKUNULMADI
+(URL değil). Fonksiyon adları korundu → list-url/add-url url_for otomatik doğru; sadece data-update-base
+hardcoded değişti. olgunluk tutarlılık için tamamen maturity yapıldı (yarım çeviri tutarsızlık olurdu).
+
+### Test
+Restart: 6 yeni İngilizce route 302, 4 eski TR köprü 301→hedef, sp/reports/k-rapor regresyon yok.
+pytest k_radar_regression(login'li 403/200) + module + k_rapor smoke → 40/40 geçti.
+
+### Notlar
+test_smoke_routes.py ÖNCEDEN KIRIK (benden bağımsız): 19 route'un tümü /micro/ prefix'i kullanıyor ama
+route'lar artık kök URL'de (app_bp, /micro prefix yok). /micro/sp, /micro/process dahil hepsi 404.
+Bu ayrı bir refactor (tüm /micro/ → kök); bu turda kapsam dışı. Benim 3 satırım sadece zaten-kırık
+testlerin URL adını güncelledi. Kalan URL işi: sp plan-yıl grubu, kurum kökü /organization, admin araçları, kule.
+
 ## TASK-207 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — sp güvenli iç segmentleri (plan-yıl HARİÇ, 11 route, 301 köprülü)

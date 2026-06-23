@@ -35,6 +35,18 @@ EXACT_ENDPOINT: dict[str, str] = {
 # ÖNCE uygulanır (legacy_sunset _legacy_sunset_redirect başında) — aksi halde canonical yollar
 # redirect'ten muaf tutulur ve köprü çalışmaz. Eski TR segment → yeni İngilizce segment, 301.
 REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
+    # k-radar iç Türkçe segmentleri (TASK-208). Kök /k-radar ürün adı KALIR; kart-kodu/?tab DOKUNULMADI.
+    ("/k-radar/cross/paydas", "/k-radar/cross/stakeholder"),
+    ("/k-radar/api/cross/paydas", "/k-radar/api/cross/stakeholder"),
+    ("/k-radar/kp/deger-zinciri", "/k-radar/kp/value-chain"),
+    ("/k-radar/api/kp/deger-zinciri", "/k-radar/api/kp/value-chain"),
+    ("/k-radar/kp/kapasite", "/k-radar/kp/capacity"),
+    ("/k-radar/api/kp/kapasite", "/k-radar/api/kp/capacity"),
+    ("/k-radar/kp/olgunluk", "/k-radar/kp/maturity"),
+    ("/k-radar/api/kp/olgunluk", "/k-radar/api/kp/maturity"),
+    ("/k-radar/kpr/kaynak-kapasite", "/k-radar/kpr/resource-capacity"),
+    ("/k-radar/api/kpr/kaynak-kapasite", "/k-radar/api/kpr/resource-capacity"),
+    ("/k-radar/api/ks/strateji-real", "/k-radar/api/ks/strategy-real"),
     # sp iç Türkçe segmentleri (TASK-207). Plan-yıl grubu (sihirbaz/yeni-yil, donemler,
     # donem-karsilastir, rapor/donemsel) + plan-yıl bağımlı api/proje BİLİNÇLİ olarak dışarıda.
     ("/sp/strateji-proje-matris", "/sp/strategy-project-matrix"),

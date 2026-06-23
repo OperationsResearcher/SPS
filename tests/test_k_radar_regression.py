@@ -144,7 +144,7 @@ def test_k_radar_new_endpoints_smoke(client, app):
         "/k-radar/api/ks/bcg",
         "/k-radar/api/kpr/evm",
         "/k-radar/api/kpr/risk",
-        "/k-radar/api/kpr/kaynak-kapasite",
+        "/k-radar/api/kpr/resource-capacity",
         "/k-radar/api/kpr/gantt",
         "/k-radar/api/cross/rekabet",
         "/k-radar/api/cross/a3",
@@ -164,7 +164,7 @@ def test_k_radar_write_forbidden_for_non_manager(client, app):
         seeded = _seed_k_radar_dataset()
         _login(client, seeded["viewer"].id)
 
-    resp = client.post("/k-radar/api/cross/paydas", json={"name": "X", "influence": 3, "interest": 3})
+    resp = client.post("/k-radar/api/cross/stakeholder", json={"name": "X", "influence": 3, "interest": 3})
     assert resp.status_code == 403
     payload = resp.get_json()
     assert payload["success"] is False
@@ -175,7 +175,7 @@ def test_k_radar_tenant_isolation_read(client, app):
         seeded = _seed_k_radar_dataset()
         _login(client, seeded["admin"].id)
 
-    resp = client.get("/k-radar/api/cross/paydas")
+    resp = client.get("/k-radar/api/cross/stakeholder")
     assert resp.status_code == 200
     payload = resp.get_json()
     rows = payload["data"]["rows"]

@@ -16,16 +16,16 @@ REQUIRED_ROUTES = [
     "/k-radar/ks",
     "/k-radar/ks/swot",
     "/k-radar/kp",
-    "/k-radar/kp/olgunluk",
+    "/k-radar/kp/maturity",
     "/k-radar/kpr",
     "/k-radar/kpr/cpm",
     "/k-radar/cross",
-    "/k-radar/cross/paydas",
+    "/k-radar/cross/stakeholder",
     "/k-radar/api/hub-summary",
     "/k-radar/api/ks/swot-summary",
-    "/k-radar/api/kp/olgunluk",
+    "/k-radar/api/kp/maturity",
     "/k-radar/api/kpr/cpm",
-    "/k-radar/api/cross/paydas",
+    "/k-radar/api/cross/stakeholder",
 ]
 
 REQUIRED_TABLES = [

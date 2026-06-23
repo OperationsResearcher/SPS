@@ -63,7 +63,7 @@ PROTECTED_ROUTES = [
     "/micro/k-radar/kp",
     "/micro/k-radar/kpr",
     "/micro/k-radar/cross",
-    "/micro/k-radar/kp/olgunluk",
+    "/micro/k-radar/kp/maturity",
     "/micro/k-radar/kpr/cpm",
     "/micro/process/api/karne/1",
     "/micro/sp",
@@ -89,9 +89,9 @@ K_RADAR_API_ROUTES = [
     "/micro/k-radar/api/cross/risk-heatmap",
     "/micro/k-radar/api/recommendations",
     "/micro/k-radar/api/ks/swot-summary",
-    "/micro/k-radar/api/kp/olgunluk",
+    "/micro/k-radar/api/kp/maturity",
     "/micro/k-radar/api/kpr/cpm",
-    "/micro/k-radar/api/cross/paydas",
+    "/micro/k-radar/api/cross/stakeholder",
 ]
 
 

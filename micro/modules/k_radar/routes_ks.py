@@ -187,7 +187,7 @@ def k_radar_api_ks_gap_real():
     return _safe_json(lambda: jsonify({"success": True, "data": get_ks_gap_real(_required_tenant_id(), year)}))
 
 
-@app_bp.route("/k-radar/api/ks/strateji-real")
+@app_bp.route("/k-radar/api/ks/strategy-real")
 @login_required
 def k_radar_api_ks_strateji_real():
     from services.k_radar_service import get_ks_strateji_real

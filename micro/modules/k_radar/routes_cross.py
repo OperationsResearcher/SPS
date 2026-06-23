@@ -18,7 +18,7 @@ def k_radar_cross():
     return render_template("platform/k_radar/cross.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/paydas")
+@app_bp.route("/k-radar/cross/stakeholder")
 @login_required
 def k_radar_cross_paydas():
     tenant_id = _required_tenant_id()
@@ -53,7 +53,7 @@ def k_radar_cross_anket():
     return render_template("platform/k_radar/cross_anket.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/paydas/ekle", methods=["POST"])
+@app_bp.route("/k-radar/cross/stakeholder/ekle", methods=["POST"])
 @login_required
 def k_radar_cross_paydas_ekle():
     if not _can_manage_k_radar():
@@ -91,7 +91,7 @@ def k_radar_api_cross_risk_heatmap():
     )
 
 
-@app_bp.route("/k-radar/api/cross/paydas")
+@app_bp.route("/k-radar/api/cross/stakeholder")
 @login_required
 def k_radar_api_cross_paydas():
     def _build():
@@ -120,7 +120,7 @@ def k_radar_api_cross_paydas():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/cross/paydas", methods=["POST"])
+@app_bp.route("/k-radar/api/cross/stakeholder", methods=["POST"])
 @login_required
 def k_radar_api_cross_paydas_create():
     if not _can_manage_k_radar():
@@ -149,7 +149,7 @@ def k_radar_api_cross_paydas_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/cross/paydas/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_cross_paydas_update(row_id: int):
     if not _can_manage_k_radar():
@@ -178,7 +178,7 @@ def k_radar_api_cross_paydas_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/cross/paydas/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_cross_paydas_delete(row_id: int):
     if not _can_manage_k_radar():

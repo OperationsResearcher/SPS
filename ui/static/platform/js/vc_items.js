@@ -13,7 +13,7 @@
 
   const LIST_URL = root.dataset.listUrl;
   const ADD_URL = root.dataset.addUrl;
-  const UPDATE_BASE = root.dataset.updateBase; // /k-radar/api/kp/deger-zinciri/items/
+  const UPDATE_BASE = root.dataset.updateBase; // /k-radar/api/kp/value-chain/items/
   const CAN_EDIT = root.dataset.canEdit === "true";
 
   const CAT_META = {
