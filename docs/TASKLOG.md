@@ -2,6 +2,35 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-214 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 0 — Çoklu dil altyapısını canlıya bağla (paket + dil seçici + set-language)
+**Modül:** app/i18n, app/__init__, base.html (2), requirements
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ planına göre FAZ 0 (altyapıyı canlıya bağla). Önceki yarım i18n iskeleti (Sprint 28/31)
+artık ÇALIŞIYOR. Henüz metin çevrilmedi — bu faz sadece dil değişim mekanizmasını aktif etti.
+
+### Değiştirilen Dosyalar
+- `requirements.txt` + `requirements-ai.txt` → Flask-Babel>=4.0.0
+- `.venv`'e flask-babel kuruldu (pytz null-byte bozulması da onarıldı — bilgisayar kapanışı kaynaklı)
+- `app/i18n.py` → init_babel'e get_locale context processor (Babel yoksa da fallback "tr")
+- `app/__init__.py` → /set-language/<lang> route (session + user.locale_preferences yazar, referer'a döner)
+- `ui/templates/platform/base.html` → topbar dil seçici (🇹🇷/🇬🇧 Alpine dropdown) + <html lang>={{ get_locale() }}
+- `templates/base.html` → <html lang> dinamik
+
+### Test
+flask_babel import OK (.venv). Restart: Babel başladı (artık "kurulu değil" uyarısı YOK). /set-language/en
+302→referer, geçersiz dil güvenli default. ?lang=en → <html lang>=en. session['lang']=en cookie ile
+sonraki istekte <html lang>=en (curl -H Cookie ile doğrulandı; curl -c jar Windows'ta yazmıyor, kod sorunu değil).
+en↔tr iki yönlü çalışıyor. /health 200 (regresyon yok).
+
+### Notlar
+Mevcut işleyiş bozulmadı (i18n zaten kapalıydı). Sıradaki: FAZ 1 (base.html metinlerini _() ile işaretle).
+Tüm faz planı: docs/lang/02-FAZ-PLANI.md. pytz onarımı: bilgisayar kapanışı bazı .venv paketlerini bozmuş
+olabilir — başka import hatası çıkarsa --force-reinstall ile onar.
+
 ## TASK-213 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — sp PLAN-YIL grubu İngilizceye (10 route, 301 köprülü) — kullanıcı onayıyla

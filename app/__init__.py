@@ -358,6 +358,34 @@ def create_app(config_class=None):
                 return {"current_section": {"label": label, "url": url, "prefix": prefix, "is_root": (path == prefix or path == url)}}
         return {"current_section": None}
 
+    @app.route("/set-language/<lang>", methods=["GET", "POST"])
+    def set_language(lang):
+        """Aktif UI dilini değiştir (i18n). session + (giriş yapmışsa) user.locale_preferences yazar.
+
+        Locale seçim zinciri için bkz. app/i18n.py::get_locale. Referer'a (veya köke) döner.
+        """
+        import json as _json
+        from flask import session, redirect, request as _req
+        from flask_login import current_user
+
+        supported = app.config.get("BABEL_SUPPORTED_LOCALES", ["tr", "en"])
+        if lang not in supported:
+            lang = app.config.get("BABEL_DEFAULT_LOCALE", "tr")
+        session["lang"] = lang
+
+        if current_user.is_authenticated:
+            try:
+                prefs = current_user.locale_preferences
+                prefs = _json.loads(prefs) if isinstance(prefs, str) and prefs else (prefs or {})
+                prefs["language"] = lang
+                current_user.locale_preferences = _json.dumps(prefs)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f"[set_language] locale_preferences kaydedilemedi: {e}")
+
+        return redirect(_req.referrer or "/")
+
     @app.route("/health")
     def global_health():
         """Yük dengeleyici / izleme endpoint'i."""

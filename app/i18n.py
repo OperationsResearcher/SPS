@@ -72,6 +72,16 @@ def get_locale() -> str:
 
 def init_babel(app):
     """Babel'i app'e kaydet."""
+    # get_locale her durumda template'lerde kullanılabilir olsun (Babel yoksa da fallback döner).
+    @app.context_processor
+    def _inject_get_locale():
+        def _safe_locale():
+            try:
+                return get_locale()
+            except Exception:
+                return app.config.get("BABEL_DEFAULT_LOCALE", "tr")
+        return {"get_locale": _safe_locale}
+
     try:
         from flask_babel import Babel
     except ImportError:

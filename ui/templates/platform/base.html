@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" x-data="microApp()" :class="darkMode ? 'dark' : ''">
+<html lang="{{ get_locale() }}" x-data="microApp()" :class="darkMode ? 'dark' : ''">
 
 <head>
     <meta charset="UTF-8">
@@ -373,6 +373,21 @@
             {% endif %}
 
             <div class="topbar-actions">
+                <!-- Dil seçici (i18n) -->
+                <div x-data="{ langOpen: false }" style="position:relative;">
+                    <button @click="langOpen = !langOpen" class="topbar-icon-btn"
+                        style="width:auto; padding:0 8px; gap:4px; display:flex; align-items:center; font-weight:600; font-size:12px;"
+                        title="Dil / Language">
+                        <i class="fas fa-globe"></i>
+                        <span>{{ get_locale()|upper }}</span>
+                    </button>
+                    <div x-show="langOpen" @click.outside="langOpen = false" x-cloak
+                        style="position:absolute; right:0; top:calc(100% + 6px); background:var(--color-surface,#fff); border:1px solid var(--color-border,#e2e8f0); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.12); min-width:140px; z-index:1000; overflow:hidden;">
+                        <a href="{{ url_for('set_language', lang='tr') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'tr' %}font-weight:700;{% endif %}">🇹🇷 Türkçe {% if get_locale() == 'tr' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
+                        <a href="{{ url_for('set_language', lang='en') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'en' %}font-weight:700;{% endif %}">🇬🇧 English {% if get_locale() == 'en' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
+                    </div>
+                </div>
+
                 <!-- Bildirim -->
                 <a href="{{ url_for('app_bp.bildirim') }}" class="topbar-icon-btn topbar-notif-btn"
                     title="Bildirimler" data-unread-url="{{ url_for('app_bp.bildirim_api_unread_count') }}">
