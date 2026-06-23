@@ -8,7 +8,7 @@ MODULES = [
     {
         "id": "masaustu",
         "name": "Masaüstüm",
-        "url": "/masaustu",
+        "url": "/desktop",
         "icon": "🏠",
         "description": "Kişisel özet — tüm modüllerden gelen görevler, KPI'lar ve iş planları",
     },

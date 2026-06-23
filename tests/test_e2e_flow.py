@@ -41,7 +41,7 @@ def _seed_user():
   "path",
   [
     "/launcher",
-    "/masaustu",
+    "/desktop",
     "/surec",
     "/project",
     "/sp",

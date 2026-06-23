@@ -66,7 +66,7 @@ def _individual_pg_has_monthly_entry(pg_id: int, user_id: int, year: int, month:
     return False
 
 
-@app_bp.route("/masaustu")
+@app_bp.route("/desktop")
 @login_required
 def masaustu():
     """Masaüstüm ana sayfası."""
@@ -750,7 +750,7 @@ _KOE_DANISMAN_ROLES = (
 )
 
 
-@app_bp.route("/masaustu/api/koe-danisman-ai", methods=["POST"])
+@app_bp.route("/desktop/api/koe-advisor-ai", methods=["POST"])
 @login_required
 def masaustu_koe_danisman_ai():
     """KOE Yapı-Danışmanı anlatı + önerilerini LLM ile zenginleştirir (lazy).

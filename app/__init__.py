@@ -331,7 +331,7 @@ def create_app(config_class=None):
         # Sıra: daha uzun/spesifik önek önce.
         sections = [
             ("/desktop-launcher",  "Masaüstü", "/desktop-launcher"),
-            ("/masaustu",          "Masaüstü", "/desktop-launcher"),
+            ("/desktop",           "Masaüstü", "/desktop-launcher"),
             ("/sp",                "Stratejik Planlama", "/sp"),
             ("/process",           "Süreç Yönetimi", "/process"),
             ("/proje",             "Proje Yönetimi", "/project"),

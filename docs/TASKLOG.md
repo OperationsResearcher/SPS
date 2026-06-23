@@ -2,6 +2,42 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-212 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — masaustu KÖKÜ /masaustu → /desktop (2 route, 301 köprülü)
+**Modül:** masaustu, nav/registry/middleware, legacy_redirect, hata_kontrol, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+/masaustu → /desktop, /masaustu/api/koe-danisman-ai → /desktop/api/koe-advisor-ai
+(koe = Kurumsal Olgunluk Endeksi kısaltması KORUNDU; danisman→advisor).
+
+### Değiştirilen Dosyalar
+- `micro/modules/masaustu/routes.py` → 2 route (fonksiyon adları korundu)
+- `app/__init__.py` nav, `micro/core/module_registry.py` url (id "masaustu" korundu)
+- `app/middleware/legacy_sunset.py` → canonical /desktop (+/)
+- `app/legacy_redirect_config.py` → EXACT /masaustu→app_bp.masaustu, PREFIX /masaustu/→/desktop/,
+  tam-yol köprü koe-danisman-ai→koe-advisor-ai (iç segment, canonical-öncesi)
+- `app/services/hata_kontrol_service.py` + `hata_kontrol_executor.py` → tarama hedefi /desktop
+- `tests/test_legacy_sunset.py` (dashboard→desktop, kurum-paneli→organization beklentileri),
+  `tests/test_module_smoke.py`, `tests/test_e2e_flow.py`
+
+### Yapılan İşlem
+/masaustu (modül) ≠ /masaustu-launcher (zaten /desktop-launcher, TASK-200) — KARIŞTIRILMADI
+(kelime sınırı: /masaustu exact + /masaustu/ slash'lı prefix). Fonksiyon adları korundu → /dashboard
+EXACT köprüsü url_for ile yeni /desktop'a otomatik yönlenir. koe-danisman-ai POST API: /masaustu/ prefix
+kuralı kökü çevirdi ama iç danisman→advisor için ek tam-yol köprü gerekti (yoksa /desktop/api/koe-danisman-ai
+= 404). frontend hardcoded YOK (url_for/data-*).
+
+### Test
+Restart: /desktop 302, /masaustu→/desktop 301, /masaustu/api/koe-danisman-ai→/desktop/api/koe-advisor-ai
+(iç segment dahil), /dashboard→/desktop, /masaustu-launcher→/desktop-launcher (karışmadı), kurum/sp regresyon yok.
+pytest legacy_sunset(redirect zinciri) + module → 26/26 geçti.
+
+### Notlar
+Kalan URL işi: sp plan-yıl grubu (aktif iş), /proje + /surec legacy alias (modern /project /process var),
+admin araçları, kule, test_smoke_routes (/micro kırık).
+
 ## TASK-211 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — kurum KÖKÜ /kurum → /organization (15 route, 301 köprülü)

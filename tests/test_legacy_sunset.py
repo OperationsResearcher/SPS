@@ -13,9 +13,9 @@ def _login(client, email="test@example.com", password="TestPassword123"):
 @pytest.mark.parametrize(
     "path,expected_fragment",
     [
-        ("/dashboard", "/masaustu"),
+        ("/dashboard", "/desktop"),
         ("/projeler", "/project"),
-        ("/kurum-paneli", "/kurum"),
+        ("/kurum-paneli", "/organization"),
     ],
 )
 def test_legacy_sunset_redirects(client, test_user, path, expected_fragment):

@@ -17,7 +17,7 @@ PAGE_ROUTES = [
     "/admin/users",
     "/admin/tenants",
     "/organization",
-    "/masaustu",
+    "/desktop",
     "/sp",
     "/process",
     "/k-radar",

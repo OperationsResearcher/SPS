@@ -18,6 +18,7 @@ EXACT_ENDPOINT: dict[str, str] = {
     "/gorevlerim": "app_bp.bireysel_karne",
     "/performans-kartim": "app_bp.bireysel_karne",
     "/kurum": "app_bp.kurum",
+    "/masaustu": "app_bp.masaustu",
     "/kurum-paneli": "app_bp.kurum",
     "/kurum-yonetim": "app_bp.kurum_ayarlar",
     "/admin-panel": "app_bp.yonetim_paneli",
@@ -48,6 +49,9 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/k-radar/kpr/kaynak-kapasite", "/k-radar/kpr/resource-capacity"),
     ("/k-radar/api/kpr/kaynak-kapasite", "/k-radar/api/kpr/resource-capacity"),
     ("/k-radar/api/ks/strateji-real", "/k-radar/api/ks/strategy-real"),
+    # masaustu→desktop iç segment: danisman→advisor (TASK-212). /masaustu/ prefix kuralı kökü çevirir,
+    # bu tam-yol köprü iç segmenti de düzeltir (canonical /desktop/ muafiyetinden önce).
+    ("/masaustu/api/koe-danisman-ai", "/desktop/api/koe-advisor-ai"),
     # k-rapor kalan iç API segmentleri (TASK-210). Kök /k-rapor ürün adı KALIR.
     ("/k-rapor/api/faaliyet-matris", "/k-rapor/api/activity-matrix"),
     ("/k-rapor/api/faaliyet", "/k-rapor/api/activity"),
@@ -120,6 +124,7 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
 
 PREFIX_REWRITE: list[tuple[str, str]] = [
     ("/kurum/", "/organization/"),  # kurum→organization alt yolları (TASK-211); /kurum exact EXACT_ENDPOINT'te
+    ("/masaustu/", "/desktop/"),    # masaustu→desktop alt yolları (TASK-212); /masaustu exact EXACT_ENDPOINT'te
     ("/raporlar/", "/reports/"),
     ("/raporlar", "/reports"),
     ("/analiz/", "/analysis/"),

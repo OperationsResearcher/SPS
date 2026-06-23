@@ -162,39 +162,47 @@ def _classify(status, js_errors, failed_ajax, html, final_url) -> tuple[str, str
     return "warn", f"HTTP {status}"
 
 
-def start_run(app, base_url: str | None = None, limit: int | None = None) -> str | None:
+def start_run(app, base_url: str | None = None, limit: int | None = None, visual: bool = False) -> str | None:
     """Arka planda tarama başlatır, run_id döner. Başka işlem çalışıyorsa None."""
     if not try_acquire("tarama"):
         return None
     run_id = _new_run_id()
+    try:
+        app.logger.info(f"[hata_kontrol] Tarama baslatiliyor (visual={visual}, limit={limit})")
+    except Exception:
+        pass
     _RUNS[run_id] = {
-        "id": run_id, "status": "starting", "total": 0, "done": 0,
+        "id": run_id, "status": "starting", "visual": visual, "total": 0, "done": 0,
         "current": "", "results": [], "counts": {"ok": 0, "warn": 0, "fail": 0},
         "error": None, "base_url": base_url or DEFAULT_BASE_URL,
         "links": {"harvested": 0, "dead": [], "orphans": []},
     }
-    t = threading.Thread(target=_run, args=(app, run_id, base_url or DEFAULT_BASE_URL, limit), daemon=True)
+    t = threading.Thread(target=_run, args=(app, run_id, base_url or DEFAULT_BASE_URL, limit, visual), daemon=True)
     t.start()
     return run_id
 
 
-def start_scenarios(app, base_url: str | None = None) -> str | None:
+def start_scenarios(app, base_url: str | None = None, visual: bool = False) -> str | None:
     """Arka planda CRUD senaryolarını başlatır, run_id döner. Meşgulse None."""
     if not try_acquire("senaryo"):
         return None
     run_id = _new_run_id()
+    try:
+        app.logger.info(f"[hata_kontrol] Senaryolar baslatiliyor (visual={visual})")
+    except Exception:
+        pass
     _RUNS[run_id] = {
-        "id": run_id, "kind": "scenario", "status": "starting",
+        "id": run_id, "kind": "scenario", "status": "starting", "visual": visual,
         "total": 0, "done": 0, "current": "", "scenarios": [],
         "passed": 0, "failed": 0, "reset": False, "error": None,
         "base_url": base_url or DEFAULT_BASE_URL,
     }
-    t = threading.Thread(target=_run_scenarios, args=(app, run_id, base_url or DEFAULT_BASE_URL), daemon=True)
+    t = threading.Thread(target=_run_scenarios, args=(app, run_id, base_url or DEFAULT_BASE_URL, visual), daemon=True)
     t.start()
     return run_id
 
 
-def _run_scenarios(app, run_id: str, base_url: str) -> None:
+def _run_scenarios(app, run_id: str, base_url: str, visual: bool = False) -> None:
     st = _RUNS[run_id]
     try:
         from app.services.hata_kontrol_scenarios import SCENARIOS
@@ -203,9 +211,18 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
 
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            if visual:
+                browser = p.chromium.launch(headless=False, slow_mo=1000)
+            else:
+                browser = p.chromium.launch(headless=True)
             try:
-                ctx = browser.new_context(ignore_https_errors=True)
+                video_dir = os.path.join(app.static_folder, "videos", "hata_kontrol")
+                os.makedirs(video_dir, exist_ok=True)
+                ctx = browser.new_context(
+                    ignore_https_errors=True,
+                    record_video_dir=video_dir if visual else None,
+                    record_video_size={"width": 1280, "height": 720} if visual else None
+                )
                 page = ctx.new_page()
                 if not _login(page, base_url):
                     st["status"] = "error"
@@ -221,7 +238,15 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
                     st["scenarios"].append(res)
                     st["passed" if res.get("passed") else "failed"] += 1
                     st["done"] += 1
+                    if visual:
+                        time.sleep(2.0)
             finally:
+                if visual and 'page' in locals() and page and page.video:
+                    try:
+                        vpath = page.video.path()
+                        st["video_url"] = f"/static/videos/hata_kontrol/{os.path.basename(vpath)}"
+                    except Exception:
+                        pass
                 browser.close()
 
         # Senaryolar veri yazdı → tomofiltest'i baseline'a döndür (K8)
@@ -253,7 +278,7 @@ def _run_scenarios(app, run_id: str, base_url: str) -> None:
         release()
 
 
-def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
+def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = False) -> None:
     st = _RUNS[run_id]
     try:
         with app.app_context():
@@ -268,9 +293,18 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
 
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            if visual:
+                browser = p.chromium.launch(headless=False, slow_mo=1000)
+            else:
+                browser = p.chromium.launch(headless=True)
             try:
-                ctx = browser.new_context(ignore_https_errors=True)
+                video_dir = os.path.join(app.static_folder, "videos", "hata_kontrol")
+                os.makedirs(video_dir, exist_ok=True)
+                ctx = browser.new_context(
+                    ignore_https_errors=True,
+                    record_video_dir=video_dir if visual else None,
+                    record_video_size={"width": 1280, "height": 720} if visual else None
+                )
                 page = ctx.new_page()
 
                 # Sinyal toplayıcılar (her ziyaret öncesi temizlenir)
@@ -305,6 +339,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                             page.wait_for_load_state("networkidle", timeout=2500)
                         except Exception:
                             pass
+                        if visual:
+                            time.sleep(2.0)
                         html = page.content()
                         durum, sebep = _classify(status, sig["js"], sig["ajax"], html, page.url)
                         # BFS — sayfadaki iç bağlantıları topla
@@ -331,6 +367,12 @@ def _run(app, run_id: str, base_url: str, limit: int | None) -> None:
                     st["counts"][durum] = st["counts"].get(durum, 0) + 1
                     st["done"] += 1
             finally:
+                if visual and 'page' in locals() and page and page.video:
+                    try:
+                        vpath = page.video.path()
+                        st["video_url"] = f"/static/videos/hata_kontrol/{os.path.basename(vpath)}"
+                    except Exception:
+                        pass
                 browser.close()
 
         # BFS sonrası: ölü linkler + yetim sayfalar
@@ -428,7 +470,7 @@ def _login(page, base_url: str) -> bool:
         # Doğrulama: korumalı bir sayfa gerçekten açılıyor mu? URL'nin /login
         # olmaması yeterli değil — oturum kurulmadan da başka yere savrulabilir.
         # Açılmazsa (login'e döner) tüm taramanın sahte-FAIL olmasını önler.
-        page.goto(base_url + "/masaustu", wait_until="domcontentloaded", timeout=15000)
+        page.goto(base_url + "/desktop", wait_until="domcontentloaded", timeout=15000)
         time.sleep(0.3)
         return "/login" not in page.url
     except Exception:

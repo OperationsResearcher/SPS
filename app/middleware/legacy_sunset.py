@@ -60,14 +60,14 @@ def _should_skip(path: str) -> bool:
 
 def _is_platform_canonical(path: str) -> bool:
     """Platform kök yolları — legacy yönlendirme uygulanmaz (/kurum-paneli vb. hariç)."""
-    if path in ("/organization", "/individual", "/sp", "/launcher", "/masaustu", "/surec"):
+    if path in ("/organization", "/individual", "/sp", "/launcher", "/desktop", "/surec"):
         return True
     platform_prefixes = (
         "/organization/",
         "/individual/",
         "/sp/",
         "/project/",
-        "/masaustu/",
+        "/desktop/",
         "/surec/",
         "/admin/",
         "/k-radar/",
