@@ -35,6 +35,9 @@ EXACT_ENDPOINT: dict[str, str] = {
 # ÖNCE uygulanır (legacy_sunset _legacy_sunset_redirect başında) — aksi halde canonical yollar
 # redirect'ten muaf tutulur ve köprü çalışmaz. Eski TR segment → yeni İngilizce segment, 301.
 REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
+    # kurum iç Türkçe segmentleri (TASK-206). Kök /kurum domain terimi olarak KALIR.
+    ("/kurum/ayarlar", "/kurum/settings"),
+    ("/kurum/api/kimlik", "/kurum/api/identity"),
     # k-rapor iç API segmentleri (TASK-205). Kök /k-rapor ürün adı olarak KALIR.
     ("/k-rapor/api/kurumsal", "/k-rapor/api/corporate"),
     ("/k-rapor/api/surec-pg", "/k-rapor/api/process-pg"),

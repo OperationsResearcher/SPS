@@ -550,7 +550,7 @@ def _run_kilavuz_process(app, run_id: str) -> None:
             _check_cancel(run_id)
             _add_log(run_id, "1.2 Kurum Yönetimi: kurum bilgileri, logo ve K-Vektör...")
             try:
-                page1.goto(base_url + "/kurum/ayarlar")
+                page1.goto(base_url + "/kurum/settings")
                 page1.wait_for_load_state("networkidle")
                 page1.wait_for_selector("#kurum_adi", state="visible", timeout=15000)
                 page1.fill("#kurum_adi", "YeniTomofil Otomotiv Sanayi ve Ticaret A.Ş.")

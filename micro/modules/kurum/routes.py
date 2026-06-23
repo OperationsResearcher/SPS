@@ -25,7 +25,7 @@ def _check_kurum_role():
     return current_user.role and current_user.role.name in _KURUM_ROLES
 
 
-@app_bp.route("/kurum/ayarlar", methods=["GET", "POST"])
+@app_bp.route("/kurum/settings", methods=["GET", "POST"])
 @login_required
 def kurum_ayarlar():
     """Kurum bilgileri ayarları + logo yükleme."""
@@ -286,7 +286,7 @@ def _kimlik_model(kind):
     return pair if pair else (None, None)
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/list", methods=["GET"])
+@app_bp.route("/kurum/api/identity/<kind>/list", methods=["GET"])
 @login_required
 def kurum_api_kimlik_list(kind):
     """Bir kimlik boyutunun aktif maddelerini sıralı döndür."""
@@ -309,7 +309,7 @@ def kurum_api_kimlik_list(kind):
     })
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/add", methods=["POST"])
+@app_bp.route("/kurum/api/identity/<kind>/add", methods=["POST"])
 @login_required
 def kurum_api_kimlik_add(kind):
     """Yeni kimlik maddesi ekle (sıra = mevcut maks + 1)."""
@@ -347,7 +347,7 @@ def kurum_api_kimlik_add(kind):
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/update/<int:item_id>", methods=["POST"])
+@app_bp.route("/kurum/api/identity/<kind>/update/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_update(kind, item_id):
     """Kimlik maddesini güncelle (tenant izolasyonlu)."""
@@ -379,7 +379,7 @@ def kurum_api_kimlik_update(kind, item_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/delete/<int:item_id>", methods=["POST"])
+@app_bp.route("/kurum/api/identity/<kind>/delete/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_delete(kind, item_id):
     """Kimlik maddesini soft-delete (is_active=False)."""

@@ -2,6 +2,40 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-206 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — kurum iç Türkçe segmentleri İngilizceye (5 route, 301 köprülü)
+**Modül:** kurum, legacy_redirect, frontend, kilavuz_executor
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /kurum domain terimi olarak KORUNDU)
+ayarlar→settings, kimlik→identity. (overview/add-strategy vb. zaten İngilizce.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/kurum/routes.py` → /kurum/settings + 4× /kurum/api/identity/* (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 2 kurum köprüsü
+- `ui/templates/platform/kurum/index.html` → data-kimlik-base değeri /kurum/api/identity/
+- `ui/static/platform/js/kurum.js` → hardcoded fallback /kurum/api/identity/
+- `ui/static/platform/js/command_palette.js` → /kurum/settings
+- `app/services/kilavuz_olusturucu_executor.py` → goto /kurum/settings
+
+### Yapılan İşlem
+Modern kurum modülü dar: kök + 2 TR segment. /kurum/kalite-politikalari, etik-kurallari, degerler
+gibi route'lar LEGACY yüzeyde (S1, kurum micro modülünde DEĞİL) → dokunulmadı. url_for kullanan
+referanslar (donemler.html, ayarlar/index.html, ayarlar.html) fonksiyon adı korunduğu için otomatik
+doğru. data-kimlik-base attribute ADI (dataset.kimlikBase eşleşmesi) korundu, sadece değeri çevrildi.
+kimlik/<kind> içindeki misyon/vizyon/degerler PARAMETRE değerleridir (DB kayıt türü) — URL path değil, dokunulmadı.
+
+### Test
+Restart: /kurum/settings + /kurum/api/identity/* 302 (login gate); /kurum/ayarlar→/kurum/settings,
+/kurum/api/kimlik/<kind>/list→/kurum/api/identity/<kind>/list (alt yol korunarak) 301. k-rapor/reports/kurum kökü
+regresyon yok. pytest module+admin smoke → 31/31 geçti.
+
+### Notlar
+ATLANDI: admin araçları (hata-kontrolu/kilavuz/yonetim-paneli) — kullanıcı yüzeyi yok + bakim-modu
+middleware/self-scan bağımlılıkları; fayda düşük, risk orta. Kalan: sp (~12 path, aktif plan-yıl — ayrı
+dikkatli oturum), kurum kökü /organization (geniş), kule (domain).
+
 ## TASK-205 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — k-rapor iç API segmentleri İngilizceye (9 segment, 301 köprülü)

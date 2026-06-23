@@ -18,7 +18,7 @@
   const UPDATE_SUB_BASE     = root.dataset.updateSubBase;
   const DELETE_SUB_BASE     = root.dataset.deleteSubBase;
   const OVERVIEW_URL        = root.dataset.overviewUrl || "";
-  const KIMLIK_BASE         = root.dataset.kimlikBase || "/kurum/api/kimlik/";
+  const KIMLIK_BASE         = root.dataset.kimlikBase || "/kurum/api/identity/";
   const CAN_EDIT            = root.dataset.canEdit === "true";
 
   // ── Yardımcılar ─────────────────────────────────────────────────────────

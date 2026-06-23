@@ -39,7 +39,7 @@
     { title: "Performans Analitiği",    url: "/analysis",          icon: "fa-chart-bar",            group: "Sayfa" },
     { title: "Bireysel Karne",          url: "/individual/scorecard", icon: "fa-user-check",        group: "Sayfa" },
     { title: "Bildirimler",             url: "/notification",      icon: "fa-bell",                 group: "Sayfa" },
-    { title: "Kurum Ayarları",          url: "/kurum/ayarlar",     icon: "fa-building",             group: "Sayfa" },
+    { title: "Kurum Ayarları",          url: "/kurum/settings",    icon: "fa-building",             group: "Sayfa" },
     { title: "Ayarlar",                 url: "/settings",          icon: "fa-cog",                  group: "Sayfa" },
     { title: "Profil",                  url: "/profile",           icon: "fa-user",                 group: "Sayfa" },
     { title: "Yönetim Paneli",          url: "/admin/yonetim",     icon: "fa-user-shield",          group: "Sayfa" },
