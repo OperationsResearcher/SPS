@@ -17,6 +17,7 @@ EXACT_ENDPOINT: dict[str, str] = {
     "/surec-paneli": "app_bp.surec",
     "/gorevlerim": "app_bp.bireysel_karne",
     "/performans-kartim": "app_bp.bireysel_karne",
+    "/kurum": "app_bp.kurum",
     "/kurum-paneli": "app_bp.kurum",
     "/kurum-yonetim": "app_bp.kurum_ayarlar",
     "/admin-panel": "app_bp.yonetim_paneli",
@@ -74,9 +75,12 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
     ("/sp/misyon", "/sp/mission"),
     ("/sp/vizyon", "/sp/vision"),
     ("/sp/degerler", "/sp/values"),
-    # kurum iç Türkçe segmentleri (TASK-206). Kök /kurum domain terimi olarak KALIR.
-    ("/kurum/ayarlar", "/kurum/settings"),
-    ("/kurum/api/kimlik", "/kurum/api/identity"),
+    # kurum → organization (TASK-211): kök çevrildi. Eski TR iç segmentleri (TASK-206) doğrudan yeni köke.
+    ("/kurum/ayarlar", "/organization/settings"),
+    ("/kurum/api/kimlik", "/organization/api/identity"),
+    ("/kurum/settings", "/organization/settings"),
+    ("/kurum/api/identity", "/organization/api/identity"),
+    ("/kurum/api/overview", "/organization/api/overview"),
     # k-rapor iç API segmentleri (TASK-205). Kök /k-rapor ürün adı olarak KALIR.
     ("/k-rapor/api/kurumsal", "/k-rapor/api/corporate"),
     ("/k-rapor/api/surec-pg", "/k-rapor/api/process-pg"),
@@ -115,6 +119,7 @@ REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
 ]
 
 PREFIX_REWRITE: list[tuple[str, str]] = [
+    ("/kurum/", "/organization/"),  # kurum→organization alt yolları (TASK-211); /kurum exact EXACT_ENDPOINT'te
     ("/raporlar/", "/reports/"),
     ("/raporlar", "/reports"),
     ("/analiz/", "/analysis/"),

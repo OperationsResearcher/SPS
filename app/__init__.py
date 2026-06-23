@@ -344,7 +344,7 @@ def create_app(config_class=None):
             ("/analysis",          "Performans Analitiği", "/analysis"),
             ("/notification",      "Bildirimler", "/notification"),
             ("/settings",          "Ayarlar", "/settings"),
-            ("/kurum",             "Kurum", "/kurum"),
+            ("/organization",      "Kurum", "/organization"),
             ("/admin",             "Yönetim Paneli", "/admin/yonetim-paneli"),
             ("/yonetim",           "Yönetim Paneli", "/admin/yonetim-paneli"),
             ("/profile",           "Profil", "/profile"),

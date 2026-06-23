@@ -25,7 +25,7 @@ def _check_kurum_role():
     return current_user.role and current_user.role.name in _KURUM_ROLES
 
 
-@app_bp.route("/kurum/settings", methods=["GET", "POST"])
+@app_bp.route("/organization/settings", methods=["GET", "POST"])
 @login_required
 def kurum_ayarlar():
     """Kurum bilgileri ayarları + logo yükleme."""
@@ -169,7 +169,7 @@ def kurum_ayarlar():
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/kurum")
+@app_bp.route("/organization")
 @login_required
 def kurum():
     """Kurum Paneli ana sayfası — tüm giriş yapmış tenant kullanıcıları; düzenleme API’leri rol ile sınırlı."""
@@ -222,7 +222,7 @@ def kurum():
     )
 
 
-@app_bp.route("/kurum/api/overview")
+@app_bp.route("/organization/api/overview")
 @login_required
 def kurum_api_overview():
     """Panel özet metrikleri (yenileme / yarı-gerçek zamanlı)."""
@@ -249,7 +249,7 @@ def kurum_api_overview():
 
 # ── API: Stratejik Kimlik ─────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/update-strategy", methods=["POST"])
+@app_bp.route("/organization/api/update-strategy", methods=["POST"])
 @login_required
 def kurum_api_update_strategy():
     """Stratejik kimlik alanlarını güncelle (purpose, vision, core_values, ...)."""
@@ -286,7 +286,7 @@ def _kimlik_model(kind):
     return pair if pair else (None, None)
 
 
-@app_bp.route("/kurum/api/identity/<kind>/list", methods=["GET"])
+@app_bp.route("/organization/api/identity/<kind>/list", methods=["GET"])
 @login_required
 def kurum_api_kimlik_list(kind):
     """Bir kimlik boyutunun aktif maddelerini sıralı döndür."""
@@ -309,7 +309,7 @@ def kurum_api_kimlik_list(kind):
     })
 
 
-@app_bp.route("/kurum/api/identity/<kind>/add", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/add", methods=["POST"])
 @login_required
 def kurum_api_kimlik_add(kind):
     """Yeni kimlik maddesi ekle (sıra = mevcut maks + 1)."""
@@ -347,7 +347,7 @@ def kurum_api_kimlik_add(kind):
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/identity/<kind>/update/<int:item_id>", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/update/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_update(kind, item_id):
     """Kimlik maddesini güncelle (tenant izolasyonlu)."""
@@ -379,7 +379,7 @@ def kurum_api_kimlik_update(kind, item_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/identity/<kind>/delete/<int:item_id>", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/delete/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_delete(kind, item_id):
     """Kimlik maddesini soft-delete (is_active=False)."""
@@ -407,7 +407,7 @@ def kurum_api_kimlik_delete(kind, item_id):
 
 # ── API: Ana Strateji CRUD ────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/add-strategy", methods=["POST"])
+@app_bp.route("/organization/api/add-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_strategy():
     if not _check_kurum_role():
@@ -434,7 +434,7 @@ def kurum_api_add_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/organization/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_update_main_strategy(strategy_id):
     if not _check_kurum_role():
@@ -456,7 +456,7 @@ def kurum_api_update_main_strategy(strategy_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/organization/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_main_strategy(strategy_id):
     if not _check_kurum_role():
@@ -477,7 +477,7 @@ def kurum_api_delete_main_strategy(strategy_id):
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/add-sub-strategy", methods=["POST"])
+@app_bp.route("/organization/api/add-sub-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_sub_strategy():
     if not _check_kurum_role():
@@ -509,7 +509,7 @@ def kurum_api_add_sub_strategy():
         return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/organization/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_update_sub_strategy(sub_id):
     if not _check_kurum_role():
@@ -532,7 +532,7 @@ def kurum_api_update_sub_strategy(sub_id):
         return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
 
 
-@app_bp.route("/kurum/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/organization/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_sub_strategy(sub_id):
     if not _check_kurum_role():
@@ -554,7 +554,7 @@ def kurum_api_delete_sub_strategy(sub_id):
 
 # ── K-Vektör ağırlıkları ─────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/k-vektor/weights", methods=["GET", "POST"])
+@app_bp.route("/organization/api/k-vektor/weights", methods=["GET", "POST"])
 @login_required
 def kurum_api_k_vektor_weights():
     """Ana / alt strateji ham ağırlıkları (geriye dönük; asıl düzenleme /sp sayfasında)."""

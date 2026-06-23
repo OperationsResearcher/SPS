@@ -16,7 +16,7 @@ PAGE_ROUTES = [
     "/admin/yonetim-paneli",
     "/admin/users",
     "/admin/tenants",
-    "/kurum",
+    "/organization",
     "/masaustu",
     "/sp",
     "/process",
@@ -31,7 +31,7 @@ API_ROUTES = [
     "/k-rapor/api/export-pdf",  # Sprint 11.3
     "/individual/api/scorecard",
     "/individual/api/scorecard/export-pdf",  # Sprint 11.3
-    "/kurum/api/overview",
+    "/organization/api/overview",
     "/sp/api/plan-years",
     "/k-radar/api/hub-summary",
 ]

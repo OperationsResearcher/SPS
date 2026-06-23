@@ -2,6 +2,42 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-211 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — kurum KÖKÜ /kurum → /organization (15 route, 301 köprülü)
+**Modül:** kurum, nav/registry/middleware, legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Karar gerekçesi
+Kullanıcı "legacy dahil her şey /organization" dedi. İnceleme: legacy /kurum/kalite-politikalari,
+/kurum/degerler, /kurum/etik-kurallari sadece static/js/kurum_panel.js'de (HİÇBİR template yüklemiyor =
+ÖLÜ JS) + /api/kurum/* (api_bp /api prefix, ayrı yüzey). CANLI legacy /kurum route'u YOK. Dolayısıyla
+"canlı olan her şey" = modern kurum modülü (15 route). Ölü JS'e dokunulmadı (çalışmıyor, strangler silecek).
+
+### Değiştirilen Dosyalar
+- `micro/modules/kurum/routes.py` → 15 route /kurum* → /organization* (fonksiyon adları korundu)
+- `app/__init__.py` → nav; `micro/core/module_registry.py` → url (id "kurum" korundu)
+- `app/middleware/legacy_sunset.py` → canonical /organization (+/)
+- `app/legacy_redirect_config.py` → EXACT /kurum→app_bp.kurum, PREFIX /kurum/→/organization/,
+  TASK-206 iç köprüleri /organization'a güncellendi (/kurum/ayarlar→/organization/settings vb.)
+- `ui/templates/platform/kurum/index.html` (5 data-base), `ui/static/platform/js/kurum.js`,
+  `ui/static/platform/js/command_palette.js`
+- `tests/test_module_smoke.py` → /organization (+api/overview)
+
+### Yapılan İşlem
+Fonksiyon adları korundu → url_for/data-* otomatik doğru; /kurum-paneli, /kurum-yonetim EXACT_ENDPOINT
+(app_bp.kurum/kurum_ayarlar) url_for ile yeni /organization'a yönlenir. /kurumsal, /kurumlar, /kurum-
+KARIŞTIRILMADI (kelime sınırı: /kurum exact + /kurum/ slash'lı prefix). KART id "kurum" korundu.
+
+### Test
+Restart: /organization* 302, /kurum* (kök+settings+ayarlar+api+add-strategy) 301→/organization*,
+/kurum-paneli→/organization, /k-rapor/org-comparison etkilenmedi, sp/individual regresyon yok.
+pytest module+bireysel → 25/25 geçti.
+
+### Notlar
+ÖLÜ legacy: static/js/kurum_panel.js (/kurum/degerler vb.) çalışmıyor, dokunulmadı. Kalan URL işi:
+sp plan-yıl grubu (aktif iş), admin araçları, kule, test_smoke_routes (/micro prefix kırık).
+
 ## TASK-210 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — k-rapor KALAN iç API segmentleri İngilizceye (8 route, 301 köprülü)

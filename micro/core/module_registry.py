@@ -29,7 +29,7 @@ MODULES = [
     {
         "id": "kurum",
         "name": "Kurum Paneli",
-        "url": "/kurum",
+        "url": "/organization",
         "icon": "🏢",
         "description": "Stratejik kimlik, kurum bilgileri ve strateji yönetimi",
     },

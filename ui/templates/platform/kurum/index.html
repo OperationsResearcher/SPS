@@ -50,12 +50,12 @@
      data-update-strategy-url="{{ url_for('app_bp.kurum_api_update_strategy') }}"
      data-add-strategy-url="{{ url_for('app_bp.kurum_api_add_strategy') }}"
      data-add-sub-url="{{ url_for('app_bp.kurum_api_add_sub_strategy') }}"
-     data-update-main-base="/kurum/api/update-main-strategy/"
-     data-delete-main-base="/kurum/api/delete-main-strategy/"
-     data-update-sub-base="/kurum/api/update-sub-strategy/"
-     data-delete-sub-base="/kurum/api/delete-sub-strategy/"
+     data-update-main-base="/organization/api/update-main-strategy/"
+     data-delete-main-base="/organization/api/delete-main-strategy/"
+     data-update-sub-base="/organization/api/update-sub-strategy/"
+     data-delete-sub-base="/organization/api/delete-sub-strategy/"
      data-overview-url="{{ url_for('app_bp.kurum_api_overview') }}"
-     data-kimlik-base="/kurum/api/identity/"
+     data-kimlik-base="/organization/api/identity/"
      data-can-edit="{{ 'true' if can_edit_kurum else 'false' }}"
      style="max-width:1000px; margin:0 auto;">
 
