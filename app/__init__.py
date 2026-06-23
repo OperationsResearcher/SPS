@@ -239,7 +239,7 @@ def create_app(config_class=None):
         ("/k-rapor", "strateji-kapsama"): "performans",
         ("/reports/k-vector-skewness", None): "performans",
         ("/reports/alignment-sankey", None): "performans",
-        ("/sp/strateji-proje-matris", None): "performans",
+        ("/sp/strategy-project-matrix", None): "performans",
         ("/reports/pg-project-impact", None): "performans",
         ("/reports/department-performance", None): "performans",
         ("/reports/executive-leadership", None): "performans",
@@ -284,7 +284,7 @@ def create_app(config_class=None):
         ("/reports/sektor-benchmark", None): "ai",
         ("/reports/sectoral", None): "strateji",
         ("/reports/sunburst", None): "strateji",
-        ("/sp/strateji-haritasi", None): "strateji",
+        ("/sp/strategy-map", None): "strateji",
         ("/reports/evolution-film", None): "strateji",
         ("/reports/strategy-story", None): "strateji",
         # AI & Üst Yönetim

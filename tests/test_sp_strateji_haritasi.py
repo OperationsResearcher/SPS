@@ -38,7 +38,7 @@ def sp_user(app):
 
 def test_strateji_haritasi_page_renders(client, sp_user):
     _login(client, sp_user)
-    rv = client.get("/sp/strateji-haritasi")
+    rv = client.get("/sp/strategy-map")
     assert rv.status_code == 200
     assert b"strateji-harita-container" in rv.data
     assert b"strateji-harita-data" in rv.data
@@ -47,7 +47,7 @@ def test_strateji_haritasi_page_renders(client, sp_user):
 
 def test_strateji_haritasi_api(client, sp_user):
     _login(client, sp_user)
-    rv = client.get("/sp/api/strateji-haritasi")
+    rv = client.get("/sp/api/strategy-map")
     assert rv.status_code == 200
     data = rv.get_json()
     assert data["success"] is True

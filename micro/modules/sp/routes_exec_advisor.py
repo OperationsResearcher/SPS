@@ -381,7 +381,7 @@ def _exec_heuristik_ozet(snap):
     return " ".join(parts)
 
 
-@app_bp.route("/sp/api/exec-ai-ozet")
+@app_bp.route("/sp/api/exec-ai-summary")
 @login_required
 def sp_api_exec_ai_ozet():
     """Tenant-geneli 2-3 cümlelik Türkçe yönetici özeti (exec + kurum üstü).
@@ -500,7 +500,7 @@ def _savas_rank(sql, tid, year):
     }
 
 
-@app_bp.route("/sp/api/savas-odasi/fronts")
+@app_bp.route("/sp/api/war-room/fronts")
 @login_required
 def sp_api_savas_odasi_fronts():
     """Savaş Odası ek cepheleri: alt strateji + süreç (hedef üstü %) + proje (sağlık)."""

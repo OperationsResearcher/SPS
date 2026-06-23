@@ -237,19 +237,19 @@ def sp_api_k_vektor_weights():
     return jsonify({"success": False, "message": msg or "Kayıt başarısız."}), status
 
 
-@app_bp.route("/sp/misyon")
+@app_bp.route("/sp/mission")
 @login_required
 def sp_misyon():
     return render_template("platform/sp/misyon.html")
 
 
-@app_bp.route("/sp/vizyon")
+@app_bp.route("/sp/vision")
 @login_required
 def sp_vizyon():
     return render_template("platform/sp/vizyon.html")
 
 
-@app_bp.route("/sp/degerler")
+@app_bp.route("/sp/values")
 @login_required
 def sp_degerler():
     return render_template("platform/sp/degerler.html")
@@ -306,7 +306,7 @@ def sp_api_tenant_identity():
 
 # ── Strateji Haritası ─────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/strateji-haritasi")
+@app_bp.route("/sp/strategy-map")
 @login_required
 def sp_strateji_haritasi():
     """Strateji → Alt Strateji → Süreç → KPI hiyerarşisi görsel haritası."""
@@ -326,7 +326,7 @@ def sp_strateji_haritasi():
     )
 
 
-@app_bp.route("/sp/api/strateji-haritasi")
+@app_bp.route("/sp/api/strategy-map")
 @login_required
 def sp_api_strateji_haritasi():
     """Strateji haritası için ağaç verisi döner (SP ile aynı strateji filtresi)."""

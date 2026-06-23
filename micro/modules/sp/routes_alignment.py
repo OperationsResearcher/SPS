@@ -13,7 +13,7 @@ def _can_view():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/strateji-proje-matris")
+@app_bp.route("/sp/strategy-project-matrix")
 @login_required
 def sp_strategy_project_matrix():
     if not _can_view():

@@ -27,7 +27,7 @@
     { title: "Yeniden Planlama Tetikleyicileri", url: "/sp/replan-triggers", icon: "fa-bell",       group: "Sayfa" },
     { title: "Mavi Okyanus",            url: "/sp/blue-ocean",     icon: "fa-water",                group: "Sayfa" },
     { title: "VRIO",                    url: "/sp/vrio",           icon: "fa-shield-halved",        group: "Sayfa" },
-    { title: "Strateji Haritası",       url: "/sp/strateji-haritasi", icon: "fa-diagram-project",   group: "Sayfa" },
+    { title: "Strateji Haritası",       url: "/sp/strategy-map",   icon: "fa-diagram-project",   group: "Sayfa" },
     { title: "SP Menüsü",               url: "/sp/menu",           icon: "fa-th",                   group: "Sayfa" },
     { title: "Süreç Yönetimi",          url: "/process",           icon: "fa-sitemap",              group: "Sayfa" },
     { title: "Proje Yönetimi",          url: "/project",           icon: "fa-folder-open",          group: "Sayfa" },

@@ -16,7 +16,7 @@ def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/ayarlar/ai")
+@app_bp.route("/sp/settings/ai")
 @login_required
 def sp_ai_settings_page():
     if not _can():

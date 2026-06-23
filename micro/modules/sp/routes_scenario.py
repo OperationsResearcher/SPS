@@ -123,7 +123,7 @@ def sp_api_scenario_delete(py_id):
 
 # ── Senaryo / What-if Kıyas ───────────────────────────────────────────────────
 
-@app_bp.route("/sp/scenarios/kiyas")
+@app_bp.route("/sp/scenarios/compare")
 @login_required
 def sp_scenarios_compare_page():
     """Baseline ⟷ senaryo yan yana kıyas ekranı."""

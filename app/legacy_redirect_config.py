@@ -35,6 +35,18 @@ EXACT_ENDPOINT: dict[str, str] = {
 # ÖNCE uygulanır (legacy_sunset _legacy_sunset_redirect başında) — aksi halde canonical yollar
 # redirect'ten muaf tutulur ve köprü çalışmaz. Eski TR segment → yeni İngilizce segment, 301.
 REPORTS_SEGMENT_REWRITE: list[tuple[str, str]] = [
+    # sp iç Türkçe segmentleri (TASK-207). Plan-yıl grubu (sihirbaz/yeni-yil, donemler,
+    # donem-karsilastir, rapor/donemsel) + plan-yıl bağımlı api/proje BİLİNÇLİ olarak dışarıda.
+    ("/sp/strateji-proje-matris", "/sp/strategy-project-matrix"),
+    ("/sp/strateji-haritasi", "/sp/strategy-map"),
+    ("/sp/api/strateji-haritasi", "/sp/api/strategy-map"),
+    ("/sp/ayarlar/ai", "/sp/settings/ai"),
+    ("/sp/scenarios/kiyas", "/sp/scenarios/compare"),
+    ("/sp/api/exec-ai-ozet", "/sp/api/exec-ai-summary"),
+    ("/sp/api/savas-odasi/fronts", "/sp/api/war-room/fronts"),
+    ("/sp/misyon", "/sp/mission"),
+    ("/sp/vizyon", "/sp/vision"),
+    ("/sp/degerler", "/sp/values"),
     # kurum iç Türkçe segmentleri (TASK-206). Kök /kurum domain terimi olarak KALIR.
     ("/kurum/ayarlar", "/kurum/settings"),
     ("/kurum/api/kimlik", "/kurum/api/identity"),

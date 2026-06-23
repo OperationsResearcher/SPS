@@ -2,6 +2,46 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-207 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — sp güvenli iç segmentleri (plan-yıl HARİÇ, 11 route, 301 köprülü)
+**Modül:** sp (5 route dosyası), nav/gating, legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /sp KORUNDU; plan-yıl grubu DOKUNULMADI)
+misyon→mission, vizyon→vision, degerler→values, strateji-haritasi→strategy-map (+api),
+strateji-proje-matris→strategy-project-matrix, ayarlar/ai→settings/ai, scenarios/kiyas→scenarios/compare,
+api/exec-ai-ozet→api/exec-ai-summary, api/savas-odasi→api/war-room.
+
+### Plan-yıl HARİÇ tutulanlar (aktif iş — çakışma riski, kullanıcı kararı)
+/sp/sihirbaz/yeni-yil (+api preview/uygula), /sp/donemler, /sp/api/donem-karsilastir,
+/sp/rapor/donemsel, /sp/api/proje + /gorev (PlanProject/PlanProjectTask bağımlı). TÜRKÇE kaldı.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_pages.py` → mission/vision/values/strategy-map (sayfa+api)
+- `micro/modules/sp/routes_tenant_ai.py` → /sp/settings/ai
+- `micro/modules/sp/routes_alignment.py` → /sp/strategy-project-matrix
+- `micro/modules/sp/routes_scenario.py` → /sp/scenarios/compare
+- `micro/modules/sp/routes_exec_advisor.py` → exec-ai-summary, war-room/fronts
+- `app/__init__.py` → component-visibility eşleme (strategy-map, strategy-project-matrix)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 10 sp köprüsü
+- `ui/templates/platform/sp/exec_dashboard.html`, `k_radar/hub.html` (2), `command_palette.js` → linkler
+- `tests/test_sp_strateji_haritasi.py` → /sp/strategy-map (+api)
+
+### Yapılan İşlem
+sp ~120 route, çoğu zaten İngilizce. Plan-yıl ile ilişkili route'lar (memory project_sp_yillik_plan
+aktif işi) BİLİNÇLİ dışarıda. routes_sp_proje.py PlanProject bağımlı → atlandı. Fonksiyon adları
+korundu → tüm url_for/data-* frontend otomatik doğru (hardcoded frontend çağrısı YOK). Köprü genel
+segment-rewrite listesine eklendi (canonical /sp/ muafiyetinden önce).
+
+### Test
+Restart: 7 yeni İngilizce route 302, 4+ eski TR köprü 301→hedef, plan-yıl grubu TÜRKÇE/çalışır (dokunulmadı),
+reports/kurum regresyon yok. pytest sp_strateji_haritasi + module smoke → 21/21 geçti.
+
+### Notlar
+Kalan: sp plan-yıl grubu (aktif iş bitince), kurum kökü /organization (geniş), admin araçları (ertelendi),
+kule (domain). Kullanıcı seçimi bekleniyor.
+
 ## TASK-206 | 2026-06-23 | ✅ Tamamlandı
 
 **Görev:** URL tek-dil — kurum iç Türkçe segmentleri İngilizceye (5 route, 301 köprülü)
