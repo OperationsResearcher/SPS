@@ -2,6 +2,37 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-225 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n eksiklikleri kapatıldı — FAZ 4b (inline-script) + FAZ 5b (API message)
+**Modül:** ui/templates inline <script>, backend API yanıtları, translations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (özet)
+- **FAZ 4b:** 43 şablonun inline `<script>` bloklarında Türkçe → `t("...")`; `extract_inline_t.py` (babel JS extractor .html içi `<script>`'i kaçırıyordu — boşluk giderildi, i18n_extract.sh'e entegre); 418 yeni msgid
+- **FAZ 5b:** 60 backend dosyasında `"message": "TR"` → `"message": _("TR")` (537 yanıt) + gettext import; 277 yeni msgid
+- `translations/{en,tr}`, `messages.pot`, supplement.json (2759), extract_inline_t.py
+
+### Yapılan İşlem
+Önceki turdan bilinçli bırakılan iki eksiklik kapatıldı (kullanıcı onayıyla, kapsam: hepsi).
+6 paralel ajan + merkezi extract→fill→unfuzzy→compile→render-test→commit akışı.
+
+### Kritik Bulgular / Düzeltmeler
+- **Extract boşluğu:** babel `[javascript]` extractor yalnız `.js` tarar; `.html` içi `<script>`
+  `t()` çağrıları katalога hiç girmiyordu → `extract_inline_t.py` regex toplayıcı eklendi.
+- **t shadow:** inline `map((t,..))` callback'leri `t()` helper'ını gölgeliyordu → `it`/`task`.
+- **Python import sırası:** `_` import çok-satır import / `__future__` ortasına düşüyordu (23 dosya) → düzeltildi.
+- **Çok-satır message concatenation** `_()` içine alındı (admin/routes.py).
+
+### Final Kontrol (hepsi ✅)
+274 şablon parse · 75 inline-script + 86 harici JS node --check · 60 .py py_compile · app import ·
+EN katalog **3507 girdi: 0 boş/fuzzy/%%-uyumsuz** · .po format temiz · t-shadow taraması temiz.
+
+### Notlar
+i18n kapsamı artık TAM: şablon `_()` + JS `t()` + inline-script `t()` + flash `_()` + API message `_()`.
+12 i18n commit'i daha (toplam dalda ~47), **push YOK / deploy YOK**. Kalan tek alan: Python enum/sabit
+display label'ları (DB-key riski — kasıtlı dokunulmadı, gerekirse ayrı seçici tur).
+
 ## TASK-224 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3-5 tamamlandı — tüm proje çoklu dil (TR/EN) — otonom tur
