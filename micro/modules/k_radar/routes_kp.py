@@ -8,6 +8,7 @@ from platform_core import app_bp
 from app.models import db
 from app.models.process import Process
 from app.models.k_radar_domain import ProcessMaturity
+from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
     _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
 )
@@ -100,7 +101,7 @@ def k_radar_kp_olgunluk_ekle():
     maturity_level = request.form.get("maturity_level", type=int)
     dimension = (request.form.get("dimension") or "").strip() or None
     if not process_id or not maturity_level:
-        flash("Süreç ve seviye zorunludur.", "danger")
+        flash(_("Süreç ve seviye zorunludur."), "danger")
         return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
     row = ProcessMaturity(
         tenant_id=tenant_id,
@@ -113,7 +114,7 @@ def k_radar_kp_olgunluk_ekle():
     )
     db.session.add(row)
     db.session.commit()
-    flash("Olgunluk kaydı eklendi.", "success")
+    flash(_("Olgunluk kaydı eklendi."), "success")
     return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
 
 

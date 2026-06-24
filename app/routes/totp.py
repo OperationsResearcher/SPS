@@ -11,6 +11,7 @@ from flask_login import login_required, current_user, login_user
 
 from extensions import db
 from app.models.core import User
+from flask_babel import gettext as _
 from app.services.totp_service import (
     generate_totp_secret, get_qr_code_base64,
     verify_totp_code, generate_backup_codes, consume_backup_code,
@@ -59,7 +60,7 @@ def totp_init():
 def totp_setup():
     """Setup başlat — secret üret + QR göster."""
     if current_user.totp_enabled:
-        flash("2FA zaten etkin. Önce devre dışı bırakın.", "info")
+        flash(_("2FA zaten etkin. Önce devre dışı bırakın."), "info")
         return redirect(url_for("auth_bp.settings"))
 
     # Geçici secret session'da tut (kullanıcı doğrulayana kadar DB'ye yazma)
@@ -173,7 +174,7 @@ def totp_challenge():
         if not ok:
             now_locked, attempts = record_failure(user.email, ip)
             if now_locked:
-                flash("Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi.", "danger")
+                flash(_("Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi."), "danger")
             else:
                 remaining_attempts = max(0, 5 - attempts)
                 flash(f"Doğrulama kodu hatalı. ({remaining_attempts} deneme hakkı kaldı)", "danger")

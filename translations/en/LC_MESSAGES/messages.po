@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 07:45+0300\n"
+"POT-Creation-Date: 2026-06-24 08:05+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -15,6 +15,328 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: app/routes/admin.py:96
+msgid "Bu modül kodu zaten mevcut."
+msgstr "This module code already exists."
+
+#: app/routes/admin.py:106
+msgid "Modül eklendi."
+msgstr "Module added."
+
+#: app/routes/admin.py:108
+msgid "Modül adı gerekli."
+msgstr "Module name is required."
+
+#: app/routes/admin.py:123
+msgid "Modül güncellendi."
+msgstr "Module updated."
+
+#: app/routes/admin.py:125 app/routes/admin.py:137
+msgid "Modül bulunamadı."
+msgstr "Module not found."
+
+#: app/routes/admin.py:135
+msgid "Modül devre dışı bırakıldı."
+msgstr "Module disabled."
+
+#: app/routes/admin.py:156
+msgid "Paket adı gerekli."
+msgstr "Package name is required."
+
+#: app/routes/admin.py:172 ui/static/platform/js/admin.js:724
+msgid "Paket güncellendi."
+msgstr "Package updated."
+
+#: app/routes/admin.py:174 app/routes/admin.py:188
+msgid "Paket bulunamadı."
+msgstr "Package not found."
+
+#: app/routes/admin.py:180
+msgid "Bu pakete bağlı kurumlar var, önce kurumların paketini değiştirin."
+msgstr "There are organizations linked to this package; change their package first."
+
+#: app/routes/admin.py:186
+msgid "Paket devre dışı bırakıldı."
+msgstr "Package disabled."
+
+#: app/routes/admin.py:378 app/routes/admin.py:429
+msgid "Kısa ad veya ticari ünvan gerekli."
+msgstr "Short name or trade title is required."
+
+#: app/routes/admin.py:385
+msgid "Bu kurum adı veya kısa ad zaten mevcut."
+msgstr "This organization name or short name already exists."
+
+#: app/routes/admin.py:409
+msgid "Kurum eklenemedi, lütfen tekrar deneyin."
+msgstr "Organization could not be added, please try again."
+
+#: app/routes/admin.py:422 app/routes/admin.py:456
+#: ui/templates/platform/admin/tenants.html:177
+msgid "Kurum bulunamadı."
+msgstr "No organizations found."
+
+#: app/routes/admin.py:445 ui/static/platform/js/admin.js:498
+msgid "Kurum güncellendi."
+msgstr "Organization updated."
+
+#: app/routes/admin.py:460
+msgid "Kurum arşivlendi."
+msgstr "Organization archived."
+
+#: app/routes/admin.py:543
+msgid "Geçersiz e-posta formatı."
+msgstr "Invalid email format."
+
+#: app/routes/admin.py:546
+msgid "Bu e-posta adresi zaten kayıtlı."
+msgstr "This email address is already registered."
+
+#: app/routes/admin.py:560 app/routes/admin.py:624
+msgid "Bu rolü atama yetkiniz yok."
+msgstr "You do not have permission to assign this role."
+
+#: app/routes/admin.py:565 app/routes/admin.py:629
+msgid "Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var."
+msgstr "Warning: This organization already has an active Organization Administrator."
+
+#: app/routes/admin.py:583
+msgid "Kullanıcı eklendi."
+msgstr "User added."
+
+#: app/routes/admin.py:594 app/routes/admin.py:655
+#: ui/templates/platform/admin/users.html:169
+msgid "Kullanıcı bulunamadı."
+msgstr "No users found."
+
+#: app/routes/admin.py:604
+msgid "Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."
+msgstr "Only an Admin can edit an Organization Administrator account."
+
+#: app/routes/admin.py:617
+msgid "Bu e-posta adresi başka bir kullanıcıya aittir."
+msgstr "This email address belongs to another user."
+
+#: app/routes/admin.py:644
+msgid "Kullanıcı güncellendi."
+msgstr "User updated."
+
+#: app/routes/admin.py:665
+msgid "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."
+msgstr "Only an Admin can deactivate/activate an Organization Administrator account."
+
+#: app/routes/admin.py:669
+msgid "Kendi hesabınızı devre dışı bırakamazsınız."
+msgstr "You cannot deactivate your own account."
+
+#: app/routes/admin.py:673
+msgid "Kullanıcı durumu güncellendi."
+msgstr "User status updated."
+
+#: app/routes/admin.py:812
+msgid "Bu sayfayı görüntüleme yetkiniz yok."
+msgstr "You do not have permission to view this page."
+
+#: app/routes/auth.py:61
+msgid "E-posta ve şifre gereklidir."
+msgstr "Email and password are required."
+
+#: app/routes/auth.py:78 app/routes/totp.py:177
+msgid "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi."
+msgstr "Too many failed attempts. Your account has been locked for 15 minutes."
+
+#: app/routes/auth.py:103
+msgid "Giriş başarılı."
+msgstr "Login successful."
+
+#: app/routes/auth.py:149
+msgid "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."
+msgstr "This email address is used by another user."
+
+#: app/routes/auth.py:154 ui/static/platform/js/profil.js:160
+msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
+msgstr "You must enter your current password to change the password."
+
+#: app/routes/auth.py:157
+msgid "Mevcut şifre yanlış."
+msgstr "Current password is incorrect."
+
+#: app/routes/auth.py:160
+msgid "Yeni şifre en az 8 karakter olmalıdır."
+msgstr "The new password must be at least 8 characters."
+
+#: app/routes/auth.py:193
+msgid "Profil başarıyla güncellendi."
+msgstr "Profile updated successfully."
+
+#: app/routes/sso.py:62
+msgid "Google SSO bu ortamda devre dışı."
+msgstr "Google SSO is disabled in this environment."
+
+#: app/routes/sso.py:67
+msgid "Google SSO yapılandırılmamış."
+msgstr "Google SSO is not configured."
+
+#: app/routes/sso.py:85
+msgid "Google girişi başarısız."
+msgstr "Google login failed."
+
+#: app/routes/sso.py:90
+msgid "Google profil alınamadı."
+msgstr "Google profile could not be retrieved."
+
+#: app/routes/sso.py:97
+msgid "E-posta alınamadı."
+msgstr "Email could not be retrieved."
+
+#: app/routes/sso.py:102
+msgid "E-posta doğrulanmamış — Google hesabınızı doğrulayın."
+msgstr "Email not verified — please verify your Google account."
+
+#: app/routes/sso.py:143
+msgid "Google ile giriş başarılı."
+msgstr "Login with Google successful."
+
+#: app/routes/totp.py:63
+msgid "2FA zaten etkin. Önce devre dışı bırakın."
+msgstr "2FA is already enabled. Disable it first."
+
+#: app/utils/decorators.py:28
+msgid "Kurum bilginiz bulunamadı."
+msgstr "Your organization information could not be found."
+
+#: app/utils/decorators.py:34
+msgid "Paket bilginiz bulunamadı."
+msgstr "Your package information could not be found."
+
+#: app/utils/decorators.py:47
+msgid "Bu bileşene erişim yetkiniz yok."
+msgstr "You do not have access to this component."
+
+#: app/utils/decorators.py:87
+msgid "Bu bölüm mevcut paketinizde yer almıyor."
+msgstr "This section is not included in your current package."
+
+#: micro/modules/k_radar/routes_cross.py:69
+msgid "Paydaş adı zorunludur."
+msgstr "Stakeholder name is required."
+
+#: micro/modules/k_radar/routes_cross.py:82
+#: ui/static/platform/js/k_radar.js:686
+msgid "Paydaş kaydı eklendi."
+msgstr "Stakeholder record added."
+
+#: micro/modules/k_radar/routes_kp.py:104
+msgid "Süreç ve seviye zorunludur."
+msgstr "Process and level are required."
+
+#: micro/modules/k_radar/routes_kp.py:117 ui/static/platform/js/k_radar.js:429
+msgid "Olgunluk kaydı eklendi."
+msgstr "Maturity record added."
+
+#: micro/modules/proje/routes_list.py:70 micro/modules/proje/routes_list.py:121
+#: micro/modules/proje/routes_list.py:259
+#: micro/modules/proje/routes_list.py:317
+#: micro/modules/proje/routes_project_crud.py:115
+msgid "Kurum bilgisi bulunamadı."
+msgstr "Organization information not found."
+
+#: micro/modules/proje/routes_list.py:254 ui/static/platform/js/app.js:179
+msgid "Bu işlem için yetkiniz yok."
+msgstr "You do not have permission for this action."
+
+#: micro/modules/proje/routes_list.py:264
+msgid "Geçersiz işlem."
+msgstr "Invalid operation."
+
+#: micro/modules/proje/routes_list.py:275
+msgid "Proje seçilmedi."
+msgstr "No project selected."
+
+#: micro/modules/proje/routes_list.py:312
+#: micro/modules/proje/routes_project_crud.py:381
+msgid "Bu sayfaya erişim yetkiniz yok."
+msgstr "You do not have access to this page."
+
+#: micro/modules/proje/routes_project_crud.py:118
+msgid "Yeni proje oluşturma yetkiniz yok."
+msgstr "You do not have permission to create new projects."
+
+#: micro/modules/proje/routes_project_crud.py:153
+msgid "Proje adı zorunludur."
+msgstr "Project name is required."
+
+#: micro/modules/proje/routes_project_crud.py:161
+#: micro/modules/proje/routes_project_crud.py:317
+msgid "Geçerli proje lideri seçilemedi."
+msgstr "A valid project leader could not be selected."
+
+#: micro/modules/proje/routes_project_crud.py:219
+msgid "Lider kaydı oluşturulamadı."
+msgstr "Leader record could not be created."
+
+#: micro/modules/proje/routes_project_crud.py:231
+msgid "Proje oluşturuldu."
+msgstr "Project created."
+
+#: micro/modules/proje/routes_project_crud.py:240
+#: micro/modules/proje/routes_views.py:21
+#: micro/modules/proje/routes_views.py:31
+#: micro/modules/proje/routes_views.py:42
+#: micro/modules/proje/routes_views.py:56
+#: micro/modules/proje/routes_views.py:75
+msgid "Bu projeye erişim yetkiniz yok."
+msgstr "You do not have access to this project."
+
+#: micro/modules/proje/routes_project_crud.py:286
+msgid "Bu projeyi düzenleme yetkiniz yok."
+msgstr "You do not have permission to edit this project."
+
+#: micro/modules/proje/routes_project_crud.py:373
+msgid "Proje güncellendi."
+msgstr "Project updated."
+
+#: micro/modules/proje/routes_project_crud.py:404
+msgid "Süreç bağlantıları güncellendi."
+msgstr "Process links updated."
+
+#: micro/modules/proje/routes_tasks.py:36
+msgid "Görev ekleyemezsiniz."
+msgstr "You cannot add tasks."
+
+#: micro/modules/proje/routes_tasks.py:52
+msgid "Görev başlığı zorunludur."
+msgstr "Task title is required."
+
+#: micro/modules/proje/routes_tasks.py:66
+#: micro/modules/proje/routes_tasks.py:270
+msgid "Geçersiz görev ataması."
+msgstr "Invalid task assignment."
+
+#: micro/modules/proje/routes_tasks.py:110
+msgid "Görev eklendi."
+msgstr "Task added."
+
+#: micro/modules/proje/routes_tasks.py:223
+msgid "Erişim yok."
+msgstr "No access."
+
+#: micro/modules/proje/routes_tasks.py:246
+msgid "Düzenleyemezsiniz."
+msgstr "You cannot edit."
+
+#: micro/modules/proje/routes_tasks.py:323
+msgid "Görev güncellendi."
+msgstr "Task updated."
+
+#: micro/modules/proje/routes_tasks.py:332
+msgid "Görev silme yetkiniz yok."
+msgstr "You do not have permission to delete tasks."
+
+#: micro/modules/proje/routes_tasks.py:339
+msgid "Görev silindi."
+msgstr "Task deleted."
 
 #: ui/static/platform/js/admin.js:32 ui/static/platform/js/analiz.js:45
 #: ui/static/platform/js/app.js:113 ui/static/platform/js/bireysel.js:103
@@ -98,10 +420,6 @@ msgstr "Yes"
 #: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
 msgstr "Cancel"
-
-#: ui/static/platform/js/admin.js:498
-msgid "Kurum güncellendi."
-msgstr "Organization updated."
 
 #: ui/static/platform/js/admin.js:498
 msgid "Kurum oluşturuldu."
@@ -243,10 +561,6 @@ msgstr "Update"
 #: ui/static/platform/js/admin.js:717
 msgid "Paket adı zorunludur."
 msgstr "Package name is required."
-
-#: ui/static/platform/js/admin.js:724
-msgid "Paket güncellendi."
-msgstr "Package updated."
 
 #: ui/static/platform/js/admin.js:725 ui/static/platform/js/k_radar.js:607
 #: ui/static/platform/js/k_radar.js:752 ui/static/platform/js/kurum.js:486
@@ -402,10 +716,6 @@ msgstr "Yes, continue"
 msgid "İşleniyor..."
 msgstr "Processing..."
 
-#: ui/static/platform/js/app.js:179
-msgid "Bu işlem için yetkiniz yok."
-msgstr "You do not have permission for this action."
-
 #: ui/static/platform/js/app.js:194 ui/static/platform/js/bildirim.js:94
 #: ui/static/platform/js/kurum_ayarlar.js:124
 msgid "Sunucu bağlantı hatası."
@@ -454,7 +764,7 @@ msgstr "Settings saved."
 
 #: ui/static/platform/js/ayarlar_eposta.js:100
 msgid "Kayıtlı ayarlarla kendi e-posta adresinize test maili gönderilecek."
-msgstr ""
+msgstr "A test mail will be sent to your own email address with the saved settings."
 "A test mail will be sent to your own email address with the saved "
 "settings."
 
@@ -901,10 +1211,6 @@ msgstr "Suggestion:"
 msgid "Yok"
 msgstr "None"
 
-#: ui/static/platform/js/k_radar.js:429
-msgid "Olgunluk kaydı eklendi."
-msgstr "Maturity record added."
-
 #: ui/static/platform/js/k_radar.js:433
 msgid "Olgunluk kaydı eklenemedi."
 msgstr "Maturity record could not be added."
@@ -949,10 +1255,6 @@ msgstr "Critical start task not found."
 #: ui/static/platform/js/k_radar.js:648
 msgid "CPM analizi güncellendi."
 msgstr "CPM analysis updated."
-
-#: ui/static/platform/js/k_radar.js:686
-msgid "Paydaş kaydı eklendi."
-msgstr "Stakeholder record added."
 
 #: ui/static/platform/js/k_radar.js:690
 msgid "Paydaş kaydı eklenemedi."
@@ -2167,10 +2469,6 @@ msgstr "The new password must be at least 6 characters."
 msgid "Yeni şifreler eşleşmiyor."
 msgstr "The new passwords do not match."
 
-#: ui/static/platform/js/profil.js:160
-msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
-msgstr "You must enter your current password to change the password."
-
 #: ui/static/platform/js/profil.js:189
 msgid "Sunucudan geçersiz yanıt alındı. Sayfayı yenileyip tekrar deneyin."
 msgstr "Invalid response received from server. Refresh the page and try again."
@@ -2898,7 +3196,7 @@ msgstr "You must select at least one sub-strategy."
 #: ui/static/platform/js/surec.js:3656
 #, python-format
 msgid "K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir."
-msgstr ""
+msgstr "When K-Vector is on, a contribution % must be entered for each selected sub-strategy."
 "When K-Vector is on, a contribution % must be entered for each selected "
 "sub-strategy."
 
@@ -3313,7 +3611,7 @@ msgstr "Admin Tools — Kokpitim"
 
 #: ui/templates/platform/admin/araclar.html:18
 msgid "Yalnız genel yönetici (Admin) erişimine açık bakım ve denetim araçları."
-msgstr ""
+msgstr "Maintenance and audit tools open only to general administrator (Admin) access."
 "Maintenance and audit tools open only to general administrator (Admin) "
 "access.Maintenance and audit tools open only to general administrator "
 "(Admin) access.Maintenance and audit tools open only to general "
@@ -3565,7 +3863,7 @@ msgstr "Holding Consolidated View"
 
 #: ui/templates/platform/admin/holding_dashboard.html:22
 msgid "ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>."
-msgstr ""
+msgstr "and the summary performance of all its sub-organizations — <strong>read-only</strong>."
 "and the summary performance of all its sub-organizations — <strong>read-"
 "only</strong>.and the summary performance of all its sub-organizations — "
 "<strong>read-only</strong>.and the summary performance of all its sub-"
@@ -4266,7 +4564,7 @@ msgstr "Package"
 
 #: ui/templates/platform/admin/sub_tenants.html:94
 msgid "İlk alt kurumu açmak için \"Yeni Alt Kurum Aç\" butonuna tıklayın."
-msgstr ""
+msgstr "Click the \"Open New Sub-Organization\" button to open the first sub-organization."
 "Click the \"Open New Sub-Organization\" button to open the first sub-"
 "organization.Click the \"Open New Sub-Organization\" button to open the "
 "first sub-organization.Click the \"Open New Sub-Organization\" button to "
@@ -4519,10 +4817,6 @@ msgstr "Detail"
 msgid "Arşivle"
 msgstr "Archive"
 
-#: ui/templates/platform/admin/tenants.html:177
-msgid "Kurum bulunamadı."
-msgstr "No organizations found."
-
 #: ui/templates/platform/admin/tenants.html:190
 msgid "Kurum Detayı"
 msgstr "Organization Detail"
@@ -4712,10 +5006,6 @@ msgstr "Reset filters"
 msgid "Temizle"
 msgstr "Clear"
 
-#: ui/templates/platform/admin/users.html:169
-msgid "Kullanıcı bulunamadı."
-msgstr "No users found."
-
 #: ui/templates/platform/admin/users.html:181
 msgid "Yeni Kullanıcı Ekle"
 msgstr "Add New User"
@@ -4797,7 +5087,7 @@ msgstr "Download Code Backup (.tar.gz)"
 
 #: ui/templates/platform/admin/yedekleme.html:39
 msgid "Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer."
-msgstr ""
+msgstr "The code backup can be large (~100+ MB), it takes a few seconds to prepare."
 "The code backup can be large (~100+ MB), it takes a few seconds to "
 "prepare.The code backup can be large (~100+ MB), it takes a few seconds "
 "to prepare.The code backup can be large (~100+ MB), it takes a few "
@@ -5507,7 +5797,7 @@ msgstr "Year summary &amp; attention"
 
 #: ui/templates/platform/bireysel/karne.html:189
 msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
-msgstr ""
+msgstr "A brief summary of data coverage and your indicators for the selected year."
 "A brief summary of data coverage and your indicators for the selected "
 "year.A brief summary of data coverage and your indicators for the "
 "selected year.A brief summary of data coverage and your indicators for "
@@ -6052,7 +6342,7 @@ msgstr "Organization → Team → Individual OKR flow"
 #: ui/templates/platform/k_radar/hub.html:83
 #: ui/templates/platform/raporlar/index.html:29
 msgid "Bugün biten/bekleyen faaliyet & kritik PG"
-msgstr ""
+msgstr "Activities ending/pending today & critical PIs"
 "Activities ending/pending today & critical PIsActivities ending/pending "
 "today & critical PIsActivities ending/pending today & critical "
 "PIsActivities ending/pending today & critical PIsActivities "
@@ -7791,7 +8081,7 @@ msgstr "Actual Cost"
 
 #: ui/templates/platform/k_rapor/index.html:531
 msgid "Bu tarihe kadar <b>gerçekten harcanan</b> tutar. Cebimizden ne çıktı?"
-msgstr ""
+msgstr "The amount <b>actually spent</b> by this date. What came out of our pocket?"
 "The amount <b>actually spent</b> by this date. What came out of our "
 "pocket?The amount <b>actually spent</b> by this date. What came out of "
 "our pocket?The amount <b>actually spent</b> by this date. What came out "
@@ -8182,7 +8472,7 @@ msgstr "K-Vector (vision score)"
 
 #: ui/templates/platform/kurum/ayarlar.html:93
 msgid "Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır."
-msgstr ""
+msgstr "When enabled, the vision score is calculated hierarchically on a 1000 scale."
 "When enabled, the vision score is calculated hierarchically on a 1000 "
 "scale.When enabled, the vision score is calculated hierarchically on a "
 "1000 scale.When enabled, the vision score is calculated hierarchically on"
@@ -8221,7 +8511,7 @@ msgstr "Enable K-Vector usage"
 
 #: ui/templates/platform/kurum/ayarlar.html:106
 msgid "Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer."
-msgstr ""
+msgstr "Vision score and hierarchical weights are activated across the organization."
 "Vision score and hierarchical weights are activated across the "
 "organization.Vision score and hierarchical weights are activated across "
 "the organization.Vision score and hierarchical weights are activated "
@@ -8255,7 +8545,7 @@ msgstr "Enable annual period planning"
 
 #: ui/templates/platform/kurum/ayarlar.html:136
 msgid "SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur."
-msgstr ""
+msgstr "A year selector is added to the SP page; KPI targets are kept separately per year."
 "A year selector is added to the SP page; KPI targets are kept separately "
 "per year.A year selector is added to the SP page; KPI targets are kept "
 "separately per year.A year selector is added to the SP page; KPI targets "
@@ -8513,7 +8803,7 @@ msgstr "Operational volume"
 
 #: ui/templates/platform/kurum/index.html:428
 msgid "Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip"
-msgstr ""
+msgstr "Active PIs, processes with data, open activities and tracking completed this month"
 "Active PIs, processes with data, open activities and tracking completed "
 "this monthActive PIs, processes with data, open activities and tracking "
 "completed this monthActive PIs, processes with data, open activities and "
@@ -8969,7 +9259,7 @@ msgstr "PDF Sections"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:33
 msgid "<b>Kurum Bilgileri</b> — Ad, sektör, çalışan sayısı, kurum kimliği"
-msgstr ""
+msgstr "<b>Organization Information</b> — Name, sector, employee count, organization identity"
 "<b>Organization Information</b> — Name, sector, employee count, "
 "organization identity<b>Organization Information</b> — Name, sector, "
 "employee count, organization identity<b>Organization Information</b> — "
@@ -8980,7 +9270,7 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/audit_paketi.html:34
 msgid "<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı"
-msgstr ""
+msgstr "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, processes and PIs"
 "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, "
 "processes and PIs<b>Strategic Plan Structure</b> — Count of strategies, "
 "sub-strategies, processes and PIs<b>Strategic Plan Structure</b> — Count "
@@ -8991,7 +9281,7 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/audit_paketi.html:35
 msgid "<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı"
-msgstr ""
+msgstr "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the last 20 entries"
 "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the "
 "last 20 entries<b>Audit Log (Last 90 Days)</b> — Action distribution + "
 "details of the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action "
@@ -9020,7 +9310,7 @@ msgstr "Purpose of Use"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:44
 msgid "Dış denetçilere (PWC, Deloitte, KPMG) kurumsal şeffaflık sunumu"
-msgstr ""
+msgstr "Corporate transparency presentation to external auditors (PWC, Deloitte, KPMG)"
 "Corporate transparency presentation to external auditors (PWC, Deloitte, "
 "KPMG)Corporate transparency presentation to external auditors (PWC, "
 "Deloitte, KPMG)Corporate transparency presentation to external auditors "
@@ -9082,7 +9372,7 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/bi_connector.html:45
 msgid "Veri yüklendikten sonra Power Query Editor'da gerekli dönüşümleri yap"
-msgstr ""
+msgstr "After the data is loaded, make the necessary transformations in the Power Query Editor"
 "After the data is loaded, make the necessary transformations in the Power"
 " Query EditorAfter the data is loaded, make the necessary transformations"
 " in the Power Query EditorAfter the data is loaded, make the necessary "
@@ -10478,7 +10768,7 @@ msgstr "Low &lt;4"
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:29
 msgid "&nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir."
-msgstr ""
+msgstr "&nbsp;·&nbsp; The number in the cell shows the count of risks in that region."
 "&nbsp;·&nbsp; The number in the cell shows the count of risks in that "
 "region.&nbsp;·&nbsp; The number in the cell shows the count of risks in "
 "that region.&nbsp;·&nbsp; The number in the cell shows the count of risks"
@@ -10868,7 +11158,7 @@ msgstr "Kokpitim system AI (free, quota-limited)"
 
 #: ui/templates/platform/sp/ai_settings.html:31
 msgid "Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok."
-msgstr ""
+msgstr "Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional charge."
 "Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional "
 "charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No "
 "additional charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 "
@@ -11114,7 +11404,7 @@ msgstr "Quarterly Review"
 
 #: ui/templates/platform/sp/ceyreklik_review.html:25
 msgid "Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip."
-msgstr ""
+msgstr "Modern strategy rhythm: annual vision — quarterly adjustment — monthly tracking."
 "Modern strategy rhythm: annual vision — quarterly adjustment — monthly "
 "tracking.Modern strategy rhythm: annual vision — quarterly adjustment — "
 "monthly tracking.Modern strategy rhythm: annual vision — quarterly "
@@ -11308,7 +11598,7 @@ msgstr "copy from plan"
 
 #: ui/templates/platform/sp/donemler.html:193
 msgid "Seçilirse kaynak dönemin stratejileri, süreçleri ve KPI yapısı kopyalanır."
-msgstr ""
+msgstr "If selected, the source period's strategies, processes and KPI structure are copied."
 "If selected, the source period's strategies, processes and KPI structure "
 "are copied.If selected, the source period's strategies, processes and KPI"
 " structure are copied.If selected, the source period's strategies, "
@@ -11776,7 +12066,7 @@ msgstr "Fill rate by quota · Share within Vision 100"
 
 #: ui/templates/platform/sp/index.html:406
 msgid "Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez."
-msgstr ""
+msgstr "If there is no sub-strategy or no quota is assigned, contribution is not shown."
 "If there is no sub-strategy or no quota is assigned, contribution is not "
 "shown.If there is no sub-strategy or no quota is assigned, contribution "
 "is not shown.If there is no sub-strategy or no quota is assigned, "
@@ -12449,7 +12739,7 @@ msgstr "Strategy → Sub-Strategy → Process → KPI relationship network."
 #: ui/templates/platform/sp/strateji_haritasi.html:25
 #, python-format
 msgid "Aktif SP döneminde <strong>%(count)s</strong> ana strateji görüntülenir."
-msgstr ""
+msgstr "<strong>%(count)s</strong> main strategies are displayed in the active SP period."
 "<strong>%(count)s</strong> main strategies are displayed in the active SP"
 " period.<strong>%(count)s</strong> main strategies are displayed in the "
 "active SP period.<strong>%(count)s</strong> main strategies are displayed"
@@ -12539,7 +12829,7 @@ msgstr "Go to SP"
 
 #: ui/templates/platform/sp/swot.html:27
 msgid "Güçlü/zayıf yönler ve dış fırsat/tehditler — aktif plan yılı bazlı."
-msgstr ""
+msgstr "Strengths/weaknesses and external opportunities/threats — based on the active plan year."
 "Strengths/weaknesses and external opportunities/threats — based on the "
 "active plan year.Strengths/weaknesses and external opportunities/threats "
 "— based on the active plan year.Strengths/weaknesses and external "
@@ -12688,7 +12978,7 @@ msgstr "R — Rare?"
 
 #: ui/templates/platform/sp/vrio.html:39
 msgid "Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?"
-msgstr ""
+msgstr "Do most competitors lack this resource? Do only a few firms possess this resource?"
 "Do most competitors lack this resource? Do only a few firms possess this "
 "resource?Do most competitors lack this resource? Do only a few firms "
 "possess this resource?Do most competitors lack this resource? Do only a "
@@ -12712,7 +13002,7 @@ msgstr "O — Organized?"
 
 #: ui/templates/platform/sp/vrio.html:47
 msgid "Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?"
-msgstr ""
+msgstr "Does the organization have the processes, structures and systems to exploit this resource?"
 "Does the organization have the processes, structures and systems to "
 "exploit this resource?Does the organization have the processes, "
 "structures and systems to exploit this resource?Does the organization "
@@ -13455,7 +13745,7 @@ msgstr "Edit record"
 
 #: ui/templates/platform/surec/karne.html:757
 msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir."
-msgstr ""
+msgstr "The data date does not change; only the actual value and description are updated."
 "The data date does not change; only the actual value and description are "
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "

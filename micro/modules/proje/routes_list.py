@@ -33,6 +33,7 @@ from app_platform.modules.proje.project_list_query import (
     parse_project_list_filters,
 )
 from app_platform.modules.proje.project_overview_service import build_project_list_overview, overview_for_export_summary
+from flask_babel import gettext as _
 
 _COMPLETED = ("Tamamlandı", "Done", "Completed")
 
@@ -66,7 +67,7 @@ def proje_legacy_redirect():
 def project_list():
     kid = kurum_id()
     if not kid:
-        flash("Kurum bilgisi bulunamadı.", "danger")
+        flash(_("Kurum bilgisi bulunamadı."), "danger")
         return redirect(url_for("app_bp.launcher"))
 
     privileged = is_privileged(current_user)
@@ -117,7 +118,7 @@ def project_list():
 def project_export_csv():
     kid = kurum_id()
     if not kid:
-        flash("Kurum bilgisi bulunamadı.", "danger")
+        flash(_("Kurum bilgisi bulunamadı."), "danger")
         return redirect(url_for("app_bp.launcher"))
 
     privileged = is_privileged(current_user)
@@ -250,17 +251,17 @@ def project_deadlines_ics():
 @login_required
 def project_bulk_notifications():
     if not is_privileged(current_user):
-        flash("Bu işlem için yetkiniz yok.", "danger")
+        flash(_("Bu işlem için yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
     if not kid:
-        flash("Kurum bilgisi bulunamadı.", "danger")
+        flash(_("Kurum bilgisi bulunamadı."), "danger")
         return redirect(url_for("app_bp.launcher"))
 
     action = (request.form.get("action") or "").strip().lower()
     if action not in ("email_on", "email_off"):
-        flash("Geçersiz işlem.", "warning")
+        flash(_("Geçersiz işlem."), "warning")
         return redirect(url_for("app_bp.project_list"))
 
     raw_ids = request.form.getlist("project_ids")
@@ -271,7 +272,7 @@ def project_bulk_notifications():
             ids.append(int(s))
     ids = list(dict.fromkeys(ids))
     if not ids:
-        flash("Proje seçilmedi.", "warning")
+        flash(_("Proje seçilmedi."), "warning")
         return redirect(url_for("app_bp.project_list"))
 
     q = accessible_projects_query(Project.query.filter(Project.id.in_(ids)), current_user, kid)
@@ -308,12 +309,12 @@ def project_bulk_notifications():
 @login_required
 def project_portfolio():
     if not can_crud_project_portfolio(current_user):
-        flash("Bu sayfaya erişim yetkiniz yok.", "danger")
+        flash(_("Bu sayfaya erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
     if not kid:
-        flash("Kurum bilgisi bulunamadı.", "danger")
+        flash(_("Kurum bilgisi bulunamadı."), "danger")
         return redirect(url_for("app_bp.launcher"))
 
     ctx = build_portfolio_context(kid)

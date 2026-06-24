@@ -25,6 +25,7 @@ from app_platform.services.notification_triggers import (
     notify_task_assignment,
 )
 from app.utils.audit_logger import AuditLogger
+from flask_babel import gettext as _
 
 
 @app_bp.route("/project/<int:project_id>/task/new", methods=["GET", "POST"])
@@ -32,7 +33,7 @@ from app.utils.audit_logger import AuditLogger
 def project_task_new(project_id: int):
     proj = load_project(project_id)
     if not user_can_edit_tasks(current_user, proj):
-        flash("Görev ekleyemezsiniz.", "danger")
+        flash(_("Görev ekleyemezsiniz."), "danger")
         return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kpis = kpis_for_tenant()
@@ -48,7 +49,7 @@ def project_task_new(project_id: int):
 
     title = (request.form.get("title") or "").strip()
     if not title:
-        flash("Görev başlığı zorunludur.", "danger")
+        flash(_("Görev başlığı zorunludur."), "danger")
         return redirect(url_for("app_bp.project_task_new", project_id=project_id))
 
     pk_raw = request.form.get("process_kpi_id")
@@ -62,7 +63,7 @@ def project_task_new(project_id: int):
     if assignee_id:
         assignee_user = CoreUser.query.get(assignee_id)
         if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
-            flash("Geçersiz görev ataması.", "danger")
+            flash(_("Geçersiz görev ataması."), "danger")
             return redirect(url_for("app_bp.project_task_new", project_id=project_id))
 
     due = None
@@ -106,7 +107,7 @@ def project_task_new(project_id: int):
         )
     except Exception as e:
         current_app.logger.error(f"Audit log hatası: {e}")
-    flash("Görev eklendi.", "success")
+    flash(_("Görev eklendi."), "success")
     return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
 
@@ -219,7 +220,7 @@ def project_task_quick_add():
 def project_task_detail(project_id: int, task_id: int):
     proj = load_project(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Erişim yok.", "danger")
+        flash(_("Erişim yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
 
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
@@ -242,7 +243,7 @@ def project_task_edit(project_id: int, task_id: int):
     proj = load_project(project_id)
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     if not user_can_manage_task(current_user, proj, task):
-        flash("Düzenleyemezsiniz.", "danger")
+        flash(_("Düzenleyemezsiniz."), "danger")
         return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
     kpis = kpis_for_tenant()
 
@@ -266,7 +267,7 @@ def project_task_edit(project_id: int, task_id: int):
     if next_assignee_id:
         assignee_user = CoreUser.query.get(next_assignee_id)
         if not assignee_user or assignee_user.tenant_id != current_user.tenant_id:
-            flash("Geçersiz görev ataması.", "danger")
+            flash(_("Geçersiz görev ataması."), "danger")
             return redirect(url_for("app_bp.project_task_edit", project_id=project_id, task_id=task_id))
     task.assignee_id = next_assignee_id
 
@@ -319,7 +320,7 @@ def project_task_edit(project_id: int, task_id: int):
         )
     except Exception as e:
         current_app.logger.error(f"Audit log hatası: {e}")
-    flash("Görev güncellendi.", "success")
+    flash(_("Görev güncellendi."), "success")
     return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
 
 
@@ -328,13 +329,13 @@ def project_task_edit(project_id: int, task_id: int):
 def project_task_delete(project_id: int, task_id: int):
     proj = load_project(project_id)
     if not can_crud_project_portfolio(current_user):
-        flash("Görev silme yetkiniz yok.", "danger")
+        flash(_("Görev silme yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
     task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     task.is_archived = True
     db.session.commit()
     AuditLogger.log_delete("Proje Faaliyeti", task.id,
                            {"title": task.title, "status": task.status, "project_id": task.project_id})
-    flash("Görev silindi.", "success")
+    flash(_("Görev silindi."), "success")
     return redirect(url_for("app_bp.project_detail", project_id=project_id))
 

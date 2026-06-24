@@ -12,6 +12,7 @@ from app.models import db
 from app.models.core import User
 from app.utils.audit_logger import AuditLogger
 from app.utils.security import limiter
+from flask_babel import gettext as _
 
 auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
 
@@ -57,7 +58,7 @@ def login():
         ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
 
         if not email or not password:
-            flash("E-posta ve şifre gereklidir.", "danger")
+            flash(_("E-posta ve şifre gereklidir."), "danger")
             return render_template("auth/login.html")
 
         # Sprint 19.2: brute force koruması
@@ -74,8 +75,7 @@ def login():
             _write_auth_audit("LOGIN_FAILED", None)
             now_locked, attempts = record_failure(email, ip)
             if now_locked:
-                flash(
-                    "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi.",
+                flash(_("Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi."),
                     "danger"
                 )
                 _write_auth_audit("ACCOUNT_LOCKED", None)
@@ -100,7 +100,7 @@ def login():
             session['next'] = _next
         login_user(user)
         _write_auth_audit("OTURUM AÇMA", user)
-        flash("Giriş başarılı.", "success")
+        flash(_("Giriş başarılı."), "success")
         from app.utils.tenant_scope import default_landing_endpoint
         from urllib.parse import urlparse
         raw_next = request.args.get("next") or ""
@@ -146,18 +146,18 @@ def profile():
 
         existing = User.query.filter_by(email=email).first()
         if existing and existing.id != current_user.id:
-            flash("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.", "danger")
+            flash(_("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."), "danger")
             return redirect(url_for("auth_bp.profile"))
 
         if new_password or current_password:
             if not current_password:
-                flash("Şifre değiştirmek için mevcut şifrenizi girmelisiniz.", "danger")
+                flash(_("Şifre değiştirmek için mevcut şifrenizi girmelisiniz."), "danger")
                 return redirect(url_for("auth_bp.profile"))
             if not check_password_hash(current_user.password_hash, current_password):
-                flash("Mevcut şifre yanlış.", "danger")
+                flash(_("Mevcut şifre yanlış."), "danger")
                 return redirect(url_for("auth_bp.profile"))
             if len(new_password) < 8:
-                flash("Yeni şifre en az 8 karakter olmalıdır.", "danger")
+                flash(_("Yeni şifre en az 8 karakter olmalıdır."), "danger")
                 return redirect(url_for("auth_bp.profile"))
 
         current_user.email = email
@@ -190,7 +190,7 @@ def profile():
                 )
             except Exception as e:
                 current_app.logger.error(f"[password_audit] {e}")
-        flash("Profil başarıyla güncellendi.", "success")
+        flash(_("Profil başarıyla güncellendi."), "success")
         return redirect(url_for("auth_bp.profile"))
 
     return render_template("auth/profile.html")

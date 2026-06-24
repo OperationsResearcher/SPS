@@ -7,6 +7,7 @@ from flask_login import current_user, login_required
 from platform_core import app_bp
 from app.models import db
 from app.models.k_radar_domain import StakeholderMap
+from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
     _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
 )
@@ -65,7 +66,7 @@ def k_radar_cross_paydas_ekle():
     influence = request.form.get("influence", type=int)
     interest = request.form.get("interest", type=int)
     if not name:
-        flash("Paydaş adı zorunludur.", "danger")
+        flash(_("Paydaş adı zorunludur."), "danger")
         return redirect(url_for("app_bp.k_radar_cross_paydas"))
     row = StakeholderMap(
         tenant_id=tenant_id,
@@ -78,7 +79,7 @@ def k_radar_cross_paydas_ekle():
     )
     db.session.add(row)
     db.session.commit()
-    flash("Paydaş kaydı eklendi.", "success")
+    flash(_("Paydaş kaydı eklendi."), "success")
     return redirect(url_for("app_bp.k_radar_cross_paydas"))
 
 

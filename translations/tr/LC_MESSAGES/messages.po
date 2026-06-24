@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 07:45+0300\n"
+"POT-Creation-Date: 2026-06-24 08:05+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -14,6 +14,363 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: app/routes/admin.py:96
+msgid "Bu modül kodu zaten mevcut."
+msgstr ""
+
+#: app/routes/admin.py:106
+#, fuzzy
+msgid "Modül eklendi."
+msgstr "Düzenle"
+
+#: app/routes/admin.py:108
+#, fuzzy
+msgid "Modül adı gerekli."
+msgstr "Ayarlar"
+
+#: app/routes/admin.py:123
+#, fuzzy
+msgid "Modül güncellendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:125 app/routes/admin.py:137
+#, fuzzy
+msgid "Modül bulunamadı."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:135
+msgid "Modül devre dışı bırakıldı."
+msgstr ""
+
+#: app/routes/admin.py:156
+#, fuzzy
+msgid "Paket adı gerekli."
+msgstr "Ayarlar"
+
+#: app/routes/admin.py:172 ui/static/platform/js/admin.js:724
+msgid "Paket güncellendi."
+msgstr ""
+
+#: app/routes/admin.py:174 app/routes/admin.py:188
+#, fuzzy
+msgid "Paket bulunamadı."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:180
+msgid "Bu pakete bağlı kurumlar var, önce kurumların paketini değiştirin."
+msgstr ""
+
+#: app/routes/admin.py:186
+msgid "Paket devre dışı bırakıldı."
+msgstr ""
+
+#: app/routes/admin.py:378 app/routes/admin.py:429
+msgid "Kısa ad veya ticari ünvan gerekli."
+msgstr ""
+
+#: app/routes/admin.py:385
+msgid "Bu kurum adı veya kısa ad zaten mevcut."
+msgstr ""
+
+#: app/routes/admin.py:409
+msgid "Kurum eklenemedi, lütfen tekrar deneyin."
+msgstr ""
+
+#: app/routes/admin.py:422 app/routes/admin.py:456
+#: ui/templates/platform/admin/tenants.html:177
+#, fuzzy
+msgid "Kurum bulunamadı."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:445 ui/static/platform/js/admin.js:498
+#, fuzzy
+msgid "Kurum güncellendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:460
+#, fuzzy
+msgid "Kurum arşivlendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:543
+msgid "Geçersiz e-posta formatı."
+msgstr ""
+
+#: app/routes/admin.py:546
+msgid "Bu e-posta adresi zaten kayıtlı."
+msgstr ""
+
+#: app/routes/admin.py:560 app/routes/admin.py:624
+#, fuzzy
+msgid "Bu rolü atama yetkiniz yok."
+msgstr "Düzenle"
+
+#: app/routes/admin.py:565 app/routes/admin.py:629
+msgid "Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var."
+msgstr ""
+
+#: app/routes/admin.py:583
+#, fuzzy
+msgid "Kullanıcı eklendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:594 app/routes/admin.py:655
+#: ui/templates/platform/admin/users.html:169
+msgid "Kullanıcı bulunamadı."
+msgstr ""
+
+#: app/routes/admin.py:604
+msgid "Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."
+msgstr ""
+
+#: app/routes/admin.py:617
+msgid "Bu e-posta adresi başka bir kullanıcıya aittir."
+msgstr ""
+
+#: app/routes/admin.py:644
+#, fuzzy
+msgid "Kullanıcı güncellendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:665
+msgid "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."
+msgstr ""
+
+#: app/routes/admin.py:669
+msgid "Kendi hesabınızı devre dışı bırakamazsınız."
+msgstr ""
+
+#: app/routes/admin.py:673
+#, fuzzy
+msgid "Kullanıcı durumu güncellendi."
+msgstr "Kurum Paneli"
+
+#: app/routes/admin.py:812
+#, fuzzy
+msgid "Bu sayfayı görüntüleme yetkiniz yok."
+msgstr "Düzenle"
+
+#: app/routes/auth.py:61
+msgid "E-posta ve şifre gereklidir."
+msgstr ""
+
+#: app/routes/auth.py:78 app/routes/totp.py:177
+msgid "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi."
+msgstr ""
+
+#: app/routes/auth.py:103
+#, fuzzy
+msgid "Giriş başarılı."
+msgstr "Kurum Paneli"
+
+#: app/routes/auth.py:149
+msgid "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."
+msgstr ""
+
+#: app/routes/auth.py:154 ui/static/platform/js/profil.js:160
+msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
+msgstr ""
+
+#: app/routes/auth.py:157
+msgid "Mevcut şifre yanlış."
+msgstr ""
+
+#: app/routes/auth.py:160
+msgid "Yeni şifre en az 8 karakter olmalıdır."
+msgstr ""
+
+#: app/routes/auth.py:193
+msgid "Profil başarıyla güncellendi."
+msgstr ""
+
+#: app/routes/sso.py:62
+msgid "Google SSO bu ortamda devre dışı."
+msgstr ""
+
+#: app/routes/sso.py:67
+msgid "Google SSO yapılandırılmamış."
+msgstr ""
+
+#: app/routes/sso.py:85
+msgid "Google girişi başarısız."
+msgstr ""
+
+#: app/routes/sso.py:90
+msgid "Google profil alınamadı."
+msgstr ""
+
+#: app/routes/sso.py:97
+#, fuzzy
+msgid "E-posta alınamadı."
+msgstr "Ayarlar"
+
+#: app/routes/sso.py:102
+msgid "E-posta doğrulanmamış — Google hesabınızı doğrulayın."
+msgstr ""
+
+#: app/routes/sso.py:143
+msgid "Google ile giriş başarılı."
+msgstr ""
+
+#: app/routes/totp.py:63
+msgid "2FA zaten etkin. Önce devre dışı bırakın."
+msgstr ""
+
+#: app/utils/decorators.py:28
+#, fuzzy
+msgid "Kurum bilginiz bulunamadı."
+msgstr "Kurum Paneli"
+
+#: app/utils/decorators.py:34
+#, fuzzy
+msgid "Paket bilginiz bulunamadı."
+msgstr "Kurum Paneli"
+
+#: app/utils/decorators.py:47
+#, fuzzy
+msgid "Bu bileşene erişim yetkiniz yok."
+msgstr "Düzenle"
+
+#: app/utils/decorators.py:87
+msgid "Bu bölüm mevcut paketinizde yer almıyor."
+msgstr ""
+
+#: micro/modules/k_radar/routes_cross.py:69
+#, fuzzy
+msgid "Paydaş adı zorunludur."
+msgstr "Kurum Paneli"
+
+#: micro/modules/k_radar/routes_cross.py:82
+#: ui/static/platform/js/k_radar.js:686
+msgid "Paydaş kaydı eklendi."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:104
+msgid "Süreç ve seviye zorunludur."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:117 ui/static/platform/js/k_radar.js:429
+msgid "Olgunluk kaydı eklendi."
+msgstr ""
+
+#: micro/modules/proje/routes_list.py:70 micro/modules/proje/routes_list.py:121
+#: micro/modules/proje/routes_list.py:259
+#: micro/modules/proje/routes_list.py:317
+#: micro/modules/proje/routes_project_crud.py:115
+#, fuzzy
+msgid "Kurum bilgisi bulunamadı."
+msgstr "Kurum Paneli"
+
+#: micro/modules/proje/routes_list.py:254 ui/static/platform/js/app.js:179
+msgid "Bu işlem için yetkiniz yok."
+msgstr ""
+
+#: micro/modules/proje/routes_list.py:264
+msgid "Geçersiz işlem."
+msgstr ""
+
+#: micro/modules/proje/routes_list.py:275
+#, fuzzy
+msgid "Proje seçilmedi."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_list.py:312
+#: micro/modules/proje/routes_project_crud.py:381
+#, fuzzy
+msgid "Bu sayfaya erişim yetkiniz yok."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_project_crud.py:118
+msgid "Yeni proje oluşturma yetkiniz yok."
+msgstr ""
+
+#: micro/modules/proje/routes_project_crud.py:153
+#, fuzzy
+msgid "Proje adı zorunludur."
+msgstr "Kurum Paneli"
+
+#: micro/modules/proje/routes_project_crud.py:161
+#: micro/modules/proje/routes_project_crud.py:317
+msgid "Geçerli proje lideri seçilemedi."
+msgstr ""
+
+#: micro/modules/proje/routes_project_crud.py:219
+msgid "Lider kaydı oluşturulamadı."
+msgstr ""
+
+#: micro/modules/proje/routes_project_crud.py:231
+msgid "Proje oluşturuldu."
+msgstr ""
+
+#: micro/modules/proje/routes_project_crud.py:240
+#: micro/modules/proje/routes_views.py:21
+#: micro/modules/proje/routes_views.py:31
+#: micro/modules/proje/routes_views.py:42
+#: micro/modules/proje/routes_views.py:56
+#: micro/modules/proje/routes_views.py:75
+#, fuzzy
+msgid "Bu projeye erişim yetkiniz yok."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_project_crud.py:286
+#, fuzzy
+msgid "Bu projeyi düzenleme yetkiniz yok."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_project_crud.py:373
+#, fuzzy
+msgid "Proje güncellendi."
+msgstr "Kurum Paneli"
+
+#: micro/modules/proje/routes_project_crud.py:404
+#, fuzzy
+msgid "Süreç bağlantıları güncellendi."
+msgstr "Stratejik Planlama"
+
+#: micro/modules/proje/routes_tasks.py:36
+#, fuzzy
+msgid "Görev ekleyemezsiniz."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_tasks.py:52
+#, fuzzy
+msgid "Görev başlığı zorunludur."
+msgstr "Kurum Paneli"
+
+#: micro/modules/proje/routes_tasks.py:66
+#: micro/modules/proje/routes_tasks.py:270
+msgid "Geçersiz görev ataması."
+msgstr ""
+
+#: micro/modules/proje/routes_tasks.py:110
+#, fuzzy
+msgid "Görev eklendi."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_tasks.py:223
+#, fuzzy
+msgid "Erişim yok."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_tasks.py:246
+msgid "Düzenleyemezsiniz."
+msgstr ""
+
+#: micro/modules/proje/routes_tasks.py:323
+#, fuzzy
+msgid "Görev güncellendi."
+msgstr "Kurum Paneli"
+
+#: micro/modules/proje/routes_tasks.py:332
+#, fuzzy
+msgid "Görev silme yetkiniz yok."
+msgstr "Düzenle"
+
+#: micro/modules/proje/routes_tasks.py:339
+#, fuzzy
+msgid "Görev silindi."
+msgstr "Stratejik Planlama"
 
 #: ui/static/platform/js/admin.js:32 ui/static/platform/js/analiz.js:45
 #: ui/static/platform/js/app.js:113 ui/static/platform/js/bireysel.js:103
@@ -97,11 +454,6 @@ msgstr ""
 #: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
 msgstr "İptal"
-
-#: ui/static/platform/js/admin.js:498
-#, fuzzy
-msgid "Kurum güncellendi."
-msgstr "Kurum Paneli"
 
 #: ui/static/platform/js/admin.js:498
 msgid "Kurum oluşturuldu."
@@ -243,10 +595,6 @@ msgstr ""
 
 #: ui/static/platform/js/admin.js:717
 msgid "Paket adı zorunludur."
-msgstr ""
-
-#: ui/static/platform/js/admin.js:724
-msgid "Paket güncellendi."
 msgstr ""
 
 #: ui/static/platform/js/admin.js:725 ui/static/platform/js/k_radar.js:607
@@ -406,10 +754,6 @@ msgstr ""
 
 #: ui/static/platform/js/app.js:155 ui/static/platform/js/bildirim.js:61
 msgid "İşleniyor..."
-msgstr ""
-
-#: ui/static/platform/js/app.js:179
-msgid "Bu işlem için yetkiniz yok."
 msgstr ""
 
 #: ui/static/platform/js/app.js:194 ui/static/platform/js/bildirim.js:94
@@ -928,10 +1272,6 @@ msgstr ""
 msgid "Yok"
 msgstr ""
 
-#: ui/static/platform/js/k_radar.js:429
-msgid "Olgunluk kaydı eklendi."
-msgstr ""
-
 #: ui/static/platform/js/k_radar.js:433
 msgid "Olgunluk kaydı eklenemedi."
 msgstr ""
@@ -975,10 +1315,6 @@ msgstr ""
 
 #: ui/static/platform/js/k_radar.js:648
 msgid "CPM analizi güncellendi."
-msgstr ""
-
-#: ui/static/platform/js/k_radar.js:686
-msgid "Paydaş kaydı eklendi."
 msgstr ""
 
 #: ui/static/platform/js/k_radar.js:690
@@ -2266,10 +2602,6 @@ msgstr ""
 
 #: ui/static/platform/js/profil.js:156
 msgid "Yeni şifreler eşleşmiyor."
-msgstr ""
-
-#: ui/static/platform/js/profil.js:160
-msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
 msgstr ""
 
 #: ui/static/platform/js/profil.js:189
@@ -4658,11 +4990,6 @@ msgstr ""
 msgid "Arşivle"
 msgstr ""
 
-#: ui/templates/platform/admin/tenants.html:177
-#, fuzzy
-msgid "Kurum bulunamadı."
-msgstr "Kurum Paneli"
-
 #: ui/templates/platform/admin/tenants.html:190
 #, fuzzy
 msgid "Kurum Detayı"
@@ -4857,10 +5184,6 @@ msgstr "Düzenle"
 #, fuzzy
 msgid "Temizle"
 msgstr "Stratejik Planlama"
-
-#: ui/templates/platform/admin/users.html:169
-msgid "Kullanıcı bulunamadı."
-msgstr ""
 
 #: ui/templates/platform/admin/users.html:181
 msgid "Yeni Kullanıcı Ekle"

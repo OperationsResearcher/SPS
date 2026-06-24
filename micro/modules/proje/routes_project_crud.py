@@ -44,6 +44,7 @@ from app_platform.services.notification_triggers import (
     notify_project_members_added,
 )
 from app.utils.audit_logger import AuditLogger
+from flask_babel import gettext as _
 
 
 def _notify_new_project_team(proj: Project, kid: int, old_leader_ids: set, old_member_ids: set) -> None:
@@ -111,10 +112,10 @@ def _sync_project_process_links_legacy(proj: Project, kid: int, selected_ids: li
 def project_new():
     kid = kurum_id()
     if not kid:
-        flash("Kurum bilgisi bulunamadı.", "danger")
+        flash(_("Kurum bilgisi bulunamadı."), "danger")
         return redirect(url_for("app_bp.launcher"))
     if not can_crud_project_portfolio(current_user):
-        flash("Yeni proje oluşturma yetkiniz yok.", "danger")
+        flash(_("Yeni proje oluşturma yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
 
     if request.method == "GET":
@@ -149,7 +150,7 @@ def project_new():
 
     name = (request.form.get("name") or "").strip()
     if not name:
-        flash("Proje adı zorunludur.", "danger")
+        flash(_("Proje adı zorunludur."), "danger")
         return redirect(url_for("app_bp.project_new"))
 
     description = (request.form.get("description") or "").strip() or None
@@ -157,7 +158,7 @@ def project_new():
     try:
         leader_ids = resolve_leader_ids_from_form(kid, project=None)
     except ValueError as e:
-        flash("Geçerli proje lideri seçilemedi.", "danger")
+        flash(_("Geçerli proje lideri seçilemedi."), "danger")
         return redirect(url_for("app_bp.project_new"))
 
     start_date = end_date = None
@@ -215,7 +216,7 @@ def project_new():
         sync_project_leaders(proj, kid, leader_ids)
     except ValueError as e:
         db.session.rollback()
-        flash("Lider kaydı oluşturulamadı.", "danger")
+        flash(_("Lider kaydı oluşturulamadı."), "danger")
         return redirect(url_for("app_bp.project_new"))
 
     _sync_project_process_links_legacy(proj, kid, request.form.getlist("surec_ids"))
@@ -227,7 +228,7 @@ def project_new():
         AuditLogger.log_create("Proje Yönetimi", proj.id, {"name": proj.name, "kurum_id": proj.kurum_id})
     except Exception as e:
         current_app.logger.error(f"Audit log hatası: {e}")
-    flash("Proje oluşturuldu.", "success")
+    flash(_("Proje oluşturuldu."), "success")
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
@@ -236,7 +237,7 @@ def project_new():
 def project_detail(project_id: int):
     proj = load_project(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
 
     kid = kurum_id()
@@ -282,7 +283,7 @@ def project_detail(project_id: int):
 def project_edit(project_id: int):
     proj = load_project(project_id)
     if not user_is_project_leader(current_user, proj):
-        flash("Bu projeyi düzenleme yetkiniz yok.", "danger")
+        flash(_("Bu projeyi düzenleme yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kid = kurum_id()
@@ -313,7 +314,7 @@ def project_edit(project_id: int):
         leader_ids = resolve_leader_ids_from_form(kid, project=proj)
         sync_project_leaders(proj, kid, leader_ids)
     except ValueError as e:
-        flash("Geçerli proje lideri seçilemedi.", "danger")
+        flash(_("Geçerli proje lideri seçilemedi."), "danger")
         return redirect(url_for("app_bp.project_edit", project_id=project_id))
 
     if request.form.get("start_date"):
@@ -369,7 +370,7 @@ def project_edit(project_id: int):
         )
     except Exception as e:
         current_app.logger.error(f"Audit log hatası: {e}")
-    flash("Proje güncellendi.", "success")
+    flash(_("Proje güncellendi."), "success")
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
@@ -377,7 +378,7 @@ def project_edit(project_id: int):
 @login_required
 def project_strategy(project_id: int):
     if not can_crud_project_portfolio(current_user):
-        flash("Bu sayfaya erişim yetkiniz yok.", "danger")
+        flash(_("Bu sayfaya erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
     kid = kurum_id()
@@ -400,7 +401,7 @@ def project_strategy_processes(project_id: int):
     for p in valid:
         proj.related_processes.append(p)
     db.session.commit()
-    flash("Süreç bağlantıları güncellendi.", "success")
+    flash(_("Süreç bağlantıları güncellendi."), "success")
     return redirect(url_for("app_bp.project_strategy", project_id=project_id))
 
 

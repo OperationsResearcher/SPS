@@ -19,6 +19,7 @@ from app.models.saas import ModuleComponentSlug, RouteRegistry, SystemModule, Su
 from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
 from app.utils.process_utils import validate_process_parent_id, validate_same_tenant_user_ids, validate_same_tenant_sub_strategies, ensure_int_list, parse_optional_date
 from app.constants.roles import PLATFORM_ADMIN_ROLES
+from flask_babel import gettext as _
 
 # Privilege escalation guard: non-Admin roller yalnızca bu whitelist'teki rolleri atayabilir.
 _ASSIGNABLE_ROLES = {
@@ -92,7 +93,7 @@ def packages():
             if name:
                 code = _slugify(name)
                 if SystemModule.query.filter_by(code=code).first():
-                    flash("Bu modül kodu zaten mevcut.", "danger")
+                    flash(_("Bu modül kodu zaten mevcut."), "danger")
                 else:
                     mod = SystemModule(name=name, code=code, is_active=True)
                     db.session.add(mod)
@@ -102,9 +103,9 @@ def packages():
                         if slug:
                             db.session.add(ModuleComponentSlug(module_id=mod.id, component_slug=slug))
                     db.session.commit()
-                    flash("Modül eklendi.", "success")
+                    flash(_("Modül eklendi."), "success")
             else:
-                flash("Modül adı gerekli.", "danger")
+                flash(_("Modül adı gerekli."), "danger")
         elif action == "edit_module":
             mod_id = request.form.get("module_id")
             mod = SystemModule.query.get(mod_id) if mod_id else None
@@ -119,9 +120,9 @@ def packages():
                         if slug:
                             db.session.add(ModuleComponentSlug(module_id=mod.id, component_slug=slug))
                     db.session.commit()
-                    flash("Modül güncellendi.", "success")
+                    flash(_("Modül güncellendi."), "success")
             else:
-                flash("Modül bulunamadı.", "danger")
+                flash(_("Modül bulunamadı."), "danger")
         elif action == "delete_module":
             mod_id = request.form.get("module_id")
             mod = SystemModule.query.get(mod_id) if mod_id else None
@@ -131,9 +132,9 @@ def packages():
                     pkg.modules.remove(mod)
                 mod.is_active = False
                 db.session.commit()
-                flash("Modül devre dışı bırakıldı.", "success")
+                flash(_("Modül devre dışı bırakıldı."), "success")
             else:
-                flash("Modül bulunamadı.", "danger")
+                flash(_("Modül bulunamadı."), "danger")
         elif action == "add_package":
             name = (request.form.get("package_name") or "").strip()
             if name:
@@ -152,7 +153,7 @@ def packages():
                     db.session.commit()
                     flash("Paket eklendi.", "success")
             else:
-                flash("Paket adı gerekli.", "danger")
+                flash(_("Paket adı gerekli."), "danger")
         elif action == "edit_package":
             pkg_id = request.form.get("package_id")
             pkg = SubscriptionPackage.query.get(pkg_id) if pkg_id else None
@@ -168,23 +169,23 @@ def packages():
                         if m:
                             pkg.modules.append(m)
                     db.session.commit()
-                    flash("Paket güncellendi.", "success")
+                    flash(_("Paket güncellendi."), "success")
             else:
-                flash("Paket bulunamadı.", "danger")
+                flash(_("Paket bulunamadı."), "danger")
         elif action == "delete_package":
             pkg_id = request.form.get("package_id")
             pkg = SubscriptionPackage.query.get(pkg_id) if pkg_id else None
             if pkg:
                 if pkg.tenants:
-                    flash("Bu pakete bağlı kurumlar var, önce kurumların paketini değiştirin.", "danger")
+                    flash(_("Bu pakete bağlı kurumlar var, önce kurumların paketini değiştirin."), "danger")
                 else:
                     # Kural 4: Hard delete yasağı — soft delete uygulanıyor
                     pkg.modules = []
                     pkg.is_active = False
                     db.session.commit()
-                    flash("Paket devre dışı bırakıldı.", "success")
+                    flash(_("Paket devre dışı bırakıldı."), "success")
             else:
-                flash("Paket bulunamadı.", "danger")
+                flash(_("Paket bulunamadı."), "danger")
         return redirect(url_for("admin_bp.packages"))
 
     modules = SystemModule.query.filter_by(is_active=True).order_by(SystemModule.name).all()
@@ -374,14 +375,14 @@ def tenants_add():
     data = _parse_tenant_form()
     name = data["name"] or data["short_name"]
     if not name:
-        flash("Kısa ad veya ticari ünvan gerekli.", "danger")
+        flash(_("Kısa ad veya ticari ünvan gerekli."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     filters = [Tenant.name == name]
     if data["short_name"]:
         filters.append(Tenant.short_name == data["short_name"])
     existing = Tenant.query.filter(db.or_(*filters)).first()
     if existing:
-        flash("Bu kurum adı veya kısa ad zaten mevcut.", "danger")
+        flash(_("Bu kurum adı veya kısa ad zaten mevcut."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     t = Tenant(
         name=name,
@@ -405,7 +406,7 @@ def tenants_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[tenants_add] {e}", exc_info=True)
-        flash("Kurum eklenemedi, lütfen tekrar deneyin.", "danger")
+        flash(_("Kurum eklenemedi, lütfen tekrar deneyin."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     flash("Kurum eklendi.", "success")
     return redirect(url_for("admin_bp.tenants"))
@@ -418,14 +419,14 @@ def tenants_edit(tenant_id):
     _require_admin_or_tenant_admin()
     t = Tenant.query.get(tenant_id)
     if not t:
-        flash("Kurum bulunamadı.", "danger")
+        flash(_("Kurum bulunamadı."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     if current_user.role.name != "Admin" and t.id != current_user.tenant_id:
         abort(403)
     data = _parse_tenant_form()
     name = data["name"] or data["short_name"]
     if not name:
-        flash("Kısa ad veya ticari ünvan gerekli.", "danger")
+        flash(_("Kısa ad veya ticari ünvan gerekli."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     t.name = name
     t.short_name = data["short_name"] or None
@@ -441,7 +442,7 @@ def tenants_edit(tenant_id):
     t.max_user_count = data["max_user_count"] if data["max_user_count"] else 5
     t.license_end_date = data["license_end_date"]
     db.session.commit()
-    flash("Kurum güncellendi.", "success")
+    flash(_("Kurum güncellendi."), "success")
     return redirect(url_for("admin_bp.tenants"))
 
 
@@ -452,11 +453,11 @@ def tenants_archive(tenant_id):
     _require_admin()
     t = Tenant.query.get(tenant_id)
     if not t:
-        flash("Kurum bulunamadı.", "danger")
+        flash(_("Kurum bulunamadı."), "danger")
         return redirect(url_for("admin_bp.tenants"))
     t.is_active = False
     db.session.commit()
-    flash("Kurum arşivlendi.", "success")
+    flash(_("Kurum arşivlendi."), "success")
     return redirect(url_for("admin_bp.tenants"))
 
 
@@ -539,10 +540,10 @@ def users_add():
         flash("E-posta zorunludur.", "danger")
         return redirect(url_for("admin_bp.users"))
     if not re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', data["email"]):
-        flash("Geçersiz e-posta formatı.", "danger")
+        flash(_("Geçersiz e-posta formatı."), "danger")
         return redirect(url_for("admin_bp.users"))
     if User.query.filter_by(email=data["email"]).first():
-        flash("Bu e-posta adresi zaten kayıtlı.", "danger")
+        flash(_("Bu e-posta adresi zaten kayıtlı."), "danger")
         return redirect(url_for("admin_bp.users"))
     if data["password"]:
         from app.utils.password_policy import validate_password
@@ -556,12 +557,12 @@ def users_add():
     if current_user.role.name != "Admin":
         allowed = _ASSIGNABLE_ROLES.get(current_user.role.name, set())
         if target_role and target_role.name not in allowed:
-            flash("Bu rolü atama yetkiniz yok.", "danger")
+            flash(_("Bu rolü atama yetkiniz yok."), "danger")
             return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin":
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
-            flash("Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var.", "danger")
+            flash(_("Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var."), "danger")
             return redirect(url_for("admin_bp.users"))
 
     u = User(
@@ -579,7 +580,7 @@ def users_add():
     )
     db.session.add(u)
     db.session.commit()
-    flash("Kullanıcı eklendi.", "success")
+    flash(_("Kullanıcı eklendi."), "success")
     return redirect(url_for("admin_bp.users"))
 
 
@@ -590,7 +591,7 @@ def users_edit(user_id):
     _require_user_management()
     u = User.query.get(user_id)
     if not u:
-        flash("Kullanıcı bulunamadı.", "danger")
+        flash(_("Kullanıcı bulunamadı."), "danger")
         return redirect(url_for("admin_bp.users"))
         
     if current_user.role.name != "Admin" and u.tenant_id != current_user.tenant_id:
@@ -600,7 +601,7 @@ def users_edit(user_id):
         abort(403)
         
     if current_user.role.name != "Admin" and u.role and u.role.name == "tenant_admin":
-        flash("Kurum Yöneticisi hesabını sadece Admin düzenleyebilir.", "danger")
+        flash(_("Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."), "danger")
         return redirect(url_for("admin_bp.users"))
 
     data = _parse_user_form()
@@ -613,19 +614,19 @@ def users_edit(user_id):
         return redirect(url_for("admin_bp.users"))
     existing = User.query.filter_by(email=data["email"]).first()
     if existing and existing.id != u.id:
-        flash("Bu e-posta adresi başka bir kullanıcıya aittir.", "danger")
+        flash(_("Bu e-posta adresi başka bir kullanıcıya aittir."), "danger")
         return redirect(url_for("admin_bp.users"))
         
     target_role = Role.query.get(int(data["role_id"])) if (data.get("role_id") and str(data["role_id"]).strip().isdigit()) else None
     if current_user.role.name != "Admin":
         allowed = _ASSIGNABLE_ROLES.get(current_user.role.name, set())
         if target_role and target_role.name not in allowed:
-            flash("Bu rolü atama yetkiniz yok.", "danger")
+            flash(_("Bu rolü atama yetkiniz yok."), "danger")
             return redirect(url_for("admin_bp.users"))
     if target_role and target_role.name == "tenant_admin" and (not u.role or u.role.name != "tenant_admin"):
         existing_admin = User.query.filter_by(tenant_id=data["tenant_id"], is_active=True).join(Role).filter(Role.name == "tenant_admin").first()
         if existing_admin:
-            flash("Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var.", "danger")
+            flash(_("Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var."), "danger")
             return redirect(url_for("admin_bp.users"))
 
     u.email = data["email"]
@@ -640,7 +641,7 @@ def users_edit(user_id):
     if data["password"]:
         u.password_hash = generate_password_hash(data["password"])
     db.session.commit()
-    flash("Kullanıcı güncellendi.", "success")
+    flash(_("Kullanıcı güncellendi."), "success")
     return redirect(url_for("admin_bp.users"))
 
 
@@ -651,7 +652,7 @@ def users_toggle(user_id):
     _require_user_management()
     u = User.query.get(user_id)
     if not u:
-        flash("Kullanıcı bulunamadı.", "danger")
+        flash(_("Kullanıcı bulunamadı."), "danger")
         return redirect(url_for("admin_bp.users"))
         
     if current_user.role.name != "Admin" and u.tenant_id != current_user.tenant_id:
@@ -661,15 +662,15 @@ def users_toggle(user_id):
         abort(403)
         
     if current_user.role.name != "Admin" and u.role and u.role.name == "tenant_admin":
-        flash("Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir.", "danger")
+        flash(_("Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."), "danger")
         return redirect(url_for("admin_bp.users"))
         
     if u.id == current_user.id:
-        flash("Kendi hesabınızı devre dışı bırakamazsınız.", "danger")
+        flash(_("Kendi hesabınızı devre dışı bırakamazsınız."), "danger")
         return redirect(url_for("admin_bp.users"))
     u.is_active = not u.is_active
     db.session.commit()
-    flash("Kullanıcı durumu güncellendi.", "success")
+    flash(_("Kullanıcı durumu güncellendi."), "success")
     return redirect(url_for("admin_bp.users"))
 
 
@@ -808,7 +809,7 @@ def users_bulk_import():
 def kule_iletisim():
     """Kule İletişim yönetim paneli (Admin ve Yönetici erişimi)."""
     if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
-        flash("Bu sayfayı görüntüleme yetkiniz yok.", "warning")
+        flash(_("Bu sayfayı görüntüleme yetkiniz yok."), "warning")
         return redirect(url_for('app_bp.masaustu'))  # Sprint 9: dashboard_bp → masaustu
 
     # Filter by tenant if not Admin
