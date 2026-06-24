@@ -91,12 +91,12 @@
     document.getElementById("btn-preview").addEventListener("click", async () => {
         const srcId = document.getElementById("source-year-select").value;
         const newY  = parseInt(document.getElementById("new-year-input").value);
-        if (!srcId || !newY) { Swal.fire("Uyarı", "Kaynak yıl ve hedef yıl seçiniz.", "warning"); return; }
+        if (!srcId || !newY) { Swal.fire(t("Uyarı"), t("Kaynak yıl ve hedef yıl seçiniz."), "warning"); return; }
         setStep(2);
         document.getElementById("preview-body").innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i></div>';
         const r = await fetch(previewUrl, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source_year_id:parseInt(srcId), new_year:newY})});
         const res = await r.json();
-        if (!res.success) { Swal.fire("Hata", res.message, "error"); setStep(1); return; }
+        if (!res.success) { Swal.fire(t("Hata"), res.message, "error"); setStep(1); return; }
         previewData = res.preview;
         document.getElementById("preview-body").innerHTML = `
             <div style="padding:8px 0;">
@@ -104,11 +104,11 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                     <div style="background:#f0fdf4;border-radius:8px;padding:14px;text-align:center;">
                         <div style="font-size:28px;font-weight:700;color:#10b981;">${previewData.process_count}</div>
-                        <div style="font-size:12px;color:#64748b;">Süreç taşınacak</div>
+                        <div style="font-size:12px;color:#64748b;">${t("Süreç taşınacak")}</div>
                     </div>
                     <div style="background:#eff6ff;border-radius:8px;padding:14px;text-align:center;">
                         <div style="font-size:28px;font-weight:700;color:#3b82f6;">${previewData.kpi_count}</div>
-                        <div style="font-size:12px;color:#64748b;">KPI taşınacak</div>
+                        <div style="font-size:12px;color:#64748b;">${t("KPI taşınacak")}</div>
                     </div>
                 </div>
             </div>`;
@@ -119,10 +119,10 @@
     document.getElementById("btn-confirm").addEventListener("click", async () => {
         if (!previewData) return;
         const conf = await Swal.fire({
-            title: "Emin misiniz?",
-            text: `${previewData.source_year} → ${previewData.new_year} geçişi geri alınamaz.`,
+            title: t("Emin misiniz?"),
+            text: `${previewData.source_year} → ${previewData.new_year} ${t("geçişi geri alınamaz.")}`,
             icon: "warning", showCancelButton: true,
-            confirmButtonText: "Evet, geç!", cancelButtonText: "İptal",
+            confirmButtonText: t("Evet, geç!"), cancelButtonText: t("İptal"),
         });
         if (!conf.isConfirmed) return;
 
@@ -130,14 +130,14 @@
         const newY  = parseInt(document.getElementById("new-year-input").value);
         const name  = document.getElementById("new-year-name").value.trim();
         document.getElementById("btn-confirm").disabled = true;
-        document.getElementById("btn-confirm").innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uygulanıyor…';
+        document.getElementById("btn-confirm").innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Uygulanıyor…');
 
         const r = await fetch(applyUrl, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source_year_id:parseInt(srcId), new_year:newY, name})});
         const res = await r.json();
         if (!res.success) {
-            Swal.fire("Hata", res.message, "error");
+            Swal.fire(t("Hata"), res.message, "error");
             document.getElementById("btn-confirm").disabled = false;
-            document.getElementById("btn-confirm").innerHTML = 'Onayla ve Uygula';
+            document.getElementById("btn-confirm").innerHTML = t('Onayla ve Uygula');
             return;
         }
         document.getElementById("result-msg").textContent = res.message;

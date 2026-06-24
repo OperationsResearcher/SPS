@@ -35,7 +35,7 @@
     var url=box.getAttribute("data-ozet-url"); if(!url) return;
     var metin=document.getElementById("ai-ozet-metin"), kEl=document.getElementById("ai-ozet-kaynak");
     var ys=document.getElementById("exec-year-select");
-    box.style.display="block"; metin.textContent="Özet hazırlanıyor…";
+    box.style.display="block"; metin.textContent=t("Özet hazırlanıyor…");
     function load(){
       var y=(ys&&ys.value)?("?year="+encodeURIComponent(ys.value)):"";
       fetch(url+y,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
@@ -401,23 +401,23 @@
 
   function priorityBadge(p) {
     const map = {
-      critical: {bg:'#fee2e2', fg:'#991b1b', label:'Kritik'},
-      high:     {bg:'#fed7aa', fg:'#9a3412', label:'Yüksek'},
-      medium:   {bg:'#dbeafe', fg:'#1e40af', label:'Orta'},
-      low:      {bg:'#f1f5f9', fg:'#475569', label:'Düşük'},
+      critical: {bg:'#fee2e2', fg:'#991b1b', label:t('Kritik')},
+      high:     {bg:'#fed7aa', fg:'#9a3412', label:t('Yüksek')},
+      medium:   {bg:'#dbeafe', fg:'#1e40af', label:t('Orta')},
+      low:      {bg:'#f1f5f9', fg:'#475569', label:t('Düşük')},
     };
     const m = map[p] || map.medium;
     return `<span style="background:${m.bg};color:${m.fg};padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;">${m.label}</span>`;
   }
 
-  function pivotTypeLabel(t) {
+  function pivotTypeLabel(pt) {
     return {
-      refocus:         '🎯 Odak Daraltma',
-      sunset:          '🌅 Sonlandırma',
-      accelerate:      '⚡ Hızlandırma',
-      new_initiative:  '🚀 Yeni Girişim',
-      risk_mitigation: '🛡️ Risk Mitigasyon',
-    }[t] || t;
+      refocus:         '🎯 ' + t('Odak Daraltma'),
+      sunset:          '🌅 ' + t('Sonlandırma'),
+      accelerate:      '⚡ ' + t('Hızlandırma'),
+      new_initiative:  '🚀 ' + t('Yeni Girişim'),
+      risk_mitigation: '🛡️ ' + t('Risk Mitigasyon'),
+    }[pt] || pt;
   }
 
   function reveal(skelId, valEl) {
@@ -445,19 +445,19 @@
       const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
       const res = await fetch(r.dataset.snapshotUrl + yq);
       const j = await res.json();
-      if (!j.success) throw new Error(j.error || 'Veri alınamadı');
+      if (!j.success) throw new Error(j.error || t('Veri alınamadı'));
       const s = j.snapshot;
 
       // Plan dönemi badge
       const pb = document.getElementById('exec-period-badge');
-      if (pb && s.year) pb.innerHTML = ' · <b>' + s.year + '</b> dönemi';
+      if (pb && s.year) pb.innerHTML = ' · <b>' + s.year + '</b> ' + t('dönemi');
 
       // Hero
       const hEl = document.getElementById('exec-health');
       hEl.textContent = s.health_score != null ? s.health_score : '—';
       hEl.style.color = healthColor(s.health_score);
       document.getElementById('exec-generated').textContent =
-        'Güncellendi: ' + fmtDate(s.generated_at);
+        t('Güncellendi:') + ' ' + fmtDate(s.generated_at);
       document.getElementById('exec-kpi-total').textContent = s.kpi.total;
       document.getElementById('exec-strat-total').textContent =
         s.strategy.count + ' · ' + s.strategy.sub_count;
@@ -470,46 +470,46 @@
                          : s.kpi.on_target_pct >= 50 ? '#d97706' : '#dc2626';
       reveal('exec-kpi-pct-skel', kpiPct);
       document.getElementById('exec-kpi-detail').textContent =
-        s.kpi.with_data + ' / ' + s.kpi.total + " PG'de veri var";
+        s.kpi.with_data + ' / ' + s.kpi.total + " " + t("PG'de veri var");
 
       const inProg = (s.initiative.by_status.in_progress) || {avg_progress:0, count:0};
       const initEl = document.getElementById('exec-init-avg');
       initEl.textContent = '%' + Math.round(inProg.avg_progress);
       reveal('exec-init-avg-skel', initEl);
       document.getElementById('exec-init-detail').textContent =
-        inProg.count + ' devam eden girişim';
+        inProg.count + ' ' + t('devam eden girişim');
 
       const odEl = document.getElementById('exec-overdue');
       odEl.textContent = s.activity.overdue;
       if (s.activity.overdue === 0) odEl.style.color = 'var(--text-strong)';
       reveal('exec-overdue-skel', odEl);
       document.getElementById('exec-overdue-detail').textContent =
-        s.activity.total + ' toplam faaliyet';
+        s.activity.total + ' ' + t('toplam faaliyet');
 
       const riskEl = document.getElementById('exec-risk');
       riskEl.textContent = s.risk.critical;
       if (s.risk.critical === 0) riskEl.style.color = 'var(--text-strong)';
       reveal('exec-risk-skel', riskEl);
       document.getElementById('exec-risk-detail').textContent =
-        s.risk.open + ' açık risk';
+        s.risk.open + ' ' + t('açık risk');
 
       const anEl = document.getElementById('exec-anomaly');
       anEl.textContent = s.anomaly.high;
       reveal('exec-anomaly-skel', anEl);
       document.getElementById('exec-anomaly-detail').textContent =
-        s.anomaly.medium + ' orta seviye';
+        s.anomaly.medium + ' ' + t('orta seviye');
 
       const trEl = document.getElementById('exec-trigger');
       trEl.textContent = s.trigger.active;
       reveal('exec-trigger-skel', trEl);
       document.getElementById('exec-trigger-detail').textContent =
-        s.trigger.fired_last_7d + ' son 7 günde ateşlendi';
+        s.trigger.fired_last_7d + ' ' + t('son 7 günde ateşlendi');
 
       // ── Otomatik Vurgular (heuristic) ─────────────────────────────────
       renderHighlights(s);
 
     } catch (err) {
-      document.getElementById('exec-error-msg').textContent = 'Hata: ' + err.message;
+      document.getElementById('exec-error-msg').textContent = t('Hata:') + ' ' + err.message;
       document.getElementById('exec-error').style.display = 'block';
     }
   }
@@ -518,19 +518,19 @@
     const items = [];
     const onPct = s.kpi?.on_target_pct ?? 0;
     if (s.health_score != null && s.health_score < 50)
-      items.push({icon:'fa-heart-pulse', color:'#dc2626', text:`Strateji sağlık skoru kritik (${s.health_score}). Pivot önerisi almanız tavsiye edilir.`});
+      items.push({icon:'fa-heart-pulse', color:'#dc2626', text:`${t('Strateji sağlık skoru kritik')} (${s.health_score}). ${t('Pivot önerisi almanız tavsiye edilir.')}`});
     if (onPct < 50)
-      items.push({icon:'fa-bullseye', color:'#dc2626', text:`PG'lerin yalnızca %${onPct}'i hedef üstünde — öncelikleri gözden geçirin.`});
+      items.push({icon:'fa-bullseye', color:'#dc2626', text:`${t("PG'lerin yalnızca")} %${onPct}${t("'i hedef üstünde — öncelikleri gözden geçirin.")}`});
     if (s.activity?.overdue > 5)
-      items.push({icon:'fa-clock', color:'#dc2626', text:`${s.activity.overdue} gecikmiş faaliyet var — sahiplere atama yapın.`});
+      items.push({icon:'fa-clock', color:'#dc2626', text:`${s.activity.overdue} ${t('gecikmiş faaliyet var — sahiplere atama yapın.')}`});
     if (s.risk?.critical > 0)
-      items.push({icon:'fa-shield-halved', color:'#dc2626', text:`${s.risk.critical} kritik risk açık — risk azaltma planı gerekli.`});
+      items.push({icon:'fa-shield-halved', color:'#dc2626', text:`${s.risk.critical} ${t('kritik risk açık — risk azaltma planı gerekli.')}`});
     if (s.anomaly?.high > 0)
-      items.push({icon:'fa-chart-line', color:'#f59e0b', text:`${s.anomaly.high} yüksek öncelikli PG anomalisi — kök neden analizi başlatın.`});
+      items.push({icon:'fa-chart-line', color:'#f59e0b', text:`${s.anomaly.high} ${t('yüksek öncelikli PG anomalisi — kök neden analizi başlatın.')}`});
     if (s.trigger?.fired_last_7d > 0)
-      items.push({icon:'fa-bell', color:'#f59e0b', text:`Son 7 günde ${s.trigger.fired_last_7d} tetikleyici ateşlendi — Replan paneline bakın.`});
+      items.push({icon:'fa-bell', color:'#f59e0b', text:`${t('Son 7 günde')} ${s.trigger.fired_last_7d} ${t('tetikleyici ateşlendi — Replan paneline bakın.')}`});
     if (s.kpi?.total > 0 && s.kpi.with_data < s.kpi.total * 0.6)
-      items.push({icon:'fa-keyboard', color:'#0ea5e9', text:`PG'lerin yalnızca %${Math.round(s.kpi.with_data/s.kpi.total*100)}'inde veri var — veri girişi disiplinini güçlendirin.`});
+      items.push({icon:'fa-keyboard', color:'#0ea5e9', text:`${t("PG'lerin yalnızca")} %${Math.round(s.kpi.with_data/s.kpi.total*100)}${t("'inde veri var — veri girişi disiplinini güçlendirin.")}`});
 
     const box = document.getElementById('exec-highlights');
     const list = document.getElementById('exec-highlights-list');
@@ -538,7 +538,7 @@
     if (!items.length) {
       box.style.display = 'block';
       box.style.borderLeftColor = '#10b981';
-      list.innerHTML = '<div style="display:flex; align-items:center; gap:8px; color:#047857; font-size:13px;"><i class="fas fa-check-circle"></i> Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürdürün.</div>';
+      list.innerHTML = '<div style="display:flex; align-items:center; gap:8px; color:#047857; font-size:13px;"><i class="fas fa-check-circle"></i> ' + t('Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürdürün.') + '</div>';
       return;
     }
     box.style.display = 'block';
@@ -555,7 +555,7 @@
     const btn = this;
     const orig = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz ediliyor…';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Analiz ediliyor…');
     try {
       const res = await fetch(r.dataset.pivotUrl, { method: 'POST' });
       const j = await res.json();
@@ -565,47 +565,47 @@
       if (res.status === 429 || j.source === 'heuristic_quota') {
         const reason = j.quota && j.quota.reason;
         const msgMap = {
-          cooldown:                  `Çok hızlı! ${j.quota.retry_after_sec} sn sonra tekrar dene.`,
-          tenant_daily_limit:        `Günlük AI çağrı limiti doldu (${j.quota.used}/${j.quota.limit}). Yarın tekrar dene.`,
-          tenant_monthly_call_limit: `Aylık AI çağrı limiti doldu (${j.quota.used}/${j.quota.limit}).`,
-          tenant_monthly_cost_limit: `Aylık AI maliyet limiti aşıldı ($${j.quota.used_usd}/$${j.quota.limit_usd}).`,
-          system_daily_limit:        `Sistem genel günlük limit doldu. Lütfen sonra tekrar dene.`,
-          tenant_paused:             `Tenant LLM çağrıları yönetici tarafından durduruldu.`,
+          cooldown:                  `${t('Çok hızlı!')} ${j.quota.retry_after_sec} ${t('sn sonra tekrar dene.')}`,
+          tenant_daily_limit:        `${t('Günlük AI çağrı limiti doldu')} (${j.quota.used}/${j.quota.limit}). ${t('Yarın tekrar dene.')}`,
+          tenant_monthly_call_limit: `${t('Aylık AI çağrı limiti doldu')} (${j.quota.used}/${j.quota.limit}).`,
+          tenant_monthly_cost_limit: `${t('Aylık AI maliyet limiti aşıldı')} ($${j.quota.used_usd}/$${j.quota.limit_usd}).`,
+          system_daily_limit:        t('Sistem genel günlük limit doldu. Lütfen sonra tekrar dene.'),
+          tenant_paused:             t('Tenant LLM çağrıları yönetici tarafından durduruldu.'),
         };
         Swal.fire({
           toast: true, position: 'top-end', icon: 'warning',
-          title: msgMap[reason] || 'AI kotası aşıldı — kural motoru kullanıldı',
+          title: msgMap[reason] || t('AI kotası aşıldı — kural motoru kullanıldı'),
           showConfirmButton: false, timer: 5000, timerProgressBar: true,
         });
       }
 
       if (!j.success) {
         Swal.fire({toast:true, position:'top-end', icon:'error',
-                   title: j.error || 'Hata', showConfirmButton:false, timer: 3000});
+                   title: j.error || t('Hata'), showConfirmButton:false, timer: 3000});
         return;
       }
       const panel = document.getElementById('exec-pivot-panel');
       panel.style.display = 'block';
-      let srcText = 'Kaynak: ';
+      let srcText = t('Kaynak:') + ' ';
       if (j.source === 'llm') srcText += 'Gemini AI';
-      else if (j.source === 'heuristic_quota') srcText += 'kural motoru (kota aşıldı)';
-      else srcText += 'kural motoru (LLM yapılandırılmadı)';
+      else if (j.source === 'heuristic_quota') srcText += t('kural motoru (kota aşıldı)');
+      else srcText += t('kural motoru (LLM yapılandırılmadı)');
 
       if (j.source === 'llm' && j.usage && j.usage.total_tokens) {
         const u = j.usage;
         const modelName = j.model || u.model || 'model?';
-        const keySrcLabel = j.key_source === 'tenant_byok' ? 'kendi key' : 'sistem key';
+        const keySrcLabel = j.key_source === 'tenant_byok' ? t('kendi key') : t('sistem key');
         const tl = (u.est_cost_usd * 34).toFixed(4);
-        srcText += ` · ${modelName} (${keySrcLabel}) · ${u.total_tokens.toLocaleString('tr-TR')} token `
+        srcText += ` · ${modelName} (${keySrcLabel}) · ${u.total_tokens.toLocaleString('tr-TR')} ${t('token')} `
                 + `(~$${u.est_cost_usd.toFixed(6)} / ~${tl} TL)`;
       }
 
       // Kota özeti
       if (j.quota_summary) {
         const q = j.quota_summary;
-        srcText += ` · Bugün: ${q.today.used}/${q.today.limit} (%${q.today.pct})`
-                + ` · Bu ay: ${q.month_calls.used}/${q.month_calls.limit}`
-                + ` · Maliyet: $${q.month_cost.used_usd}/$${q.month_cost.limit_usd}`;
+        srcText += ` · ${t('Bugün:')} ${q.today.used}/${q.today.limit} (%${q.today.pct})`
+                + ` · ${t('Bu ay:')} ${q.month_calls.used}/${q.month_calls.limit}`
+                + ` · ${t('Maliyet:')} $${q.month_cost.used_usd}/$${q.month_cost.limit_usd}`;
       }
 
       document.getElementById('exec-pivot-source').textContent = srcText;
@@ -615,8 +615,8 @@
         list.innerHTML = `
           <div class="mc-empty">
             <i class="fas fa-check-circle mc-empty-icon" style="color:#10b981;"></i>
-            <div class="mc-empty-title">Şu an pivot önerisi yok</div>
-            <div class="mc-empty-text">Durum sağlıklı görünüyor.</div>
+            <div class="mc-empty-title">${t('Şu an pivot önerisi yok')}</div>
+            <div class="mc-empty-text">${t('Durum sağlıklı görünüyor.')}</div>
           </div>`;
       } else {
         list.innerHTML = j.recommendations.map(rec => `
@@ -630,10 +630,10 @@
               ${priorityBadge(rec.priority)}
             </div>
             <div style="font-size: var(--text-md); color: var(--text-muted); margin-bottom: var(--space-1);">
-              <b>Gerekçe:</b> ${rec.rationale || ''}
+              <b>${t('Gerekçe:')}</b> ${rec.rationale || ''}
             </div>
             <div style="font-size: var(--text-md); color: var(--text-default);">
-              <b>Aksiyon:</b> ${rec.action || ''}
+              <b>${t('Aksiyon:')}</b> ${rec.action || ''}
             </div>
             <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-2);">
               <i class="far fa-clock"></i> ${rec.timeframe || ''}
@@ -666,13 +666,13 @@
         const first = validVals[0];
         const delta = (last - first).toFixed(1);
         const sign = delta > 0 ? '+' : '';
-        if (sumEl) sumEl.innerHTML = `${labels.length} ay · son: <b>%${last}</b> · 12 ay değişim: <b style="color:${delta>=0?'#10b981':'#ef4444'}">${sign}${delta}</b> puan`;
-      } else if (sumEl) sumEl.textContent = 'Yeterli veri yok';
+        if (sumEl) sumEl.innerHTML = `${labels.length} ${t('ay')} · ${t('son:')} <b>%${last}</b> · ${t('12 ay değişim:')} <b style="color:${delta>=0?'#10b981':'#ef4444'}">${sign}${delta}</b> ${t('puan')}`;
+      } else if (sumEl) sumEl.textContent = t('Yeterli veri yok');
       if (trendChart) trendChart.destroy();
       trendChart = new Chart(canvas, {
         type: 'line',
         data: { labels, datasets: [{
-          label: 'PG hedef üstü %', data: values, spanGaps: true,
+          label: t('PG hedef üstü %'), data: values, spanGaps: true,
           borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.10)',
           fill: true, borderWidth: 2, tension: 0.3, pointRadius: 3,
         }]},
@@ -698,7 +698,7 @@
           <span style="flex:1; color:var(--text-default); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title || ''}</span>
           <span style="color:${color}; font-weight:700;">%${it.on_target_pct}</span>
           <span style="color:#94a3b8; font-size:11px;">(${it.pg_total} PG)</span>
-        </div>`).join('') : '<div style="font-size:12px; color:#94a3b8; padding:6px;">Veri yok</div>';
+        </div>`).join('') : '<div style="font-size:12px; color:#94a3b8; padding:6px;">' + t('Veri yok') + '</div>';
       const topEl = document.getElementById('exec-strat-top');
       const botEl = document.getElementById('exec-strat-bottom');
       if (topEl) topEl.innerHTML = render(j.data.top, '#10b981');
@@ -728,11 +728,11 @@
   }
   function deltaSummary(values) {
     const v = values.filter(x => x != null);
-    if (v.length < 2) return v.length ? `son: <b>%${v[v.length-1]}</b>` : '';
+    if (v.length < 2) return v.length ? `${t('son:')} <b>%${v[v.length-1]}</b>` : '';
     const delta = (v[v.length-1] - v[0]).toFixed(1);
     const sign = delta > 0 ? '+' : '';
     const color = delta >= 0 ? '#10b981' : '#ef4444';
-    return `son: <b>%${v[v.length-1]}</b> · Δ <b style="color:${color}">${sign}${delta}</b>`;
+    return `${t('son:')} <b>%${v[v.length-1]}</b> · Δ <b style="color:${color}">${sign}${delta}</b>`;
   }
   async function loadKvektorTrend() {
     try {
@@ -798,8 +798,8 @@
   // ── Hero metrik açıklama popupları ───────────────────────────────────
   const HERO_INFO = {
     health: {
-      title: 'Strateji Sağlık Skoru — Nasıl hesaplanıyor?',
-      html: `
+      title: t('Strateji Sağlık Skoru — Nasıl hesaplanıyor?'),
+      html: t(`
         <div style="text-align:left; font-size:13.5px; line-height:1.6;">
           <p>Stratejinin <b>genel sağlık durumunu 0–100 ölçeğinde</b> özetler. Ağırlıklı dört bileşenden oluşur:</p>
           <table style="width:100%; border-collapse:collapse; margin:8px 0; font-size:12.5px;">
@@ -819,20 +819,20 @@
             </tbody>
           </table>
           <p><b>Yorum aralıkları:</b> 75 ve üzeri sağlıklı · 50–74 yakın izleme · 50 altı acil aksiyon gerekli.</p>
-        </div>`
+        </div>`)
     },
     pg: {
-      title: 'Aktif PG — Açıklama',
-      html: `
+      title: t('Aktif PG — Açıklama'),
+      html: t(`
         <div style="text-align:left; font-size:13.5px; line-height:1.6;">
           <p>Kurumunuzun <b>tüm süreçlerinde aktif olarak tanımlanmış Performans Göstergeleri</b>nin toplam sayısıdır.</p>
           <p>PG (Performans Göstergesi), bir sürecin başarısını sayısal olarak ölçen göstergedir. Örneğin: "Müşteri memnuniyeti oranı", "İlk seferde doğru tamamlama yüzdesi", "Ortalama yanıt süresi".</p>
           <p><b>Not:</b> Bu sayı kurum envanteri olduğundan plan dönemine bağlı değildir; "PG'de veri var" sayacı ise yalnızca seçili yıl için ölçüm girilmiş PG'leri gösterir.</p>
-        </div>`
+        </div>`)
     },
     strategy: {
-      title: 'Strateji & Alt Strateji — Açıklama',
-      html: `
+      title: t('Strateji & Alt Strateji — Açıklama'),
+      html: t(`
         <div style="text-align:left; font-size:13.5px; line-height:1.6;">
           <p>Gösterim <b>ana strateji · alt strateji</b> şeklindedir.</p>
           <ul style="margin:4px 0 8px 18px;">
@@ -841,18 +841,18 @@
           </ul>
           <p>Sayım kurumun tüm aktif stratejilerini kapsar; plan dönemine bağlı değildir.</p>
           <p><b>Sağlıklı aralık:</b> 4–8 ana strateji ve her ana strateji altında 2–4 alt strateji önerilir. Daha fazlası odak kaybına, daha azı yetersiz kapsayıcılığa yol açar.</p>
-        </div>`
+        </div>`)
     },
     initiative: {
-      title: 'Girişim — Açıklama',
-      html: `
+      title: t('Girişim — Açıklama'),
+      html: t(`
         <div style="text-align:left; font-size:13.5px; line-height:1.6;">
           <p>Girişim; bir veya birden fazla alt stratejiyi ileri taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır. Strateji ile günlük operasyon arasındaki köprüdür.</p>
           <p>Örnekler: "Dijital satış kanalı kurulumu", "ERP geçiş projesi", "Sıfır atık sertifikasyonu hazırlığı".</p>
           <p>Buradaki sayı, kurumdaki <b>tüm aktif girişimlerin toplamı</b>dır (durumdan bağımsız).</p>
           <p>Üstteki "Girişim Sağlığı" kartında ise yalnızca <b>devam eden</b> girişimlerin ortalama ilerleme yüzdesi gösterilir. Girişimler şu durumlarda olabilir: <i>Planlandı, Devam Ediyor, Beklemede, Tamamlandı, İptal, Gecikmiş</i>.</p>
           <p><b>İpucu:</b> "X-Matrix" üzerinden girişimlerin hangi stratejilere katkı verdiğini görsel olarak takip edebilirsiniz.</p>
-        </div>`
+        </div>`)
     }
   };
   document.addEventListener('click', (e) => {
@@ -865,7 +865,7 @@
       title: info.title,
       html: info.html,
       icon: 'info',
-      confirmButtonText: 'Anladım',
+      confirmButtonText: t('Anladım'),
       width: 640,
       customClass: { popup: 'swal-above-nested-modal' }
     });
@@ -911,11 +911,11 @@
   var baseline=null, shown=false;
   function showToast(){
     if(shown) return; shown=true;
-    var t=document.createElement("div");
-    t.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
-    t.innerHTML='<i class="fas fa-rotate"></i> Yeni veri girildi <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Yenile</button>';
-    t.querySelector("button").onclick=function(){ location.reload(); };
-    document.body.appendChild(t);
+    var el=document.createElement("div");
+    el.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
+    el.innerHTML='<i class="fas fa-rotate"></i> '+t("Yeni veri girildi")+' <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">'+t("Yenile")+'</button>';
+    el.querySelector("button").onclick=function(){ location.reload(); };
+    document.body.appendChild(el);
   }
   function check(){
     fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})

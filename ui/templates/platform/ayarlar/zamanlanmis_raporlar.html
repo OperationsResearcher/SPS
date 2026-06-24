@@ -203,10 +203,10 @@
         body: JSON.stringify({ subscriptions: subs })
       });
       const j = await res.json();
-      if (j.success) showToast("Kaydedildi", true);
-      else showToast(j.message || "Hata", false);
+      if (j.success) showToast(t("Kaydedildi"), true);
+      else showToast(j.message || t("Hata"), false);
     } catch(e) {
-      showToast("Bağlantı hatası", false);
+      showToast(t("Bağlantı hatası"), false);
     }
   }
 

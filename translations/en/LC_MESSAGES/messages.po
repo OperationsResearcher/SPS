@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 08:05+0300\n"
+"POT-Creation-Date: 2026-06-24 12:15+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -54,7 +54,11 @@ msgstr "Package not found."
 
 #: app/routes/admin.py:180
 msgid "Bu pakete bağlı kurumlar var, önce kurumların paketini değiştirin."
-msgstr "There are organizations linked to this package; change their package first."
+msgstr ""
+"There are organizations linked to this package; change their package "
+"first.There are organizations linked to this package; change their "
+"package first.There are organizations linked to this package; change "
+"their package first."
 
 #: app/routes/admin.py:186
 msgid "Paket devre dışı bırakıldı."
@@ -99,7 +103,11 @@ msgstr "You do not have permission to assign this role."
 
 #: app/routes/admin.py:565 app/routes/admin.py:629
 msgid "Dikkat: Bu kurumda zaten aktif bir Kurum Yöneticisi var."
-msgstr "Warning: This organization already has an active Organization Administrator."
+msgstr ""
+"Warning: This organization already has an active Organization "
+"Administrator.Warning: This organization already has an active "
+"Organization Administrator.Warning: This organization already has an "
+"active Organization Administrator."
 
 #: app/routes/admin.py:583
 msgid "Kullanıcı eklendi."
@@ -124,7 +132,11 @@ msgstr "User updated."
 
 #: app/routes/admin.py:665
 msgid "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."
-msgstr "Only an Admin can deactivate/activate an Organization Administrator account."
+msgstr ""
+"Only an Admin can deactivate/activate an Organization Administrator "
+"account.Only an Admin can deactivate/activate an Organization "
+"Administrator account.Only an Admin can deactivate/activate an "
+"Organization Administrator account."
 
 #: app/routes/admin.py:669
 msgid "Kendi hesabınızı devre dışı bırakamazsınız."
@@ -764,9 +776,12 @@ msgstr "Settings saved."
 
 #: ui/static/platform/js/ayarlar_eposta.js:100
 msgid "Kayıtlı ayarlarla kendi e-posta adresinize test maili gönderilecek."
-msgstr "A test mail will be sent to your own email address with the saved settings."
+msgstr ""
 "A test mail will be sent to your own email address with the saved "
-"settings."
+"settings.A test mail will be sent to your own email address with the "
+"saved settings.A test mail will be sent to your own email address with "
+"the saved settings.A test mail will be sent to your own email address "
+"with the saved settings."
 
 #: ui/static/platform/js/ayarlar_eposta.js:102
 msgid "Mail gönderiliyor..."
@@ -3196,9 +3211,12 @@ msgstr "You must select at least one sub-strategy."
 #: ui/static/platform/js/surec.js:3656
 #, python-format
 msgid "K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir."
-msgstr "When K-Vector is on, a contribution % must be entered for each selected sub-strategy."
+msgstr ""
 "When K-Vector is on, a contribution % must be entered for each selected "
-"sub-strategy."
+"sub-strategy.When K-Vector is on, a contribution % must be entered for "
+"each selected sub-strategy.When K-Vector is on, a contribution % must be "
+"entered for each selected sub-strategy.When K-Vector is on, a "
+"contribution % must be entered for each selected sub-strategy."
 
 #: ui/static/platform/js/surec.js:3661
 msgid "Katkı yüzdeleri 0 veya pozitif sayı olmalıdır."
@@ -3611,14 +3629,17 @@ msgstr "Admin Tools — Kokpitim"
 
 #: ui/templates/platform/admin/araclar.html:18
 msgid "Yalnız genel yönetici (Admin) erişimine açık bakım ve denetim araçları."
-msgstr "Maintenance and audit tools open only to general administrator (Admin) access."
+msgstr ""
 "Maintenance and audit tools open only to general administrator (Admin) "
 "access.Maintenance and audit tools open only to general administrator "
 "(Admin) access.Maintenance and audit tools open only to general "
 "administrator (Admin) access.Maintenance and audit tools open only to "
 "general administrator (Admin) access.Maintenance and audit tools open "
 "only to general administrator (Admin) access.Maintenance and audit tools "
-"open only to general administrator (Admin) access."
+"open only to general administrator (Admin) access.Maintenance and audit "
+"tools open only to general administrator (Admin) access.Maintenance and "
+"audit tools open only to general administrator (Admin) access.Maintenance"
+" and audit tools open only to general administrator (Admin) access."
 
 #: ui/templates/platform/admin/araclar.html:26
 msgid ""
@@ -3863,7 +3884,7 @@ msgstr "Holding Consolidated View"
 
 #: ui/templates/platform/admin/holding_dashboard.html:22
 msgid "ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>."
-msgstr "and the summary performance of all its sub-organizations — <strong>read-only</strong>."
+msgstr ""
 "and the summary performance of all its sub-organizations — <strong>read-"
 "only</strong>.and the summary performance of all its sub-organizations — "
 "<strong>read-only</strong>.and the summary performance of all its sub-"
@@ -3871,7 +3892,10 @@ msgstr "and the summary performance of all its sub-organizations — <strong>rea
 " all its sub-organizations — <strong>read-only</strong>.and the summary "
 "performance of all its sub-organizations — <strong>read-only</strong>.and"
 " the summary performance of all its sub-organizations — <strong>read-"
-"only</strong>."
+"only</strong>.and the summary performance of all its sub-organizations — "
+"<strong>read-only</strong>.and the summary performance of all its sub-"
+"organizations — <strong>read-only</strong>.and the summary performance of"
+" all its sub-organizations — <strong>read-only</strong>."
 
 #: ui/templates/platform/admin/holding_dashboard.html:39
 msgid "Ortalama Sağlık Skoru"
@@ -4564,14 +4588,18 @@ msgstr "Package"
 
 #: ui/templates/platform/admin/sub_tenants.html:94
 msgid "İlk alt kurumu açmak için \"Yeni Alt Kurum Aç\" butonuna tıklayın."
-msgstr "Click the \"Open New Sub-Organization\" button to open the first sub-organization."
+msgstr ""
 "Click the \"Open New Sub-Organization\" button to open the first sub-"
 "organization.Click the \"Open New Sub-Organization\" button to open the "
 "first sub-organization.Click the \"Open New Sub-Organization\" button to "
 "open the first sub-organization.Click the \"Open New Sub-Organization\" "
 "button to open the first sub-organization.Click the \"Open New Sub-"
 "Organization\" button to open the first sub-organization.Click the \"Open"
-" New Sub-Organization\" button to open the first sub-organization."
+" New Sub-Organization\" button to open the first sub-organization.Click "
+"the \"Open New Sub-Organization\" button to open the first sub-"
+"organization.Click the \"Open New Sub-Organization\" button to open the "
+"first sub-organization.Click the \"Open New Sub-Organization\" button to "
+"open the first sub-organization."
 
 #: ui/templates/platform/admin/sub_tenants.html:110
 msgid ""
@@ -5087,14 +5115,17 @@ msgstr "Download Code Backup (.tar.gz)"
 
 #: ui/templates/platform/admin/yedekleme.html:39
 msgid "Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer."
-msgstr "The code backup can be large (~100+ MB), it takes a few seconds to prepare."
+msgstr ""
 "The code backup can be large (~100+ MB), it takes a few seconds to "
 "prepare.The code backup can be large (~100+ MB), it takes a few seconds "
 "to prepare.The code backup can be large (~100+ MB), it takes a few "
 "seconds to prepare.The code backup can be large (~100+ MB), it takes a "
 "few seconds to prepare.The code backup can be large (~100+ MB), it takes "
 "a few seconds to prepare.The code backup can be large (~100+ MB), it "
-"takes a few seconds to prepare."
+"takes a few seconds to prepare.The code backup can be large (~100+ MB), "
+"it takes a few seconds to prepare.The code backup can be large (~100+ "
+"MB), it takes a few seconds to prepare.The code backup can be large "
+"(~100+ MB), it takes a few seconds to prepare."
 
 #: ui/templates/platform/admin/yedekleme.html:46
 msgid "Otomatik Yedek — her gece 02:00"
@@ -5797,7 +5828,7 @@ msgstr "Year summary &amp; attention"
 
 #: ui/templates/platform/bireysel/karne.html:189
 msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
-msgstr "A brief summary of data coverage and your indicators for the selected year."
+msgstr ""
 "A brief summary of data coverage and your indicators for the selected "
 "year.A brief summary of data coverage and your indicators for the "
 "selected year.A brief summary of data coverage and your indicators for "
@@ -5810,7 +5841,11 @@ msgstr "A brief summary of data coverage and your indicators for the selected ye
 "data coverage and your indicators for the selected year.A brief summary "
 "of data coverage and your indicators for the selected year.A brief "
 "summary of data coverage and your indicators for the selected year.A "
-"brief summary of data coverage and your indicators for the selected year."
+"brief summary of data coverage and your indicators for the selected "
+"year.A brief summary of data coverage and your indicators for the "
+"selected year.A brief summary of data coverage and your indicators for "
+"the selected year.A brief summary of data coverage and your indicators "
+"for the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -6342,10 +6377,12 @@ msgstr "Organization → Team → Individual OKR flow"
 #: ui/templates/platform/k_radar/hub.html:83
 #: ui/templates/platform/raporlar/index.html:29
 msgid "Bugün biten/bekleyen faaliyet & kritik PG"
-msgstr "Activities ending/pending today & critical PIs"
+msgstr ""
 "Activities ending/pending today & critical PIsActivities ending/pending "
 "today & critical PIsActivities ending/pending today & critical "
 "PIsActivities ending/pending today & critical PIsActivities "
+"ending/pending today & critical PIsActivities ending/pending today & "
+"critical PIsActivities ending/pending today & critical PIsActivities "
 "ending/pending today & critical PIsActivities ending/pending today & "
 "critical PIsActivities ending/pending today & critical PIsActivities "
 "due/pending today, assigned tasks, critical PIs. A short summary to start"
@@ -8081,7 +8118,7 @@ msgstr "Actual Cost"
 
 #: ui/templates/platform/k_rapor/index.html:531
 msgid "Bu tarihe kadar <b>gerçekten harcanan</b> tutar. Cebimizden ne çıktı?"
-msgstr "The amount <b>actually spent</b> by this date. What came out of our pocket?"
+msgstr ""
 "The amount <b>actually spent</b> by this date. What came out of our "
 "pocket?The amount <b>actually spent</b> by this date. What came out of "
 "our pocket?The amount <b>actually spent</b> by this date. What came out "
@@ -8090,7 +8127,10 @@ msgstr "The amount <b>actually spent</b> by this date. What came out of our pock
 "came out of our pocket?The amount <b>actually spent</b> by this date. "
 "What came out of our pocket?The amount <b>actually spent</b> by this "
 "date. What came out of our pocket?The amount <b>actually spent</b> by "
-"this date. What came out of our pocket?"
+"this date. What came out of our pocket?The amount <b>actually spent</b> "
+"by this date. What came out of our pocket?The amount <b>actually "
+"spent</b> by this date. What came out of our pocket?The amount "
+"<b>actually spent</b> by this date. What came out of our pocket?"
 
 #: ui/templates/platform/k_rapor/index.html:540
 msgid "Zaman Performans Endeksi"
@@ -8472,7 +8512,7 @@ msgstr "K-Vector (vision score)"
 
 #: ui/templates/platform/kurum/ayarlar.html:93
 msgid "Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır."
-msgstr "When enabled, the vision score is calculated hierarchically on a 1000 scale."
+msgstr ""
 "When enabled, the vision score is calculated hierarchically on a 1000 "
 "scale.When enabled, the vision score is calculated hierarchically on a "
 "1000 scale.When enabled, the vision score is calculated hierarchically on"
@@ -8482,7 +8522,11 @@ msgstr "When enabled, the vision score is calculated hierarchically on a 1000 sc
 "calculated hierarchically on a 1000 scale.When enabled, the vision score "
 "is calculated hierarchically on a 1000 scale.When enabled, the vision "
 "score is calculated hierarchically on a 1000 scale.When enabled, the "
-"vision score is calculated hierarchically on a 1000 scale."
+"vision score is calculated hierarchically on a 1000 scale.When enabled, "
+"the vision score is calculated hierarchically on a 1000 scale.When "
+"enabled, the vision score is calculated hierarchically on a 1000 "
+"scale.When enabled, the vision score is calculated hierarchically on a "
+"1000 scale."
 
 #: ui/templates/platform/kurum/ayarlar.html:94
 #, python-format
@@ -8511,7 +8555,7 @@ msgstr "Enable K-Vector usage"
 
 #: ui/templates/platform/kurum/ayarlar.html:106
 msgid "Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer."
-msgstr "Vision score and hierarchical weights are activated across the organization."
+msgstr ""
 "Vision score and hierarchical weights are activated across the "
 "organization.Vision score and hierarchical weights are activated across "
 "the organization.Vision score and hierarchical weights are activated "
@@ -8521,7 +8565,11 @@ msgstr "Vision score and hierarchical weights are activated across the organizat
 "weights are activated across the organization.Vision score and "
 "hierarchical weights are activated across the organization.Vision score "
 "and hierarchical weights are activated across the organization.Vision "
-"score and hierarchical weights are activated across the organization."
+"score and hierarchical weights are activated across the "
+"organization.Vision score and hierarchical weights are activated across "
+"the organization.Vision score and hierarchical weights are activated "
+"across the organization.Vision score and hierarchical weights are "
+"activated across the organization."
 
 #: ui/templates/platform/kurum/ayarlar.html:120
 msgid "Yıllık Plan Dönemleri"
@@ -8545,7 +8593,7 @@ msgstr "Enable annual period planning"
 
 #: ui/templates/platform/kurum/ayarlar.html:136
 msgid "SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur."
-msgstr "A year selector is added to the SP page; KPI targets are kept separately per year."
+msgstr ""
 "A year selector is added to the SP page; KPI targets are kept separately "
 "per year.A year selector is added to the SP page; KPI targets are kept "
 "separately per year.A year selector is added to the SP page; KPI targets "
@@ -8556,7 +8604,10 @@ msgstr "A year selector is added to the SP page; KPI targets are kept separately
 "is added to the SP page; KPI targets are kept separately per year.A year "
 "selector is added to the SP page; KPI targets are kept separately per "
 "year.A year selector is added to the SP page; KPI targets are kept "
-"separately per year."
+"separately per year.A year selector is added to the SP page; KPI targets "
+"are kept separately per year.A year selector is added to the SP page; KPI"
+" targets are kept separately per year.A year selector is added to the SP "
+"page; KPI targets are kept separately per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:147
 msgid "Geçmiş yılları dahil et"
@@ -8803,7 +8854,7 @@ msgstr "Operational volume"
 
 #: ui/templates/platform/kurum/index.html:428
 msgid "Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip"
-msgstr "Active PIs, processes with data, open activities and tracking completed this month"
+msgstr ""
 "Active PIs, processes with data, open activities and tracking completed "
 "this monthActive PIs, processes with data, open activities and tracking "
 "completed this monthActive PIs, processes with data, open activities and "
@@ -8814,7 +8865,11 @@ msgstr "Active PIs, processes with data, open activities and tracking completed 
 "monthActive PIs, processes with data, open activities and tracking "
 "completed this monthActive PIs, processes with data, open activities and "
 "tracking completed this monthActive PIs, processes with data, open "
-"activities and tracking completed this month"
+"activities and tracking completed this monthActive PIs, processes with "
+"data, open activities and tracking completed this monthActive PIs, "
+"processes with data, open activities and tracking completed this "
+"monthActive PIs, processes with data, open activities and tracking "
+"completed this month"
 
 #: ui/templates/platform/kurum/index.html:441
 msgid "Risk &amp; uyarı"
@@ -9259,36 +9314,45 @@ msgstr "PDF Sections"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:33
 msgid "<b>Kurum Bilgileri</b> — Ad, sektör, çalışan sayısı, kurum kimliği"
-msgstr "<b>Organization Information</b> — Name, sector, employee count, organization identity"
+msgstr ""
 "<b>Organization Information</b> — Name, sector, employee count, "
 "organization identity<b>Organization Information</b> — Name, sector, "
 "employee count, organization identity<b>Organization Information</b> — "
 "Name, sector, employee count, organization identity<b>Organization "
 "Information</b> — Name, sector, employee count, organization "
 "identity<b>Organization Information</b> — Name, sector, employee count, "
-"organization identity"
+"organization identity<b>Organization Information</b> — Name, sector, "
+"employee count, organization identity<b>Organization Information</b> — "
+"Name, sector, employee count, organization identity<b>Organization "
+"Information</b> — Name, sector, employee count, organization identity"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:34
 msgid "<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı"
-msgstr "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, processes and PIs"
+msgstr ""
 "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, "
 "processes and PIs<b>Strategic Plan Structure</b> — Count of strategies, "
 "sub-strategies, processes and PIs<b>Strategic Plan Structure</b> — Count "
 "of strategies, sub-strategies, processes and PIs<b>Strategic Plan "
 "Structure</b> — Count of strategies, sub-strategies, processes and "
 "PIs<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies,"
-" processes and PIs"
+" processes and PIs<b>Strategic Plan Structure</b> — Count of strategies, "
+"sub-strategies, processes and PIs<b>Strategic Plan Structure</b> — Count "
+"of strategies, sub-strategies, processes and PIs<b>Strategic Plan "
+"Structure</b> — Count of strategies, sub-strategies, processes and PIs"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:35
 msgid "<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı"
-msgstr "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the last 20 entries"
+msgstr ""
 "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the "
 "last 20 entries<b>Audit Log (Last 90 Days)</b> — Action distribution + "
 "details of the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action "
 "distribution + details of the last 20 entries<b>Audit Log (Last 90 "
 "Days)</b> — Action distribution + details of the last 20 entries<b>Audit "
 "Log (Last 90 Days)</b> — Action distribution + details of the last 20 "
-"entries"
+"entries<b>Audit Log (Last 90 Days)</b> — Action distribution + details of"
+" the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action distribution"
+" + details of the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action"
+" distribution + details of the last 20 entries"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:36
 msgid ""
@@ -9310,13 +9374,17 @@ msgstr "Purpose of Use"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:44
 msgid "Dış denetçilere (PWC, Deloitte, KPMG) kurumsal şeffaflık sunumu"
-msgstr "Corporate transparency presentation to external auditors (PWC, Deloitte, KPMG)"
+msgstr ""
 "Corporate transparency presentation to external auditors (PWC, Deloitte, "
 "KPMG)Corporate transparency presentation to external auditors (PWC, "
 "Deloitte, KPMG)Corporate transparency presentation to external auditors "
 "(PWC, Deloitte, KPMG)Corporate transparency presentation to external "
 "auditors (PWC, Deloitte, KPMG)Corporate transparency presentation to "
-"external auditors (PWC, Deloitte, KPMG)"
+"external auditors (PWC, Deloitte, KPMG)Corporate transparency "
+"presentation to external auditors (PWC, Deloitte, KPMG)Corporate "
+"transparency presentation to external auditors (PWC, Deloitte, "
+"KPMG)Corporate transparency presentation to external auditors (PWC, "
+"Deloitte, KPMG)"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:45
 msgid "ISO 9001 / ISO 27001 uyum kanıtı"
@@ -9372,13 +9440,17 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/bi_connector.html:45
 msgid "Veri yüklendikten sonra Power Query Editor'da gerekli dönüşümleri yap"
-msgstr "After the data is loaded, make the necessary transformations in the Power Query Editor"
+msgstr ""
 "After the data is loaded, make the necessary transformations in the Power"
 " Query EditorAfter the data is loaded, make the necessary transformations"
 " in the Power Query EditorAfter the data is loaded, make the necessary "
 "transformations in the Power Query EditorAfter the data is loaded, make "
 "the necessary transformations in the Power Query EditorAfter the data is "
-"loaded, make the necessary transformations in the Power Query Editor"
+"loaded, make the necessary transformations in the Power Query EditorAfter"
+" the data is loaded, make the necessary transformations in the Power "
+"Query EditorAfter the data is loaded, make the necessary transformations "
+"in the Power Query EditorAfter the data is loaded, make the necessary "
+"transformations in the Power Query Editor"
 
 #: ui/templates/platform/raporlar/bi_connector.html:46
 msgid "Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)"
@@ -10768,13 +10840,16 @@ msgstr "Low &lt;4"
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:29
 msgid "&nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir."
-msgstr "&nbsp;·&nbsp; The number in the cell shows the count of risks in that region."
+msgstr ""
 "&nbsp;·&nbsp; The number in the cell shows the count of risks in that "
 "region.&nbsp;·&nbsp; The number in the cell shows the count of risks in "
 "that region.&nbsp;·&nbsp; The number in the cell shows the count of risks"
 " in that region.&nbsp;·&nbsp; The number in the cell shows the count of "
 "risks in that region.&nbsp;·&nbsp; The number in the cell shows the count"
-" of risks in that region."
+" of risks in that region.&nbsp;·&nbsp; The number in the cell shows the "
+"count of risks in that region.&nbsp;·&nbsp; The number in the cell shows "
+"the count of risks in that region.&nbsp;·&nbsp; The number in the cell "
+"shows the count of risks in that region."
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:42
 msgid "5×5 Risk Matrisi"
@@ -11158,11 +11233,14 @@ msgstr "Kokpitim system AI (free, quota-limited)"
 
 #: ui/templates/platform/sp/ai_settings.html:31
 msgid "Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok."
-msgstr "Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional charge."
+msgstr ""
 "Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional "
 "charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No "
 "additional charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 "
-"Flash. No additional charge."
+"Flash. No additional charge.Limited to 50 daily / 500 monthly calls, "
+"Gemini 2.0 Flash. No additional charge.Limited to 50 daily / 500 monthly "
+"calls, Gemini 2.0 Flash. No additional charge.Limited to 50 daily / 500 "
+"monthly calls, Gemini 2.0 Flash. No additional charge."
 
 #: ui/templates/platform/sp/ai_settings.html:37
 msgid "Kendi API anahtarımı kullan (sınırsız, kendi faturam)"
@@ -11404,11 +11482,14 @@ msgstr "Quarterly Review"
 
 #: ui/templates/platform/sp/ceyreklik_review.html:25
 msgid "Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip."
-msgstr "Modern strategy rhythm: annual vision — quarterly adjustment — monthly tracking."
+msgstr ""
 "Modern strategy rhythm: annual vision — quarterly adjustment — monthly "
 "tracking.Modern strategy rhythm: annual vision — quarterly adjustment — "
 "monthly tracking.Modern strategy rhythm: annual vision — quarterly "
-"adjustment — monthly tracking."
+"adjustment — monthly tracking.Modern strategy rhythm: annual vision — "
+"quarterly adjustment — monthly tracking.Modern strategy rhythm: annual "
+"vision — quarterly adjustment — monthly tracking.Modern strategy rhythm: "
+"annual vision — quarterly adjustment — monthly tracking."
 
 #: ui/templates/platform/sp/ceyreklik_review.html:39
 msgid "Q1 (Oca-Mar)"
@@ -11598,11 +11679,15 @@ msgstr "copy from plan"
 
 #: ui/templates/platform/sp/donemler.html:193
 msgid "Seçilirse kaynak dönemin stratejileri, süreçleri ve KPI yapısı kopyalanır."
-msgstr "If selected, the source period's strategies, processes and KPI structure are copied."
+msgstr ""
 "If selected, the source period's strategies, processes and KPI structure "
 "are copied.If selected, the source period's strategies, processes and KPI"
 " structure are copied.If selected, the source period's strategies, "
-"processes and KPI structure are copied."
+"processes and KPI structure are copied.If selected, the source period's "
+"strategies, processes and KPI structure are copied.If selected, the "
+"source period's strategies, processes and KPI structure are copied.If "
+"selected, the source period's strategies, processes and KPI structure are"
+" copied."
 
 #: ui/templates/platform/sp/dynamic_flow.html:2
 #: ui/templates/platform/sp/dynamic_flow.html:3
@@ -12066,11 +12151,14 @@ msgstr "Fill rate by quota · Share within Vision 100"
 
 #: ui/templates/platform/sp/index.html:406
 msgid "Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez."
-msgstr "If there is no sub-strategy or no quota is assigned, contribution is not shown."
+msgstr ""
 "If there is no sub-strategy or no quota is assigned, contribution is not "
 "shown.If there is no sub-strategy or no quota is assigned, contribution "
 "is not shown.If there is no sub-strategy or no quota is assigned, "
-"contribution is not shown."
+"contribution is not shown.If there is no sub-strategy or no quota is "
+"assigned, contribution is not shown.If there is no sub-strategy or no "
+"quota is assigned, contribution is not shown.If there is no sub-strategy "
+"or no quota is assigned, contribution is not shown."
 
 #: ui/templates/platform/sp/index.html:411
 msgid "Bağlı alt stratejiler"
@@ -12739,11 +12827,15 @@ msgstr "Strategy → Sub-Strategy → Process → KPI relationship network."
 #: ui/templates/platform/sp/strateji_haritasi.html:25
 #, python-format
 msgid "Aktif SP döneminde <strong>%(count)s</strong> ana strateji görüntülenir."
-msgstr "<strong>%(count)s</strong> main strategies are displayed in the active SP period."
+msgstr ""
 "<strong>%(count)s</strong> main strategies are displayed in the active SP"
 " period.<strong>%(count)s</strong> main strategies are displayed in the "
 "active SP period.<strong>%(count)s</strong> main strategies are displayed"
-" in the active SP period."
+" in the active SP period.<strong>%(count)s</strong> main strategies are "
+"displayed in the active SP period.<strong>%(count)s</strong> main "
+"strategies are displayed in the active SP "
+"period.<strong>%(count)s</strong> main strategies are displayed in the "
+"active SP period."
 
 #: ui/templates/platform/sp/strateji_haritasi.html:29
 msgid "Tüm grafiği sığdır"
@@ -12829,11 +12921,16 @@ msgstr "Go to SP"
 
 #: ui/templates/platform/sp/swot.html:27
 msgid "Güçlü/zayıf yönler ve dış fırsat/tehditler — aktif plan yılı bazlı."
-msgstr "Strengths/weaknesses and external opportunities/threats — based on the active plan year."
+msgstr ""
 "Strengths/weaknesses and external opportunities/threats — based on the "
 "active plan year.Strengths/weaknesses and external opportunities/threats "
 "— based on the active plan year.Strengths/weaknesses and external "
-"opportunities/threats — based on the active plan year."
+"opportunities/threats — based on the active plan "
+"year.Strengths/weaknesses and external opportunities/threats — based on "
+"the active plan year.Strengths/weaknesses and external "
+"opportunities/threats — based on the active plan "
+"year.Strengths/weaknesses and external opportunities/threats — based on "
+"the active plan year."
 
 #: ui/templates/platform/sp/templates.html:3
 msgid "Plan Year Şablonları"
@@ -12978,11 +13075,14 @@ msgstr "R — Rare?"
 
 #: ui/templates/platform/sp/vrio.html:39
 msgid "Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?"
-msgstr "Do most competitors lack this resource? Do only a few firms possess this resource?"
+msgstr ""
 "Do most competitors lack this resource? Do only a few firms possess this "
 "resource?Do most competitors lack this resource? Do only a few firms "
 "possess this resource?Do most competitors lack this resource? Do only a "
-"few firms possess this resource?"
+"few firms possess this resource?Do most competitors lack this resource? "
+"Do only a few firms possess this resource?Do most competitors lack this "
+"resource? Do only a few firms possess this resource?Do most competitors "
+"lack this resource? Do only a few firms possess this resource?"
 
 #: ui/templates/platform/sp/vrio.html:42
 msgid "I — Taklit Edilemez mi?"
@@ -13002,11 +13102,15 @@ msgstr "O — Organized?"
 
 #: ui/templates/platform/sp/vrio.html:47
 msgid "Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?"
-msgstr "Does the organization have the processes, structures and systems to exploit this resource?"
+msgstr ""
 "Does the organization have the processes, structures and systems to "
 "exploit this resource?Does the organization have the processes, "
 "structures and systems to exploit this resource?Does the organization "
-"have the processes, structures and systems to exploit this resource?"
+"have the processes, structures and systems to exploit this resource?Does "
+"the organization have the processes, structures and systems to exploit "
+"this resource?Does the organization have the processes, structures and "
+"systems to exploit this resource?Does the organization have the "
+"processes, structures and systems to exploit this resource?"
 
 #: ui/templates/platform/sp/vrio.html:56
 msgid "Kategori"
@@ -13745,7 +13849,7 @@ msgstr "Edit record"
 
 #: ui/templates/platform/surec/karne.html:757
 msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir."
-msgstr "The data date does not change; only the actual value and description are updated."
+msgstr ""
 "The data date does not change; only the actual value and description are "
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "
@@ -13760,7 +13864,11 @@ msgstr "The data date does not change; only the actual value and description are
 "value and description are updated.The data date does not change; only the"
 " actual value and description are updated.The data date does not change; "
 "only the actual value and description are updated.The data date does not "
-"change; only the actual value and description are updated."
+"change; only the actual value and description are updated.The data date "
+"does not change; only the actual value and description are updated.The "
+"data date does not change; only the actual value and description are "
+"updated.The data date does not change; only the actual value and "
+"description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
@@ -13809,4 +13917,1687 @@ msgstr "Period data detail"
 #: ui/templates/platform/surec/karne.html:908
 msgid "Veri düzenle"
 msgstr "Edit data"
+
+#: ui/templates/platform/base.html:29
+msgid "Türkçe metin"
+msgstr "Turkish text"
+
+#: ui/templates/platform/base.html:30
+#, python-format
+msgid "%(n)s öğe"
+msgstr "%(n)s items"
+
+#: ui/templates/platform/base.html:647
+msgid "Bu kart ne için? (amaç / içerik)"
+msgstr "What is this card for? (purpose / content)"
+
+#: ui/templates/platform/base.html:699
+msgid "Bu kart henüz numaralanmamış"
+msgstr "This card is not numbered yet"
+
+#: ui/templates/platform/base.html:748
+msgid "Bilgi alınamadı."
+msgstr "Could not retrieve information."
+
+#: ui/templates/platform/base.html:753
+msgid "Bu kart için henüz açıklama girilmemiş."
+msgstr "No description has been entered for this card yet."
+
+#: ui/templates/platform/base.html:760
+msgid "Bilgi alınamadı (ağ hatası)."
+msgstr "Could not retrieve information (network error)."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:186
+msgid "Durum alınamadı."
+msgstr "Could not retrieve status."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:189
+msgid "tomofiltest henüz yok. \"Kur / Yenile\" ile oluşturun."
+msgstr "tomofiltest does not exist yet. Create it with \"Install / Refresh\"."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:192
+msgid "Hazır"
+msgstr "Ready"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "strateji:"
+msgstr "strategy:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "süreç:"
+msgstr "process:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "ölçüm:"
+msgstr "measurement:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "admin:"
+msgstr "admin:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:200
+msgid "Kuruluyor… (birkaç saniye)"
+msgstr "Installing… (a few seconds)"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:207
+msgid "tomofiltest hazır —"
+msgstr "tomofiltest ready —"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:207
+msgid "satır kopyalandı"
+msgstr "row copied"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:210
+msgid "Hata oluştu."
+msgstr "An error occurred."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:231
+msgid "Keşfediliyor…"
+msgstr "Discovering…"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:235
+msgid "Keşif başarısız."
+msgstr "Discovery failed."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:237
+msgid "sayfa taranacak."
+msgstr "pages will be scanned."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:238
+msgid "atlanan — parametreli:"
+msgstr "skipped — parameterized:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:238
+msgid "kara liste:"
+msgstr "blacklist:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:271
+msgid "Taranıyor…"
+msgstr "Scanning…"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:272
+msgid "Tamamlandı —"
+msgstr "Completed —"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:275
+msgid "Özet:"
+msgstr "Summary:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:284
+msgid "Ölü link:"
+msgstr "Dead link:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:285
+msgid "Yetim sayfa:"
+msgstr "Orphan page:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:286
+msgid "toplanan bağlantı:"
+msgstr "links collected:"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:288
+msgid "Ölü linkler"
+msgstr "Dead links"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:292
+msgid "Yetim sayfalar — hiçbir sayfadan link verilmemiş"
+msgstr "Orphan pages — not linked from any page"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:325
+msgid "Başlatılıyor…"
+msgstr "Starting…"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:330
+msgid "Başlatılamadı."
+msgstr "Could not start."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:343
+msgid "Çalışıyor…"
+msgstr "Running…"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:344
+msgid "tomofiltest sıfırlandı"
+msgstr "tomofiltest reset"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:418
+msgid "Geçmiş alınamadı."
+msgstr "Could not retrieve history."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:422
+msgid "Henüz kayıtlı tarama koşusu yok."
+msgstr "No saved scan run yet."
+
+#: ui/templates/platform/admin/hata_kontrolu.html:423
+msgid "Henüz kayıtlı senaryo koşusu yok."
+msgstr "No saved scenario run yet."
+
+#: ui/templates/platform/admin/holding_dashboard.html:137
+msgid "AKTİF"
+msgstr "ACTIVE"
+
+#: ui/templates/platform/admin/holding_dashboard.html:138
+msgid "PASİF"
+msgstr "INACTIVE"
+
+#: ui/templates/platform/admin/holding_dashboard.html:144
+msgid "Son aktivite"
+msgstr "Last activity"
+
+#: ui/templates/platform/admin/holding_dashboard.html:224
+msgid "Üretildi"
+msgstr "Generated"
+
+#: ui/templates/platform/admin/holding_dashboard.html:225
+msgid "aktif"
+msgstr "active"
+
+#: ui/templates/platform/admin/holding_dashboard.html:242
+msgid "Sunucu hatası"
+msgstr "Server error"
+
+#: ui/templates/platform/admin/holding_drilldown.html:169
+msgid "senaryo"
+msgstr "scenario"
+
+#: ui/templates/platform/admin/holding_drilldown.html:169
+msgid "Üretildi:"
+msgstr "Generated:"
+
+#: ui/templates/platform/admin/holding_drilldown.html:177
+msgid "KPI'da veri"
+msgstr "Data in KPI"
+
+#: ui/templates/platform/admin/holding_drilldown.html:181
+msgid "devam eden"
+msgstr "ongoing"
+
+#: ui/templates/platform/admin/holding_drilldown.html:184
+msgid "toplam"
+msgstr "total"
+
+#: ui/templates/platform/admin/holding_drilldown.html:187
+msgid "açık"
+msgstr "open"
+
+#: ui/templates/platform/admin/holding_drilldown.html:190
+msgid "orta"
+msgstr "medium"
+
+#: ui/templates/platform/admin/holding_drilldown.html:193
+msgid "senaryo dalı"
+msgstr "scenario branch"
+
+#: ui/templates/platform/admin/holding_drilldown.html:199
+msgid "Henüz girişim yok."
+msgstr "No initiatives yet."
+
+#: ui/templates/platform/admin/holding_drilldown.html:231
+msgid "Risk kaydı yok."
+msgstr "No risk records."
+
+#: ui/templates/platform/admin/holding_drilldown.html:240
+msgid "Skor"
+msgstr "Score"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:158
+msgid "Kurum durumu alınamadı."
+msgstr "Could not retrieve organization status."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:162
+msgid "YeniTomofil henüz kurulmamış."
+msgstr "YeniTomofil is not set up yet."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:164
+msgid "Kuruldu"
+msgstr "Installed"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:167
+msgid "Süreçler"
+msgstr "Processes"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:168
+msgid "PG/KPI Sayısı"
+msgstr "PI/KPI Count"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:169
+msgid "Admin"
+msgstr "Admin"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:188
+msgid "Durum API hatası."
+msgstr "Status API error."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:204
+msgid "Yürütülüyor..."
+msgstr "Executing..."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:210
+msgid "Tüm işlemler başarıyla tamamlandı!"
+msgstr "All operations completed successfully!"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:211
+msgid "Çekim durduruldu — Taslak PDF ile görselleri inceleyebilirsiniz."
+msgstr "Capture stopped — you can review the visuals with the Draft PDF."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:211
+msgid "Bir hata ile kesildi."
+msgstr "Interrupted by an error."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:225
+msgid "Otonom Playwright çekim süreci başlatılıyor..."
+msgstr "Autonomous Playwright capture process is starting..."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:240
+msgid "Sunucuyla bağlantı kurulamadı."
+msgstr "Could not connect to the server."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:251
+msgid "Durduruluyor…"
+msgstr "Stopping…"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:252
+msgid "Durdurma isteği gönderildi — çekim güvenli noktada duracak."
+msgstr "Stop request sent — the capture will stop at a safe point."
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:256
+msgid "Durdurma isteği gönderilemedi."
+msgstr "Stop request could not be sent."
+
+#: ui/templates/platform/admin/sub_tenants.html:237
+msgid "Admin yok"
+msgstr "No admin"
+
+#: ui/templates/platform/admin/sub_tenants.html:254
+msgid "Admin şifresini sıfırla"
+msgstr "Reset admin password"
+
+#: ui/templates/platform/admin/sub_tenants.html:259
+msgid "Pasifleştir"
+msgstr "Deactivate"
+
+#: ui/templates/platform/admin/sub_tenants.html:276
+msgid "Platform Admin için ?parent_id= query parametresi gerekli."
+msgstr "The ?parent_id= query parameter is required for Platform Admin."
+
+#: ui/templates/platform/admin/sub_tenants.html:276
+msgid "→ Önce bir bayi/holding seç"
+msgstr "→ First select a dealer/holding"
+
+#: ui/templates/platform/admin/sub_tenants.html:301
+msgid "alt kurumların yönetimi + konsolide görünüm"
+msgstr "management of sub-organizations + consolidated view"
+
+#: ui/templates/platform/admin/sub_tenants.html:302
+msgid "alt kurumların yönetimsel kontrolü (iç verilere erişim yok)"
+msgstr "administrative control of sub-organizations (no access to internal data)"
+
+#: ui/templates/platform/admin/sub_tenants.html:347
+msgid "Kurum adı ve admin e-posta zorunlu."
+msgstr "Organization name and admin email are required."
+
+#: ui/templates/platform/admin/sub_tenants.html:352
+msgid "Oluşturuluyor…"
+msgstr "Creating…"
+
+#: ui/templates/platform/admin/sub_tenants.html:390
+msgid "Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"
+msgstr ""
+"Are you sure you want to reset the administrator password of this sub-"
+"organization?"
+
+#: ui/templates/platform/admin/sub_tenants.html:409
+msgid "Bu alt kurumu pasifleştirmek istiyor musunuz?"
+msgstr "Do you want to deactivate this sub-organization?"
+
+#: ui/templates/platform/admin/sub_tenants.html:409
+msgid "Bu alt kurumu aktifleştirmek istiyor musunuz?"
+msgstr "Do you want to activate this sub-organization?"
+
+#: ui/templates/platform/admin/yedekleme.html:122
+msgid "Çalışıyor… (DB + kod, ~30 sn)"
+msgstr "Running… (DB + code, ~30 sec)"
+
+#: ui/templates/platform/admin/yedekleme.html:128
+msgid "Tamam — DB:"
+msgstr "OK — DB:"
+
+#: ui/templates/platform/admin/yedekleme.html:128
+msgid "MB. Sayfayı yenileyin."
+msgstr "MB. Refresh the page."
+
+#: ui/templates/platform/admin/yedekleme.html:140
+msgid "Bir .dump dosyası seçin."
+msgstr "Select a .dump file."
+
+#: ui/templates/platform/admin/yedekleme.html:141
+msgid "DB üzerine yazılacak. Emin misiniz?"
+msgstr "The DB will be overwritten. Are you sure?"
+
+#: ui/templates/platform/admin/yedekleme.html:142
+msgid "Mevcut DB üzerine yazılacak, geri alınamaz."
+msgstr "The existing DB will be overwritten, this cannot be undone."
+
+#: ui/templates/platform/admin/yedekleme.html:142
+msgid "Evet, geri yükle"
+msgstr "Yes, restore"
+
+#: ui/templates/platform/admin/yedekleme.html:145
+msgid "Geri yükleniyor…"
+msgstr "Restoring…"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:206
+msgid "Kaydedildi"
+msgstr "Saved"
+
+#: ui/templates/platform/bireysel/karne.html:51
+msgid "Özet hazırlanıyor…"
+msgstr "Preparing summary…"
+
+#: ui/templates/platform/demo/_banner.html:79
+msgid "Demo süreniz doldu"
+msgstr "Your demo time has expired"
+
+#: ui/templates/platform/demo/_banner.html:80
+msgid "Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz."
+msgstr "You are being redirected to the demo page to start again."
+
+#: ui/templates/platform/demo/_banner.html:108
+msgid "Demo'yu sonlandır?"
+msgstr "End the demo?"
+
+#: ui/templates/platform/demo/_banner.html:109
+msgid "Yaptığınız tüm değişiklikler silinecek."
+msgstr "All changes you made will be deleted."
+
+#: ui/templates/platform/demo/_banner.html:110
+msgid "Beğendiyseniz"
+msgstr "If you liked it"
+
+#: ui/templates/platform/demo/_banner.html:110
+msgid "hesap açarak"
+msgstr "by opening an account"
+
+#: ui/templates/platform/demo/_banner.html:110
+msgid "Kokpitim'i kuruma getirebilirsiniz."
+msgstr "you can bring Kokpitim to your organization."
+
+#: ui/templates/platform/demo/_banner.html:113
+msgid "Evet, çık"
+msgstr "Yes, exit"
+
+#: ui/templates/platform/kurum/index.html:84
+msgid "otomatik"
+msgstr "automatic"
+
+#: ui/templates/platform/k_radar/kp.html:86
+msgid "Yeşil — sağlıklı"
+msgstr "Green — healthy"
+
+#: ui/templates/platform/k_radar/kp.html:86
+msgid "Sarı — izlenmeli"
+msgstr "Yellow — to be monitored"
+
+#: ui/templates/platform/k_radar/kp.html:86
+msgid "Kırmızı — kritik"
+msgstr "Red — critical"
+
+#: ui/templates/platform/k_radar/kp.html:113
+msgid "Mevcut Skor"
+msgstr "Current Score"
+
+#: ui/templates/platform/k_radar/kp.html:121
+msgid "Hedef (80)"
+msgstr "Target (80)"
+
+#: ui/templates/platform/k_radar/kp.html:142
+msgid "Sağlıklı"
+msgstr "Healthy"
+
+#: ui/templates/platform/k_radar/kp.html:142
+msgid "İzle"
+msgstr "Monitor"
+
+#: ui/templates/platform/k_radar/risk_management.html:192
+msgid "Risk Düzenle"
+msgstr "Edit Risk"
+
+#: ui/templates/platform/k_radar/risk_management.html:219
+msgid "Sil?"
+msgstr "Delete?"
+
+#: ui/templates/platform/k_rapor/anomalies.html:114
+msgid "Son değer:"
+msgstr "Last value:"
+
+#: ui/templates/platform/k_rapor/anomalies.html:118
+msgid "Ortalama:"
+msgstr "Average:"
+
+#: ui/templates/platform/k_rapor/anomalies.html:122
+msgid "Z-Score:"
+msgstr "Z-Score:"
+
+#: ui/templates/platform/k_rapor/anomalies.html:126
+msgid "Yön:"
+msgstr "Direction:"
+
+#: ui/templates/platform/k_rapor/anomalies.html:129
+msgid "Hedef:"
+msgstr "Target:"
+
+#: ui/templates/platform/k_rapor/anomalies.html:140
+msgid "Webhook gerekli"
+msgstr "Webhook required"
+
+#: ui/templates/platform/k_rapor/anomalies.html:140
+msgid "Slack webhook URL'sini girin."
+msgstr "Enter the Slack webhook URL."
+
+#: ui/templates/platform/k_rapor/anomalies.html:151
+msgid "Gönderildi"
+msgstr "Sent"
+
+#: ui/templates/platform/k_rapor/anomalies.html:151
+msgid "mesaj gönderildi."
+msgstr "message sent."
+
+#: ui/templates/platform/k_rapor/anomalies.html:153
+msgid "Slack hatası"
+msgstr "Slack error"
+
+#: ui/templates/platform/k_rapor/index.html:951
+msgid "sekme"
+msgstr "tab"
+
+#: ui/templates/platform/masaustu/index.html:237
+msgid "tarihsiz"
+msgstr "undated"
+
+#: ui/templates/platform/masaustu/index.html:238
+msgid "gün gecikme"
+msgstr "days delay"
+
+#: ui/templates/platform/masaustu/index.html:240
+msgid "gün kaldı"
+msgstr "days left"
+
+#: ui/templates/platform/masaustu/index.html:241
+msgid "gün"
+msgstr "day"
+
+#: ui/templates/platform/masaustu/index.html:257
+msgid "Filtreye uyan görev yok."
+msgstr "No task matches the filter."
+
+#: ui/templates/platform/masaustu/index.html:295
+msgid "Bu Hafta"
+msgstr "This Week"
+
+#: ui/templates/platform/masaustu/index.html:304
+msgid "Veri alınamadı"
+msgstr "Could not retrieve data"
+
+#: ui/templates/platform/masaustu/index.html:309
+msgid "Yüklenemedi:"
+msgstr "Could not be loaded:"
+
+#: ui/templates/platform/masaustu/index.html:364
+msgid "Sabitten kaldır"
+msgstr "Unpin"
+
+#: ui/templates/platform/masaustu/index.html:403
+msgid "Önce bir sayfayı ziyaret edin."
+msgstr "Visit a page first."
+
+#: ui/templates/platform/masaustu/index.html:409
+msgid "Bu sayfa zaten sabitlenmiş."
+msgstr "This page is already pinned."
+
+#: ui/templates/platform/masaustu/index.html:415
+msgid "sabitlendi"
+msgstr "pinned"
+
+#: ui/templates/platform/project/calendar.html:54
+msgid "Güncelleme hatası"
+msgstr "Update error"
+
+#: ui/templates/platform/project/calendar.html:71
+msgid "Listeleme hatası"
+msgstr "Listing error"
+
+#: ui/templates/platform/project/calendar.html:87
+msgid "Takvim yüklenemedi"
+msgstr "Calendar could not be loaded"
+
+#: ui/templates/platform/project/calendar.html:99
+msgid "Tarih güncellendi"
+msgstr "Date updated"
+
+#: ui/templates/platform/project/calendar.html:102
+msgid "Güncellenemedi"
+msgstr "Could not be updated"
+
+#: ui/templates/platform/project/calendar.html:110
+msgid "Süre güncellendi"
+msgstr "Duration updated"
+
+#: ui/templates/platform/project/gantt.html:78
+msgid "Gantt kütüphanesi yüklenemedi"
+msgstr "Gantt library could not be loaded"
+
+#: ui/templates/platform/project/gantt.html:106
+msgid "Gantt yüklenemedi"
+msgstr "Gantt could not be loaded"
+
+#: ui/templates/platform/project/kanban.html:105
+msgid "Durum güncellendi"
+msgstr "Status updated"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pt"
+msgstr "Mon"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Sa"
+msgstr "Tue"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Ça"
+msgstr "Wed"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pe"
+msgstr "Thu"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Cu"
+msgstr "Fri"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Ct"
+msgstr "Sat"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pz"
+msgstr "Sun"
+
+#: ui/templates/platform/raporlar/early_warning.html:53
+msgid "Kontrol Edilen PG"
+msgstr "Checked PI"
+
+#: ui/templates/platform/raporlar/early_warning.html:53
+msgid "Aktif plan yılındaki tüm PG'ler"
+msgstr "All PIs in the active plan year"
+
+#: ui/templates/platform/raporlar/early_warning.html:54
+msgid "Uyarı Sayısı"
+msgstr "Warning Count"
+
+#: ui/templates/platform/raporlar/early_warning.html:54
+msgid "Ardışık düşük performanslı"
+msgstr "Consecutively low performing"
+
+#: ui/templates/platform/raporlar/early_warning.html:55
+msgid "Yüksek Öncelik"
+msgstr "High Priority"
+
+#: ui/templates/platform/raporlar/early_warning.html:55
+msgid "Acil müdahale gerektirenler"
+msgstr "Requiring urgent intervention"
+
+#: ui/templates/platform/raporlar/early_warning.html:61
+msgid "Şu an erken uyarı yok — tüm PG'ler kabul edilebilir performans aralığında."
+msgstr ""
+"There is no early warning at the moment — all PIs are within an "
+"acceptable performance range."
+
+#: ui/templates/platform/raporlar/early_warning.html:67
+msgid "YÜKSEK ÖNCELİK"
+msgstr "HIGH PRIORITY"
+
+#: ui/templates/platform/raporlar/early_warning.html:67
+msgid "ORTA ÖNCELİK"
+msgstr "MEDIUM PRIORITY"
+
+#: ui/templates/platform/raporlar/early_warning.html:78
+msgid "Süreç belirtilmemiş"
+msgstr "Process not specified"
+
+#: ui/templates/platform/raporlar/early_warning.html:83
+msgid "Son dönem başarı seyri"
+msgstr "Recent period success trend"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:57
+msgid "Analiz Edilen PG"
+msgstr "Analyzed PI"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:57
+msgid "IsolationForest modeli çalıştırıldı"
+msgstr "IsolationForest model executed"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:58
+msgid "Yetersiz Veri (Atlandı)"
+msgstr "Insufficient Data (Skipped)"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:58
+msgid "En az 6 ölçüm gerekir"
+msgstr "At least 6 measurements are required"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:59
+msgid "Anomali Tespit Edildi"
+msgstr "Anomaly Detected"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:59
+msgid "Olağandışı ölçüm noktaları"
+msgstr "Unusual measurement points"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:64
+msgid "Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda."
+msgstr "No anomaly detected — your KPI measurements are in a normal distribution."
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:76
+msgid "Anomali skoru:"
+msgstr "Anomaly score:"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:88
+msgid "Toplam Proje"
+msgstr "Total Projects"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:92
+msgid "PG'ye Bağlı Proje"
+msgstr "Project Linked to PI"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:96
+msgid "Bağsız Proje"
+msgstr "Unlinked Project"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:100
+msgid "Toplam Etkilenen PG"
+msgstr "Total Affected PI"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:104
+msgid "Ort. PG Hedef Üstü"
+msgstr "Avg. PI Above Target"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:109
+msgid "Bu kurumda henüz proje yok."
+msgstr "There are no projects in this organization yet."
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:118
+msgid "PG Toplam"
+msgstr "PI Total"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:119
+msgid "Hedef Üstü"
+msgstr "Above Target"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:120
+msgid "Hedef Üstü %"
+msgstr "Above Target %"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:129
+msgid "Sağlık:"
+msgstr "Health:"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:162
+msgid "Bu projenin etkilediği"
+msgstr "Affected by this project"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:175
+msgid "hedef üstü"
+msgstr "above target"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+msgid "Azaltıldı"
+msgstr "Reduced"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+msgid "Kabul Edildi"
+msgstr "Accepted"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+msgid "Transfer Edildi"
+msgstr "Transferred"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:82
+msgid "Çok Düşük"
+msgstr "Very Low"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:82
+msgid "Neredeyse Kesin"
+msgstr "Almost Certain"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+msgid "Önemsiz"
+msgstr "Insignificant"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+msgid "Az"
+msgstr "Low"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+msgid "Önemli"
+msgstr "Important"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+msgid "Felaket"
+msgstr "Catastrophic"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:112
+msgid "Toplam Risk"
+msgstr "Total Risks"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:112
+msgid "Seçili dönemdeki tüm riskler"
+msgstr "All risks in the selected period"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:113
+msgid "Henüz kapatılmamış riskler"
+msgstr "Risks not yet closed"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:114
+msgid "Önlem alınmış riskler"
+msgstr "Risks with measures taken"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:115
+msgid "Kritik (≥15)"
+msgstr "Critical (≥15)"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:115
+msgid "RPN ≥ 15 olan yüksek öncelikli"
+msgstr "high priority with RPN ≥ 15"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:119
+msgid "OL. \\ ETKİ"
+msgstr "PROB. \\ IMPACT"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:128
+msgid "risk"
+msgstr "risk"
+
+#: ui/templates/platform/sp/ai_settings.html:158
+msgid "Mevcut:"
+msgstr "Current:"
+
+#: ui/templates/platform/sp/ai_settings.html:158
+msgid "(yeni anahtar girin ya da boş bırakın)"
+msgstr "(enter a new key or leave blank)"
+
+#: ui/templates/platform/sp/ai_settings.html:159
+msgid "API anahtarı"
+msgstr "API key"
+
+#: ui/templates/platform/sp/ai_settings.html:165
+msgid "Son test:"
+msgstr "Last test:"
+
+#: ui/templates/platform/sp/ai_settings.html:199
+msgid "Test ediliyor…"
+msgstr "Testing…"
+
+#: ui/templates/platform/sp/ai_settings.html:206
+msgid "Bağlantı başarılı. Yanıt:"
+msgstr "Connection successful. Response:"
+
+#: ui/templates/platform/sp/ai_settings.html:206
+msgid "token kullanıldı."
+msgstr "tokens used."
+
+#: ui/templates/platform/sp/ai_settings.html:209
+msgid "Test başarısız:"
+msgstr "Test failed:"
+
+#: ui/templates/platform/sp/ai_settings.html:217
+msgid "BYOK anahtarını sil?"
+msgstr "Delete BYOK key?"
+
+#: ui/templates/platform/sp/ai_settings.html:217
+msgid "Tenant tekrar sistem AI'sına döner."
+msgstr "The tenant reverts to the system AI."
+
+#: ui/templates/platform/sp/ai_settings.html:225
+msgid "BYOK anahtarı silindi"
+msgstr "BYOK key deleted"
+
+#: ui/templates/platform/sp/blue_ocean.html:159
+msgid "Henüz tuval yok. \"Yeni Tuval\" ile başlayın."
+msgstr "No canvas yet. Start with \"New Canvas\"."
+
+#: ui/templates/platform/sp/blue_ocean.html:166
+msgid "ERRC öğesi"
+msgstr "ERRC item"
+
+#: ui/templates/platform/sp/blue_ocean.html:167
+msgid "Rakip"
+msgstr "Competitor"
+
+#: ui/templates/platform/sp/blue_ocean.html:198
+msgid "Değer Eğrisi (Strateji Tuvali)"
+msgstr "Value Curve (Strategy Canvas)"
+
+#: ui/templates/platform/sp/blue_ocean.html:203
+msgid "ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)"
+msgstr "ERRC Table (Eliminate / Reduce / Raise / Create)"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+msgid "Kaldır"
+msgstr "Eliminate"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+msgid "Azalt"
+msgstr "Reduce"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+msgid "Yükselt"
+msgstr "Raise"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+msgid "Yarat"
+msgstr "Create"
+
+#: ui/templates/platform/sp/blue_ocean.html:228
+msgid "Bizim Kurum"
+msgstr "Our Organization"
+
+#: ui/templates/platform/sp/blue_ocean.html:276
+msgid "Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek."
+msgstr "No competitor added to the canvas — only your own score will be entered."
+
+#: ui/templates/platform/sp/blue_ocean.html:287
+msgid "Faktör adı gerekli."
+msgstr "Factor name required."
+
+#: ui/templates/platform/sp/blue_ocean.html:290
+msgid "Kendi puan 0-10 arası olmalı."
+msgstr "Own score must be between 0-10."
+
+#: ui/templates/platform/sp/blue_ocean.html:305
+msgid "Faktör eklenemedi."
+msgstr "Factor could not be added."
+
+#: ui/templates/platform/sp/blue_ocean.html:338
+msgid "Açıklama gerekli."
+msgstr "Description required."
+
+#: ui/templates/platform/sp/blue_ocean.html:352
+msgid "ERRC öğesi eklenemedi."
+msgstr "ERRC item could not be added."
+
+#: ui/templates/platform/sp/blue_ocean.html:375
+msgid "Tuval adı gerekli."
+msgstr "Canvas name required."
+
+#: ui/templates/platform/sp/blue_ocean.html:390
+msgid "Tuval oluşturulamadı."
+msgstr "Canvas could not be created."
+
+#: ui/templates/platform/sp/exec_dashboard.html:415
+msgid "Odak Daraltma"
+msgstr "Focus Narrowing"
+
+#: ui/templates/platform/sp/exec_dashboard.html:416
+msgid "Sonlandırma"
+msgstr "Termination"
+
+#: ui/templates/platform/sp/exec_dashboard.html:417
+msgid "Hızlandırma"
+msgstr "Acceleration"
+
+#: ui/templates/platform/sp/exec_dashboard.html:419
+msgid "Risk Mitigasyon"
+msgstr "Risk Mitigation"
+
+#: ui/templates/platform/sp/exec_dashboard.html:460
+msgid "Güncellendi:"
+msgstr "Updated:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:473
+msgid "PG'de veri var"
+msgstr "PI has data"
+
+#: ui/templates/platform/sp/exec_dashboard.html:480
+msgid "devam eden girişim"
+msgstr "ongoing initiative"
+
+#: ui/templates/platform/sp/exec_dashboard.html:487
+msgid "toplam faaliyet"
+msgstr "total activities"
+
+#: ui/templates/platform/sp/exec_dashboard.html:494
+msgid "açık risk"
+msgstr "open risk"
+
+#: ui/templates/platform/sp/exec_dashboard.html:500
+msgid "orta seviye"
+msgstr "medium level"
+
+#: ui/templates/platform/sp/exec_dashboard.html:506
+msgid "son 7 günde ateşlendi"
+msgstr "fired in the last 7 days"
+
+#: ui/templates/platform/sp/exec_dashboard.html:521
+msgid "Strateji sağlık skoru kritik"
+msgstr "Strategy health score is critical"
+
+#: ui/templates/platform/sp/exec_dashboard.html:521
+msgid "Pivot önerisi almanız tavsiye edilir."
+msgstr "It is recommended that you get a pivot suggestion."
+
+#: ui/templates/platform/sp/exec_dashboard.html:523
+msgid "PG'lerin yalnızca"
+msgstr "only of the PIs"
+
+#: ui/templates/platform/sp/exec_dashboard.html:523
+msgid "'i hedef üstünde — öncelikleri gözden geçirin."
+msgstr "are above target — review priorities."
+
+#: ui/templates/platform/sp/exec_dashboard.html:525
+msgid "gecikmiş faaliyet var — sahiplere atama yapın."
+msgstr "there are overdue activities — assign owners."
+
+#: ui/templates/platform/sp/exec_dashboard.html:527
+msgid "kritik risk açık — risk azaltma planı gerekli."
+msgstr "critical risk open — a risk mitigation plan is required."
+
+#: ui/templates/platform/sp/exec_dashboard.html:529
+msgid "yüksek öncelikli PG anomalisi — kök neden analizi başlatın."
+msgstr "high priority PI anomaly — start a root cause analysis."
+
+#: ui/templates/platform/sp/exec_dashboard.html:531
+msgid "Son 7 günde"
+msgstr "In the last 7 days"
+
+#: ui/templates/platform/sp/exec_dashboard.html:531
+msgid "tetikleyici ateşlendi — Replan paneline bakın."
+msgstr "trigger fired — see the Replan panel."
+
+#: ui/templates/platform/sp/exec_dashboard.html:533
+msgid "'inde veri var — veri girişi disiplinini güçlendirin."
+msgstr "have data — strengthen data entry discipline."
+
+#: ui/templates/platform/sp/exec_dashboard.html:541
+msgid "Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürdürün."
+msgstr ""
+"Overall strategy health is at an acceptable level. Maintain the current "
+"pace."
+
+#: ui/templates/platform/sp/exec_dashboard.html:558
+msgid "Analiz ediliyor…"
+msgstr "Analyzing…"
+
+#: ui/templates/platform/sp/exec_dashboard.html:568
+msgid "Çok hızlı!"
+msgstr "Too fast!"
+
+#: ui/templates/platform/sp/exec_dashboard.html:568
+msgid "sn sonra tekrar dene."
+msgstr "try again in sec."
+
+#: ui/templates/platform/sp/exec_dashboard.html:569
+msgid "Günlük AI çağrı limiti doldu"
+msgstr "Daily AI call limit reached"
+
+#: ui/templates/platform/sp/exec_dashboard.html:569
+msgid "Yarın tekrar dene."
+msgstr "Try again tomorrow."
+
+#: ui/templates/platform/sp/exec_dashboard.html:570
+msgid "Aylık AI çağrı limiti doldu"
+msgstr "Monthly AI call limit reached"
+
+#: ui/templates/platform/sp/exec_dashboard.html:571
+msgid "Aylık AI maliyet limiti aşıldı"
+msgstr "Monthly AI cost limit exceeded"
+
+#: ui/templates/platform/sp/exec_dashboard.html:572
+msgid "Sistem genel günlük limit doldu. Lütfen sonra tekrar dene."
+msgstr "The system-wide daily limit has been reached. Please try again later."
+
+#: ui/templates/platform/sp/exec_dashboard.html:573
+msgid "Tenant LLM çağrıları yönetici tarafından durduruldu."
+msgstr "Tenant LLM calls have been stopped by the administrator."
+
+#: ui/templates/platform/sp/exec_dashboard.html:577
+msgid "AI kotası aşıldı — kural motoru kullanıldı"
+msgstr "AI quota exceeded — rule engine used"
+
+#: ui/templates/platform/sp/exec_dashboard.html:591
+msgid "kural motoru (kota aşıldı)"
+msgstr "rule engine (quota exceeded)"
+
+#: ui/templates/platform/sp/exec_dashboard.html:592
+msgid "kural motoru (LLM yapılandırılmadı)"
+msgstr "rule engine (LLM not configured)"
+
+#: ui/templates/platform/sp/exec_dashboard.html:597
+msgid "kendi key"
+msgstr "own key"
+
+#: ui/templates/platform/sp/exec_dashboard.html:597
+msgid "sistem key"
+msgstr "system key"
+
+#: ui/templates/platform/sp/exec_dashboard.html:599
+msgid "token"
+msgstr "token"
+
+#: ui/templates/platform/sp/exec_dashboard.html:606
+msgid "Bugün:"
+msgstr "Today:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:607
+msgid "Bu ay:"
+msgstr "This month:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:608
+msgid "Maliyet:"
+msgstr "Cost:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:618
+msgid "Şu an pivot önerisi yok"
+msgstr "There is no pivot suggestion at the moment"
+
+#: ui/templates/platform/sp/exec_dashboard.html:619
+msgid "Durum sağlıklı görünüyor."
+msgstr "Status looks healthy."
+
+#: ui/templates/platform/sp/exec_dashboard.html:633
+msgid "Gerekçe:"
+msgstr "Rationale:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:636
+msgid "Aksiyon:"
+msgstr "Action:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "ay"
+msgstr "month"
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "son:"
+msgstr "last:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "12 ay değişim:"
+msgstr "12-month change:"
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "puan"
+msgstr "score"
+
+#: ui/templates/platform/sp/exec_dashboard.html:670
+msgid "Yeterli veri yok"
+msgstr "Not enough data"
+
+#: ui/templates/platform/sp/exec_dashboard.html:675
+msgid "PG hedef üstü %"
+msgstr "PI above target %"
+
+#: ui/templates/platform/sp/exec_dashboard.html:801
+msgid "Strateji Sağlık Skoru — Nasıl hesaplanıyor?"
+msgstr "Strategy Health Score — How is it calculated?"
+
+#: ui/templates/platform/sp/exec_dashboard.html:825
+msgid "Aktif PG — Açıklama"
+msgstr "Active PI — Description"
+
+#: ui/templates/platform/sp/exec_dashboard.html:834
+msgid "Strateji & Alt Strateji — Açıklama"
+msgstr "Strategy & Sub-Strategy — Description"
+
+#: ui/templates/platform/sp/exec_dashboard.html:847
+msgid "Girişim — Açıklama"
+msgstr "Initiative — Description"
+
+#: ui/templates/platform/sp/exec_dashboard.html:916
+msgid "Yeni veri girildi"
+msgstr "New data entered"
+
+#: ui/templates/platform/sp/initiatives.html:127
+msgid "milestone"
+msgstr "milestone"
+
+#: ui/templates/platform/sp/initiatives.html:128
+msgid "Bütçe:"
+msgstr "Budget:"
+
+#: ui/templates/platform/sp/initiatives.html:135
+msgid "Altındaki Projeler"
+msgstr "Projects Under It"
+
+#: ui/templates/platform/sp/initiatives.html:160
+msgid "Bu stratejik girişime henüz proje bağlanmamış."
+msgstr "No project has been linked to this strategic initiative yet."
+
+#: ui/templates/platform/sp/initiatives.html:161
+msgid "Proje listesine git"
+msgstr "Go to project list"
+
+#: ui/templates/platform/sp/initiatives.html:161
+msgid "ve oradan \"Stratejik Girişim\" alanına bunu seçebilirsiniz."
+msgstr "and from there you can select this in the \"Strategic Initiative\" field."
+
+#: ui/templates/platform/sp/initiatives.html:199
+msgid "bilinmeyen"
+msgstr "unknown"
+
+#: ui/templates/platform/sp/llm_usage.html:47
+msgid "Özet alınamadı."
+msgstr "Could not retrieve summary."
+
+#: ui/templates/platform/sp/llm_usage.html:50
+msgid "Bugün çağrı"
+msgstr "Calls today"
+
+#: ui/templates/platform/sp/llm_usage.html:51
+msgid "Bu ay çağrı"
+msgstr "Calls this month"
+
+#: ui/templates/platform/sp/llm_usage.html:52
+msgid "Bu ay maliyet"
+msgstr "Cost this month"
+
+#: ui/templates/platform/sp/llm_usage.html:52
+msgid "limit"
+msgstr "limit"
+
+#: ui/templates/platform/sp/llm_usage.html:53
+msgid "Durduruldu"
+msgstr "Stopped"
+
+#: ui/templates/platform/sp/llm_usage.html:58
+msgid "Kayıt yok."
+msgstr "No records."
+
+#: ui/templates/platform/sp/llm_usage.html:60
+msgid "Uç"
+msgstr "Extreme"
+
+#: ui/templates/platform/sp/llm_usage.html:60
+msgid "Token"
+msgstr "Token"
+
+#: ui/templates/platform/sp/okr.html:184
+msgid "OKR verisi alınamadı"
+msgstr "OKR data could not be retrieved"
+
+#: ui/templates/platform/sp/okr.html:212
+msgid "Anahtar Sonuç"
+msgstr "Key Result"
+
+#: ui/templates/platform/sp/okr.html:213
+msgid "Ortalama İlerleme"
+msgstr "Average Progress"
+
+#: ui/templates/platform/sp/okr.html:238
+msgid "Güncel:"
+msgstr "Current:"
+
+#: ui/templates/platform/sp/okr.html:264
+msgid "Alt:"
+msgstr "Sub:"
+
+#: ui/templates/platform/sp/okr.html:265
+msgid "Henüz anahtar sonuç yok."
+msgstr "No key results yet."
+
+#: ui/templates/platform/sp/okr.html:297
+msgid "Hedef Düzenle"
+msgstr "Edit Target"
+
+#: ui/templates/platform/sp/okr.html:337
+msgid "Silinsin mi?"
+msgstr "Delete?"
+
+#: ui/templates/platform/sp/okr.html:344
+msgid "Silindi"
+msgstr "Deleted"
+
+#: ui/templates/platform/sp/okr.html:364
+msgid "KR Düzenle"
+msgstr "Edit KR"
+
+#: ui/templates/platform/sp/replan_triggers.html:125
+msgid "Tetikleyici yok."
+msgstr "No trigger."
+
+#: ui/templates/platform/sp/replan_triggers.html:131
+msgid "dönem"
+msgstr "period"
+
+#: ui/templates/platform/sp/replan_triggers.html:134
+msgid "kez ateşlendi"
+msgstr "times fired"
+
+#: ui/templates/platform/sp/replan_triggers.html:141
+msgid "Henüz olay yok."
+msgstr "No events yet."
+
+#: ui/templates/platform/sp/replan_triggers.html:146
+msgid "Tetikleyici"
+msgstr "Trigger"
+
+#: ui/templates/platform/sp/replan_triggers.html:177
+msgid "Değerlendirildi"
+msgstr "Evaluated"
+
+#: ui/templates/platform/sp/replan_triggers.html:177
+msgid "tetikleyici ateşlendi"
+msgstr "trigger fired"
+
+#: ui/templates/platform/sp/scenarios.html:70
+msgid "kapalı"
+msgstr "closed"
+
+#: ui/templates/platform/sp/scenarios.html:70
+msgid "taslak"
+msgstr "draft"
+
+#: ui/templates/platform/sp/scenarios.html:70
+msgid "arşiv"
+msgstr "archive"
+
+#: ui/templates/platform/sp/scenarios.html:90
+msgid "Plan yılı yok."
+msgstr "No plan year."
+
+#: ui/templates/platform/sp/scenarios.html:102
+msgid "— Senaryo yok"
+msgstr "— No scenario"
+
+#: ui/templates/platform/sp/scenarios.html:110
+msgid "Düzenle →"
+msgstr "Edit →"
+
+#: ui/templates/platform/sp/scenarios.html:125
+msgid "Oluşturuluyor..."
+msgstr "Creating..."
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:85
+msgid "Senaryo"
+msgstr "Scenario"
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:99
+msgid "öğe seçili (max 6)."
+msgstr "items selected (max 6)."
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:107
+msgid "Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun."
+msgstr "No plan year/scenario yet. Create one first from the Scenarios screen."
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:118
+msgid "Plan"
+msgstr "Plan"
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:129
+msgid "Senaryo listesi yüklenemedi."
+msgstr "Scenario list could not be loaded."
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:182
+msgid "Karşılaştırma hesaplanamadı."
+msgstr "Comparison could not be calculated."
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:94
+msgid "Kaynak yıl ve hedef yıl seçiniz."
+msgstr "Select source year and target year."
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:107
+msgid "Süreç taşınacak"
+msgstr "Process will be moved"
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:111
+msgid "KPI taşınacak"
+msgstr "KPI will be moved"
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:123
+msgid "geçişi geri alınamaz."
+msgstr "the transition cannot be undone."
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:125
+msgid "Evet, geç!"
+msgstr "Yes, skip!"
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:133
+msgid "Uygulanıyor…"
+msgstr "Applying…"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:92
+msgid "Kapsama"
+msgstr "Coverage"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:92
+msgid "boş olmayan hücre"
+msgstr "non-empty cell"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:105
+msgid "En Güçlü Hizalama"
+msgstr "Strongest Alignment"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:109
+msgid "Hizalama Kapsama"
+msgstr "Alignment Coverage"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:114
+msgid "Strateji veya proje bulunamadı."
+msgstr "Strategy or project not found."
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:132
+msgid "bağ"
+msgstr "link"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:152
+msgid "Stratejiye Bağlanmamış Projeler"
+msgstr "Projects Not Linked to a Strategy"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:162
+msgid "Projesi Olmayan Stratejiler"
+msgstr "Strategies Without Projects"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:171
+msgid "Yüklenemedi"
+msgstr "Could not be loaded"
+
+#: ui/templates/platform/sp/templates.html:61
+msgid "Şablon yok."
+msgstr "No template."
+
+#: ui/templates/platform/sp/templates.html:64
+msgid "Kamu"
+msgstr "Public"
+
+#: ui/templates/platform/sp/templates.html:64
+msgid "Özel"
+msgstr "Private"
+
+#: ui/templates/platform/sp/templates.html:64
+msgid "STK"
+msgstr "NGO"
+
+#: ui/templates/platform/sp/templates.html:69
+msgid "yıllık"
+msgstr "annual"
+
+#: ui/templates/platform/sp/templates.html:78
+msgid "Bu Şablonu Uygula"
+msgstr "Apply This Template"
+
+#: ui/templates/platform/sp/templates.html:104
+msgid "Uygulanıyor..."
+msgstr "Applying..."
+
+#: ui/templates/platform/sp/templates.html:114
+msgid "Şablon uygulandı: PlanYear #"
+msgstr "Template applied: PlanYear #"
+
+#: ui/templates/platform/sp/tv.html:193
+msgid "PG hedefin üstünde"
+msgstr "PI above target"
+
+#: ui/templates/platform/sp/tv.html:194
+msgid "PG Veri Kapsamı"
+msgstr "PI Data Coverage"
+
+#: ui/templates/platform/sp/tv.html:195
+msgid "Strateji Sayısı"
+msgstr "Strategy Count"
+
+#: ui/templates/platform/sp/tv.html:196
+msgid "Aktif Faaliyet"
+msgstr "Active Activity"
+
+#: ui/templates/platform/sp/tv.html:197
+msgid "Geciken Faaliyet"
+msgstr "Delayed Activity"
+
+#: ui/templates/platform/sp/tv.html:197
+msgid "termini geçti"
+msgstr "past due"
+
+#: ui/templates/platform/sp/tv.html:198
+msgid "Açık Risk"
+msgstr "Open Risk"
+
+#: ui/templates/platform/sp/tv.html:198
+msgid "kritik"
+msgstr "critical"
+
+#: ui/templates/platform/sp/tv.html:200
+msgid "Tetiklenen Kural (7g)"
+msgstr "Triggered Rule (7d)"
+
+#: ui/templates/platform/sp/tv.html:200
+msgid "aktif kural"
+msgstr "active rule"
+
+#: ui/templates/platform/sp/tv.html:206
+msgid "Ana Stratejiler"
+msgstr "Main Strategies"
+
+#: ui/templates/platform/sp/tv.html:209
+msgid "Projeler (sağlık)"
+msgstr "Projects (health)"
+
+#: ui/templates/platform/sp/tv.html:220
+msgid "Genel Sağlık"
+msgstr "Overall Health"
+
+#: ui/templates/platform/sp/tv.html:221
+msgid "Strateji Cephesi"
+msgstr "Strategy Front"
+
+#: ui/templates/platform/sp/tv.html:222
+msgid "Süreç Cephesi"
+msgstr "Process Front"
+
+#: ui/templates/platform/sp/tv.html:223
+msgid "Proje Cephesi"
+msgstr "Project Front"
+
+#: ui/templates/platform/sp/tv.html:240
+msgid "Genel Sağlık Skoru"
+msgstr "Overall Health Score"
+
+#: ui/templates/platform/sp/tv.html:282
+msgid "En Güçlü"
+msgstr "Strongest"
+
+#: ui/templates/platform/sp/tv.html:286
+msgid "En Zayıf"
+msgstr "Weakest"
+
+#: ui/templates/platform/sp/tv.html:338
+msgid "Karşılaştırılabilir veri yok."
+msgstr "No comparable data."
+
+#: ui/templates/platform/sp/tv.html:375
+msgid "güncellendi"
+msgstr "updated"
+
+#: ui/templates/platform/sp/tv.html:383
+msgid "kritik risk"
+msgstr "critical risk"
+
+#: ui/templates/platform/sp/tv.html:384
+msgid "geciken faaliyet"
+msgstr "delayed activity"
+
+#: ui/templates/platform/sp/tv.html:385
+msgid "yüksek anomali"
+msgstr "high anomaly"
+
+#: ui/templates/platform/sp/tv.html:386
+msgid "Hedef üstü"
+msgstr "Above target"
+
+#: ui/templates/platform/sp/tv.html:388
+msgid "Veri kapsamı"
+msgstr "Data coverage"
+
+#: ui/templates/platform/sp/tv.html:389
+msgid "En zayıf strateji"
+msgstr "Weakest strategy"
+
+#: ui/templates/platform/sp/tv.html:390
+msgid "En güçlü strateji"
+msgstr "Strongest strategy"
+
+#: ui/templates/platform/sp/tv.html:391
+msgid "Tüm cephelerde durum sakin"
+msgstr "Status is calm on all fronts"
+
+#: ui/templates/platform/sp/tv.html:486
+msgid "✈️ Animasyonu aç"
+msgstr "✈️ Enable animation"
+
+#: ui/templates/platform/sp/tv.html:504
+msgid "Metrik panosu"
+msgstr "Metric dashboard"
+
+#: ui/templates/platform/sp/tv.html:504
+msgid "Sıralama"
+msgstr "Sorting"
+
+#: ui/templates/platform/sp/tv.html:511
+msgid "Büyük sağlık skoru (hero)"
+msgstr "Large health score (hero)"
+
+#: ui/templates/platform/sp/tv.html:519
+msgid "En güçlü"
+msgstr "Strongest"
+
+#: ui/templates/platform/sp/tv.html:520
+msgid "En zayıf"
+msgstr "Weakest"
+
+#: ui/templates/platform/sp/tv.html:542
+msgid "Yeni Pano"
+msgstr "New Dashboard"
+
+#: ui/templates/platform/sp/tv.html:543
+msgid "Yeni Cephe"
+msgstr "New Front"
+
+#: ui/templates/platform/sp/tv.html:563
+msgid "Veri alınamadı — 30 sn sonra tekrar."
+msgstr "Could not retrieve data — try again in 30 sec."
+
+#: ui/templates/platform/sp/vrio.html:105
+msgid "Henüz kaynak eklenmedi. Üstteki"
+msgstr "No resource added yet. The above"
+
+#: ui/templates/platform/sp/vrio.html:105
+msgid "butonuyla başlayın."
+msgstr "button to start."
+
+#: ui/templates/platform/sp/vrio.html:109
+msgid "Maddi Varlık"
+msgstr "Tangible Asset"
+
+#: ui/templates/platform/sp/vrio.html:109
+msgid "Maddi Olmayan Varlık"
+msgstr "Intangible Asset"
+
+#: ui/templates/platform/sp/vrio.html:110
+msgid "İnsan Kaynağı"
+msgstr "Human Resource"
+
+#: ui/templates/platform/sp/vrio.html:110
+msgid "Organizasyonel"
+msgstr "Organizational"
+
+#: ui/templates/platform/sp/vrio.html:129
+msgid "kaynağı silinecek."
+msgstr "resource will be deleted."
+
+#: ui/templates/platform/sp/vrio.html:136
+msgid "Silinemedi"
+msgstr "Could not be deleted"
+
+#: ui/templates/platform/sp/vrio.html:150
+msgid "Yeni Kaynak / Yetenek"
+msgstr "New Resource / Capability"
+
+#: ui/templates/platform/sp/vrio.html:154
+msgid "Kaynak (Resource)"
+msgstr "Resource"
+
+#: ui/templates/platform/sp/vrio.html:154
+msgid "kurumun sahip olduğu varlık (marka, patent, ekip, sermaye)."
+msgstr "the asset the organization owns (brand, patent, team, capital)."
+
+#: ui/templates/platform/sp/vrio.html:155
+msgid "Yetenek (Capability)"
+msgstr "Capability"
+
+#: ui/templates/platform/sp/vrio.html:155
+msgid ""
+"kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim "
+"verimi)."
+msgstr ""
+"the organization's ability to use these assets (R&D, customer "
+"relationship, production efficiency)."
+
+#: ui/templates/platform/sp/vrio.html:159
+msgid "Örn: Endüstriyel patent portföyü"
+msgstr "e.g.: Industrial patent portfolio"
+
+#: ui/templates/platform/sp/vrio.html:164
+msgid "Maddi Varlık (bina, makine, stok)"
+msgstr "Tangible Asset (building, machinery, inventory)"
+
+#: ui/templates/platform/sp/vrio.html:165
+msgid "Maddi Olmayan Varlık (marka, patent, itibar)"
+msgstr "Intangible Asset (brand, patent, reputation)"
+
+#: ui/templates/platform/sp/vrio.html:166
+msgid "İnsan Kaynağı (yetkinlik, deneyim)"
+msgstr "Human Resource (competency, experience)"
+
+#: ui/templates/platform/sp/vrio.html:167
+msgid "Finansal (sermaye, nakit akışı)"
+msgstr "Financial (capital, cash flow)"
+
+#: ui/templates/platform/sp/vrio.html:168
+msgid "Organizasyonel (kültür, süreç, sistem)"
+msgstr "Organizational (culture, process, system)"
+
+#: ui/templates/platform/sp/vrio.html:173
+msgid "Kaynağı kısaca açıklayın"
+msgstr "Briefly describe the resource"
+
+#: ui/templates/platform/sp/vrio.html:182
+msgid "Ad gerekli"
+msgstr "Name required"
+
+#: ui/templates/platform/sp/vrio.html:196
+msgid "Kaynak eklenemedi"
+msgstr "Resource could not be added"
+
+#: ui/templates/platform/sp/xmatrix.html:108
+msgid "Sayım:"
+msgstr "Count:"
+
+#: ui/templates/platform/sp/xmatrix.html:108
+msgid "girişim"
+msgstr "initiative"
+
+#: ui/templates/platform/sp/xmatrix.html:109
+msgid "PG başlığı"
+msgstr "PI title"
+
+#: ui/templates/platform/surec/index.html:702
+msgid "Plan dönemi değiştirilemedi:"
+msgstr "Plan period could not be changed:"
+
+#: ui/templates/platform/surec/index.html:702
+msgid "bilinmeyen hata"
+msgstr "unknown error"
+
+#: ui/templates/platform/surec/index.html:740
+msgid "Son 3 ay:"
+msgstr "Last 3 months:"
+
+#: ui/templates/platform/surec/index.html:775
+msgid "süreç"
+msgstr "process"
 

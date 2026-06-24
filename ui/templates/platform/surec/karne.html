@@ -986,14 +986,14 @@
   function load(year) {
     box.style.display = "block";
     if (kaynakEl) kaynakEl.textContent = "";
-    if (metin) metin.textContent = "Özet hazırlanıyor…";
+    if (metin) metin.textContent = t("Özet hazırlanıyor…");
     var url = apiBase.replace(/\/$/, "") + "/ai-ozet"
             + (year ? ("?year=" + encodeURIComponent(year)) : "");
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) {
         if (!d || !d.success || !d.ozet) { box.style.display = "none"; return; }
-        if (kaynakEl) kaynakEl.textContent = (d.kaynak === "ai") ? "AI" : "otomatik";
+        if (kaynakEl) kaynakEl.textContent = (d.kaynak === "ai") ? "AI" : t("otomatik");
         typeOut(d.ozet);
         if (!confettiFired && typeof d.skor === "number" && d.skor >= 85) {
           confettiFired = true; fireConfetti();
@@ -1081,7 +1081,7 @@
     if(shown) return; shown=true;
     var t=document.createElement("div");
     t.style.cssText="position:fixed;bottom:22px;right:22px;z-index:10000;background:#4338ca;color:#fff;padding:11px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13px;display:flex;gap:10px;align-items:center;";
-    t.innerHTML='<i class="fas fa-rotate"></i> Yeni veri girildi <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Yenile</button>';
+    t.innerHTML='<i class="fas fa-rotate"></i> '+window.t("Yeni veri girildi")+' <button style="background:#fff;color:#4338ca;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">'+window.t("Yenile")+'</button>';
     t.querySelector("button").onclick=function(){ location.reload(); };
     document.body.appendChild(t);
   }

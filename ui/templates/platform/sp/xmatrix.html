@@ -105,8 +105,8 @@
 
     html.push('</table>');
     html.push('<div style="margin-top:12px;font-size:12px;color:#64748b;">');
-    html.push(`<b>Sayım:</b> ${N.length} strateji · ${E.length} alt strateji · ${S.length} girişim · ${W.length} PG`);
-    html.push(' · <span style="color:#4f46e5;">■</span> Strateji <span style="color:#db2777;">■</span> Girişim <span style="background:#fef3c7;padding:0 4px;">PG başlığı</span> <span style="background:#dbeafe;padding:0 4px;">Alt strateji başlığı</span>');
+    html.push(`<b>${t("Sayım:")}</b> ${N.length} ${t("strateji")} · ${E.length} ${t("alt strateji")} · ${S.length} ${t("girişim")} · ${W.length} ${t("PG")}`);
+    html.push(` · <span style="color:#4f46e5;">■</span> ${t("Strateji")} <span style="color:#db2777;">■</span> ${t("Girişim")} <span style="background:#fef3c7;padding:0 4px;">${t("PG başlığı")}</span> <span style="background:#dbeafe;padding:0 4px;">${t("Alt strateji başlığı")}</span>`);
     html.push('</div></div>');
     return html.join('');
   }
@@ -115,13 +115,13 @@
     .then(r => r.json())
     .then(j => {
       document.getElementById('xm-loading').style.display = 'none';
-      if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.error||''}); return; }
+      if (!j.success) { Swal.fire({icon:'error',title:t("Hata"),text:j.error||''}); return; }
       const g = document.getElementById('xm-grid');
       g.innerHTML = buildGrid(j);
       g.style.display = 'block';
     })
     .catch(err => {
-      document.getElementById('xm-loading').innerHTML = 'Hata: ' + err.message;
+      document.getElementById('xm-loading').innerHTML = t("Hata:") + ' ' + err.message;
     });
 })();
 </script>

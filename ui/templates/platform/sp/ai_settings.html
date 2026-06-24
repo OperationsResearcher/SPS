@@ -155,14 +155,14 @@
       document.getElementById('byok-base-url').value = j.config.base_url || '';
       document.getElementById('byok-pii').checked = j.config.pii_mask_enabled;
       document.getElementById('byok-key').placeholder = j.config.api_key_masked
-        ? `Mevcut: ${j.config.api_key_masked} (yeni anahtar girin ya da boş bırakın)`
-        : 'API anahtarı';
+        ? `${t("Mevcut:")} ${j.config.api_key_masked} ${t("(yeni anahtar girin ya da boş bırakın)")}`
+        : t('API anahtarı');
       if (j.config.last_test_at) {
         const lt = document.getElementById('last-test');
         const okIcon = j.config.last_test_status === 'ok'
           ? '<i class="fas fa-check-circle" style="color: var(--color-success);"></i>'
           : '<i class="fas fa-times-circle" style="color: var(--color-danger);"></i>';
-        lt.innerHTML = `Son test: ${new Date(j.config.last_test_at).toLocaleString('tr-TR')} ${okIcon} ${j.config.last_test_message || ''}`;
+        lt.innerHTML = `${t("Son test:")} ${new Date(j.config.last_test_at).toLocaleString('tr-TR')} ${okIcon} ${j.config.last_test_message || ''}`;
         lt.style.display = 'block';
       }
     } else {
@@ -186,9 +186,9 @@
       body: JSON.stringify(payload),
     });
     const j = await res.json();
-    if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
+    if (!res.ok) { Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('İşlem başarısız')), confirmButtonColor: '#dc2626' }); return; }
     Swal.fire({toast:true, position:'top-end', icon:'success',
-               title: 'Kaydedildi', showConfirmButton:false, timer: 2500});
+               title: t('Kaydedildi'), showConfirmButton:false, timer: 2500});
     document.getElementById('byok-key').value = '';
     load();
   };
@@ -196,17 +196,17 @@
   document.getElementById('btn-test').onclick = async () => {
     const btn = document.getElementById('btn-test');
     const orig = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test ediliyor…';
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Test ediliyor…');
     const res = await fetch(r.dataset.testUrl, {method: 'POST'});
     const j = await res.json();
     btn.disabled = false; btn.innerHTML = orig;
     const box = document.getElementById('test-result');
     if (j.success) {
       box.className = 'mc-alert mc-alert-success';
-      box.innerHTML = `<i class="fas fa-check-circle"></i> Bağlantı başarılı. Yanıt: <code>${j.message}</code> · ${j.tokens_used || 0} token kullanıldı.`;
+      box.innerHTML = `<i class="fas fa-check-circle"></i> ${t("Bağlantı başarılı. Yanıt:")} <code>${j.message}</code> · ${j.tokens_used || 0} ${t("token kullanıldı.")}`;
     } else {
       box.className = 'mc-alert mc-alert-error';
-      box.innerHTML = `<i class="fas fa-times-circle"></i> Test başarısız: ${j.message}`;
+      box.innerHTML = `<i class="fas fa-times-circle"></i> ${t("Test başarısız:")} ${j.message}`;
     }
     box.style.padding = 'var(--space-3)';
     box.style.display = 'block';
@@ -214,15 +214,15 @@
 
   document.getElementById('btn-delete').onclick = async () => {
     const ok = await Swal.fire({
-      title: 'BYOK anahtarını sil?', text: 'Tenant tekrar sistem AI\'sına döner.',
+      title: t('BYOK anahtarını sil?'), text: t('Tenant tekrar sistem AI\'sına döner.'),
       icon: 'warning', showCancelButton: true,
-      confirmButtonText: 'Sil', cancelButtonText: 'İptal',
+      confirmButtonText: t('Sil'), cancelButtonText: t('İptal'),
     }).then(r => r.isConfirmed);
     if (!ok) return;
     await fetch(r.dataset.deleteUrl, {method: 'DELETE'});
     load();
     Swal.fire({toast:true, position:'top-end', icon:'info',
-               title: 'BYOK anahtarı silindi', showConfirmButton:false, timer: 2500});
+               title: t('BYOK anahtarı silindi'), showConfirmButton:false, timer: 2500});
   };
 
   load();

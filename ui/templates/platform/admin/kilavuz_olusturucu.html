@@ -155,21 +155,21 @@
     fetch(durumUrl, {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"})
       .then(function(r){return r.json();})
       .then(function(j){
-        if(!j||!j.success){durumEl.textContent="Kurum durumu alınamadı.";return;}
+        if(!j||!j.success){durumEl.textContent=t("Kurum durumu alınamadı.");return;}
         var d = j.durum || {};
         // YeniTomofil kurumunun gerçek durumu (kurum-durum ucu).
         if(!d.exists){
-          durumEl.innerHTML = '<span style="color:#b45309;"><i class="fas fa-triangle-exclamation"></i> YeniTomofil henüz kurulmamış.</span>';
+          durumEl.innerHTML = '<span style="color:#b45309;"><i class="fas fa-triangle-exclamation"></i> '+t("YeniTomofil henüz kurulmamış.")+'</span>';
         } else {
-          durumEl.innerHTML = '<span style="color:#15803d; font-weight:600;"><i class="fas fa-check-circle"></i> Kuruldu (TID: '+d.tid+')</span>' +
+          durumEl.innerHTML = '<span style="color:#15803d; font-weight:600;"><i class="fas fa-check-circle"></i> '+t("Kuruldu")+' (TID: '+d.tid+')</span>' +
             '<div style="margin-top:6px; font-size:12px; color:#64748b;">' +
-            'Strateji: <b>'+d.strategies+'</b><br>' +
-            'Süreçler: <b>'+d.processes+'</b><br>' +
-            'PG/KPI Sayısı: <b>'+d.process_kpis+'</b><br>' +
-            'Admin: <b>'+d.admin_email+'</b>' +
+            t("Strateji")+': <b>'+d.strategies+'</b><br>' +
+            t("Süreçler")+': <b>'+d.processes+'</b><br>' +
+            t("PG/KPI Sayısı")+': <b>'+d.process_kpis+'</b><br>' +
+            t("Admin")+': <b>'+d.admin_email+'</b>' +
             '</div>';
         }
-      }).catch(function(){durumEl.textContent="Durum alınamadı.";});
+      }).catch(function(){durumEl.textContent=t("Durum alınamadı.");});
   }
 
   function appendLog(line) {
@@ -185,7 +185,7 @@
       .then(function(j){
         if(!j||!j.success) {
           clearInterval(pollTimer);
-          appendLog("[Sistem] Durum API hatası.");
+          appendLog("[Sistem] " + t("Durum API hatası."));
           btnBaslat.disabled = !isLocal;
           return;
         }
@@ -201,14 +201,14 @@
         var pct = d.total ? Math.round((d.done / d.total) * 100) : 0;
         progressBar.style.width = pct + "%";
         progressPct.textContent = pct + "%";
-        progressText.textContent = d.current || "Yürütülüyor...";
+        progressText.textContent = d.current || t("Yürütülüyor...");
 
         if(d.status === "done" || d.status === "error" || d.status === "cancelled") {
           clearInterval(pollTimer);
           btnBaslat.disabled = !isLocal;
           if(btnDurdur) btnDurdur.style.display = "none";
-          progressText.textContent = d.status === "done" ? "Tüm işlemler başarıyla tamamlandı!"
-            : (d.status === "cancelled" ? "Çekim durduruldu — Taslak PDF ile görselleri inceleyebilirsiniz." : "Bir hata ile kesildi.");
+          progressText.textContent = d.status === "done" ? t("Tüm işlemler başarıyla tamamlandı!")
+            : (d.status === "cancelled" ? t("Çekim durduruldu — Taslak PDF ile görselleri inceleyebilirsiniz.") : t("Bir hata ile kesildi."));
           loadDurum();
           // Videoları yenilemek için video elementlerini yeniden yükle
           document.querySelectorAll("video").forEach(function(v){
@@ -222,22 +222,22 @@
     if(!isLocal) return;
     btnBaslat.disabled = true;
     progressWrap.style.display = "block";
-    terminal.innerHTML = "<div>[Sistem] Otonom Playwright çekim süreci başlatılıyor...</div>";
+    terminal.innerHTML = "<div>[Sistem] " + t("Otonom Playwright çekim süreci başlatılıyor...") + "</div>";
     
     fetch(baslatUrl, {method:"POST", headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin", body:"{}"})
       .then(function(r){return r.json();})
       .then(function(j){
         if(!j||!j.success) {
-          appendLog("[Hata] " + ((j&&j.message)||"Başlatılamadı."));
+          appendLog("[Hata] " + ((j&&j.message)||t("Başlatılamadı.")));
           btnBaslat.disabled = false;
           return;
         }
         currentRunId = j.run_id;
-        if(btnDurdur){ btnDurdur.style.display = ""; btnDurdur.disabled = false; btnDurdur.innerHTML = '<i class="fas fa-stop"></i> Çekimi Durdur'; }
+        if(btnDurdur){ btnDurdur.style.display = ""; btnDurdur.disabled = false; btnDurdur.innerHTML = '<i class="fas fa-stop"></i> '+t("Çekimi Durdur"); }
         pollTimer = setInterval(function(){ poll(j.run_id); }, 1500);
         poll(j.run_id);
       }).catch(function(){
-        appendLog("[Hata] Sunucuyla bağlantı kurulamadı.");
+        appendLog("[Hata] " + t("Sunucuyla bağlantı kurulamadı."));
         btnBaslat.disabled = false;
       });
   }
@@ -248,12 +248,12 @@
   if(btnDurdur) btnDurdur.addEventListener("click", function(){
     if(!currentRunId){ return; }
     btnDurdur.disabled = true;
-    btnDurdur.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Durduruluyor…';
-    appendLog("[Sistem] Durdurma isteği gönderildi — çekim güvenli noktada duracak.");
+    btnDurdur.innerHTML = '<i class="fas fa-spinner fa-spin"></i> '+t("Durduruluyor…");
+    appendLog("[Sistem] " + t("Durdurma isteği gönderildi — çekim güvenli noktada duracak."));
     fetch(durdurUrl + "?run=" + encodeURIComponent(currentRunId), {method:"POST", headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"})
       .then(function(r){return r.json();})
       .then(function(j){ if(j && j.message) appendLog("[Sistem] " + j.message); })
-      .catch(function(){ appendLog("[Hata] Durdurma isteği gönderilemedi."); btnDurdur.disabled = false; });
+      .catch(function(){ appendLog("[Hata] " + t("Durdurma isteği gönderilemedi.")); btnDurdur.disabled = false; });
   });
   
   // PDF İndir butonu

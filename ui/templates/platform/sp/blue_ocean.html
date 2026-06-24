@@ -156,15 +156,15 @@
     const j = await r.json();
     const list = document.getElementById('bo-list');
     if (!j.items || !j.items.length) {
-      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz tuval yok. "Yeni Tuval" ile başlayın.</div>';
+      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">'+t("Henüz tuval yok. \"Yeni Tuval\" ile başlayın.")+'</div>';
       return;
     }
     list.innerHTML = j.items.map(c => `
       <div class="mc-card" style="padding:14px;margin-bottom:8px;cursor:pointer;" onclick="bo_open(${c.id})">
         <div style="font-size:14px;font-weight:600;color:var(--text-default);">${c.name}</div>
         <div style="font-size:12px;color:#64748b;margin-top:4px;">
-          ${c.industry || ''} • ${c.factor_count} faktör • ${c.errc_count} ERRC öğesi
-          ${c.competitor_names.length ? '• Rakip: ' + c.competitor_names.join(', ') : ''}
+          ${c.industry || ''} • ${c.factor_count} ${t("faktör")} • ${c.errc_count} ${t("ERRC öğesi")}
+          ${c.competitor_names.length ? '• ' + t("Rakip") + ': ' + c.competitor_names.join(', ') : ''}
         </div>
       </div>
     `).join('');
@@ -189,30 +189,30 @@
         <div style="color:#64748b;font-size:13px;margin-top:4px;">${j.canvas.industry || ''}</div>
         ${j.canvas.description ? `<p style="margin-top:8px;color:#475569;">${j.canvas.description}</p>` : ''}
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> Faktör Ekle</button>
-          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ERRC Öğesi Ekle</button>
+          <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> ${t("Faktör Ekle")}</button>
+          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ${t("ERRC Öğesi Ekle")}</button>
         </div>
       </div>
 
       <div class="mc-card" style="padding:20px;margin-bottom:16px;">
-        <h4 style="margin:0 0 12px;">📈 Değer Eğrisi (Strateji Tuvali)</h4>
+        <h4 style="margin:0 0 12px;">📈 ${t("Değer Eğrisi (Strateji Tuvali)")}</h4>
         <canvas id="bo-chart" height="120"></canvas>
       </div>
 
       <div class="mc-card" style="padding:20px;">
-        <h4 style="margin:0 0 12px;">🎯 ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)</h4>
+        <h4 style="margin:0 0 12px;">🎯 ${t("ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)")}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           ${['eliminate','reduce','raise','create'].map(a => {
             const colors = {eliminate:'#fecaca', reduce:'#fed7aa', raise:'#bbf7d0', create:'#bfdbfe'};
-            const titles = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
-            const impactLabels = {high:'Yüksek', medium:'Orta', low:'Düşük'};
+            const titles = {eliminate:'❌ '+t("Kaldır"), reduce:'⬇️ '+t("Azalt"), raise:'⬆️ '+t("Yükselt"), create:'⭐ '+t("Yarat")};
+            const impactLabels = {high:t("Yüksek"), medium:t("Orta"), low:t("Düşük")};
             return `
               <div style="background:${colors[a]};padding:12px;border-radius:8px;min-height:140px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                   <div style="font-weight:600;">${titles[a]}</div>
-                  <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> Ekle</button>
+                  <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> ${t("Ekle")}</button>
                 </div>
-                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || '<div style="color:#64748b;font-size:12px;">— Boş</div>'}
+                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || `<div style="color:#64748b;font-size:12px;">— ${t("Boş")}</div>`}
               </div>
             `;
           }).join('')}
@@ -225,7 +225,7 @@
     const ctx = document.getElementById('bo-chart').getContext('2d');
     const labels = factors.map(f => f.name);
     const datasets = [{
-      label: 'Bizim Kurum',
+      label: t("Bizim Kurum"),
       data: factors.map(f => f.self_score),
       borderColor: '#0ea5e9',
       backgroundColor: 'rgba(14,165,233,0.1)',
@@ -273,7 +273,7 @@
             <input type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${c}" placeholder="0-10" style="width:110px;">
           </div>
         `).join('')
-      : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">Canvas\'a rakip eklenmemiş — yalnız kendi puanı girilecek.</div>';
+      : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">'+t("Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek.")+'</div>';
     fModal.style.display = 'flex';
     setTimeout(() => document.getElementById('bo-f-name').focus(), 50);
   };
@@ -284,10 +284,10 @@
 
   document.getElementById('bo-f-save').onclick = async () => {
     const name = document.getElementById('bo-f-name').value.trim();
-    if (!name) { fShowErr('Faktör adı gerekli.'); return; }
+    if (!name) { fShowErr(t("Faktör adı gerekli.")); return; }
     const self_score = parseFloat(document.getElementById('bo-f-self').value);
     if (isNaN(self_score) || self_score < 0 || self_score > 10) {
-      fShowErr('Kendi puan 0-10 arası olmalı.'); return;
+      fShowErr(t("Kendi puan 0-10 arası olmalı.")); return;
     }
     const comp = {};
     document.querySelectorAll('#bo-f-comp-rows .bo-comp-input').forEach(inp => {
@@ -302,8 +302,8 @@
         body: JSON.stringify({ name, self_score, competitor_scores: comp }),
       });
       if (r.ok) { fClose(); bo_open(fCid); }
-      else fShowErr('Faktör eklenemedi.');
-    } catch (e) { fShowErr('Sunucu hatası.'); }
+      else fShowErr(t("Faktör eklenemedi."));
+    } catch (e) { fShowErr(t("Sunucu hatası.")); }
     finally { btn.disabled = false; }
   };
 
@@ -311,7 +311,7 @@
   const eModal = document.getElementById('modal-bo-errc');
   const eErr = document.getElementById('bo-e-error');
   let eCid = null;
-  const ERRC_LABELS = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
+  const ERRC_LABELS = {eliminate:'❌ '+t("Kaldır"), reduce:'⬇️ '+t("Azalt"), raise:'⬆️ '+t("Yükselt"), create:'⭐ '+t("Yarat")};
   function eClose(){ eModal.style.display = 'none'; }
   function eShowErr(msg){ eErr.textContent = msg; eErr.style.display = 'block'; }
 
@@ -324,7 +324,7 @@
     actSel.value = (preAction && ERRC_LABELS[preAction]) ? preAction : 'eliminate';
     document.getElementById('bo-e-title').innerHTML = preAction
       ? `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ERRC: ${ERRC_LABELS[preAction]}`
-      : `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ERRC Öğesi Ekle`;
+      : `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ${t("ERRC Öğesi Ekle")}`;
     eModal.style.display = 'flex';
     setTimeout(() => document.getElementById('bo-e-text').focus(), 50);
   };
@@ -335,7 +335,7 @@
 
   document.getElementById('bo-e-save').onclick = async () => {
     const text = document.getElementById('bo-e-text').value.trim();
-    if (!text) { eShowErr('Açıklama gerekli.'); return; }
+    if (!text) { eShowErr(t("Açıklama gerekli.")); return; }
     const form = {
       action: document.getElementById('bo-e-action').value,
       text: text,
@@ -349,8 +349,8 @@
         body: JSON.stringify(form),
       });
       if (r.ok) { eClose(); bo_open(eCid); }
-      else eShowErr('ERRC öğesi eklenemedi.');
-    } catch (e) { eShowErr('Sunucu hatası.'); }
+      else eShowErr(t("ERRC öğesi eklenemedi."));
+    } catch (e) { eShowErr(t("Sunucu hatası.")); }
     finally { btn.disabled = false; }
   };
 
@@ -372,7 +372,7 @@
 
   document.getElementById('bo-modal-save').onclick = async () => {
     const name = document.getElementById('bo-c-name').value.trim();
-    if (!name) { boShowErr('Tuval adı gerekli.'); document.getElementById('bo-c-name').focus(); return; }
+    if (!name) { boShowErr(t("Tuval adı gerekli.")); document.getElementById('bo-c-name').focus(); return; }
     const form = {
       name,
       industry: document.getElementById('bo-c-ind').value.trim(),
@@ -387,9 +387,9 @@
         body: JSON.stringify(form),
       });
       if (r.ok) { boModalClose(); load(); }
-      else { boShowErr('Tuval oluşturulamadı.'); }
+      else { boShowErr(t("Tuval oluşturulamadı.")); }
     } catch (e) {
-      boShowErr('Sunucu hatası.');
+      boShowErr(t("Sunucu hatası."));
     } finally {
       btn.disabled = false;
     }

@@ -644,7 +644,7 @@
         info.type = "button";
         info.className = "kk-card-info-btn";
         info.innerHTML = "<i class='fas fa-info'></i>";
-        info.title = "Bu kart ne için? (amaç / içerik)";
+        info.title = t("Bu kart ne için? (amaç / içerik)");
         info.addEventListener("click", function (e) {
           e.preventDefault(); e.stopPropagation();
           openInfo(code);
@@ -696,7 +696,7 @@
         badges.forEach(function (b) {
           var m = META[b.dataset.code];
           b.textContent = (m && m.short_id) ? m.short_id : "?";
-          if (!m || !m.short_id) b.title = "Bu kart henüz numaralanmamış (" + b.dataset.code + ")";
+          if (!m || !m.short_id) b.title = t("Bu kart henüz numaralanmamış") + " (" + b.dataset.code + ")";
         });
       }
 
@@ -740,24 +740,24 @@
         var bodyEl = document.getElementById("kk-card-info-body");
         if (codeEl) codeEl.textContent = "";
         nameEl.textContent = "";
-        bodyEl.textContent = "Yükleniyor…";
+        bodyEl.textContent = t("Yükleniyor…");
         ov.style.display = "flex";
         fetch(INFO_URL.replace("__CODE__", encodeURIComponent(code)))
           .then(function (r) { return r.json(); })
           .then(function (j) {
-            if (!j.success) { bodyEl.textContent = "Bilgi alınamadı."; return; }
+            if (!j.success) { bodyEl.textContent = t("Bilgi alınamadı."); return; }
             nameEl.textContent = j.name || "";
             // Kısa kimlik yalnız admin'e gösterilir (eleman sadece admin'de var)
             if (codeEl) codeEl.textContent = j.short_id || "";
             if (!j.found) {
-              bodyEl.textContent = "Bu kart için henüz açıklama girilmemiş.";
+              bodyEl.textContent = t("Bu kart için henüz açıklama girilmemiş.");
             } else if (!j.description) {
-              bodyEl.textContent = "Bu kart için henüz açıklama girilmemiş.";
+              bodyEl.textContent = t("Bu kart için henüz açıklama girilmemiş.");
             } else {
               bodyEl.textContent = j.description;
             }
           })
-          .catch(function () { bodyEl.textContent = "Bilgi alınamadı (ağ hatası)."; });
+          .catch(function () { bodyEl.textContent = t("Bilgi alınamadı (ağ hatası)."); });
       }
       function closeInfo() {
         var ov = document.getElementById("kk-card-info-modal-overlay");

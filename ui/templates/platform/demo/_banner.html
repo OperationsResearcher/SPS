@@ -76,8 +76,8 @@
         if (j.expired) {
           Swal.fire({
             icon: 'info',
-            title: 'Demo süreniz doldu',
-            text: 'Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz.',
+            title: t('Demo süreniz doldu'),
+            text: t('Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz.'),
             timer: 2500, showConfirmButton: false,
           });
           setTimeout(() => { window.location.href = '/demo/'; }, 2400);
@@ -105,13 +105,13 @@
   if (EXIT_BTN) {
     EXIT_BTN.addEventListener('click', () => {
       Swal.fire({
-        title: 'Demo\'yu sonlandır?',
-        html: 'Yaptığınız tüm değişiklikler silinecek.<br><br>'
-            + '<small style="color:#64748b;">Beğendiyseniz <a href="https://kokpitim.com" target="_blank" style="color:#4f46e5;">hesap açarak</a> Kokpitim\'i kuruma getirebilirsiniz.</small>',
+        title: t('Demo\'yu sonlandır?'),
+        html: t('Yaptığınız tüm değişiklikler silinecek.') + '<br><br>'
+            + '<small style="color:#64748b;">' + t('Beğendiyseniz') + ' <a href="https://kokpitim.com" target="_blank" style="color:#4f46e5;">' + t('hesap açarak') + '</a> ' + t('Kokpitim\'i kuruma getirebilirsiniz.') + '</small>',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Evet, çık',
-        cancelButtonText: 'Vazgeç',
+        confirmButtonText: t('Evet, çık'),
+        cancelButtonText: t('Vazgeç'),
         confirmButtonColor: '#4f46e5',
       }).then(res => {
         if (res.isConfirmed) {

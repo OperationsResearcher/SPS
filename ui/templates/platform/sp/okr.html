@@ -161,14 +161,14 @@ function populateStrategyDropdowns() {
     const sSel = document.getElementById("obj-strategy");
     const ssSel = document.getElementById("obj-sub-strategy");
     if (!sSel || !ssSel) return;
-    sSel.innerHTML = '<option value="">— Strateji yok —</option>';
+    sSel.innerHTML = `<option value="">${t("— Strateji yok —")}</option>`;
     allStrategies.forEach(s => {
         const opt = document.createElement("option");
         opt.value = s.id;
         opt.textContent = `${s.code || ""} — ${s.title || ""}`.trim();
         sSel.appendChild(opt);
     });
-    ssSel.innerHTML = '<option value="">— Alt strateji yok —</option>';
+    ssSel.innerHTML = `<option value="">${t("— Alt strateji yok —")}</option>`;
     allSubStrategies.forEach(ss => {
         const opt = document.createElement("option");
         opt.value = ss.id;
@@ -181,12 +181,12 @@ async function loadOkrs() {
     try {
         const resp = await fetch(OKR_API);
         const data = await resp.json();
-        if (!data.success) throw new Error(data.message || "OKR verisi alınamadı");
+        if (!data.success) throw new Error(data.message || t("OKR verisi alınamadı"));
         allObjectives = data.data || [];
         renderOkrs();
     } catch (e) {
         console.error(e);
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
@@ -208,9 +208,9 @@ function renderOkrs() {
     summary.innerHTML = `
         <div class="card border-0 shadow-sm">
             <div class="card-body d-flex justify-content-around text-center">
-                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">Hedef</small></div>
-                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">Anahtar Sonuç</small></div>
-                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">Ortalama İlerleme</small></div>
+                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">${t("Hedef")}</small></div>
+                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">${t("Anahtar Sonuç")}</small></div>
+                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">${t("Ortalama İlerleme")}</small></div>
             </div>
         </div>`;
 
@@ -235,7 +235,7 @@ function renderOkrs() {
                     <small class="text-muted">
                         ${kr.start_value ?? "—"} → ${kr.target_value ?? "—"}
                         ${kr.metric ? `<span class="ms-1">${escapeHtml(kr.metric)}</span>` : ""}
-                        | Güncel: <strong>${kr.current_value ?? "—"}</strong>
+                        | ${t("Güncel:")} <strong>${kr.current_value ?? "—"}</strong>
                     </small>
                     <div class="progress mt-1" style="height:4px;">
                         <div class="progress-bar ${cls}" style="width:${pct}%"></div>
@@ -249,7 +249,7 @@ function renderOkrs() {
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                     <div>
-                        ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : '<span class="badge bg-light text-dark me-2">Yıllık</span>'}
+                        ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : `<span class="badge bg-light text-dark me-2">${t("Yıllık")}</span>`}
                         <strong>${escapeHtml(obj.title)}</strong>
                     </div>
                     <div>
@@ -260,13 +260,13 @@ function renderOkrs() {
                 <div class="card-body">
                     ${obj.description ? `<p class="text-muted small">${escapeHtml(obj.description)}</p>` : ""}
                     ${obj.owner ? `<div class="small mb-2"><i class="bi bi-person"></i> ${escapeHtml(obj.owner)}</div>` : ""}
-                    ${obj.linked_strategy ? `<div class="small mb-1"><i class="bi bi-link-45deg"></i> Strateji: <span class="badge bg-primary-subtle text-primary">${escapeHtml(obj.linked_strategy.code)} — ${escapeHtml(obj.linked_strategy.title)}</span></div>` : ""}
-                    ${obj.linked_sub_strategy ? `<div class="small mb-2"><i class="bi bi-link-45deg"></i> Alt: <span class="badge bg-info-subtle text-info">${escapeHtml(obj.linked_sub_strategy.code)} — ${escapeHtml(obj.linked_sub_strategy.title)}</span></div>` : ""}
-                    ${krsHtml || '<p class="text-muted small mb-0">Henüz anahtar sonuç yok.</p>'}
+                    ${obj.linked_strategy ? `<div class="small mb-1"><i class="bi bi-link-45deg"></i> ${t("Strateji:")} <span class="badge bg-primary-subtle text-primary">${escapeHtml(obj.linked_strategy.code)} — ${escapeHtml(obj.linked_strategy.title)}</span></div>` : ""}
+                    ${obj.linked_sub_strategy ? `<div class="small mb-2"><i class="bi bi-link-45deg"></i> ${t("Alt:")} <span class="badge bg-info-subtle text-info">${escapeHtml(obj.linked_sub_strategy.code)} — ${escapeHtml(obj.linked_sub_strategy.title)}</span></div>` : ""}
+                    ${krsHtml || `<p class="text-muted small mb-0">${t("Henüz anahtar sonuç yok.")}</p>`}
                 </div>
                 <div class="card-footer bg-white border-top">
                     <button class="btn btn-sm btn-outline-primary w-100" onclick="addKr(${obj.id})">
-                        <i class="bi bi-plus"></i> Anahtar Sonuç Ekle
+                        <i class="bi bi-plus"></i> ${t("Anahtar Sonuç Ekle")}
                     </button>
                 </div>
             </div>`;
@@ -279,7 +279,7 @@ function escapeHtml(s) {
 }
 
 function openObjectiveModal() {
-    document.getElementById("obj-modal-title").textContent = "Yeni Hedef";
+    document.getElementById("obj-modal-title").textContent = t("Yeni Hedef");
     document.getElementById("obj-id").value = "";
     document.getElementById("form-objective").reset();
     document.getElementById("obj-strategy").value = "";
@@ -294,7 +294,7 @@ function closeObjectiveModal() {
 function editObjective(id) {
     const o = allObjectives.find(x => x.id === id);
     if (!o) return;
-    document.getElementById("obj-modal-title").textContent = "Hedef Düzenle";
+    document.getElementById("obj-modal-title").textContent = t("Hedef Düzenle");
     document.getElementById("obj-id").value = id;
     document.getElementById("obj-title").value = o.title || "";
     document.getElementById("obj-description").value = o.description || "";
@@ -315,7 +315,7 @@ async function saveObjective() {
         linked_strategy_id: parseInt(document.getElementById("obj-strategy").value) || null,
         linked_sub_strategy_id: parseInt(document.getElementById("obj-sub-strategy").value) || null,
     };
-    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    if (!body.title) { Swal.fire({ icon: "warning", title: t("Başlık gerekli") }); return; }
     try {
         const url = id ? `${OKR_API}/objective/${id}` : `${OKR_API}/objective`;
         const resp = await fetch(url, {
@@ -324,31 +324,31 @@ async function saveObjective() {
             body: JSON.stringify(body),
         });
         const data = await resp.json();
-        if (!data.success) throw new Error(data.message || "Kaydedilemedi");
+        if (!data.success) throw new Error(data.message || t("Kaydedilemedi"));
         closeObjectiveModal();
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Kaydedildi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 async function deleteObjective(id) {
-    const r = await Swal.fire({ icon: "warning", title: "Silinsin mi?", showCancelButton: true, confirmButtonText: "Evet, sil" });
+    const r = await Swal.fire({ icon: "warning", title: t("Silinsin mi?"), showCancelButton: true, confirmButtonText: t("Evet, sil") });
     if (!r.isConfirmed) return;
     try {
         const resp = await fetch(`${OKR_API}/objective/${id}`, { method: "DELETE" });
         const data = await resp.json();
         if (!data.success) throw new Error(data.message);
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Silindi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Silindi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 function addKr(objId) {
-    document.getElementById("kr-modal-title").textContent = "Yeni Anahtar Sonuç";
+    document.getElementById("kr-modal-title").textContent = t("Yeni Anahtar Sonuç");
     document.getElementById("kr-id").value = "";
     document.getElementById("kr-objective-id").value = objId;
     document.getElementById("form-kr").reset();
@@ -361,7 +361,7 @@ function editKr(objId, krId) {
     if (!o) return;
     const kr = o.key_results.find(k => k.id === krId);
     if (!kr) return;
-    document.getElementById("kr-modal-title").textContent = "KR Düzenle";
+    document.getElementById("kr-modal-title").textContent = t("KR Düzenle");
     document.getElementById("kr-id").value = krId;
     document.getElementById("kr-objective-id").value = objId;
     document.getElementById("kr-title").value = kr.title || "";
@@ -386,7 +386,7 @@ async function saveKr() {
         target_value: parseFloat(document.getElementById("kr-target-value").value) || null,
         current_value: parseFloat(document.getElementById("kr-current-value").value) || null,
     };
-    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    if (!body.title) { Swal.fire({ icon: "warning", title: t("Başlık gerekli") }); return; }
     try {
         const url = id ? `${OKR_API}/kr/${id}` : `${OKR_API}/objective/${objId}/kr`;
         const resp = await fetch(url, {
@@ -398,14 +398,14 @@ async function saveKr() {
         if (!data.success) throw new Error(data.message);
         closeKrModal();
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Kaydedildi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 async function deleteKr(krId) {
-    const r = await Swal.fire({ icon: "warning", title: "KR silinsin mi?", showCancelButton: true, confirmButtonText: "Evet" });
+    const r = await Swal.fire({ icon: "warning", title: t("KR silinsin mi?"), showCancelButton: true, confirmButtonText: t("Evet") });
     if (!r.isConfirmed) return;
     try {
         const resp = await fetch(`${OKR_API}/kr/${krId}`, { method: "DELETE" });
@@ -413,7 +413,7 @@ async function deleteKr(krId) {
         if (!data.success) throw new Error(data.message);
         await loadOkrs();
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 

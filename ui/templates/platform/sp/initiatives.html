@@ -97,12 +97,12 @@
   }
   function priorityBadge(p) {
     const colors = {critical:'#dc2626', high:'#f59e0b', medium:'#0ea5e9', low:'#64748b'};
-    const labels = {critical:'Kritik', high:'Yüksek', medium:'Orta', low:'Düşük'};
+    const labels = {critical:t('Kritik'), high:t('Yüksek'), medium:t('Orta'), low:t('Düşük')};
     return `<span style="background:${colors[p]||'#64748b'};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">${labels[p]||p}</span>`;
   }
   function statusLabel(s) {
-    return {planned:'Planlanan', in_progress:'Devam Ediyor', on_hold:'Beklemede',
-            completed:'Tamamlandı', cancelled:'İptal'}[s] || s;
+    return {planned:t('Planlanan'), in_progress:t('Devam Ediyor'), on_hold:t('Beklemede'),
+            completed:t('Tamamlandı'), cancelled:t('İptal')}[s] || s;
   }
 
   async function load() {
@@ -110,7 +110,7 @@
     const j = await res.json();
     const ul = document.getElementById('init-list');
     if (!j.items || j.items.length === 0) {
-      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz girişim yok.</div>';
+      ul.innerHTML = `<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">${t("Henüz girişim yok.")}</div>`;
       return;
     }
     ul.innerHTML = j.items.map(i => `
@@ -124,15 +124,15 @@
             </div>
             <div style="font-size:15px;font-weight:600;color:var(--text-default);">${i.name}</div>
             <div style="font-size:12px;color:#64748b;margin-top:4px;">
-              ${i.start_year} - ${i.end_year} • ${i.milestone_count} milestone
-              ${i.budget_total ? ' • Bütçe: ' + i.budget_total.toLocaleString('tr-TR') : ''}
+              ${i.start_year} - ${i.end_year} • ${i.milestone_count} ${t("milestone")}
+              ${i.budget_total ? ' • ' + t("Bütçe:") + ' ' + i.budget_total.toLocaleString('tr-TR') : ''}
             </div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:24px;font-weight:700;color:var(--text-default);">%${i.progress_pct.toFixed(0)}</div>
-            <div style="font-size:11px;color:#64748b;">İlerleme</div>
+            <div style="font-size:11px;color:#64748b;">${t("İlerleme")}</div>
             <button type="button" class="init-toggle-projects mc-btn mc-btn-secondary mc-btn-sm" data-iid="${i.id}" style="margin-top:8px;">
-              <i class="fas fa-folder-open"></i> Altındaki Projeler
+              <i class="fas fa-folder-open"></i> ${t("Altındaki Projeler")}
             </button>
           </div>
         </div>
@@ -150,22 +150,22 @@
     if (!wrap) return;
     if (wrap.style.display === 'block') { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
-    wrap.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:10px;font-size:12px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>';
+    wrap.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:10px;font-size:12px;"><i class="fas fa-spinner fa-spin"></i> ${t("Yükleniyor…")}</div>`;
     try {
       const res = await fetch('/sp/api/initiatives/' + iid + '/projects');
       const j = await res.json();
       const items = (j.items || []);
       if (!items.length) {
         wrap.innerHTML = `<div style="background:#f8fafc; padding:14px; border-radius:6px; font-size:12.5px; color:#64748b;">
-          Bu stratejik girişime henüz proje bağlanmamış.
-          <a href="/project" style="color:#6366f1; font-weight:600;">Proje listesine git</a> ve oradan "Stratejik Girişim" alanına bunu seçebilirsiniz.
+          ${t("Bu stratejik girişime henüz proje bağlanmamış.")}
+          <a href="/project" style="color:#6366f1; font-weight:600;">${t("Proje listesine git")}</a> ${t("ve oradan \"Stratejik Girişim\" alanına bunu seçebilirsiniz.")}
         </div>`;
         return;
       }
       const esc = s => String(s||'').replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
       wrap.innerHTML = `
         <div style="font-size:11.5px; color:#64748b; text-transform:uppercase; font-weight:600; margin-bottom:8px;">
-          Altındaki Projeler (${items.length})
+          ${t("Altındaki Projeler")} (${items.length})
         </div>
         <div style="display:grid; gap:6px;">
           ${items.map(p => `
@@ -177,7 +177,7 @@
             </a>`).join('')}
         </div>`;
     } catch(e) {
-      wrap.innerHTML = `<div style="color:#dc2626; font-size:12px;">Yüklenemedi: ${e.message}</div>`;
+      wrap.innerHTML = `<div style="color:#dc2626; font-size:12px;">${t("Yüklenemedi:")} ${e.message}</div>`;
     }
   }
 
@@ -196,7 +196,7 @@
     });
     const j = await res.json();
     if (!res.ok || !j.success) {
-      Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'bilinmeyen'), confirmButtonColor: '#dc2626' });
+      Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('bilinmeyen')), confirmButtonColor: '#dc2626' });
       return;
     }
     modal.style.display = 'none';

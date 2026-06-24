@@ -226,38 +226,38 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
 
   function statusBadge(active) {
     return active
-      ? '<span class="mc-badge mc-badge-success">Aktif</span>'
-      : '<span class="mc-badge mc-badge-gray">Pasif</span>';
+      ? '<span class="mc-badge mc-badge-success">'+t("Aktif")+'</span>'
+      : '<span class="mc-badge mc-badge-gray">'+t("Pasif")+'</span>';
   }
 
-  function renderRow(t) {
-    const adminInfo = t.admin
-      ? `<div style="font-weight:500;">${esc(t.admin.email)}</div>
-         <div style="font-size:11px; color:#94a3b8;">${esc((t.admin.first_name || "") + " " + (t.admin.last_name || ""))}</div>`
-      : `<span style="color:#94a3b8; font-size:12px;">Admin yok</span>`;
-    const pkgBadge = t.package
-      ? `<span class="mc-badge mc-badge-indigo">${esc(t.package.name)}</span>`
+  function renderRow(it) {
+    const adminInfo = it.admin
+      ? `<div style="font-weight:500;">${esc(it.admin.email)}</div>
+         <div style="font-size:11px; color:#94a3b8;">${esc((it.admin.first_name || "") + " " + (it.admin.last_name || ""))}</div>`
+      : `<span style="color:#94a3b8; font-size:12px;">${t("Admin yok")}</span>`;
+    const pkgBadge = it.package
+      ? `<span class="mc-badge mc-badge-indigo">${esc(it.package.name)}</span>`
       : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
     return `
       <tr>
         <td style="font-weight:600; color:var(--text-default);">
-          ${esc(t.name)}
-          ${t.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${esc(t.short_name)}</div>` : ""}
+          ${esc(it.name)}
+          ${it.short_name ? `<div style="font-size:11px; color:#94a3b8; font-weight:400;">${esc(it.short_name)}</div>` : ""}
         </td>
         <td style="font-size:13px; color:#475569;">${adminInfo}</td>
         <td>${pkgBadge}</td>
         <td style="text-align:center;">
-          <span class="mc-badge mc-badge-gray">${t.users_count}${t.max_user_count ? ` / ${t.max_user_count}` : ""}</span>
+          <span class="mc-badge mc-badge-gray">${it.users_count}${it.max_user_count ? ` / ${it.max_user_count}` : ""}</span>
         </td>
-        <td style="text-align:center;">${statusBadge(t.is_active)}</td>
+        <td style="text-align:center;">${statusBadge(it.is_active)}</td>
         <td style="text-align:center;">
-          <button class="mc-btn mc-btn-secondary mc-btn-sm btn-reset-pw" data-id="${t.id}" title="Admin şifresini sıfırla" style="padding:4px 8px;">
+          <button class="mc-btn mc-btn-secondary mc-btn-sm btn-reset-pw" data-id="${it.id}" title="${t("Admin şifresini sıfırla")}" style="padding:4px 8px;">
             <i class="fas fa-key"></i>
           </button>
-          <button class="mc-btn mc-btn-sm ${t.is_active ? "mc-btn-danger" : "mc-btn-success"} btn-toggle"
-                  data-id="${t.id}" data-active="${t.is_active}"
-                  title="${t.is_active ? "Pasifleştir" : "Aktifleştir"}" style="padding:4px 8px;">
-            <i class="fas ${t.is_active ? "fa-ban" : "fa-check-circle"}"></i>
+          <button class="mc-btn mc-btn-sm ${it.is_active ? "mc-btn-danger" : "mc-btn-success"} btn-toggle"
+                  data-id="${it.id}" data-active="${it.is_active}"
+                  title="${it.is_active ? t("Pasifleştir") : t("Aktifleştir")}" style="padding:4px 8px;">
+            <i class="fas ${it.is_active ? "fa-ban" : "fa-check-circle"}"></i>
           </button>
         </td>
       </tr>
@@ -273,7 +273,7 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     const params = IS_PLATFORM && PARENT_ID ? `?parent_id=${PARENT_ID}` : "";
     if (IS_PLATFORM && !PARENT_ID) {
       document.getElementById("loading").innerHTML =
-        '<div style="color:#dc2626;">Platform Admin için ?parent_id= query parametresi gerekli.<br><a href="/admin/tenants" style="color:#4f46e5;">→ Önce bir bayi/holding seç</a></div>';
+        '<div style="color:#dc2626;">'+t("Platform Admin için ?parent_id= query parametresi gerekli.")+'<br><a href="/admin/tenants" style="color:#4f46e5;">'+t("→ Önce bir bayi/holding seç")+'</a></div>';
       return;
     }
     const res = await fetch(LIST_URL + params, { credentials: "same-origin" });
@@ -282,7 +282,7 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
 
     if (!j.success) {
       document.getElementById("loading").style.display = "block";
-      document.getElementById("loading").innerHTML = `<div style="color:#dc2626;">${j.message || "Hata"}</div>`;
+      document.getElementById("loading").innerHTML = `<div style="color:#dc2626;">${j.message || t("Hata")}</div>`;
       return;
     }
     _parent = j.parent;
@@ -291,15 +291,15 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     document.getElementById("hero-card").style.display = "block";
     document.getElementById("hero-parent-name").textContent = j.parent.name;
     document.getElementById("hero-type-label").textContent =
-      j.parent.tenant_type === "holding" ? "🏛 Holding" : "🏪 Bayi";
+      j.parent.tenant_type === "holding" ? "🏛 "+t("Holding") : "🏪 "+t("Bayi");
     document.getElementById("hero-active-count").textContent = j.active_count;
     document.getElementById("hero-quota").textContent =
       j.parent.sub_tenant_limit ? `${j.active_count} / ${j.parent.sub_tenant_limit}` : "∞";
 
     document.getElementById("subtenants-subtitle").textContent =
       j.parent.is_holding
-        ? `${j.parent.name} — alt kurumların yönetimi + konsolide görünüm`
-        : `${j.parent.name} — alt kurumların yönetimsel kontrolü (iç verilere erişim yok)`;
+        ? `${j.parent.name} — ${t("alt kurumların yönetimi + konsolide görünüm")}`
+        : `${j.parent.name} — ${t("alt kurumların yönetimsel kontrolü (iç verilere erişim yok)")}`;
 
     document.getElementById("btn-new-sub").disabled = false;
 
@@ -344,16 +344,16 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     if (IS_PLATFORM && PARENT_ID) payload.parent_tenant_id = parseInt(PARENT_ID);
 
     if (!payload.name || !payload.admin_email) {
-      errEl.textContent = "Kurum adı ve admin e-posta zorunlu.";
+      errEl.textContent = t("Kurum adı ve admin e-posta zorunlu.");
       errEl.style.display = "block"; return;
     }
     const btn = document.getElementById("btn-ns-create");
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Oluşturuluyor…';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> '+t("Oluşturuluyor…");
     try {
       const j = await postJson(CREATE_URL, payload);
       if (!j.success) {
-        errEl.textContent = j.message || "Hata";
+        errEl.textContent = j.message || t("Hata");
         errEl.style.display = "block"; return;
       }
       // Başarı
@@ -366,7 +366,7 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
       loadList();
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-plus"></i> Oluştur';
+      btn.innerHTML = '<i class="fas fa-plus"></i> '+t("Oluştur");
     }
   });
 
@@ -374,10 +374,10 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     document.getElementById("modal-success").style.display = "none";
   });
   document.getElementById("btn-copy-cred").addEventListener("click", function() {
-    const text = `E-posta: ${document.getElementById("cred-email").textContent}\nŞifre: ${document.getElementById("cred-password").textContent}`;
+    const text = `${t("E-posta")}: ${document.getElementById("cred-email").textContent}\n${t("Şifre")}: ${document.getElementById("cred-password").textContent}`;
     navigator.clipboard.writeText(text).then(() => {
-      this.innerHTML = '<i class="fas fa-check"></i> Kopyalandı';
-      setTimeout(() => this.innerHTML = '<i class="fas fa-copy"></i> Kopyala', 1500);
+      this.innerHTML = '<i class="fas fa-check"></i> '+t("Kopyalandı");
+      setTimeout(() => this.innerHTML = '<i class="fas fa-copy"></i> '+t("Kopyala"), 1500);
     });
   });
 
@@ -387,12 +387,12 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     const toggleBtn = e.target.closest(".btn-toggle");
     if (resetBtn) {
       const id = resetBtn.dataset.id;
-      if (!confirm("Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?")) return;
+      if (!confirm(t("Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"))) return;
       resetBtn.disabled = true;
       resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
       try {
         const j = await postJson(`/admin/api/sub-tenants/${id}/admin/reset-password`);
-        if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.message||'İşlem başarısız'}); return; }
+        if (!j.success) { Swal.fire({icon:'error',title:t("Hata"),text:j.message||t("İşlem başarısız")}); return; }
         document.getElementById("success-msg").textContent = j.message;
         document.getElementById("credentials-box").style.display = "block";
         document.getElementById("cred-email").textContent = j.admin_email;
@@ -406,11 +406,11 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     if (toggleBtn) {
       const id = toggleBtn.dataset.id;
       const active = toggleBtn.dataset.active === "true";
-      if (!confirm(active ? "Bu alt kurumu pasifleştirmek istiyor musunuz?" : "Bu alt kurumu aktifleştirmek istiyor musunuz?")) return;
+      if (!confirm(active ? t("Bu alt kurumu pasifleştirmek istiyor musunuz?") : t("Bu alt kurumu aktifleştirmek istiyor musunuz?"))) return;
       toggleBtn.disabled = true;
       try {
         const j = await postJson(`/admin/api/sub-tenants/${id}/toggle`);
-        if (!j.success) { Swal.fire({icon:'error',title:'Hata',text:j.message||'İşlem başarısız'}); return; }
+        if (!j.success) { Swal.fire({icon:'error',title:t("Hata"),text:j.message||t("İşlem başarısız")}); return; }
         loadList();
       } finally {
         toggleBtn.disabled = false;

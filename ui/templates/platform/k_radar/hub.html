@@ -222,7 +222,7 @@
       g.style.display = (inGroup && visibleInGroup > 0) ? '' : 'none';
       totalShown += visibleInGroup;
     });
-    if (countLbl) countLbl.textContent = (q || activeGroup !== 'all') ? `${totalShown} öğe` : '';
+    if (countLbl) countLbl.textContent = (q || activeGroup !== 'all') ? `${totalShown} ${t("öğe")}` : '';
   }
   search?.addEventListener('input', apply);
   fbtns.forEach(b => b.addEventListener('click', () => {

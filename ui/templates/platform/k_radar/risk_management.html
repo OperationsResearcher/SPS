@@ -171,7 +171,7 @@ function openRiskModal() {
     document.getElementById("risk-impact").value = "3";
     document.getElementById("risk-status").value = "Open";
     document.getElementById("risk-source").value = "manual";
-    document.getElementById("risk-modal-title").textContent = "Yeni Risk";
+    document.getElementById("risk-modal-title").textContent = t("Yeni Risk");
     document.getElementById("modal-risk").classList.add("active");
 }
 
@@ -189,7 +189,7 @@ async function editRisk(id) {
     document.getElementById("risk-probability").value = r.probability;
     document.getElementById("risk-impact").value = r.impact;
     document.getElementById("risk-status").value = r.status || "Open";
-    document.getElementById("risk-modal-title").textContent = "Risk Düzenle";
+    document.getElementById("risk-modal-title").textContent = t("Risk Düzenle");
     document.getElementById("modal-risk").classList.add("active");
 }
 
@@ -202,7 +202,7 @@ async function saveRisk() {
         status: document.getElementById("risk-status").value,
         source_type: document.getElementById("risk-source").value,
     };
-    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    if (!body.title) { Swal.fire({ icon: "warning", title: t("Başlık gerekli") }); return; }
     const url = id ? `/k-radar/api/risk/${id}` : "/k-radar/api/risk/add";
     const resp = await fetch(url, {
         method: id ? "PUT" : "POST",
@@ -216,7 +216,7 @@ async function saveRisk() {
 }
 
 async function deleteRisk(id) {
-    const r = await Swal.fire({ icon: "warning", title: "Sil?", showCancelButton: true });
+    const r = await Swal.fire({ icon: "warning", title: t("Sil?"), showCancelButton: true });
     if (!r.isConfirmed) return;
     await fetch(`/k-radar/api/risk/${id}`, { method: "DELETE" });
     await Promise.all([loadRisks(), loadMatrix()]);

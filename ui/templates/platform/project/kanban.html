@@ -101,10 +101,10 @@
             body: JSON.stringify({ status: newStatus })
           });
           var data = await res.json();
-          if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
-          showToast('success', 'Durum güncellendi');
+          if (!data.success) throw new Error(data.message || t('Güncelleme hatası'));
+          showToast('success', t('Durum güncellendi'));
         } catch (e) {
-          showToast('error', e.message || 'Güncelleme hatası');
+          showToast('error', e.message || t('Güncelleme hatası'));
         }
       }
     });

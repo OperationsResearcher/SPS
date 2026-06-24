@@ -83,7 +83,7 @@
 <script>
 (function(){
   const BAND_COLOR = { green:"#10b981", yellow:"#f59e0b", red:"#ef4444" };
-  const BAND_LABEL = { green:"Yeşil — sağlıklı", yellow:"Sarı — izlenmeli", red:"Kırmızı — kritik" };
+  const BAND_LABEL = { green:t("Yeşil — sağlıklı"), yellow:t("Sarı — izlenmeli"), red:t("Kırmızı — kritik") };
   function bandLabel(b) { return BAND_LABEL[b] || (b || "—"); }
   function bandColor(b) { return BAND_COLOR[b] || "#94a3b8"; }
 
@@ -110,7 +110,7 @@
         data: {
           labels: d.labels,
           datasets: [{
-            label: "Mevcut Skor",
+            label: t("Mevcut Skor"),
             data: d.values,
             backgroundColor: "rgba(99,102,241,0.18)",
             borderColor: "#6366f1",
@@ -118,7 +118,7 @@
             pointBackgroundColor: "#6366f1",
             pointRadius: 4,
           }, {
-            label: "Hedef (80)",
+            label: t("Hedef (80)"),
             data: d.labels.map(() => 80),
             backgroundColor: "rgba(16,185,129,0)",
             borderColor: "#10b981",
@@ -139,7 +139,7 @@
     sum.innerHTML = d.labels.map((lbl, i) => {
       const v = d.values[i] || 0;
       const c = v >= 75 ? "#10b981" : (v >= 50 ? "#f59e0b" : "#ef4444");
-      const tag = v >= 75 ? "Sağlıklı" : (v >= 50 ? "İzle" : "Aksiyon");
+      const tag = v >= 75 ? t("Sağlıklı") : (v >= 50 ? t("İzle") : t("Aksiyon"));
       return `
         <div style="display:flex; align-items:center; gap:10px;">
           <div style="width:90px; font-weight:600; color:#475569;">${lbl}</div>

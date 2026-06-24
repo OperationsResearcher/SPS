@@ -75,49 +75,49 @@
   }
 
   async function load() {
-    wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>`;
+    wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> ${t("Yükleniyor…")}</div>`;
     try {
       const res = await fetch("/reports/api/pi-project-impact");
       const j = await res.json();
-      if (!j.success) throw new Error(j.message || "Veri alınamadı");
+      if (!j.success) throw new Error(j.message || t("Veri alınamadı"));
       const d = j.data;
       const s = d.summary;
 
       summaryEl.innerHTML = `
         <div class="mc-card" style="padding:12px 14px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Toplam Proje</div>
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Toplam Proje")}</div>
           <div style="font-size:22px; font-weight:800; color:#0f172a;">${s.projects}</div>
         </div>
         <div class="mc-card" style="padding:12px 14px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">PG'ye Bağlı Proje</div>
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("PG'ye Bağlı Proje")}</div>
           <div style="font-size:22px; font-weight:800; color:#10b981;">${s.projects_with_pg}</div>
         </div>
         <div class="mc-card" style="padding:12px 14px; border-left:3px solid ${s.projects_without_pg>0?'#dc2626':'#10b981'};">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Bağsız Proje</div>
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Bağsız Proje")}</div>
           <div style="font-size:22px; font-weight:800; color:${s.projects_without_pg>0?'#dc2626':'#10b981'};">${s.projects_without_pg}</div>
         </div>
         <div class="mc-card" style="padding:12px 14px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Toplam Etkilenen PG</div>
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Toplam Etkilenen PG")}</div>
           <div style="font-size:22px; font-weight:800; color:#0f172a;">${s.total_pg_touched}</div>
         </div>
         <div class="mc-card" style="padding:12px 14px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">Ort. PG Hedef Üstü</div>
+          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Ort. PG Hedef Üstü")}</div>
           <div style="font-size:22px; font-weight:800; color:${pctColor(s.avg_pg_on_target_pct)};">%${s.avg_pg_on_target_pct}</div>
         </div>`;
 
       if (!d.items.length) {
-        wrap.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">Bu kurumda henüz proje yok.</div>';
+        wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;">${t("Bu kurumda henüz proje yok.")}</div>`;
         return;
       }
 
       // Header
       let html = `
         <div class="pgx-row" style="background:#f8fafc; font-weight:600; font-size:11.5px; color:#475569; text-transform:uppercase; letter-spacing:0.03em; cursor:default;">
-          <div>Proje</div>
-          <div style="text-align:center;">Süreç</div>
-          <div style="text-align:center;">PG Toplam</div>
-          <div style="text-align:center;">Hedef Üstü</div>
-          <div style="text-align:center;">Hedef Üstü %</div>
+          <div>${t("Proje")}</div>
+          <div style="text-align:center;">${t("Süreç")}</div>
+          <div style="text-align:center;">${t("PG Toplam")}</div>
+          <div style="text-align:center;">${t("Hedef Üstü")}</div>
+          <div style="text-align:center;">${t("Hedef Üstü %")}</div>
           <div></div>
         </div>`;
 
@@ -126,7 +126,7 @@
           <div class="pgx-row" data-idx="${idx}">
             <div style="display:flex; flex-direction:column; min-width:0;">
               <a href="/project/${it.project_id}" style="font-weight:600; color:var(--text-default); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
-              <div style="font-size:11px; color:#94a3b8;">Sağlık: %${Math.round(it.health_score||0)}</div>
+              <div style="font-size:11px; color:#94a3b8;">${t("Sağlık:")} %${Math.round(it.health_score||0)}</div>
             </div>
             <div style="text-align:center; font-weight:600;">${it.process_count}</div>
             <div style="text-align:center;">${it.pg_total}</div>
@@ -159,7 +159,7 @@
         det.className = "pgx-detail";
         det.innerHTML = `
           <div style="font-size:11.5px; color:#64748b; text-transform:uppercase; font-weight:600; margin-bottom:8px;">
-            Bu projenin etkilediği ${it.process_count} süreç:
+            ${t("Bu projenin etkilediği")} ${it.process_count} ${t("süreç:")}
           </div>
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:8px;">
             ${it.processes.map(p => {
@@ -172,7 +172,7 @@
                       ${p.code ? `<span style="background:#eef2ff; color:#4338ca; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:11px; margin-right:4px;">${escHtml(p.code)}</span>` : ''}
                       ${escHtml(p.name)}
                     </div>
-                    <div style="font-size:11px; color:#64748b; margin-top:2px;">${p.pg_total} PG · ${p.pg_on_target} hedef üstü</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:2px;">${p.pg_total} PG · ${p.pg_on_target} ${t("hedef üstü")}</div>
                   </div>
                   ${pctPill(pct)}
                 </a>`;
@@ -181,7 +181,7 @@
         row.after(det);
       });
     } catch(e) {
-      wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#dc2626;">Yüklenemedi: ${escHtml(e.message)}</div>`;
+      wrap.innerHTML = `<div style="text-align:center; padding:40px; color:#dc2626;">${t("Yüklenemedi:")} ${escHtml(e.message)}</div>`;
     }
   }
 

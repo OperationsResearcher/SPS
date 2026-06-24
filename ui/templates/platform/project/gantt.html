@@ -75,7 +75,7 @@
       });
 
       if (typeof Gantt === 'undefined') {
-        showToast('error', 'Gantt kütüphanesi yüklenemedi');
+        showToast('error', t('Gantt kütüphanesi yüklenemedi'));
         return;
       }
       new Gantt('#gantt', ganttTasks, {
@@ -95,15 +95,15 @@
               body: JSON.stringify(body)
             });
             var d = await r.json();
-            if (!d.success) throw new Error(d.message || 'Güncelleme hatası');
-            showToast('success', 'Tarih güncellendi');
+            if (!d.success) throw new Error(d.message || t('Güncelleme hatası'));
+            showToast('success', t('Tarih güncellendi'));
           } catch (e) {
-            showToast('error', e.message || 'Güncelleme hatası');
+            showToast('error', e.message || t('Güncelleme hatası'));
           }
         }
       });
     } catch (e) {
-      showToast('error', e.message || 'Gantt yüklenemedi');
+      showToast('error', e.message || t('Gantt yüklenemedi'));
     }
   })();
 })();

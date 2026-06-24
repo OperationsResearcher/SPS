@@ -48,7 +48,7 @@
     var root=document.getElementById("bireysel-root");
     var ys=document.getElementById("year-select");
     function load(){
-      box.style.display="block"; metin.textContent="Özet hazırlanıyor…"; if(kEl)kEl.textContent="";
+      box.style.display="block"; metin.textContent=t("Özet hazırlanıyor…"); if(kEl)kEl.textContent="";
       var y=(ys&&ys.value)||(root&&root.getAttribute("data-current-year"))||"";
       fetch(url+(y?("?year="+encodeURIComponent(y)):""),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
         .then(function(r){return r.ok?r.json():null;})

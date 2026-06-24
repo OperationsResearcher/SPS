@@ -122,28 +122,28 @@
     ]);
     const list = document.getElementById('rt-list');
     if (!j1.items || !j1.items.length) {
-      list.innerHTML = '<div class="mc-card" style="padding:20px;color:#64748b;">Tetikleyici yok.</div>';
+      list.innerHTML = `<div class="mc-card" style="padding:20px;color:#64748b;">${t("Tetikleyici yok.")}</div>`;
     } else {
       list.innerHTML = j1.items.filter(i => i.is_active).map(i => `
         <div class="mc-card" style="padding:12px;margin-bottom:8px;border-left:3px solid ${sevColor(i.severity)};">
           <div style="font-weight:600;color:var(--text-default);">${i.name}</div>
           <div style="font-size:12px;color:#64748b;margin-top:4px;">
-            ${i.trigger_type} • ${i.threshold_operator || ''} ${i.threshold_value ?? ''} • ${i.consecutive_periods} dönem
+            ${i.trigger_type} • ${i.threshold_operator || ''} ${i.threshold_value ?? ''} • ${i.consecutive_periods} ${t("dönem")}
           </div>
           <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
-            ${i.fire_count} kez ateşlendi ${i.last_fired_at ? '• son: ' + new Date(i.last_fired_at).toLocaleString('tr-TR') : ''}
+            ${i.fire_count} ${t("kez ateşlendi")} ${i.last_fired_at ? '• ' + t("son:") + ' ' + new Date(i.last_fired_at).toLocaleString('tr-TR') : ''}
           </div>
         </div>
       `).join('');
     }
     const ev = document.getElementById('rt-events');
     if (!j2.items || !j2.items.length) {
-      ev.innerHTML = '<div class="mc-card" style="padding:20px;color:#64748b;">Henüz olay yok.</div>';
+      ev.innerHTML = `<div class="mc-card" style="padding:20px;color:#64748b;">${t("Henüz olay yok.")}</div>`;
     } else {
       ev.innerHTML = j2.items.map(e => `
         <div class="mc-card" style="padding:12px;margin-bottom:8px;">
           <div style="font-size:12px;color:#64748b;">${new Date(e.fired_at).toLocaleString('tr-TR')}</div>
-          <div style="font-size:13px;color:var(--text-default);">Tetikleyici #${e.trigger_id} → ${e.action_taken || '—'}</div>
+          <div style="font-size:13px;color:var(--text-default);">${t("Tetikleyici")} #${e.trigger_id} → ${e.action_taken || '—'}</div>
           ${e.payload ? `<pre style="font-size:11px;background:#f8fafc;padding:6px;margin-top:4px;border-radius:4px;">${e.payload}</pre>` : ''}
         </div>
       `).join('');
@@ -165,7 +165,7 @@
       body: JSON.stringify(d),
     });
     const j = await res.json();
-    if (!res.ok) { Swal.fire({icon:'error',title:'Hata',text:j.error||''}); return; }
+    if (!res.ok) { Swal.fire({icon:'error',title:t("Hata"),text:j.error||''}); return; }
     modal.classList.remove('open');
     f.reset();
     load();
@@ -174,7 +174,7 @@
   document.getElementById('rt-eval').onclick = async () => {
     const res = await fetch(r.dataset.evaluateUrl, {method: 'POST'});
     const j = await res.json();
-    Swal.fire({icon:'success',title:'Değerlendirildi',text:j.fired_count + ' tetikleyici ateşlendi'});
+    Swal.fire({icon:'success',title:t("Değerlendirildi"),text:j.fired_count + ' ' + t("tetikleyici ateşlendi")});
     load();
   };
 

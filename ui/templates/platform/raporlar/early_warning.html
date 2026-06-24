@@ -50,21 +50,21 @@
       document.getElementById('ew-content').style.display = 'block';
       const s = j.summary;
       document.getElementById('ew-summary').innerHTML = [
-        stat('Kontrol Edilen PG', s.total_kpis_checked, '#0f172a', 'Aktif plan yılındaki tüm PG\'ler', 'raporlar_early_warning.kontrol_edilen_pg'),
-        stat('Uyarı Sayısı',      s.warnings_count,     s.warnings_count > 0 ? '#dc2626' : '#10b981', 'Ardışık düşük performanslı', 'raporlar_early_warning.uyari_sayisi'),
-        stat('Yüksek Öncelik',   s.high_severity,       '#dc2626', 'Acil müdahale gerektirenler', 'raporlar_early_warning.yuksek_oncelik'),
+        stat(t('Kontrol Edilen PG'), s.total_kpis_checked, '#0f172a', t('Aktif plan yılındaki tüm PG\'ler'), 'raporlar_early_warning.kontrol_edilen_pg'),
+        stat(t('Uyarı Sayısı'),      s.warnings_count,     s.warnings_count > 0 ? '#dc2626' : '#10b981', t('Ardışık düşük performanslı'), 'raporlar_early_warning.uyari_sayisi'),
+        stat(t('Yüksek Öncelik'),   s.high_severity,       '#dc2626', t('Acil müdahale gerektirenler'), 'raporlar_early_warning.yuksek_oncelik'),
       ].join('');
 
       const warnings = j.warnings;
       const el = document.getElementById('ew-warnings');
       if (!warnings.length) {
-        el.innerHTML = '<div style="color:#10b981;font-size:13px;padding:14px 16px;background:#ecfdf5;border-radius:8px;border:1px solid #bbf7d0;"><i class="fas fa-check-circle"></i> Şu an erken uyarı yok — tüm PG\'ler kabul edilebilir performans aralığında.</div>';
+        el.innerHTML = '<div style="color:#10b981;font-size:13px;padding:14px 16px;background:#ecfdf5;border-radius:8px;border:1px solid #bbf7d0;"><i class="fas fa-check-circle"></i> ' + t('Şu an erken uyarı yok — tüm PG\'ler kabul edilebilir performans aralığında.') + '</div>';
         return;
       }
       el.innerHTML = '<div style="display:grid;gap:8px;">' + warnings.map(w => {
         const isHigh = w.severity === 'high';
         const c = isHigh ? '#dc2626' : '#f59e0b';
-        const label = isHigh ? 'YÜKSEK ÖNCELİK' : 'ORTA ÖNCELİK';
+        const label = isHigh ? t('YÜKSEK ÖNCELİK') : t('ORTA ÖNCELİK');
         const bg = isHigh ? '#fef2f2' : '#fffbeb';
         const scores = (w.last_scores || []).map(sc => {
           const pct = Math.round(sc);
@@ -75,12 +75,12 @@
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
             <div>
               <div style="font-weight:600;color:#0f172a;font-size:13px;">${esc(w.kpi_code||'')} — ${esc(w.kpi_name||'')}</div>
-              <div style="font-size:11.5px;color:#64748b;margin-top:2px;"><i class="fas fa-cog" style="font-size:10px;"></i> ${esc(w.process_name||'Süreç belirtilmemiş')}</div>
+              <div style="font-size:11.5px;color:#64748b;margin-top:2px;"><i class="fas fa-cog" style="font-size:10px;"></i> ${esc(w.process_name||t('Süreç belirtilmemiş'))}</div>
             </div>
             <span style="background:${c};color:#fff;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:8px;white-space:nowrap;">${label}</span>
           </div>
           <div style="font-size:11.5px;color:#475569;margin-top:8px;">
-            <span style="color:#64748b;">Son dönem başarı seyrі:</span> ${scores}
+            <span style="color:#64748b;">${t("Son dönem başarı seyri")}:</span> ${scores}
           </div>
         </div>`;
       }).join('') + '</div>';
@@ -88,7 +88,7 @@
       document.getElementById('ew-loading').style.display = 'none';
       const err = document.getElementById('ew-error');
       err.style.display = 'block';
-      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Hata: ' + esc(e.message);
+      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + t('Hata') + ': ' + esc(e.message);
     }
   }
   load();

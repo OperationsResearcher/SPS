@@ -58,24 +58,24 @@
     const j = await res.json();
     const list = document.getElementById('tpl-list');
     if (!j.items || !j.items.length) {
-      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Şablon yok.</div>';
+      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">' + t("Şablon yok.") + '</div>';
       return;
     }
-    const sectorLabel = {public:'Kamu', private:'Özel', ngo:'STK'};
-    list.innerHTML = j.items.map(t => `
+    const sectorLabel = {public:t('Kamu'), private:t('Özel'), ngo:t('STK')};
+    list.innerHTML = j.items.map(it => `
       <div class="mc-card" style="padding:18px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${sectorLabel[t.sector]||t.sector||''}</span>
-          <span style="color:#64748b;font-size:11px;">${t.period_years || '?'} yıllık</span>
+          <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${sectorLabel[it.sector]||it.sector||''}</span>
+          <span style="color:#64748b;font-size:11px;">${it.period_years || '?'} ${t("yıllık")}</span>
         </div>
-        <h3 style="font-size:15px;font-weight:700;color:var(--text-default);margin:0 0 6px;">${t.name}</h3>
-        <p style="font-size:13px;color:#64748b;margin:0 0 12px;">${t.description || ''}</p>
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-default);margin:0 0 6px;">${it.name}</h3>
+        <p style="font-size:13px;color:#64748b;margin:0 0 12px;">${it.description || ''}</p>
         <div style="display:flex;gap:12px;font-size:12px;color:#475569;margin-bottom:12px;">
-          <span>📋 ${t.strategy_count} strateji</span>
-          <span>📊 ${t.kpi_count} KPI</span>
+          <span>📋 ${it.strategy_count} ${t("strateji")}</span>
+          <span>📊 ${it.kpi_count} KPI</span>
         </div>
-        <button class="mc-btn mc-btn-primary" style="width:100%;" data-code="${t.code}" data-name="${t.name}" data-desc="${t.description||''}">
-          <i class="fas fa-magic"></i> Bu Şablonu Uygula
+        <button class="mc-btn mc-btn-primary" style="width:100%;" data-code="${it.code}" data-name="${it.name}" data-desc="${it.description||''}">
+          <i class="fas fa-magic"></i> ${t("Bu Şablonu Uygula")}
         </button>
       </div>
     `).join('');
@@ -101,7 +101,7 @@
       overwrite_identity: document.getElementById('tpl-overwrite').checked,
     };
     const btn = document.getElementById('tpl-apply');
-    btn.disabled = true; btn.textContent = 'Uygulanıyor...';
+    btn.disabled = true; btn.textContent = t('Uygulanıyor...');
     try {
       const res = await fetch(url, {
         method: 'POST',
@@ -109,12 +109,12 @@
         body: JSON.stringify(data),
       });
       const j = await res.json();
-      if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
+      if (!res.ok) { Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('İşlem başarısız')), confirmButtonColor: '#dc2626' }); return; }
       Swal.fire({ toast: true, position: 'top-end', icon: 'success',
-                  title: 'Şablon uygulandı: PlanYear #' + j.plan_year.id, showConfirmButton: false, timer: 2500 });
+                  title: t('Şablon uygulandı: PlanYear #') + j.plan_year.id, showConfirmButton: false, timer: 2500 });
       modal.style.display = 'none';
     } finally {
-      btn.disabled = false; btn.textContent = 'Uygula';
+      btn.disabled = false; btn.textContent = t('Uygula');
     }
   };
 

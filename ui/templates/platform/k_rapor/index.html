@@ -948,7 +948,7 @@
       t.style.display = ok ? '' : 'none';
       if (ok) shown++;
     });
-    if (countLbl) countLbl.textContent = `${shown} sekme`;
+    if (countLbl) countLbl.textContent = `${shown} ${t("sekme")}`;
   }
   search?.addEventListener('input', apply);
 })();

@@ -119,15 +119,15 @@
   // Otomatik şimdi çalıştır
   var runBtn=document.getElementById("yd-run"), runSonuc=document.getElementById("yd-run-sonuc");
   if(runBtn) runBtn.addEventListener("click", function(){
-    runBtn.disabled=true; var o=runBtn.innerHTML; runBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor… (DB + kod, ~30 sn)';
+    runBtn.disabled=true; var o=runBtn.innerHTML; runBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Çalışıyor… (DB + kod, ~30 sn)');
     fetch(root.dataset.otomatikUrl,{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();}).then(function(j){
         runSonuc.style.display="block";
         if(j.success){ var res=j.result||{};
           runSonuc.style.color="#166534";
-          runSonuc.innerHTML='<i class="fas fa-check"></i> Tamam — DB: '+((res.db&&(res.db.size/1048576).toFixed(1))||'?')+' MB, Kod ('+(res.code_kind||'?')+'): '+((res.code&&(res.code.size/1048576).toFixed(1))||'?')+' MB. Sayfayı yenileyin.';
-        } else { runSonuc.style.color="#991b1b"; runSonuc.innerHTML='<i class="fas fa-xmark"></i> '+((j.result&&j.result.errors&&j.result.errors.join("; "))||j.message||"Hata"); }
-      }).catch(function(){ runSonuc.style.display="block"; runSonuc.style.color="#991b1b"; runSonuc.textContent="Bağlantı hatası."; })
+          runSonuc.innerHTML='<i class="fas fa-check"></i> '+t('Tamam — DB:')+' '+((res.db&&(res.db.size/1048576).toFixed(1))||'?')+' MB, '+t('Kod')+' ('+(res.code_kind||'?')+'): '+((res.code&&(res.code.size/1048576).toFixed(1))||'?')+' '+t('MB. Sayfayı yenileyin.');
+        } else { runSonuc.style.color="#991b1b"; runSonuc.innerHTML='<i class="fas fa-xmark"></i> '+((j.result&&j.result.errors&&j.result.errors.join("; "))||j.message||t("Hata")); }
+      }).catch(function(){ runSonuc.style.display="block"; runSonuc.style.color="#991b1b"; runSonuc.textContent=t("Bağlantı hatası."); })
       .finally(function(){ runBtn.disabled=false; runBtn.innerHTML=o; });
   });
 
@@ -137,17 +137,17 @@
     var f=document.getElementById("yd-restore-file").files[0];
     var pw=document.getElementById("yd-restore-pw").value;
     var cf=document.getElementById("yd-restore-confirm").value;
-    if(!f){ alert("Bir .dump dosyası seçin."); return; }
-    if(typeof Swal==="undefined"){ if(!confirm("DB üzerine yazılacak. Emin misiniz?")) return; doRestore(); }
-    else { Swal.fire({title:"Emin misiniz?",text:"Mevcut DB üzerine yazılacak, geri alınamaz.",icon:"warning",showCancelButton:true,confirmButtonColor:"#dc2626",confirmButtonText:"Evet, geri yükle",cancelButtonText:"Vazgeç"}).then(function(r){ if(r.isConfirmed) doRestore(); }); }
+    if(!f){ alert(t("Bir .dump dosyası seçin.")); return; }
+    if(typeof Swal==="undefined"){ if(!confirm(t("DB üzerine yazılacak. Emin misiniz?"))) return; doRestore(); }
+    else { Swal.fire({title:t("Emin misiniz?"),text:t("Mevcut DB üzerine yazılacak, geri alınamaz."),icon:"warning",showCancelButton:true,confirmButtonColor:"#dc2626",confirmButtonText:t("Evet, geri yükle"),cancelButtonText:t("Vazgeç")}).then(function(r){ if(r.isConfirmed) doRestore(); }); }
     function doRestore(){
       var fd=new FormData(); fd.append("dump",f); fd.append("password",pw); fd.append("confirmation",cf);
-      rb.disabled=true; var o=rb.innerHTML; rb.innerHTML='<i class="fas fa-spinner fa-spin"></i> Geri yükleniyor…';
+      rb.disabled=true; var o=rb.innerHTML; rb.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Geri yükleniyor…');
       fetch(root.dataset.restoreUrl,{method:"POST",body:fd,headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
         .then(function(r){return r.json();}).then(function(j){
           rs.style.display="block"; rs.style.color=j.success?"#166534":"#991b1b";
           rs.innerHTML=(j.success?'<i class="fas fa-check"></i> ':'<i class="fas fa-xmark"></i> ')+(j.message||"");
-        }).catch(function(){ rs.style.display="block"; rs.style.color="#991b1b"; rs.textContent="Bağlantı hatası."; })
+        }).catch(function(){ rs.style.display="block"; rs.style.color="#991b1b"; rs.textContent=t("Bağlantı hatası."); })
         .finally(function(){ rb.disabled=false; rb.innerHTML=o; });
     }
   });

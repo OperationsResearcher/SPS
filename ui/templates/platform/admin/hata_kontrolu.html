@@ -183,36 +183,36 @@
     fetch(durumUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();})
       .then(function(j){
-        if(!j||!j.success){durumEl.textContent="Durum alınamadı.";return;}
+        if(!j||!j.success){durumEl.textContent=t("Durum alınamadı.");return;}
         var d=j.durum||{};
         if(!d.exists){
-          durumEl.innerHTML='<span style="color:#b45309;"><i class="fas fa-circle-exclamation"></i> tomofiltest henüz yok. "Kur / Yenile" ile oluşturun.</span>';
+          durumEl.innerHTML='<span style="color:#b45309;"><i class="fas fa-circle-exclamation"></i> '+t('tomofiltest henüz yok. "Kur / Yenile" ile oluşturun.')+'</span>';
           return;
         }
-        durumEl.innerHTML='<span style="color:#15803d;"><i class="fas fa-circle-check"></i> Hazır</span> '+
-          '<span style="color:#64748b;">(id='+d.tid+') — strateji: <b>'+d.strategies+'</b>, süreç: <b>'+d.processes+'</b>, PG: <b>'+d.process_kpis+'</b>, ölçüm: <b>'+(d.kpi_data||0).toLocaleString("tr-TR")+'</b> · admin: '+d.admin_email+'</span>';
-      }).catch(function(){durumEl.textContent="Durum alınamadı.";});
+        durumEl.innerHTML='<span style="color:#15803d;"><i class="fas fa-circle-check"></i> '+t('Hazır')+'</span> '+
+          '<span style="color:#64748b;">(id='+d.tid+') — '+t('strateji:')+' <b>'+d.strategies+'</b>, '+t('süreç:')+' <b>'+d.processes+'</b>, PG: <b>'+d.process_kpis+'</b>, '+t('ölçüm:')+' <b>'+(d.kpi_data||0).toLocaleString("tr-TR")+'</b> · '+t('admin:')+' '+d.admin_email+'</span>';
+      }).catch(function(){durumEl.textContent=t("Durum alınamadı.");});
   }
 
   function yenile(){
     if(!isLocal) return;
     setBusy(true); var orig=btn.innerHTML;
-    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Kuruluyor… (birkaç saniye)';
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Kuruluyor… (birkaç saniye)');
     sonucEl.style.display="none";
     fetch(yenileUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
       .then(function(r){return r.json();})
       .then(function(j){
         if(j&&j.success){
           sonucEl.style.background="#f0fdf4";sonucEl.style.color="#166534";
-          sonucEl.innerHTML='<i class="fas fa-check"></i> tomofiltest hazır — '+(j.toplam_satir||0).toLocaleString("tr-TR")+' satır kopyalandı (id='+j.tid+').';
+          sonucEl.innerHTML='<i class="fas fa-check"></i> '+t('tomofiltest hazır —')+' '+(j.toplam_satir||0).toLocaleString("tr-TR")+' '+t('satır kopyalandı')+' (id='+j.tid+').';
         }else{
           sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
-          sonucEl.innerHTML='<i class="fas fa-xmark"></i> '+((j&&j.message)||"Hata oluştu.");
+          sonucEl.innerHTML='<i class="fas fa-xmark"></i> '+((j&&j.message)||t("Hata oluştu."));
         }
         sonucEl.style.display="block"; loadDurum();
       }).catch(function(){
         sonucEl.style.background="#fef2f2";sonucEl.style.color="#991b1b";
-        sonucEl.innerHTML='<i class="fas fa-xmark"></i> Bağlantı hatası.';sonucEl.style.display="block";
+        sonucEl.innerHTML='<i class="fas fa-xmark"></i> '+t('Bağlantı hatası.');sonucEl.style.display="block";
       }).finally(function(){setBusy(false);btn.innerHTML=orig;});
   }
 
@@ -228,14 +228,14 @@
 
   function kesfet(){
     kesfetBtn.disabled=true; var o=kesfetBtn.innerHTML;
-    kesfetBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Keşfediliyor…';
+    kesfetBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Keşfediliyor…');
     fetch(kesifUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();})
       .then(function(j){
-        if(!j||!j.success){kesifEl.textContent="Keşif başarısız.";return;}
+        if(!j||!j.success){kesifEl.textContent=t("Keşif başarısız.");return;}
         var k=j.kesif||{}, sk=k.skipped||{};
-        kesifEl.innerHTML='<span style="color:#15803d;font-weight:600;"><i class="fas fa-circle-check"></i> '+k.count+' sayfa taranacak.</span>'+
-          ' <span style="color:#94a3b8;">(atlanan — parametreli: '+(sk.param||0)+', kara liste: '+(sk.blacklist||0)+', legacy: '+(sk.legacy||0)+')</span>';
+        kesifEl.innerHTML='<span style="color:#15803d;font-weight:600;"><i class="fas fa-circle-check"></i> '+k.count+' '+t('sayfa taranacak.')+'</span>'+
+          ' <span style="color:#94a3b8;">('+t('atlanan — parametreli:')+' '+(sk.param||0)+', '+t('kara liste:')+' '+(sk.blacklist||0)+', legacy: '+(sk.legacy||0)+')</span>';
         // modul rozetleri
         var bm=k.by_module||{}, chips="";
         Object.keys(bm).forEach(function(m){
@@ -250,7 +250,7 @@
         });
         kesifListe.innerHTML='<div style="margin-bottom:8px;">'+chips+'</div>'+list;
         kesifListe.style.display="block";
-      }).catch(function(){kesifEl.textContent="Keşif başarısız.";})
+      }).catch(function(){kesifEl.textContent=t("Keşif başarısız.");})
       .finally(function(){kesfetBtn.disabled=false;kesfetBtn.innerHTML=o;});
   }
   if(kesfetBtn) kesfetBtn.addEventListener("click", kesfet);
@@ -268,11 +268,11 @@
     var pct=d.total?Math.round(d.done/d.total*100):0;
     bar.style.width=pct+"%";
     info.textContent=d.status==="running"
-      ? ("Taranıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
-      : (d.status==="done"?("Tamamlandı — "+d.done+"/"+d.total):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+      ? (t("Taranıyor…")+" "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?(t("Tamamlandı —")+" "+d.done+"/"+d.total):(d.status==="error"?(t("Hata:")+" "+(d.error||"")):d.status));
     var c=d.counts||{};
     ozetEl.style.display="block";
-    ozetEl.innerHTML='<span style="font-size:13px;font-weight:600;">Özet:</span> '+
+    ozetEl.innerHTML='<span style="font-size:13px;font-weight:600;">'+t('Özet:')+'</span> '+
       '<span style="color:#16a34a;">✅ '+(c.ok||0)+'</span> &nbsp; '+
       '<span style="color:#f59e0b;">⚠️ '+(c.warn||0)+'</span> &nbsp; '+
       '<span style="color:#dc2626;">❌ '+(c.fail||0)+'</span> &nbsp; '+
@@ -281,15 +281,15 @@
     var lk=d.links||{}, linksEl=document.getElementById("hk-tara-links");
     if((lk.dead_count||0)>0 || (lk.orphan_count||0)>0){
       var h='<div style="font-size:12.5px;">'+
-        '<b><i class="fas fa-link-slash" style="color:#dc2626;"></i> Ölü link:</b> '+(lk.dead_count||0)+
-        ' &nbsp; <b><i class="fas fa-ghost" style="color:#94a3b8;"></i> Yetim sayfa:</b> '+(lk.orphan_count||0)+
-        ' <span style="color:#94a3b8;">(toplanan bağlantı: '+(lk.harvested||0)+')</span></div>';
+        '<b><i class="fas fa-link-slash" style="color:#dc2626;"></i> '+t('Ölü link:')+'</b> '+(lk.dead_count||0)+
+        ' &nbsp; <b><i class="fas fa-ghost" style="color:#94a3b8;"></i> '+t('Yetim sayfa:')+'</b> '+(lk.orphan_count||0)+
+        ' <span style="color:#94a3b8;">('+t('toplanan bağlantı:')+' '+(lk.harvested||0)+')</span></div>';
       if((lk.dead||[]).length){
-        h+='<details style="margin-top:4px;"><summary style="cursor:pointer;font-size:12px;color:#dc2626;">Ölü linkler ('+lk.dead.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+        h+='<details style="margin-top:4px;"><summary style="cursor:pointer;font-size:12px;color:#dc2626;">'+t('Ölü linkler')+' ('+lk.dead.length+')</summary><div style="padding:4px 0 6px 12px;">'+
           lk.dead.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.path)+' <span style="color:#cbd5e1;">← '+esc(x.source)+'</span></div>';}).join("")+'</div></details>';
       }
       if((lk.orphans||[]).length){
-        h+='<details style="margin-top:2px;"><summary style="cursor:pointer;font-size:12px;color:#64748b;">Yetim sayfalar — hiçbir sayfadan link verilmemiş ('+lk.orphans.length+')</summary><div style="padding:4px 0 6px 12px;">'+
+        h+='<details style="margin-top:2px;"><summary style="cursor:pointer;font-size:12px;color:#64748b;">'+t('Yetim sayfalar — hiçbir sayfadan link verilmemiş')+' ('+lk.orphans.length+')</summary><div style="padding:4px 0 6px 12px;">'+
           lk.orphans.map(function(x){return '<div style="font-size:11.5px;color:#64748b;font-family:monospace;">'+esc(x.url)+' <span style="color:#cbd5e1;">'+esc(x.module||"")+'</span></div>';}).join("")+'</div></details>';
       }
       linksEl.innerHTML=h; linksEl.style.display="block";
@@ -312,25 +312,25 @@
   function poll(runId){
     fetch(taramaDurumUrl+"?run="+encodeURIComponent(runId),{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){info.textContent="Durum alınamadı.";clearInterval(pollTimer);return;}
+        if(!j||!j.success){info.textContent=t("Durum alınamadı.");clearInterval(pollTimer);return;}
         renderTara(j.durum);
         if(j.durum.status==="done"||j.durum.status==="error"){
-          clearInterval(pollTimer); setBusy(false); taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';
+          clearInterval(pollTimer); setBusy(false); taraBtn.innerHTML='<i class="fas fa-play"></i> '+t('Taramayı Başlat');
         }
       }).catch(function(){});
   }
 
   function basla(){
     if(!isLocal) return;
-    setBusy(true); taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Başlatılıyor…';
+    setBusy(true); taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Başlatılıyor…');
     barWrap.style.display="block"; bar.style.width="0";
     var lim=parseInt(limitEl.value); var q=(lim>0)?("?limit="+lim):"";
     fetch(baslatUrl+q,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){info.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';return;}
-        taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Taranıyor…';
+        if(!j||!j.success){info.textContent=(j&&j.message)||t("Başlatılamadı.");setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> '+t('Taramayı Başlat');return;}
+        taraBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Taranıyor…');
         pollTimer=setInterval(function(){poll(j.run_id);},1500); poll(j.run_id);
-      }).catch(function(){info.textContent="Bağlantı hatası.";setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> Taramayı Başlat';});
+      }).catch(function(){info.textContent=t("Bağlantı hatası.");setBusy(false);taraBtn.innerHTML='<i class="fas fa-play"></i> '+t('Taramayı Başlat');});
   }
   if(taraBtn) taraBtn.addEventListener("click", basla);
 
@@ -340,8 +340,8 @@
   var senTimer=null;
   function renderSen(d){
     senInfo.textContent=d.status==="running"
-      ? ("Çalışıyor… "+d.done+"/"+d.total+" — "+(d.current||""))
-      : (d.status==="done"?("Tamamlandı — ✅ "+d.passed+" / ❌ "+d.failed+(d.reset?" · tomofiltest sıfırlandı":"")):(d.status==="error"?("Hata: "+(d.error||"")):d.status));
+      ? (t("Çalışıyor…")+" "+d.done+"/"+d.total+" — "+(d.current||""))
+      : (d.status==="done"?(t("Tamamlandı —")+" ✅ "+d.passed+" / ❌ "+d.failed+(d.reset?" · "+t("tomofiltest sıfırlandı"):"")):(d.status==="error"?(t("Hata:")+" "+(d.error||"")):d.status));
     var html=(d.scenarios||[]).map(function(s){
       var col=s.passed?"#16a34a":"#dc2626", ic=s.passed?"fa-circle-check":"fa-circle-xmark";
       var steps=(s.steps||[]).map(function(st){
@@ -357,18 +357,18 @@
       .then(function(r){return r.json();}).then(function(j){
         if(!j||!j.success){clearInterval(senTimer);return;}
         renderSen(j.durum);
-        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';}
+        if(j.durum.status==="done"||j.durum.status==="error"){clearInterval(senTimer);setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> '+t('Senaryoları Çalıştır');}
       }).catch(function(){});
   }
   function senBasla(){
     if(!isLocal) return;
-    setBusy(true); senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Çalışıyor…';
-    senInfo.textContent="Başlatılıyor…";
+    setBusy(true); senBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+t('Çalışıyor…');
+    senInfo.textContent=t("Başlatılıyor…");
     fetch(senBaslatUrl,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"},credentials:"same-origin",body:"{}"})
       .then(function(r){return r.json();}).then(function(j){
-        if(!j||!j.success){senInfo.textContent=(j&&j.message)||"Başlatılamadı.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';return;}
+        if(!j||!j.success){senInfo.textContent=(j&&j.message)||t("Başlatılamadı.");setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> '+t('Senaryoları Çalıştır');return;}
         senTimer=setInterval(function(){senPoll(j.run_id);},1500); senPoll(j.run_id);
-      }).catch(function(){senInfo.textContent="Bağlantı hatası.";setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> Senaryoları Çalıştır';});
+      }).catch(function(){senInfo.textContent=t("Bağlantı hatası.");setBusy(false);senBtn.innerHTML='<i class="fas fa-vial"></i> '+t('Senaryoları Çalıştır');});
   }
   if(senBtn) senBtn.addEventListener("click", senBasla);
 
@@ -415,15 +415,15 @@
     fetch(gecmisUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.json();}).then(function(j){
         if(!j||!j.success){
-          if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
-          if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";return;
+          if(taraGecmisListe)taraGecmisListe.textContent=t("Geçmiş alınamadı.");
+          if(senGecmisListe)senGecmisListe.textContent=t("Geçmiş alınamadı.");return;
         }
         var ks=j.kosular||[];
-        fillGecmis(taraGecmisListe, ks.filter(function(k){return k.kind!=="scenario";}), "Henüz kayıtlı tarama koşusu yok.");
-        fillGecmis(senGecmisListe, ks.filter(function(k){return k.kind==="scenario";}), "Henüz kayıtlı senaryo koşusu yok.");
+        fillGecmis(taraGecmisListe, ks.filter(function(k){return k.kind!=="scenario";}), t("Henüz kayıtlı tarama koşusu yok."));
+        fillGecmis(senGecmisListe, ks.filter(function(k){return k.kind==="scenario";}), t("Henüz kayıtlı senaryo koşusu yok."));
       }).catch(function(){
-        if(taraGecmisListe)taraGecmisListe.textContent="Geçmiş alınamadı.";
-        if(senGecmisListe)senGecmisListe.textContent="Geçmiş alınamadı.";
+        if(taraGecmisListe)taraGecmisListe.textContent=t("Geçmiş alınamadı.");
+        if(senGecmisListe)senGecmisListe.textContent=t("Geçmiş alınamadı.");
       });
   }
   if(taraGecmisBtn) taraGecmisBtn.addEventListener("click", loadGecmis);

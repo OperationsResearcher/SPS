@@ -67,7 +67,7 @@ async function loadAnomalies() {
         renderAnomalies(data);
         document.getElementById("btn-slack").disabled = lastAnomalies.length === 0;
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
@@ -90,10 +90,10 @@ function renderAnomalies(data) {
     summary.innerHTML = `
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-body d-flex justify-content-around text-center">
-                <div><div class="fs-3 fw-bold text-danger">${bySev.high}</div><small class="text-muted">Yüksek</small></div>
-                <div><div class="fs-3 fw-bold text-warning">${bySev.medium}</div><small class="text-muted">Orta</small></div>
-                <div><div class="fs-3 fw-bold text-info">${bySev.low}</div><small class="text-muted">Düşük</small></div>
-                <div><div class="fs-3 fw-bold">${data.count}</div><small class="text-muted">Toplam</small></div>
+                <div><div class="fs-3 fw-bold text-danger">${bySev.high}</div><small class="text-muted">${t("Yüksek")}</small></div>
+                <div><div class="fs-3 fw-bold text-warning">${bySev.medium}</div><small class="text-muted">${t("Orta")}</small></div>
+                <div><div class="fs-3 fw-bold text-info">${bySev.low}</div><small class="text-muted">${t("Düşük")}</small></div>
+                <div><div class="fs-3 fw-bold">${data.count}</div><small class="text-muted">${t("Toplam")}</small></div>
             </div>
         </div>`;
 
@@ -111,22 +111,22 @@ function renderAnomalies(data) {
                     </div>
                     <h6 class="card-title mb-2">${escapeHtml(a.kpi_name)}</h6>
                     <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted small">Son değer:</span>
+                        <span class="text-muted small">${t("Son değer:")}</span>
                         <strong class="text-${sevClass}">${a.latest_value} ${arrow}</strong>
                     </div>
                     <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted small">Ortalama:</span>
+                        <span class="text-muted small">${t("Ortalama:")}</span>
                         <span>${a.mean} (σ=${a.std})</span>
                     </div>
                     <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted small">Z-Score:</span>
+                        <span class="text-muted small">${t("Z-Score:")}</span>
                         <strong>${a.z_score}</strong>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span class="text-muted small">Yön:</span>
+                        <span class="text-muted small">${t("Yön:")}</span>
                         <span class="badge bg-light text-dark">${a.direction}</span>
                     </div>
-                    ${a.target_value !== null ? `<hr><small class="text-muted">Hedef: ${a.target_value}</small>` : ""}
+                    ${a.target_value !== null ? `<hr><small class="text-muted">${t("Hedef:")} ${a.target_value}</small>` : ""}
                 </div>
             </div>`;
         list.appendChild(card);
@@ -137,7 +137,7 @@ async function sendSlack() {
     const webhook = document.getElementById("slack-webhook").value.trim();
     const sevMin = document.getElementById("severity-min").value;
     if (!webhook) {
-        Swal.fire({ icon: "warning", title: "Webhook gerekli", text: "Slack webhook URL'sini girin." });
+        Swal.fire({ icon: "warning", title: t("Webhook gerekli"), text: t("Slack webhook URL'sini girin.") });
         return;
     }
     try {
@@ -148,9 +148,9 @@ async function sendSlack() {
         });
         const data = await resp.json();
         if (!data.success) throw new Error(data.message);
-        Swal.fire({ icon: "success", title: "Gönderildi", text: data.message || `${data.sent} mesaj gönderildi.` });
+        Swal.fire({ icon: "success", title: t("Gönderildi"), text: data.message || `${data.sent} ${t("mesaj gönderildi.")}` });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Slack hatası", text: e.message });
+        Swal.fire({ icon: "error", title: t("Slack hatası"), text: e.message });
     }
 }
 

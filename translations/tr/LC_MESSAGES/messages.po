@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 08:05+0300\n"
+"POT-Creation-Date: 2026-06-24 12:15+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -13733,6 +13733,1865 @@ msgstr ""
 #, fuzzy
 msgid "Veri düzenle"
 msgstr "Düzenle"
+
+#: ui/templates/platform/base.html:29
+#, fuzzy
+msgid "Türkçe metin"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/base.html:30
+#, python-format
+msgid "%(n)s öğe"
+msgstr ""
+
+#: ui/templates/platform/base.html:647
+msgid "Bu kart ne için? (amaç / içerik)"
+msgstr ""
+
+#: ui/templates/platform/base.html:699
+msgid "Bu kart henüz numaralanmamış"
+msgstr ""
+
+#: ui/templates/platform/base.html:748
+#, fuzzy
+msgid "Bilgi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/base.html:753
+msgid "Bu kart için henüz açıklama girilmemiş."
+msgstr ""
+
+#: ui/templates/platform/base.html:760
+msgid "Bilgi alınamadı (ağ hatası)."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:186
+#, fuzzy
+msgid "Durum alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:189
+msgid "tomofiltest henüz yok. \"Kur / Yenile\" ile oluşturun."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:192
+#, fuzzy
+msgid "Hazır"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+#, fuzzy
+msgid "strateji:"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "süreç:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "ölçüm:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:193
+msgid "admin:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:200
+msgid "Kuruluyor… (birkaç saniye)"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:207
+msgid "tomofiltest hazır —"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:207
+#, fuzzy
+msgid "satır kopyalandı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:210
+msgid "Hata oluştu."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:231
+msgid "Keşfediliyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:235
+#, fuzzy
+msgid "Keşif başarısız."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:237
+msgid "sayfa taranacak."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:238
+msgid "atlanan — parametreli:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:238
+msgid "kara liste:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:271
+msgid "Taranıyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:272
+#, fuzzy
+msgid "Tamamlandı —"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:275
+msgid "Özet:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:284
+msgid "Ölü link:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:285
+msgid "Yetim sayfa:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:286
+msgid "toplanan bağlantı:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:288
+msgid "Ölü linkler"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:292
+msgid "Yetim sayfalar — hiçbir sayfadan link verilmemiş"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:325
+msgid "Başlatılıyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:330
+#, fuzzy
+msgid "Başlatılamadı."
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:343
+msgid "Çalışıyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:344
+#, fuzzy
+msgid "tomofiltest sıfırlandı"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:418
+#, fuzzy
+msgid "Geçmiş alınamadı."
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:422
+msgid "Henüz kayıtlı tarama koşusu yok."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:423
+msgid "Henüz kayıtlı senaryo koşusu yok."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:137
+#, fuzzy
+msgid "AKTİF"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_dashboard.html:138
+msgid "PASİF"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:144
+msgid "Son aktivite"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:224
+#, fuzzy
+msgid "Üretildi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_dashboard.html:225
+#, fuzzy
+msgid "aktif"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_dashboard.html:242
+#, fuzzy
+msgid "Sunucu hatası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_drilldown.html:169
+#, fuzzy
+msgid "senaryo"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_drilldown.html:169
+#, fuzzy
+msgid "Üretildi:"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_drilldown.html:177
+msgid "KPI'da veri"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:181
+msgid "devam eden"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:184
+#, fuzzy
+msgid "toplam"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_drilldown.html:187
+#, fuzzy
+msgid "açık"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_drilldown.html:190
+#, fuzzy
+msgid "orta"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/holding_drilldown.html:193
+#, fuzzy
+msgid "senaryo dalı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_drilldown.html:199
+#, fuzzy
+msgid "Henüz girişim yok."
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/holding_drilldown.html:231
+msgid "Risk kaydı yok."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:240
+#, fuzzy
+msgid "Skor"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:158
+#, fuzzy
+msgid "Kurum durumu alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:162
+#, fuzzy
+msgid "YeniTomofil henüz kurulmamış."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:164
+#, fuzzy
+msgid "Kuruldu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:167
+#, fuzzy
+msgid "Süreçler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:168
+msgid "PG/KPI Sayısı"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:169
+msgid "Admin"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:188
+msgid "Durum API hatası."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:204
+msgid "Yürütülüyor..."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:210
+msgid "Tüm işlemler başarıyla tamamlandı!"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:211
+msgid "Çekim durduruldu — Taslak PDF ile görselleri inceleyebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:211
+msgid "Bir hata ile kesildi."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:225
+msgid "Otonom Playwright çekim süreci başlatılıyor..."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:240
+#, fuzzy
+msgid "Sunucuyla bağlantı kurulamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:251
+msgid "Durduruluyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:252
+msgid "Durdurma isteği gönderildi — çekim güvenli noktada duracak."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:256
+msgid "Durdurma isteği gönderilemedi."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:237
+#, fuzzy
+msgid "Admin yok"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/sub_tenants.html:254
+msgid "Admin şifresini sıfırla"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:259
+msgid "Pasifleştir"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:276
+msgid "Platform Admin için ?parent_id= query parametresi gerekli."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:276
+msgid "→ Önce bir bayi/holding seç"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:301
+msgid "alt kurumların yönetimi + konsolide görünüm"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:302
+msgid "alt kurumların yönetimsel kontrolü (iç verilere erişim yok)"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:347
+#, fuzzy
+msgid "Kurum adı ve admin e-posta zorunlu."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:352
+msgid "Oluşturuluyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:390
+msgid "Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:409
+msgid "Bu alt kurumu pasifleştirmek istiyor musunuz?"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:409
+msgid "Bu alt kurumu aktifleştirmek istiyor musunuz?"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:122
+msgid "Çalışıyor… (DB + kod, ~30 sn)"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:128
+#, fuzzy
+msgid "Tamam — DB:"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/yedekleme.html:128
+msgid "MB. Sayfayı yenileyin."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:140
+msgid "Bir .dump dosyası seçin."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:141
+msgid "DB üzerine yazılacak. Emin misiniz?"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:142
+msgid "Mevcut DB üzerine yazılacak, geri alınamaz."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:142
+#, fuzzy
+msgid "Evet, geri yükle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/yedekleme.html:145
+#, fuzzy
+msgid "Geri yükleniyor…"
+msgstr "Düzenle"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:206
+#, fuzzy
+msgid "Kaydedildi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/bireysel/karne.html:51
+msgid "Özet hazırlanıyor…"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:79
+msgid "Demo süreniz doldu"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:80
+msgid "Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz."
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:108
+msgid "Demo'yu sonlandır?"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:109
+msgid "Yaptığınız tüm değişiklikler silinecek."
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:110
+msgid "Beğendiyseniz"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:110
+#, fuzzy
+msgid "hesap açarak"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/demo/_banner.html:110
+msgid "Kokpitim'i kuruma getirebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:113
+msgid "Evet, çık"
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:84
+#, fuzzy
+msgid "otomatik"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/kp.html:86
+msgid "Yeşil — sağlıklı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:86
+#, fuzzy
+msgid "Sarı — izlenmeli"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/kp.html:86
+#, fuzzy
+msgid "Kırmızı — kritik"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/kp.html:113
+msgid "Mevcut Skor"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:121
+msgid "Hedef (80)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:142
+#, fuzzy
+msgid "Sağlıklı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_radar/kp.html:142
+#, fuzzy
+msgid "İzle"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/risk_management.html:192
+#, fuzzy
+msgid "Risk Düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/risk_management.html:219
+#, fuzzy
+msgid "Sil?"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_rapor/anomalies.html:114
+msgid "Son değer:"
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:118
+#, fuzzy
+msgid "Ortalama:"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_rapor/anomalies.html:122
+msgid "Z-Score:"
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:126
+msgid "Yön:"
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:129
+#, fuzzy
+msgid "Hedef:"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_rapor/anomalies.html:140
+#, fuzzy
+msgid "Webhook gerekli"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_rapor/anomalies.html:140
+msgid "Slack webhook URL'sini girin."
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:151
+msgid "Gönderildi"
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:151
+msgid "mesaj gönderildi."
+msgstr ""
+
+#: ui/templates/platform/k_rapor/anomalies.html:153
+#, fuzzy
+msgid "Slack hatası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_rapor/index.html:951
+#, fuzzy
+msgid "sekme"
+msgstr "Düzenle"
+
+#: ui/templates/platform/masaustu/index.html:237
+#, fuzzy
+msgid "tarihsiz"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/masaustu/index.html:238
+msgid "gün gecikme"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:240
+#, fuzzy
+msgid "gün kaldı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/masaustu/index.html:241
+msgid "gün"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:257
+msgid "Filtreye uyan görev yok."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:295
+msgid "Bu Hafta"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:304
+#, fuzzy
+msgid "Veri alınamadı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/masaustu/index.html:309
+#, fuzzy
+msgid "Yüklenemedi:"
+msgstr "Düzenle"
+
+#: ui/templates/platform/masaustu/index.html:364
+msgid "Sabitten kaldır"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:403
+msgid "Önce bir sayfayı ziyaret edin."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:409
+msgid "Bu sayfa zaten sabitlenmiş."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:415
+#, fuzzy
+msgid "sabitlendi"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/project/calendar.html:54
+#, fuzzy
+msgid "Güncelleme hatası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/project/calendar.html:71
+#, fuzzy
+msgid "Listeleme hatası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/project/calendar.html:87
+#, fuzzy
+msgid "Takvim yüklenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/project/calendar.html:99
+#, fuzzy
+msgid "Tarih güncellendi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/project/calendar.html:102
+#, fuzzy
+msgid "Güncellenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/project/calendar.html:110
+#, fuzzy
+msgid "Süre güncellendi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/project/gantt.html:78
+#, fuzzy
+msgid "Gantt kütüphanesi yüklenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/project/gantt.html:106
+#, fuzzy
+msgid "Gantt yüklenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/project/kanban.html:105
+#, fuzzy
+msgid "Durum güncellendi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pt"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:487
+#, fuzzy
+msgid "Sa"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Ça"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pe"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:487
+#, fuzzy
+msgid "Cu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/project/list.html:487
+msgid "Ct"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:487
+msgid "Pz"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:53
+msgid "Kontrol Edilen PG"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:53
+msgid "Aktif plan yılındaki tüm PG'ler"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:54
+msgid "Uyarı Sayısı"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:54
+#, fuzzy
+msgid "Ardışık düşük performanslı"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/raporlar/early_warning.html:55
+#, fuzzy
+msgid "Yüksek Öncelik"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/raporlar/early_warning.html:55
+msgid "Acil müdahale gerektirenler"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:61
+msgid "Şu an erken uyarı yok — tüm PG'ler kabul edilebilir performans aralığında."
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:67
+#, fuzzy
+msgid "YÜKSEK ÖNCELİK"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/raporlar/early_warning.html:67
+#, fuzzy
+msgid "ORTA ÖNCELİK"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/early_warning.html:78
+msgid "Süreç belirtilmemiş"
+msgstr ""
+
+#: ui/templates/platform/raporlar/early_warning.html:83
+msgid "Son dönem başarı seyri"
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:57
+msgid "Analiz Edilen PG"
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:57
+msgid "IsolationForest modeli çalıştırıldı"
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:58
+msgid "Yetersiz Veri (Atlandı)"
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:58
+msgid "En az 6 ölçüm gerekir"
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:59
+#, fuzzy
+msgid "Anomali Tespit Edildi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:59
+#, fuzzy
+msgid "Olağandışı ölçüm noktaları"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:64
+msgid "Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda."
+msgstr ""
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:76
+msgid "Anomali skoru:"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:88
+#, fuzzy
+msgid "Toplam Proje"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:92
+msgid "PG'ye Bağlı Proje"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:96
+msgid "Bağsız Proje"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:100
+#, fuzzy
+msgid "Toplam Etkilenen PG"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:104
+msgid "Ort. PG Hedef Üstü"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:109
+msgid "Bu kurumda henüz proje yok."
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:118
+#, fuzzy
+msgid "PG Toplam"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:119
+msgid "Hedef Üstü"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:120
+msgid "Hedef Üstü %"
+msgstr ""
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:129
+#, fuzzy
+msgid "Sağlık:"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:162
+#, fuzzy
+msgid "Bu projenin etkilediği"
+msgstr "Düzenle"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:175
+msgid "hedef üstü"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+msgid "Azaltıldı"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+#, fuzzy
+msgid "Kabul Edildi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:62
+msgid "Transfer Edildi"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:82
+msgid "Çok Düşük"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:82
+msgid "Neredeyse Kesin"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+#, fuzzy
+msgid "Önemsiz"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+msgid "Az"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+#, fuzzy
+msgid "Önemli"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:83
+#, fuzzy
+msgid "Felaket"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:112
+#, fuzzy
+msgid "Toplam Risk"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:112
+#, fuzzy
+msgid "Seçili dönemdeki tüm riskler"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:113
+msgid "Henüz kapatılmamış riskler"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:114
+msgid "Önlem alınmış riskler"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:115
+#, fuzzy
+msgid "Kritik (≥15)"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:115
+msgid "RPN ≥ 15 olan yüksek öncelikli"
+msgstr ""
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:119
+#, fuzzy
+msgid "OL. \\ ETKİ"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:128
+#, fuzzy
+msgid "risk"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/ai_settings.html:158
+msgid "Mevcut:"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:158
+msgid "(yeni anahtar girin ya da boş bırakın)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:159
+#, fuzzy
+msgid "API anahtarı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/ai_settings.html:165
+msgid "Son test:"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:199
+msgid "Test ediliyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:206
+msgid "Bağlantı başarılı. Yanıt:"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:206
+#, fuzzy
+msgid "token kullanıldı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/ai_settings.html:209
+msgid "Test başarısız:"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:217
+msgid "BYOK anahtarını sil?"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:217
+msgid "Tenant tekrar sistem AI'sına döner."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:225
+#, fuzzy
+msgid "BYOK anahtarı silindi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/blue_ocean.html:159
+msgid "Henüz tuval yok. \"Yeni Tuval\" ile başlayın."
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:166
+#, fuzzy
+msgid "ERRC öğesi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/blue_ocean.html:167
+#, fuzzy
+msgid "Rakip"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/blue_ocean.html:198
+msgid "Değer Eğrisi (Strateji Tuvali)"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:203
+msgid "ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+#, fuzzy
+msgid "Kaldır"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+#, fuzzy
+msgid "Azalt"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+#, fuzzy
+msgid "Yükselt"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/blue_ocean.html:207
+#, fuzzy
+msgid "Yarat"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:228
+#, fuzzy
+msgid "Bizim Kurum"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:276
+msgid "Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek."
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:287
+#, fuzzy
+msgid "Faktör adı gerekli."
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:290
+msgid "Kendi puan 0-10 arası olmalı."
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:305
+#, fuzzy
+msgid "Faktör eklenemedi."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/blue_ocean.html:338
+#, fuzzy
+msgid "Açıklama gerekli."
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:352
+#, fuzzy
+msgid "ERRC öğesi eklenemedi."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/blue_ocean.html:375
+#, fuzzy
+msgid "Tuval adı gerekli."
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/blue_ocean.html:390
+msgid "Tuval oluşturulamadı."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:415
+#, fuzzy
+msgid "Odak Daraltma"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/exec_dashboard.html:416
+#, fuzzy
+msgid "Sonlandırma"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/exec_dashboard.html:417
+msgid "Hızlandırma"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:419
+msgid "Risk Mitigasyon"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:460
+#, fuzzy
+msgid "Güncellendi:"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:473
+msgid "PG'de veri var"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:480
+#, fuzzy
+msgid "devam eden girişim"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:487
+#, fuzzy
+msgid "toplam faaliyet"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:494
+#, fuzzy
+msgid "açık risk"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/exec_dashboard.html:500
+#, fuzzy
+msgid "orta seviye"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/exec_dashboard.html:506
+msgid "son 7 günde ateşlendi"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:521
+#, fuzzy
+msgid "Strateji sağlık skoru kritik"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/exec_dashboard.html:521
+msgid "Pivot önerisi almanız tavsiye edilir."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:523
+msgid "PG'lerin yalnızca"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:523
+msgid "'i hedef üstünde — öncelikleri gözden geçirin."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:525
+#, fuzzy
+msgid "gecikmiş faaliyet var — sahiplere atama yapın."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:527
+msgid "kritik risk açık — risk azaltma planı gerekli."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:529
+msgid "yüksek öncelikli PG anomalisi — kök neden analizi başlatın."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:531
+msgid "Son 7 günde"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:531
+msgid "tetikleyici ateşlendi — Replan paneline bakın."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:533
+msgid "'inde veri var — veri girişi disiplinini güçlendirin."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:541
+msgid "Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürdürün."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:558
+msgid "Analiz ediliyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:568
+msgid "Çok hızlı!"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:568
+#, fuzzy
+msgid "sn sonra tekrar dene."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:569
+msgid "Günlük AI çağrı limiti doldu"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:569
+#, fuzzy
+msgid "Yarın tekrar dene."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:570
+msgid "Aylık AI çağrı limiti doldu"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:571
+msgid "Aylık AI maliyet limiti aşıldı"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:572
+msgid "Sistem genel günlük limit doldu. Lütfen sonra tekrar dene."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:573
+msgid "Tenant LLM çağrıları yönetici tarafından durduruldu."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:577
+msgid "AI kotası aşıldı — kural motoru kullanıldı"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:591
+msgid "kural motoru (kota aşıldı)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:592
+msgid "kural motoru (LLM yapılandırılmadı)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:597
+msgid "kendi key"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:597
+msgid "sistem key"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:599
+msgid "token"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:606
+msgid "Bugün:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:607
+msgid "Bu ay:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:608
+#, fuzzy
+msgid "Maliyet:"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:618
+msgid "Şu an pivot önerisi yok"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:619
+msgid "Durum sağlıklı görünüyor."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:633
+msgid "Gerekçe:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:636
+msgid "Aksiyon:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+#, fuzzy
+msgid "ay"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "son:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "12 ay değişim:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:669
+msgid "puan"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:670
+#, fuzzy
+msgid "Yeterli veri yok"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/exec_dashboard.html:675
+msgid "PG hedef üstü %"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:801
+#, fuzzy
+msgid "Strateji Sağlık Skoru — Nasıl hesaplanıyor?"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/exec_dashboard.html:825
+#, fuzzy
+msgid "Aktif PG — Açıklama"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/exec_dashboard.html:834
+#, fuzzy
+msgid "Strateji & Alt Strateji — Açıklama"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/exec_dashboard.html:847
+#, fuzzy
+msgid "Girişim — Açıklama"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/exec_dashboard.html:916
+#, fuzzy
+msgid "Yeni veri girildi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/initiatives.html:127
+msgid "milestone"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:128
+msgid "Bütçe:"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:135
+msgid "Altındaki Projeler"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:160
+msgid "Bu stratejik girişime henüz proje bağlanmamış."
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:161
+#, fuzzy
+msgid "Proje listesine git"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/initiatives.html:161
+msgid "ve oradan \"Stratejik Girişim\" alanına bunu seçebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:199
+msgid "bilinmeyen"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:47
+#, fuzzy
+msgid "Özet alınamadı."
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/llm_usage.html:50
+msgid "Bugün çağrı"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:51
+msgid "Bu ay çağrı"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:52
+#, fuzzy
+msgid "Bu ay maliyet"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/llm_usage.html:52
+msgid "limit"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:53
+msgid "Durduruldu"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:58
+msgid "Kayıt yok."
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:60
+msgid "Uç"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:60
+msgid "Token"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:184
+#, fuzzy
+msgid "OKR verisi alınamadı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/okr.html:212
+#, fuzzy
+msgid "Anahtar Sonuç"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/okr.html:213
+msgid "Ortalama İlerleme"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:238
+msgid "Güncel:"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:264
+msgid "Alt:"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:265
+#, fuzzy
+msgid "Henüz anahtar sonuç yok."
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/okr.html:297
+#, fuzzy
+msgid "Hedef Düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/okr.html:337
+#, fuzzy
+msgid "Silinsin mi?"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/okr.html:344
+#, fuzzy
+msgid "Silindi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/okr.html:364
+#, fuzzy
+msgid "KR Düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/replan_triggers.html:125
+#, fuzzy
+msgid "Tetikleyici yok."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/replan_triggers.html:131
+#, fuzzy
+msgid "dönem"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/replan_triggers.html:134
+#, fuzzy
+msgid "kez ateşlendi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/replan_triggers.html:141
+msgid "Henüz olay yok."
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:146
+msgid "Tetikleyici"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:177
+#, fuzzy
+msgid "Değerlendirildi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/replan_triggers.html:177
+msgid "tetikleyici ateşlendi"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:70
+#, fuzzy
+msgid "kapalı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/scenarios.html:70
+#, fuzzy
+msgid "taslak"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/scenarios.html:70
+msgid "arşiv"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:90
+msgid "Plan yılı yok."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:102
+#, fuzzy
+msgid "— Senaryo yok"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/scenarios.html:110
+#, fuzzy
+msgid "Düzenle →"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/scenarios.html:125
+msgid "Oluşturuluyor..."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:85
+#, fuzzy
+msgid "Senaryo"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:99
+msgid "öğe seçili (max 6)."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:107
+msgid "Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:118
+#, fuzzy
+msgid "Plan"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:129
+#, fuzzy
+msgid "Senaryo listesi yüklenemedi."
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:182
+#, fuzzy
+msgid "Karşılaştırma hesaplanamadı."
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:94
+msgid "Kaynak yıl ve hedef yıl seçiniz."
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:107
+#, fuzzy
+msgid "Süreç taşınacak"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:111
+msgid "KPI taşınacak"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:123
+msgid "geçişi geri alınamaz."
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:125
+msgid "Evet, geç!"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:133
+msgid "Uygulanıyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:92
+#, fuzzy
+msgid "Kapsama"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:92
+msgid "boş olmayan hücre"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:105
+msgid "En Güçlü Hizalama"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:109
+#, fuzzy
+msgid "Hizalama Kapsama"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:114
+#, fuzzy
+msgid "Strateji veya proje bulunamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:132
+msgid "bağ"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:152
+#, fuzzy
+msgid "Stratejiye Bağlanmamış Projeler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:162
+#, fuzzy
+msgid "Projesi Olmayan Stratejiler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:171
+#, fuzzy
+msgid "Yüklenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/templates.html:61
+msgid "Şablon yok."
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:64
+#, fuzzy
+msgid "Kamu"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/templates.html:64
+msgid "Özel"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:64
+msgid "STK"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:69
+msgid "yıllık"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:78
+msgid "Bu Şablonu Uygula"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:104
+msgid "Uygulanıyor..."
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:114
+msgid "Şablon uygulandı: PlanYear #"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:193
+msgid "PG hedefin üstünde"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:194
+#, fuzzy
+msgid "PG Veri Kapsamı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:195
+#, fuzzy
+msgid "Strateji Sayısı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:196
+#, fuzzy
+msgid "Aktif Faaliyet"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:197
+#, fuzzy
+msgid "Geciken Faaliyet"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:197
+msgid "termini geçti"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:198
+#, fuzzy
+msgid "Açık Risk"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/tv.html:198
+#, fuzzy
+msgid "kritik"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/tv.html:200
+#, fuzzy
+msgid "Tetiklenen Kural (7g)"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:200
+#, fuzzy
+msgid "aktif kural"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/tv.html:206
+#, fuzzy
+msgid "Ana Stratejiler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:209
+#, fuzzy
+msgid "Projeler (sağlık)"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:220
+msgid "Genel Sağlık"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:221
+#, fuzzy
+msgid "Strateji Cephesi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:222
+#, fuzzy
+msgid "Süreç Cephesi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:223
+#, fuzzy
+msgid "Proje Cephesi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:240
+#, fuzzy
+msgid "Genel Sağlık Skoru"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:282
+msgid "En Güçlü"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:286
+msgid "En Zayıf"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:338
+msgid "Karşılaştırılabilir veri yok."
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:375
+#, fuzzy
+msgid "güncellendi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:383
+#, fuzzy
+msgid "kritik risk"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/tv.html:384
+#, fuzzy
+msgid "geciken faaliyet"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:385
+#, fuzzy
+msgid "yüksek anomali"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/sp/tv.html:386
+msgid "Hedef üstü"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:388
+#, fuzzy
+msgid "Veri kapsamı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:389
+#, fuzzy
+msgid "En zayıf strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:390
+#, fuzzy
+msgid "En güçlü strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:391
+msgid "Tüm cephelerde durum sakin"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:486
+msgid "✈️ Animasyonu aç"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:504
+#, fuzzy
+msgid "Metrik panosu"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:504
+#, fuzzy
+msgid "Sıralama"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:511
+#, fuzzy
+msgid "Büyük sağlık skoru (hero)"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/sp/tv.html:519
+msgid "En güçlü"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:520
+msgid "En zayıf"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:542
+#, fuzzy
+msgid "Yeni Pano"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:543
+#, fuzzy
+msgid "Yeni Cephe"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/tv.html:563
+msgid "Veri alınamadı — 30 sn sonra tekrar."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:105
+#, fuzzy
+msgid "Henüz kaynak eklenmedi. Üstteki"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/vrio.html:105
+msgid "butonuyla başlayın."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:109
+msgid "Maddi Varlık"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:109
+msgid "Maddi Olmayan Varlık"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:110
+msgid "İnsan Kaynağı"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:110
+msgid "Organizasyonel"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:129
+msgid "kaynağı silinecek."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:136
+#, fuzzy
+msgid "Silinemedi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/vrio.html:150
+#, fuzzy
+msgid "Yeni Kaynak / Yetenek"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/vrio.html:154
+msgid "Kaynak (Resource)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:154
+msgid "kurumun sahip olduğu varlık (marka, patent, ekip, sermaye)."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:155
+msgid "Yetenek (Capability)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:155
+msgid ""
+"kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim "
+"verimi)."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:159
+msgid "Örn: Endüstriyel patent portföyü"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:164
+msgid "Maddi Varlık (bina, makine, stok)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:165
+msgid "Maddi Olmayan Varlık (marka, patent, itibar)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:166
+msgid "İnsan Kaynağı (yetkinlik, deneyim)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:167
+msgid "Finansal (sermaye, nakit akışı)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:168
+msgid "Organizasyonel (kültür, süreç, sistem)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:173
+msgid "Kaynağı kısaca açıklayın"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:182
+#, fuzzy
+msgid "Ad gerekli"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/vrio.html:196
+#, fuzzy
+msgid "Kaynak eklenemedi"
+msgstr "Düzenle"
+
+#: ui/templates/platform/sp/xmatrix.html:108
+#, fuzzy
+msgid "Sayım:"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/sp/xmatrix.html:108
+#, fuzzy
+msgid "girişim"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/sp/xmatrix.html:109
+#, fuzzy
+msgid "PG başlığı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/surec/index.html:702
+#, fuzzy
+msgid "Plan dönemi değiştirilemedi:"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/surec/index.html:702
+#, fuzzy
+msgid "bilinmeyen hata"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/surec/index.html:740
+msgid "Son 3 ay:"
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:775
+#, fuzzy
+msgid "süreç"
+msgstr "Stratejik Planlama"
 
 #~ msgid "Hoş geldiniz"
 #~ msgstr "Hoş geldiniz"

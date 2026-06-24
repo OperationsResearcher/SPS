@@ -77,11 +77,11 @@
     var box=document.getElementById("ai-ozet-serit"); if(!box) return;
     var url=box.getAttribute("data-ozet-url"); if(!url) return;
     var metin=document.getElementById("ai-ozet-metin"), kEl=document.getElementById("ai-ozet-kaynak");
-    box.style.display="block"; metin.textContent="Özet hazırlanıyor…";
+    box.style.display="block"; metin.textContent=t("Özet hazırlanıyor…");
     fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
       .then(function(r){return r.ok?r.json():null;})
       .then(function(d){ if(!d||!d.success||!d.ozet){box.style.display="none";return;}
-        if(kEl)kEl.textContent=(d.kaynak==="ai")?"AI":"otomatik";
+        if(kEl)kEl.textContent=(d.kaynak==="ai")?"AI":t("otomatik");
         var i=0,t=d.ozet; metin.textContent="";
         var tm=setInterval(function(){metin.textContent=t.slice(0,++i); if(i>=t.length)clearInterval(tm);},12);
       }).catch(function(){box.style.display="none";});

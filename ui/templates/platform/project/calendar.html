@@ -51,7 +51,7 @@
         body: JSON.stringify(body)
       });
       var data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+      if (!data.success) throw new Error(data.message || t('Güncelleme hatası'));
     }
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -68,7 +68,7 @@
         try {
           var res = await fetch('/api/projeler/' + projectId + '/gorevler');
           var data = await res.json();
-          if (!data.success) throw new Error(data.message || 'Listeleme hatası');
+          if (!data.success) throw new Error(data.message || t('Listeleme hatası'));
           var evts = (data.gorevler || []).filter(function (t) { return t.due_date || t.start_date; }).map(function (t) {
             return {
               id: t.id,
@@ -83,8 +83,8 @@
           success(evts);
         } catch (e) {
           var ld2 = document.getElementById('calendar-loading');
-          if (ld2) ld2.innerHTML = '<span style="color:#dc2626;">Yüklenemedi: ' + (e.message || '') + '</span>';
-          if (window.showToast) showToast('error', e.message || 'Takvim yüklenemedi');
+          if (ld2) ld2.innerHTML = '<span style="color:#dc2626;">' + t('Yüklenemedi:') + ' ' + (e.message || '') + '</span>';
+          if (window.showToast) showToast('error', e.message || t('Takvim yüklenemedi'));
           fail(e);
         }
       },
@@ -96,10 +96,10 @@
           var start = info.event.startStr.slice(0, 10);
           var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
           await updateTaskDates(info.event.id, start, end);
-          showToast('success', 'Tarih güncellendi');
+          showToast('success', t('Tarih güncellendi'));
         } catch (e) {
           info.revert();
-          showToast('error', e.message || 'Güncellenemedi');
+          showToast('error', e.message || t('Güncellenemedi'));
         }
       },
       eventResize: async function (info) {
@@ -107,10 +107,10 @@
           var start = info.event.startStr.slice(0, 10);
           var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
           await updateTaskDates(info.event.id, start, end);
-          showToast('success', 'Süre güncellendi');
+          showToast('success', t('Süre güncellendi'));
         } catch (e) {
           info.revert();
-          showToast('error', e.message || 'Güncellenemedi');
+          showToast('error', e.message || t('Güncellenemedi'));
         }
       }
     });

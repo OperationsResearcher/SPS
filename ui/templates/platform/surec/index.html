@@ -679,7 +679,7 @@
   if (!sel) return;
   function _surecErr(msg) {
     if (typeof Swal !== "undefined") {
-      Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+      Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
     } else {
       alert(msg);
     }
@@ -699,10 +699,10 @@
       if (j && j.success) {
         window.location.reload();
       } else {
-        _surecErr("Plan dönemi değiştirilemedi: " + (j && j.message || "bilinmeyen hata"));
+        _surecErr(t("Plan dönemi değiştirilemedi:") + " " + (j && j.message || t("bilinmeyen hata")));
       }
     } catch (e) {
-      _surecErr("Sunucuya ulaşılamadı.");
+      _surecErr(t("Sunucuya ulaşılamadı."));
     }
   });
 })();
@@ -737,7 +737,7 @@
         const first = valid[0];
         const color = last >= first ? '#10b981' : '#ef4444';
         line.setAttribute('stroke', color);
-        svg.setAttribute('title', `Son 3 ay: ${valid.map(v => '%' + v).join(' → ')}`);
+        svg.setAttribute('title', `${t("Son 3 ay:")} ${valid.map(v => '%' + v).join(' → ')}`);
       }
     });
   }).catch(() => {});
@@ -772,7 +772,7 @@
       m.el.style.display = ok ? "" : "none";
       if (ok) shown++;
     });
-    if (countLbl) countLbl.textContent = `${shown} süreç`;
+    if (countLbl) countLbl.textContent = `${shown} ${t("süreç")}`;
   }
   search?.addEventListener("input", apply);
   filter?.addEventListener("change", apply);

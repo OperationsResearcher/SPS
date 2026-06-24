@@ -102,12 +102,12 @@
     const j = await r.json();
     const tbody = document.getElementById('vrio-body');
     if (!j.items || !j.items.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="padding:30px;text-align:center;color:#64748b;">Henüz kaynak eklenmedi. Üstteki <b>"Yeni Kaynak"</b> butonuyla başlayın.</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="8" style="padding:30px;text-align:center;color:#64748b;">${t("Henüz kaynak eklenmedi. Üstteki")} <b>"${t("Yeni Kaynak")}"</b> ${t("butonuyla başlayın.")}</td></tr>`;
       return;
     }
     const catLabels = {
-      'tangible':'Maddi Varlık', 'intangible':'Maddi Olmayan Varlık',
-      'human':'İnsan Kaynağı', 'financial':'Finansal', 'organizational':'Organizasyonel'
+      'tangible':t('Maddi Varlık'), 'intangible':t('Maddi Olmayan Varlık'),
+      'human':t('İnsan Kaynağı'), 'financial':t('Finansal'), 'organizational':t('Organizasyonel')
     };
     tbody.innerHTML = j.items.map(r => `
       <tr style="border-bottom:1px solid #e2e8f0;">
@@ -125,15 +125,15 @@
 
   window.vrio_delete = async function(rid, name) {
     const ok = await Swal.fire({
-      icon:'warning', title:'Sil?',
-      text:`"${name}" kaynağı silinecek.`,
-      showCancelButton:true, confirmButtonText:'Sil', cancelButtonText:'İptal',
+      icon:'warning', title:t('Sil?'),
+      text:`"${name}" ${t("kaynağı silinecek.")}`,
+      showCancelButton:true, confirmButtonText:t('Sil'), cancelButtonText:t('İptal'),
       confirmButtonColor:'#dc2626'
     });
     if (!ok.isConfirmed) return;
     const r = await fetch('/sp/api/vrio/' + rid, {method:'DELETE'});
     if (r.ok) load();
-    else Swal.fire({icon:'error',title:'Hata',text:'Silinemedi'});
+    else Swal.fire({icon:'error',title:t('Hata'),text:t('Silinemedi')});
   };
 
   window.vrio_update = async function(rid, field, value) {
@@ -147,39 +147,39 @@
 
   document.getElementById('vrio-new').onclick = async () => {
     const { value: form } = await Swal.fire({
-      title: 'Yeni Kaynak / Yetenek',
+      title: t('Yeni Kaynak / Yetenek'),
       width: 540,
       html: `
         <div style="text-align:left;font-size:12.5px;color:#475569;margin-bottom:12px;line-height:1.5;">
-          <b>Kaynak (Resource)</b> = kurumun sahip olduğu varlık (marka, patent, ekip, sermaye).<br>
-          <b>Yetenek (Capability)</b> = kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim verimi).
+          <b>${t("Kaynak (Resource)")}</b> = ${t("kurumun sahip olduğu varlık (marka, patent, ekip, sermaye).")}<br>
+          <b>${t("Yetenek (Capability)")}</b> = ${t("kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim verimi).")}
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Ad</label>
-          <input id="vr-name" class="swal2-input" style="margin:0;width:100%;" placeholder="Örn: Endüstriyel patent portföyü">
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Ad")}</label>
+          <input id="vr-name" class="swal2-input" style="margin:0;width:100%;" placeholder="${t('Örn: Endüstriyel patent portföyü')}">
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Kategori</label>
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Kategori")}</label>
           <select id="vr-cat" class="swal2-input" style="margin:0;width:100%;">
-            <option value="tangible">Maddi Varlık (bina, makine, stok)</option>
-            <option value="intangible" selected>Maddi Olmayan Varlık (marka, patent, itibar)</option>
-            <option value="human">İnsan Kaynağı (yetkinlik, deneyim)</option>
-            <option value="financial">Finansal (sermaye, nakit akışı)</option>
-            <option value="organizational">Organizasyonel (kültür, süreç, sistem)</option>
+            <option value="tangible">${t("Maddi Varlık (bina, makine, stok)")}</option>
+            <option value="intangible" selected>${t("Maddi Olmayan Varlık (marka, patent, itibar)")}</option>
+            <option value="human">${t("İnsan Kaynağı (yetkinlik, deneyim)")}</option>
+            <option value="financial">${t("Finansal (sermaye, nakit akışı)")}</option>
+            <option value="organizational">${t("Organizasyonel (kültür, süreç, sistem)")}</option>
           </select>
         </div>
         <div style="text-align:left;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Açıklama (opsiyonel)</label>
-          <textarea id="vr-desc" class="swal2-textarea" style="margin:0;width:100%;" placeholder="Kaynağı kısaca açıklayın"></textarea>
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Açıklama (opsiyonel)")}</label>
+          <textarea id="vr-desc" class="swal2-textarea" style="margin:0;width:100%;" placeholder="${t('Kaynağı kısaca açıklayın')}"></textarea>
         </div>
       `,
-      confirmButtonText: 'Ekle',
-      cancelButtonText: 'İptal',
+      confirmButtonText: t('Ekle'),
+      cancelButtonText: t('İptal'),
       showCancelButton: true,
       focusConfirm: false,
       preConfirm: () => {
         const name = document.getElementById('vr-name').value.trim();
-        if (!name) { Swal.showValidationMessage('Ad gerekli'); return false; }
+        if (!name) { Swal.showValidationMessage(t('Ad gerekli')); return false; }
         return {
           name,
           category: document.getElementById('vr-cat').value,
@@ -193,7 +193,7 @@
       body: JSON.stringify(form),
     });
     if (r.ok) load();
-    else Swal.fire({icon:'error',title:'Hata',text:'Kaynak eklenemedi'});
+    else Swal.fire({icon:'error',title:t('Hata'),text:t('Kaynak eklenemedi')});
   };
 
   load();

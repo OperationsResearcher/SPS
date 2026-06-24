@@ -484,7 +484,7 @@
       (row || []).forEach(function (v) { if (v != null && v > maxV) maxV = v; });
     });
     var html = '';
-    var dayNames = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+    var dayNames = [t('Pt'), t('Sa'), t('Ça'), t('Pe'), t('Cu'), t('Ct'), t('Pz')];
     html += '<div></div>';
     dayNames.forEach(function (d) { html += '<div class="text-center text-slate-400" style="font-size:9px">' + d + '</div>'; });
     weeks.forEach(function (row, ri) {
@@ -520,7 +520,7 @@
         data: {
           labels: wl,
           datasets: [{
-            label: 'Tamamlanan',
+            label: t('Tamamlanan'),
             data: wd,
             borderColor: '#6366f1',
             backgroundColor: 'rgba(99,102,241,0.12)',
@@ -575,7 +575,7 @@
         data: {
           labels: pr.labels,
           datasets: [{
-            label: 'Proje',
+            label: t('Proje'),
             data: pr.data,
             backgroundColor: pr.labels.map(function (_, i) { return palette[i % palette.length]; }),
             borderRadius: 8,
