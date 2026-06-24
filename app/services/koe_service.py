@@ -14,6 +14,7 @@ KOE = boyutların ağırlıklı ortalaması (şimdilik eşit %25).
 from __future__ import annotations
 
 from flask import current_app
+from flask_babel import gettext as _
 
 from extensions import db
 from app.models.core import Tenant, Strategy, SubStrategy, User
@@ -265,23 +266,23 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": k["kimlik_doluluk_pct"],
             "etki": _ETKI_KISMI,
-            "baslik": f"{eksik} kimlik alanı boş",
-            "oneri": "Misyon, Vizyon, Değerler, Etik ve Kalite alanlarından eksik olanları doldur.",
+            "baslik": _("%(n)s kimlik alanı boş") % {"n": eksik},
+            "oneri": _("Misyon, Vizyon, Değerler, Etik ve Kalite alanlarından eksik olanları doldur."),
         })
     if k["toplam_strateji"] == 0:
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": 0,
             "etki": _ETKI_TEMEL,
-            "baslik": "Hiç stratejin yok",
-            "oneri": "En az birkaç ana strateji tanımla — yapının iskeleti budur.",
+            "baslik": _("Hiç stratejin yok"),
+            "oneri": _("En az birkaç ana strateji tanımla — yapının iskeleti budur."),
         })
     elif k["alt_stratejisi_olan"] < k["toplam_strateji"]:
         yetim = k["toplam_strateji"] - k["alt_stratejisi_olan"]
         bosluklar.append({
             "boyut": "kimlik_strateji", "severity": k["strateji_butunluk_pct"],
             "etki": _ETKI_KISMI,
-            "baslik": f"{yetim} strateji alt stratejisiz (yetim)",
-            "oneri": "Her ana stratejiyi alt stratejilerle somutlaştır.",
+            "baslik": _("%(n)s strateji alt stratejisiz (yetim)") % {"n": yetim},
+            "oneri": _("Her ana stratejiyi alt stratejilerle somutlaştır."),
         })
 
     # Boyut 2 — Süreç Mimarisi
@@ -290,8 +291,8 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         bosluklar.append({
             "boyut": "surec_mimarisi", "severity": 0,
             "etki": _ETKI_TEMEL,
-            "baslik": "Hiç sürecin yok",
-            "oneri": "Süreçleri tanımla ve stratejilerine bağla.",
+            "baslik": _("Hiç sürecin yok"),
+            "oneri": _("Süreçleri tanımla ve stratejilerine bağla."),
         })
     else:
         bosta = s["toplam_surec"] - s["stratejiye_bagli"]
@@ -299,16 +300,16 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
             bosluklar.append({
                 "boyut": "surec_mimarisi", "severity": s["bagli_pct"],
                 "etki": _ETKI_KISMI,
-                "baslik": f"{bosta} süreç stratejiye bağlı değil (boşta)",
-                "oneri": "Boştaki süreçleri hizmet ettikleri stratejilere bağla.",
+                "baslik": _("%(n)s süreç stratejiye bağlı değil (boşta)") % {"n": bosta},
+                "oneri": _("Boştaki süreçleri hizmet ettikleri stratejilere bağla."),
             })
         olcutsuz = s["toplam_surec"] - s["pg_tanimli"]
         if olcutsuz > 0:
             bosluklar.append({
                 "boyut": "surec_mimarisi", "severity": s["pg_pct"],
                 "etki": _ETKI_KISMI,
-                "baslik": f"{olcutsuz} sürecin ölçütü (PG) tanımsız",
-                "oneri": "Her süreç için neyi ölçeceğini tanımla (PGV girmeden, sadece ölçüt).",
+                "baslik": _("%(n)s sürecin ölçütü (PG) tanımsız") % {"n": olcutsuz},
+                "oneri": _("Her süreç için neyi ölçeceğini tanımla (PGV girmeden, sadece ölçüt)."),
             })
 
     # Boyut 3 — Olgunluk
@@ -317,15 +318,15 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         bosluklar.append({
             "boyut": "olgunluk", "severity": 0,
             "etki": _ETKI_TEMEL,
-            "baslik": "Hiç olgunluk değerlendirmesi yapılmamış",
-            "oneri": "Süreçlerinin olgunluğunu 1-5 arası kendin değerlendir — ilerlemeyi böyle görürsün.",
+            "baslik": _("Hiç olgunluk değerlendirmesi yapılmamış"),
+            "oneri": _("Süreçlerinin olgunluğunu 1-5 arası kendin değerlendir — ilerlemeyi böyle görürsün."),
         })
     elif o["ortalama_seviye"] and o["ortalama_seviye"] < 3:
         bosluklar.append({
             "boyut": "olgunluk", "severity": o["skor"],
             "etki": _ETKI_KISMI,
-            "baslik": f"Ortalama olgunluk düşük ({o['ortalama_seviye']}/5)",
-            "oneri": "Düşük olgunluktaki süreçler için iyileştirme faaliyetleri planla.",
+            "baslik": _("Ortalama olgunluk düşük (%(sev)s/5)") % {"sev": o['ortalama_seviye']},
+            "oneri": _("Düşük olgunluktaki süreçler için iyileştirme faaliyetleri planla."),
         })
 
     # Boyut 4 — İcra Disiplini
@@ -334,16 +335,16 @@ def _bosluklari_tespit_et(koe: dict) -> list[dict]:
         bosluklar.append({
             "boyut": "icra_disiplini", "severity": 0,
             "etki": _ETKI_TEMEL,
-            "baslik": "Hiç iyileştirme faaliyetin yok",
-            "oneri": "Süreçlerini geliştirmek için somut faaliyetler tanımla ve takip et.",
+            "baslik": _("Hiç iyileştirme faaliyetin yok"),
+            "oneri": _("Süreçlerini geliştirmek için somut faaliyetler tanımla ve takip et."),
         })
     elif i["skor"] < 50:
         bekleyen = i["toplam_faaliyet"] - i["tamamlanan"]
         bosluklar.append({
             "boyut": "icra_disiplini", "severity": i["skor"],
             "etki": _ETKI_KISMI,
-            "baslik": f"{bekleyen} faaliyet tamamlanmamış (icra %{int(i['skor'])})",
-            "oneri": "Planladığın iyileştirme faaliyetlerini hayata geçir.",
+            "baslik": _("%(n)s faaliyet tamamlanmamış (icra %%%(skor)s)") % {"n": bekleyen, "skor": int(i['skor'])},
+            "oneri": _("Planladığın iyileştirme faaliyetlerini hayata geçir."),
         })
 
     # Ağırlıklı öncelik: temel boşluklar (iskelet hiç yok) en üstte, sonra
@@ -357,16 +358,16 @@ def _anlati_uret(koe: dict, bosluklar: list[dict]) -> str:
     skor = koe["koe"]
     n = len(bosluklar)
     if skor >= 75:
-        durum = "Yapın olgun ve büyük ölçüde tam"
+        durum = _("Yapın olgun ve büyük ölçüde tam")
     elif skor >= 50:
-        durum = "Yapının temeli kurulmuş, geliştirilecek alanlar var"
+        durum = _("Yapının temeli kurulmuş, geliştirilecek alanlar var")
     elif skor >= 25:
-        durum = "Yapı kısmen kurulmuş, önemli eksikler var"
+        durum = _("Yapı kısmen kurulmuş, önemli eksikler var")
     else:
-        durum = "Yapı henüz başlangıç aşamasında"
+        durum = _("Yapı henüz başlangıç aşamasında")
     if n == 0:
-        return f"{durum}. Belirgin bir yapısal boşluk görünmüyor."
-    return f"{durum}. {n} yapısal boşluk tespit edildi; en kritiğinden başla."
+        return _("%(durum)s. Belirgin bir yapısal boşluk görünmüyor.") % {"durum": durum}
+    return _("%(durum)s. %(n)s yapısal boşluk tespit edildi; en kritiğinden başla.") % {"durum": durum, "n": n}
 
 
 def _llm_anlatim(koe: dict, oncelikler: list[dict], heuristik_anlati: str,

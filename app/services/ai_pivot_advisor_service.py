@@ -8,6 +8,7 @@ import json
 from typing import Optional
 
 from flask import current_app
+from flask_babel import gettext as _
 
 from app.services.exec_dashboard_service import build_exec_snapshot
 from app.services.llm_gateway import call_llm
@@ -37,9 +38,9 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if kpi.get("on_target_pct", 100) < 50:
         recs.append({
             "pivot_type": "refocus",
-            "title": "Stratejik odak daraltma",
-            "rationale": f"KPI'ların yalnızca %{kpi.get('on_target_pct', 0):.0f}'ı hedef üstünde.",
-            "action": "En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause/sunset adayı yap.",
+            "title": _("Stratejik odak daraltma"),
+            "rationale": _("KPI'ların yalnızca %%%(pct).0f'ı hedef üstünde.") % {"pct": kpi.get('on_target_pct', 0)},
+            "action": _("En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause/sunset adayı yap."),
             "priority": "high",
             "timeframe": "bu çeyrek",
         })
@@ -47,9 +48,9 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if act.get("total") and act["overdue"] / max(act["total"], 1) > 0.2:
         recs.append({
             "pivot_type": "risk_mitigation",
-            "title": "Faaliyet kapasite revizyonu",
-            "rationale": f"Faaliyetlerin %{(act['overdue'] / max(act['total'], 1)) * 100:.0f}'ı gecikmiş.",
-            "action": "Kapasite planlaması + sorumlu yeniden atama.",
+            "title": _("Faaliyet kapasite revizyonu"),
+            "rationale": _("Faaliyetlerin %%%(pct).0f'ı gecikmiş.") % {"pct": (act['overdue'] / max(act['total'], 1)) * 100},
+            "action": _("Kapasite planlaması + sorumlu yeniden atama."),
             "priority": "high",
             "timeframe": "önümüzdeki çeyrek",
         })
@@ -57,9 +58,9 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if risk.get("critical", 0) > 0:
         recs.append({
             "pivot_type": "risk_mitigation",
-            "title": "Kritik risk mitigasyon planı",
-            "rationale": f"{risk['critical']} kritik risk açık.",
-            "action": "Her kritik risk için sahipli mitigation initiative aç.",
+            "title": _("Kritik risk mitigasyon planı"),
+            "rationale": _("%(n)s kritik risk açık.") % {"n": risk['critical']},
+            "action": _("Her kritik risk için sahipli mitigation initiative aç."),
             "priority": "critical",
             "timeframe": "bu çeyrek",
         })
@@ -67,9 +68,9 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if anom.get("high", 0) > 0:
         recs.append({
             "pivot_type": "new_initiative",
-            "title": "Anomali kök neden analizi",
-            "rationale": f"{anom['high']} yüksek-severity KPI anomalisi.",
-            "action": "A3 raporu + 5-neden analizi başlat.",
+            "title": _("Anomali kök neden analizi"),
+            "rationale": _("%(n)s yüksek-severity KPI anomalisi.") % {"n": anom['high']},
+            "action": _("A3 raporu + 5-neden analizi başlat."),
             "priority": "medium",
             "timeframe": "bu çeyrek",
         })
@@ -78,18 +79,18 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
     if in_progress and in_progress.get("avg_progress", 0) < 30:
         recs.append({
             "pivot_type": "accelerate",
-            "title": "Devam eden initiative'lerde hız problemi",
-            "rationale": f"{in_progress['count']} initiative ortalama %{in_progress['avg_progress']:.0f}.",
-            "action": "Haftalık 30dk sponsor standup + blocker eskalasyonu.",
+            "title": _("Devam eden initiative'lerde hız problemi"),
+            "rationale": _("%(n)s initiative ortalama %%%(pct).0f.") % {"n": in_progress['count'], "pct": in_progress['avg_progress']},
+            "action": _("Haftalık 30dk sponsor standup + blocker eskalasyonu."),
             "priority": "high",
             "timeframe": "önümüzdeki çeyrek",
         })
     if not recs:
         recs.append({
             "pivot_type": "accelerate",
-            "title": "Genel durum sağlıklı — momentum koru",
-            "rationale": "Kritik gösterge yeşil.",
-            "action": "Bir sonraki çeyreğe küçük 'innovation initiative' ekle.",
+            "title": _("Genel durum sağlıklı — momentum koru"),
+            "rationale": _("Kritik gösterge yeşil."),
+            "action": _("Bir sonraki çeyreğe küçük 'innovation initiative' ekle."),
             "priority": "medium",
             "timeframe": "önümüzdeki çeyrek",
         })

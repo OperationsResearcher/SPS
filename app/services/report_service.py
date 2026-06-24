@@ -8,6 +8,7 @@ from extensions import db
 from app.models.process import Process, ProcessKpi, KpiData
 from app.services.analytics_service import AnalyticsService
 from app.utils.numeric import safe_float
+from flask_babel import gettext as _
 from datetime import datetime
 from typing import Dict, List
 import io
@@ -37,12 +38,12 @@ class ReportService:
         """
         process = Process.query.filter_by(id=process_id).first()
         if not process:
-            return {'error': 'Süreç bulunamadı'}
-        
+            return {'error': _('Süreç bulunamadı')}
+
         # Süreç bilgileri
         report_data = {
             'report_info': {
-                'title': f'{process.name} Performans Raporu',
+                'title': _('%(name)s Performans Raporu') % {"name": process.name},
                 'process_code': process.code,
                 'process_name': process.name,
                 'start_date': start_date.strftime('%Y-%m-%d'),
@@ -125,17 +126,17 @@ class ReportService:
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             # Özet sayfası
             summary_df = pd.DataFrame([report_data['summary']])
-            summary_df.to_excel(writer, sheet_name='Özet', index=False)
-            
+            summary_df.to_excel(writer, sheet_name=_('Özet'), index=False)
+
             # KPI detayları
             kpi_df = pd.DataFrame(report_data['kpi_details'])
-            kpi_df.to_excel(writer, sheet_name='KPI Detayları', index=False)
-            
+            kpi_df.to_excel(writer, sheet_name=_('KPI Detayları'), index=False)
+
             # Öneriler
             recommendations_df = pd.DataFrame({
-                'Öneriler': report_data['recommendations']
+                _('Öneriler'): report_data['recommendations']
             })
-            recommendations_df.to_excel(writer, sheet_name='Öneriler', index=False)
+            recommendations_df.to_excel(writer, sheet_name=_('Öneriler'), index=False)
         
         output.seek(0)
         return output.getvalue()
@@ -247,7 +248,7 @@ class ReportService:
             }
         """
         report_data = {
-            'title': report_config.get('title', 'Özel Rapor'),
+            'title': report_config.get('title', _('Özel Rapor')),
             'generated_at': datetime.now().isoformat(),
             'sections': []
         }
@@ -259,7 +260,7 @@ class ReportService:
         if 'trend' in report_config.get('metrics', []):
             trend_section = {
                 'type': 'trend',
-                'title': 'Trend Analizi',
+                'title': _('Trend Analizi'),
                 'data': []
             }
             
@@ -288,7 +289,7 @@ class ReportService:
             
             report_data['sections'].append({
                 'type': 'comparison',
-                'title': 'Karşılaştırmalı Analiz',
+                'title': _('Karşılaştırmalı Analiz'),
                 'data': comparison
             })
         
@@ -296,7 +297,7 @@ class ReportService:
         if 'forecast' in report_config.get('metrics', []):
             forecast_section = {
                 'type': 'forecast',
-                'title': 'Tahminleme',
+                'title': _('Tahminleme'),
                 'data': []
             }
             

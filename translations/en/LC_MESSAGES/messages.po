@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 12:31+0300\n"
+"POT-Creation-Date: 2026-06-24 13:22+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -73,7 +73,8 @@ msgstr ""
 "first.There are organizations linked to this package; change their "
 "package first.There are organizations linked to this package; change "
 "their package first.There are organizations linked to this package; "
-"change their package first."
+"change their package first.There are organizations linked to this "
+"package; change their package first."
 
 #: app/routes/admin.py:186
 msgid "Paket devre dışı bırakıldı."
@@ -144,7 +145,8 @@ msgstr ""
 "Administrator.Warning: This organization already has an active "
 "Organization Administrator.Warning: This organization already has an "
 "active Organization Administrator.Warning: This organization already has "
-"an active Organization Administrator."
+"an active Organization Administrator.Warning: This organization already "
+"has an active Organization Administrator."
 
 #: app/routes/admin.py:583
 msgid "Kullanıcı eklendi."
@@ -174,7 +176,8 @@ msgstr ""
 "account.Only an Admin can deactivate/activate an Organization "
 "Administrator account.Only an Admin can deactivate/activate an "
 "Organization Administrator account.Only an Admin can deactivate/activate "
-"an Organization Administrator account."
+"an Organization Administrator account.Only an Admin can "
+"deactivate/activate an Organization Administrator account."
 
 #: app/routes/admin.py:669
 msgid "Kendi hesabınızı devre dışı bırakamazsınız."
@@ -392,6 +395,243 @@ msgstr "Password is incorrect."
 msgid "2FA devre dışı bırakıldı."
 msgstr "2FA disabled."
 
+#: app/services/admin_logs_service.py:180
+#: app/services/admin_logs_service.py:272
+#, python-format
+msgid "PG verisi: %(val)s"
+msgstr "PI data: %(val)s"
+
+#: app/services/admin_logs_service.py:375
+msgid "label"
+msgstr "label"
+
+#: app/services/ai_pivot_advisor_service.py:41
+msgid "Stratejik odak daraltma"
+msgstr "Narrowing strategic focus"
+
+#: app/services/ai_pivot_advisor_service.py:42
+#, python-format
+msgid "KPI'ların yalnızca %%%(pct).0f'ı hedef üstünde."
+msgstr "Only %%%(pct).0f of KPIs are above target."
+
+#: app/services/ai_pivot_advisor_service.py:43
+msgid ""
+"En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause/sunset adayı"
+" yap."
+msgstr ""
+"Review the lowest 3 KPIs; make the strategies they are linked to "
+"pause/sunset candidates."
+
+#: app/services/ai_pivot_advisor_service.py:51
+msgid "Faaliyet kapasite revizyonu"
+msgstr "Activity capacity revision"
+
+#: app/services/ai_pivot_advisor_service.py:52
+#, python-format
+msgid "Faaliyetlerin %%%(pct).0f'ı gecikmiş."
+msgstr "%%%(pct).0f of activities are delayed."
+
+#: app/services/ai_pivot_advisor_service.py:53
+msgid "Kapasite planlaması + sorumlu yeniden atama."
+msgstr "Capacity planning + responsible reassignment."
+
+#: app/services/ai_pivot_advisor_service.py:61
+msgid "Kritik risk mitigasyon planı"
+msgstr "Critical risk mitigation plan"
+
+#: app/services/ai_pivot_advisor_service.py:62
+#, python-format
+msgid "%(n)s kritik risk açık."
+msgstr "%(n)s critical risks open."
+
+#: app/services/ai_pivot_advisor_service.py:63
+msgid "Her kritik risk için sahipli mitigation initiative aç."
+msgstr "Open an owned mitigation initiative for each critical risk."
+
+#: app/services/ai_pivot_advisor_service.py:71
+msgid "Anomali kök neden analizi"
+msgstr "Anomaly root cause analysis"
+
+#: app/services/ai_pivot_advisor_service.py:72
+#, python-format
+msgid "%(n)s yüksek-severity KPI anomalisi."
+msgstr "%(n)s high-severity KPI anomalies."
+
+#: app/services/ai_pivot_advisor_service.py:73
+msgid "A3 raporu + 5-neden analizi başlat."
+msgstr "Start an A3 report + 5-why analysis."
+
+#: app/services/ai_pivot_advisor_service.py:82
+msgid "Devam eden initiative'lerde hız problemi"
+msgstr "Velocity problem in ongoing initiatives"
+
+#: app/services/ai_pivot_advisor_service.py:83
+#, python-format
+msgid "%(n)s initiative ortalama %%%(pct).0f."
+msgstr "%(n)s initiatives average %%%(pct).0f."
+
+#: app/services/ai_pivot_advisor_service.py:84
+msgid "Haftalık 30dk sponsor standup + blocker eskalasyonu."
+msgstr "Weekly 30-min sponsor standup + blocker escalation."
+
+#: app/services/ai_pivot_advisor_service.py:91
+msgid "Genel durum sağlıklı — momentum koru"
+msgstr "Overall status healthy — maintain momentum"
+
+#: app/services/ai_pivot_advisor_service.py:92
+msgid "Kritik gösterge yeşil."
+msgstr "Critical indicator green."
+
+#: app/services/ai_pivot_advisor_service.py:93
+msgid "Bir sonraki çeyreğe küçük 'innovation initiative' ekle."
+msgstr "Add a small 'innovation initiative' for the next quarter."
+
+#: app/services/efqm_assessment.py:52
+msgid "Dünya Lideri Performans"
+msgstr "World-Leading Performance"
+
+#: app/services/efqm_assessment.py:53
+msgid "Dönüşüm ve Geleceğe Yönelik Odaklanma"
+msgstr "Transformation and Future-Oriented Focus"
+
+#: app/services/efqm_assessment.py:56
+msgid "Rol Model Performansı"
+msgstr "Role Model Performance"
+
+#: app/services/efqm_assessment.py:57
+msgid "İnovasyon & Veri, Bilgi Birikimi"
+msgstr "Innovation & Data, Knowledge Base"
+
+#: app/services/efqm_assessment.py:60
+msgid "Mükemmel Performans"
+msgstr "Excellent Performance"
+
+#: app/services/efqm_assessment.py:61
+msgid "İnovasyon & Amaç / Vizyon"
+msgstr "Innovation & Purpose / Vision"
+
+#: app/services/efqm_assessment.py:64
+msgid "Güçlü Performans"
+msgstr "Strong Performance"
+
+#: app/services/efqm_assessment.py:65
+msgid "Strateji ve Değer Yaratma"
+msgstr "Strategy and Value Creation"
+
+#: app/services/efqm_assessment.py:68
+msgid "İyi Performans"
+msgstr "Good Performance"
+
+#: app/services/efqm_assessment.py:69
+msgid "Müşteri Odaklılık & Değer Yaratma"
+msgstr "Customer Focus & Value Creation"
+
+#: app/services/efqm_assessment.py:72
+msgid "Mükemmellik Yolunda"
+msgstr "On the Path to Excellence"
+
+#: app/services/efqm_assessment.py:73
+msgid "Temel uygulamalar yerleşmekte"
+msgstr "Basic practices are taking root"
+
+#: app/services/efqm_assessment.py:75
+msgid "Başlangıç Seviyesi"
+msgstr "Initial Level"
+
+#: app/services/efqm_assessment.py:76
+msgid "Temel performans — gelişim alanları belirgin"
+msgstr "Basic performance — development areas are evident"
+
+#: app/services/efqm_assessment.py:332
+msgid "Plan yılı, vizyon/amaç tanımı, strateji-alt strateji yapısı."
+msgstr "Plan year, vision/purpose definition, strategy-sub-strategy structure."
+
+#: app/services/efqm_assessment.py:333
+msgid "Çalışan tabanı, rol çeşitliliği ve departman dağılımı."
+msgstr "Employee base, role diversity and department distribution."
+
+#: app/services/efqm_assessment.py:334
+msgid "Paydaş kategorileri: çalışan, OKR objektif, girişim, strateji bağı."
+msgstr ""
+"Stakeholder categories: employee, OKR objective, initiative, strategy "
+"link."
+
+#: app/services/efqm_assessment.py:335
+msgid ""
+"BSC perspektif dengesi (Kaplan-Norton ideal %25), girişim portföyü, PG "
+"portföy büyüklüğü."
+msgstr ""
+"BSC perspective balance (Kaplan-Norton ideal %25), initiative portfolio, "
+"PI portfolio size."
+
+#: app/services/efqm_assessment.py:336
+msgid "Veri giriş disiplini, kritik risk yönetimi, gecikmiş faaliyet kontrolü."
+msgstr "Data entry discipline, critical risk management, delayed activity control."
+
+#: app/services/efqm_assessment.py:337
+msgid ""
+"Doğrudan paydaş algı anketi yok — BSC müşteri/öğrenme perspektifi "
+"atamaları proxy. Bu kriter en yüksek gelişim alanı."
+msgstr ""
+"No direct stakeholder perception survey — BSC customer/learning "
+"perspective assignments serve as a proxy. This criterion is the highest "
+"development area."
+
+#: app/services/efqm_assessment.py:338
+msgid "Hedef üstü ölçüm oranı (sürdürülebilirlik) + ölçülen PG kapsamı."
+msgstr "Above-target measurement rate (sustainability) + measured PI coverage."
+
+#: app/services/efqm_assessment.py:361
+msgid "Genel durum"
+msgstr "Overall status"
+
+#: app/services/efqm_assessment.py:362
+#, python-format
+msgid ""
+"Toplam %(pts)s/1000 puan — <b>%(label)s</b> seviyesinde. EFQM 2025 "
+"doktrini gereği %(tagline)s bu seviyede ön plana çıkıyor."
+msgstr ""
+"Total %(pts)s/1000 points — at the <b>%(label)s</b> level. According to "
+"the EFQM 2025 doctrine, %(tagline)s comes to the fore at this level."
+
+#: app/services/efqm_assessment.py:368
+#, python-format
+msgid "Gelişim alanı: %(label)s (%%%(pct).0f)"
+msgstr "Development area: %(label)s (%%%(pct).0f)"
+
+#: app/services/efqm_assessment.py:373
+#, python-format
+msgid "Güçlü yön: %(label)s (%%%(pct).0f)"
+msgstr "Strength: %(label)s (%%%(pct).0f)"
+
+#: app/services/efqm_assessment.py:385
+msgid ""
+"Kuruluşun KPI-327 üzerinden manuel EFQM özdeğerlendirme puanı. Bu "
+"modüldeki türev puan ile karşılaştırılabilir."
+msgstr ""
+"The organization's manual EFQM self-assessment score via KPI-327. It can "
+"be compared with the derived score in this module."
+
+#: app/services/efqm_assessment.py:402
+msgid "Sonuçlar — paydaş algıları ve stratejik/operasyonel performans"
+msgstr "Results — stakeholder perceptions and strategic/operational performance"
+
+#: app/services/efqm_assessment.py:403
+msgid "Yaklaşım — sağlam temelli ve uyumlu yön + uygulama"
+msgstr "Approach — well-founded and aligned direction + deployment"
+
+#: app/services/efqm_assessment.py:404
+msgid "Yayılım — uygulamanın tutarlı, esnek ve zamanında yapılması"
+msgstr "Deployment — consistent, flexible and timely implementation"
+
+#: app/services/efqm_assessment.py:405
+msgid "Değerlendirme — etkililik ve verimlilik içgörüleri"
+msgstr "Assessment — effectiveness and efficiency insights"
+
+#: app/services/efqm_assessment.py:406
+msgid "İyileştirme — sürekli öğrenme ile yaklaşımı uyarlama"
+msgstr "Improvement — adapting the approach through continuous learning"
+
 #: app/services/email_digest_service.py:155
 #: micro/modules/k_rapor/routes.py:1739
 msgid "Tenant bulunamadı"
@@ -404,6 +644,130 @@ msgstr "Recipient manager not found"
 #: app/services/email_digest_service.py:177
 msgid "Özet e-postası gönderilemedi."
 msgstr "Summary email could not be sent."
+
+#: app/services/koe_service.py:269
+#, python-format
+msgid "%(n)s kimlik alanı boş"
+msgstr "%(n)s identity fields empty"
+
+#: app/services/koe_service.py:270
+msgid ""
+"Misyon, Vizyon, Değerler, Etik ve Kalite alanlarından eksik olanları "
+"doldur."
+msgstr ""
+"Fill in the missing fields among Mission, Vision, Values, Ethics and "
+"Quality."
+
+#: app/services/koe_service.py:276
+msgid "Hiç stratejin yok"
+msgstr "You have no strategies"
+
+#: app/services/koe_service.py:277
+msgid "En az birkaç ana strateji tanımla — yapının iskeleti budur."
+msgstr ""
+"Define at least a few main strategies — this is the skeleton of the "
+"structure."
+
+#: app/services/koe_service.py:284
+#, python-format
+msgid "%(n)s strateji alt stratejisiz (yetim)"
+msgstr "%(n)s strategies without sub-strategies (orphan)"
+
+#: app/services/koe_service.py:285
+msgid "Her ana stratejiyi alt stratejilerle somutlaştır."
+msgstr "Concretize each main strategy with sub-strategies."
+
+#: app/services/koe_service.py:294
+msgid "Hiç sürecin yok"
+msgstr "You have no processes"
+
+#: app/services/koe_service.py:295
+msgid "Süreçleri tanımla ve stratejilerine bağla."
+msgstr "Define processes and link them to their strategies."
+
+#: app/services/koe_service.py:303
+#, python-format
+msgid "%(n)s süreç stratejiye bağlı değil (boşta)"
+msgstr "%(n)s processes not linked to a strategy (idle)"
+
+#: app/services/koe_service.py:304
+msgid "Boştaki süreçleri hizmet ettikleri stratejilere bağla."
+msgstr "Link idle processes to the strategies they serve."
+
+#: app/services/koe_service.py:311
+#, python-format
+msgid "%(n)s sürecin ölçütü (PG) tanımsız"
+msgstr "%(n)s processes have no defined metric (PI)"
+
+#: app/services/koe_service.py:312
+msgid "Her süreç için neyi ölçeceğini tanımla (PGV girmeden, sadece ölçüt)."
+msgstr ""
+"Define what you will measure for each process (without entering PI "
+"values, just the metric)."
+
+#: app/services/koe_service.py:321
+msgid "Hiç olgunluk değerlendirmesi yapılmamış"
+msgstr "No maturity assessment has been done"
+
+#: app/services/koe_service.py:322
+msgid ""
+"Süreçlerinin olgunluğunu 1-5 arası kendin değerlendir — ilerlemeyi böyle "
+"görürsün."
+msgstr ""
+"Self-assess the maturity of your processes from 1 to 5 — this is how you "
+"see progress."
+
+#: app/services/koe_service.py:328
+#, python-format
+msgid "Ortalama olgunluk düşük (%(sev)s/5)"
+msgstr "Average maturity low (%(sev)s/5)"
+
+#: app/services/koe_service.py:329
+msgid "Düşük olgunluktaki süreçler için iyileştirme faaliyetleri planla."
+msgstr "Plan improvement activities for low-maturity processes."
+
+#: app/services/koe_service.py:338
+msgid "Hiç iyileştirme faaliyetin yok"
+msgstr "You have no improvement activities"
+
+#: app/services/koe_service.py:339
+msgid "Süreçlerini geliştirmek için somut faaliyetler tanımla ve takip et."
+msgstr "Define and track concrete activities to improve your processes."
+
+#: app/services/koe_service.py:346
+#, python-format
+msgid "%(n)s faaliyet tamamlanmamış (icra %%%(skor)s)"
+msgstr "%(n)s activities incomplete (execution %%%(skor)s)"
+
+#: app/services/koe_service.py:347
+msgid "Planladığın iyileştirme faaliyetlerini hayata geçir."
+msgstr "Implement the improvement activities you have planned."
+
+#: app/services/koe_service.py:361
+msgid "Yapın olgun ve büyük ölçüde tam"
+msgstr "Your structure is mature and largely complete"
+
+#: app/services/koe_service.py:363
+msgid "Yapının temeli kurulmuş, geliştirilecek alanlar var"
+msgstr "The foundation of the structure is established, with areas to develop"
+
+#: app/services/koe_service.py:365
+msgid "Yapı kısmen kurulmuş, önemli eksikler var"
+msgstr "The structure is partially established, with significant gaps"
+
+#: app/services/koe_service.py:367
+msgid "Yapı henüz başlangıç aşamasında"
+msgstr "The structure is still in its initial stage"
+
+#: app/services/koe_service.py:369
+#, python-format
+msgid "%(durum)s. Belirgin bir yapısal boşluk görünmüyor."
+msgstr "%(durum)s. No significant structural gap appears."
+
+#: app/services/koe_service.py:370
+#, python-format
+msgid "%(durum)s. %(n)s yapısal boşluk tespit edildi; en kritiğinden başla."
+msgstr "%(durum)s. %(n)s structural gaps detected; start with the most critical."
 
 #: app/services/llm_gateway.py:391
 msgid "API anahtarı tanımlı değil"
@@ -441,6 +805,101 @@ msgstr "You do not have permission to view this Process."
 #: app/services/process_performance_service.py:707
 msgid "Excel aktarımı için openpyxl gerekli. Lütfen bağımlılığı yükleyin."
 msgstr "openpyxl is required for Excel export. Please install the dependency."
+
+#: app/services/recommendation_service.py:38 app/services/report_service.py:41
+msgid "Süreç bulunamadı"
+msgstr "Process not found"
+
+#: app/services/recommendation_service.py:83
+msgid "Öneri oluşturulurken hata oluştu."
+msgstr "An error occurred while generating the recommendation."
+
+#: app/services/recommendation_service.py:121
+msgid "Düşük Performans"
+msgstr "Low Performance"
+
+#: app/services/recommendation_service.py:122
+#, python-format
+msgid "Son 3 ayda ortalama %%%(pct).1f başarı. Hedefin altında."
+msgstr "Average %%%(pct).1f success over the last 3 months. Below target."
+
+#: app/services/recommendation_service.py:123
+msgid "Kök neden analizi yapın ve aksiyon planı oluşturun"
+msgstr "Perform root cause analysis and create an action plan"
+
+#: app/services/recommendation_service.py:133
+msgid "İyileştirme Fırsatı"
+msgstr "Improvement Opportunity"
+
+#: app/services/recommendation_service.py:134
+#, python-format
+msgid "Ortalama %%%(pct).1f başarı. Hedefe yakın."
+msgstr "Average %%%(pct).1f success. Close to target."
+
+#: app/services/recommendation_service.py:135
+msgid "Küçük iyileştirmelerle hedefe ulaşabilirsiniz"
+msgstr "You can reach the target with small improvements"
+
+#: app/services/recommendation_service.py:158
+#, python-format
+msgid "Negatif trend tespit edildi (güç: %(s).2f)"
+msgstr "Negative trend detected (strength: %(s).2f)"
+
+#: app/services/recommendation_service.py:167
+#, python-format
+msgid "Pozitif trend devam ediyor (güç: %(s).2f)"
+msgstr "Positive trend continues (strength: %(s).2f)"
+
+#: app/services/recommendation_service.py:192
+msgid "Anormal Değer Tespit Edildi"
+msgstr "Abnormal Value Detected"
+
+#: app/services/recommendation_service.py:193
+#, python-format
+msgid "Tarih: %(date)s, Değer: %(value)s, Sapma: %(dev)s%%"
+msgstr "Date: %(date)s, Value: %(value)s, Deviation: %(dev)s%%"
+
+#: app/services/recommendation_service.py:195
+msgid "Veri doğruluğunu kontrol edin ve nedeni araştırın"
+msgstr "Check data accuracy and investigate the cause"
+
+#: app/services/recommendation_service.py:308
+msgid "Anlık analiz oluşturulamadı."
+msgstr "Instant analysis could not be generated."
+
+#: app/services/report_service.py:46
+#, python-format
+msgid "%(name)s Performans Raporu"
+msgstr "%(name)s Performance Report"
+
+#: app/services/report_service.py:129
+msgid "Özet"
+msgstr "Summary"
+
+#: app/services/report_service.py:133
+msgid "KPI Detayları"
+msgstr "KPI Details"
+
+#: app/services/report_service.py:137 app/services/report_service.py:139
+msgid "Öneriler"
+msgstr "Recommendations"
+
+#: app/services/report_service.py:251
+msgid "Özel Rapor"
+msgstr "Custom Report"
+
+#: app/services/report_service.py:263
+#: ui/templates/platform/analiz/index.html:102
+msgid "Trend Analizi"
+msgstr "Trend Analysis"
+
+#: app/services/report_service.py:292
+msgid "Karşılaştırmalı Analiz"
+msgstr "Comparative Analysis"
+
+#: app/services/report_service.py:300
+msgid "Tahminleme"
+msgstr "Forecasting"
 
 #: app/services/slack_notification.py:55
 msgid "Slack webhook yapılandırılmamış."
@@ -497,6 +956,158 @@ msgstr "The requested API or resource was not found."
 msgid "Bu işlem için yetkiniz yok."
 msgstr "You do not have permission for this action."
 
+#: micro/core/module_registry.py:12 ui/templates/platform/base.html:152
+msgid "Masaüstüm"
+msgstr "My Desktop"
+
+#: micro/core/module_registry.py:15
+msgid "Kişisel özet — tüm modüllerden gelen görevler, KPI'lar ve iş planları"
+msgstr "Personal summary — tasks, KPIs and work plans from all modules"
+
+#: micro/core/module_registry.py:19 ui/static/platform/js/command_palette.js:22
+#: ui/templates/platform/base.html:160
+#: ui/templates/platform/sp/blue_ocean.html:10
+#: ui/templates/platform/sp/ceyreklik_review.html:10
+#: ui/templates/platform/sp/donemler.html:11
+#: ui/templates/platform/sp/index.html:70
+#: ui/templates/platform/sp/initiatives.html:10
+#: ui/templates/platform/sp/menu.html:17
+#: ui/templates/platform/sp/projeler.html:10
+#: ui/templates/platform/sp/projeler.html:24
+#: ui/templates/platform/sp/replan_triggers.html:10
+#: ui/templates/platform/sp/scenarios.html:10
+#: ui/templates/platform/sp/strategy_project_matrix.html:7
+#: ui/templates/platform/sp/vrio.html:10
+#: ui/templates/platform/surec/index.html:489
+msgid "Stratejik Planlama"
+msgstr "Strategic Planning"
+
+#: micro/core/module_registry.py:22
+msgid "Stratejiler, alt stratejiler ve hedef takibi"
+msgstr "Strategies, sub-strategies and target tracking"
+
+#: micro/core/module_registry.py:26 ui/static/platform/js/command_palette.js:33
+#: ui/templates/platform/base.html:198
+#: ui/templates/platform/sp/exec_dashboard.html:109
+#: ui/templates/platform/surec/faaliyetler.html:10
+msgid "Süreç Yönetimi"
+msgstr "Process Management"
+
+#: micro/core/module_registry.py:29
+msgid "Süreçler, KPI'lar ve faaliyet takibi"
+msgstr "Processes, KPIs and activity tracking"
+
+#: micro/core/module_registry.py:33 ui/templates/platform/base.html:165
+#: ui/templates/platform/kurum/index.html:2
+#: ui/templates/platform/kurum/index.html:3
+msgid "Kurum Paneli"
+msgstr "Organization Panel"
+
+#: micro/core/module_registry.py:36
+msgid "Stratejik kimlik, kurum bilgileri ve strateji yönetimi"
+msgstr "Strategic identity, organization information and strategy management"
+
+#: micro/core/module_registry.py:40 ui/templates/platform/base.html:235
+#: ui/templates/platform/k_radar/hub.html:76
+msgid "Bireysel Performans"
+msgstr "Individual Performance"
+
+#: micro/core/module_registry.py:43
+msgid "Bireysel PG'ler, faaliyetler ve kişisel karne"
+msgstr "Individual PIs, activities and personal scorecard"
+
+#: micro/core/module_registry.py:47 ui/static/platform/js/command_palette.js:34
+#: ui/templates/platform/base.html:206
+msgid "Proje Yönetimi"
+msgstr "Project Management"
+
+#: micro/core/module_registry.py:50
+msgid "Projeler, görevler, Kanban ve stratejik portföy"
+msgstr "Projects, tasks, Kanban and strategic portfolio"
+
+#: micro/core/module_registry.py:54 ui/static/platform/js/command_palette.js:40
+#: ui/templates/platform/analiz/index.html:2
+#: ui/templates/platform/analiz/index.html:3
+#: ui/templates/platform/base.html:242
+msgid "Performans Analitiği"
+msgstr "Performance Analytics"
+
+#: micro/core/module_registry.py:57
+msgid "Süreç bazlı trend, sağlık skoru ve performans raporları"
+msgstr "Process-based trend, health score and performance reports"
+
+#: micro/core/module_registry.py:61 ui/static/platform/js/command_palette.js:39
+#: ui/templates/platform/raporlar/index.html:6
+#: ui/templates/platform/raporlar/pg_proje_etki.html:7
+msgid "K-Radar"
+msgstr "K-Radar"
+
+#: micro/core/module_registry.py:64
+msgid "KS, KP, KPR ve Cross radarlarıyla kurum çapı karar desteği"
+msgstr "Organization-wide decision support with KS, KP, KPR and Cross radars"
+
+#: micro/core/module_registry.py:68 ui/templates/platform/k_rapor/index.html:10
+#: ui/templates/platform/raporlar/esg_yonetim.html:6
+msgid "K-Rapor"
+msgstr "K-Report"
+
+#: micro/core/module_registry.py:71
+msgid ""
+"Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim "
+"raporları"
+msgstr ""
+"Corporate reporting center — process, strategy, activity, risk and audit "
+"reports"
+
+#: micro/core/module_registry.py:75 ui/static/platform/js/command_palette.js:46
+#: ui/templates/platform/admin/hierarchy.html:6
+#: ui/templates/platform/admin/holding_dashboard.html:6
+#: ui/templates/platform/admin/notifications.html:6
+#: ui/templates/platform/admin/packages.html:6
+#: ui/templates/platform/admin/sub_tenants.html:6
+#: ui/templates/platform/admin/sub_tenants_usage.html:6
+#: ui/templates/platform/admin/tenants.html:10
+#: ui/templates/platform/admin/users.html:10
+#: ui/templates/platform/admin/yonetim_paneli.html:2
+#: ui/templates/platform/admin/yonetim_paneli.html:3
+#: ui/templates/platform/admin/yonetim_paneli.html:10
+#: ui/templates/platform/ayarlar/index.html:139
+msgid "Yönetim Paneli"
+msgstr "Management Panel"
+
+#: micro/core/module_registry.py:78
+msgid "Kullanıcı, kurum ve paket yönetimi"
+msgstr "User, organization and package management"
+
+#: micro/core/module_registry.py:82 ui/templates/platform/base.html:280
+msgid "API Dokümantasyonu"
+msgstr "API Documentation"
+
+#: micro/core/module_registry.py:85
+msgid "REST API v1 endpoint referansı"
+msgstr "REST API v1 endpoint reference"
+
+#: micro/core/module_registry.py:89 ui/static/platform/js/command_palette.js:44
+#: ui/templates/platform/ayarlar/eposta.html:10
+#: ui/templates/platform/ayarlar/index.html:2
+#: ui/templates/platform/ayarlar/index.html:3
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7
+#: ui/templates/platform/base.html:306
+msgid "Ayarlar"
+msgstr "Settings"
+
+#: micro/core/module_registry.py:92
+msgid "Kurum ve kullanıcı ayarları"
+msgstr "Organization and user settings"
+
+#: micro/core/module_registry.py:96 ui/templates/platform/base.html:265
+msgid "Bildirim Merkezi"
+msgstr "Notification Center"
+
+#: micro/core/module_registry.py:99
+msgid "Sistem bildirimleri ve uyarılar"
+msgstr "System notifications and alerts"
+
 #: micro/modules/admin/routes.py:296
 msgid "CSRF doğrulaması başarısız."
 msgstr "CSRF verification failed."
@@ -529,11 +1140,12 @@ msgstr "This email is already registered."
 #: micro/modules/admin/routes.py:524
 msgid "Bu kurumda zaten aktif bir Kurum Yöneticisi var."
 msgstr ""
-"This Organization already has an active Organization Manager.Warning: "
+"This Organization already has an active Organization Manager.This "
+"Organization already has an active Organization Manager.Warning: This "
+"organization already has an active Organization Administrator.Warning: "
 "This organization already has an active Organization "
 "Administrator.Warning: This organization already has an active "
-"Organization Administrator.Warning: This organization already has an "
-"active Organization Administrator."
+"Organization Administrator."
 
 #: micro/modules/admin/routes.py:547 micro/modules/admin/routes.py:573
 msgid "Kullanıcı oluşturuldu."
@@ -758,7 +1370,8 @@ msgstr "The operation was not found."
 msgid "PDF kılavuz dosyası henüz üretilmemiş. Lütfen otonom taramayı çalıştırın."
 msgstr ""
 "The PDF guide file has not been generated yet. Please run the autonomous "
-"scan."
+"scan.The PDF guide file has not been generated yet. Please run the "
+"autonomous scan."
 
 #: micro/modules/admin/routes_holding.py:60
 #: micro/modules/admin/routes_holding.py:120
@@ -839,11 +1452,12 @@ msgstr "Password could not be reset."
 #: micro/modules/admin/routes_sub_tenants.py:410
 msgid "Bu kurum tipi alt kurum yönetimine sahip değil."
 msgstr ""
-"This Organization type does not have Sub-Organization management.Warning:"
-" This organization already has an active Organization "
+"This Organization type does not have Sub-Organization management.This "
+"Organization type does not have Sub-Organization management.Warning: This"
+" organization already has an active Organization Administrator.Warning: "
+"This organization already has an active Organization "
 "Administrator.Warning: This organization already has an active "
-"Organization Administrator.Warning: This organization already has an "
-"active Organization Administrator."
+"Organization Administrator."
 
 #: micro/modules/admin/routes_sub_tenants.py:422
 msgid "openpyxl kütüphanesi kurulu değil."
@@ -889,6 +1503,12 @@ msgstr "PI not found."
 msgid "Güncellendi."
 msgstr "Updated."
 
+#: micro/modules/api/routes.py:179 ui/static/platform/js/k_radar_ks.js:925
+#: ui/static/platform/js/kurum.js:601
+#: ui/static/platform/js/pg_tablo_modal.js:714
+msgid "Silindi."
+msgstr "Deleted."
+
 #: micro/modules/api/routes.py:183 micro/modules/kurum/routes.py:406
 #: micro/modules/kurum/routes.py:476 micro/modules/kurum/routes.py:553
 #: micro/modules/sp/routes_strategy.py:181
@@ -909,6 +1529,54 @@ msgstr "AI service is unavailable."
 #: micro/modules/api/routes.py:296
 msgid "Push servisi kullanılamıyor."
 msgstr "Push service is unavailable."
+
+#: micro/modules/api/routes.py:306
+msgid "Süreç listesi"
+msgstr "Process list"
+
+#: micro/modules/api/routes.py:307
+msgid "Süreç detayı"
+msgstr "Process detail"
+
+#: micro/modules/api/routes.py:308
+msgid "KPI veri oluştur"
+msgstr "Create KPI data"
+
+#: micro/modules/api/routes.py:309
+msgid "KPI veri detayı"
+msgstr "KPI data detail"
+
+#: micro/modules/api/routes.py:310
+msgid "KPI veri güncelle"
+msgstr "Update KPI data"
+
+#: micro/modules/api/routes.py:311
+msgid "KPI veri soft delete"
+msgstr "Soft delete KPI data"
+
+#: micro/modules/api/routes.py:312
+msgid "Trend analizi"
+msgstr "Trend analysis"
+
+#: micro/modules/api/routes.py:313
+msgid "Sağlık skoru"
+msgstr "Health score"
+
+#: micro/modules/api/routes.py:314
+msgid "Karşılaştırma"
+msgstr "Comparison"
+
+#: micro/modules/api/routes.py:315 ui/static/platform/js/analiz.js:147
+msgid "Tahmin"
+msgstr "Estimate"
+
+#: micro/modules/api/routes.py:316
+msgid "Performans raporu"
+msgstr "Performance report"
+
+#: micro/modules/api/routes.py:317
+msgid "Dashboard raporu"
+msgstr "Dashboard report"
 
 #: micro/modules/bireysel/routes.py:117
 msgid "Geçersiz process_kpi_id."
@@ -975,6 +1643,90 @@ msgstr "Activity updated."
 #: micro/modules/bireysel/routes.py:747 micro/modules/k_rapor/routes.py:1839
 msgid "PDF oluşturulamadı."
 msgstr "PDF could not be created."
+
+#: micro/modules/demo/routes.py:31
+msgid "Kurum Yöneticisi"
+msgstr "Organization Administrator"
+
+#: micro/modules/demo/routes.py:37
+msgid ""
+"Tüm modüllere tam erişim. Stratejik plan, süreç, kullanıcı, PG "
+"yapılandırması. Yönetici penceresinden Kokpitim'i deneyin."
+msgstr ""
+"Full access to all modules. Strategic plan, process, user, PI "
+"configuration. Try Kokpitim from the administrator window."
+
+#: micro/modules/demo/routes.py:40
+msgid "Vizyon / strateji ağacı düzenleme"
+msgstr "Vision / strategy tree editing"
+
+#: micro/modules/demo/routes.py:41
+msgid "Plan dönemleri ve K-Vektör ağırlıkları"
+msgstr "Plan periods and K-Vector weights"
+
+#: micro/modules/demo/routes.py:42
+msgid "Kullanıcı listesi ve rol görünümü"
+msgstr "User list and role view"
+
+#: micro/modules/demo/routes.py:43
+msgid "Karşılaştırma raporları (yıllar arası)"
+msgstr "Comparison reports (year-over-year)"
+
+#: micro/modules/demo/routes.py:47
+msgid "Süreç Lideri"
+msgstr "Process Leader"
+
+#: micro/modules/demo/routes.py:53
+msgid ""
+"Sorumlu olduğu süreçlerin lideri. PG verisi girer, faaliyet ekler, "
+"ekibini koordine eder. Operasyonel deneyim."
+msgstr ""
+"Leader of the processes they are responsible for. Enters PI data, adds "
+"activities, coordinates their team. Operational experience."
+
+#: micro/modules/demo/routes.py:56
+msgid "Sorumlu süreçlerinin karne ekranı"
+msgstr "Scorecard screen of the processes they are responsible for"
+
+#: micro/modules/demo/routes.py:57
+msgid "PG hedef-gerçekleşme veri girişi"
+msgstr "PI target-actual data entry"
+
+#: micro/modules/demo/routes.py:58
+msgid "Faaliyet atama ve ilerleme"
+msgstr "Activity assignment and progress"
+
+#: micro/modules/demo/routes.py:59
+msgid "Süreç ekibinin görev takibi"
+msgstr "Task tracking of the process team"
+
+#: micro/modules/demo/routes.py:63
+msgid "Süreç Üyesi"
+msgstr "Process Member"
+
+#: micro/modules/demo/routes.py:69
+msgid ""
+"Süreç üyesi olarak kendi görevlerini, bireysel PG'lerini ve atanan "
+"faaliyetleri yönetir. Çalışan penceresi."
+msgstr ""
+"As a process member, manages their own tasks, individual PIs and assigned"
+" activities. Employee window."
+
+#: micro/modules/demo/routes.py:72
+msgid "Atanan görevler ve faaliyetler"
+msgstr "Assigned tasks and activities"
+
+#: micro/modules/demo/routes.py:73
+msgid "Bireysel PG (kişisel hedefler)"
+msgstr "Individual PI (personal targets)"
+
+#: micro/modules/demo/routes.py:74
+msgid "Süreç karnesine veri girişi"
+msgstr "Data entry to the process scorecard"
+
+#: micro/modules/demo/routes.py:75
+msgid "Bireysel performans paneli"
+msgstr "Individual performance panel"
 
 #: micro/modules/k_radar/routes_cross.py:69
 msgid "Paydaş adı zorunludur."
@@ -1368,17 +2120,1704 @@ msgstr "Value not found."
 msgid "Değer silinemedi."
 msgstr "Value could not be deleted."
 
+#: micro/modules/raporlar/routes_faz0.py:354
+#: micro/modules/raporlar/routes_faz0.py:477
+#: micro/modules/raporlar/routes_faz3.py:232
+#: micro/modules/raporlar/routes_faz3.py:455
+#: ui/templates/platform/sp/dynamic_flow.html:17
+#: ui/templates/platform/sp/flow.html:42
+#: ui/templates/platform/sp/index.html:178
+#: ui/templates/platform/sp/strateji_haritasi.html:96
+#: ui/templates/platform/sp/strateji_haritasi.html:110
+#: ui/templates/platform/sp/vizyon.html:13
+msgid "Vizyon"
+msgstr "Vision"
+
+#: micro/modules/raporlar/routes_faz0.py:446
+msgid "(adsız PG)"
+msgstr "(unnamed PI)"
+
+#: micro/modules/raporlar/routes_faz0.py:477
+#: micro/modules/raporlar/routes_faz3.py:242
+#: micro/modules/raporlar/routes_faz3.py:758
+#: ui/templates/platform/admin/istatistikler.html:36
+#: ui/templates/platform/kurum/index.html:242
+#: ui/templates/platform/sp/flow.html:23 ui/templates/platform/sp/index.html:98
+#: ui/templates/platform/sp/strateji_haritasi.html:48
+msgid "Ana Strateji"
+msgstr "Main Strategy"
+
+#: micro/modules/raporlar/routes_faz0.py:477
+#: micro/modules/raporlar/routes_faz3.py:758
+#: ui/templates/platform/admin/istatistikler.html:37
+#: ui/templates/platform/k_rapor/index.html:492
+#: ui/templates/platform/sp/dynamic_flow.html:23
+#: ui/templates/platform/sp/flow.html:28
+#: ui/templates/platform/sp/strateji_haritasi.html:55
+#: ui/templates/platform/sp/strateji_haritasi.html:98
+#: ui/templates/platform/sp/strateji_haritasi.html:112
+msgid "Alt Strateji"
+msgstr "Sub-Strategy"
+
+#: micro/modules/raporlar/routes_faz0.py:477
+#: micro/modules/raporlar/routes_faz3.py:759
+#: micro/modules/raporlar/routes_faz4.py:240
+#: micro/modules/raporlar/routes_faz4.py:260
+#: ui/static/platform/js/surec_vgs.js:579
+#: ui/templates/platform/admin/istatistikler.html:38
+#: ui/templates/platform/admin/istatistikler.html:72
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+#: ui/templates/platform/k_radar/risk_management.html:98
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:370
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/raporlar/sektorel_detay.html:16
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/sp/dynamic_flow.html:26
+#: ui/templates/platform/sp/flow.html:33
+#: ui/templates/platform/sp/strateji_haritasi.html:62
+#: ui/templates/platform/sp/strateji_haritasi.html:113
+#: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
+msgid "Süreç"
+msgstr "Process"
+
+#: micro/modules/raporlar/routes_faz0.py:477
+#: micro/modules/raporlar/routes_faz4.py:276
+#: ui/static/platform/js/k_rapor.js:1228 ui/static/platform/js/surec_vgs.js:541
+#: ui/static/platform/js/surec_vgs.js:587
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/sp/dynamic_flow.html:29
+#: ui/templates/platform/sp/strateji_haritasi.html:69
+#: ui/templates/platform/sp/strateji_haritasi.html:114
+msgid "PG"
+msgstr "PI"
+
+#: micro/modules/raporlar/routes_faz0.py:1054
+#: micro/modules/raporlar/routes_faz3.py:80
+#: micro/modules/raporlar/routes_faz3.py:342
+msgid "Kapak"
+msgstr "Cover"
+
+#: micro/modules/raporlar/routes_faz0.py:1054
+#: ui/static/platform/js/pg_tablo_modal.js:247
+#: ui/static/platform/js/surec.js:235 ui/templates/platform/k_radar/ks.html:290
+#: ui/templates/platform/k_rapor/index.html:196
+#: ui/templates/platform/surec/karne.html:562
+msgid "Yıllık"
+msgstr "Annual"
+
+#: micro/modules/raporlar/routes_faz0.py:1054
+#: micro/modules/raporlar/routes_faz0.py:1238
+msgid "Stratejik Plan Sunumu"
+msgstr "Strategic Plan Presentation"
+
+#: micro/modules/raporlar/routes_faz0.py:1055
+#: micro/modules/raporlar/routes_faz0.py:1240
+#: micro/modules/raporlar/routes_faz3.py:82
+#: micro/modules/raporlar/routes_faz3.py:203
+#: micro/modules/raporlar/routes_faz3.py:343
+#: micro/modules/raporlar/routes_faz3.py:452
+msgid "Yönetici Özeti"
+msgstr "Executive Summary"
+
+#: micro/modules/raporlar/routes_faz0.py:1055
+msgid "AI tarafından üretilen 3-cümle özet"
+msgstr "AI-generated 3-sentence summary"
+
+#: micro/modules/raporlar/routes_faz0.py:1056
+msgid "Vizyon ve Misyon"
+msgstr "Vision and Mission"
+
+#: micro/modules/raporlar/routes_faz0.py:1056
+msgid "Kurumsal kimlik alanları"
+msgstr "Corporate identity fields"
+
+#: micro/modules/raporlar/routes_faz0.py:1057
+#: micro/modules/raporlar/routes_faz0.py:1242
+msgid "Stratejik Yıl Özeti"
+msgstr "Strategic Year Summary"
+
+#: micro/modules/raporlar/routes_faz0.py:1057
+#: ui/static/platform/js/k_radar_ks.js:130
+#: ui/static/platform/js/k_radar_ks.js:515
+msgid "strateji"
+msgstr "strategy"
+
+#: micro/modules/raporlar/routes_faz0.py:1057
+msgid "süreç"
+msgstr "process"
+
+#: micro/modules/raporlar/routes_faz0.py:1058
+msgid "Strateji Ağacı"
+msgstr "Strategy Tree"
+
+#: micro/modules/raporlar/routes_faz0.py:1058
+msgid "Ana stratejiler + ağırlık dağılımı"
+msgstr "Main strategies + weight distribution"
+
+#: micro/modules/raporlar/routes_faz0.py:1059
+msgid "Süreç Sağlık Heatmap"
+msgstr "Process Health Heatmap"
+
+#: micro/modules/raporlar/routes_faz0.py:1059
+msgid "süreç performans özeti"
+msgstr "process performance summary"
+
+#: micro/modules/raporlar/routes_faz0.py:1060
+#: ui/templates/platform/surec/karne.html:141
+#: ui/templates/platform/surec/karne.html:937
+msgid "K-Vektör Analizi"
+msgstr "K-Vector Analysis"
+
+#: micro/modules/raporlar/routes_faz0.py:1060
+msgid "Ağırlık × performans çarpıklık tespiti"
+msgstr "Weight × performance skew detection"
+
+#: micro/modules/raporlar/routes_faz0.py:1061
+#: micro/modules/raporlar/routes_faz0.py:1259
+#: micro/modules/raporlar/routes_faz3.py:86
+#: micro/modules/raporlar/routes_faz3.py:266
+#: micro/modules/raporlar/routes_faz3.py:353
+#: micro/modules/raporlar/routes_faz3.py:484
+msgid "Initiative Portföyü"
+msgstr "Initiative Portfolio"
+
+#: micro/modules/raporlar/routes_faz0.py:1061
+msgid "girişimin bütçe + ilerleme durumu"
+msgstr "the initiative's budget + progress status"
+
+#: micro/modules/raporlar/routes_faz0.py:1062
+msgid "Yıllar Arası Değişim"
+msgstr "Year-over-Year Change"
+
+#: micro/modules/raporlar/routes_faz0.py:1062
+msgid "Önceki yılla karşılaştırma — strateji, süreç, PG farkları"
+msgstr "Comparison with the previous year — strategy, process, PI differences"
+
+#: micro/modules/raporlar/routes_faz0.py:1063
+msgid "İnsan Kaynakları"
+msgstr "Human Resources"
+
+#: micro/modules/raporlar/routes_faz0.py:1063
+msgid "çalışan + departman dağılımı"
+msgstr "employee + department distribution"
+
+#: micro/modules/raporlar/routes_faz0.py:1064
+msgid "Risk Haritası"
+msgstr "Risk Map"
+
+#: micro/modules/raporlar/routes_faz0.py:1064
+msgid "Top 10 risk + olasılık × etki matrisi"
+msgstr "Top 10 risks + probability × impact matrix"
+
+#: micro/modules/raporlar/routes_faz0.py:1065
+#: micro/modules/raporlar/routes_faz3.py:351
+msgid "ESG & Sürdürülebilirlik"
+msgstr "ESG & Sustainability"
+
+#: micro/modules/raporlar/routes_faz0.py:1065
+msgid "E/S/G metrikleri + SDG katkı"
+msgstr "E/S/G metrics + SDG contribution"
+
+#: micro/modules/raporlar/routes_faz0.py:1066
+#: ui/templates/platform/raporlar/index.html:21
+msgid "Veri Kalitesi"
+msgstr "Data Quality"
+
+#: micro/modules/raporlar/routes_faz0.py:1066
+msgid "toplam ölçüm · doluluk oranları"
+msgstr "total measurements · fill rates"
+
+#: micro/modules/raporlar/routes_faz0.py:1067
+msgid "Önümüzdeki Dönem Yol Haritası"
+msgstr "Next Period Roadmap"
+
+#: micro/modules/raporlar/routes_faz0.py:1067
+msgid "Yeni initiative önerileri + öncelikler"
+msgstr "New initiative recommendations + priorities"
+
+#: micro/modules/raporlar/routes_faz0.py:1068
+msgid "Kapanış"
+msgstr "Closing"
+
+#: micro/modules/raporlar/routes_faz0.py:1068
+msgid "Teşekkür + Q&A"
+msgstr "Thanks + Q&A"
+
 #: micro/modules/raporlar/routes_faz0.py:1110
 msgid "python-pptx kurulu değil. Kurulum: pip install python-pptx"
 msgstr "python-pptx is not installed. Installation: pip install python-pptx"
 
-#: micro/modules/raporlar/routes_faz3.py:888
+#: micro/modules/raporlar/routes_faz0.py:1243
+msgid "Tüm sistem aşağıdaki ana boyutlarda izlendi:"
+msgstr "The entire system was monitored across the following main dimensions:"
+
+#: micro/modules/raporlar/routes_faz0.py:1245
+#: micro/modules/raporlar/routes_faz3.py:347
+msgid "ana strateji"
+msgstr "main strategies"
+
+#: micro/modules/raporlar/routes_faz0.py:1246
+#: micro/modules/raporlar/routes_faz3.py:471
+msgid "aktif süreç"
+msgstr "active processes"
+
+#: micro/modules/raporlar/routes_faz0.py:1247
+msgid "performans göstergesi"
+msgstr "performance indicator"
+
+#: micro/modules/raporlar/routes_faz0.py:1248
+msgid "stratejik girişim (initiative)"
+msgstr "strategic initiative"
+
+#: micro/modules/raporlar/routes_faz0.py:1249
+#: micro/modules/raporlar/routes_faz3.py:472
+msgid "aktif çalışan"
+msgstr "active employees"
+
+#: micro/modules/raporlar/routes_faz0.py:1250
+msgid "toplam KPI ölçümü"
+msgstr "total KPI measurements"
+
+#: micro/modules/raporlar/routes_faz0.py:1253
+msgid "Ana Stratejiler ve K-Vektör Ağırlıkları"
+msgstr "Main Strategies and K-Vector Weights"
+
+#: micro/modules/raporlar/routes_faz0.py:1255
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/surec/karne.html:865
+msgid "Ağırlık"
+msgstr "Weight"
+
+#: micro/modules/raporlar/routes_faz0.py:1257
+msgid "Aktif plan yılında strateji bulunamadı."
+msgstr "No strategy found in the active plan year."
+
+#: micro/modules/raporlar/routes_faz0.py:1260
+msgid "Aktif ve tamamlanmış toplam"
+msgstr "Total active and completed"
+
+#: micro/modules/raporlar/routes_faz0.py:1260
+msgid "girişim."
+msgstr "initiatives."
+
+#: micro/modules/raporlar/routes_faz0.py:1262
+msgid "durum:"
+msgstr "status:"
+
+#: micro/modules/raporlar/routes_faz0.py:1262
+msgid "ilerleme:"
+msgstr "progress:"
+
+#: micro/modules/raporlar/routes_faz0.py:1266
+msgid "Veri Akışı ve Ölçüm Hacmi"
+msgstr "Data Flow and Measurement Volume"
+
+#: micro/modules/raporlar/routes_faz0.py:1267
+msgid "sistemine girilen toplam"
+msgstr "total entered into the system"
+
+#: micro/modules/raporlar/routes_faz0.py:1267
+msgid "ölçüm verisi."
+msgstr "measurement data."
+
+#: micro/modules/raporlar/routes_faz0.py:1269
+msgid "Aktif süreç:"
+msgstr "Active processes:"
+
+#: micro/modules/raporlar/routes_faz0.py:1270
+msgid "Aktif PG:"
+msgstr "Active PI:"
+
+#: micro/modules/raporlar/routes_faz0.py:1271
+msgid "Ortalama ölçüm/PG:"
+msgstr "Average measurements/PI:"
+
+#: micro/modules/raporlar/routes_faz0.py:1272
+msgid "Veri girişi düzenli sürdürüldü — kalite skoru raporu detay sağlar."
+msgstr ""
+"Data entry was maintained regularly — the quality score report provides "
+"detail."
+
+#: micro/modules/raporlar/routes_faz0.py:1275
+msgid "Önümüzdeki Dönem — Öneriler"
+msgstr "Next Period — Recommendations"
+
+#: micro/modules/raporlar/routes_faz0.py:1276
+msgid "Bu sunumun arka planındaki Kokpitim verisinden çıkan öneriler:"
+msgstr "Recommendations derived from the Kokpitim data behind this presentation:"
+
+#: micro/modules/raporlar/routes_faz0.py:1278
+msgid "Stratejik öncelikleri K-Vektör çarpıklık raporundan gözden geçir"
+msgstr "Review strategic priorities from the K-Vector skew report"
+
+#: micro/modules/raporlar/routes_faz0.py:1279
+msgid "Yıllar arası karşılaştırma sayfasından evrim haritasını incele"
+msgstr "Review the evolution map from the year-over-year comparison page"
+
+#: micro/modules/raporlar/routes_faz0.py:1280
+msgid "Veri kalitesi raporundaki eksik PG'leri planla"
+msgstr "Plan the missing PIs in the data quality report"
+
+#: micro/modules/raporlar/routes_faz0.py:1281
+msgid "Initiative portföyünde geri kalanlara odak"
+msgstr "Focus on the rest of the initiative portfolio"
+
+#: micro/modules/raporlar/routes_faz0.py:1284
+#: micro/modules/raporlar/routes_faz3.py:308
+#: micro/modules/raporlar/routes_faz3.py:359
+#: micro/modules/raporlar/routes_faz3.py:517
+msgid "Teşekkürler"
+msgstr "Thank you"
+
+#: micro/modules/raporlar/routes_faz0.py:1285
+msgid "ekibinin katkılarıyla hazırlandı."
+msgstr "was prepared with the contributions of its team."
+
+#: micro/modules/raporlar/routes_faz0.py:1286
+msgid "Sorular ve detay için: kokpitim.com"
+msgstr "For questions and details: kokpitim.com"
+
+#: micro/modules/raporlar/routes_faz1.py:291
+msgid "Aşırı Üretim"
+msgstr "Overproduction"
+
+#: micro/modules/raporlar/routes_faz1.py:291
+msgid "İhtiyaçtan fazla üretim, ham veri/rapor hazırlama. Stoğa eklenir, çürür."
+msgstr ""
+"Producing more than needed, preparing raw data/reports. Added to "
+"inventory, decays."
+
+#: micro/modules/raporlar/routes_faz1.py:291
+msgid "Talep edilmemiş raporlar; satılamayan ürün stoku"
+msgstr "Unrequested reports; unsellable product inventory"
+
+#: micro/modules/raporlar/routes_faz1.py:292
+#: ui/static/platform/js/vc_items.js:25
+msgid "Bekleme"
+msgstr "Waiting"
+
+#: micro/modules/raporlar/routes_faz1.py:292
+msgid "Onay, malzeme, makine veya bilgi beklemesi. Üretim akışını keser."
+msgstr ""
+"Waiting for approval, material, machine or information. Interrupts the "
+"production flow."
+
+#: micro/modules/raporlar/routes_faz1.py:292
+msgid "Onay zincirinde bekleyen evrak; teslimat geciken malzeme"
+msgstr "Documents waiting in the approval chain; material with delayed delivery"
+
+#: micro/modules/raporlar/routes_faz1.py:293
+msgid "Taşıma / Nakliye"
+msgstr "Transportation / Shipping"
+
+#: micro/modules/raporlar/routes_faz1.py:293
+msgid "Gereksiz malzeme/dosya/insan hareketi. Değer üretmez."
+msgstr "Unnecessary movement of material/files/people. Produces no value."
+
+#: micro/modules/raporlar/routes_faz1.py:293
+msgid "Atölyeden depoya gereksiz gidip-gelme; çoklu dosya kopyaları"
+msgstr ""
+"Unnecessary back-and-forth from workshop to warehouse; multiple file "
+"copies"
+
+#: micro/modules/raporlar/routes_faz1.py:294
+msgid "Aşırı İşlem"
+msgstr "Over-processing"
+
+#: micro/modules/raporlar/routes_faz1.py:294
+msgid "Müşterinin değer vermediği fazladan adımlar/kontroller/standart fazlası."
+msgstr ""
+"Extra steps/controls/excess beyond standard that the customer does not "
+"value."
+
+#: micro/modules/raporlar/routes_faz1.py:294
+msgid "Aynı veriye 3 farklı yerden imza; gereksiz detaylı paketleme"
+msgstr ""
+"Sign-off on the same data from 3 different places; unnecessarily detailed"
+" packaging"
+
+#: micro/modules/raporlar/routes_faz1.py:295
+#: ui/static/platform/js/vc_items.js:26
+msgid "Stok"
+msgstr "Inventory"
+
+#: micro/modules/raporlar/routes_faz1.py:295
+msgid "Bilgi/malzeme/iş emrinin kuyrukta birikmesi. Para bağlar, kaliteyi gizler."
+msgstr ""
+"Information/material/work order piling up in the queue. Ties up money, "
+"hides quality."
+
+#: micro/modules/raporlar/routes_faz1.py:295
+msgid "Yarı mamul yığını; iş listesi 100+ açık iş emri"
+msgstr "Pile of work-in-progress; backlog of 100+ open work orders"
+
+#: micro/modules/raporlar/routes_faz1.py:296
+#: ui/static/platform/js/vc_items.js:26
+msgid "Hareket"
+msgstr "Movement"
+
+#: micro/modules/raporlar/routes_faz1.py:296
+msgid "Çalışanın gereksiz fiziksel/dijital hareketi (arama, eğilme, yürüme)."
+msgstr ""
+"Unnecessary physical/digital movement of the employee (searching, "
+"bending, walking)."
+
+#: micro/modules/raporlar/routes_faz1.py:296
+msgid "Doğru klasörü bulmak için 10 ekran tıklama"
+msgstr "10 screen clicks to find the right folder"
+
+#: micro/modules/raporlar/routes_faz1.py:297
+msgid "Kusurlar / Hatalar"
+msgstr "Defects / Errors"
+
+#: micro/modules/raporlar/routes_faz1.py:297
+msgid "Yeniden yapım, düzeltme, iade gerektiren hatalı çıktı."
+msgstr "Defective output requiring rework, correction, return."
+
+#: micro/modules/raporlar/routes_faz1.py:297
+msgid "Hatalı veri girişi nedeniyle yeniden raporlama"
+msgstr "Re-reporting due to erroneous data entry"
+
+#: micro/modules/raporlar/routes_faz1.py:371
+msgid "1 — Başlangıç"
+msgstr "1 — Initial"
+
+#: micro/modules/raporlar/routes_faz1.py:371
+msgid "Süreç ad-hoc/kaotik; kişiye bağımlı, tekrarlanabilirlik yok."
+msgstr "Process is ad-hoc/chaotic; person-dependent, no repeatability."
+
+#: micro/modules/raporlar/routes_faz1.py:372
+msgid "2 — Yönetilen"
+msgstr "2 — Managed"
+
+#: micro/modules/raporlar/routes_faz1.py:372
+msgid "Temel süreç disiplini var; planlama, izleme, kontrol uygulanıyor."
+msgstr ""
+"Basic process discipline exists; planning, monitoring, control are "
+"applied."
+
+#: micro/modules/raporlar/routes_faz1.py:373
+msgid "3 — Tanımlı"
+msgstr "3 — Defined"
+
+#: micro/modules/raporlar/routes_faz1.py:373
+msgid "Süreç dokümante edilmiş, kurum standardı; iyileştirmeler proaktif."
+msgstr ""
+"Process is documented, an organizational standard; improvements are "
+"proactive."
+
+#: micro/modules/raporlar/routes_faz1.py:374
+msgid "4 — Sayısal Yönetilen"
+msgstr "4 — Quantitatively Managed"
+
+#: micro/modules/raporlar/routes_faz1.py:374
+msgid ""
+"Süreç istatistiksel teknikleriyle ölçülüyor; sapmalar sayısal kontrol "
+"altında."
+msgstr ""
+"Process is measured with statistical techniques; deviations are under "
+"quantitative control."
+
+#: micro/modules/raporlar/routes_faz1.py:375
+msgid "5 — Optimize Eden"
+msgstr "5 — Optimizing"
+
+#: micro/modules/raporlar/routes_faz1.py:375
+msgid ""
+"Sürekli iyileştirme döngüsü; inovasyon ve teknolojik yenilik "
+"kurumsallaşmış."
+msgstr ""
+"Continuous improvement loop; innovation and technological renewal are "
+"institutionalized."
+
+#: micro/modules/raporlar/routes_faz1.py:386
+msgid "Mükemmel — Optimize Eden"
+msgstr "Excellent — Optimizing"
+
+#: micro/modules/raporlar/routes_faz1.py:388
+msgid ""
+"Süreçleriniz sınıfın en iyisi seviyesinde. İnovasyonu kurumsallaştırma "
+"odaklı kalın."
+msgstr ""
+"Your processes are at best-in-class level. Stay focused on "
+"institutionalizing innovation."
+
+#: micro/modules/raporlar/routes_faz1.py:390
+msgid "Çok İyi — Sayısal Yönetim"
+msgstr "Very Good — Quantitative Management"
+
+#: micro/modules/raporlar/routes_faz1.py:392
+msgid "Sayısal teknik uygulanıyor; süreçleri optimize etmeye geçiş zamanı."
+msgstr ""
+"Quantitative techniques are applied; it is time to move to optimizing "
+"processes."
+
+#: micro/modules/raporlar/routes_faz1.py:394
+msgid "İyi — Tanımlı"
+msgstr "Good — Defined"
+
+#: micro/modules/raporlar/routes_faz1.py:396
+msgid "Standart süreçler var; ölçüm ve istatistik kontrol için yatırım yapın."
+msgstr "Standard processes exist; invest in measurement and statistical control."
+
+#: micro/modules/raporlar/routes_faz1.py:398
+msgid "Orta — Yönetilen"
+msgstr "Medium — Managed"
+
+#: micro/modules/raporlar/routes_faz1.py:400
+msgid "Temel disiplin var; dokümantasyon ve kurum standardı için çalışın."
+msgstr ""
+"Basic discipline exists; work on documentation and organizational "
+"standards."
+
+#: micro/modules/raporlar/routes_faz1.py:402
+msgid "Düşük — Başlangıç"
+msgstr "Low — Initial"
+
+#: micro/modules/raporlar/routes_faz1.py:404
+msgid "Süreçler ad-hoc; öncelik temel planlama ve izleme disiplinini kurmaktır."
+msgstr ""
+"Processes are ad-hoc; the priority is to establish basic planning and "
+"monitoring discipline."
+
+#: micro/modules/raporlar/routes_faz3.py:80
+msgid "Kurum logo + yıl + başlık"
+msgstr "Organization logo + year + title"
+
+#: micro/modules/raporlar/routes_faz3.py:81
+#: micro/modules/raporlar/routes_faz3.py:198
+msgid "Önsöz"
+msgstr "Preface"
+
+#: micro/modules/raporlar/routes_faz3.py:81
+msgid "AI özet — 1 sayfa giriş"
+msgstr "AI summary — 1-page introduction"
+
+#: micro/modules/raporlar/routes_faz3.py:82
+msgid "Yıl özetinde 3 cümle + 5 kritik metrik"
+msgstr "3 sentences + 5 critical metrics in the year summary"
+
+#: micro/modules/raporlar/routes_faz3.py:83
+#: micro/modules/raporlar/routes_faz3.py:227
+msgid "Kurumsal Kimlik"
+msgstr "Corporate Identity"
+
+#: micro/modules/raporlar/routes_faz3.py:83
+msgid "Vizyon, misyon, değerler, etik"
+msgstr "Vision, mission, values, ethics"
+
+#: micro/modules/raporlar/routes_faz3.py:84
+#: micro/modules/raporlar/routes_faz3.py:242
+#: micro/modules/raporlar/routes_faz3.py:347
+#: micro/modules/raporlar/routes_faz3.py:464
+msgid "Stratejik Direkler"
+msgstr "Strategic Pillars"
+
+#: micro/modules/raporlar/routes_faz3.py:84
+msgid "Ana stratejiler + K-Vektör ağırlık"
+msgstr "Main strategies + K-Vector weights"
+
+#: micro/modules/raporlar/routes_faz3.py:85
+msgid "Süreç Mükemmelliği"
+msgstr "Process Excellence"
+
+#: micro/modules/raporlar/routes_faz3.py:85
+msgid "Süreç sağlığı + CMMI olgunluk"
+msgstr "Process health + CMMI maturity"
+
+#: micro/modules/raporlar/routes_faz3.py:86
+msgid "Yıl içi girişimler + bütçe"
+msgstr "In-year initiatives + budget"
+
+#: micro/modules/raporlar/routes_faz3.py:87
+msgid "Performans Göstergeleri"
+msgstr "Performance Indicators"
+
+#: micro/modules/raporlar/routes_faz3.py:87
+msgid "PG hedef-gerçek özet"
+msgstr "PI target-actual summary"
+
+#: micro/modules/raporlar/routes_faz3.py:88
+#: micro/modules/raporlar/routes_faz3.py:352
+#: micro/modules/raporlar/routes_faz3.py:502
+#: ui/templates/platform/k_radar/risk_management.html:2
+#: ui/templates/platform/k_radar/risk_management.html:7
+msgid "Risk Yönetimi"
+msgstr "Risk Management"
+
+#: micro/modules/raporlar/routes_faz3.py:88
+msgid "Risk heatmap + top 10"
+msgstr "Risk heatmap + top 10"
+
+#: micro/modules/raporlar/routes_faz3.py:89
+msgid "Sürdürülebilirlik (ESG)"
+msgstr "Sustainability (ESG)"
+
+#: micro/modules/raporlar/routes_faz3.py:89
+msgid "Carbon + sosyal + yönetişim"
+msgstr "Carbon + social + governance"
+
+#: micro/modules/raporlar/routes_faz3.py:90
+msgid "İK ve Yetenek"
+msgstr "HR and Talent"
+
+#: micro/modules/raporlar/routes_faz3.py:90
+msgid "Çalışan + departman + bireysel başarı"
+msgstr "Employee + department + individual success"
+
+#: micro/modules/raporlar/routes_faz3.py:91
+msgid "Yıllar Arası Karşılaştırma"
+msgstr "Year-over-Year Comparison"
+
+#: micro/modules/raporlar/routes_faz3.py:91
+msgid "Önceki yıllarla evrim"
+msgstr "Evolution over previous years"
+
+#: micro/modules/raporlar/routes_faz3.py:92
+#: micro/modules/raporlar/routes_faz3.py:293
+msgid "Önümüzdeki Dönem"
+msgstr "Next Period"
+
+#: micro/modules/raporlar/routes_faz3.py:92
+msgid "Yol haritası + AI önerileri"
+msgstr "Roadmap + AI recommendations"
+
+#: micro/modules/raporlar/routes_faz3.py:93
+msgid "Ekler"
+msgstr "Appendices"
+
+#: micro/modules/raporlar/routes_faz3.py:93
+msgid "Veri kaynağı, metodoloji, terimler"
+msgstr "Data source, methodology, terms"
+
+#: micro/modules/raporlar/routes_faz3.py:100
+msgid "PDF (reportlab)"
+msgstr "PDF (reportlab)"
+
+#: micro/modules/raporlar/routes_faz3.py:189
+msgid "STRATEJİK YILLIK"
+msgstr "STRATEGIC ANNUAL REPORT"
+
+#: micro/modules/raporlar/routes_faz3.py:193
+msgid "Hazırlık tarihi"
+msgstr "Preparation date"
+
+#: micro/modules/raporlar/routes_faz3.py:204
+msgid "yılı için kurum geneli görünümü:"
+msgstr "organization-wide view for the year:"
+
+#: micro/modules/raporlar/routes_faz3.py:206
+msgid "Strateji sayısı"
+msgstr "Number of strategies"
+
+#: micro/modules/raporlar/routes_faz3.py:207
+#: ui/templates/platform/kurum/index.html:264
+#: ui/templates/platform/kurum/index.html:333
+msgid "Aktif süreç"
+msgstr "Active processes"
+
+#: micro/modules/raporlar/routes_faz3.py:208
+#: ui/templates/platform/surec/karne.html:695
+msgid "Performans göstergesi"
+msgstr "Performance indicator"
+
+#: micro/modules/raporlar/routes_faz3.py:209
+msgid "Stratejik girişim"
+msgstr "Strategic initiative"
+
+#: micro/modules/raporlar/routes_faz3.py:210
+msgid "Aktif çalışan"
+msgstr "Active employees"
+
+#: micro/modules/raporlar/routes_faz3.py:211
+msgid "Toplam ölçüm"
+msgstr "Total measurements"
+
+#: micro/modules/raporlar/routes_faz3.py:230
+#: ui/templates/platform/kurum/index.html:137
+msgid "Amaç"
+msgstr "Purpose"
+
+#: micro/modules/raporlar/routes_faz3.py:234
+msgid "Değerler"
+msgstr "Values"
+
+#: micro/modules/raporlar/routes_faz3.py:236
+msgid "Etik Kurallar"
+msgstr "Code of Ethics"
+
+#: micro/modules/raporlar/routes_faz3.py:238
+msgid "Kurumsal kimlik bilgisi tanımlanmamış."
+msgstr "No corporate identity information defined."
+
+#: micro/modules/raporlar/routes_faz3.py:244
+#: micro/modules/raporlar/routes_faz3.py:268
+#: micro/modules/raporlar/routes_faz3.py:593
+#: micro/modules/raporlar/routes_faz3.py:937
+#: micro/modules/raporlar/routes_faz4.py:198
+#: micro/modules/raporlar/routes_faz4.py:218
+#: micro/modules/raporlar/routes_faz4.py:240
+#: micro/modules/raporlar/routes_faz4.py:248
+#: micro/modules/raporlar/routes_faz4.py:276
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:492
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/initiative_bubble.html:107
+#: ui/templates/platform/raporlar/onay_zinciri.html:24
+#: ui/templates/platform/raporlar/op_istatistik.html:36
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/sp/initiatives.html:51
+msgid "Kod"
+msgstr "Code"
+
+#: micro/modules/raporlar/routes_faz3.py:244
+#: micro/modules/raporlar/routes_faz3.py:268
+#: micro/modules/raporlar/routes_faz4.py:248
+#: ui/templates/platform/admin/sub_tenants.html:145
+#: ui/templates/platform/admin/sub_tenants.html:146
+#: ui/templates/platform/admin/users.html:188
+#: ui/templates/platform/admin/users.html:189
+#: ui/templates/platform/admin/users.html:239
+#: ui/templates/platform/admin/users.html:240
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/raporlar/onay_zinciri.html:25
+#: ui/templates/platform/sp/donemler.html:90
+#: ui/templates/platform/sp/initiatives.html:50
+#: ui/templates/platform/sp/replan_triggers.html:59
+msgid "Ad"
+msgstr "Name"
+
+#: micro/modules/raporlar/routes_faz3.py:244
+msgid "K-Vektör %"
+msgstr "K-Vector %"
+
+#: micro/modules/raporlar/routes_faz3.py:262
+msgid "Strateji tanımlanmamış."
+msgstr "No strategy defined."
+
+#: micro/modules/raporlar/routes_faz3.py:266
+#: ui/templates/platform/admin/holding_drilldown.html:58
+#: ui/templates/platform/admin/sub_tenants_usage.html:76
+#: ui/templates/platform/sp/exec_dashboard.html:173
+#: ui/templates/platform/sp/strateji_haritasi.html:115
+msgid "Girişim"
+msgstr "Initiative"
+
+#: micro/modules/raporlar/routes_faz3.py:268
+#: micro/modules/raporlar/routes_faz4.py:248
+#: micro/modules/raporlar/routes_faz4.py:260
+#: micro/modules/raporlar/routes_faz4.py:294
+#: ui/static/platform/js/k_radar.js:207 ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/admin/notifications.html:80
+#: ui/templates/platform/admin/sub_tenants.html:80
+#: ui/templates/platform/admin/sub_tenants_usage.html:81
+#: ui/templates/platform/admin/tenants.html:73
+#: ui/templates/platform/admin/users.html:103
+#: ui/templates/platform/admin/yonetim_paneli.html:113
+#: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:87
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:574
+#: ui/templates/platform/k_rapor/index.html:603
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/initiative_bubble.html:109
+#: ui/templates/platform/raporlar/op_istatistik.html:38
+#: ui/templates/platform/sp/donemler.html:91
+#: ui/templates/platform/sp/initiatives.html:66
+#: ui/templates/platform/sp/projeler.html:65
+#: ui/templates/platform/sp/projeler.html:115
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
+msgid "Durum"
+msgstr "Status"
+
+#: micro/modules/raporlar/routes_faz3.py:268
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/raporlar/initiative_bubble.html:114
+#: ui/templates/platform/raporlar/onay_zinciri.html:30
+#: ui/templates/platform/surec/karne.html:220
+msgid "İlerleme"
+msgstr "Progress"
+
+#: micro/modules/raporlar/routes_faz3.py:268
+msgid "Bütçe (₺)"
+msgstr "Budget (₺)"
+
+#: micro/modules/raporlar/routes_faz3.py:289
+msgid "Initiative tanımlanmamış."
+msgstr "No initiative defined."
+
+#: micro/modules/raporlar/routes_faz3.py:309
+msgid "Bu yıllık,"
+msgstr "This annual report,"
+
+#: micro/modules/raporlar/routes_faz3.py:309
+msgid ""
+"ekibinin yıl boyunca verdiği emeğin yansımasıdır. Kokpitim platformu "
+"üzerinde sistemli olarak toplanan veriler ile üretilmiştir."
+msgstr ""
+"is a reflection of the effort its team gave throughout the year. It was "
+"produced from data systematically collected on the Kokpitim platform."
+
+#: micro/modules/raporlar/routes_faz3.py:311
+msgid "Stratejik Yıllık"
+msgstr "Strategic Annual Report"
+
+#: micro/modules/raporlar/routes_faz3.py:313
+msgid "Kokpitim — Kurumsal Performans Yönetim Platformu"
+msgstr "Kokpitim — Enterprise Performance Management Platform"
+
+#: micro/modules/raporlar/routes_faz3.py:342
+#: micro/modules/raporlar/routes_faz3.py:450
+#: ui/templates/platform/k_radar/hub.html:137
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:4
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:8
+msgid "Yatırımcı Sunumu"
+msgstr "Investor Presentation"
+
+#: micro/modules/raporlar/routes_faz3.py:343
+msgid "AI 4-cümle özet"
+msgstr "AI 4-sentence summary"
+
+#: micro/modules/raporlar/routes_faz3.py:344
+msgid "Vizyon & Misyon"
+msgstr "Vision & Mission"
+
+#: micro/modules/raporlar/routes_faz3.py:344
+msgid "Stratejik kimlik"
+msgstr "Strategic identity"
+
+#: micro/modules/raporlar/routes_faz3.py:345
+msgid "Pazardaki Yerimiz"
+msgstr "Our Place in the Market"
+
+#: micro/modules/raporlar/routes_faz3.py:345
+msgid "Sektör + rakip benchmark"
+msgstr "Sector + competitor benchmark"
+
+#: micro/modules/raporlar/routes_faz3.py:346
+msgid "İş Modeli"
+msgstr "Business Model"
+
+#: micro/modules/raporlar/routes_faz3.py:346
+msgid "Gelir kalemleri + büyüme stratejisi"
+msgstr "Revenue items + growth strategy"
+
+#: micro/modules/raporlar/routes_faz3.py:348
+msgid "Operasyonel Mükemmellik"
+msgstr "Operational Excellence"
+
+#: micro/modules/raporlar/routes_faz3.py:348
+msgid "Süreç olgunluk + verimlilik"
+msgstr "Process maturity + efficiency"
+
+#: micro/modules/raporlar/routes_faz3.py:349
+msgid "Finansal Performans"
+msgstr "Financial Performance"
+
+#: micro/modules/raporlar/routes_faz3.py:349
+msgid "Bütçe + initiative ROI"
+msgstr "Budget + initiative ROI"
+
+#: micro/modules/raporlar/routes_faz3.py:350
+msgid "İnsan Kaynağı"
+msgstr "Human Resource"
+
+#: micro/modules/raporlar/routes_faz3.py:350
+msgid "Çalışan + yetenek geliştirme"
+msgstr "Employee + talent development"
+
+#: micro/modules/raporlar/routes_faz3.py:351
+msgid "Çevre + sosyal + yönetişim"
+msgstr "Environment + social + governance"
+
+#: micro/modules/raporlar/routes_faz3.py:352
+msgid "Risk register + mitigation"
+msgstr "Risk register + mitigation"
+
+#: micro/modules/raporlar/routes_faz3.py:353
+msgid "girişim"
+msgstr "initiative"
+
+#: micro/modules/raporlar/routes_faz3.py:354
+msgid "Geçmiş Performans (7 yıl)"
+msgstr "Past Performance (7 years)"
+
+#: micro/modules/raporlar/routes_faz3.py:354
+msgid "Yıllar arası trend"
+msgstr "Year-over-year trend"
+
+#: micro/modules/raporlar/routes_faz3.py:355
+msgid "3 Yıllık Projeksiyon"
+msgstr "3-Year Projection"
+
+#: micro/modules/raporlar/routes_faz3.py:355
+msgid "Senaryo bazlı tahmin"
+msgstr "Scenario-based forecast"
+
+#: micro/modules/raporlar/routes_faz3.py:356
+#: micro/modules/raporlar/routes_faz3.py:509
+msgid "Yatırım Talebi"
+msgstr "Investment Request"
+
+#: micro/modules/raporlar/routes_faz3.py:356
+msgid "Bütçe + use of funds"
+msgstr "Budget + use of funds"
+
+#: micro/modules/raporlar/routes_faz3.py:357
+msgid "Yönetim Ekibi"
+msgstr "Management Team"
+
+#: micro/modules/raporlar/routes_faz3.py:357
+msgid "Lider ekip"
+msgstr "Leadership team"
+
+#: micro/modules/raporlar/routes_faz3.py:358
+msgid "Soru-Cevap"
+msgstr "Q&A"
+
+#: micro/modules/raporlar/routes_faz3.py:358
+msgid "Hazır cevaplar"
+msgstr "Ready answers"
+
+#: micro/modules/raporlar/routes_faz3.py:359
+#: ui/templates/platform/admin/tenants.html:240
+#: ui/templates/platform/kurum/ayarlar.html:60
+msgid "İletişim"
+msgstr "Contact"
+
+#: micro/modules/raporlar/routes_faz3.py:365
+msgid "PPTX (python-pptx, 16:9)"
+msgstr "PPTX (python-pptx, 16:9)"
+
+#: micro/modules/raporlar/routes_faz3.py:456
+msgid "Vizyon tanımlanmamış."
+msgstr "No vision defined."
+
+#: micro/modules/raporlar/routes_faz3.py:458
+msgid "Misyon ve Değerler"
+msgstr "Mission and Values"
+
+#: micro/modules/raporlar/routes_faz3.py:460
+msgid "Amaç: "
+msgstr "Purpose: "
+
+#: micro/modules/raporlar/routes_faz3.py:461
+msgid "Değerler: "
+msgstr "Values: "
+
+#: micro/modules/raporlar/routes_faz3.py:465
+msgid "ana stratejik direk:"
+msgstr "main strategic pillar:"
+
+#: micro/modules/raporlar/routes_faz3.py:469
+msgid "Operasyonel Performans"
+msgstr "Operational Performance"
+
+#: micro/modules/raporlar/routes_faz3.py:470
+msgid "Yıllık operasyonel göstergeler:"
+msgstr "Annual operational indicators:"
+
+#: micro/modules/raporlar/routes_faz3.py:471
+msgid "KPI ölçümü"
+msgstr "KPI measurement"
+
+#: micro/modules/raporlar/routes_faz3.py:473
+msgid "Süreçler CMMI olgunluk seviyesinde izlenmektedir"
+msgstr "Processes are monitored at the CMMI maturity level"
+
+#: micro/modules/raporlar/routes_faz3.py:476
+msgid "Finansal Görünüm"
+msgstr "Financial Outlook"
+
+#: micro/modules/raporlar/routes_faz3.py:477
+msgid "Stratejik girişim portföyü:"
+msgstr "Strategic initiative portfolio:"
+
+#: micro/modules/raporlar/routes_faz3.py:478
+msgid "Toplam initiative bütçesi:"
+msgstr "Total initiative budget:"
+
+#: micro/modules/raporlar/routes_faz3.py:479
+msgid "Aktif initiative:"
+msgstr "Active initiatives:"
+
+#: micro/modules/raporlar/routes_faz3.py:480
+msgid "Ortalama bütçe/initiative:"
+msgstr "Average budget/initiative:"
+
+#: micro/modules/raporlar/routes_faz3.py:481
+msgid "EVM (PV/EV/AC) modeliyle takip"
+msgstr "Tracking with the EVM (PV/EV/AC) model"
+
+#: micro/modules/raporlar/routes_faz3.py:485
+msgid "En öne çıkan"
+msgstr "Most prominent"
+
+#: micro/modules/raporlar/routes_faz3.py:485
+msgid "stratejik girişim:"
+msgstr "strategic initiative:"
+
+#: micro/modules/raporlar/routes_faz3.py:486
+msgid "ilerleme, durum:"
+msgstr "progress, status:"
+
+#: micro/modules/raporlar/routes_faz3.py:490
+msgid "İnsan Sermayesi"
+msgstr "Human Capital"
+
+#: micro/modules/raporlar/routes_faz3.py:491
+msgid "aktif çalışan ile yetenek odaklı büyüme."
+msgstr "talent-focused growth with active employees."
+
+#: micro/modules/raporlar/routes_faz3.py:492
+msgid "Bireysel performans takibi"
+msgstr "Individual performance tracking"
+
+#: micro/modules/raporlar/routes_faz3.py:492
+msgid "Süreç sahipliği ve liderlik geliştirme"
+msgstr "Process ownership and leadership development"
+
+#: micro/modules/raporlar/routes_faz3.py:493
+msgid "2FA güvenlik standartları"
+msgstr "2FA security standards"
+
+#: micro/modules/raporlar/routes_faz3.py:496
+msgid "ESG ve Sürdürülebilirlik"
+msgstr "ESG and Sustainability"
+
+#: micro/modules/raporlar/routes_faz3.py:497
+msgid "Çevre, sosyal ve yönetişim taahhütleri:"
+msgstr "Environmental, social and governance commitments:"
+
+#: micro/modules/raporlar/routes_faz3.py:498
+msgid "Scope 1+2+3 emisyon takibi"
+msgstr "Scope 1+2+3 emission tracking"
+
+#: micro/modules/raporlar/routes_faz3.py:498
+msgid "SDG katkı haritası"
+msgstr "SDG contribution map"
+
+#: micro/modules/raporlar/routes_faz3.py:499
+msgid "İş güvenliği ve çeşitlilik metrikleri"
+msgstr "Occupational safety and diversity metrics"
+
+#: micro/modules/raporlar/routes_faz3.py:499
+msgid "Bağımsız yatırımcı raporlaması"
+msgstr "Independent investor reporting"
+
+#: micro/modules/raporlar/routes_faz3.py:503
+msgid "Stratejik risk register ile proaktif yönetim:"
+msgstr "Proactive management with a strategic risk register:"
+
+#: micro/modules/raporlar/routes_faz3.py:504
+msgid "5×5 risk heatmap (olasılık × etki)"
+msgstr "5×5 risk heatmap (probability × impact)"
+
+#: micro/modules/raporlar/routes_faz3.py:505
+msgid "Sahip atamalı mitigation planları"
+msgstr "Mitigation plans with owner assignment"
+
+#: micro/modules/raporlar/routes_faz3.py:506
+msgid "Çeyreklik risk değerlendirme"
+msgstr "Quarterly risk assessment"
+
+#: micro/modules/raporlar/routes_faz3.py:506
+msgid "AI Erken Uyarı sistemi"
+msgstr "AI Early Warning system"
+
+#: micro/modules/raporlar/routes_faz3.py:510
+msgid "Önerilen yatırım kullanım planı:"
+msgstr "Proposed investment use plan:"
+
+#: micro/modules/raporlar/routes_faz3.py:511
+msgid "Ürün geliştirme ve Ar-Ge (~%40)"
+msgstr "Product development and R&D (~%40)"
+
+#: micro/modules/raporlar/routes_faz3.py:512
+msgid "Operasyonel kapasite (~%30)"
+msgstr "Operational capacity (~%30)"
+
+#: micro/modules/raporlar/routes_faz3.py:513
+msgid "Pazarlama ve büyüme (~%20)"
+msgstr "Marketing and growth (~%20)"
+
+#: micro/modules/raporlar/routes_faz3.py:514
+msgid "Yedek (~%10)"
+msgstr "Reserve (~%10)"
+
+#: micro/modules/raporlar/routes_faz3.py:518
+msgid "İletişim: investor@example.com"
+msgstr "Contact: investor@example.com"
+
+#: micro/modules/raporlar/routes_faz3.py:518
+msgid "Detaylı analiz: Kokpitim platformu"
+msgstr "Detailed analysis: Kokpitim platform"
+
+#: micro/modules/raporlar/routes_faz3.py:570
+msgid "ESG YILLIK RAPOR"
+msgstr "ESG ANNUAL REPORT"
+
+#: micro/modules/raporlar/routes_faz3.py:574
+#: ui/templates/platform/raporlar/esg_rapor.html:21
+msgid "GRI · CDP · TCFD Uyumlu"
+msgstr "GRI · CDP · TCFD Compliant"
+
+#: micro/modules/raporlar/routes_faz3.py:580
+msgid "GRI 102 — Organizasyonel Profil"
+msgstr "GRI 102 — Organizational Profile"
+
+#: micro/modules/raporlar/routes_faz3.py:581
+msgid "Kurum:"
+msgstr "Organization:"
+
+#: micro/modules/raporlar/routes_faz3.py:583
+msgid "Sektör:"
+msgstr "Sector:"
+
+#: micro/modules/raporlar/routes_faz3.py:584
+msgid "Çalışan sayısı:"
+msgstr "Number of employees:"
+
+#: micro/modules/raporlar/routes_faz3.py:585
+msgid "Vizyon:"
+msgstr "Vision:"
+
+#: micro/modules/raporlar/routes_faz3.py:589
+msgid "GRI 305 — Emisyonlar"
+msgstr "GRI 305 — Emissions"
+
+#: micro/modules/raporlar/routes_faz3.py:593
+#: ui/templates/platform/sp/okr.html:112
+msgid "Metrik"
+msgstr "Metric"
+
+#: micro/modules/raporlar/routes_faz3.py:593
+msgid "Scope"
+msgstr "Scope"
+
+#: micro/modules/raporlar/routes_faz3.py:593
+#: micro/modules/raporlar/routes_faz3.py:937
+#: ui/templates/platform/bireysel/karne.html:240
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/surec/karne.html:866
+msgid "Birim"
+msgstr "Unit"
+
+#: micro/modules/raporlar/routes_faz3.py:620
+msgid "Yılı Toplam Emisyonlar:"
+msgstr "Total Emissions for the Year:"
+
+#: micro/modules/raporlar/routes_faz3.py:626
+msgid "Henüz çevre metriği tanımlanmamış."
+msgstr "No environmental metric defined yet."
+
+#: micro/modules/raporlar/routes_faz3.py:631
+msgid "GRI 403 — Sosyal Göstergeler (LTIFR, vb.)"
+msgstr "GRI 403 — Social Indicators (LTIFR, etc.)"
+
+#: micro/modules/raporlar/routes_faz3.py:636
+msgid "Kod:"
+msgstr "Code:"
+
+#: micro/modules/raporlar/routes_faz3.py:636
+msgid "Birim:"
+msgstr "Unit:"
+
+#: micro/modules/raporlar/routes_faz3.py:639
+msgid "Henüz sosyal metriği tanımlanmamış."
+msgstr "No social metric defined yet."
+
+#: micro/modules/raporlar/routes_faz3.py:644
+msgid "GRI 102-22 — Yönetişim"
+msgstr "GRI 102-22 — Governance"
+
+#: micro/modules/raporlar/routes_faz3.py:650
+msgid "Henüz yönetişim metriği tanımlanmamış."
+msgstr "No governance metric defined yet."
+
+#: micro/modules/raporlar/routes_faz3.py:655
+msgid "TCFD — İklim Risk Açıklaması"
+msgstr "TCFD — Climate Risk Disclosure"
+
+#: micro/modules/raporlar/routes_faz3.py:656
+msgid ""
+"Yönetişim, Strateji, Risk Yönetimi, Metrik ve Hedefler dört boyutta iklim"
+" ile ilgili açıklamalar:"
+msgstr ""
+"Climate-related disclosures across four dimensions: Governance, Strategy,"
+" Risk Management, Metrics and Targets:"
+
+#: micro/modules/raporlar/routes_faz3.py:658
+msgid ""
+"<b>1. Yönetişim:</b> İklim risklerinin yönetim kurulu seviyesinde "
+"değerlendirilmesi."
+msgstr "<b>1. Governance:</b> Assessment of climate risks at the board level."
+
+#: micro/modules/raporlar/routes_faz3.py:660
+msgid ""
+"<b>2. Strateji:</b> İklim ile ilgili kısa/orta/uzun vadeli stratejik etki"
+" analizi."
+msgstr ""
+"<b>2. Strategy:</b> Short/medium/long-term strategic impact analysis "
+"related to climate."
+
+#: micro/modules/raporlar/routes_faz3.py:662
+msgid "<b>3. Risk yönetimi:</b> Risk register'a iklim risklerinin entegrasyonu."
+msgstr ""
+"<b>3. Risk management:</b> Integration of climate risks into the risk "
+"register."
+
+#: micro/modules/raporlar/routes_faz3.py:663
+msgid ""
+"<b>4. Metrik ve hedefler:</b> Scope 1/2/3 emisyon ölçümü ve Net Zero "
+"hedefi (varsa)."
+msgstr ""
+"<b>4. Metrics and targets:</b> Scope 1/2/3 emission measurement and Net "
+"Zero target (if any)."
+
+#: micro/modules/raporlar/routes_faz3.py:668
+msgid ""
+"Bu rapor Kokpitim platformu üzerinden, GRI/CDP/TCFD standart yapısına "
+"uygun olarak otomatik üretilmiştir. Detay veri ve yöntem için ek ekleri "
+"talep edebilirsiniz."
+msgstr ""
+"This report was generated automatically via the Kokpitim platform, in "
+"accordance with the GRI/CDP/TCFD standard structure. You may request "
+"additional appendices for detailed data and methodology."
+
+#: micro/modules/raporlar/routes_faz3.py:721
+msgid "AUDIT ÇIKTI PAKETİ"
+msgstr "AUDIT OUTPUT PACKAGE"
+
+#: micro/modules/raporlar/routes_faz3.py:725
+msgid ""
+"Bu doküman, üçüncü parti denetçilere kurum içi stratejik plan, "
+"performans, risk ve kullanıcı aktivite verisinin özet sunumudur."
+msgstr ""
+"This document is a summary presentation of internal strategic plan, "
+"performance, risk and user activity data for third-party auditors."
+
+#: micro/modules/raporlar/routes_faz3.py:731
+msgid "1. Kurum Bilgileri"
+msgstr "1. Organization Information"
+
+#: micro/modules/raporlar/routes_faz3.py:732
+#: ui/templates/platform/admin/istatistikler.html:34
+#: ui/templates/platform/admin/istatistikler.html:68
+#: ui/templates/platform/admin/loglar.html:69
+#: ui/templates/platform/admin/loglar.html:121
+#: ui/templates/platform/admin/sub_tenants_usage.html:43
+#: ui/templates/platform/admin/sub_tenants_usage.html:71
+#: ui/templates/platform/admin/tenants.html:67
+#: ui/templates/platform/admin/users.html:102
+#: ui/templates/platform/admin/users.html:210
+#: ui/templates/platform/admin/users.html:262
+#: ui/templates/platform/ayarlar/index.html:38
+#: ui/templates/platform/ayarlar/index.html:40
+#: ui/templates/platform/ayarlar/index.html:92
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Kurum"
+msgstr "Organization"
+
+#: micro/modules/raporlar/routes_faz3.py:734
+#: ui/templates/platform/admin/sub_tenants.html:119
+#: ui/templates/platform/admin/tenants.html:227
+msgid "Kısa Ad"
+msgstr "Short Name"
+
+#: micro/modules/raporlar/routes_faz3.py:735
+#: ui/templates/platform/admin/tenants.html:69
+#: ui/templates/platform/admin/tenants.html:231
+#: ui/templates/platform/kurum/ayarlar.html:46
+#: ui/templates/platform/sp/blue_ocean.html:54
+msgid "Sektör"
+msgstr "Sector"
+
+#: micro/modules/raporlar/routes_faz3.py:736
+#: ui/templates/platform/raporlar/departman_performans.html:26
+msgid "Çalışan"
+msgstr "Employee"
+
+#: micro/modules/raporlar/routes_faz3.py:737
+msgid "Plan Year Aktif"
+msgstr "Plan Year Active"
+
+#: micro/modules/raporlar/routes_faz3.py:737 ui/static/platform/js/admin.js:46
+#: ui/static/platform/js/pg_tablo_modal.js:700
+msgid "Evet"
+msgstr "Yes"
+
+#: micro/modules/raporlar/routes_faz3.py:737
+msgid "Hayır"
+msgstr "No"
+
+#: micro/modules/raporlar/routes_faz3.py:738
+msgid "Tenant ID"
+msgstr "Tenant ID"
+
+#: micro/modules/raporlar/routes_faz3.py:751
+msgid "2. Stratejik Plan Yapısı"
+msgstr "2. Strategic Plan Structure"
+
+#: micro/modules/raporlar/routes_faz3.py:759
+msgid "Performans Göstergesi"
+msgstr "Performance Indicator"
+
+#: micro/modules/raporlar/routes_faz3.py:772
+msgid "3. Audit Log — Son 90 Gün"
+msgstr "3. Audit Log — Last 90 Days"
+
+#: micro/modules/raporlar/routes_faz3.py:783
+msgid "Aksiyon Dağılımı (top 50):"
+msgstr "Action Distribution (top 50):"
+
+#: micro/modules/raporlar/routes_faz3.py:790
+msgid "Son 20 İşlem:"
+msgstr "Last 20 Transactions:"
+
+#: micro/modules/raporlar/routes_faz3.py:791
+#: ui/templates/platform/admin/notifications.html:79
+#: ui/templates/platform/admin/yedekleme.html:71
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:596
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Tarih"
+msgstr "Date"
+
+#: micro/modules/raporlar/routes_faz3.py:791
+#: ui/static/platform/js/project_form_transfer.js:222
+#: ui/templates/platform/admin/istatistikler.html:35
+#: ui/templates/platform/admin/istatistikler.html:69
+#: ui/templates/platform/admin/sub_tenants.html:79
+#: ui/templates/platform/admin/sub_tenants_usage.html:44
+#: ui/templates/platform/admin/sub_tenants_usage.html:73
+#: ui/templates/platform/admin/yonetim_paneli.html:114
+#: ui/templates/platform/admin/yonetim_paneli.html:142
+#: ui/templates/platform/ayarlar/index.html:33
+#: ui/templates/platform/base.html:324
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
+msgid "Kullanıcı"
+msgstr "User"
+
+#: micro/modules/raporlar/routes_faz3.py:791
+#: ui/templates/platform/sp/replan_triggers.html:83
+msgid "Aksiyon"
+msgstr "Action"
+
+#: micro/modules/raporlar/routes_faz3.py:791
+#: ui/templates/platform/admin/yonetim_paneli.html:141
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:95
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:697
+#: ui/templates/platform/sp/vrio.html:55
+msgid "Kaynak"
+msgstr "Source"
+
+#: micro/modules/raporlar/routes_faz3.py:813
+msgid "Son 90 günde audit log kaydı yok."
+msgstr "No audit log record in the last 90 days."
+
+#: micro/modules/raporlar/routes_faz3.py:817
+msgid "4. Kullanıcı Güvenlik Özeti"
+msgstr "4. User Security Summary"
+
+#: micro/modules/raporlar/routes_faz3.py:820
+msgid "Toplam aktif kullanıcı:"
+msgstr "Total active users:"
+
+#: micro/modules/raporlar/routes_faz3.py:821
+msgid "2FA etkin:"
+msgstr "2FA enabled:"
+
+#: micro/modules/raporlar/routes_faz3.py:822
+msgid "2FA pasif:"
+msgstr "2FA disabled:"
+
+#: micro/modules/raporlar/routes_faz3.py:826
+msgid "Bu rapor"
+msgstr "This report"
+
+#: micro/modules/raporlar/routes_faz3.py:826
+msgid "tarihinde Kokpitim platformundan otomatik üretilmiştir."
+msgstr "was generated automatically from the Kokpitim platform on this date."
+
+#: micro/modules/raporlar/routes_faz3.py:859
+msgid "ZIP (PDF her kullanıcı için)"
+msgstr "ZIP (PDF for each user)"
+
+#: micro/modules/raporlar/routes_faz3.py:885
 msgid "Bireysel PG'si olan kullanıcı yok."
 msgstr "There is no user with an individual PI."
+
+#: micro/modules/raporlar/routes_faz3.py:927
+msgid "BİREYSEL PERFORMANS KARNESİ"
+msgstr "INDIVIDUAL PERFORMANCE SCORECARD"
+
+#: micro/modules/raporlar/routes_faz3.py:929
+#: ui/templates/platform/admin/sub_tenants.html:185
+msgid "E-posta:"
+msgstr "E-mail:"
+
+#: micro/modules/raporlar/routes_faz3.py:930
+msgid "Departman:"
+msgstr "Department:"
+
+#: micro/modules/raporlar/routes_faz3.py:932
+msgid "Özet:"
+msgstr "Summary:"
+
+#: micro/modules/raporlar/routes_faz3.py:932
+msgid "bireysel PG ·"
+msgstr "individual PI ·"
+
+#: micro/modules/raporlar/routes_faz3.py:933
+msgid "kurum stratejisine bağlı"
+msgstr "linked to the organization strategy"
+
+#: micro/modules/raporlar/routes_faz3.py:933
+msgid "hizalama"
+msgstr "alignment"
+
+#: micro/modules/raporlar/routes_faz3.py:937
+#: micro/modules/raporlar/routes_faz4.py:198
+#: micro/modules/raporlar/routes_faz4.py:218
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+msgid "PG Adı"
+msgstr "PI Name"
+
+#: micro/modules/raporlar/routes_faz3.py:937
+#: ui/static/platform/js/k_rapor.js:360
+#: ui/templates/platform/bireysel/karne.html:239
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/sp/okr.html:120
+msgid "Hedef"
+msgstr "Target"
+
+#: micro/modules/raporlar/routes_faz3.py:937
+#: ui/static/platform/js/project_raid.js:108
+#: ui/templates/platform/admin/notifications.html:77
+#: ui/templates/platform/admin/tenants.html:68
+msgid "Tip"
+msgstr "Type"
+
+#: micro/modules/raporlar/routes_faz3.py:944
+msgid "Kurumdan"
+msgstr "From the Organization"
+
+#: micro/modules/raporlar/routes_faz3.py:944
+#: ui/templates/platform/k_rapor/index.html:102
+msgid "Bireysel"
+msgstr "Individual"
+
+#: micro/modules/raporlar/routes_faz3.py:960
+msgid "Bu karne Kokpitim platformu üzerinden otomatik üretilmiştir."
+msgstr "This scorecard was generated automatically via the Kokpitim platform."
+
+#: micro/modules/raporlar/routes_faz4.py:93
+msgid "sektörü için hazır paket henüz yok."
+msgstr "there is no ready package for this sector yet."
+
+#: micro/modules/raporlar/routes_faz4.py:198
+#: micro/modules/raporlar/routes_faz4.py:218
+#: ui/static/platform/js/k_radar_ks.js:1527
+#: ui/static/platform/js/k_rapor.js:1419
+msgid "Ort. Başarı %"
+msgstr "Avg. Success %"
+
+#: micro/modules/raporlar/routes_faz4.py:198
+#: micro/modules/raporlar/routes_faz4.py:218
+msgid "Ölçüm"
+msgstr "Measurement"
+
+#: micro/modules/raporlar/routes_faz4.py:200
+msgid "yılı en yüksek 5 PG"
+msgstr "highest 5 PIs of the year"
+
+#: micro/modules/raporlar/routes_faz4.py:220
+msgid "yılı en düşük 5 PG"
+msgstr "lowest 5 PIs of the year"
+
+#: micro/modules/raporlar/routes_faz4.py:240
+#: ui/templates/platform/analiz/index.html:74
+msgid "Sağlık Skoru"
+msgstr "Health Score"
+
+#: micro/modules/raporlar/routes_faz4.py:242
+msgid "süreç sağlık skoru sıralı"
+msgstr "ranked by process health score"
+
+#: micro/modules/raporlar/routes_faz4.py:248
+#: ui/templates/platform/raporlar/initiative_bubble.html:110
+#: ui/templates/platform/raporlar/onay_zinciri.html:27
+#: ui/templates/platform/sp/initiatives.html:58
+msgid "Öncelik"
+msgstr "Priority"
+
+#: micro/modules/raporlar/routes_faz4.py:248
+#: ui/templates/platform/raporlar/onay_zinciri.html:29
+msgid "Bütçe"
+msgstr "Budget"
+
+#: micro/modules/raporlar/routes_faz4.py:248
+msgid "İlerleme %"
+msgstr "Progress %"
+
+#: micro/modules/raporlar/routes_faz4.py:251
+msgid "aktif/planlanan initiative"
+msgstr "active/planned initiatives"
+
+#: micro/modules/raporlar/routes_faz4.py:260
+#: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/bireysel/karne.html:273
+#: ui/templates/platform/k_rapor/index.html:101
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/sp/ceyreklik_review.html:75
+#: ui/templates/platform/surec/faaliyetler.html:104
+#: ui/templates/platform/surec/karne.html:476
+msgid "Faaliyet"
+msgstr "Activity"
+
+#: micro/modules/raporlar/routes_faz4.py:260
+#: ui/templates/platform/k_rapor/index.html:308
+msgid "Son Tarih"
+msgstr "Last Date"
+
+#: micro/modules/raporlar/routes_faz4.py:265
+msgid "geciken faaliyet (top 20)"
+msgstr "delayed activities (top 20)"
+
+#: micro/modules/raporlar/routes_faz4.py:276
+msgid "Ölçüm Sayısı"
+msgstr "Number of Measurements"
+
+#: micro/modules/raporlar/routes_faz4.py:278
+msgid "En çok ölçüm yapılan 10 PG"
+msgstr "Top 10 most-measured PIs"
+
+#: micro/modules/raporlar/routes_faz4.py:285
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:26
+#: ui/templates/platform/raporlar/departman_performans.html:25
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:27
+msgid "Departman"
+msgstr "Department"
+
+#: micro/modules/raporlar/routes_faz4.py:285
+msgid "Kullanıcı Sayısı"
+msgstr "User Count"
+
+#: micro/modules/raporlar/routes_faz4.py:286
+msgid "(belirsiz)"
+msgstr "(undefined)"
+
+#: micro/modules/raporlar/routes_faz4.py:287
+msgid "farklı departman"
+msgstr "different departments"
+
+#: micro/modules/raporlar/routes_faz4.py:294
+#: ui/templates/platform/k_radar/risk_management.html:50
+#: ui/templates/platform/k_rapor/index.html:104
+#: ui/templates/platform/raporlar/sektorel_detay.html:18
+#: ui/templates/platform/raporlar/sektorel_detay.html:53
+#: ui/templates/platform/sp/ceyreklik_review.html:80
+msgid "Risk"
+msgstr "Risk"
+
+#: micro/modules/raporlar/routes_faz4.py:294
+#: ui/static/platform/js/project_raid.js:90
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "Olasılık"
+msgstr "Probability"
+
+#: micro/modules/raporlar/routes_faz4.py:294
+#: ui/static/platform/js/project_raid.js:93
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_radar/risk_management.html:50
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/sp/blue_ocean.html:133
+msgid "Etki"
+msgstr "Impact"
+
+#: micro/modules/raporlar/routes_faz4.py:294
+#: ui/templates/platform/k_radar/risk_management.html:51
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "RPN"
+msgstr "RPN"
+
+#: micro/modules/raporlar/routes_faz4.py:296
+msgid "RPN ≥ 10 olan"
+msgstr "with RPN ≥ 10"
+
+#: micro/modules/raporlar/routes_faz4.py:296
+msgid "risk"
+msgstr "risk"
+
+#: micro/modules/raporlar/routes_faz4.py:310
+msgid "AI Analizi"
+msgstr "AI Analysis"
+
+#: micro/modules/raporlar/routes_faz4.py:313
+msgid "Pattern veya sorgu metni gerekli"
+msgstr "Pattern or query text required"
 
 #: micro/modules/raporlar/routes_faz4.py:455
 msgid "Lütfen önce bir sektör seçin."
 msgstr "Please select a sector first."
+
+#: micro/modules/raporlar/routes_faz4.py:506
+msgid "Kendi API anahtarınız"
+msgstr "Your own API key"
+
+#: micro/modules/raporlar/routes_faz4.py:506
+msgid "Sınırsız"
+msgstr "Unlimited"
+
+#: micro/modules/raporlar/routes_faz4.py:519
+msgid "Sistem API · Bugün"
+msgstr "System API · Today"
+
+#: micro/modules/raporlar/routes_faz4.py:519
+msgid "hak kaldı"
+msgstr "remaining"
+
+#: micro/modules/raporlar/routes_faz4.py:523
+msgid "Sistem API"
+msgstr "System API"
 
 #: micro/modules/shared/auth/routes.py:53
 msgid "Bu e-posta başka bir kullanıcı tarafından kullanılıyor."
@@ -1415,8 +3854,9 @@ msgstr "Email settings saved."
 #: micro/modules/shared/ayarlar/routes.py:119
 msgid "Hesabınızda e-posta adresi tanımlı değil; test maili gönderilemez."
 msgstr ""
-"No email address is defined for your account; test email cannot be sent.A"
-" test mail will be sent to your own email address with the saved "
+"No email address is defined for your account; test email cannot be "
+"sent.No email address is defined for your account; test email cannot be "
+"sent.A test mail will be sent to your own email address with the saved "
 "settings.A test mail will be sent to your own email address with the "
 "saved settings.A test mail will be sent to your own email address with "
 "the saved settings.A test mail will be sent to your own email address "
@@ -1778,11 +4218,6 @@ msgstr "Sparkline data could not be retrieved."
 msgid "Hata"
 msgstr "Error"
 
-#: ui/static/platform/js/admin.js:46
-#: ui/static/platform/js/pg_tablo_modal.js:700
-msgid "Evet"
-msgstr "Yes"
-
 #: ui/static/platform/js/admin.js:46 ui/static/platform/js/admin.js:657
 #: ui/static/platform/js/admin.js:685 ui/static/platform/js/admin.js:714
 #: ui/static/platform/js/admin.js:804 ui/static/platform/js/app.js:144
@@ -2051,10 +4486,6 @@ msgstr "e.g. pgv_kapsami"
 msgid "Gerçekleşen"
 msgstr "Actual"
 
-#: ui/static/platform/js/analiz.js:147
-msgid "Tahmin"
-msgstr "Estimate"
-
 #: ui/static/platform/js/analiz.js:212
 msgid "Değer:"
 msgstr "Value:"
@@ -2163,7 +4594,8 @@ msgstr ""
 "saved settings.A test mail will be sent to your own email address with "
 "the saved settings.A test mail will be sent to your own email address "
 "with the saved settings.A test mail will be sent to your own email "
-"address with the saved settings."
+"address with the saved settings.A test mail will be sent to your own "
+"email address with the saved settings."
 
 #: ui/static/platform/js/ayarlar_eposta.js:102
 msgid "Mail gönderiliyor..."
@@ -2264,24 +4696,6 @@ msgstr "Desktop"
 msgid "Sayfa"
 msgstr "Page"
 
-#: ui/static/platform/js/command_palette.js:22
-#: ui/templates/platform/base.html:160
-#: ui/templates/platform/sp/blue_ocean.html:10
-#: ui/templates/platform/sp/ceyreklik_review.html:10
-#: ui/templates/platform/sp/donemler.html:11
-#: ui/templates/platform/sp/index.html:70
-#: ui/templates/platform/sp/initiatives.html:10
-#: ui/templates/platform/sp/menu.html:17
-#: ui/templates/platform/sp/projeler.html:10
-#: ui/templates/platform/sp/projeler.html:24
-#: ui/templates/platform/sp/replan_triggers.html:10
-#: ui/templates/platform/sp/scenarios.html:10
-#: ui/templates/platform/sp/strategy_project_matrix.html:7
-#: ui/templates/platform/sp/vrio.html:10
-#: ui/templates/platform/surec/index.html:489
-msgid "Stratejik Planlama"
-msgstr "Strategic Planning"
-
 #: ui/static/platform/js/command_palette.js:23
 #: ui/templates/platform/sp/exec_dashboard.html:56
 #: ui/templates/platform/sp/menu.html:26
@@ -2341,18 +4755,6 @@ msgstr "Strategy Map"
 msgid "SP Menüsü"
 msgstr "SP Menu"
 
-#: ui/static/platform/js/command_palette.js:33
-#: ui/templates/platform/base.html:198
-#: ui/templates/platform/sp/exec_dashboard.html:109
-#: ui/templates/platform/surec/faaliyetler.html:10
-msgid "Süreç Yönetimi"
-msgstr "Process Management"
-
-#: ui/static/platform/js/command_palette.js:34
-#: ui/templates/platform/base.html:206
-msgid "Proje Yönetimi"
-msgstr "Project Management"
-
 #: ui/static/platform/js/command_palette.js:35
 msgid "Proje Portföyü"
 msgstr "Project Portfolio"
@@ -2371,19 +4773,6 @@ msgstr "Project Kanban"
 #: ui/templates/platform/sp/exec_dashboard.html:112
 msgid "K-Analiz"
 msgstr "K-Analysis"
-
-#: ui/static/platform/js/command_palette.js:39
-#: ui/templates/platform/raporlar/index.html:6
-#: ui/templates/platform/raporlar/pg_proje_etki.html:7
-msgid "K-Radar"
-msgstr "K-Radar"
-
-#: ui/static/platform/js/command_palette.js:40
-#: ui/templates/platform/analiz/index.html:2
-#: ui/templates/platform/analiz/index.html:3
-#: ui/templates/platform/base.html:242
-msgid "Performans Analitiği"
-msgstr "Performance Analytics"
 
 #: ui/static/platform/js/command_palette.js:41
 msgid "Bireysel Karne"
@@ -2404,36 +4793,11 @@ msgstr "Notifications"
 msgid "Kurum Ayarları"
 msgstr "Organization Settings"
 
-#: ui/static/platform/js/command_palette.js:44
-#: ui/templates/platform/ayarlar/eposta.html:10
-#: ui/templates/platform/ayarlar/index.html:2
-#: ui/templates/platform/ayarlar/index.html:3
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7
-#: ui/templates/platform/base.html:306
-msgid "Ayarlar"
-msgstr "Settings"
-
 #: ui/static/platform/js/command_palette.js:45
 #: ui/static/platform/js/profil.js:109
 #: ui/templates/platform/raporlar/mobile.html:45
 msgid "Profil"
 msgstr "Profile"
-
-#: ui/static/platform/js/command_palette.js:46
-#: ui/templates/platform/admin/hierarchy.html:6
-#: ui/templates/platform/admin/holding_dashboard.html:6
-#: ui/templates/platform/admin/notifications.html:6
-#: ui/templates/platform/admin/packages.html:6
-#: ui/templates/platform/admin/sub_tenants.html:6
-#: ui/templates/platform/admin/sub_tenants_usage.html:6
-#: ui/templates/platform/admin/tenants.html:10
-#: ui/templates/platform/admin/users.html:10
-#: ui/templates/platform/admin/yonetim_paneli.html:2
-#: ui/templates/platform/admin/yonetim_paneli.html:3
-#: ui/templates/platform/admin/yonetim_paneli.html:10
-#: ui/templates/platform/ayarlar/index.html:139
-msgid "Yönetim Paneli"
-msgstr "Management Panel"
 
 #: ui/static/platform/js/command_palette.js:47
 #: ui/templates/platform/admin/users.html:10
@@ -2539,37 +4903,6 @@ msgstr "Total:"
 #: ui/static/platform/js/k_radar.js:182
 msgid "Gecmis aksiyon kaydi yok."
 msgstr "No past action record."
-
-#: ui/static/platform/js/k_radar.js:207 ui/static/platform/js/surec.js:3140
-#: ui/templates/platform/admin/notifications.html:80
-#: ui/templates/platform/admin/sub_tenants.html:80
-#: ui/templates/platform/admin/sub_tenants_usage.html:81
-#: ui/templates/platform/admin/tenants.html:73
-#: ui/templates/platform/admin/users.html:103
-#: ui/templates/platform/admin/yonetim_paneli.html:113
-#: ui/templates/platform/bireysel/karne.html:274
-#: ui/templates/platform/k_radar/risk_management.html:52
-#: ui/templates/platform/k_radar/risk_management.html:87
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:574
-#: ui/templates/platform/k_rapor/index.html:603
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/raporlar/initiative_bubble.html:109
-#: ui/templates/platform/raporlar/op_istatistik.html:38
-#: ui/templates/platform/sp/donemler.html:91
-#: ui/templates/platform/sp/initiatives.html:66
-#: ui/templates/platform/sp/projeler.html:65
-#: ui/templates/platform/sp/projeler.html:115
-#: ui/templates/platform/surec/faaliyetler.html:105
-#: ui/templates/platform/surec/index.html:530
-#: ui/templates/platform/surec/karne.html:221
-#: ui/templates/platform/surec/karne.html:477
-msgid "Durum"
-msgstr "Status"
 
 #: ui/static/platform/js/k_radar.js:208
 msgid "Kullanici"
@@ -2724,11 +5057,6 @@ msgstr "item"
 #: ui/templates/platform/surec/index.html:423
 msgid "Veri yok"
 msgstr "No Data"
-
-#: ui/static/platform/js/k_radar_ks.js:130
-#: ui/static/platform/js/k_radar_ks.js:515
-msgid "strateji"
-msgstr "strategy"
 
 #: ui/static/platform/js/k_radar_ks.js:153
 #: ui/static/platform/js/k_radar_ks.js:614
@@ -2936,11 +5264,6 @@ msgstr "Delete the target?"
 msgid "Bu hedef ve tüm KR'ları silinecek."
 msgstr "This target and all its KRs will be deleted."
 
-#: ui/static/platform/js/k_radar_ks.js:925 ui/static/platform/js/kurum.js:601
-#: ui/static/platform/js/pg_tablo_modal.js:714
-msgid "Silindi."
-msgstr "Deleted."
-
 #: ui/static/platform/js/k_radar_ks.js:936
 #: ui/templates/platform/k_radar/ks.html:318
 msgid "Anahtar Sonuç Ekle"
@@ -3091,21 +5414,6 @@ msgstr "On Target"
 msgid "Riskli"
 msgstr "At Risk"
 
-#: ui/static/platform/js/k_radar_ks.js:1527
-#: ui/static/platform/js/k_rapor.js:1419
-msgid "Ort. Başarı %"
-msgstr "Avg. Success %"
-
-#: ui/static/platform/js/k_rapor.js:360
-#: ui/templates/platform/bireysel/karne.html:239
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/raporlar/sektorel_detay.html:62
-#: ui/templates/platform/sp/okr.html:120
-msgid "Hedef"
-msgstr "Target"
-
 #: ui/static/platform/js/k_rapor.js:419
 msgid "Bağlı süreç yok"
 msgstr "No linked process"
@@ -3213,15 +5521,6 @@ msgstr "PI Count"
 #: ui/static/platform/js/k_rapor.js:1221
 msgid "Başarı %"
 msgstr "Success %"
-
-#: ui/static/platform/js/k_rapor.js:1228 ui/static/platform/js/surec_vgs.js:541
-#: ui/static/platform/js/surec_vgs.js:587
-#: ui/templates/platform/k_rapor/index.html:271
-#: ui/templates/platform/sp/dynamic_flow.html:29
-#: ui/templates/platform/sp/strateji_haritasi.html:69
-#: ui/templates/platform/sp/strateji_haritasi.html:114
-msgid "PG"
-msgstr "PI"
 
 #: ui/static/platform/js/k_rapor.js:1263 ui/static/platform/js/k_rapor.js:1546
 #: ui/templates/platform/k_rapor/index.html:753
@@ -3708,13 +6007,6 @@ msgstr "Year End"
 msgid "Çeyreklik"
 msgstr "Quarterly"
 
-#: ui/static/platform/js/pg_tablo_modal.js:247
-#: ui/static/platform/js/surec.js:235 ui/templates/platform/k_radar/ks.html:290
-#: ui/templates/platform/k_rapor/index.html:196
-#: ui/templates/platform/surec/karne.html:562
-msgid "Yıllık"
-msgstr "Annual"
-
 #: ui/static/platform/js/pg_tablo_modal.js:248
 #: ui/static/platform/js/surec.js:236
 #: ui/templates/platform/analiz/index.html:43
@@ -3851,23 +6143,6 @@ msgstr "First make a selection from the left."
 msgid "Önce sağdan seçim yapın."
 msgstr "First make a selection from the right."
 
-#: ui/static/platform/js/project_form_transfer.js:222
-#: ui/templates/platform/admin/istatistikler.html:35
-#: ui/templates/platform/admin/istatistikler.html:69
-#: ui/templates/platform/admin/sub_tenants.html:79
-#: ui/templates/platform/admin/sub_tenants_usage.html:44
-#: ui/templates/platform/admin/sub_tenants_usage.html:73
-#: ui/templates/platform/admin/yonetim_paneli.html:114
-#: ui/templates/platform/admin/yonetim_paneli.html:142
-#: ui/templates/platform/ayarlar/index.html:33
-#: ui/templates/platform/base.html:324
-#: ui/templates/platform/k_rapor/index.html:271
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
-msgid "Kullanıcı"
-msgstr "User"
-
 #: ui/static/platform/js/project_form_transfer.js:269
 msgid "Üye olan kullanıcı gözlemci olamaz; önce üyelikten çıkarın."
 msgstr "A user who is a member cannot be an observer; first remove the membership."
@@ -3888,22 +6163,6 @@ msgstr "RAID Loading Error"
 msgid "Henüz öğe eklenmedi."
 msgstr "No item added yet."
 
-#: ui/static/platform/js/project_raid.js:90
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-msgid "Olasılık"
-msgstr "Probability"
-
-#: ui/static/platform/js/project_raid.js:93
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_radar/risk_management.html:50
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:663
-#: ui/templates/platform/sp/blue_ocean.html:133
-msgid "Etki"
-msgstr "Impact"
-
 #: ui/static/platform/js/project_raid.js:98
 msgid "Doğrulama"
 msgstr "Verification"
@@ -3911,12 +6170,6 @@ msgstr "Verification"
 #: ui/static/platform/js/project_raid.js:103
 msgid "Aciliyet"
 msgstr "Urgency"
-
-#: ui/static/platform/js/project_raid.js:108
-#: ui/templates/platform/admin/notifications.html:77
-#: ui/templates/platform/admin/tenants.html:68
-msgid "Tip"
-msgstr "Type"
 
 #: ui/static/platform/js/project_raid.js:194
 #: ui/templates/platform/admin/packages.html:44
@@ -4457,17 +6710,6 @@ msgid "Tablo görünümü şu an kullanılamıyor."
 msgstr "Table view is not available right now."
 
 #: ui/static/platform/js/surec.js:3140
-#: ui/templates/platform/bireysel/karne.html:273
-#: ui/templates/platform/k_rapor/index.html:101
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/sp/ceyreklik_review.html:75
-#: ui/templates/platform/surec/faaliyetler.html:104
-#: ui/templates/platform/surec/karne.html:476
-msgid "Faaliyet"
-msgstr "Activity"
-
-#: ui/static/platform/js/surec.js:3140
 #: ui/templates/platform/k_rapor/index.html:251
 #: ui/templates/platform/sp/okr.html:116
 #: ui/templates/platform/sp/projeler.html:124
@@ -4545,7 +6787,8 @@ msgstr ""
 "entered for each selected sub-strategy.When K-Vector is on, a "
 "contribution % must be entered for each selected sub-strategy.When "
 "K-Vector is on, a contribution % must be entered for each selected sub-"
-"strategy."
+"strategy.When K-Vector is on, a contribution % must be entered for each "
+"selected sub-strategy."
 
 #: ui/static/platform/js/surec.js:3661
 msgid "Katkı yüzdeleri 0 veya pozitif sayı olmalıdır."
@@ -4630,30 +6873,6 @@ msgstr "Data entry window could not be loaded."
 msgid "PG bulunamadı; sayfayı yenileyin."
 msgstr "PI not found; refresh the page."
 
-#: ui/static/platform/js/surec_vgs.js:579
-#: ui/templates/platform/admin/istatistikler.html:38
-#: ui/templates/platform/admin/istatistikler.html:72
-#: ui/templates/platform/k_radar/kp_olgunluk.html:43
-#: ui/templates/platform/k_radar/risk_management.html:98
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:308
-#: ui/templates/platform/k_rapor/index.html:320
-#: ui/templates/platform/k_rapor/index.html:370
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/raporlar/sektorel_detay.html:16
-#: ui/templates/platform/raporlar/sektorel_detay.html:46
-#: ui/templates/platform/sp/dynamic_flow.html:26
-#: ui/templates/platform/sp/flow.html:33
-#: ui/templates/platform/sp/strateji_haritasi.html:62
-#: ui/templates/platform/sp/strateji_haritasi.html:113
-#: ui/templates/platform/surec/faaliyetler.html:60
-#: ui/templates/platform/surec/karne.html:691
-msgid "Süreç"
-msgstr "Process"
-
 #: ui/static/platform/js/surec_vgs.js:683
 msgid "Bireysel PG eşlemesi oluşturulamadı."
 msgstr "Individual PI mapping could not be created."
@@ -4715,24 +6934,12 @@ msgid "Fazla üretim"
 msgstr "Overproduction"
 
 #: ui/static/platform/js/vc_items.js:25
-msgid "Bekleme"
-msgstr "Waiting"
-
-#: ui/static/platform/js/vc_items.js:25
 msgid "Taşıma"
 msgstr "Transport"
 
 #: ui/static/platform/js/vc_items.js:26
 msgid "Fazla işleme"
 msgstr "Overprocessing"
-
-#: ui/static/platform/js/vc_items.js:26
-msgid "Stok"
-msgstr "Inventory"
-
-#: ui/static/platform/js/vc_items.js:26
-msgid "Hareket"
-msgstr "Movement"
 
 #: ui/static/platform/js/vc_items.js:26
 msgid "Hata/Düzeltme"
@@ -4793,15 +7000,6 @@ msgstr "Inactive"
 msgid "Ana Modüller"
 msgstr "Main Modules"
 
-#: ui/templates/platform/base.html:152
-msgid "Masaüstüm"
-msgstr "My Desktop"
-
-#: ui/templates/platform/base.html:165 ui/templates/platform/kurum/index.html:2
-#: ui/templates/platform/kurum/index.html:3
-msgid "Kurum Paneli"
-msgstr "Organization Panel"
-
 #: ui/templates/platform/admin/holding_drilldown.html:2
 #: ui/templates/platform/base.html:174
 msgid "Holding Görünümü"
@@ -4823,11 +7021,6 @@ msgstr "My Client Organizations"
 msgid "Savaş Odası"
 msgstr "War Room"
 
-#: ui/templates/platform/base.html:235
-#: ui/templates/platform/k_radar/hub.html:76
-msgid "Bireysel Performans"
-msgstr "Individual Performance"
-
 #: ui/templates/platform/base.html:248
 msgid "Yönetim"
 msgstr "Management"
@@ -4837,17 +7030,9 @@ msgstr "Management"
 msgid "Kurumlar"
 msgstr "Organizations"
 
-#: ui/templates/platform/base.html:265
-msgid "Bildirim Merkezi"
-msgstr "Notification Center"
-
 #: ui/templates/platform/base.html:272
 msgid "SaaS Paketler"
 msgstr "SaaS Packages"
-
-#: ui/templates/platform/base.html:280
-msgid "API Dokümantasyonu"
-msgstr "API Documentation"
 
 #: ui/templates/platform/admin/araclar.html:3
 #: ui/templates/platform/admin/araclar.html:6
@@ -4958,7 +7143,8 @@ msgstr ""
 "audit tools open only to general administrator (Admin) access.Maintenance"
 " and audit tools open only to general administrator (Admin) "
 "access.Maintenance and audit tools open only to general administrator "
-"(Admin) access."
+"(Admin) access.Maintenance and audit tools open only to general "
+"administrator (Admin) access."
 
 #: ui/templates/platform/admin/araclar.html:26
 msgid ""
@@ -5215,7 +7401,9 @@ msgstr ""
 "<strong>read-only</strong>.and the summary performance of all its sub-"
 "organizations — <strong>read-only</strong>.and the summary performance of"
 " all its sub-organizations — <strong>read-only</strong>.and the summary "
-"performance of all its sub-organizations — <strong>read-only</strong>."
+"performance of all its sub-organizations — <strong>read-only</strong>.and"
+" the summary performance of all its sub-organizations — <strong>read-"
+"only</strong>."
 
 #: ui/templates/platform/admin/holding_dashboard.html:39
 msgid "Ortalama Sağlık Skoru"
@@ -5331,13 +7519,6 @@ msgstr "Active KPIs"
 msgid "Strateji"
 msgstr "Strategy"
 
-#: ui/templates/platform/admin/holding_drilldown.html:58
-#: ui/templates/platform/admin/sub_tenants_usage.html:76
-#: ui/templates/platform/sp/exec_dashboard.html:173
-#: ui/templates/platform/sp/strateji_haritasi.html:115
-msgid "Girişim"
-msgstr "Initiative"
-
 #: ui/templates/platform/admin/holding_drilldown.html:68
 msgid "KPI Hedef Üstü"
 msgstr "KPI Above Target"
@@ -5375,40 +7556,6 @@ msgstr ""
 #: ui/templates/platform/admin/istatistikler.html:26
 msgid "İstatistikler alınamadı."
 msgstr "Could not retrieve statistics."
-
-#: ui/templates/platform/admin/istatistikler.html:34
-#: ui/templates/platform/admin/istatistikler.html:68
-#: ui/templates/platform/admin/loglar.html:69
-#: ui/templates/platform/admin/loglar.html:121
-#: ui/templates/platform/admin/sub_tenants_usage.html:43
-#: ui/templates/platform/admin/sub_tenants_usage.html:71
-#: ui/templates/platform/admin/tenants.html:67
-#: ui/templates/platform/admin/users.html:102
-#: ui/templates/platform/admin/users.html:210
-#: ui/templates/platform/admin/users.html:262
-#: ui/templates/platform/ayarlar/index.html:38
-#: ui/templates/platform/ayarlar/index.html:40
-#: ui/templates/platform/ayarlar/index.html:92
-#: ui/templates/platform/k_rapor/index.html:795
-msgid "Kurum"
-msgstr "Organization"
-
-#: ui/templates/platform/admin/istatistikler.html:36
-#: ui/templates/platform/kurum/index.html:242
-#: ui/templates/platform/sp/flow.html:23 ui/templates/platform/sp/index.html:98
-#: ui/templates/platform/sp/strateji_haritasi.html:48
-msgid "Ana Strateji"
-msgstr "Main Strategy"
-
-#: ui/templates/platform/admin/istatistikler.html:37
-#: ui/templates/platform/k_rapor/index.html:492
-#: ui/templates/platform/sp/dynamic_flow.html:23
-#: ui/templates/platform/sp/flow.html:28
-#: ui/templates/platform/sp/strateji_haritasi.html:55
-#: ui/templates/platform/sp/strateji_haritasi.html:98
-#: ui/templates/platform/sp/strateji_haritasi.html:112
-msgid "Alt Strateji"
-msgstr "Sub-Strategy"
 
 #: ui/templates/platform/admin/istatistikler.html:40
 #: ui/templates/platform/admin/istatistikler.html:74
@@ -5781,14 +7928,6 @@ msgstr "Message"
 msgid "Alıcı"
 msgstr "Recipient"
 
-#: ui/templates/platform/admin/notifications.html:79
-#: ui/templates/platform/admin/yedekleme.html:71
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/k_rapor/index.html:596
-#: ui/templates/platform/k_rapor/index.html:697
-msgid "Tarih"
-msgstr "Date"
-
 #: ui/templates/platform/admin/notifications.html:81
 #: ui/templates/platform/admin/sub_tenants.html:81
 #: ui/templates/platform/admin/tenants.html:74
@@ -5920,7 +8059,8 @@ msgstr ""
 "organization.Click the \"Open New Sub-Organization\" button to open the "
 "first sub-organization.Click the \"Open New Sub-Organization\" button to "
 "open the first sub-organization.Click the \"Open New Sub-Organization\" "
-"button to open the first sub-organization."
+"button to open the first sub-organization.Click the \"Open New Sub-"
+"Organization\" button to open the first sub-organization."
 
 #: ui/templates/platform/admin/sub_tenants.html:110
 msgid ""
@@ -5941,11 +8081,6 @@ msgstr "Organization Name"
 #: ui/templates/platform/admin/sub_tenants.html:116
 msgid "Örn: ABC Cam"
 msgstr "E.g.: ABC Cam"
-
-#: ui/templates/platform/admin/sub_tenants.html:119
-#: ui/templates/platform/admin/tenants.html:227
-msgid "Kısa Ad"
-msgstr "Short Name"
 
 #: ui/templates/platform/admin/sub_tenants.html:120
 msgid "Örn: ABCCam"
@@ -5969,20 +8104,6 @@ msgstr "— No package selected —"
 #: ui/templates/platform/admin/sub_tenants.html:138
 msgid "İlk Admin Bilgileri"
 msgstr "First Admin Information"
-
-#: ui/templates/platform/admin/sub_tenants.html:145
-#: ui/templates/platform/admin/sub_tenants.html:146
-#: ui/templates/platform/admin/users.html:188
-#: ui/templates/platform/admin/users.html:189
-#: ui/templates/platform/admin/users.html:239
-#: ui/templates/platform/admin/users.html:240
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/raporlar/onay_zinciri.html:25
-#: ui/templates/platform/sp/donemler.html:90
-#: ui/templates/platform/sp/initiatives.html:50
-#: ui/templates/platform/sp/replan_triggers.html:59
-msgid "Ad"
-msgstr "Name"
 
 #: ui/templates/platform/admin/sub_tenants.html:149
 #: ui/templates/platform/admin/sub_tenants.html:150
@@ -6017,10 +8138,6 @@ msgstr "Create"
 #: ui/templates/platform/admin/sub_tenants.html:182
 msgid "Geçici Şifre — Şimdi Kaydet"
 msgstr "Temporary Password — Save Now"
-
-#: ui/templates/platform/admin/sub_tenants.html:185
-msgid "E-posta:"
-msgstr "E-mail:"
 
 #: ui/templates/platform/admin/sub_tenants.html:186
 msgid "Şifre:"
@@ -6117,13 +8234,6 @@ msgstr "Active Organizations"
 msgid "Arşivlenmiş"
 msgstr "Archived"
 
-#: ui/templates/platform/admin/tenants.html:69
-#: ui/templates/platform/admin/tenants.html:231
-#: ui/templates/platform/kurum/ayarlar.html:46
-#: ui/templates/platform/sp/blue_ocean.html:54
-msgid "Sektör"
-msgstr "Sector"
-
 #: ui/templates/platform/admin/tenants.html:71
 msgid "Lisans Bitiş"
 msgstr "License Expiry"
@@ -6210,11 +8320,6 @@ msgstr "Field of Activity"
 #: ui/templates/platform/admin/tenants.html:236
 msgid "Faaliyet alanı"
 msgstr "Field of activity"
-
-#: ui/templates/platform/admin/tenants.html:240
-#: ui/templates/platform/kurum/ayarlar.html:60
-msgid "İletişim"
-msgstr "Contact"
 
 #: ui/templates/platform/admin/tenants.html:247
 #: ui/templates/platform/kurum/ayarlar.html:70
@@ -6447,7 +8552,8 @@ msgstr ""
 "it takes a few seconds to prepare.The code backup can be large (~100+ "
 "MB), it takes a few seconds to prepare.The code backup can be large "
 "(~100+ MB), it takes a few seconds to prepare.The code backup can be "
-"large (~100+ MB), it takes a few seconds to prepare."
+"large (~100+ MB), it takes a few seconds to prepare.The code backup can "
+"be large (~100+ MB), it takes a few seconds to prepare."
 
 #: ui/templates/platform/admin/yedekleme.html:46
 msgid "Otomatik Yedek — her gece 02:00"
@@ -6615,17 +8721,6 @@ msgstr "Recent Activities"
 msgid "İkon"
 msgstr "Icon"
 
-#: ui/templates/platform/admin/yonetim_paneli.html:141
-#: ui/templates/platform/k_radar/risk_management.html:52
-#: ui/templates/platform/k_radar/risk_management.html:95
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/k_rapor/index.html:697
-#: ui/templates/platform/sp/vrio.html:55
-msgid "Kaynak"
-msgstr "Source"
-
 #: ui/templates/platform/admin/yonetim_paneli.html:153
 msgid "Daha fazla göster"
 msgstr "Show more"
@@ -6671,10 +8766,6 @@ msgstr "Scan anomalies in the selected process (or all) PIs"
 msgid "Anomali Tara"
 msgstr "Scan Anomalies"
 
-#: ui/templates/platform/analiz/index.html:74
-msgid "Sağlık Skoru"
-msgstr "Health Score"
-
 #: ui/templates/platform/analiz/index.html:76
 msgid "Hesaplanıyor…"
 msgstr "Calculating…"
@@ -6703,10 +8794,6 @@ msgstr "Anomaly"
 #: ui/templates/platform/analiz/index.html:94
 msgid "Tespit edilen"
 msgstr "Detected"
-
-#: ui/templates/platform/analiz/index.html:102
-msgid "Trend Analizi"
-msgstr "Trend Analysis"
 
 #: ui/templates/platform/analiz/index.html:112
 msgid "Trend verisi bulunamadı."
@@ -7168,7 +9255,8 @@ msgstr ""
 "selected year.A brief summary of data coverage and your indicators for "
 "the selected year.A brief summary of data coverage and your indicators "
 "for the selected year.A brief summary of data coverage and your "
-"indicators for the selected year."
+"indicators for the selected year.A brief summary of data coverage and "
+"your indicators for the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -7225,12 +9313,6 @@ msgstr "Click a row to open annual detail and a mini chart."
 #: ui/templates/platform/surec/karne.html:263
 msgid "Gösterge"
 msgstr "Indicator"
-
-#: ui/templates/platform/bireysel/karne.html:240
-#: ui/templates/platform/raporlar/sektorel_detay.html:62
-#: ui/templates/platform/surec/karne.html:866
-msgid "Birim"
-msgstr "Unit"
 
 #: ui/templates/platform/bireysel/karne.html:262
 msgid "Faaliyetlerim"
@@ -7708,8 +9790,9 @@ msgstr ""
 "critical PIsActivities ending/pending today & critical PIsActivities "
 "ending/pending today & critical PIsActivities ending/pending today & "
 "critical PIsActivities ending/pending today & critical PIsActivities "
-"ending/pending today & critical PIsActivities due/pending today, assigned"
-" tasks, critical PIs. A short summary to start the work day."
+"ending/pending today & critical PIsActivities ending/pending today & "
+"critical PIsActivities due/pending today, assigned tasks, critical PIs. A"
+" short summary to start the work day."
 
 #: ui/templates/platform/k_radar/hub.html:84
 #: ui/templates/platform/raporlar/index.html:39
@@ -8004,12 +10087,6 @@ msgstr "CHRO Panel"
 #: ui/templates/platform/k_radar/hub.html:136
 msgid "İK ve insan kaynakları paneli"
 msgstr "HR and human resources panel"
-
-#: ui/templates/platform/k_radar/hub.html:137
-#: ui/templates/platform/raporlar/yatirimci_sunum.html:4
-#: ui/templates/platform/raporlar/yatirimci_sunum.html:8
-msgid "Yatırımcı Sunumu"
-msgstr "Investor Presentation"
 
 #: ui/templates/platform/k_radar/hub.html:137
 msgid "Yatırımcı için hazır sunum paketi"
@@ -8837,11 +10914,6 @@ msgstr "— Remove Assignment —"
 msgid "Öğrenme &amp; Gelişim"
 msgstr "Learning &amp; Growth"
 
-#: ui/templates/platform/k_radar/risk_management.html:2
-#: ui/templates/platform/k_radar/risk_management.html:7
-msgid "Risk Yönetimi"
-msgstr "Risk Management"
-
 #: ui/templates/platform/k_radar/risk_management.html:8
 msgid "RAID + K-Radar Isı Haritası birleşik görünüm"
 msgstr "RAID + K-Radar Heatmap combined view"
@@ -8880,22 +10952,8 @@ msgid "Kapalı"
 msgstr "Off"
 
 #: ui/templates/platform/k_radar/risk_management.html:50
-#: ui/templates/platform/k_rapor/index.html:104
-#: ui/templates/platform/raporlar/sektorel_detay.html:18
-#: ui/templates/platform/raporlar/sektorel_detay.html:53
-#: ui/templates/platform/sp/ceyreklik_review.html:80
-msgid "Risk"
-msgstr "Risk"
-
-#: ui/templates/platform/k_radar/risk_management.html:50
 msgid "Olas."
 msgstr "Prob."
-
-#: ui/templates/platform/k_radar/risk_management.html:51
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-msgid "RPN"
-msgstr "RPN"
 
 #: ui/templates/platform/k_radar/risk_management.html:51
 #: ui/templates/platform/sp/replan_triggers.html:90
@@ -8995,11 +11053,6 @@ msgstr "All KPIs are around their historical averages."
 msgid "K-Rapor — Raporlama Merkezi"
 msgstr "K-Report — Reporting Center"
 
-#: ui/templates/platform/k_rapor/index.html:10
-#: ui/templates/platform/raporlar/esg_yonetim.html:6
-msgid "K-Rapor"
-msgstr "K-Report"
-
 #: ui/templates/platform/k_rapor/index.html:79
 msgid "Aktif sekmeyi Excel olarak indir"
 msgstr "Download active tab as Excel"
@@ -9032,10 +11085,6 @@ msgstr "Process-based PI performance table"
 #: ui/templates/platform/k_rapor/index.html:101
 msgid "Faaliyet durumu ve ilerleme dağılımı"
 msgstr "Activity status and progress distribution"
-
-#: ui/templates/platform/k_rapor/index.html:102
-msgid "Bireysel"
-msgstr "Individual"
 
 #: ui/templates/platform/k_rapor/index.html:102
 msgid "Bireysel performans karne özetleri"
@@ -9213,14 +11262,6 @@ msgstr "Overdue Activities"
 msgid "Proje Portföy Durumu"
 msgstr "Project Portfolio Status"
 
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/raporlar/initiative_bubble.html:114
-#: ui/templates/platform/raporlar/onay_zinciri.html:30
-#: ui/templates/platform/surec/karne.html:220
-msgid "İlerleme"
-msgstr "Progress"
-
 #: ui/templates/platform/k_rapor/index.html:260
 msgid ""
 "<b>Bireysel Performans:</b> Kullanıcı bazlı bireysel PG sahipliği ve "
@@ -9253,27 +11294,6 @@ msgstr "Individual PI Detail List"
 
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:492
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/raporlar/initiative_bubble.html:107
-#: ui/templates/platform/raporlar/onay_zinciri.html:24
-#: ui/templates/platform/raporlar/op_istatistik.html:36
-#: ui/templates/platform/raporlar/sektorel_detay.html:46
-#: ui/templates/platform/raporlar/sektorel_detay.html:62
-#: ui/templates/platform/sp/initiatives.html:51
-msgid "Kod"
-msgstr "Code"
-
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:308
-#: ui/templates/platform/k_rapor/index.html:320
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:727
-msgid "PG Adı"
-msgstr "PI Name"
-
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
 #, python-format
 msgid "Başarı %%"
@@ -9297,10 +11317,6 @@ msgstr "PIs with Data Entered"
 #: ui/templates/platform/k_rapor/index.html:320
 msgid "PG Kodu"
 msgstr "PI Code"
-
-#: ui/templates/platform/k_rapor/index.html:308
-msgid "Son Tarih"
-msgstr "Last Date"
 
 #: ui/templates/platform/k_rapor/index.html:308
 msgid "Giren"
@@ -9454,7 +11470,9 @@ msgstr ""
 "by this date. What came out of our pocket?The amount <b>actually "
 "spent</b> by this date. What came out of our pocket?The amount "
 "<b>actually spent</b> by this date. What came out of our pocket?The "
-"amount <b>actually spent</b> by this date. What came out of our pocket?"
+"amount <b>actually spent</b> by this date. What came out of our "
+"pocket?The amount <b>actually spent</b> by this date. What came out of "
+"our pocket?"
 
 #: ui/templates/platform/k_rapor/index.html:540
 msgid "Zaman Performans Endeksi"
@@ -9851,7 +11869,8 @@ msgstr ""
 "enabled, the vision score is calculated hierarchically on a 1000 "
 "scale.When enabled, the vision score is calculated hierarchically on a "
 "1000 scale.When enabled, the vision score is calculated hierarchically on"
-" a 1000 scale."
+" a 1000 scale.When enabled, the vision score is calculated hierarchically"
+" on a 1000 scale."
 
 #: ui/templates/platform/kurum/ayarlar.html:94
 #, python-format
@@ -9895,7 +11914,8 @@ msgstr ""
 "the organization.Vision score and hierarchical weights are activated "
 "across the organization.Vision score and hierarchical weights are "
 "activated across the organization.Vision score and hierarchical weights "
-"are activated across the organization."
+"are activated across the organization.Vision score and hierarchical "
+"weights are activated across the organization."
 
 #: ui/templates/platform/kurum/ayarlar.html:120
 msgid "Yıllık Plan Dönemleri"
@@ -9934,7 +11954,8 @@ msgstr ""
 "are kept separately per year.A year selector is added to the SP page; KPI"
 " targets are kept separately per year.A year selector is added to the SP "
 "page; KPI targets are kept separately per year.A year selector is added "
-"to the SP page; KPI targets are kept separately per year."
+"to the SP page; KPI targets are kept separately per year.A year selector "
+"is added to the SP page; KPI targets are kept separately per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:147
 msgid "Geçmiş yılları dahil et"
@@ -10020,10 +12041,6 @@ msgstr "Organization vision"
 msgid "Geleceğe yönelik ifade — tüm ekip için ortak pusula"
 msgstr "A forward-looking statement — a shared compass for the whole team"
 
-#: ui/templates/platform/kurum/index.html:137
-msgid "Amaç"
-msgstr "Purpose"
-
 #: ui/templates/platform/kurum/index.html:159
 #: ui/templates/platform/sp/index.html:240
 msgid "Temel değerler"
@@ -10066,11 +12083,6 @@ msgid ""
 msgstr ""
 "Summary figures based on processes within your access scope. Open the "
 "panels below for charts."
-
-#: ui/templates/platform/kurum/index.html:264
-#: ui/templates/platform/kurum/index.html:333
-msgid "Aktif süreç"
-msgstr "Active processes"
 
 #: ui/templates/platform/kurum/index.html:268
 msgid "PG tanımlı süreç"
@@ -10197,7 +12209,8 @@ msgstr ""
 "processes with data, open activities and tracking completed this "
 "monthActive PIs, processes with data, open activities and tracking "
 "completed this monthActive PIs, processes with data, open activities and "
-"tracking completed this month"
+"tracking completed this monthActive PIs, processes with data, open "
+"activities and tracking completed this month"
 
 #: ui/templates/platform/kurum/index.html:441
 msgid "Risk &amp; uyarı"
@@ -10654,7 +12667,8 @@ msgstr ""
 "Name, sector, employee count, organization identity<b>Organization "
 "Information</b> — Name, sector, employee count, organization "
 "identity<b>Organization Information</b> — Name, sector, employee count, "
-"organization identity"
+"organization identity<b>Organization Information</b> — Name, sector, "
+"employee count, organization identity"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:34
 msgid "<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı"
@@ -10670,7 +12684,8 @@ msgstr ""
 "of strategies, sub-strategies, processes and PIs<b>Strategic Plan "
 "Structure</b> — Count of strategies, sub-strategies, processes and "
 "PIs<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies,"
-" processes and PIs"
+" processes and PIs<b>Strategic Plan Structure</b> — Count of strategies, "
+"sub-strategies, processes and PIs"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:35
 msgid "<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı"
@@ -10685,7 +12700,9 @@ msgstr ""
 " the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action distribution"
 " + details of the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action"
 " distribution + details of the last 20 entries<b>Audit Log (Last 90 "
-"Days)</b> — Action distribution + details of the last 20 entries"
+"Days)</b> — Action distribution + details of the last 20 entries<b>Audit "
+"Log (Last 90 Days)</b> — Action distribution + details of the last 20 "
+"entries"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:36
 msgid ""
@@ -10718,7 +12735,8 @@ msgstr ""
 "transparency presentation to external auditors (PWC, Deloitte, "
 "KPMG)Corporate transparency presentation to external auditors (PWC, "
 "Deloitte, KPMG)Corporate transparency presentation to external auditors "
-"(PWC, Deloitte, KPMG)"
+"(PWC, Deloitte, KPMG)Corporate transparency presentation to external "
+"auditors (PWC, Deloitte, KPMG)"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:45
 msgid "ISO 9001 / ISO 27001 uyum kanıtı"
@@ -10785,7 +12803,8 @@ msgstr ""
 "Query EditorAfter the data is loaded, make the necessary transformations "
 "in the Power Query EditorAfter the data is loaded, make the necessary "
 "transformations in the Power Query EditorAfter the data is loaded, make "
-"the necessary transformations in the Power Query Editor"
+"the necessary transformations in the Power Query EditorAfter the data is "
+"loaded, make the necessary transformations in the Power Query Editor"
 
 #: ui/templates/platform/raporlar/bi_connector.html:46
 msgid "Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)"
@@ -10848,12 +12867,6 @@ msgstr "Individual Goal Alignment — Kokpitim"
 #: ui/templates/platform/raporlar/bireysel_hizalama.html:15
 msgid "Kullanıcıların bireysel PG'lerinin kurum stratejisine bağlanma oranı"
 msgstr "The rate at which users' individual PIs link to the organization strategy"
-
-#: ui/templates/platform/raporlar/bireysel_hizalama.html:26
-#: ui/templates/platform/raporlar/departman_performans.html:25
-#: ui/templates/platform/raporlar/yonetici_liderlik.html:27
-msgid "Departman"
-msgstr "Department"
 
 #: ui/templates/platform/raporlar/bireysel_hizalama.html:28
 msgid "Bağlı PG"
@@ -11124,10 +13137,6 @@ msgstr "Department Performance Score"
 msgid "Departman bazlı çalışan + bireysel PG + 2FA güvenlik metrikleri"
 msgstr "Department-based employee + individual PI + 2FA security metrics"
 
-#: ui/templates/platform/raporlar/departman_performans.html:26
-msgid "Çalışan"
-msgstr "Employee"
-
 #: ui/templates/platform/raporlar/departman_performans.html:28
 msgid "PG / Kişi"
 msgstr "PI / Person"
@@ -11199,10 +13208,6 @@ msgstr "Manage Metrics"
 #: ui/templates/platform/raporlar/esg_rapor.html:20
 msgid "YATIRIMCI / DENETÇI HAZIR · PDF"
 msgstr "INVESTOR / AUDITOR READY · PDF"
-
-#: ui/templates/platform/raporlar/esg_rapor.html:21
-msgid "GRI · CDP · TCFD Uyumlu"
-msgstr "GRI · CDP · TCFD Compliant"
 
 #: ui/templates/platform/raporlar/esg_rapor.html:22
 msgid "Tüm Tomofil ESG metriklerinden otomatik üretim"
@@ -11378,10 +13383,6 @@ msgid ""
 msgstr ""
 "Strategic, operational, financial and transformation reports — real-time "
 "insights across the entire tenant."
-
-#: ui/templates/platform/raporlar/index.html:21
-msgid "Veri Kalitesi"
-msgstr "Data Quality"
 
 #: ui/templates/platform/raporlar/index.html:21
 msgid "PG doluluk, eksik alan ve son giriş tarihleri"
@@ -11757,12 +13758,6 @@ msgstr "Detail Table"
 msgid "Girişim Adı"
 msgstr "Initiative Name"
 
-#: ui/templates/platform/raporlar/initiative_bubble.html:110
-#: ui/templates/platform/raporlar/onay_zinciri.html:27
-#: ui/templates/platform/sp/initiatives.html:58
-msgid "Öncelik"
-msgstr "Priority"
-
 #: ui/templates/platform/raporlar/initiative_bubble.html:112
 msgid "Harcanan"
 msgstr "Spent"
@@ -12030,10 +14025,6 @@ msgstr "Approval Status"
 msgid "Sahip"
 msgstr "Owner"
 
-#: ui/templates/platform/raporlar/onay_zinciri.html:29
-msgid "Bütçe"
-msgstr "Budget"
-
 #: ui/templates/platform/raporlar/onay_zinciri.html:38
 msgid ""
 "<b>MVP:</b> Bu sayfa onay durumlarını gösterir. Tam BPMN engine (görsel "
@@ -12185,7 +14176,8 @@ msgstr ""
 "count of risks in that region.&nbsp;·&nbsp; The number in the cell shows "
 "the count of risks in that region.&nbsp;·&nbsp; The number in the cell "
 "shows the count of risks in that region.&nbsp;·&nbsp; The number in the "
-"cell shows the count of risks in that region."
+"cell shows the count of risks in that region.&nbsp;·&nbsp; The number in "
+"the cell shows the count of risks in that region."
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:42
 msgid "5×5 Risk Matrisi"
@@ -12338,11 +14330,6 @@ msgstr "🎯 Strategies (%(n)s)"
 #, python-format
 msgid "⚙ Süreçler (%(n)s)"
 msgstr "⚙ Processes (%(n)s)"
-
-#: ui/templates/platform/raporlar/sektorel_detay.html:46
-#: ui/templates/platform/surec/karne.html:865
-msgid "Ağırlık"
-msgstr "Weight"
 
 #: ui/templates/platform/raporlar/sektorel_detay.html:51
 #, python-format
@@ -12577,7 +14564,8 @@ msgstr ""
 "Gemini 2.0 Flash. No additional charge.Limited to 50 daily / 500 monthly "
 "calls, Gemini 2.0 Flash. No additional charge.Limited to 50 daily / 500 "
 "monthly calls, Gemini 2.0 Flash. No additional charge.Limited to 50 daily"
-" / 500 monthly calls, Gemini 2.0 Flash. No additional charge."
+" / 500 monthly calls, Gemini 2.0 Flash. No additional charge.Limited to "
+"50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional charge."
 
 #: ui/templates/platform/sp/ai_settings.html:37
 msgid "Kendi API anahtarımı kullan (sınırsız, kendi faturam)"
@@ -12827,7 +14815,8 @@ msgstr ""
 "quarterly adjustment — monthly tracking.Modern strategy rhythm: annual "
 "vision — quarterly adjustment — monthly tracking.Modern strategy rhythm: "
 "annual vision — quarterly adjustment — monthly tracking.Modern strategy "
-"rhythm: annual vision — quarterly adjustment — monthly tracking."
+"rhythm: annual vision — quarterly adjustment — monthly tracking.Modern "
+"strategy rhythm: annual vision — quarterly adjustment — monthly tracking."
 
 #: ui/templates/platform/sp/ceyreklik_review.html:39
 msgid "Q1 (Oca-Mar)"
@@ -13026,21 +15015,13 @@ msgstr ""
 "source period's strategies, processes and KPI structure are copied.If "
 "selected, the source period's strategies, processes and KPI structure are"
 " copied.If selected, the source period's strategies, processes and KPI "
-"structure are copied."
+"structure are copied.If selected, the source period's strategies, "
+"processes and KPI structure are copied."
 
 #: ui/templates/platform/sp/dynamic_flow.html:2
 #: ui/templates/platform/sp/dynamic_flow.html:3
 msgid "Dinamik Strateji Grafiği"
 msgstr "Dynamic Strategy Graph"
-
-#: ui/templates/platform/sp/dynamic_flow.html:17
-#: ui/templates/platform/sp/flow.html:42
-#: ui/templates/platform/sp/index.html:178
-#: ui/templates/platform/sp/strateji_haritasi.html:96
-#: ui/templates/platform/sp/strateji_haritasi.html:110
-#: ui/templates/platform/sp/vizyon.html:13
-msgid "Vizyon"
-msgstr "Vision"
 
 #: ui/templates/platform/sp/dynamic_flow.html:41
 msgid "Graf yükleniyor…"
@@ -13498,7 +15479,8 @@ msgstr ""
 "assigned, contribution is not shown.If there is no sub-strategy or no "
 "quota is assigned, contribution is not shown.If there is no sub-strategy "
 "or no quota is assigned, contribution is not shown.If there is no sub-"
-"strategy or no quota is assigned, contribution is not shown."
+"strategy or no quota is assigned, contribution is not shown.If there is "
+"no sub-strategy or no quota is assigned, contribution is not shown."
 
 #: ui/templates/platform/sp/index.html:411
 msgid "Bağlı alt stratejiler"
@@ -13798,10 +15780,6 @@ msgstr "— No sub-strategy —"
 msgid "Yeni Anahtar Sonuç"
 msgstr "New Key Result"
 
-#: ui/templates/platform/sp/okr.html:112
-msgid "Metrik"
-msgstr "Metric"
-
 #: ui/templates/platform/sp/okr.html:113
 #, python-format
 msgid "%%, adet, TL..."
@@ -13964,10 +15942,6 @@ msgstr "Threshold"
 #: ui/templates/platform/sp/replan_triggers.html:82
 msgid "Ardışık Dönem"
 msgstr "Sequential Period"
-
-#: ui/templates/platform/sp/replan_triggers.html:83
-msgid "Aksiyon"
-msgstr "Action"
 
 #: ui/templates/platform/sp/replan_triggers.html:86
 msgid "Pivot Öner"
@@ -14176,7 +16150,8 @@ msgstr ""
 "strategies are displayed in the active SP "
 "period.<strong>%(count)s</strong> main strategies are displayed in the "
 "active SP period.<strong>%(count)s</strong> main strategies are displayed"
-" in the active SP period."
+" in the active SP period.<strong>%(count)s</strong> main strategies are "
+"displayed in the active SP period."
 
 #: ui/templates/platform/sp/strateji_haritasi.html:29
 msgid "Tüm grafiği sığdır"
@@ -14272,7 +16247,9 @@ msgstr ""
 "opportunities/threats — based on the active plan "
 "year.Strengths/weaknesses and external opportunities/threats — based on "
 "the active plan year.Strengths/weaknesses and external "
-"opportunities/threats — based on the active plan year."
+"opportunities/threats — based on the active plan "
+"year.Strengths/weaknesses and external opportunities/threats — based on "
+"the active plan year."
 
 #: ui/templates/platform/sp/templates.html:3
 msgid "Plan Year Şablonları"
@@ -14426,7 +16403,8 @@ msgstr ""
 "resource? Do only a few firms possess this resource?Do most competitors "
 "lack this resource? Do only a few firms possess this resource?Do most "
 "competitors lack this resource? Do only a few firms possess this "
-"resource?"
+"resource?Do most competitors lack this resource? Do only a few firms "
+"possess this resource?"
 
 #: ui/templates/platform/sp/vrio.html:42
 msgid "I — Taklit Edilemez mi?"
@@ -14456,7 +16434,8 @@ msgstr ""
 "systems to exploit this resource?Does the organization have the "
 "processes, structures and systems to exploit this resource?Does the "
 "organization have the processes, structures and systems to exploit this "
-"resource?"
+"resource?Does the organization have the processes, structures and systems"
+" to exploit this resource?"
 
 #: ui/templates/platform/sp/vrio.html:56
 msgid "Kategori"
@@ -14807,11 +16786,6 @@ msgstr "View"
 msgid "Bu süreçteki PG ağırlıkları ve başarı puanı aralıklarını kontrol eder"
 msgstr "Checks the PI weights and success score ranges in this process"
 
-#: ui/templates/platform/surec/karne.html:141
-#: ui/templates/platform/surec/karne.html:937
-msgid "K-Vektör Analizi"
-msgstr "K-Vector Analysis"
-
 #: ui/templates/platform/surec/karne.html:171
 msgid "Genel bilgiler"
 msgstr "General information"
@@ -15134,10 +17108,6 @@ msgstr "Excellent"
 msgid "Veri Girişi Sihirbazı"
 msgstr "Data Entry Wizard"
 
-#: ui/templates/platform/surec/karne.html:695
-msgid "Performans göstergesi"
-msgstr "Performance indicator"
-
 #: ui/templates/platform/surec/karne.html:701
 msgid "Veri tarihi"
 msgstr "Data date"
@@ -15215,7 +17185,8 @@ msgstr ""
 "data date does not change; only the actual value and description are "
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "
-"value and description are updated."
+"value and description are updated.The data date does not change; only the"
+" actual value and description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
@@ -15357,10 +17328,6 @@ msgstr "Scanning…"
 #: ui/templates/platform/admin/hata_kontrolu.html:272
 msgid "Tamamlandı —"
 msgstr "Completed —"
-
-#: ui/templates/platform/admin/hata_kontrolu.html:275
-msgid "Özet:"
-msgstr "Summary:"
 
 #: ui/templates/platform/admin/hata_kontrolu.html:284
 msgid "Ölü link:"
@@ -15579,7 +17546,8 @@ msgid "Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin mis
 msgstr ""
 "Are you sure you want to reset the administrator password of this sub-"
 "organization?Are you sure you want to reset the administrator password of"
-" this sub-organization?"
+" this sub-organization?Are you sure you want to reset the administrator "
+"password of this sub-organization?"
 
 #: ui/templates/platform/admin/sub_tenants.html:409
 msgid "Bu alt kurumu pasifleştirmek istiyor musunuz?"
@@ -15886,7 +17854,9 @@ msgid "Şu an erken uyarı yok — tüm PG'ler kabul edilebilir performans aral�
 msgstr ""
 "There is no early warning at the moment — all PIs are within an "
 "acceptable performance range.There is no early warning at the moment — "
-"all PIs are within an acceptable performance range."
+"all PIs are within an acceptable performance range.There is no early "
+"warning at the moment — all PIs are within an acceptable performance "
+"range."
 
 #: ui/templates/platform/raporlar/early_warning.html:67
 msgid "YÜKSEK ÖNCELİK"
@@ -16047,10 +18017,6 @@ msgstr "high priority with RPN ≥ 15"
 #: ui/templates/platform/raporlar/risk_heatmap.html:119
 msgid "OL. \\ ETKİ"
 msgstr "PROB. \\ IMPACT"
-
-#: ui/templates/platform/raporlar/risk_heatmap.html:128
-msgid "risk"
-msgstr "risk"
 
 #: ui/templates/platform/sp/ai_settings.html:158
 msgid "Mevcut:"
@@ -16257,7 +18223,8 @@ msgid "Genel strateji sağlığı kabul edilebilir seviyede. Mevcut ritmi sürd�
 msgstr ""
 "Overall strategy health is at an acceptable level. Maintain the current "
 "pace.Overall strategy health is at an acceptable level. Maintain the "
-"current pace."
+"current pace.Overall strategy health is at an acceptable level. Maintain "
+"the current pace."
 
 #: ui/templates/platform/sp/exec_dashboard.html:558
 msgid "Analiz ediliyor…"
@@ -16836,10 +18803,6 @@ msgid "Maddi Olmayan Varlık"
 msgstr "Intangible Asset"
 
 #: ui/templates/platform/sp/vrio.html:110
-msgid "İnsan Kaynağı"
-msgstr "Human Resource"
-
-#: ui/templates/platform/sp/vrio.html:110
 msgid "Organizasyonel"
 msgstr "Organizational"
 
@@ -16915,10 +18878,6 @@ msgstr "Resource could not be added"
 msgid "Sayım:"
 msgstr "Count:"
 
-#: ui/templates/platform/sp/xmatrix.html:108
-msgid "girişim"
-msgstr "initiative"
-
 #: ui/templates/platform/sp/xmatrix.html:109
 msgid "PG başlığı"
 msgstr "PI title"
@@ -16934,8 +18893,4 @@ msgstr "unknown error"
 #: ui/templates/platform/surec/index.html:740
 msgid "Son 3 ay:"
 msgstr "Last 3 months:"
-
-#: ui/templates/platform/surec/index.html:775
-msgid "süreç"
-msgstr "process"
 

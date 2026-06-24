@@ -176,7 +176,7 @@ def api_kpi_data_delete(entry_id):
         except Exception as _audit_err:
             current_app.logger.error("[audit] KpiData delete audit kaydı başarısız: %s", _audit_err)
         db.session.commit()
-        return jsonify({"success": True, "message": "Silindi."})
+        return jsonify({"success": True, "message": _("Silindi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[api_kpi_data_delete] {e}")
@@ -303,17 +303,17 @@ def api_push_subscribe():
 def api_docs():
     """Swagger/OpenAPI dokümantasyon sayfası."""
     endpoints = [
-        {"method": "GET",    "url": "/api/v1/processes",           "desc": "Süreç listesi"},
-        {"method": "GET",    "url": "/api/v1/processes/<id>",       "desc": "Süreç detayı"},
-        {"method": "POST",   "url": "/api/v1/kpi-data",             "desc": "KPI veri oluştur"},
-        {"method": "GET",    "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri detayı"},
-        {"method": "PATCH",  "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri güncelle"},
-        {"method": "DELETE", "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri soft delete"},
-        {"method": "GET",    "url": "/api/v1/analytics/trend/<id>", "desc": "Trend analizi"},
-        {"method": "GET",    "url": "/api/v1/analytics/health/<id>","desc": "Sağlık skoru"},
-        {"method": "POST",   "url": "/api/v1/analytics/comparison", "desc": "Karşılaştırma"},
-        {"method": "GET",    "url": "/api/v1/analytics/forecast/<id>","desc": "Tahmin"},
-        {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": "Performans raporu"},
-        {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": "Dashboard raporu"},
+        {"method": "GET",    "url": "/api/v1/processes",           "desc": _("Süreç listesi")},
+        {"method": "GET",    "url": "/api/v1/processes/<id>",       "desc": _("Süreç detayı")},
+        {"method": "POST",   "url": "/api/v1/kpi-data",             "desc": _("KPI veri oluştur")},
+        {"method": "GET",    "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri detayı")},
+        {"method": "PATCH",  "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri güncelle")},
+        {"method": "DELETE", "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri soft delete")},
+        {"method": "GET",    "url": "/api/v1/analytics/trend/<id>", "desc": _("Trend analizi")},
+        {"method": "GET",    "url": "/api/v1/analytics/health/<id>","desc": _("Sağlık skoru")},
+        {"method": "POST",   "url": "/api/v1/analytics/comparison", "desc": _("Karşılaştırma")},
+        {"method": "GET",    "url": "/api/v1/analytics/forecast/<id>","desc": _("Tahmin")},
+        {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": _("Performans raporu")},
+        {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": _("Dashboard raporu")},
     ]
     return render_template("platform/api/docs.html", endpoints=endpoints)

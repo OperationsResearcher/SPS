@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from flask_babel import gettext as _
+
 from sqlalchemy import func, and_, or_
 
 from extensions import db
@@ -175,7 +177,7 @@ def collect_logs() -> dict:
         if tid not in kpi_change:
             dt = kd.updated_at or kd.created_at
             kpi_change[tid] = {
-                "what": f"PG verisi: {kd.actual_value}",
+                "what": _("PG verisi: %(val)s") % {"val": kd.actual_value},
                 "who": _uname(usr), "when": _iso(dt), "dt": dt,
             }
 
@@ -267,7 +269,7 @@ def collect_logs() -> dict:
         feed.append({
             "when": _iso(dt), "dt": dt, "who": _uname(usr),
             "tenant": tenant_name.get(ptid, "—"),
-            "what": f"PG verisi: {kd.actual_value}", "kind": "PG verisi",
+            "what": _("PG verisi: %(val)s") % {"val": kd.actual_value}, "kind": "PG verisi",
         })
     feed.sort(key=lambda x: _cmp(x["dt"]), reverse=True)
     feed = [{k: v for k, v in f.items() if k != "dt"} for f in feed[:25]]
@@ -324,7 +326,7 @@ def _entity_label(row) -> str:
     ov = row.old_values if isinstance(row.old_values, dict) else {}
     src = nv or ov
     # Kurumsal kimlik: hangi kart(lar) değişti
-    ident = [lbl for key, lbl in _IDENTITY_FIELDS.items() if key in src]
+    ident = [_(lbl) for key, lbl in _IDENTITY_FIELDS.items() if key in src]
     if ident:
         return ", ".join(ident)
     for k in ("name", "Ad", "title", "_migration_record_name", "code"):
@@ -338,7 +340,8 @@ def _entity_label(row) -> str:
 
 
 def _event(row) -> dict:
-    act = _ACTION_LABEL.get(row.action, row.action)
+    _raw_act = _ACTION_LABEL.get(row.action)
+    act = _(_raw_act) if _raw_act else row.action
     return {
         "action": row.action, "action_label": act,
         "what": _entity_label(row),
@@ -369,7 +372,7 @@ def collect_tenant_logs(tenant_id: int, per_cat: int = 15) -> dict | None:
         )
         events = [_event(r) for r in rows]
         categories.append({
-            "key": cat["key"], "label": cat["label"],
+            "key": cat["key"], "label": _(cat["label"]),
             "icon": cat["icon"], "color": cat["color"],
             "total": total,
             "last": events[0] if events else None,

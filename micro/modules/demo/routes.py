@@ -16,6 +16,7 @@ from flask import (
     abort, current_app, session as flask_session, jsonify,
 )
 from flask_login import login_user, logout_user, current_user
+from flask_babel import lazy_gettext as _
 
 from platform_core import app_bp
 from app.models import db
@@ -27,51 +28,51 @@ from app.models.core import User, Role, Tenant
 # Backend her rolü Tomofil tenant'ı içindeki uygun bir kullanıcıya bağlar.
 DEMO_ROLES = {
     "yonetici": {
-        "label": "Kurum Yöneticisi",
+        "label": _("Kurum Yöneticisi"),
         "role_name": "tenant_admin",
         "fallback_email": "admin@tomofil.com",
         "icon": "fas fa-user-shield",
         "color": "#4f46e5",
         "color_soft": "#eef2ff",
-        "description": "Tüm modüllere tam erişim. Stratejik plan, süreç, kullanıcı, "
-                       "PG yapılandırması. Yönetici penceresinden Kokpitim'i deneyin.",
+        "description": _("Tüm modüllere tam erişim. Stratejik plan, süreç, kullanıcı, "
+                       "PG yapılandırması. Yönetici penceresinden Kokpitim'i deneyin."),
         "bullets": [
-            "Vizyon / strateji ağacı düzenleme",
-            "Plan dönemleri ve K-Vektör ağırlıkları",
-            "Kullanıcı listesi ve rol görünümü",
-            "Karşılaştırma raporları (yıllar arası)",
+            _("Vizyon / strateji ağacı düzenleme"),
+            _("Plan dönemleri ve K-Vektör ağırlıkları"),
+            _("Kullanıcı listesi ve rol görünümü"),
+            _("Karşılaştırma raporları (yıllar arası)"),
         ],
     },
     "lider": {
-        "label": "Süreç Lideri",
+        "label": _("Süreç Lideri"),
         "role_name": "yonetici",
         "fallback_email": None,   # tenant içinde ilk yonetici-rolü olan kullanıcı
         "icon": "fas fa-user-tie",
         "color": "#8b5cf6",
         "color_soft": "#f5f3ff",
-        "description": "Sorumlu olduğu süreçlerin lideri. PG verisi girer, faaliyet "
-                       "ekler, ekibini koordine eder. Operasyonel deneyim.",
+        "description": _("Sorumlu olduğu süreçlerin lideri. PG verisi girer, faaliyet "
+                       "ekler, ekibini koordine eder. Operasyonel deneyim."),
         "bullets": [
-            "Sorumlu süreçlerinin karne ekranı",
-            "PG hedef-gerçekleşme veri girişi",
-            "Faaliyet atama ve ilerleme",
-            "Süreç ekibinin görev takibi",
+            _("Sorumlu süreçlerinin karne ekranı"),
+            _("PG hedef-gerçekleşme veri girişi"),
+            _("Faaliyet atama ve ilerleme"),
+            _("Süreç ekibinin görev takibi"),
         ],
     },
     "uye": {
-        "label": "Süreç Üyesi",
+        "label": _("Süreç Üyesi"),
         "role_name": "calisan",
         "fallback_email": None,   # tenant içinde ilk calisan-rolü olan kullanıcı
         "icon": "fas fa-user",
         "color": "#0ea5e9",
         "color_soft": "#e0f2fe",
-        "description": "Süreç üyesi olarak kendi görevlerini, bireysel PG'lerini ve "
-                       "atanan faaliyetleri yönetir. Çalışan penceresi.",
+        "description": _("Süreç üyesi olarak kendi görevlerini, bireysel PG'lerini ve "
+                       "atanan faaliyetleri yönetir. Çalışan penceresi."),
         "bullets": [
-            "Atanan görevler ve faaliyetler",
-            "Bireysel PG (kişisel hedefler)",
-            "Süreç karnesine veri girişi",
-            "Bireysel performans paneli",
+            _("Atanan görevler ve faaliyetler"),
+            _("Bireysel PG (kişisel hedefler)"),
+            _("Süreç karnesine veri girişi"),
+            _("Bireysel performans paneli"),
         ],
     },
 }
@@ -156,7 +157,7 @@ def demo_start(role):
     expires_minutes = current_app.config.get("DEMO_SESSION_MINUTES", 60)
     flask_session["demo_session_active"] = True
     flask_session["demo_role"] = role
-    flask_session["demo_role_label"] = DEMO_ROLES[role]["label"]
+    flask_session["demo_role_label"] = str(DEMO_ROLES[role]["label"])  # lazy_gettext → str (session JSON serileştirilebilir olmalı)
     flask_session["demo_started_at"] = started_at.isoformat()
     flask_session["demo_expires_at"] = (started_at + timedelta(minutes=expires_minutes)).isoformat()
     flask_session.permanent = True

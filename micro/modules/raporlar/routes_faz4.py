@@ -90,7 +90,7 @@ def raporlar_sektorel_detay(code):
     if not pkg:
         return render_template("platform/reports/sektorel.html",
                                sektorler=SEKTOR_CATALOG,
-                               error=f"\"{code}\" sektörü için hazır paket henüz yok."), 404
+                               error=f"\"{code}\" {_('sektörü için hazır paket henüz yok.')}"), 404
     return render_template("platform/reports/sektorel_detay.html",
                            code=code, package=pkg)
 
@@ -195,9 +195,9 @@ def raporlar_api_nlp_query():
         ).limit(5).all()
         result = [{"code": r[0] or "—", "name": r[1], "avg_score": round(r[2] or 0, 1), "count": r[3]} for r in rows]
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Kod", "PG Adı", "Ort. Başarı %", "Ölçüm"],
+                        "columns": [_("Kod"), _("PG Adı"), _("Ort. Başarı %"), _("Ölçüm")],
                         "rows": [[r["code"], r["name"], r["avg_score"], r["count"]] for r in result],
-                        "summary": f"{_date.today().year} yılı en yüksek 5 PG"})
+                        "summary": f"{_date.today().year} {_('yılı en yüksek 5 PG')}"})
 
     if pattern_id == "bottom5_kpi_score":
         rows = db.session.query(
@@ -215,15 +215,15 @@ def raporlar_api_nlp_query():
         ).order_by(func.avg(KpiData.status_percentage).asc().nullslast()
         ).limit(5).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Kod", "PG Adı", "Ort. Başarı %", "Ölçüm"],
+                        "columns": [_("Kod"), _("PG Adı"), _("Ort. Başarı %"), _("Ölçüm")],
                         "rows": [[r[0] or "—", r[1], round(r[2] or 0, 1), r[3]] for r in rows],
-                        "summary": f"{_date.today().year} yılı en düşük 5 PG"})
+                        "summary": f"{_date.today().year} {_('yılı en düşük 5 PG')}"})
 
     if pattern_id == "process_health":
         active_py = get_active_plan_year_for_user(current_user)
         try:
             today = _date.today()
-            proc_scores, _ = compute_process_scores_internal(
+            proc_scores, _unused = compute_process_scores_internal(
                 tid, active_py.year if active_py else today.year, today,
                 persist_pg_scores=False, plan_year=active_py)
         except Exception:
@@ -237,18 +237,18 @@ def raporlar_api_nlp_query():
                 "score": round(score, 1) if score is not None else None})
         result.sort(key=lambda x: -(x["score"] or 0))
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Kod", "Süreç", "Sağlık Skoru"],
+                        "columns": [_("Kod"), _("Süreç"), _("Sağlık Skoru")],
                         "rows": [[r["code"], r["name"], r["score"] if r["score"] is not None else "—"] for r in result[:30]],
-                        "summary": f"{len(result)} süreç sağlık skoru sıralı"})
+                        "summary": f"{len(result)} {_('süreç sağlık skoru sıralı')}"})
 
     if pattern_id == "active_initiatives":
         inits = Initiative.query.filter_by(tenant_id=tid, is_active=True).filter(
             Initiative.status.in_(["in_progress", "planned"])).order_by(Initiative.priority).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Kod", "Ad", "Durum", "Öncelik", "Bütçe", "İlerleme %"],
+                        "columns": [_("Kod"), _("Ad"), _("Durum"), _("Öncelik"), _("Bütçe"), _("İlerleme %")],
                         "rows": [[i.code or "—", i.name, i.status, i.priority,
                                   f"{float(i.budget_total or 0):,.0f} ₺", i.progress_pct or 0] for i in inits],
-                        "summary": f"{len(inits)} aktif/planlanan initiative"})
+                        "summary": f"{len(inits)} {_('aktif/planlanan initiative')}"})
 
     if pattern_id == "overdue_activities":
         overdue = ProcessActivity.query.options(joinedload(ProcessActivity.process)).join(Process).filter(
@@ -257,12 +257,12 @@ def raporlar_api_nlp_query():
             ProcessActivity.status != "Tamamlandı",
         ).order_by(ProcessActivity.end_at).limit(20).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Faaliyet", "Süreç", "Son Tarih", "Durum"],
+                        "columns": [_("Faaliyet"), _("Süreç"), _("Son Tarih"), _("Durum")],
                         "rows": [[a.name or "—",
                                   a.process.code if a.process else "—",
                                   a.end_at.strftime("%d.%m.%Y") if a.end_at else "—",
                                   a.status or "—"] for a in overdue],
-                        "summary": f"{len(overdue)} geciken faaliyet (top 20)"})
+                        "summary": f"{len(overdue)} {_('geciken faaliyet (top 20)')}"})
 
     if pattern_id == "kpi_data_volume":
         rows = db.session.query(
@@ -273,27 +273,27 @@ def raporlar_api_nlp_query():
         ).group_by(ProcessKpi.code, ProcessKpi.name
         ).order_by(func.count(KpiData.id).desc()).limit(10).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Kod", "PG", "Ölçüm Sayısı"],
+                        "columns": [_("Kod"), _("PG"), _("Ölçüm Sayısı")],
                         "rows": [[r[0] or "—", r[1], r[2]] for r in rows],
-                        "summary": "En çok ölçüm yapılan 10 PG"})
+                        "summary": _("En çok ölçüm yapılan 10 PG")})
 
     if pattern_id == "department_user_count":
         rows = db.session.query(User.department, func.count(User.id)).filter(
             User.tenant_id == tid, User.is_active.is_(True),
         ).group_by(User.department).order_by(func.count(User.id).desc()).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Departman", "Kullanıcı Sayısı"],
-                        "rows": [[r[0] or "(belirsiz)", r[1]] for r in rows],
-                        "summary": f"{len(rows)} farklı departman"})
+                        "columns": [_("Departman"), _("Kullanıcı Sayısı")],
+                        "rows": [[r[0] or _("(belirsiz)"), r[1]] for r in rows],
+                        "summary": f"{len(rows)} {_('farklı departman')}"})
 
     if pattern_id == "high_risks":
         from app.models.k_radar_domain import RiskHeatmapItem
         risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).filter(
             RiskHeatmapItem.rpn >= 10).order_by(RiskHeatmapItem.rpn.desc()).all()
         return jsonify({"success": True, "type": "table",
-                        "columns": ["Risk", "Olasılık", "Etki", "RPN", "Durum"],
+                        "columns": [_("Risk"), _("Olasılık"), _("Etki"), _("RPN"), _("Durum")],
                         "rows": [[r.title, r.probability, r.impact, r.rpn, r.status or "Open"] for r in risks],
-                        "summary": f"RPN ≥ 10 olan {len(risks)} risk"})
+                        "summary": f"{_('RPN ≥ 10 olan')} {len(risks)} {_('risk')}"})
 
     # Free-form: AI ile SQL üret + güvenlik kontrolleri
     if free_text:
@@ -307,10 +307,10 @@ def raporlar_api_nlp_query():
                       "Lütfen sol taraftan bir hazır soru seçin."),
             tid=tid, endpoint="ai_nlp_query", max_tokens=200,
         )
-        return jsonify({"success": True, "type": "text", "summary": "AI Analizi",
+        return jsonify({"success": True, "type": "text", "summary": _("AI Analizi"),
                         "text": ai_response})
 
-    return jsonify({"success": False, "message": "Pattern veya sorgu metni gerekli"}), 400
+    return jsonify({"success": False, "message": _("Pattern veya sorgu metni gerekli")}), 400
 
 
 # ─── AI-10: AI Sektör Benchmark ────────────────────────────────────────────
@@ -503,7 +503,7 @@ def raporlar_api_ai_status():
         pass
     if byok:
         return jsonify({"success": True, "byok": True, "provider": provider or "custom",
-                        "label": f"Kendi API anahtarınız ({(provider or 'AI').capitalize()}) — Sınırsız"})
+                        "label": f"{_('Kendi API anahtarınız')} ({(provider or 'AI').capitalize()}) — {_('Sınırsız')}"})
     # Sistem anahtarı — kota özeti
     try:
         from app.services.llm_quota_service import get_tenant_usage_summary, DEFAULT_LIMITS
@@ -516,10 +516,10 @@ def raporlar_api_ai_status():
             "today_used": today["used"],
             "today_limit": today["limit"],
             "today_remain": remain,
-            "label": f"Sistem API · Bugün {remain}/{today['limit']} hak kaldı",
+            "label": f"{_('Sistem API · Bugün')} {remain}/{today['limit']} {_('hak kaldı')}",
         })
     except Exception:
         return jsonify({"success": True, "byok": False, "today_remain": None,
-                        "label": "Sistem API"})
+                        "label": _("Sistem API")})
 
 

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import logging
+from flask_babel import gettext as _
 from sqlalchemy import text
 from extensions import db
 
@@ -48,31 +49,31 @@ DIMENSIONS = {
 def _level_for(total_pts: int) -> dict:
     """EFQM tanınma seviyesi (1000 üzerinden)."""
     if total_pts >= 700:
-        return {"label": "Dünya Lideri Performans",
-                "tagline": "Dönüşüm ve Geleceğe Yönelik Odaklanma",
+        return {"label": _("Dünya Lideri Performans"),
+                "tagline": _("Dönüşüm ve Geleceğe Yönelik Odaklanma"),
                 "color": "#059669", "stars": 7, "min": 700, "max": 1000}
     if total_pts >= 600:
-        return {"label": "Rol Model Performansı",
-                "tagline": "İnovasyon & Veri, Bilgi Birikimi",
+        return {"label": _("Rol Model Performansı"),
+                "tagline": _("İnovasyon & Veri, Bilgi Birikimi"),
                 "color": "#10b981", "stars": 6, "min": 600, "max": 699}
     if total_pts >= 500:
-        return {"label": "Mükemmel Performans",
-                "tagline": "İnovasyon & Amaç / Vizyon",
+        return {"label": _("Mükemmel Performans"),
+                "tagline": _("İnovasyon & Amaç / Vizyon"),
                 "color": "#0ea5e9", "stars": 5, "min": 500, "max": 599}
     if total_pts >= 400:
-        return {"label": "Güçlü Performans",
-                "tagline": "Strateji ve Değer Yaratma",
+        return {"label": _("Güçlü Performans"),
+                "tagline": _("Strateji ve Değer Yaratma"),
                 "color": "#6366f1", "stars": 4, "min": 400, "max": 499}
     if total_pts >= 300:
-        return {"label": "İyi Performans",
-                "tagline": "Müşteri Odaklılık & Değer Yaratma",
+        return {"label": _("İyi Performans"),
+                "tagline": _("Müşteri Odaklılık & Değer Yaratma"),
                 "color": "#8b5cf6", "stars": 3, "min": 300, "max": 399}
     if total_pts >= 200:
-        return {"label": "Mükemmellik Yolunda",
-                "tagline": "Temel uygulamalar yerleşmekte",
+        return {"label": _("Mükemmellik Yolunda"),
+                "tagline": _("Temel uygulamalar yerleşmekte"),
                 "color": "#f59e0b", "stars": 2, "min": 200, "max": 299}
-    return {"label": "Başlangıç Seviyesi",
-            "tagline": "Temel performans — gelişim alanları belirgin",
+    return {"label": _("Başlangıç Seviyesi"),
+            "tagline": _("Temel performans — gelişim alanları belirgin"),
             "color": "#dc2626", "stars": 1, "min": 0, "max": 199}
 
 
@@ -328,13 +329,13 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     total_pts = 0
 
     notes = {
-        "k1": "Plan yılı, vizyon/amaç tanımı, strateji-alt strateji yapısı.",
-        "k2": "Çalışan tabanı, rol çeşitliliği ve departman dağılımı.",
-        "k3": "Paydaş kategorileri: çalışan, OKR objektif, girişim, strateji bağı.",
-        "k4": "BSC perspektif dengesi (Kaplan-Norton ideal %25), girişim portföyü, PG portföy büyüklüğü.",
-        "k5": "Veri giriş disiplini, kritik risk yönetimi, gecikmiş faaliyet kontrolü.",
-        "k6": "Doğrudan paydaş algı anketi yok — BSC müşteri/öğrenme perspektifi atamaları proxy. Bu kriter en yüksek gelişim alanı.",
-        "k7": "Hedef üstü ölçüm oranı (sürdürülebilirlik) + ölçülen PG kapsamı.",
+        "k1": _("Plan yılı, vizyon/amaç tanımı, strateji-alt strateji yapısı."),
+        "k2": _("Çalışan tabanı, rol çeşitliliği ve departman dağılımı."),
+        "k3": _("Paydaş kategorileri: çalışan, OKR objektif, girişim, strateji bağı."),
+        "k4": _("BSC perspektif dengesi (Kaplan-Norton ideal %25), girişim portföyü, PG portföy büyüklüğü."),
+        "k5": _("Veri giriş disiplini, kritik risk yönetimi, gecikmiş faaliyet kontrolü."),
+        "k6": _("Doğrudan paydaş algı anketi yok — BSC müşteri/öğrenme perspektifi atamaları proxy. Bu kriter en yüksek gelişim alanı."),
+        "k7": _("Hedef üstü ölçüm oranı (sürdürülebilirlik) + ölçülen PG kapsamı."),
     }
 
     for key, label, dim, weight in CRITERIA:
@@ -357,18 +358,19 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     strongest = sorted_c[-2:]
     narrative = []
     narrative.append({
-        "title": "Genel durum",
-        "text": f"Toplam {total_pts}/1000 puan — <b>{level['label']}</b> seviyesinde. "
-                f"EFQM 2025 doktrini gereği {level['tagline'].lower()} bu seviyede ön plana çıkıyor.",
+        "title": _("Genel durum"),
+        "text": _("Toplam %(pts)s/1000 puan — <b>%(label)s</b> seviyesinde. "
+                  "EFQM 2025 doktrini gereği %(tagline)s bu seviyede ön plana çıkıyor.") % {
+                  "pts": total_pts, "label": level['label'], "tagline": level['tagline'].lower()},
     })
     for w in weakest:
         narrative.append({
-            "title": f"Gelişim alanı: {w['label']} (%{w['score_pct']:.0f})",
+            "title": _("Gelişim alanı: %(label)s (%%%(pct).0f)") % {"label": w['label'], "pct": w['score_pct']},
             "text": w["note"],
         })
     if strongest:
         narrative.append({
-            "title": f"Güçlü yön: {strongest[-1]['label']} (%{strongest[-1]['score_pct']:.0f})",
+            "title": _("Güçlü yön: %(label)s (%%%(pct).0f)") % {"label": strongest[-1]['label'], "pct": strongest[-1]['score_pct']},
             "text": strongest[-1]["note"],
         })
 
@@ -380,8 +382,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
             "manual_score": kpi_327["latest"],
             "manual_target": kpi_327["target"],
             "manual_gap": kpi_327["gap"],
-            "note": "Kuruluşun KPI-327 üzerinden manuel EFQM özdeğerlendirme puanı. "
-                    "Bu modüldeki türev puan ile karşılaştırılabilir.",
+            "note": _("Kuruluşun KPI-327 üzerinden manuel EFQM özdeğerlendirme puanı. "
+                      "Bu modüldeki türev puan ile karşılaştırılabilir."),
         }
 
     return {
@@ -397,10 +399,10 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         "kpi_327": kpi_327_info,
         "model_version": "EFQM 2025",
         "radar": {
-            "results":      "Sonuçlar — paydaş algıları ve stratejik/operasyonel performans",
-            "approach":     "Yaklaşım — sağlam temelli ve uyumlu yön + uygulama",
-            "deployment":   "Yayılım — uygulamanın tutarlı, esnek ve zamanında yapılması",
-            "assessment":   "Değerlendirme — etkililik ve verimlilik içgörüleri",
-            "refinement":   "İyileştirme — sürekli öğrenme ile yaklaşımı uyarlama",
+            "results":      _("Sonuçlar — paydaş algıları ve stratejik/operasyonel performans"),
+            "approach":     _("Yaklaşım — sağlam temelli ve uyumlu yön + uygulama"),
+            "deployment":   _("Yayılım — uygulamanın tutarlı, esnek ve zamanında yapılması"),
+            "assessment":   _("Değerlendirme — etkililik ve verimlilik içgörüleri"),
+            "refinement":   _("İyileştirme — sürekli öğrenme ile yaklaşımı uyarlama"),
         },
     }
