@@ -44,7 +44,7 @@ def _is_manager():
 
 
 def _403():
-    return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+    return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
 
 
 _TENANT_LOGO_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"}
@@ -282,7 +282,7 @@ def get_user_activity_stats(tenant_id=None):
 def admin_bakim_modu():
     """Bakım modu (yalnız platform Admin). Ortam değişkeni kilitliyse yalnız okuma."""
     if not _is_admin():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
     from flask_wtf.csrf import validate_csrf
     from wtforms import ValidationError
     from app.services.maintenance_service import maintenance_status_for_admin, set_maintenance_db
@@ -293,14 +293,14 @@ def admin_bakim_modu():
     try:
         validate_csrf(request.headers.get("X-CSRFToken"))
     except ValidationError:
-        return jsonify({"success": False, "message": "CSRF doğrulaması başarısız."}), 400
+        return jsonify({"success": False, "message": _("CSRF doğrulaması başarısız.")}), 400
 
     st = maintenance_status_for_admin(current_app)
     if not st.get("can_toggle_db"):
         return jsonify({
             "success": False,
-            "message": "Bakım modu ortam değişkeni (MAINTENANCE_MODE / MAINTENANCE_OVERRIDE_OFF) ile kilitli; "
-            "panelden değiştirilemez. Sunucu dokümantasyonuna bakın.",
+            "message": _("Bakım modu ortam değişkeni (MAINTENANCE_MODE / MAINTENANCE_OVERRIDE_OFF) ile kilitli; "
+                         "panelden değiştirilemez. Sunucu dokümantasyonuna bakın."),
         }), 400
     data = request.get_json() or {}
     enabled = bool(data.get("enabled"))
@@ -344,7 +344,7 @@ def yonetim_paneli():
 @login_required
 def yonetim_paneli_istatistik():
     if not _is_admin_or_tenant_admin():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
     try:
         req_tenant_id = request.args.get("tenant_id", type=int)
         tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
@@ -352,14 +352,14 @@ def yonetim_paneli_istatistik():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[yonetim_paneli_istatistik] {e}")
-        return jsonify({"success": False, "message": "İstatistik alınamadı."}), 500
+        return jsonify({"success": False, "message": _("İstatistik alınamadı.")}), 500
 
 
 @app_bp.route("/admin/yonetim-paneli/kullanici-detay")
 @login_required
 def yonetim_paneli_kullanici_detay():
     if not _is_admin_or_tenant_admin():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
     try:
         req_tenant_id = request.args.get("tenant_id", type=int)
         tenant_id = current_user.tenant_id if not _is_admin() else req_tenant_id
@@ -369,14 +369,14 @@ def yonetim_paneli_kullanici_detay():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[yonetim_paneli_kullanici_detay] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Kullanıcı istatistikleri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Kullanıcı istatistikleri alınamadı.")}), 500
 
 
 @app_bp.route("/admin/yonetim-paneli/aktiviteler")
 @login_required
 def yonetim_paneli_aktiviteler():
     if not _is_admin_or_tenant_admin():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
     try:
         req_tenant_id = request.args.get("tenant_id", type=int)
         limit = request.args.get("limit", type=int) or 50
@@ -424,7 +424,7 @@ def yonetim_paneli_aktiviteler():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[yonetim_paneli_aktiviteler] {e}")
-        return jsonify({"success": False, "message": "Aktivite kayıtları alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Aktivite kayıtları alınamadı.")}), 500
 
 
 
@@ -505,14 +505,14 @@ def admin_users_add():
         return jsonify({"success": False, "message": "E-posta zorunludur."}), 400
 
     if User.query.filter_by(email=email).first():
-        return jsonify({"success": False, "message": "Bu e-posta zaten kayıtlı."}), 400
+        return jsonify({"success": False, "message": _("Bu e-posta zaten kayıtlı.")}), 400
 
     # Rol atama yetki kontrolü
     role = Role.query.get(data.get("role_id"))
     if role:
         allowed = ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", [])
         if role.name not in allowed:
-            return jsonify({"success": False, "message": "Bu rolü atama yetkiniz yok."}), 403
+            return jsonify({"success": False, "message": _("Bu rolü atama yetkiniz yok.")}), 403
 
     # tenant_admin tekil kontrolü
     tid  = int(data.get("tenant_id") or current_user.tenant_id or 0)
@@ -521,7 +521,7 @@ def admin_users_add():
             User.tenant_id == tid, Role.name == "tenant_admin", User.is_active.is_(True)
         ).first()
         if existing:
-            return jsonify({"success": False, "message": "Bu kurumda zaten aktif bir Kurum Yöneticisi var."}), 400
+            return jsonify({"success": False, "message": _("Bu kurumda zaten aktif bir Kurum Yöneticisi var.")}), 400
 
     try:
         u = User(
@@ -544,7 +544,7 @@ def admin_users_add():
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
+        return jsonify({"success": True, "message": _("Kullanıcı oluşturuldu."), "id": u.id})
     except Exception as e:
         db.session.rollback()
         if is_pk_duplicate(e, "users"):
@@ -570,12 +570,12 @@ def admin_users_add():
                     )
                 except Exception as e:
                     current_app.logger.error(f"Audit log hatası: {e}")
-                return jsonify({"success": True, "message": "Kullanıcı oluşturuldu.", "id": u.id})
+                return jsonify({"success": True, "message": _("Kullanıcı oluşturuldu."), "id": u.id})
             except Exception as e2:
                 db.session.rollback()
                 current_app.logger.error(f"[admin_users_add/retry] {e2}")
         current_app.logger.error(f"[admin_users_add] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/users/edit/<int:user_id>", methods=["POST"])
@@ -592,7 +592,7 @@ def admin_users_edit(user_id):
         and u.role
         and u.role.name == "tenant_admin"
     ):
-        return jsonify({"success": False, "message": "Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."}), 403
+        return jsonify({"success": False, "message": _("Kurum Yöneticisi hesabını sadece Admin düzenleyebilir.")}), 403
 
     data = request.get_json() or {}
     try:
@@ -605,7 +605,7 @@ def admin_users_edit(user_id):
             if new_role:
                 allowed = ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", [])
                 if new_role.name not in allowed:
-                    return jsonify({"success": False, "message": "Bu rolü atama yetkiniz yok."}), 403
+                    return jsonify({"success": False, "message": _("Bu rolü atama yetkiniz yok.")}), 403
             u.role_id = int(data["role_id"])
         if data.get("password"):
             u.password_hash = generate_password_hash(data["password"])
@@ -625,11 +625,11 @@ def admin_users_edit(user_id):
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Kullanıcı güncellendi."})
+        return jsonify({"success": True, "message": _("Kullanıcı güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_users_edit] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/users/toggle/<int:user_id>", methods=["POST"])
@@ -646,9 +646,9 @@ def admin_users_toggle(user_id):
         and u.role
         and u.role.name == "tenant_admin"
     ):
-        return jsonify({"success": False, "message": "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."}), 403
+        return jsonify({"success": False, "message": _("Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir.")}), 403
     if u.id == current_user.id:
-        return jsonify({"success": False, "message": "Kendi hesabınızı pasife alamazsınız."}), 400
+        return jsonify({"success": False, "message": _("Kendi hesabınızı pasife alamazsınız.")}), 400
 
     try:
         u.is_active = not u.is_active
@@ -658,7 +658,7 @@ def admin_users_toggle(user_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_users_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 # ── 2FA Sıfırlama (Admin) ────────────────────────────────────────────────────
@@ -685,10 +685,10 @@ def admin_users_2fa_reset(user_id):
         and u.role.name == "tenant_admin"
         and u.id != current_user.id
     ):
-        return jsonify({"success": False, "message": "Kurum Yöneticisi 2FA'sını sadece Admin sıfırlayabilir."}), 403
+        return jsonify({"success": False, "message": _("Kurum Yöneticisi 2FA'sını sadece Admin sıfırlayabilir.")}), 403
 
     if not u.totp_enabled:
-        return jsonify({"success": False, "message": "Kullanıcının 2FA'sı zaten devre dışı."}), 400
+        return jsonify({"success": False, "message": _("Kullanıcının 2FA'sı zaten devre dışı.")}), 400
 
     try:
         u.totp_enabled = False
@@ -714,7 +714,7 @@ def admin_users_2fa_reset(user_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_users_2fa_reset] {e}")
-        return jsonify({"success": False, "message": "Sıfırlama sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sıfırlama sırasında hata oluştu.")}), 500
 
 
 # ── Toplu Kullanıcı İçe Aktarma ───────────────────────────────────────────────
@@ -727,10 +727,10 @@ def admin_users_bulk_import():
 
     file = request.files.get("file")
     if not file:
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
 
     if request.content_length and request.content_length > 10 * 1024 * 1024:
-        return jsonify({"success": False, "message": "Dosya boyutu 10 MB sınırını aşıyor."}), 400
+        return jsonify({"success": False, "message": _("Dosya boyutu 10 MB sınırını aşıyor.")}), 400
 
     filename = (file.filename or "").lower()
     try:
@@ -792,7 +792,7 @@ def admin_users_bulk_import():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_users_bulk_import] {e}")
-        return jsonify({"success": False, "message": "İçe aktarma sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İçe aktarma sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/users/sample-excel")
@@ -882,7 +882,7 @@ def admin_tenants_add():
     data = request.get_json() or {}
     name = (data.get("name") or "").strip()
     if not name:
-        return jsonify({"success": False, "message": "Kurum adı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Kurum adı zorunludur.")}), 400
 
     # Bayi/Holding hiyerarşi: tip + parent doğrulama
     from app.utils.tenant_scope import (
@@ -900,14 +900,14 @@ def admin_tenants_add():
         try:
             parent_id = int(parent_id)
         except (TypeError, ValueError):
-            return jsonify({"success": False, "message": "Parent tenant ID geçersiz."}), 400
+            return jsonify({"success": False, "message": _("Parent tenant ID geçersiz.")}), 400
         parent_tenant = Tenant.query.get(parent_id)
         ok, err = can_be_parent(parent_tenant)
         if not ok:
             return jsonify({"success": False, "message": err}), 400
         # Alt tenant her zaman 'normal' tipi olur (iç içe hiyerarşi yasak)
         if tenant_type != TENANT_TYPE_NORMAL:
-            return jsonify({"success": False, "message": "Alt-tenant tipi 'normal' olmalı (iç içe hiyerarşi yok)."}), 400
+            return jsonify({"success": False, "message": _("Alt-tenant tipi 'normal' olmalı (iç içe hiyerarşi yok).")}), 400
         ok, err = check_sub_tenant_limit(parent_tenant)
         if not ok:
             return jsonify({"success": False, "message": err}), 400
@@ -950,7 +950,7 @@ def admin_tenants_add():
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
+        return jsonify({"success": True, "message": _("Kurum oluşturuldu."), "id": t.id})
     except ValueError as e:
         return jsonify({"success": False, "message": f"Geçersiz sayısal alan: {e}"}), 400
     except Exception as e:
@@ -985,12 +985,12 @@ def admin_tenants_add():
                     )
                 except Exception as e:
                     current_app.logger.error(f"Audit log hatası: {e}")
-                return jsonify({"success": True, "message": "Kurum oluşturuldu.", "id": t.id})
+                return jsonify({"success": True, "message": _("Kurum oluşturuldu."), "id": t.id})
             except Exception as e2:
                 db.session.rollback()
                 current_app.logger.error(f"[admin_tenants_add/retry] {e2}")
         current_app.logger.error(f"[admin_tenants_add] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/tenants/edit/<int:tenant_id>", methods=["POST"])
@@ -1064,11 +1064,11 @@ def admin_tenants_edit(tenant_id):
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Kurum güncellendi."})
+        return jsonify({"success": True, "message": _("Kurum güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_tenants_edit] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/tenants/logo/<int:tenant_id>", methods=["POST"])
@@ -1082,11 +1082,11 @@ def admin_tenants_logo(tenant_id):
     t = Tenant.query.get_or_404(tenant_id)
     f = request.files.get("logo")
     if not f or not getattr(f, "filename", None):
-        return jsonify({"success": False, "message": "Logo dosyası seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Logo dosyası seçilmedi.")}), 400
     ext = os.path.splitext(f.filename)[1].lower()
     if ext not in _TENANT_LOGO_EXT:
         return jsonify(
-            {"success": False, "message": "Geçersiz dosya türü. PNG, JPG, WEBP, GIF veya SVG yükleyin."}
+            {"success": False, "message": _("Geçersiz dosya türü. PNG, JPG, WEBP, GIF veya SVG yükleyin.")}
         ), 400
     blob = f.read()
     if len(blob) > _TENANT_LOGO_MAX_BYTES:
@@ -1111,7 +1111,7 @@ def admin_tenants_logo(tenant_id):
     # Çift kontrol: dest folder'ın içinde olmalı
     if not os.path.abspath(dest).startswith(os.path.abspath(folder)):
         current_app.logger.error(f"[logo_upload] path traversal blocked: {dest}")
-        return jsonify({"success": False, "message": "Geçersiz dosya yolu."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz dosya yolu.")}), 400
     try:
         for old in os.listdir(folder):
             if old.startswith(f"{tenant_id}.") and old != fname:
@@ -1124,11 +1124,11 @@ def admin_tenants_logo(tenant_id):
         t.logo_path = fname
         t.logo_updated_at = datetime.datetime.now(datetime.timezone.utc)
         db.session.commit()
-        return jsonify({"success": True, "message": "Kurum logosu güncellendi.", "logo_path": fname})
+        return jsonify({"success": True, "message": _("Kurum logosu güncellendi."), "logo_path": fname})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_tenants_logo] {e}")
-        return jsonify({"success": False, "message": "Logo yüklenirken hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Logo yüklenirken hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/tenants/toggle/<int:tenant_id>", methods=["POST"])
@@ -1146,7 +1146,7 @@ def admin_tenants_toggle(tenant_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_tenants_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 # ── Paket Yönetimi ────────────────────────────────────────────────────────────
@@ -1188,7 +1188,7 @@ def admin_cards_discover():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_cards_discover] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Kart keşfi sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kart keşfi sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/hierarchy", methods=["GET"])
@@ -1277,6 +1277,24 @@ def admin_api_card_info(code):
                     "description": card.description})
 
 
+@app_bp.route("/admin/api/page-meta/<path:code>", methods=["GET"])
+@login_required
+def admin_api_page_meta(code):
+    """Sayfa kataloğu meta (short_id, name, url) — yalnız sistem Admin.
+
+    code = kart code prefix'i (örn. raporlar_cfo_dashboard). Sayfa başındaki
+    admin rozeti bununla doldurulur.
+    """
+    if not _is_admin():
+        return _403()
+    from app.models.saas import SystemPage
+    pg = SystemPage.query.filter_by(code=code).first()
+    if not pg:
+        return jsonify({"success": True, "found": False, "code": code})
+    return jsonify({"success": True, "found": True, "code": pg.code,
+                    "short_id": pg.short_id, "name": pg.name, "url": pg.url})
+
+
 @app_bp.route("/admin/api/cards-meta", methods=["GET", "POST"])
 @login_required
 def admin_api_cards_meta():
@@ -1315,7 +1333,7 @@ def admin_api_card_update(card_id):
         if "name" in data:
             name = (data.get("name") or "").strip()
             if not name:
-                return jsonify({"success": False, "message": "Kart adı boş olamaz."}), 400
+                return jsonify({"success": False, "message": _("Kart adı boş olamaz.")}), 400
             card.name = name
         if "description" in data:
             card.description = (data.get("description") or "").strip() or None
@@ -1336,7 +1354,7 @@ def admin_api_card_update(card_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_card_update] {e}")
-        return jsonify({"success": False, "message": "Kart güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Kart güncellenemedi.")}), 500
 
 
 @app_bp.route("/admin/api/data-sources/<int:ds_id>", methods=["POST"])
@@ -1359,7 +1377,7 @@ def admin_api_data_source_update(ds_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_data_source_update] {e}")
-        return jsonify({"success": False, "message": "Veri kaynağı güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Veri kaynağı güncellenemedi.")}), 500
 
 
 @app_bp.route("/admin/api/cards/<int:card_id>/data-sources", methods=["POST"])
@@ -1373,9 +1391,9 @@ def admin_api_data_source_add(card_id):
     data = request.get_json(silent=True) or {}
     dk = (data.get("data_key") or "").strip()
     if not dk:
-        return jsonify({"success": False, "message": "Veri anahtarı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Veri anahtarı zorunludur.")}), 400
     if CardDataSource.query.filter_by(card_id=card_id, data_key=dk).first():
-        return jsonify({"success": False, "message": "Bu veri anahtarı zaten var."}), 400
+        return jsonify({"success": False, "message": _("Bu veri anahtarı zaten var.")}), 400
     try:
         ds = CardDataSource(
             card_id=card_id, data_key=dk,
@@ -1388,7 +1406,7 @@ def admin_api_data_source_add(card_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_data_source_add] {e}")
-        return jsonify({"success": False, "message": "Veri kaynağı eklenemedi."}), 500
+        return jsonify({"success": False, "message": _("Veri kaynağı eklenemedi.")}), 500
 
 
 @app_bp.route("/admin/api/data-sources/<int:ds_id>/delete", methods=["POST"])
@@ -1439,7 +1457,7 @@ def admin_components_sync():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_components_sync] {e}")
-        return jsonify({"success": False, "message": "Senkronizasyon sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Senkronizasyon sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/components/update", methods=["POST"])
@@ -1461,11 +1479,11 @@ def admin_components_update():
             if rec and item.get("component_slug"):
                 rec.component_slug = item["component_slug"]
         db.session.commit()
-        return jsonify({"success": True, "message": "Bileşen slug'ları güncellendi."})
+        return jsonify({"success": True, "message": _("Bileşen slug'ları güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_components_update] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 # ── Bildirim Merkezi Yönetimi ─────────────────────────────────────────────────
@@ -1513,7 +1531,7 @@ def admin_notifications_delete(notif_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_notifications_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/notifications/broadcast", methods=["POST"])
@@ -1528,7 +1546,7 @@ def admin_notifications_broadcast():
     notif_type = data.get("type", "system_broadcast")
 
     if not title or not message:
-        return jsonify({"success": False, "message": "Başlık ve mesaj zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık ve mesaj zorunludur.")}), 400
 
     try:
         from app.models.core import Notification
@@ -1561,7 +1579,7 @@ def admin_notifications_broadcast():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_notifications_broadcast] {e}")
-        return jsonify({"success": False, "message": "Bildirim gönderilemedi."}), 500
+        return jsonify({"success": False, "message": _("Bildirim gönderilemedi.")}), 500
 
 
 @app_bp.route("/admin/notifications/stats")
@@ -1594,7 +1612,7 @@ def admin_notifications_stats():
         })
     except Exception as e:
         current_app.logger.error(f"[admin_notifications_stats] {e}")
-        return jsonify({"success": False, "message": "İstatistik alınamadı."}), 500
+        return jsonify({"success": False, "message": _("İstatistik alınamadı.")}), 500
 
 
 # ── SaaS Paket / Modül CRUD ───────────────────────────────────────────────────
@@ -1614,15 +1632,15 @@ def admin_packages_add():
     try:
         from app.models.saas import SubscriptionPackage
         if SubscriptionPackage.query.filter_by(code=code).first():
-            return jsonify({"success": False, "message": "Bu kod zaten kullanılıyor."}), 400
+            return jsonify({"success": False, "message": _("Bu kod zaten kullanılıyor.")}), 400
         pkg = SubscriptionPackage(name=name, code=code, description=data.get("description") or None)
         db.session.add(pkg)
         db.session.commit()
-        return jsonify({"success": True, "message": "Paket oluşturuldu.", "id": pkg.id})
+        return jsonify({"success": True, "message": _("Paket oluşturuldu."), "id": pkg.id})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_packages_add] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/packages/edit/<int:pkg_id>", methods=["POST"])
@@ -1638,11 +1656,11 @@ def admin_packages_edit(pkg_id):
         pkg.name        = (data.get("name") or pkg.name).strip()
         pkg.description = data.get("description") or pkg.description
         db.session.commit()
-        return jsonify({"success": True, "message": "Paket güncellendi."})
+        return jsonify({"success": True, "message": _("Paket güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_packages_edit] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/packages/toggle/<int:pkg_id>", methods=["POST"])
@@ -1661,7 +1679,7 @@ def admin_packages_toggle(pkg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_packages_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 # ── Paket ↔ Modül atama (paket içeriği yönetimi) ──────────────────────────────
@@ -1723,7 +1741,7 @@ def admin_package_module_toggle(pkg_id, module_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_package_module_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/modules/add", methods=["POST"])
@@ -1741,15 +1759,15 @@ def admin_modules_add():
     try:
         from app.models.saas import SystemModule
         if SystemModule.query.filter_by(code=code).first():
-            return jsonify({"success": False, "message": "Bu kod zaten kullanılıyor."}), 400
+            return jsonify({"success": False, "message": _("Bu kod zaten kullanılıyor.")}), 400
         mod = SystemModule(name=name, code=code, description=data.get("description") or None)
         db.session.add(mod)
         db.session.commit()
-        return jsonify({"success": True, "message": "Modül oluşturuldu.", "id": mod.id})
+        return jsonify({"success": True, "message": _("Modül oluşturuldu."), "id": mod.id})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_modules_add] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/k-radar/weights", methods=["GET"])
@@ -1806,11 +1824,11 @@ def admin_k_radar_weights_save():
         # K-Radar cache'i temizle (yeni ağırlıklar hemen geçerli olsun)
         cache.delete_memoized(None)
         cache.clear()
-        return jsonify({"success": True, "weights": weights, "message": "Ağırlıklar kaydedildi."})
+        return jsonify({"success": True, "weights": weights, "message": _("Ağırlıklar kaydedildi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_k_radar_weights] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/admin/modules/toggle/<int:mod_id>", methods=["POST"])
@@ -1829,7 +1847,7 @@ def admin_modules_toggle(mod_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_modules_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
 
 
@@ -1843,3 +1861,4 @@ from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
 from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D
 
 from micro.modules.admin import routes_admin_tools  # noqa: F401, E402  Admin Araçları (Hata Kontrolü)
+from flask_babel import gettext as _

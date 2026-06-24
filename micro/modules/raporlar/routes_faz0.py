@@ -23,6 +23,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from flask_babel import gettext as _
 
 # ─── Rapor 1: Veri Kalitesi ──────────────────────────────────────────────────
 
@@ -1106,7 +1107,7 @@ def raporlar_api_ai_sunum_generate():
     except ImportError:
         return jsonify({
             "success": False,
-            "message": "python-pptx kurulu değil. Kurulum: pip install python-pptx",
+            "message": _("python-pptx kurulu değil. Kurulum: pip install python-pptx"),
         }), 500
 
     active_py = get_active_plan_year_for_user(current_user)

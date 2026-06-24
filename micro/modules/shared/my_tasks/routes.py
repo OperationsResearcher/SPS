@@ -8,6 +8,7 @@ from platform_core import app_bp
 from extensions import db
 from app.models.portfolio_project import Task, Project
 from app.models.process import IndividualActivity, ProcessActivity, ProcessActivityAssignee
+from flask_babel import gettext as _
 
 
 _OPEN_TASK_STATUSES = ("Yapılacak", "Devam Ediyor", "Beklemede")
@@ -111,7 +112,7 @@ def api_my_tasks():
 
     except Exception as e:
         current_app.logger.error(f"[api_my_tasks] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Görevler alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Görevler alınamadı.")}), 500
 
     # Bitiş tarihine göre sırala (None'lar sona)
     items.sort(key=lambda x: (x["due_date"] is None, x["due_date"] or "9999-12-31"))

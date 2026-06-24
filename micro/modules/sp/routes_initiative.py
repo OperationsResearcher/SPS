@@ -11,6 +11,7 @@ from app.extensions import csrf
 from extensions import db
 from app.models.initiative import Initiative, InitiativeMilestone
 from micro.modules.sp.helpers import _check_sp_role
+from flask_babel import gettext as _
 
 
 def _can_manage():
@@ -76,7 +77,7 @@ def sp_api_initiatives_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"initiative_create error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
     return jsonify({"success": True, "item": init.to_dict()}), 201
 
 
@@ -103,7 +104,7 @@ def sp_api_initiatives_update(iid):
         from app.models.core import Strategy
         s = Strategy.query.filter_by(id=data["strategy_id"], tenant_id=tid).first()
         if not s:
-            return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+            return jsonify({"success": False, "message": _("Geçersiz strateji.")}), 400
         init.strategy_id = s.id
     elif "strategy_id" in data:
         init.strategy_id = None
@@ -125,7 +126,7 @@ def sp_api_initiatives_update(iid):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
     return jsonify({"success": True, "item": init.to_dict()})
 
 
@@ -215,7 +216,7 @@ def sp_api_project_set_initiative(pid):
     new_iid = data.get("initiative_id")
     if new_iid is not None:
         try: new_iid = int(new_iid)
-        except (TypeError, ValueError): return jsonify({"success": False, "message": "Geçersiz initiative_id"}), 400
+        except (TypeError, ValueError): return jsonify({"success": False, "message": _("Geçersiz initiative_id")}), 400
         Initiative.query.filter_by(id=new_iid, tenant_id=tid).first_or_404()
     p.initiative_id = new_iid
     db.session.commit()

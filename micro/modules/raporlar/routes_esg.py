@@ -16,6 +16,7 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app.models import db
 from app.models.esg import EsgMetric, EsgMetricValue
+from flask_babel import gettext as _
 
 # Yönetici rolleri (ESG yönetimi = stratejik/yönetim işi)
 _ESG_ROLES = ("Admin", "admin", "tenant_admin", "executive_manager",
@@ -76,7 +77,7 @@ def esg_api_metrics_list():
                         "categories": list(_CATEGORIES), "scopes": list(_SCOPES)})
     except Exception as e:
         current_app.logger.error(f"[esg_api_metrics_list] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "ESG metrikleri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("ESG metrikleri alınamadı.")}), 500
 
 
 # ── API: Metrik CRUD ──────────────────────────────────────────────────────────
@@ -85,14 +86,14 @@ def esg_api_metrics_list():
 @login_required
 def esg_api_metric_add():
     if not _can_manage_esg():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     data = request.get_json(silent=True) or {}
     name = (data.get("name") or "").strip()
     if not name:
-        return jsonify({"success": False, "message": "Metrik adı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Metrik adı zorunludur.")}), 400
     category = (data.get("category") or "").strip().upper()
     if category not in _CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori (E/S/G)."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori (E/S/G).")}), 400
     try:
         m = EsgMetric(
             tenant_id=current_user.tenant_id, name=name, category=category,
@@ -119,18 +120,18 @@ def esg_api_metric_add():
 @login_required
 def esg_api_metric_update(metric_id):
     if not _can_manage_esg():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     m = EsgMetric.query.filter_by(
         id=metric_id, tenant_id=current_user.tenant_id, is_active=True).first()
     if not m:
-        return jsonify({"success": False, "message": "Metrik bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Metrik bulunamadı.")}), 404
     data = request.get_json(silent=True) or {}
     name = (data.get("name") or "").strip()
     if not name:
-        return jsonify({"success": False, "message": "Metrik adı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Metrik adı zorunludur.")}), 400
     category = (data.get("category") or m.category or "").strip().upper()
     if category not in _CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori (E/S/G)."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori (E/S/G).")}), 400
     try:
         m.name = name
         m.category = category
@@ -147,18 +148,18 @@ def esg_api_metric_update(metric_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[esg_api_metric_update] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Metrik güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Metrik güncellenemedi.")}), 500
 
 
 @app_bp.route("/reports/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
 @login_required
 def esg_api_metric_delete(metric_id):
     if not _can_manage_esg():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     m = EsgMetric.query.filter_by(
         id=metric_id, tenant_id=current_user.tenant_id, is_active=True).first()
     if not m:
-        return jsonify({"success": False, "message": "Metrik bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Metrik bulunamadı.")}), 404
     try:
         m.is_active = False  # soft delete (KURALLAR §3)
         db.session.commit()
@@ -175,15 +176,15 @@ def esg_api_metric_delete(metric_id):
 @login_required
 def esg_api_value_save(metric_id):
     if not _can_manage_esg():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     m = EsgMetric.query.filter_by(
         id=metric_id, tenant_id=current_user.tenant_id, is_active=True).first()
     if not m:
-        return jsonify({"success": False, "message": "Metrik bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Metrik bulunamadı.")}), 404
     data = request.get_json(silent=True) or {}
     year = _int(data.get("year"))
     if not year:
-        return jsonify({"success": False, "message": "Yıl zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Yıl zorunludur.")}), 400
     try:
         # Yıl bazlı tekil değer (yıllık) — upsert
         row = EsgMetricValue.query.filter_by(
@@ -200,20 +201,20 @@ def esg_api_value_save(metric_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[esg_api_value_save] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Değer kaydedilemedi."}), 500
+        return jsonify({"success": False, "message": _("Değer kaydedilemedi.")}), 500
 
 
 @app_bp.route("/reports/api/esg/values/<int:value_id>/delete", methods=["POST"])
 @login_required
 def esg_api_value_delete(value_id):
     if not _can_manage_esg():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     # tenant izolasyonu: değer → metrik → tenant
     row = (EsgMetricValue.query.join(EsgMetric, EsgMetricValue.metric_id == EsgMetric.id)
            .filter(EsgMetricValue.id == value_id,
                    EsgMetric.tenant_id == current_user.tenant_id).first())
     if not row:
-        return jsonify({"success": False, "message": "Değer bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Değer bulunamadı.")}), 404
     try:
         db.session.delete(row)  # değer kaydı hard delete (audit dışı)
         db.session.commit()
@@ -221,7 +222,7 @@ def esg_api_value_delete(value_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[esg_api_value_delete] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Değer silinemedi."}), 500
+        return jsonify({"success": False, "message": _("Değer silinemedi.")}), 500
 
 
 # ── Yardımcılar ───────────────────────────────────────────────────────────────

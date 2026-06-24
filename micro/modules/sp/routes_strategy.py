@@ -1,5 +1,6 @@
 """Stratejik Planlama — Strateji ve alt strateji API."""
 
+from flask_babel import gettext as _
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -55,7 +56,7 @@ from micro.modules.sp.helpers import (
 def sp_api_strategies_list():
     """Ana strateji + alt strateji listesi (OKR vb. dropdown'ları için). Aktif kurum/plan yılı."""
     if not _check_sp_role(current_user):
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     tid = current_user.tenant_id
     py = get_active_plan_year_for_user(current_user)
     q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
@@ -82,7 +83,7 @@ def sp_add_strategy():
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Strateji adı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Strateji adı zorunludur.")}), 400
 
     tenant_id = current_user.tenant_id
     if not tenant_id:
@@ -119,7 +120,7 @@ def sp_add_strategy():
                 db.session.rollback()
                 current_app.logger.error(f"[sp_add_strategy/retry] {e2}")
         current_app.logger.error(f"[sp_add_strategy] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/strategy/update/<int:strategy_id>", methods=["POST"])
@@ -138,7 +139,7 @@ def sp_update_strategy(strategy_id):
         if "title" in data:
             t = (data.get("title") or "").strip()
             if not t:
-                return jsonify({"success": False, "message": "Başlık boş olamaz."}), 400
+                return jsonify({"success": False, "message": _("Başlık boş olamaz.")}), 400
             st.title = t
         if "code" in data:
             st.code = (data.get("code") or "").strip() or None
@@ -153,11 +154,11 @@ def sp_update_strategy(strategy_id):
                 return jsonify({"success": False, "message": err}), 400
         db.session.commit()
         AuditLogger.log_update("Strateji Yönetimi", st.id, {}, {"name": st.title, "code": st.code})
-        return jsonify({"success": True, "message": "Ana strateji güncellendi."})
+        return jsonify({"success": True, "message": _("Ana strateji güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_update_strategy] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
@@ -177,7 +178,7 @@ def sp_delete_strategy(strategy_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_delete_strategy] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
@@ -192,12 +193,12 @@ def sp_add_sub_strategy():
     raw_sid = data.get("strategy_id")
     title = (data.get("title") or "").strip()
     if not raw_sid or not title:
-        return jsonify({"success": False, "message": "Strateji ve başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Strateji ve başlık zorunludur.")}), 400
 
     try:
         strategy_id = int(raw_sid)
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz strateji numarası."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz strateji numarası.")}), 400
 
     parent = Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
@@ -234,7 +235,7 @@ def sp_add_sub_strategy():
                 db.session.rollback()
                 current_app.logger.error(f"[sp_add_sub_strategy/retry] {e2}")
         current_app.logger.error(f"[sp_add_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
@@ -265,11 +266,11 @@ def sp_update_sub_strategy(sub_id):
                 return jsonify({"success": False, "message": err}), 400
         db.session.commit()
         AuditLogger.log_update("Strateji Yönetimi", sub.id, {}, {"name": sub.title, "code": sub.code})
-        return jsonify({"success": True, "message": "Alt strateji güncellendi."})
+        return jsonify({"success": True, "message": _("Alt strateji güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_update_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
@@ -290,7 +291,7 @@ def sp_delete_sub_strategy(sub_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_delete_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── Akış Sayfaları ────────────────────────────────────────────────────────────

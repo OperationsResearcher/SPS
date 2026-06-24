@@ -167,7 +167,7 @@ def k_radar_api_cross_paydas_update(row_id: int):
     def _update():
         row = StakeholderMap.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.name = name
         row.role = role
         row.strategy = strategy
@@ -188,7 +188,7 @@ def k_radar_api_cross_paydas_delete(row_id: int):
     def _delete():
         row = StakeholderMap.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.is_active = False
         db.session.commit()
         return jsonify({"success": True, "data": {"id": row.id}})

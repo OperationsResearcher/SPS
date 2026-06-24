@@ -3,6 +3,7 @@
 Kokpitim Global Error Handlers
 Kurumsal hata yakalama (Centralized Exception Handling) mekanizması.
 """
+from flask_babel import gettext as _
 from flask import jsonify, current_app, request, render_template
 from werkzeug.exceptions import HTTPException
 
@@ -53,7 +54,7 @@ def register_error_handlers(app):
         if _wants_json_response():
             return jsonify({
                 "success": False,
-                "message": "İstenen API veya kaynak bulunamadı.",
+                "message": _("İstenen API veya kaynak bulunamadı."),
                 "error_code": "NotFoundError"
             }), 404
         return _render_error_page(404)
@@ -82,7 +83,7 @@ def register_error_handlers(app):
         if _wants_json_response():
             return jsonify({
                 "success": False,
-                "message": "Bu işlem için yetkiniz yok.",
+                "message": _("Bu işlem için yetkiniz yok."),
                 "error_code": "ForbiddenError"
             }), 403
         return _render_error_page(403)

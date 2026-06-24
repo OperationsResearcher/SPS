@@ -41,6 +41,27 @@ class SystemComponent(db.Model):
         return f'<SystemComponent {self.id} {(self.code or "")[:20]}>'
 
 
+class SystemPage(db.Model):
+    """SAYFA — kartların bulunduğu ekran/sayfa (kart code prefix'i ile eşleşir).
+
+    Örn: code='raporlar_cfo_dashboard', kartların code'u 'raporlar_cfo_dashboard.*'.
+    short_id = modül-kısa kimlik (RP-CFO, MA, PR...). Admin sayfa başında görür;
+    "hangi sayfada hangi kart var" envanteri + sorun bildiriminde sayfa referansı.
+    """
+    __tablename__ = "system_pages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(80), unique=True, nullable=False, index=True)  # kart code prefix
+    name = db.Column(db.String(160), nullable=False)
+    url = db.Column(db.String(255), nullable=True)
+    short_id = db.Column(db.String(16), unique=True, nullable=True, index=True)
+    description = db.Column(db.String(512), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return f'<SystemPage {self.id} {(self.short_id or self.code or "")[:16]}>'
+
+
 class SystemCard(db.Model):
     """KART — hiyerarşinin en alt katmanı (bileşen altındaki kart).
 

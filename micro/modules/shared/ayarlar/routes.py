@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app.models import db
 from app.models.email_config import TenantEmailConfig
+from flask_babel import gettext as _
 
 # Erişime izin verilen roller
 _ALLOWED_ROLES = {"tenant_admin", "executive_manager", "Admin"}
@@ -39,7 +40,7 @@ def ayarlar_eposta():
 def ayarlar_eposta_save():
     """Kurum e-posta ayarlarını kaydet."""
     if not _check_access():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
 
     data = request.get_json() or {}
     try:
@@ -71,12 +72,12 @@ def ayarlar_eposta_save():
             cfg.smtp_password = new_password
 
         db.session.commit()
-        return jsonify({"success": True, "message": "E-posta ayarları kaydedildi."})
+        return jsonify({"success": True, "message": _("E-posta ayarları kaydedildi.")})
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[ayarlar_eposta_save] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/settings/email/api/test", methods=["POST"])
@@ -84,7 +85,7 @@ def ayarlar_eposta_save():
 def ayarlar_eposta_test():
     """SMTP bağlantısını test et."""
     if not _check_access():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
 
     data = request.get_json() or {}
     try:
@@ -100,7 +101,7 @@ def ayarlar_eposta_test():
         return jsonify({"success": ok, "message": msg})
     except Exception as e:
         current_app.logger.error(f"[ayarlar_eposta_test] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/settings/email/api/send-test", methods=["POST"])
@@ -108,14 +109,14 @@ def ayarlar_eposta_test():
 def ayarlar_eposta_send_test():
     """Kayıtlı ayarlarla test maili gönder."""
     if not _check_access():
-        return jsonify({"success": False, "message": "Bu işlem için yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
 
     try:
         if not (current_user.email or "").strip():
             return jsonify(
                 {
                     "success": False,
-                    "message": "Hesabınızda e-posta adresi tanımlı değil; test maili gönderilemez.",
+                    "message": _("Hesabınızda e-posta adresi tanımlı değil; test maili gönderilemez."),
                 }
             )
 
@@ -140,4 +141,4 @@ def ayarlar_eposta_send_test():
         )
     except Exception as e:
         current_app.logger.error(f"[ayarlar_eposta_send_test] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400

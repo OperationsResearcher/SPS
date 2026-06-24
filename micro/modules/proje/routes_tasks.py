@@ -119,15 +119,15 @@ def project_task_quick_add():
     try:
         project_id = int(data.get("project_id"))
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz proje."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz proje.")}), 400
 
     proj = load_project(project_id)
     if not user_can_edit_tasks(current_user, proj):
-        return jsonify({"success": False, "message": "Bu projede görev oluşturma yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu projede görev oluşturma yetkiniz yok.")}), 403
 
     title = (data.get("title") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Görev başlığı zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Görev başlığı zorunludur.")}), 400
 
     start_d = None
     due_d = None
@@ -208,7 +208,7 @@ def project_task_quick_add():
     return jsonify(
         {
             "success": True,
-            "message": "Görev eklendi.",
+            "message": _("Görev eklendi."),
             "id": task.id,
             "url": url_for("app_bp.project_task_detail", project_id=project_id, task_id=task.id),
         }

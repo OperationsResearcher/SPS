@@ -34,6 +34,7 @@ from app.models.portfolio_project import Project, Task, project_members, project
 
 from app_platform.modules.proje.permissions import is_privileged, user_can_edit_tasks
 from app_platform.modules.surec.permissions import user_can_access_process
+from flask_babel import gettext as _
 
 
 def _table_exists(table_name: str) -> bool:
@@ -659,9 +660,9 @@ def api_calendar_activity_form_meta(process_id: int):
         is_active=True,
     ).first()
     if not p:
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     if not user_can_access_process(current_user, p):
-        return jsonify({"success": False, "message": "Bu sürece erişiminiz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu sürece erişiminiz yok.")}), 403
 
     kpis = (
         ProcessKpi.query.filter_by(process_id=p.id, is_active=True)
@@ -710,7 +711,7 @@ def api_morning_summary():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[morning_summary] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Özet yüklenemedi."}), 500
+        return jsonify({"success": False, "message": _("Özet yüklenemedi.")}), 500
 
 
 @app_bp.route("/api/tenant-last-change")
@@ -760,11 +761,11 @@ def masaustu_koe_danisman_ai():
     """
     rn = current_user.role.name if current_user.role else None
     if rn not in _KOE_DANISMAN_ROLES:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     tenant_id = current_user.tenant_id
     if not tenant_id:
-        return jsonify({"success": False, "message": "Kurum bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 404
 
     try:
         from app.services.koe_service import compute_koe, yapi_danismani
@@ -781,4 +782,4 @@ def masaustu_koe_danisman_ai():
         })
     except Exception as e:
         current_app.logger.warning(f"[koe-danisman-ai] {e}")
-        return jsonify({"success": False, "message": "AI danışman çağrılamadı."}), 500
+        return jsonify({"success": False, "message": _("AI danışman çağrılamadı.")}), 500

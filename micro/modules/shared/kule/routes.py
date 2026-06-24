@@ -1,5 +1,6 @@
 """Kule yardımcı sistemi — tur API route'ları."""
 
+from flask_babel import gettext as _
 from flask import jsonify, request, abort
 from flask_login import login_required, current_user
 
@@ -22,11 +23,11 @@ def kule_get_tour(tour_key: str):
     """Tur tanımını + kullanıcı durumunu döner."""
     tour = load_tour(tour_key)
     if not tour:
-        return jsonify({"success": False, "message": "Tur bulunamadı"}), 404
+        return jsonify({"success": False, "message": _("Tur bulunamadı")}), 404
 
     user_role = current_user.role.name if current_user.role else None
     if not is_audience_allowed(tour, user_role):
-        return jsonify({"success": False, "message": "Bu tur senin için değil"}), 403
+        return jsonify({"success": False, "message": _("Bu tur senin için değil")}), 403
 
     progress = get_or_create_progress(current_user.id, tour_key)
 

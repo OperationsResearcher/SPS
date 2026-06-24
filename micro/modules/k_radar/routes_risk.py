@@ -18,6 +18,7 @@ from platform_core import app_bp
 from micro.modules.k_radar.routes_common import _required_tenant_id as _rtid
 from extensions import db
 from app.models.k_radar_domain import RiskHeatmapItem
+from flask_babel import gettext as _
 
 
 def _is_manager() -> bool:
@@ -40,7 +41,7 @@ def k_radar_api_risk_list():
     try:
         tid = _rtid()
     except ValueError:
-        return jsonify({"success": False, "message": "Tenant bağlamı yok."}), 400
+        return jsonify({"success": False, "message": _("Tenant bağlamı yok.")}), 400
     severity = request.args.get("severity")  # "low"/"medium"/"high"/"critical"
     status = request.args.get("status")  # "Open"/"Mitigating"/"Closed"
     source = request.args.get("source")  # process/pestel/swot/project
@@ -92,7 +93,7 @@ def k_radar_api_risk_matrix():
     try:
         tid = _rtid()
     except ValueError:
-        return jsonify({"success": False, "message": "Tenant bağlamı yok."}), 400
+        return jsonify({"success": False, "message": _("Tenant bağlamı yok.")}), 400
     risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).all()
     # 5x5 matrix [probability-1][impact-1] = count
     grid = [[0] * 5 for _ in range(5)]
@@ -113,13 +114,13 @@ def k_radar_api_risk_add():
     payload = request.get_json(silent=True) or {}
     title = (payload.get("title") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
 
     try:
         prob = max(1, min(5, int(payload.get("probability", 3))))
         imp = max(1, min(5, int(payload.get("impact", 3))))
     except (ValueError, TypeError):
-        return jsonify({"success": False, "message": "probability/impact 1-5 arası olmalı."}), 400
+        return jsonify({"success": False, "message": _("probability/impact 1-5 arası olmalı.")}), 400
 
     risk = RiskHeatmapItem(
         tenant_id=current_user.tenant_id,

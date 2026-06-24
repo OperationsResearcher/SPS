@@ -56,6 +56,10 @@ def _scan_file(text: str) -> list[dict]:
         return cards
     bounds = [p[0] for p in code_positions] + [len(text)]
     for i, (pos, code) in enumerate(code_positions):
+        # JS/Jinja literal'lerini atla: data-card-code="${code}", "{{ ... }}" gibi
+        # dinamik ifadeler gerçek kart kodu değildir (sadece runtime'da değer alır).
+        if "${" in code or "{{" in code or "}" in code:
+            continue
         segment = text[pos:bounds[i + 1]]
         # kart açılış tag'i: pos'tan ilk '>' kadar
         open_tag = segment[: segment.find(">") + 1] if ">" in segment else segment

@@ -77,11 +77,11 @@ def totp_verify_setup():
     """Setup doğrulama — kullanıcı authenticator'dan gelen kodu girer."""
     secret = session.get("_pending_totp_secret")
     if not secret:
-        return jsonify({"success": False, "message": "Setup oturumu bulunamadı."}), 400
+        return jsonify({"success": False, "message": _("Setup oturumu bulunamadı.")}), 400
 
     code = (request.form.get("code") or "").strip()
     if not verify_totp_code(secret, code):
-        return jsonify({"success": False, "message": "Doğrulama kodu hatalı."}), 400
+        return jsonify({"success": False, "message": _("Doğrulama kodu hatalı.")}), 400
 
     # Backup codes üret + DB'ye yaz
     backup = generate_backup_codes(10)
@@ -104,7 +104,7 @@ def totp_verify_setup():
 
     return jsonify({
         "success": True,
-        "message": "2FA etkinleştirildi. Backup kodlarınızı güvenli bir yere kaydedin.",
+        "message": _("2FA etkinleştirildi. Backup kodlarınızı güvenli bir yere kaydedin."),
         "backup_codes": backup,
     })
 
@@ -116,7 +116,7 @@ def totp_disable():
     from werkzeug.security import check_password_hash
     password = request.form.get("password") or ""
     if not password or not check_password_hash(current_user.password_hash, password):
-        return jsonify({"success": False, "message": "Şifre hatalı."}), 401
+        return jsonify({"success": False, "message": _("Şifre hatalı.")}), 401
 
     current_user.totp_secret = None
     current_user.totp_enabled = False
@@ -133,7 +133,7 @@ def totp_disable():
     except Exception:
         pass
 
-    return jsonify({"success": True, "message": "2FA devre dışı bırakıldı."})
+    return jsonify({"success": True, "message": _("2FA devre dışı bırakıldı.")})
 
 
 # Login flow için ek endpoint — auth_bp.login içinden çağrılır

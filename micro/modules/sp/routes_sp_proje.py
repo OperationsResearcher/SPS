@@ -1,5 +1,6 @@
 """Stratejik Planlama — SP proje ve görev API."""
 
+from flask_babel import gettext as _
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -91,7 +92,7 @@ def sp_api_proje_save():
             db.session.add(obj)
         name = (data.get("name") or "").strip()
         if not name:
-            return jsonify({"success": False, "message": "Proje adı zorunludur."}), 400
+            return jsonify({"success": False, "message": _("Proje adı zorunludur.")}), 400
         obj.name        = name
         obj.description = data.get("description", obj.description)
         obj.status      = data.get("status", obj.status) or "Planlandı"
@@ -107,7 +108,7 @@ def sp_api_proje_save():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_proje_save] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/project/<int:item_id>", methods=["DELETE"])
@@ -125,7 +126,7 @@ def sp_api_proje_delete(item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_proje_delete] {e}")
-        return jsonify({"success": False, "message": "Silme hatası."}), 500
+        return jsonify({"success": False, "message": _("Silme hatası.")}), 500
 
 
 # ── Proje Görevleri ────────────────────────────────────────────────────────────
@@ -165,7 +166,7 @@ def sp_api_proje_gorev_save(project_id):
             db.session.add(obj)
         name = (data.get("name") or "").strip()
         if not name:
-            return jsonify({"success": False, "message": "Görev adı zorunludur."}), 400
+            return jsonify({"success": False, "message": _("Görev adı zorunludur.")}), 400
         obj.name        = name
         obj.description = data.get("description", obj.description)
         obj.status      = data.get("status", obj.status) or "Planlandı"
@@ -177,11 +178,11 @@ def sp_api_proje_gorev_save(project_id):
             from datetime import datetime as _dt
             obj.end_date = _dt.strptime(data["end_date"], "%Y-%m-%d").date()
         db.session.commit()
-        return jsonify({"success": True, "message": "Görev kaydedildi.", "id": obj.id})
+        return jsonify({"success": True, "message": _("Görev kaydedildi."), "id": obj.id})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_proje_gorev_save] {e}")
-        return jsonify({"success": False, "message": "Kayıt hatası."}), 500
+        return jsonify({"success": False, "message": _("Kayıt hatası.")}), 500
 
 
 @app_bp.route("/sp/api/project/task/<int:task_id>", methods=["DELETE"])
@@ -200,4 +201,4 @@ def sp_api_proje_gorev_delete(task_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_proje_gorev_delete] {e}")
-        return jsonify({"success": False, "message": "Silme hatası."}), 500
+        return jsonify({"success": False, "message": _("Silme hatası.")}), 500

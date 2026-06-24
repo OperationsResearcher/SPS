@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 12:15+0300\n"
+"POT-Creation-Date: 2026-06-24 12:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,19 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: app/api/data_connector.py:79
+msgid "Geçersiz token. X-API-Token header veya ?token= ile gönder"
+msgstr ""
+
+#: app/api/data_connector.py:152 app/api/data_connector.py:175
+#: app/api/data_connector.py:200
+msgid "Geçersiz token"
+msgstr ""
+
+#: app/api/routes.py:127
+msgid "Erişim reddedildi."
+msgstr ""
 
 #: app/routes/admin.py:96
 msgid "Bu modül kodu zaten mevcut."
@@ -45,7 +58,8 @@ msgstr ""
 msgid "Paket adı gerekli."
 msgstr ""
 
-#: app/routes/admin.py:172 ui/static/platform/js/admin.js:724
+#: app/routes/admin.py:172 micro/modules/admin/routes.py:1659
+#: ui/static/platform/js/admin.js:724
 msgid "Paket güncellendi."
 msgstr ""
 
@@ -61,6 +75,22 @@ msgstr ""
 msgid "Paket devre dışı bırakıldı."
 msgstr ""
 
+#: app/routes/admin.py:246
+msgid "Rota kayıt hatası."
+msgstr ""
+
+#: app/routes/admin.py:260
+msgid "Geçersiz rota ID."
+msgstr ""
+
+#: app/routes/admin.py:263
+msgid "Rota bulunamadı."
+msgstr ""
+
+#: app/routes/admin.py:266
+msgid "Bileşen adı kaydedildi."
+msgstr ""
+
 #: app/routes/admin.py:378 app/routes/admin.py:429
 msgid "Kısa ad veya ticari ünvan gerekli."
 msgstr ""
@@ -73,12 +103,16 @@ msgstr ""
 msgid "Kurum eklenemedi, lütfen tekrar deneyin."
 msgstr ""
 
-#: app/routes/admin.py:422 app/routes/admin.py:456
+#: app/routes/admin.py:422 app/routes/admin.py:456 app/routes/dashboard.py:77
+#: app/services/k_vektor_config_service.py:41
+#: micro/modules/k_rapor/routes.py:1792 micro/modules/masaustu/routes.py:768
+#: micro/modules/raporlar/routes_faz5.py:346
 #: ui/templates/platform/admin/tenants.html:177
 msgid "Kurum bulunamadı."
 msgstr ""
 
-#: app/routes/admin.py:445 ui/static/platform/js/admin.js:498
+#: app/routes/admin.py:445 micro/modules/admin/routes.py:1067
+#: ui/static/platform/js/admin.js:498
 msgid "Kurum güncellendi."
 msgstr ""
 
@@ -86,7 +120,7 @@ msgstr ""
 msgid "Kurum arşivlendi."
 msgstr ""
 
-#: app/routes/admin.py:543
+#: app/routes/admin.py:543 micro/modules/admin/routes_sub_tenants.py:149
 msgid "Geçersiz e-posta formatı."
 msgstr ""
 
@@ -95,6 +129,7 @@ msgid "Bu e-posta adresi zaten kayıtlı."
 msgstr ""
 
 #: app/routes/admin.py:560 app/routes/admin.py:624
+#: micro/modules/admin/routes.py:515 micro/modules/admin/routes.py:608
 msgid "Bu rolü atama yetkiniz yok."
 msgstr ""
 
@@ -111,7 +146,7 @@ msgstr ""
 msgid "Kullanıcı bulunamadı."
 msgstr ""
 
-#: app/routes/admin.py:604
+#: app/routes/admin.py:604 micro/modules/admin/routes.py:595
 msgid "Kurum Yöneticisi hesabını sadece Admin düzenleyebilir."
 msgstr ""
 
@@ -119,11 +154,11 @@ msgstr ""
 msgid "Bu e-posta adresi başka bir kullanıcıya aittir."
 msgstr ""
 
-#: app/routes/admin.py:644
+#: app/routes/admin.py:644 micro/modules/admin/routes.py:628
 msgid "Kullanıcı güncellendi."
 msgstr ""
 
-#: app/routes/admin.py:665
+#: app/routes/admin.py:665 micro/modules/admin/routes.py:649
 msgid "Kurum Yöneticisi hesabını sadece Admin pasife/aktife alabilir."
 msgstr ""
 
@@ -135,8 +170,79 @@ msgstr ""
 msgid "Kullanıcı durumu güncellendi."
 msgstr ""
 
+#: app/routes/admin.py:713 app/routes/admin.py:842 app/routes/admin.py:846
+#: app/routes/admin.py:869 app/routes/admin.py:873 app/routes/dashboard.py:73
+#: micro/modules/kurum/routes.py:258 micro/modules/kurum/routes.py:318
+#: micro/modules/kurum/routes.py:356 micro/modules/kurum/routes.py:388
+#: micro/modules/kurum/routes.py:415 micro/modules/kurum/routes.py:442
+#: micro/modules/kurum/routes.py:464 micro/modules/kurum/routes.py:485
+#: micro/modules/kurum/routes.py:517 micro/modules/kurum/routes.py:540
+#: micro/modules/kurum/routes.py:563 micro/modules/masaustu/routes.py:764
+#: micro/modules/raporlar/routes_esg.py:89
+#: micro/modules/raporlar/routes_esg.py:123
+#: micro/modules/raporlar/routes_esg.py:158
+#: micro/modules/raporlar/routes_esg.py:179
+#: micro/modules/raporlar/routes_esg.py:211 micro/modules/sp/helpers.py:73
+#: micro/modules/sp/routes_strategy.py:59
+msgid "Yetkisiz işlem."
+msgstr ""
+
+#: app/routes/admin.py:716 micro/modules/admin/routes_admin_tools.py:178
+msgid "Dosya bulunamadı."
+msgstr ""
+
+#: app/routes/admin.py:720 app/routes/auth.py:206 app/routes/auth.py:209
+#: micro/modules/admin/routes.py:730 micro/modules/shared/auth/routes.py:82
+#: micro/modules/shared/auth/routes.py:85
+msgid "Dosya seçilmedi."
+msgstr ""
+
+#: app/routes/admin.py:728
+msgid "Geçersiz dosya formatı. Lütfen Excel veya CSV yükleyin."
+msgstr ""
+
+#: app/routes/admin.py:746
+msgid "Dosyada E-posta sütunu bulunamadı."
+msgstr ""
+
+#: app/routes/admin.py:804
+msgid "Dosya işlenirken bir hata oluştu."
+msgstr ""
+
 #: app/routes/admin.py:812
 msgid "Bu sayfayı görüntüleme yetkiniz yok."
+msgstr ""
+
+#: app/routes/admin.py:939 app/routes/admin.py:1014
+msgid "Content-Type application/json olmalı"
+msgstr ""
+
+#: app/routes/admin.py:943
+msgid "Süreç adı zorunludur"
+msgstr ""
+
+#: app/routes/admin.py:997
+msgid "Süreç oluşturulamadı."
+msgstr ""
+
+#: app/routes/admin.py:998
+msgid "Süreç başarıyla oluşturuldu"
+msgstr ""
+
+#: app/routes/admin.py:1064
+msgid "Süreç güncellenemedi."
+msgstr ""
+
+#: app/routes/admin.py:1065
+msgid "Süreç başarıyla güncellendi"
+msgstr ""
+
+#: app/routes/admin.py:1085
+msgid "Süreç silinemedi."
+msgstr ""
+
+#: app/routes/admin.py:1086
+msgid "Süreç başarıyla silindi"
 msgstr ""
 
 #: app/routes/auth.py:61
@@ -155,11 +261,12 @@ msgstr ""
 msgid "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."
 msgstr ""
 
-#: app/routes/auth.py:154 ui/static/platform/js/profil.js:160
+#: app/routes/auth.py:154 micro/modules/shared/auth/routes.py:38
+#: ui/static/platform/js/profil.js:160
 msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
 msgstr ""
 
-#: app/routes/auth.py:157
+#: app/routes/auth.py:157 micro/modules/shared/auth/routes.py:40
 msgid "Mevcut şifre yanlış."
 msgstr ""
 
@@ -169,6 +276,54 @@ msgstr ""
 
 #: app/routes/auth.py:193
 msgid "Profil başarıyla güncellendi."
+msgstr ""
+
+#: app/routes/auth.py:214
+msgid "Geçersiz dosya tipi. İzin verilenler: PNG, JPG, GIF, WEBP."
+msgstr ""
+
+#: app/routes/auth.py:220 micro/modules/shared/auth/routes.py:93
+msgid "Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir."
+msgstr ""
+
+#: app/routes/auth.py:228
+msgid "Dosya boyutu 5 MB'ı aşamaz."
+msgstr ""
+
+#: app/routes/auth.py:250
+msgid "Fotoğraf yüklendi."
+msgstr ""
+
+#: app/routes/auth.py:433
+msgid "Şifre yanlış."
+msgstr ""
+
+#: app/routes/auth.py:450
+msgid "Son tenant yöneticisi silinemez. Önce başka bir yönetici atayın."
+msgstr ""
+
+#: app/routes/auth.py:480
+msgid "Hesabınız silindi. Veriler anonimleştirildi."
+msgstr ""
+
+#: app/routes/auth.py:484
+msgid "Silme işlemi başarısız."
+msgstr ""
+
+#: app/routes/core.py:46
+msgid "Geçersiz dosya formatı. Sadece resimler kabul edilir."
+msgstr ""
+
+#: app/routes/core.py:58
+msgid "Bilet başarıyla gönderildi."
+msgstr ""
+
+#: app/routes/core.py:63
+msgid "Bilet gönderilemedi, lütfen tekrar deneyin."
+msgstr ""
+
+#: app/routes/dashboard.py:89
+msgid "Stratejik kimlik başarıyla güncellendi."
 msgstr ""
 
 #: app/routes/sso.py:62
@@ -203,6 +358,101 @@ msgstr ""
 msgid "2FA zaten etkin. Önce devre dışı bırakın."
 msgstr ""
 
+#: app/routes/totp.py:80
+msgid "Setup oturumu bulunamadı."
+msgstr ""
+
+#: app/routes/totp.py:84
+msgid "Doğrulama kodu hatalı."
+msgstr ""
+
+#: app/routes/totp.py:107
+msgid "2FA etkinleştirildi. Backup kodlarınızı güvenli bir yere kaydedin."
+msgstr ""
+
+#: app/routes/totp.py:119 micro/modules/admin/routes_admin_tools.py:211
+msgid "Şifre hatalı."
+msgstr ""
+
+#: app/routes/totp.py:136
+msgid "2FA devre dışı bırakıldı."
+msgstr ""
+
+#: app/services/email_digest_service.py:155
+#: micro/modules/k_rapor/routes.py:1739
+msgid "Tenant bulunamadı"
+msgstr ""
+
+#: app/services/email_digest_service.py:161
+msgid "Alıcı yönetici bulunamadı"
+msgstr ""
+
+#: app/services/email_digest_service.py:177
+msgid "Özet e-postası gönderilemedi."
+msgstr ""
+
+#: app/services/llm_gateway.py:391
+msgid "API anahtarı tanımlı değil"
+msgstr ""
+
+#: app/services/okr_kpi_sync.py:42
+msgid "KR bulunamadı"
+msgstr ""
+
+#: app/services/okr_kpi_sync.py:44
+msgid "KR bağlı KPI yok"
+msgstr ""
+
+#: app/services/okr_kpi_sync.py:48
+msgid "KPI'da son değer yok"
+msgstr ""
+
+#: app/services/process_performance_service.py:670
+msgid "Süreç ID ve Yıl gereklidir."
+msgstr ""
+
+#: app/services/process_performance_service.py:674
+#: micro/modules/api/routes.py:44 micro/modules/api/routes.py:192
+#: micro/modules/api/routes.py:205 micro/modules/api/routes.py:237
+#: micro/modules/api/routes.py:253 micro/modules/masaustu/routes.py:663
+#: micro/modules/surec/routes_karne.py:93
+msgid "Süreç bulunamadı."
+msgstr ""
+
+#: app/services/process_performance_service.py:683
+#: app/services/process_performance_service.py:697
+msgid "Bu süreci görüntüleme yetkiniz yok."
+msgstr ""
+
+#: app/services/process_performance_service.py:707
+msgid "Excel aktarımı için openpyxl gerekli. Lütfen bağımlılığı yükleyin."
+msgstr ""
+
+#: app/services/slack_notification.py:55
+msgid "Slack webhook yapılandırılmamış."
+msgstr ""
+
+#: app/services/slack_notification.py:81
+msgid "Slack webhook URL hatası."
+msgstr ""
+
+#: app/services/slack_notification.py:87
+msgid "Slack mesajı gönderilemedi."
+msgstr ""
+
+#: app/services/slack_notification.py:96
+msgid "Teams webhook URL boş."
+msgstr ""
+
+#: app/services/slack_notification.py:119
+#: app/services/slack_notification.py:144
+msgid "Webhook mesajı gönderilemedi."
+msgstr ""
+
+#: app/services/slack_notification.py:125
+msgid "Discord webhook URL boş."
+msgstr ""
+
 #: app/utils/decorators.py:28
 msgid "Kurum bilginiz bulunamadı."
 msgstr ""
@@ -219,6 +469,484 @@ msgstr ""
 msgid "Bu bölüm mevcut paketinizde yer almıyor."
 msgstr ""
 
+#: app/utils/error_handlers.py:57
+msgid "İstenen API veya kaynak bulunamadı."
+msgstr ""
+
+#: app/utils/error_handlers.py:86 micro/modules/admin/routes.py:47
+#: micro/modules/admin/routes.py:285 micro/modules/admin/routes.py:347
+#: micro/modules/admin/routes.py:362 micro/modules/admin/routes.py:379
+#: micro/modules/proje/routes_list.py:254
+#: micro/modules/shared/ayarlar/routes.py:43
+#: micro/modules/shared/ayarlar/routes.py:88
+#: micro/modules/shared/ayarlar/routes.py:112 ui/static/platform/js/app.js:179
+msgid "Bu işlem için yetkiniz yok."
+msgstr ""
+
+#: micro/modules/admin/routes.py:296
+msgid "CSRF doğrulaması başarısız."
+msgstr ""
+
+#: micro/modules/admin/routes.py:302
+msgid ""
+"Bakım modu ortam değişkeni (MAINTENANCE_MODE / MAINTENANCE_OVERRIDE_OFF) "
+"ile kilitli; panelden değiştirilemez. Sunucu dokümantasyonuna bakın."
+msgstr ""
+
+#: micro/modules/admin/routes.py:355 micro/modules/admin/routes.py:1615
+msgid "İstatistik alınamadı."
+msgstr ""
+
+#: micro/modules/admin/routes.py:372
+msgid "Kullanıcı istatistikleri alınamadı."
+msgstr ""
+
+#: micro/modules/admin/routes.py:427
+msgid "Aktivite kayıtları alınamadı."
+msgstr ""
+
+#: micro/modules/admin/routes.py:508
+msgid "Bu e-posta zaten kayıtlı."
+msgstr ""
+
+#: micro/modules/admin/routes.py:524
+msgid "Bu kurumda zaten aktif bir Kurum Yöneticisi var."
+msgstr ""
+
+#: micro/modules/admin/routes.py:547 micro/modules/admin/routes.py:573
+msgid "Kullanıcı oluşturuldu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:578 micro/modules/admin/routes.py:993
+#: micro/modules/admin/routes.py:1643 micro/modules/admin/routes.py:1770
+#: micro/modules/admin/routes.py:1831 micro/modules/api/routes.py:109
+#: micro/modules/kurum/routes.py:348 micro/modules/kurum/routes.py:435
+#: micro/modules/kurum/routes.py:510 micro/modules/sp/routes_plan_year.py:250
+#: micro/modules/sp/routes_sp_proje.py:111
+#: micro/modules/sp/routes_strategy.py:123
+#: micro/modules/sp/routes_strategy.py:238
+msgid "Kayıt sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:632 micro/modules/admin/routes.py:1071
+#: micro/modules/admin/routes.py:1486 micro/modules/admin/routes.py:1663
+#: micro/modules/api/routes.py:154 micro/modules/kurum/routes.py:271
+#: micro/modules/kurum/routes.py:380 micro/modules/kurum/routes.py:457
+#: micro/modules/kurum/routes.py:533 micro/modules/sp/routes_pages.py:303
+#: micro/modules/sp/routes_strategy.py:161
+#: micro/modules/sp/routes_strategy.py:273
+msgid "Güncelleme sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:651
+msgid "Kendi hesabınızı pasife alamazsınız."
+msgstr ""
+
+#: micro/modules/admin/routes.py:661 micro/modules/admin/routes.py:1149
+#: micro/modules/admin/routes.py:1534 micro/modules/admin/routes.py:1682
+#: micro/modules/admin/routes.py:1744 micro/modules/admin/routes.py:1850
+#: micro/modules/admin/routes_sub_tenants.py:330
+msgid "İşlem sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:688
+msgid "Kurum Yöneticisi 2FA'sını sadece Admin sıfırlayabilir."
+msgstr ""
+
+#: micro/modules/admin/routes.py:691
+msgid "Kullanıcının 2FA'sı zaten devre dışı."
+msgstr ""
+
+#: micro/modules/admin/routes.py:717
+msgid "Sıfırlama sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:733
+msgid "Dosya boyutu 10 MB sınırını aşıyor."
+msgstr ""
+
+#: micro/modules/admin/routes.py:795
+msgid "İçe aktarma sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:885 ui/static/platform/js/kurum_ayarlar.js:69
+msgid "Kurum adı zorunludur."
+msgstr ""
+
+#: micro/modules/admin/routes.py:903
+msgid "Parent tenant ID geçersiz."
+msgstr ""
+
+#: micro/modules/admin/routes.py:910
+msgid "Alt-tenant tipi 'normal' olmalı (iç içe hiyerarşi yok)."
+msgstr ""
+
+#: micro/modules/admin/routes.py:953 micro/modules/admin/routes.py:988
+#: ui/static/platform/js/admin.js:498
+msgid "Kurum oluşturuldu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1085
+msgid "Logo dosyası seçilmedi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1089
+msgid "Geçersiz dosya türü. PNG, JPG, WEBP, GIF veya SVG yükleyin."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1114 micro/modules/kurum/routes.py:147
+msgid "Geçersiz dosya yolu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1127
+msgid "Kurum logosu güncellendi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1131
+msgid "Logo yüklenirken hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1191
+msgid "Kart keşfi sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1336
+msgid "Kart adı boş olamaz."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1357
+msgid "Kart güncellenemedi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1380
+msgid "Veri kaynağı güncellenemedi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1394
+msgid "Veri anahtarı zorunludur."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1396
+msgid "Bu veri anahtarı zaten var."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1409
+msgid "Veri kaynağı eklenemedi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1460
+msgid "Senkronizasyon sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1482
+msgid "Bileşen slug'ları güncellendi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1549 ui/static/platform/js/admin.js:808
+msgid "Başlık ve mesaj zorunludur."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1582
+msgid "Bildirim gönderilemedi."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1635 micro/modules/admin/routes.py:1762
+msgid "Bu kod zaten kullanılıyor."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1639 ui/static/platform/js/admin.js:668
+msgid "Paket oluşturuldu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1766 ui/static/platform/js/admin.js:696
+msgid "Modül oluşturuldu."
+msgstr ""
+
+#: micro/modules/admin/routes.py:1827
+msgid "Ağırlıklar kaydedildi."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:214
+msgid "Geçerli bir .dump dosyası yükleyin."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:221
+msgid "DB geri yükleme tamamlandı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:247
+#: micro/modules/admin/routes_admin_tools.py:447
+msgid "Durum alınamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:261
+msgid "Keşif başarısız."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:283
+#: ui/static/platform/js/k_radar.js:591 ui/static/platform/js/k_radar.js:735
+#: ui/static/platform/js/yonetim_paneli.js:67
+#: ui/templates/platform/k_radar/cross_paydas.html:50
+#: ui/templates/platform/k_radar/kp_olgunluk.html:53
+msgid "Kayıt bulunamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:295
+msgid "Tarama yalnız Yerel ortamda çalışır."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:308
+msgid "Tarama başlatılamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:320
+#: micro/modules/admin/routes_admin_tools.py:362
+msgid "Koşu bulunamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:340
+msgid "Senaryolar yalnız Yerel ortamda çalışır."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:351
+msgid "Senaryolar başlatılamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:381
+msgid "Bu işlem yalnız Yerel ortamda çalışır."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:401
+msgid "Klon sırasında hata."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:423
+msgid "Yalnız Yerel ortamda çalışır."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:433
+msgid "İşlem başlatılamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:459
+msgid "İşlem bulunamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_admin_tools.py:485
+msgid "PDF kılavuz dosyası henüz üretilmemiş. Lütfen otonom taramayı çalıştırın."
+msgstr ""
+
+#: micro/modules/admin/routes_holding.py:60
+#: micro/modules/admin/routes_holding.py:120
+#: micro/modules/admin/routes_sub_tenants.py:393
+#: micro/modules/k_rapor/routes.py:77 micro/modules/k_rapor/routes.py:1672
+#: micro/modules/k_rapor/routes.py:1743 micro/modules/k_rapor/routes.py:1766
+#: micro/modules/kurum/routes.py:168 micro/modules/sp/routes_pages.py:362
+#: micro/modules/sp/routes_tenant_ai.py:90
+#: micro/modules/surec/routes_kpi_data.py:243
+msgid "Sunucu hatası oluştu."
+msgstr ""
+
+#: micro/modules/admin/routes_holding.py:71
+msgid "Alt kurum bulunamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_holding.py:73
+#: micro/modules/admin/routes_sub_tenants.py:264
+#: micro/modules/admin/routes_sub_tenants.py:320
+msgid "Bu kurum bir alt kurum değil."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:81
+#: micro/modules/admin/routes_sub_tenants.py:378
+msgid "Platform Admin için parent_id gerekli."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:87
+msgid "Bu kurum tipi alt kurum açamaz."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:146
+msgid "Kurum adı ve admin e-posta zorunlu."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:155
+msgid "Platform Admin için üst kurum ID gerekli."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:161
+msgid "Geçersiz üst kurum."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:174
+msgid "Bu e-posta zaten başka bir kullanıcıya ait."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:181
+msgid "Şifre en az 8 karakter olmalı."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:186
+#: micro/modules/admin/routes_sub_tenants.py:273
+msgid "Kurum yöneticisi rolü tanımlı değil."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:196
+msgid "Seçilen paket geçersiz veya pasif."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:198
+msgid "Paket ID geçersiz."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:250
+msgid "Alt kurum oluşturulamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:281
+msgid "Bu alt kurumun aktif yöneticisi yok."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:291
+msgid "Parola sıfırlanamadı."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:383
+#: micro/modules/admin/routes_sub_tenants.py:410
+msgid "Bu kurum tipi alt kurum yönetimine sahip değil."
+msgstr ""
+
+#: micro/modules/admin/routes_sub_tenants.py:422
+msgid "openpyxl kütüphanesi kurulu değil."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:80 micro/modules/k_rapor/routes.py:379
+msgid "Trend verisi alınamadı."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:99
+msgid "Sağlık skoru alınamadı."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:118
+msgid "Tahmin verisi alınamadı."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:142
+msgid "Karşılaştırma verisi alınamadı."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:175 micro/modules/api/routes.py:259
+#: micro/modules/api/routes.py:272 micro/modules/sp/routes_pages.py:365
+msgid "Rapor oluşturulamadı."
+msgstr ""
+
+#: micro/modules/analiz/routes.py:235
+msgid "Anomali verisi alınamadı."
+msgstr ""
+
+#: micro/modules/api/routes.py:22
+msgid "Kimlik doğrulama gerekli."
+msgstr ""
+
+#: micro/modules/api/routes.py:70 micro/modules/bireysel/routes.py:130
+msgid "PG bulunamadı."
+msgstr ""
+
+#: micro/modules/api/routes.py:150 ui/static/platform/js/k_radar_ks.js:905
+#: ui/static/platform/js/kurum.js:590 ui/static/platform/js/kurum.js:697
+#: ui/static/platform/js/pg_tablo_modal.js:734
+#: ui/static/platform/js/surec.js:2693
+msgid "Güncellendi."
+msgstr ""
+
+#: micro/modules/api/routes.py:183 micro/modules/kurum/routes.py:406
+#: micro/modules/kurum/routes.py:476 micro/modules/kurum/routes.py:553
+#: micro/modules/sp/routes_strategy.py:181
+#: micro/modules/sp/routes_strategy.py:294
+msgid "Silme sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/api/routes.py:198 micro/modules/api/routes.py:211
+#: micro/modules/api/routes.py:230 micro/modules/api/routes.py:244
+#: micro/modules/raporlar/routes_faz5.py:452
+msgid "Veri alınamadı."
+msgstr ""
+
+#: micro/modules/api/routes.py:285
+msgid "AI servisi kullanılamıyor."
+msgstr ""
+
+#: micro/modules/api/routes.py:296
+msgid "Push servisi kullanılamıyor."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:117
+msgid "Geçersiz process_kpi_id."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:136
+msgid "Bu PG için veri girişi yapamazsınız."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:176 micro/modules/bireysel/routes.py:216
+#: micro/modules/bireysel/routes.py:242 micro/modules/bireysel/routes.py:258
+#: micro/modules/bireysel/routes.py:326 micro/modules/bireysel/routes.py:353
+#: micro/modules/bireysel/routes.py:377 micro/modules/bireysel/routes.py:393
+#: micro/modules/bireysel/routes.py:425 micro/modules/bireysel/routes.py:454
+#: micro/modules/k_radar/routes_common.py:116
+#: micro/modules/shared/ayarlar/routes.py:80
+#: micro/modules/shared/ayarlar/routes.py:104
+#: micro/modules/shared/ayarlar/routes.py:144
+#: micro/modules/shared/bildirim/routes.py:49
+#: micro/modules/shared/bildirim/routes.py:66
+#: micro/modules/sp/routes_alignment.py:109
+#: micro/modules/sp/routes_donemler.py:536
+#: micro/modules/sp/routes_exec_advisor.py:55
+#: micro/modules/sp/routes_exec_advisor.py:114
+#: micro/modules/sp/routes_exec_advisor.py:234
+#: micro/modules/sp/routes_exec_advisor.py:277
+#: micro/modules/sp/routes_exec_advisor.py:298
+#: micro/modules/sp/routes_exec_advisor.py:449
+#: micro/modules/sp/routes_frameworks.py:66
+#: micro/modules/sp/routes_frameworks.py:273
+#: micro/modules/sp/routes_initiative.py:80
+#: micro/modules/sp/routes_initiative.py:129
+#: micro/modules/sp/routes_replan_trigger.py:68
+#: micro/modules/sp/routes_replan_trigger.py:100
+#: micro/modules/sp/routes_scenario.py:91
+#: micro/modules/sp/routes_scenario.py:121
+#: micro/modules/surec/routes_activity.py:274
+#: micro/modules/surec/routes_activity.py:430
+#: micro/modules/surec/routes_activity.py:451
+#: micro/modules/surec/routes_activity.py:473
+#: micro/modules/surec/routes_activity.py:517
+#: micro/modules/surec/routes_activity.py:540
+#: micro/modules/surec/routes_activity.py:580
+#: micro/modules/surec/routes_kpi.py:140 micro/modules/surec/routes_kpi.py:233
+#: micro/modules/surec/routes_kpi.py:274
+#: micro/modules/surec/routes_kpi_data.py:213
+#: micro/modules/surec/routes_kpi_data.py:461
+#: micro/modules/surec/routes_kpi_data.py:512
+#: micro/modules/surec/routes_process.py:393
+#: micro/modules/surec/routes_process.py:525
+#: micro/modules/surec/routes_process.py:554
+msgid "İşlem tamamlanamadı."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:238
+msgid "Bireysel PG güncellendi."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:373
+#: micro/modules/surec/routes_activity.py:426
+msgid "Faaliyet güncellendi."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:747 micro/modules/k_rapor/routes.py:1839
+msgid "PDF oluşturulamadı."
+msgstr ""
+
 #: micro/modules/k_radar/routes_cross.py:69
 msgid "Paydaş adı zorunludur."
 msgstr ""
@@ -226,6 +954,13 @@ msgstr ""
 #: micro/modules/k_radar/routes_cross.py:82
 #: ui/static/platform/js/k_radar.js:686
 msgid "Paydaş kaydı eklendi."
+msgstr ""
+
+#: micro/modules/k_radar/routes_cross.py:170
+#: micro/modules/k_radar/routes_cross.py:191
+#: micro/modules/k_radar/routes_kp.py:293
+#: micro/modules/k_radar/routes_kp.py:313
+msgid "Kayıt bulunamadı"
 msgstr ""
 
 #: micro/modules/k_radar/routes_kp.py:104
@@ -236,15 +971,228 @@ msgstr ""
 msgid "Olgunluk kaydı eklendi."
 msgstr ""
 
+#: micro/modules/k_radar/routes_kp.py:220
+msgid "Radar verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:386
+#: micro/modules/k_radar/routes_kp.py:420
+#: micro/modules/k_radar/routes_risk.py:117 micro/modules/kurum/routes.py:326
+#: micro/modules/kurum/routes.py:370 micro/modules/kurum/routes.py:420
+#: micro/modules/sp/routes_analysis.py:481
+#: micro/modules/sp/routes_analysis.py:530
+#: micro/modules/sp/routes_analysis.py:591
+#: ui/static/platform/js/k_radar_ks.js:878
+#: ui/static/platform/js/k_radar_ks.js:899
+#: ui/static/platform/js/k_radar_ks.js:942
+#: ui/static/platform/js/k_radar_ks.js:965 ui/static/platform/js/kurum.js:521
+#: ui/static/platform/js/kurum.js:559 ui/static/platform/js/kurum.js:641
+#: ui/static/platform/js/kurum.js:686 ui/static/platform/js/kurum.js:740
+msgid "Başlık zorunludur."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:388
+#: micro/modules/k_radar/routes_kp.py:422
+msgid "Geçersiz kategori."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:403
+msgid "Öğe eklenemedi."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:415
+#: micro/modules/k_radar/routes_kp.py:446
+msgid "Öğe bulunamadı."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:434
+msgid "Öğe güncellenemedi."
+msgstr ""
+
+#: micro/modules/k_radar/routes_kp.py:454
+msgid "Öğe silinemedi."
+msgstr ""
+
+#: micro/modules/k_radar/routes_risk.py:44
+#: micro/modules/k_radar/routes_risk.py:96
+msgid "Tenant bağlamı yok."
+msgstr ""
+
+#: micro/modules/k_radar/routes_risk.py:123
+msgid "probability/impact 1-5 arası olmalı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:66
+msgid "KPI bulunamadı"
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:192
+msgid "Kurumsal veri alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:340
+msgid "Süreç/PG verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:453
+msgid "Stratejik uyum verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:567
+msgid "Faaliyet verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:688
+msgid "Bireysel veri alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:775
+msgid "Veri durumu alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:867
+msgid "Risk verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:927
+msgid "Denetim verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1060
+msgid "Uyarı verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1075
+msgid "K-Vektör servisi henüz aktif değil."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1143
+msgid "K-Vektör verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1189
+msgid "EVM verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1289
+msgid "Stratejik analiz verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1341
+msgid "Paydaş verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1398
+msgid "Rekabet/A3 verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1567
+msgid "Excel oluşturulamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1601
+msgid "Anomali tespiti başarısız."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1724
+msgid "Slack gönderimi başarısız."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1931
+msgid "PG dağılım verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:1999
+msgid "Faaliyet matris verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2075
+msgid "Aktivite takvim verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2176
+msgid "Kurum karşılaştırma verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2276
+msgid "Strateji kapsama verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2350
+msgid "Sorumlu analiz verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2421
+msgid "SWOT trend verisi alınamadı."
+msgstr ""
+
+#: micro/modules/k_rapor/routes.py:2535
+msgid "Bildirim analiz verisi alınamadı."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:132
+msgid "Logo dosyası 2MB'dan büyük olamaz."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:163 ui/static/platform/js/kurum_ayarlar.js:79
+msgid "Kurum ayarları kaydedildi."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:231 micro/modules/sp/routes_pages.py:226
+#: micro/modules/sp/routes_plan_year.py:64
+#: micro/modules/sp/routes_plan_year.py:86
+msgid "Tenant bulunamadı."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:267 micro/modules/sp/routes_pages.py:299
+#: ui/static/platform/js/kurum.js:485
+msgid "Stratejik kimlik güncellendi."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:296 micro/modules/kurum/routes.py:321
+#: micro/modules/kurum/routes.py:359 micro/modules/kurum/routes.py:391
+msgid "Geçersiz tür."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:365 micro/modules/kurum/routes.py:397
+msgid "Madde bulunamadı."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:453
+msgid "Strateji güncellendi."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:491 micro/modules/sp/routes_strategy.py:196
+msgid "Strateji ve başlık zorunludur."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:529 micro/modules/sp/routes_strategy.py:269
+#: ui/static/platform/js/kurum.js:750
+msgid "Alt strateji güncellendi."
+msgstr ""
+
+#: micro/modules/kurum/routes.py:573 micro/modules/sp/routes_pages.py:234
+msgid "K-Vektör ağırlıkları kaydedildi."
+msgstr ""
+
+#: micro/modules/masaustu/routes.py:665
+msgid "Bu sürece erişiminiz yok."
+msgstr ""
+
+#: micro/modules/masaustu/routes.py:714
+msgid "Özet yüklenemedi."
+msgstr ""
+
+#: micro/modules/masaustu/routes.py:785
+msgid "AI danışman çağrılamadı."
+msgstr ""
+
 #: micro/modules/proje/routes_list.py:70 micro/modules/proje/routes_list.py:121
 #: micro/modules/proje/routes_list.py:259
 #: micro/modules/proje/routes_list.py:317
 #: micro/modules/proje/routes_project_crud.py:115
+#: micro/modules/sp/routes_pages.py:336
 msgid "Kurum bilgisi bulunamadı."
-msgstr ""
-
-#: micro/modules/proje/routes_list.py:254 ui/static/platform/js/app.js:179
-msgid "Bu işlem için yetkiniz yok."
 msgstr ""
 
 #: micro/modules/proje/routes_list.py:264
@@ -265,6 +1213,7 @@ msgid "Yeni proje oluşturma yetkiniz yok."
 msgstr ""
 
 #: micro/modules/proje/routes_project_crud.py:153
+#: micro/modules/sp/routes_sp_proje.py:95
 msgid "Proje adı zorunludur."
 msgstr ""
 
@@ -307,6 +1256,7 @@ msgid "Görev ekleyemezsiniz."
 msgstr ""
 
 #: micro/modules/proje/routes_tasks.py:52
+#: micro/modules/proje/routes_tasks.py:130
 msgid "Görev başlığı zorunludur."
 msgstr ""
 
@@ -316,7 +1266,16 @@ msgid "Geçersiz görev ataması."
 msgstr ""
 
 #: micro/modules/proje/routes_tasks.py:110
+#: micro/modules/proje/routes_tasks.py:211
 msgid "Görev eklendi."
+msgstr ""
+
+#: micro/modules/proje/routes_tasks.py:122
+msgid "Geçersiz proje."
+msgstr ""
+
+#: micro/modules/proje/routes_tasks.py:126
+msgid "Bu projede görev oluşturma yetkiniz yok."
 msgstr ""
 
 #: micro/modules/proje/routes_tasks.py:223
@@ -337,6 +1296,420 @@ msgstr ""
 
 #: micro/modules/proje/routes_tasks.py:339
 msgid "Görev silindi."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:80
+msgid "ESG metrikleri alınamadı."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:93
+#: micro/modules/raporlar/routes_esg.py:131
+msgid "Metrik adı zorunludur."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:96
+#: micro/modules/raporlar/routes_esg.py:134
+msgid "Geçersiz kategori (E/S/G)."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:127
+#: micro/modules/raporlar/routes_esg.py:162
+#: micro/modules/raporlar/routes_esg.py:183
+msgid "Metrik bulunamadı."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:151
+msgid "Metrik güncellenemedi."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:187
+#: micro/modules/sp/routes_plan_year.py:91
+msgid "Yıl zorunludur."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:204
+msgid "Değer kaydedilemedi."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:217
+msgid "Değer bulunamadı."
+msgstr ""
+
+#: micro/modules/raporlar/routes_esg.py:225
+msgid "Değer silinemedi."
+msgstr ""
+
+#: micro/modules/raporlar/routes_faz0.py:1110
+msgid "python-pptx kurulu değil. Kurulum: pip install python-pptx"
+msgstr ""
+
+#: micro/modules/raporlar/routes_faz3.py:888
+msgid "Bireysel PG'si olan kullanıcı yok."
+msgstr ""
+
+#: micro/modules/raporlar/routes_faz4.py:455
+msgid "Lütfen önce bir sektör seçin."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:53
+msgid "Bu e-posta başka bir kullanıcı tarafından kullanılıyor."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:65 ui/static/platform/js/profil.js:196
+msgid "Profil güncellendi."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:69
+msgid "Profil güncellenirken hata oluştu."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:100
+msgid "Dosya boyutu çok büyük (max 15 MB)."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:148
+msgid "Fotoğraf yüklendi ve optimize edildi."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:154
+msgid "Fotoğraf yüklenirken bir hata oluştu."
+msgstr ""
+
+#: micro/modules/shared/auth/routes.py:224
+msgid "theme alanı 'light' veya 'dark' olmalı."
+msgstr ""
+
+#: micro/modules/shared/ayarlar/routes.py:75
+msgid "E-posta ayarları kaydedildi."
+msgstr ""
+
+#: micro/modules/shared/ayarlar/routes.py:119
+msgid "Hesabınızda e-posta adresi tanımlı değil; test maili gönderilemez."
+msgstr ""
+
+#: micro/modules/shared/kule/routes.py:26
+msgid "Tur bulunamadı"
+msgstr ""
+
+#: micro/modules/shared/kule/routes.py:30
+msgid "Bu tur senin için değil"
+msgstr ""
+
+#: micro/modules/shared/my_tasks/routes.py:115
+msgid "Görevler alınamadı."
+msgstr ""
+
+#: micro/modules/shared/scheduled_reports/routes.py:64
+msgid "subscriptions alanı zorunlu."
+msgstr ""
+
+#: micro/modules/shared/search/routes.py:173
+msgid "Arama hatası."
+msgstr ""
+
+#: micro/modules/sp/helpers.py:50 micro/modules/sp/routes_analysis.py:150
+#: micro/modules/sp/routes_analysis.py:227
+#: micro/modules/sp/routes_analysis.py:291
+#: micro/modules/sp/routes_analysis.py:355
+#: micro/modules/sp/routes_analysis.py:478
+#: micro/modules/sp/routes_analysis.py:838
+#: micro/modules/sp/routes_analysis.py:889
+#: micro/modules/sp/routes_analysis.py:1004
+msgid "Aktif plan yılı bulunamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:135
+msgid "Porter verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:212
+msgid "SWOT verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:276
+msgid "TOWS verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:340
+msgid "PESTLE verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:464
+msgid "OKR verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:488
+#: micro/modules/sp/routes_analysis.py:540
+#: micro/modules/sp/routes_initiative.py:107
+msgid "Geçersiz strateji."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:496
+#: micro/modules/sp/routes_analysis.py:551
+#: micro/modules/surec/routes_kpi.py:111 micro/modules/surec/routes_kpi.py:207
+msgid "Geçersiz alt strateji."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:558
+#: ui/static/platform/js/surec_vgs.js:459
+msgid "Güncellenemedi."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:637
+msgid "KR güncellenemedi."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:822
+msgid "BSC verisi alınamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:847
+#: micro/modules/sp/routes_analysis.py:900
+#: micro/modules/sp/routes_plan_year.py:239
+#: micro/modules/sp/routes_plan_year.py:246
+#: micro/modules/sp/routes_plan_year.py:281
+msgid "Geçersiz KPI."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:985
+msgid "Öneri üretilemedi."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:1050
+msgid "Otomatik atama yapılamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_analysis.py:1102
+msgid "Denge skoru hesaplanamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_donemler.py:100
+msgid "İki dönem yılı gerekli (y1, y2)."
+msgstr ""
+
+#: micro/modules/sp/routes_donemler.py:102
+msgid "Aynı dönemi karşılaştıramazsınız."
+msgstr ""
+
+#: micro/modules/sp/routes_initiative.py:219
+msgid "Geçersiz initiative_id"
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:95
+msgid "Geçersiz yıl değeri."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:98
+msgid "Yıl 2000-2100 aralığında olmalıdır."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:119
+msgid "Geçersiz kaynak yıl."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:145
+msgid "Plan yılı oluşturulurken hata oluştu."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:159
+msgid "Geçersiz yıl."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:180
+msgid "Bu yıl zaten kapalı."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:190
+msgid "Yıl kapatılırken hata oluştu."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:232
+#: micro/modules/sp/routes_plan_year.py:265
+msgid "Kapalı plan yılı düzenlenemez."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:244
+msgid "KPI yıllık hedef güncellendi."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:270
+msgid "Konfigürasyon listesi boş."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:297
+msgid "Bazı kayıtlarda hata oluştu."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:335
+#: micro/modules/sp/routes_plan_year.py:376
+msgid "Kaynak yıl bulunamadı."
+msgstr ""
+
+#: micro/modules/sp/routes_plan_year.py:393
+msgid "Geçiş sırasında hata oluştu."
+msgstr ""
+
+#: micro/modules/sp/routes_sp_proje.py:129
+#: micro/modules/sp/routes_sp_proje.py:204
+msgid "Silme hatası."
+msgstr ""
+
+#: micro/modules/sp/routes_sp_proje.py:169
+msgid "Görev adı zorunludur."
+msgstr ""
+
+#: micro/modules/sp/routes_sp_proje.py:181
+msgid "Görev kaydedildi."
+msgstr ""
+
+#: micro/modules/sp/routes_sp_proje.py:185
+msgid "Kayıt hatası."
+msgstr ""
+
+#: micro/modules/sp/routes_strategy.py:86
+msgid "Strateji adı zorunludur."
+msgstr ""
+
+#: micro/modules/sp/routes_strategy.py:142
+msgid "Başlık boş olamaz."
+msgstr ""
+
+#: micro/modules/sp/routes_strategy.py:157
+msgid "Ana strateji güncellendi."
+msgstr ""
+
+#: micro/modules/sp/routes_strategy.py:201
+msgid "Geçersiz strateji numarası."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:140
+msgid "Başlangıç ve bitiş zamanı zorunludur."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:142
+#: micro/modules/surec/routes_activity.py:354
+#: micro/modules/surec/routes_activity.py:506
+#: ui/static/platform/js/surec.js:2627
+msgid "Bitiş başlangıçtan sonra olmalıdır."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:318
+msgid "Faaliyet güncelleme yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:491
+msgid "Başlangıç ve bitiş tarihi zorunludur."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:504
+msgid "Tarih formatı geçersiz (YYYY-AA-GG veya ISO 8601)."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:536
+#: ui/static/platform/js/surec.js:2770
+msgid "Faaliyet tamamlandı."
+msgstr ""
+
+#: micro/modules/surec/routes_activity.py:554
+msgid "Faaliyet takibi için yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:484
+msgid "Geçersiz istek gövdesi."
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:486
+msgid "Çok fazla sütun veya satır."
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:491
+msgid "Sunucuda Excel dışa aktarma kullanılamıyor."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi.py:136
+msgid "Performans göstergesi eklendi."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi.py:186
+msgid "PG güncelleme yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi.py:229
+msgid "Performans göstergesi güncellendi."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi.py:270 ui/static/platform/js/surec.js:2714
+msgid "Performans göstergesi silindi."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi.py:341
+msgid "Favorilerden kaldırıldı."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:86
+msgid "Geçersiz kpi_id."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:224
+msgid "Dosya seçilmedi"
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:226
+msgid "Yalnızca .xlsx / .xls dosyası kabul edilir."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:387
+msgid "Silinmiş veri düzenlenemez."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:390
+msgid "Bu veriyi güncelleme yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:457
+msgid "Veri güncellendi."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:473
+msgid "Veri zaten silinmiş."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:607
+msgid "KPI bulunamadı."
+msgstr ""
+
+#: micro/modules/surec/routes_kpi_data.py:695
+msgid "openpyxl kurulu değil."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:321
+msgid "Süreç oluşturma yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:389
+msgid "Süreç başarıyla oluşturuldu."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:450
+msgid "Bu süreci güncelleme yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:521
+#: ui/static/platform/js/surec.js:3723
+msgid "Süreç güncellendi."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:532
+msgid "Süreç silme yetkiniz yok."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:550
+#: ui/static/platform/js/surec.js:3756
+msgid "Süreç silindi."
+msgstr ""
+
+#: micro/modules/surec/routes_process.py:629
+msgid "Sparkline verisi alınamadı."
 msgstr ""
 
 #: ui/static/platform/js/admin.js:32 ui/static/platform/js/analiz.js:45
@@ -420,10 +1793,6 @@ msgstr ""
 #: ui/templates/platform/surec/karne.html:795
 #: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
-msgstr ""
-
-#: ui/static/platform/js/admin.js:498
-msgid "Kurum oluşturuldu."
 msgstr ""
 
 #: ui/static/platform/js/admin.js:502 ui/static/platform/js/admin.js:613
@@ -527,10 +1896,6 @@ msgstr ""
 msgid "Ad ve kod zorunludur."
 msgstr ""
 
-#: ui/static/platform/js/admin.js:668
-msgid "Paket oluşturuldu."
-msgstr ""
-
 #: ui/static/platform/js/admin.js:669 ui/static/platform/js/admin.js:697
 #: ui/static/platform/js/ayarlar_eposta.js:92
 #: ui/static/platform/js/kurum.js:533 ui/static/platform/js/kurum.js:574
@@ -541,10 +1906,6 @@ msgstr ""
 
 #: ui/static/platform/js/admin.js:675
 msgid "Yeni Modül Ekle"
-msgstr ""
-
-#: ui/static/platform/js/admin.js:696
-msgid "Modül oluşturuldu."
 msgstr ""
 
 #: ui/static/platform/js/admin.js:706
@@ -597,10 +1958,6 @@ msgstr ""
 #: ui/static/platform/js/admin.js:804
 #: ui/static/platform/js/ayarlar_eposta.js:115
 msgid "Gönder"
-msgstr ""
-
-#: ui/static/platform/js/admin.js:808
-msgid "Başlık ve mesaj zorunludur."
 msgstr ""
 
 #: ui/static/platform/js/admin.js:821
@@ -1212,13 +2569,6 @@ msgstr ""
 msgid "Olgunluk kaydı eklenemedi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar.js:591 ui/static/platform/js/k_radar.js:735
-#: ui/static/platform/js/yonetim_paneli.js:67
-#: ui/templates/platform/k_radar/cross_paydas.html:50
-#: ui/templates/platform/k_radar/kp_olgunluk.html:53
-msgid "Kayıt bulunamadı."
-msgstr ""
-
 #: ui/static/platform/js/k_radar.js:599
 msgid "Yeni seviye (1-5):"
 msgstr ""
@@ -1527,28 +2877,12 @@ msgstr ""
 msgid "Yeni Hedef Ekle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:878
-#: ui/static/platform/js/k_radar_ks.js:899
-#: ui/static/platform/js/k_radar_ks.js:942
-#: ui/static/platform/js/k_radar_ks.js:965 ui/static/platform/js/kurum.js:521
-#: ui/static/platform/js/kurum.js:559 ui/static/platform/js/kurum.js:641
-#: ui/static/platform/js/kurum.js:686 ui/static/platform/js/kurum.js:740
-msgid "Başlık zorunludur."
-msgstr ""
-
 #: ui/static/platform/js/k_radar_ks.js:880
 msgid "Hedef eklendi."
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:892
 msgid "Hedefi Düzenle"
-msgstr ""
-
-#: ui/static/platform/js/k_radar_ks.js:905 ui/static/platform/js/kurum.js:590
-#: ui/static/platform/js/kurum.js:697
-#: ui/static/platform/js/pg_tablo_modal.js:734
-#: ui/static/platform/js/surec.js:2693
-msgid "Güncellendi."
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:918
@@ -2025,10 +3359,6 @@ msgstr ""
 msgid "Amaç & Vizyon Düzenle"
 msgstr ""
 
-#: ui/static/platform/js/kurum.js:485
-msgid "Stratejik kimlik güncellendi."
-msgstr ""
-
 #: ui/static/platform/js/kurum.js:494
 msgid "Modal bileşeni yüklenemedi. Sayfayı yenileyin."
 msgstr ""
@@ -2090,24 +3420,12 @@ msgstr ""
 msgid "Alt Strateji Düzenle"
 msgstr ""
 
-#: ui/static/platform/js/kurum.js:750
-msgid "Alt strateji güncellendi."
-msgstr ""
-
 #: ui/static/platform/js/kurum.js:760
 msgid "Alt strateji silinsin mi?"
 msgstr ""
 
 #: ui/static/platform/js/kurum.js:764
 msgid "Alt strateji silindi."
-msgstr ""
-
-#: ui/static/platform/js/kurum_ayarlar.js:69
-msgid "Kurum adı zorunludur."
-msgstr ""
-
-#: ui/static/platform/js/kurum_ayarlar.js:79
-msgid "Kurum ayarları kaydedildi."
 msgstr ""
 
 #: ui/static/platform/js/kurum_ayarlar.js:92
@@ -2464,10 +3782,6 @@ msgstr ""
 
 #: ui/static/platform/js/profil.js:189
 msgid "Sunucudan geçersiz yanıt alındı. Sayfayı yenileyip tekrar deneyin."
-msgstr ""
-
-#: ui/static/platform/js/profil.js:196
-msgid "Profil güncellendi."
 msgstr ""
 
 #: ui/static/platform/js/program_gantt.js:25
@@ -2969,10 +4283,6 @@ msgstr ""
 msgid "Başlangıç ve bitiş zorunludur."
 msgstr ""
 
-#: ui/static/platform/js/surec.js:2627
-msgid "Bitiş başlangıçtan sonra olmalıdır."
-msgstr ""
-
 #: ui/static/platform/js/surec.js:2636
 msgid "Faaliyet ertelenemedi."
 msgstr ""
@@ -3003,10 +4313,6 @@ msgstr ""
 msgid ""
 "Seçili yıl için kaldırılacaktır (plan yılı kapalıysa tümden pasife "
 "alınır)."
-msgstr ""
-
-#: ui/static/platform/js/surec.js:2714
-msgid "Performans göstergesi silindi."
 msgstr ""
 
 #: ui/static/platform/js/surec.js:2726
@@ -3047,10 +4353,6 @@ msgstr ""
 
 #: ui/static/platform/js/surec.js:2769
 msgid "Faaliyet tamamlanamadı."
-msgstr ""
-
-#: ui/static/platform/js/surec.js:2770
-msgid "Faaliyet tamamlandı."
 msgstr ""
 
 #: ui/static/platform/js/surec.js:2798
@@ -3202,10 +4504,6 @@ msgid ""
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3723
-msgid "Süreç güncellendi."
-msgstr ""
-
-#: ui/static/platform/js/surec.js:3723
 msgid "Süreç oluşturuldu."
 msgstr ""
 
@@ -3216,10 +4514,6 @@ msgstr ""
 
 #: ui/static/platform/js/surec.js:3742
 msgid "Süreç silinsin mi?"
-msgstr ""
-
-#: ui/static/platform/js/surec.js:3756
-msgid "Süreç silindi."
 msgstr ""
 
 #: ui/static/platform/js/surec_vgs.js:179
@@ -3250,10 +4544,6 @@ msgstr ""
 
 #: ui/static/platform/js/surec_vgs.js:424
 msgid "Silme penceresi veya adres yüklenemedi."
-msgstr ""
-
-#: ui/static/platform/js/surec_vgs.js:459
-msgid "Güncellenemedi."
 msgstr ""
 
 #: ui/static/platform/js/surec_vgs.js:480
@@ -13184,10 +14474,6 @@ msgstr ""
 msgid "Bilgi alınamadı (ağ hatası)."
 msgstr ""
 
-#: ui/templates/platform/admin/hata_kontrolu.html:186
-msgid "Durum alınamadı."
-msgstr ""
-
 #: ui/templates/platform/admin/hata_kontrolu.html:189
 msgid "tomofiltest henüz yok. \"Kur / Yenile\" ile oluşturun."
 msgstr ""
@@ -13230,10 +14516,6 @@ msgstr ""
 
 #: ui/templates/platform/admin/hata_kontrolu.html:231
 msgid "Keşfediliyor…"
-msgstr ""
-
-#: ui/templates/platform/admin/hata_kontrolu.html:235
-msgid "Keşif başarısız."
 msgstr ""
 
 #: ui/templates/platform/admin/hata_kontrolu.html:237
@@ -13466,10 +14748,6 @@ msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants.html:302
 msgid "alt kurumların yönetimsel kontrolü (iç verilere erişim yok)"
-msgstr ""
-
-#: ui/templates/platform/admin/sub_tenants.html:347
-msgid "Kurum adı ve admin e-posta zorunlu."
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants.html:352

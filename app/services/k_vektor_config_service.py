@@ -2,6 +2,7 @@
 """K-Vektör yapılandırması: ağırlık okuma/yazma ve snapshot (kurum + SP API ortak)."""
 
 from __future__ import annotations
+from flask_babel import gettext as _
 
 import json
 from typing import Any, Dict, List, Optional, Tuple
@@ -37,7 +38,7 @@ def add_k_vektor_snapshot(
 def k_vektor_weights_get_dict(tenant_id: int, plan_year=None) -> Dict[str, Any]:
     tenant = Tenant.query.get(tenant_id)
     if not tenant:
-        return {"success": False, "message": "Kurum bulunamadı."}
+        return {"success": False, "message": _("Kurum bulunamadı.")}
 
     tid = tenant_id
     sw_map = {r.strategy_id: r.weight_raw for r in KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}

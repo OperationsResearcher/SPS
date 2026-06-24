@@ -23,6 +23,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from flask_babel import gettext as _
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 5 — BÜYÜK ALTYAPI (MVP'ler)
@@ -342,7 +343,7 @@ def raporlar_api_pg_proje_etki():
     from app.extensions import db as _db
     tid = current_user.tenant_id
     if not tid:
-        return jsonify({"success": False, "message": "Kurum bulunamadı."}), 400
+        return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 400
     try:
         # Projeler
         proj_rows = _db.session.execute(_t("""
@@ -448,4 +449,4 @@ def raporlar_api_pg_proje_etki():
         }})
     except Exception as e:
         current_app.logger.error(f"[raporlar_api_pg_proje_etki] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500

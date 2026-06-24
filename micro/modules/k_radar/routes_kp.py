@@ -217,7 +217,7 @@ def k_radar_api_kp_radar():
         }})
     except Exception as e:
         current_app.logger.exception("[kp_radar] %s", e)
-        return jsonify({"success": False, "message": "Radar verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Radar verisi alınamadı.")}), 500
 
 
 @app_bp.route("/k-radar/api/kp/maturity")
@@ -290,7 +290,7 @@ def k_radar_api_kp_olgunluk_update(row_id: int):
     def _update():
         row = ProcessMaturity.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.maturity_level = max(1, min(5, int(maturity_level)))
         row.dimension = dimension
         row.assessed_by = current_user.id
@@ -310,7 +310,7 @@ def k_radar_api_kp_olgunluk_delete(row_id: int):
     def _delete():
         row = ProcessMaturity.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.is_active = False
         db.session.commit()
         return jsonify({"success": True, "data": {"id": row.id}})
@@ -383,9 +383,9 @@ def k_radar_api_vc_item_add():
     title = (data.get("title") or "").strip()
     category = (data.get("category") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
     if category not in _VC_CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori.")}), 400
     try:
         it = ValueChainItem(
             tenant_id=tid, title=title, category=category,
@@ -400,7 +400,7 @@ def k_radar_api_vc_item_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_add] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe eklenemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe eklenemedi.")}), 500
 
 
 @app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>", methods=["POST"])
@@ -412,14 +412,14 @@ def k_radar_api_vc_item_update(item_id):
     tid = _required_tenant_id()
     it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
     if not it:
-        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Öğe bulunamadı.")}), 404
     data = request.get_json(silent=True) or {}
     title = (data.get("title") or "").strip()
     category = (data.get("category") or it.category or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
     if category not in _VC_CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori.")}), 400
     try:
         it.title = title
         it.category = category
@@ -431,7 +431,7 @@ def k_radar_api_vc_item_update(item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_update] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe güncellenemedi.")}), 500
 
 
 @app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>/delete", methods=["POST"])
@@ -443,7 +443,7 @@ def k_radar_api_vc_item_delete(item_id):
     tid = _required_tenant_id()
     it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
     if not it:
-        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Öğe bulunamadı.")}), 404
     try:
         it.is_active = False  # soft delete (KURALLAR §3)
         db.session.commit()
@@ -451,7 +451,7 @@ def k_radar_api_vc_item_delete(item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_delete] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe silinemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe silinemedi.")}), 500
 
 
 def _vc_proc(raw, tid):

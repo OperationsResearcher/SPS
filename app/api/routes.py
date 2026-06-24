@@ -15,6 +15,7 @@ from app.schemas.kpi_schemas import KpiDataSchema, ProcessKpiSchema
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
 from datetime import datetime
+from flask_babel import gettext as _
 
 # Create API blueprint
 api_bp = Blueprint('api_routes', __name__, url_prefix='/api/v1')
@@ -123,7 +124,7 @@ def create_kpi_data(validated_data):
         .first()
     )
     if not _owns:
-        return jsonify({"success": False, "message": "Erişim reddedildi."}), 403
+        return jsonify({"success": False, "message": _("Erişim reddedildi.")}), 403
 
     # Map schema fields to model (notes->description, add year)
     create_data = {

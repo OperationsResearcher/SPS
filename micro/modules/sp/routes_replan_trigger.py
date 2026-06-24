@@ -10,6 +10,7 @@ from extensions import db
 from app.models.replan_trigger import ReplanTrigger, ReplanTriggerEvent
 from app.services.replan_trigger_service import evaluate_triggers
 from micro.modules.sp.helpers import _check_sp_role
+from flask_babel import gettext as _
 
 
 def _can():
@@ -64,7 +65,7 @@ def sp_api_triggers_create():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
     return jsonify({"success": True, "item": t.to_dict()}), 201
 
 
@@ -96,7 +97,7 @@ def sp_api_triggers_evaluate():
         events = evaluate_triggers(current_user.tenant_id, dry_run=dry)
     except Exception as e:
         current_app.logger.error(f"trigger_eval error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
     return jsonify({
         "success": True,
         "fired_count": len(events),

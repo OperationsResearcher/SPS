@@ -20,6 +20,7 @@ from flask import current_app
 
 from app.services.llm_quota_service import check_quota, log_usage, get_tenant_usage_summary
 from app.models.tenant_llm_config import TenantLLMConfig
+from flask_babel import gettext as _
 
 
 # ─── Provider çağırıcılar ────────────────────────────────────────────────────
@@ -387,7 +388,7 @@ def test_tenant_config(tenant_id: int) -> dict:
     """BYOK key'in çalışıp çalışmadığını test et."""
     cfg = TenantLLMConfig.query.filter_by(tenant_id=tenant_id).first()
     if not cfg or not cfg.api_key_encrypted:
-        return {"success": False, "message": "API anahtarı tanımlı değil"}
+        return {"success": False, "message": _("API anahtarı tanımlı değil")}
     plain = cfg.api_key_plain
     provider = cfg.provider or "gemini"
     caller = PROVIDERS.get(provider, {}).get("caller")

@@ -1,6 +1,7 @@
 """Süreç modülü — Karne ve yıl çözümleme API."""
 
 from __future__ import annotations
+from flask_babel import gettext as _
 
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
@@ -89,7 +90,7 @@ def surec_api_resolve_for_year():
         id=src_id, tenant_id=current_user.tenant_id, is_active=True
     ).first()
     if not src:
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
 
     # Hedef plan year
     target_py = get_plan_year(current_user.tenant_id, year)
@@ -480,14 +481,14 @@ def surec_api_karne_export_xlsx(process_id):
     rows = payload.get("rows")
     year = payload.get("year", "")
     if not isinstance(headers, list) or not isinstance(rows, list):
-        return jsonify({"success": False, "message": "Geçersiz istek gövdesi."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz istek gövdesi.")}), 400
     if len(headers) > 200 or len(rows) > 2000:
-        return jsonify({"success": False, "message": "Çok fazla sütun veya satır."}), 400
+        return jsonify({"success": False, "message": _("Çok fazla sütun veya satır.")}), 400
     try:
         from openpyxl import Workbook
     except ImportError:
         current_app.logger.error("[surec_api_karne_export_xlsx] openpyxl yok")
-        return jsonify({"success": False, "message": "Sunucuda Excel dışa aktarma kullanılamıyor."}), 500
+        return jsonify({"success": False, "message": _("Sunucuda Excel dışa aktarma kullanılamıyor.")}), 500
 
     wb = Workbook()
     ws = wb.active

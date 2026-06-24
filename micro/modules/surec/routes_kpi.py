@@ -1,6 +1,7 @@
 """Süreç modülü — KPI CRUD API."""
 
 from __future__ import annotations
+from flask_babel import gettext as _
 
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
@@ -107,7 +108,7 @@ def surec_api_kpi_add():
         if data.get("sub_strategy_id"):
             tid = current_user.tenant_id
             if not validate_same_tenant_sub_strategies(tid, [int(data["sub_strategy_id"])]):
-                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz alt strateji.")}), 400
             kpi.sub_strategy_id = int(data["sub_strategy_id"])
         if data.get("start_date"):
             kpi.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
@@ -132,11 +133,11 @@ def surec_api_kpi_add():
             AuditLogger.log_create("PG Yönetimi", kpi.id, {"name": kpi.name, "code": kpi.code, "process_id": p.id})
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Performans göstergesi eklendi.", "id": kpi.id})
+        return jsonify({"success": True, "message": _("Performans göstergesi eklendi."), "id": kpi.id})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_add] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
@@ -182,7 +183,7 @@ def surec_api_kpi_update(kpi_id):
     ).first_or_404()
     proc = _process_for_user(kpi.process_id)
     if not proc or not user_can_crud_pg_and_activity(current_user, proc):
-        return jsonify({"success": False, "message": "PG güncelleme yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("PG güncelleme yetkiniz yok.")}), 403
     data = request.get_json() or {}
     try:
         kpi.name = data.get("name", kpi.name)
@@ -203,7 +204,7 @@ def surec_api_kpi_update(kpi_id):
         if data.get("sub_strategy_id"):
             tid = current_user.tenant_id
             if not validate_same_tenant_sub_strategies(tid, [int(data["sub_strategy_id"])]):
-                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz alt strateji.")}), 400
             kpi.sub_strategy_id = int(data["sub_strategy_id"])
         elif "sub_strategy_id" in data and not data["sub_strategy_id"]:
             kpi.sub_strategy_id = None
@@ -225,11 +226,11 @@ def surec_api_kpi_update(kpi_id):
             AuditLogger.log_update("PG Yönetimi", kpi.id, {}, {"name": kpi.name, "code": kpi.code, "weight": kpi.weight})
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Performans göstergesi güncellendi."})
+        return jsonify({"success": True, "message": _("Performans göstergesi güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_update] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
@@ -266,11 +267,11 @@ def surec_api_kpi_delete(kpi_id):
 
         kpi.is_active = False
         db.session.commit()
-        return jsonify({"success": True, "message": "Performans göstergesi silindi.", "scope": "global"})
+        return jsonify({"success": True, "message": _("Performans göstergesi silindi."), "scope": "global"})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/kpi/list/<int:process_id>", methods=["GET"])
@@ -337,7 +338,7 @@ def surec_api_favorite_kpi_toggle():
     if existing:
         existing.is_active = False
         db.session.commit()
-        return jsonify({"success": True, "favorite": False, "message": "Favorilerden kaldırıldı."})
+        return jsonify({"success": True, "favorite": False, "message": _("Favorilerden kaldırıldı.")})
 
     archived = FavoriteKpi.query.filter_by(
         user_id=current_user.id,

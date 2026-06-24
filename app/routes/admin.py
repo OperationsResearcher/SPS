@@ -243,7 +243,7 @@ def components_sync():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[components_sync] commit hatası: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Rota kayıt hatası."}), 500
+        return jsonify({"success": False, "message": _("Rota kayıt hatası.")}), 500
 
     return jsonify({"success": True, "message": f"{added_count} yeni rota eklendi.", "added": added_count})
 
@@ -257,13 +257,13 @@ def components_update():
     rid = data.get("id")
     slug = (data.get("component_slug") or "").strip() or None
     if not rid:
-        return jsonify({"success": False, "message": "Geçersiz rota ID."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz rota ID.")}), 400
     rec = RouteRegistry.query.get(rid)
     if not rec:
-        return jsonify({"success": False, "message": "Rota bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Rota bulunamadı.")}), 404
     rec.component_slug = slug
     db.session.commit()
-    return jsonify({"success": True, "message": "Bileşen adı kaydedildi."})
+    return jsonify({"success": True, "message": _("Bileşen adı kaydedildi.")})
 
 
 def _require_admin_or_tenant_admin():
@@ -710,14 +710,14 @@ def users_bulk_import():
     _require_user_management()
     
     if current_user.role.name == "standard_user":
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     if 'file' not in request.files:
-        return jsonify({"success": False, "message": "Dosya bulunamadı."}), 400
+        return jsonify({"success": False, "message": _("Dosya bulunamadı.")}), 400
         
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
 
     try:
         if file.filename.endswith('.csv'):
@@ -725,7 +725,7 @@ def users_bulk_import():
         elif file.filename.endswith('.xlsx') or file.filename.endswith('.xls'):
             df = pd.read_excel(file)
         else:
-            return jsonify({"success": False, "message": "Geçersiz dosya formatı. Lütfen Excel veya CSV yükleyin."}), 400
+            return jsonify({"success": False, "message": _("Geçersiz dosya formatı. Lütfen Excel veya CSV yükleyin.")}), 400
 
         # Replace NaN with None
         df = df.where(pd.notnull(df), None)
@@ -743,7 +743,7 @@ def users_bulk_import():
         
         email_col = next((c for c in actual_cols if "posta" in c.lower() or "mail" in c.lower()), None)
         if not email_col:
-            return jsonify({"success": False, "message": "Dosyada E-posta sütunu bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Dosyada E-posta sütunu bulunamadı.")}), 400
             
         success_count = 0
         duplicate_count = 0
@@ -801,7 +801,7 @@ def users_bulk_import():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bulk_import] dosya okuma hatası: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Dosya işlenirken bir hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Dosya işlenirken bir hata oluştu.")}), 500
 
 
 @admin_bp.route("/kule-iletisim")
@@ -839,11 +839,11 @@ def kule_iletisim():
 @login_required
 def kule_ticket_detail(ticket_id):
     if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     ticket = Ticket.query.get_or_404(ticket_id)
     if (current_user.role.name if current_user.role else "") != 'Admin' and ticket.tenant_id != current_user.tenant_id:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     return jsonify({
         "success": True,
@@ -866,11 +866,11 @@ def kule_ticket_detail(ticket_id):
 @login_required
 def kule_ticket_update(ticket_id):
     if (current_user.role.name if current_user.role else "") not in ['Admin', 'tenant_admin', 'executive_manager']:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     ticket = Ticket.query.get_or_404(ticket_id)
     if (current_user.role.name if current_user.role else "") != 'Admin' and ticket.tenant_id != current_user.tenant_id:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     data = request.get_json()
     new_status = data.get("status")
@@ -936,11 +936,11 @@ def admin_create_process():
     """Admin süreç oluştur."""
     _require_process_admin()
     if not request.is_json:
-        return jsonify({"success": False, "message": "Content-Type application/json olmalı"}), 400
+        return jsonify({"success": False, "message": _("Content-Type application/json olmalı")}), 400
     data = request.get_json() or {}
     name = (data.get("name") or data.get("ad") or "").strip()
     if not name:
-        return jsonify({"success": False, "message": "Süreç adı zorunludur"}), 400
+        return jsonify({"success": False, "message": _("Süreç adı zorunludur")}), 400
 
     tenant_id = current_user.tenant_id
     parent_id_raw = data.get("parent_id")
@@ -994,8 +994,8 @@ def admin_create_process():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_create_process] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Süreç oluşturulamadı."}), 500
-    return jsonify({"success": True, "message": "Süreç başarıyla oluşturuldu", "id": new_process.id})
+        return jsonify({"success": False, "message": _("Süreç oluşturulamadı.")}), 500
+    return jsonify({"success": True, "message": _("Süreç başarıyla oluşturuldu"), "id": new_process.id})
 
 
 @admin_bp.route("/add-process", methods=["POST"])
@@ -1011,7 +1011,7 @@ def admin_update_process(process_id):
     """Admin süreç güncelle."""
     _require_process_admin()
     if not request.is_json:
-        return jsonify({"success": False, "message": "Content-Type application/json olmalı"}), 400
+        return jsonify({"success": False, "message": _("Content-Type application/json olmalı")}), 400
     p = Process.query.filter_by(id=process_id, is_active=True).first_or_404()
     if p.tenant_id != current_user.tenant_id and current_user.role.name not in PLATFORM_ADMIN_ROLES:
         abort(403)
@@ -1061,8 +1061,8 @@ def admin_update_process(process_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_update_process] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Süreç güncellenemedi."}), 500
-    return jsonify({"success": True, "message": "Süreç başarıyla güncellendi"})
+        return jsonify({"success": False, "message": _("Süreç güncellenemedi.")}), 500
+    return jsonify({"success": True, "message": _("Süreç başarıyla güncellendi")})
 
 
 @admin_bp.route("/delete-process/<int:process_id>", methods=["DELETE", "POST"])
@@ -1082,5 +1082,5 @@ def admin_delete_process(process_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_delete_process] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Süreç silinemedi."}), 500
-    return jsonify({"success": True, "message": "Süreç başarıyla silindi"})
+        return jsonify({"success": False, "message": _("Süreç silinemedi.")}), 500
+    return jsonify({"success": True, "message": _("Süreç başarıyla silindi")})

@@ -33,6 +33,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES, _ai_text
+from flask_babel import gettext as _
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 3 — PREMIUM ÜRÜNLER (indirilebilir PDF/PPTX/Excel/ZIP)
@@ -884,7 +885,7 @@ def raporlar_api_bireysel_karne_batch_generate():
     ).all()]
 
     if not user_ids_with_pg:
-        return jsonify({"success": False, "message": "Bireysel PG'si olan kullanıcı yok."}), 400
+        return jsonify({"success": False, "message": _("Bireysel PG'si olan kullanıcı yok.")}), 400
 
     h = _pdf_helpers()
     P = h["Paragraph"]

@@ -37,6 +37,7 @@ from app.services.plan_year_service import (
     get_active_plan_year_for_user,
 )
 from app.models.tenant_year import TenantYearIdentity
+from flask_babel import gettext as _
 
 
 def _require_plan_year():
@@ -46,7 +47,7 @@ def _require_plan_year():
     """
     py = get_active_plan_year_for_user(current_user)
     if not py:
-        return None, (jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400)
+        return None, (jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400)
     return py, None
 
 _SP_ROLES = (
@@ -69,7 +70,7 @@ def sp_manage_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not _check_sp_role():
-            return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+            return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
         return f(*args, **kwargs)
 
     return decorated

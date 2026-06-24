@@ -26,6 +26,7 @@ from app.services.score_engine_service import compute_process_scores_internal
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES, _ai_text
 import os as _os
 import json as _json
+from flask_babel import gettext as _
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 4 — SEKTÖREL PAKETLER + AI DERİNLEŞME
@@ -451,7 +452,7 @@ def raporlar_api_sektor_benchmark_ai():
     sektor_override = body.get("sektor") or request.args.get("sektor") or None
     ctx = _sektor_context(tid, tenant, sektor_override)
     if ctx["sektor_secilmedi"]:
-        return jsonify({"success": False, "message": "Lütfen önce bir sektör seçin."}), 400
+        return jsonify({"success": False, "message": _("Lütfen önce bir sektör seçin.")}), 400
     bench_str = "\n".join(f"  - {b['tr']}: {b['deger']} {b['birim']}" for b in ctx["benchmark"])
     kurum_adi = tenant.name if tenant else "Kurum"
     yorum = _ai_text(

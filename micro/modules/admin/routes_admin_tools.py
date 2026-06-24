@@ -20,6 +20,7 @@ from werkzeug.security import check_password_hash
 from platform_core import app_bp
 from app.extensions import csrf
 from app.constants.roles import PLATFORM_ADMIN_ROLES
+from flask_babel import gettext as _
 
 
 def _is_admin() -> bool:
@@ -174,7 +175,7 @@ def admin_tools_yedekleme_indir_dosya():
     name = os.path.basename(request.args.get("file", ""))  # path traversal koruması
     path = os.path.join(Y.auto_dir(current_app._get_current_object()), name)
     if not name or not os.path.isfile(path):
-        return jsonify({"success": False, "message": "Dosya bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Dosya bulunamadı.")}), 404
     mime = "application/gzip" if name.endswith(".gz") else "application/octet-stream"
     return send_file(path, as_attachment=True, download_name=name, mimetype=mime)
 
@@ -207,17 +208,17 @@ def admin_tools_yedekleme_geri_yukle_db():
     if confirm != _RESTORE_CONFIRM:
         return jsonify({"success": False, "message": f"Onay metni hatalı. '{_RESTORE_CONFIRM}' yazmalısınız."}), 400
     if not pw or not check_password_hash(getattr(current_user, "password_hash", "") or "", pw):
-        return jsonify({"success": False, "message": "Şifre hatalı."}), 403
+        return jsonify({"success": False, "message": _("Şifre hatalı.")}), 403
     f = request.files.get("dump")
     if not f or not f.filename.endswith(".dump"):
-        return jsonify({"success": False, "message": "Geçerli bir .dump dosyası yükleyin."}), 400
+        return jsonify({"success": False, "message": _("Geçerli bir .dump dosyası yükleyin.")}), 400
     try:
         from app.services import yedekleme_service as Y
         fd, path = tempfile.mkstemp(suffix=".dump"); os.close(fd)
         f.save(path)
         Y.restore_db(current_app._get_current_object(), path)
         os.remove(path)
-        return jsonify({"success": True, "message": "DB geri yükleme tamamlandı."})
+        return jsonify({"success": True, "message": _("DB geri yükleme tamamlandı.")})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] DB geri yukle: {e}", exc_info=True)
         return jsonify({"success": False, "message": f"Geri yükleme hatası: {e}"}), 500
@@ -243,7 +244,7 @@ def admin_tools_tomofiltest_durum():
         return jsonify({"success": True, "durum": tomofiltest_status(), "is_local": _is_local()})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] tomofiltest_durum: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Durum alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Durum alınamadı.")}), 500
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/kesif")
@@ -257,7 +258,7 @@ def admin_tools_hk_kesif():
         return jsonify({"success": True, "kesif": discover_routes()})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] kesif: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Keşif başarısız."}), 500
+        return jsonify({"success": False, "message": _("Keşif başarısız.")}), 500
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/gecmis")
@@ -279,7 +280,7 @@ def admin_tools_hk_gecmis_yukle():
     from app.services.hata_kontrol_executor import load_saved_run
     rec = load_saved_run(current_app._get_current_object(), request.args.get("file", ""))
     if not rec:
-        return jsonify({"success": False, "message": "Kayıt bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Kayıt bulunamadı.")}), 404
     return jsonify({"success": True, "kosu": rec})
 
 
@@ -291,19 +292,20 @@ def admin_tools_hk_tarama_baslat():
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
     if not _is_local():
-        return jsonify({"success": False, "message": "Tarama yalnız Yerel ortamda çalışır."}), 403
+        return jsonify({"success": False, "message": _("Tarama yalnız Yerel ortamda çalışır.")}), 403
     try:
         from app.services.hata_kontrol_executor import start_run, busy_label
         limit = request.args.get("limit", type=int)
+        visual = request.args.get("visual", "0") == "1" or (request.is_json and request.json and request.json.get("visual"))
         base_url = request.host_url.rstrip("/")
-        run_id = start_run(current_app._get_current_object(), base_url=base_url, limit=limit)
+        run_id = start_run(current_app._get_current_object(), base_url=base_url, limit=limit, visual=bool(visual))
         if run_id is None:
             return jsonify({"success": False, "busy": busy_label(),
                             "message": f"Başka bir Hata Kontrolü işlemi çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
         return jsonify({"success": True, "run_id": run_id})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] tarama_baslat: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Tarama başlatılamadı."}), 500
+        return jsonify({"success": False, "message": _("Tarama başlatılamadı.")}), 500
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/tarama-durum")
@@ -315,7 +317,7 @@ def admin_tools_hk_tarama_durum():
     run_id = request.args.get("run", "")
     prog = get_progress(run_id)
     if not prog:
-        return jsonify({"success": False, "message": "Koşu bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Koşu bulunamadı.")}), 404
     # Sonuç listesi büyük olabilir — özet + son sonuçlar
     return jsonify({"success": True, "durum": {
         "id": prog["id"], "status": prog["status"], "total": prog["total"],
@@ -323,6 +325,7 @@ def admin_tools_hk_tarama_durum():
         "error": prog["error"],
         "results": prog["results"],  # tümü (tek tenant, ~321 satır — yönetilebilir)
         "links": prog.get("links", {}),
+        "video_url": prog.get("video_url"),
     }})
 
 
@@ -334,17 +337,18 @@ def admin_tools_hk_senaryo_baslat():
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
     if not _is_local():
-        return jsonify({"success": False, "message": "Senaryolar yalnız Yerel ortamda çalışır."}), 403
+        return jsonify({"success": False, "message": _("Senaryolar yalnız Yerel ortamda çalışır.")}), 403
     try:
         from app.services.hata_kontrol_executor import start_scenarios, busy_label
-        run_id = start_scenarios(current_app._get_current_object(), base_url=request.host_url.rstrip("/"))
+        visual = request.args.get("visual", "0") == "1" or (request.is_json and request.json and request.json.get("visual"))
+        run_id = start_scenarios(current_app._get_current_object(), base_url=request.host_url.rstrip("/"), visual=bool(visual))
         if run_id is None:
             return jsonify({"success": False, "busy": busy_label(),
                             "message": f"Başka bir Hata Kontrolü işlemi çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
         return jsonify({"success": True, "run_id": run_id})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] senaryo_baslat: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Senaryolar başlatılamadı."}), 500
+        return jsonify({"success": False, "message": _("Senaryolar başlatılamadı.")}), 500
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/senaryo-durum")
@@ -355,13 +359,14 @@ def admin_tools_hk_senaryo_durum():
     from app.services.hata_kontrol_executor import get_progress
     prog = get_progress(request.args.get("run", ""))
     if not prog:
-        return jsonify({"success": False, "message": "Koşu bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Koşu bulunamadı.")}), 404
     return jsonify({"success": True, "durum": {
         "id": prog["id"], "status": prog["status"], "total": prog["total"],
         "done": prog["done"], "current": prog["current"],
         "passed": prog.get("passed", 0), "failed": prog.get("failed", 0),
         "scenarios": prog.get("scenarios", []), "reset": prog.get("reset", False),
         "error": prog["error"],
+        "video_url": prog.get("video_url"),
     }})
 
 
@@ -373,7 +378,7 @@ def admin_tools_tomofiltest_yenile():
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
     if not _is_local():
-        return jsonify({"success": False, "message": "Bu işlem yalnız Yerel ortamda çalışır."}), 403
+        return jsonify({"success": False, "message": _("Bu işlem yalnız Yerel ortamda çalışır.")}), 403
     # Yenile = tomofiltest'i sıfırlar → çalışan tarama/senaryonun oturumunu öldürür.
     # Bu yüzden o işlem bitmeden yenilemeye izin verme (eşzamanlılık koruması).
     from app.services.hata_kontrol_executor import try_acquire, release, busy_label
@@ -393,6 +398,90 @@ def admin_tools_tomofiltest_yenile():
         })
     except Exception as e:
         current_app.logger.error(f"[admin_tools] tomofiltest_yenile: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Klon sırasında hata."}), 500
+        return jsonify({"success": False, "message": _("Klon sırasında hata.")}), 500
     finally:
         release()
+
+
+# ── Kullanım Kılavuzu & Video Oluşturucu ─────────────────────────────────────
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu")
+@login_required
+def admin_tools_kilavuz_olusturucu():
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    return render_template("platform/admin/kilavuz_olusturucu.html", is_local=_is_local())
+
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu/baslat", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_kilavuz_olusturucu_baslat():
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    if not _is_local():
+        return jsonify({"success": False, "message": _("Yalnız Yerel ortamda çalışır.")}), 403
+    try:
+        from app.services.kilavuz_olusturucu_executor import start_kilavuz_run, busy_label
+        run_id = start_kilavuz_run(current_app._get_current_object())
+        if run_id is None:
+            return jsonify({"success": False, "busy": busy_label(),
+                            "message": f"Başka bir işlem çalışıyor ({busy_label()}). Bitmesini bekleyin."}), 409
+        return jsonify({"success": True, "run_id": run_id})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] kilavuz_olusturucu_baslat: {e}", exc_info=True)
+        return jsonify({"success": False, "message": _("İşlem başlatılamadı.")}), 500
+
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu/kurum-durum")
+@login_required
+def admin_tools_kilavuz_kurum_durum():
+    """YeniTomofil kurumunun durumu (durum kartı için)."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    try:
+        from app.services.kilavuz_olusturucu_executor import kilavuz_status
+        return jsonify({"success": True, "durum": kilavuz_status()})
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] kilavuz_kurum_durum: {e}", exc_info=True)
+        return jsonify({"success": False, "message": _("Durum alınamadı.")}), 500
+
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu/durum")
+@login_required
+def admin_tools_kilavuz_olusturucu_durum():
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.kilavuz_olusturucu_executor import get_progress
+    run_id = request.args.get("run", "")
+    prog = get_progress(run_id)
+    if not prog:
+        return jsonify({"success": False, "message": _("İşlem bulunamadı.")}), 404
+    return jsonify({"success": True, "durum": prog})
+
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu/durdur", methods=["POST"])
+@csrf.exempt
+@login_required
+def admin_tools_kilavuz_olusturucu_durdur():
+    """Çalışan otonom çekimi durdurur (kooperatif iptal — güvenli noktada durur)."""
+    if not _is_admin():
+        return jsonify({"error": "yetki yok"}), 403
+    from app.services.kilavuz_olusturucu_executor import request_stop
+    run_id = request.args.get("run") or (request.get_json(silent=True) or {}).get("run")
+    stopped = request_stop(run_id)
+    return jsonify({"success": True, "stopped": stopped,
+                    "message": "Durdurma isteği alındı. Çekim güvenli noktada duracak." if stopped
+                               else "Durdurulacak aktif çekim bulunamadı."})
+
+
+@app_bp.route("/admin/araclar/kilavuz-olusturucu/indir-pdf")
+@login_required
+def admin_tools_kilavuz_olusturucu_indir_pdf():
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    pdf_path = os.path.abspath("docs/kokpitim_master_kullanim_kilavuzu.pdf")
+    if not os.path.exists(pdf_path):
+        return jsonify({"success": False, "message": _("PDF kılavuz dosyası henüz üretilmemiş. Lütfen otonom taramayı çalıştırın.")}), 404
+    return send_file(pdf_path, as_attachment=True, download_name="kokpitim_master_kullanim_kilavuzu.pdf", mimetype="application/pdf")
+

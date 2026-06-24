@@ -1,6 +1,7 @@
 """Süreç modülü — KPI veri (PGV) API."""
 
 from __future__ import annotations
+from flask_babel import gettext as _
 
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
@@ -82,7 +83,7 @@ def surec_api_kpi_data_add():
     try:
         kpi_id = int(data.get("kpi_id") or 0)
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz kpi_id."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kpi_id.")}), 400
     if not kpi_id:
         return jsonify({"success": False, "message": "kpi_id gerekli."}), 400
     kpi = ProcessKpi.query.join(Process).filter(
@@ -209,7 +210,7 @@ def surec_api_kpi_data_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_add] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # Sprint 44 — Bulk Excel import
@@ -220,9 +221,9 @@ def surec_api_kpi_data_bulk_import():
     from app.services.bulk_import_service import import_kpi_data_from_excel
     f = request.files.get("file")
     if not f or not f.filename:
-        return jsonify({"success": False, "message": "Dosya seçilmedi"}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi")}), 400
     if not f.filename.lower().endswith((".xlsx", ".xls")):
-        return jsonify({"success": False, "message": "Yalnızca .xlsx / .xls dosyası kabul edilir."}), 400
+        return jsonify({"success": False, "message": _("Yalnızca .xlsx / .xls dosyası kabul edilir.")}), 400
     # Content-Length header ile erken boyut kontrolü (tam okumadan önce)
     content_length = request.content_length
     if content_length and content_length > 5 * 1024 * 1024:
@@ -239,7 +240,7 @@ def surec_api_kpi_data_bulk_import():
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[bulk_import] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 @app_bp.route("/process/api/kpi-data/template.xlsx")
@@ -383,10 +384,10 @@ def surec_api_kpi_data_update(data_id):
         Process.is_active.is_(True),
     ).first_or_404()
     if not entry.is_active:
-        return jsonify({"success": False, "message": "Silinmiş veri düzenlenemez."}), 400
+        return jsonify({"success": False, "message": _("Silinmiş veri düzenlenemez.")}), 400
     proc = _process_for_user(entry.process_kpi.process_id)
     if not proc or not user_can_edit_kpi_data_row(current_user, entry, proc):
-        return jsonify({"success": False, "message": "Bu veriyi güncelleme yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu veriyi güncelleme yetkiniz yok.")}), 403
     data = request.get_json() or {}
     old_actual = entry.actual_value or ""
     old_desc = entry.description or ""
@@ -453,11 +454,11 @@ def surec_api_kpi_data_update(data_id):
             )
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Veri güncellendi."})
+        return jsonify({"success": True, "message": _("Veri güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_update] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
@@ -469,7 +470,7 @@ def surec_api_kpi_data_delete(data_id):
         Process.is_active.is_(True),
     ).first_or_404()
     if not entry.is_active:
-        return jsonify({"success": False, "message": "Veri zaten silinmiş."}), 400
+        return jsonify({"success": False, "message": _("Veri zaten silinmiş.")}), 400
     proc = _process_for_user(entry.process_kpi.process_id)
     if not proc or not user_can_edit_kpi_data_row(current_user, entry, proc):
         return jsonify({"success": False, "message": "Bu veriyi silme yetkiniz yok."}), 403
@@ -508,7 +509,7 @@ def surec_api_kpi_data_delete(data_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_kpi_data_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/kpi-data/detail", methods=["GET"])
@@ -603,7 +604,7 @@ def surec_api_kpi_score_detail(kpi_id: int):
     )
     kpi = ProcessKpi.query.filter_by(id=kpi_id, is_active=True).first()
     if not kpi:
-        return jsonify({"success": False, "message": "KPI bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("KPI bulunamadı.")}), 404
     proc = kpi.process
     if not proc or proc.tenant_id != current_user.tenant_id:
         return jsonify({"success": False, "message": "Yetkisiz."}), 403
@@ -691,7 +692,7 @@ def surec_api_kpi_bulk_template():
         from openpyxl import Workbook
         from openpyxl.styles import Font, PatternFill, Alignment
     except ImportError:
-        return jsonify({"success": False, "message": "openpyxl kurulu değil."}), 500
+        return jsonify({"success": False, "message": _("openpyxl kurulu değil.")}), 500
 
     tid = current_user.tenant_id
     kpis = (

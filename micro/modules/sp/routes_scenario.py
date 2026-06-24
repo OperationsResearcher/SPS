@@ -10,6 +10,7 @@ from extensions import db
 from app.models.plan_year import PlanYear
 from app.services.plan_year_service import clone_full_plan_year
 from micro.modules.sp.helpers import _check_sp_role
+from flask_babel import gettext as _
 
 
 def _can():
@@ -87,7 +88,7 @@ def sp_api_scenario_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"scenario_create error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
     return jsonify({
         "success": True,
@@ -117,7 +118,7 @@ def sp_api_scenario_delete(py_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
     return jsonify({"success": True})
 
 
