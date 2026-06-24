@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-217 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3b — surec (Process) modülü: faaliyetler + index çevirisi
+**Modül:** ui/surec/{faaliyetler,index}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı (karne.html sonraki dilim)
+
+### Yapılan İşlem
+docs/lang/ FAZ 3b. surec modülünün 2 template'i (faaliyetler 8 + index ~50 metin) {{ _() }} ile işaretlendi:
+breadcrumb, istatistik kartları, kanban kolonları, arama/filtre, boş durum, süreç oluşturma modalı
+(status değerleri, parent, sınırlar, lider/üye seçici), ay kısaltmaları. EN çevirileri dolduruldu (PG→PI,
+K-Vektör→K-Vector). karne.html (1101 satır, ~105 metin) AYRI dilim — sonraki tur.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/faaliyetler.html`, `surec/index.html` → ~58 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +81 string (165 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → tek-seferlik toplu çeviri doldurma scripti
+
+### Verimlilik kararı
+~80 string elle Edit yerine: işaretle → extract → tek-seferlik fill scripti (TR→EN sözlük, sadece BOŞ/fuzzy
+doldurur, insan-onaylı çevirilere dokunmaz) → 81 msgstr tek seferde. Status değerleri value="Aktif" korundu,
+görünen _() ile çevrildi (DB anahtarı sabit). gettext %% kaçışı kullanıldı (% özel karakter).
+
+### Test
+compile 0 boş 0 fuzzy. force_locale EN: "Total Processes|Create New Process|On Target|On Hold|Jan".
+faaliyetler+index Jinja parse OK (liste indeksleme, multi-line, %% kaçış syntax bozmadı).
+
+### Notlar
+JS blokları (index.html 648+, karne.html script'leri) DOKUNULMADI — FAZ 4. Sıradaki: surec/karne.html.
+
 ## TASK-216 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3a — masaustu (Desktop) modülü çevirisi

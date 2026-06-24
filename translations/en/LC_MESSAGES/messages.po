@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 03:14+0300\n"
+"POT-Creation-Date: 2026-06-24 03:30+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -25,6 +25,7 @@ msgid "Masaüstüm"
 msgstr "My Desktop"
 
 #: ui/templates/platform/base.html:145
+#: ui/templates/platform/surec/index.html:489
 msgid "Stratejik Planlama"
 msgstr "Strategic Planning"
 
@@ -45,6 +46,7 @@ msgid "Müşteri Kurumlarım"
 msgstr "My Client Organizations"
 
 #: ui/templates/platform/base.html:183
+#: ui/templates/platform/surec/faaliyetler.html:10
 msgid "Süreç Yönetimi"
 msgstr "Process Management"
 
@@ -73,6 +75,8 @@ msgid "Yönetim"
 msgstr "Management"
 
 #: ui/templates/platform/base.html:238
+#: ui/templates/platform/surec/index.html:598
+#: ui/templates/platform/surec/index.html:618
 msgid "Kullanıcılar"
 msgstr "Users"
 
@@ -153,6 +157,7 @@ msgid "Kart Bilgisi"
 msgstr "Card Info"
 
 #: ui/templates/platform/base.html:563
+#: ui/templates/platform/surec/index.html:506
 msgid "Kapat"
 msgstr "Close"
 
@@ -165,6 +170,7 @@ msgid "Düzenle"
 msgstr "Edit"
 
 #: ui/templates/platform/base.html:826
+#: ui/templates/platform/surec/index.html:634
 msgid "İptal"
 msgstr "Cancel"
 
@@ -193,10 +199,10 @@ msgid ""
 "açmak için sayfa yenilenir."
 msgstr ""
 "The <strong>scratchpad</strong> and <strong>widget order / hidden "
-"cards</strong> are stored only in this browser (<code>localStorage</code>); "
-"they are not saved to the server. They are not visible on other devices or "
-"browsers, and are not deleted or backed up. Refresh the page to restore "
-"sections you hid from widget management."
+"cards</strong> are stored only in this browser "
+"(<code>localStorage</code>); they are not saved to the server. They are "
+"not visible on other devices or browsers, and are not deleted or backed "
+"up. Refresh the page to restore sections you hid from widget management."
 
 #: ui/templates/platform/masaustu/index.html:58
 msgid "Yönetici Sabah Özeti"
@@ -323,8 +329,8 @@ msgid ""
 "Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle "
 "burada toplanır."
 msgstr ""
-"Indicators you starred from process scorecards are collected here with their "
-"latest measurement values."
+"Indicators you starred from process scorecards are collected here with "
+"their latest measurement values."
 
 #: ui/templates/platform/masaustu/index.html:645
 msgid ""
@@ -345,4 +351,374 @@ msgstr "Read"
 #: ui/templates/platform/masaustu/index.html:682
 msgid "Okunmamış bildirim yok."
 msgstr "No unread notifications."
+
+#: ui/templates/platform/surec/faaliyetler.html:2
+#: ui/templates/platform/surec/faaliyetler.html:3
+#: ui/templates/platform/surec/faaliyetler.html:36
+msgid "Süreç Faaliyetleri"
+msgstr "Process Activities"
+
+#: ui/templates/platform/surec/faaliyetler.html:10
+#: ui/templates/platform/surec/faaliyetler.html:75
+#: ui/templates/platform/surec/faaliyetler.html:94
+msgid "Faaliyetler"
+msgstr "Activities"
+
+#: ui/templates/platform/surec/faaliyetler.html:33
+msgid "Süreç Karnesi"
+msgstr "Process Scorecard"
+
+#: ui/templates/platform/surec/faaliyetler.html:42
+#: ui/templates/platform/surec/index.html:539
+msgid "Doküman No"
+msgstr "Document No"
+
+#: ui/templates/platform/surec/faaliyetler.html:45
+msgid "Revizyon"
+msgstr "Revision"
+
+#: ui/templates/platform/surec/faaliyetler.html:51
+msgid "Yıl"
+msgstr "Year"
+
+#: ui/templates/platform/surec/faaliyetler.html:60
+msgid "Süreç"
+msgstr "Process"
+
+#: ui/templates/platform/surec/faaliyetler.html:77
+msgid "Toplam"
+msgstr "Total"
+
+#: ui/templates/platform/surec/faaliyetler.html:81
+msgid "Tamamlanan"
+msgstr "Completed"
+
+#: ui/templates/platform/surec/faaliyetler.html:83
+msgid "Aylık işaretleme"
+msgstr "Monthly marking"
+
+#: ui/templates/platform/surec/faaliyetler.html:89
+#: ui/templates/platform/surec/faaliyetler.html:114
+msgid "Veriler yükleniyor…"
+msgstr "Loading data…"
+
+#: ui/templates/platform/surec/faaliyetler.html:96
+msgid "Faaliyet Ekle"
+msgstr "Add Activity"
+
+#: ui/templates/platform/surec/faaliyetler.html:104
+msgid "Faaliyet"
+msgstr "Activity"
+
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+msgid "Durum"
+msgstr "Status"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Oca"
+msgstr "Jan"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Şub"
+msgstr "Feb"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Mar"
+msgstr "Mar"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Nis"
+msgstr "Apr"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "May"
+msgstr "May"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Haz"
+msgstr "Jun"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Tem"
+msgstr "Jul"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Ağu"
+msgstr "Aug"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Eyl"
+msgstr "Sep"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Eki"
+msgstr "Oct"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Kas"
+msgstr "Nov"
+
+#: ui/templates/platform/surec/faaliyetler.html:107
+msgid "Ara"
+msgstr "Dec"
+
+#: ui/templates/platform/surec/faaliyetler.html:109
+msgid "İşlem"
+msgstr "Action"
+
+#: ui/templates/platform/surec/index.html:100
+msgid "Toplam Süreç"
+msgstr "Total Processes"
+
+#: ui/templates/platform/surec/index.html:102
+#, python-format
+msgid "%(n)s kök süreç"
+msgstr "%(n)s root processes"
+
+#: ui/templates/platform/surec/index.html:105
+msgid "Toplam PG"
+msgstr "Total PIs"
+
+#: ui/templates/platform/surec/index.html:107
+#, python-format
+msgid "%(n)s PG'siz süreç"
+msgstr "%(n)s processes without PIs"
+
+#: ui/templates/platform/surec/index.html:110
+msgid "Ortalama Skor"
+msgstr "Average Score"
+
+#: ui/templates/platform/surec/index.html:112
+msgid "tüm süreçler"
+msgstr "all processes"
+
+#: ui/templates/platform/surec/index.html:115
+msgid "Yüksek Performans"
+msgstr "High Performance"
+
+#: ui/templates/platform/surec/index.html:117
+msgid "skor ≥ 80"
+msgstr "score ≥ 80"
+
+#: ui/templates/platform/surec/index.html:120
+msgid "Kritik Süreç"
+msgstr "Critical Process"
+
+#: ui/templates/platform/surec/index.html:122
+msgid "skor &lt; 50"
+msgstr "score &lt; 50"
+
+#: ui/templates/platform/surec/index.html:126
+msgid "K-Vektör"
+msgstr "K-Vector"
+
+#: ui/templates/platform/surec/index.html:127
+#: ui/templates/platform/surec/index.html:532
+msgid "Aktif"
+msgstr "Active"
+
+#: ui/templates/platform/surec/index.html:128
+msgid "ağırlıklı skorlama"
+msgstr "weighted scoring"
+
+#: ui/templates/platform/surec/index.html:137
+msgid "Süreç ara (ad veya kod)…"
+msgstr "Search process (name or code)…"
+
+#: ui/templates/platform/surec/index.html:141
+msgid "Tüm performanslar"
+msgstr "All performances"
+
+#: ui/templates/platform/surec/index.html:142
+msgid "Yüksek (≥80)"
+msgstr "High (≥80)"
+
+#: ui/templates/platform/surec/index.html:143
+msgid "Orta (50-79)"
+msgstr "Medium (50-79)"
+
+#: ui/templates/platform/surec/index.html:144
+msgid "Kritik (&lt;50)"
+msgstr "Critical (&lt;50)"
+
+#: ui/templates/platform/surec/index.html:270
+msgid "Hedefte"
+msgstr "On Target"
+
+#: ui/templates/platform/surec/index.html:321
+msgid "Risk altında"
+msgstr "At Risk"
+
+#: ui/templates/platform/surec/index.html:372
+msgid "Hedef dışı"
+msgstr "Off Target"
+
+#: ui/templates/platform/surec/index.html:423
+msgid "Veri yok"
+msgstr "No Data"
+
+#: ui/templates/platform/surec/index.html:474
+msgid "Görüntülenecek süreç yok"
+msgstr "No processes to display"
+
+#: ui/templates/platform/surec/index.html:477
+msgid ""
+"Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, "
+"AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri "
+"(PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur."
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:479
+msgid ""
+"Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. "
+"Yöneticinizden süreç ataması talep edebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:485
+msgid "İlk Süreci Ekle"
+msgstr "Add First Process"
+
+#: ui/templates/platform/surec/index.html:504
+msgid "Yeni Süreç Oluştur"
+msgstr "Create New Process"
+
+#: ui/templates/platform/surec/index.html:514
+msgid ""
+"Süreç en az bir <strong>alt stratejiye</strong> bağlanmalıdır (aşağıda). "
+"PG’ler ileride isteğe bağlı alt stratejiye bağlanabilir."
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:516
+#, python-format
+msgid ""
+"<strong>K-Vektör:</strong> Her seçili alt strateji için katkı %% girin; "
+"toplam en fazla 100 olmalıdır."
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:522
+msgid "Süreç Adı"
+msgstr "Process Name"
+
+#: ui/templates/platform/surec/index.html:523
+msgid "Örn: Satın Alma Süreci"
+msgstr "e.g. Procurement Process"
+
+#: ui/templates/platform/surec/index.html:526
+msgid "Süreç Kodu"
+msgstr "Process Code"
+
+#: ui/templates/platform/surec/index.html:533
+msgid "Pasif"
+msgstr "Inactive"
+
+#: ui/templates/platform/surec/index.html:534
+msgid "Beklemede"
+msgstr "On Hold"
+
+#: ui/templates/platform/surec/index.html:535
+msgid "Tamamlandı"
+msgstr "Completed"
+
+#: ui/templates/platform/surec/index.html:543
+msgid "Revizyon No"
+msgstr "Revision No"
+
+#: ui/templates/platform/surec/index.html:547
+msgid "Revizyon Tarihi"
+msgstr "Revision Date"
+
+#: ui/templates/platform/surec/index.html:551
+msgid "İlk Yayın Tarihi"
+msgstr "First Publish Date"
+
+#: ui/templates/platform/surec/index.html:555
+msgid "Üst Süreç (Parent)"
+msgstr "Parent Process"
+
+#: ui/templates/platform/surec/index.html:557
+msgid "— Bağımsız (Üst Süreç Yok) —"
+msgstr "— Independent (No Parent Process) —"
+
+#: ui/templates/platform/surec/index.html:564
+msgid "Başlangıç Sınırı"
+msgstr "Start Boundary"
+
+#: ui/templates/platform/surec/index.html:565
+msgid "Sürecin başlangıç noktası..."
+msgstr "The start point of the process..."
+
+#: ui/templates/platform/surec/index.html:568
+msgid "Bitiş Sınırı"
+msgstr "End Boundary"
+
+#: ui/templates/platform/surec/index.html:569
+msgid "Sürecin bitiş noktası..."
+msgstr "The end point of the process..."
+
+#: ui/templates/platform/surec/index.html:572
+msgid "Açıklama"
+msgstr "Description"
+
+#: ui/templates/platform/surec/index.html:573
+msgid "İsteğe bağlı açıklama"
+msgstr "Optional description"
+
+#: ui/templates/platform/surec/index.html:578
+msgid "Alt strateji bağlantısı ve K-Vektör katkı %"
+msgstr "Sub-strategy link and K-Vector contribution %"
+
+#: ui/templates/platform/surec/index.html:580
+msgid "Alt strateji bağlantısı"
+msgstr "Sub-strategy link"
+
+#: ui/templates/platform/surec/index.html:582
+msgid "(en az bir)"
+msgstr "(at least one)"
+
+#: ui/templates/platform/surec/index.html:586
+#, python-format
+msgid ""
+"Seçili her alt strateji için <strong>katkı %%</strong> girin; toplam en "
+"fazla 100 olmalıdır. Ana/alt strateji <strong>ham ağırlıkları</strong> "
+"Stratejik Planlama (/sp) sayfasındadır."
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:594
+msgid "Süreç Liderleri"
+msgstr "Process Leaders"
+
+#: ui/templates/platform/surec/index.html:602
+msgid "Seçilenleri ekle"
+msgstr "Add selected"
+
+#: ui/templates/platform/surec/index.html:602
+#: ui/templates/platform/surec/index.html:622
+msgid "Ekle"
+msgstr "Add"
+
+#: ui/templates/platform/surec/index.html:603
+msgid "Seçilenleri çıkar"
+msgstr "Remove selected"
+
+#: ui/templates/platform/surec/index.html:603
+#: ui/templates/platform/surec/index.html:623
+msgid "Çıkar"
+msgstr "Remove"
+
+#: ui/templates/platform/surec/index.html:606
+msgid "Seçilen Liderler"
+msgstr "Selected Leaders"
+
+#: ui/templates/platform/surec/index.html:614
+msgid "Süreç Üyeleri"
+msgstr "Process Members"
+
+#: ui/templates/platform/surec/index.html:626
+msgid "Seçilen Üyeler"
+msgstr "Selected Members"
+
+#: ui/templates/platform/surec/index.html:637
+msgid "Süreci Kaydet"
+msgstr "Save Process"
 
