@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 05:40+0300\n"
+"POT-Creation-Date: 2026-06-24 06:03+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -33,10 +33,14 @@ msgstr "Stratejik Planlama"
 msgid "Kurum Paneli"
 msgstr "Kurum Paneli"
 
+#: ui/templates/platform/admin/holding_drilldown.html:2
 #: ui/templates/platform/base.html:159
 msgid "Holding Görünümü"
 msgstr ""
 
+#: ui/templates/platform/admin/holding_dashboard.html:26
+#: ui/templates/platform/admin/sub_tenants.html:3
+#: ui/templates/platform/admin/sub_tenants.html:21
 #: ui/templates/platform/base.html:171
 #, fuzzy
 msgid "Alt Kurum Yönetimi"
@@ -81,12 +85,14 @@ msgstr "Performans Göstergeleri"
 msgid "Yönetim"
 msgstr ""
 
+#: ui/templates/platform/admin/users.html:10
 #: ui/templates/platform/base.html:238
 #: ui/templates/platform/surec/index.html:598
 #: ui/templates/platform/surec/index.html:618
 msgid "Kullanıcılar"
 msgstr ""
 
+#: ui/templates/platform/admin/tenants.html:10
 #: ui/templates/platform/base.html:244
 #, fuzzy
 msgid "Kurumlar"
@@ -104,6 +110,15 @@ msgstr ""
 msgid "API Dokümantasyonu"
 msgstr ""
 
+#: ui/templates/platform/admin/araclar.html:3
+#: ui/templates/platform/admin/araclar.html:6
+#: ui/templates/platform/admin/araclar.html:15
+#: ui/templates/platform/admin/hata_kontrolu.html:6
+#: ui/templates/platform/admin/istatistikler.html:6
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:6
+#: ui/templates/platform/admin/loglar.html:6
+#: ui/templates/platform/admin/loglar_kurum.html:7
+#: ui/templates/platform/admin/yedekleme.html:6
 #: ui/templates/platform/base.html:272 ui/templates/platform/base.html:276
 msgid "Admin Araçları"
 msgstr ""
@@ -125,6 +140,13 @@ msgstr ""
 msgid "Ayarlar"
 msgstr "Ayarlar"
 
+#: ui/templates/platform/admin/istatistikler.html:35
+#: ui/templates/platform/admin/istatistikler.html:69
+#: ui/templates/platform/admin/sub_tenants.html:79
+#: ui/templates/platform/admin/sub_tenants_usage.html:44
+#: ui/templates/platform/admin/sub_tenants_usage.html:73
+#: ui/templates/platform/admin/yonetim_paneli.html:114
+#: ui/templates/platform/admin/yonetim_paneli.html:142
 #: ui/templates/platform/ayarlar/index.html:33
 #: ui/templates/platform/base.html:309
 #: ui/templates/platform/k_rapor/index.html:271
@@ -175,6 +197,10 @@ msgstr ""
 msgid "Kart Bilgisi"
 msgstr ""
 
+#: ui/templates/platform/admin/tenants.html:192
+#: ui/templates/platform/admin/tenants.html:206
+#: ui/templates/platform/admin/users.html:183
+#: ui/templates/platform/admin/users.html:234
 #: ui/templates/platform/base.html:563
 #: ui/templates/platform/k_radar/ks.html:213
 #: ui/templates/platform/k_radar/ks.html:226
@@ -205,11 +231,19 @@ msgstr ""
 msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
 msgstr ""
 
+#: ui/templates/platform/admin/tenants.html:160
+#: ui/templates/platform/admin/tenants.html:161
+#: ui/templates/platform/admin/users.html:140
+#: ui/templates/platform/admin/users.html:141
 #: ui/templates/platform/base.html:816
 #: ui/templates/platform/kurum/index.html:106
 msgid "Düzenle"
 msgstr "Düzenle"
 
+#: ui/templates/platform/admin/sub_tenants.html:162
+#: ui/templates/platform/admin/tenants.html:329
+#: ui/templates/platform/admin/users.html:218
+#: ui/templates/platform/admin/users.html:292
 #: ui/templates/platform/base.html:826
 #: ui/templates/platform/k_radar/ks.html:308
 #: ui/templates/platform/k_radar/ks.html:346
@@ -224,6 +258,1815 @@ msgstr "Düzenle"
 #: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
 msgstr "İptal"
+
+#: ui/templates/platform/admin/araclar.html:2
+msgid "Admin Araçları — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:18
+msgid "Yalnız genel yönetici (Admin) erişimine açık bakım ve denetim araçları."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:26
+msgid ""
+"Bu araçlar şu an <b>yalnız Yerel</b> ortamda etkindir. Bu ortamda "
+"işlemler kilitlidir."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:35
+#: ui/templates/platform/admin/hata_kontrolu.html:3
+#: ui/templates/platform/admin/hata_kontrolu.html:6
+#: ui/templates/platform/admin/hata_kontrolu.html:26
+msgid "Hata Kontrolü"
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:38
+msgid ""
+"Uygulamanın sayfalarını ve özelliklerini otomatik gezip çalışmayanları "
+"raporlar. İzole test kurumu (tomofiltest) üzerinde çalışır."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:45
+#: ui/templates/platform/admin/istatistikler.html:3
+#: ui/templates/platform/admin/istatistikler.html:6
+#: ui/templates/platform/admin/istatistikler.html:15
+#, fuzzy
+msgid "İstatistikler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/araclar.html:48
+msgid ""
+"Sistemdeki kurum, kullanıcı, strateji, süreç, performans göstergesi ve "
+"proje sayılarını kurum bazında tablolar."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:55
+#: ui/templates/platform/admin/loglar.html:3
+#: ui/templates/platform/admin/loglar.html:6
+#: ui/templates/platform/admin/loglar.html:15
+#: ui/templates/platform/admin/loglar_kurum.html:8
+msgid "Loglar"
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:58
+msgid ""
+"Kurum bazında ve genel giriş kayıtları, son veri hareketleri ve hiç giriş"
+" yapmamış kullanıcılar."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:65
+#: ui/templates/platform/admin/yedekleme.html:3
+#: ui/templates/platform/admin/yedekleme.html:6
+#: ui/templates/platform/admin/yedekleme.html:19
+#, fuzzy
+msgid "Yedekleme"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/araclar.html:68
+msgid ""
+"Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir DB/kod "
+"yedekleri. Geri yükleme dahil."
+msgstr ""
+
+#: ui/templates/platform/admin/araclar.html:74
+msgid "Yeni araçlar buraya eklenecek"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:2
+msgid "Hata Kontrolü — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:29
+msgid ""
+"Uygulamayı izole bir test kurumu (<b>tomofiltest</b>) üzerinde otomatik "
+"gezip çalışmayan sayfa/özellikleri raporlar."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:37
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:33
+msgid ""
+"Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre "
+"dışı."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:47
+msgid "İzole Test Kurumu — tomofiltest"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:48
+msgid ""
+"Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri "
+"etkilenmez."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:52
+msgid "tomofiltest'i Kur / Yenile"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:56
+msgid "Durum yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:66
+msgid "Keşif — Taranacak Sayfalar"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:67
+msgid ""
+"Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve "
+"legacy hariç."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:70
+msgid "Keşfet"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:72
+msgid "Henüz keşif yapılmadı."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:82
+msgid "Otomatik Tarayıcı Testi"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:83
+msgid ""
+"Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + "
+"AJAX hatalarını yakalar."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:87
+msgid "Limit:"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:88
+msgid "tümü"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:90
+msgid "Taramayı Başlat"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:112
+msgid "Tarama Geçmişi"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:113
+msgid ""
+"Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda "
+"açılır."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:122
+#: ui/templates/platform/admin/hata_kontrolu.html:158
+#: ui/templates/platform/admin/hierarchy.html:26
+#: ui/templates/platform/admin/holding_dashboard.html:98
+#: ui/templates/platform/admin/holding_drilldown.html:33
+#: ui/templates/platform/admin/sub_tenants.html:59
+#: ui/templates/platform/admin/sub_tenants_usage.html:62
+#: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/k_radar/kp.html:57
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
+#: ui/templates/platform/k_radar/ks.html:58
+#: ui/templates/platform/k_radar/ks.html:70
+#: ui/templates/platform/k_radar/ks.html:199
+#: ui/templates/platform/k_radar/ks.html:216
+#: ui/templates/platform/k_radar/ks.html:229
+#: ui/templates/platform/k_radar/ks.html:242
+#: ui/templates/platform/k_radar/ks.html:255
+#: ui/templates/platform/k_radar/ks.html:269
+#: ui/templates/platform/k_radar/ks.html:360
+#: ui/templates/platform/k_radar/ks.html:373
+#: ui/templates/platform/k_rapor/index.html:156
+#: ui/templates/platform/k_rapor/index.html:162
+#: ui/templates/platform/k_rapor/index.html:174
+#: ui/templates/platform/k_rapor/index.html:180
+#: ui/templates/platform/k_rapor/index.html:217
+#: ui/templates/platform/k_rapor/index.html:252
+#: ui/templates/platform/k_rapor/index.html:272
+#: ui/templates/platform/k_rapor/index.html:287
+#: ui/templates/platform/k_rapor/index.html:347
+#: ui/templates/platform/k_rapor/index.html:605
+#: ui/templates/platform/k_rapor/index.html:621
+#: ui/templates/platform/k_rapor/index.html:629
+#: ui/templates/platform/k_rapor/index.html:639
+#: ui/templates/platform/k_rapor/index.html:647
+#: ui/templates/platform/k_rapor/index.html:664
+#: ui/templates/platform/k_rapor/index.html:673
+#: ui/templates/platform/k_rapor/index.html:796
+#: ui/templates/platform/k_rapor/index.html:854
+#: ui/templates/platform/k_rapor/index.html:907
+#: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/surec/karne.html:727
+msgid "Yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:132
+#, fuzzy
+msgid "Aktif CRUD Senaryoları"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/hata_kontrolu.html:133
+msgid ""
+"Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince "
+"tomofiltest otomatik sıfırlanır."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:136
+msgid "Senaryoları Çalıştır"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:138
+msgid "Henüz çalıştırılmadı."
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:148
+msgid "Senaryo Geçmişi"
+msgstr ""
+
+#: ui/templates/platform/admin/hata_kontrolu.html:149
+msgid "Yalnız Aktif CRUD senaryo koşuları. Bir kayda tıklayınca yukarıda açılır."
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:2
+msgid "SaaS Hiyerarşi"
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:3
+msgid "Paket Hiyerarşisi (4 Katman)"
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:6
+#: ui/templates/platform/admin/holding_dashboard.html:6
+#: ui/templates/platform/admin/notifications.html:6
+#: ui/templates/platform/admin/packages.html:6
+#: ui/templates/platform/admin/sub_tenants.html:6
+#: ui/templates/platform/admin/sub_tenants_usage.html:6
+#: ui/templates/platform/admin/tenants.html:10
+#: ui/templates/platform/admin/users.html:10
+#: ui/templates/platform/admin/yonetim_paneli.html:2
+#: ui/templates/platform/admin/yonetim_paneli.html:3
+#: ui/templates/platform/admin/yonetim_paneli.html:10
+#: ui/templates/platform/ayarlar/index.html:139
+#, fuzzy
+msgid "Yönetim Paneli"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/hierarchy.html:6
+#: ui/templates/platform/admin/hierarchy.html:17
+msgid "Paket Hiyerarşisi"
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:18
+msgid ""
+"Paket → Modül → Bileşen → Kart → Veri kaynağı. Kartlar template "
+"işaretlerinden (data-card-*) keşfedilir."
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:21
+#: ui/templates/platform/admin/packages.html:6
+msgid "Paketler"
+msgstr ""
+
+#: ui/templates/platform/admin/hierarchy.html:22
+msgid "Kartları Keşfet"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:2
+msgid "Holding Dashboard — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:3
+msgid "Konsolide Görünüm"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:6
+msgid "Holding Panosu"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:19
+msgid "Holding Konsolide Görünüm"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:22
+msgid "ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:39
+msgid "Ortalama Sağlık Skoru"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:47
+#: ui/templates/platform/admin/tenants.html:44
+#, fuzzy
+msgid "Toplam Kurum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/holding_dashboard.html:51
+#: ui/templates/platform/admin/tenants.html:59
+#: ui/templates/platform/admin/users.html:64
+msgid "Toplam Kullanıcı"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:55
+#, fuzzy
+msgid "Toplam KPI"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_dashboard.html:59
+#, fuzzy
+msgid "Toplam Girişim"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_dashboard.html:69
+msgid "Toplam Kritik Risk"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:71
+#, fuzzy
+msgid "Tüm kurumlarda"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/holding_dashboard.html:74
+#: ui/templates/platform/admin/holding_drilldown.html:88
+#, fuzzy
+msgid "Yüksek Anomali"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/holding_dashboard.html:76
+#, fuzzy
+msgid "KPI sapmaları"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/holding_dashboard.html:79
+#: ui/templates/platform/admin/holding_drilldown.html:78
+msgid "Gecikmiş Faaliyet"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:81
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+#: ui/templates/platform/surec/faaliyetler.html:77
+#: ui/templates/platform/surec/karne.html:392
+msgid "Toplam"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:88
+#, fuzzy
+msgid "Kurum Karşılaştırma — Sağlık Skoru"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/holding_dashboard.html:95
+#: ui/templates/platform/admin/sub_tenants.html:6
+#, fuzzy
+msgid "Alt Kurumlar"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/holding_dashboard.html:104
+#: ui/templates/platform/admin/sub_tenants.html:93
+#: ui/templates/platform/admin/sub_tenants_usage.html:93
+msgid "Henüz alt kurum yok"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_dashboard.html:105
+msgid "\"Alt Kurum Yönetimi\" sayfasından açabilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:19
+msgid "Holding Görünümü — Salt Okur"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:22
+msgid "alt kurumunun verilerini görüntülüyorsunuz."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:23
+msgid "Düzenleme yetkisi yoktur, tüm aksiyon butonları devre dışı."
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:28
+msgid "Konsolide Görünüme Dön"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:43
+#, fuzzy
+msgid "Strateji Sağlık Skoru"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_drilldown.html:50
+msgid "Aktif KPI"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:54
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/surec/karne.html:864
+#, fuzzy
+msgid "Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/holding_drilldown.html:58
+#: ui/templates/platform/admin/sub_tenants_usage.html:76
+msgid "Girişim"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:68
+msgid "KPI Hedef Üstü"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:73
+msgid "Girişim Ortalaması"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:83
+#, fuzzy
+msgid "Kritik Risk"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/holding_drilldown.html:93
+msgid "Kullanıcı / Senaryo"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:102
+msgid "Girişimler"
+msgstr ""
+
+#: ui/templates/platform/admin/holding_drilldown.html:111
+msgid "Risk Listesi"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:2
+msgid "İstatistikler — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:18
+msgid ""
+"Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans "
+"göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır."
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:26
+msgid "İstatistikler alınamadı."
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:34
+#: ui/templates/platform/admin/istatistikler.html:68
+#: ui/templates/platform/admin/loglar.html:69
+#: ui/templates/platform/admin/loglar.html:121
+#: ui/templates/platform/admin/sub_tenants_usage.html:43
+#: ui/templates/platform/admin/sub_tenants_usage.html:71
+#: ui/templates/platform/admin/tenants.html:67
+#: ui/templates/platform/admin/users.html:102
+#: ui/templates/platform/admin/users.html:210
+#: ui/templates/platform/admin/users.html:262
+#: ui/templates/platform/ayarlar/index.html:38
+#: ui/templates/platform/ayarlar/index.html:40
+#: ui/templates/platform/ayarlar/index.html:92
+#: ui/templates/platform/k_rapor/index.html:795
+#, fuzzy
+msgid "Kurum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/istatistikler.html:36
+#: ui/templates/platform/kurum/index.html:242
+#, fuzzy
+msgid "Ana Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/istatistikler.html:37
+#: ui/templates/platform/k_rapor/index.html:492
+#, fuzzy
+msgid "Alt Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/istatistikler.html:38
+#: ui/templates/platform/admin/istatistikler.html:72
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+#: ui/templates/platform/k_radar/risk_management.html:98
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:370
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
+msgid "Süreç"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:40
+#: ui/templates/platform/admin/istatistikler.html:74
+msgid "PG Verisi"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:41
+#: ui/templates/platform/admin/istatistikler.html:75
+#: ui/templates/platform/k_radar/risk_management.html:99
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:597
+msgid "Proje"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:42
+#: ui/templates/platform/admin/istatistikler.html:76
+#, fuzzy
+msgid "Proje Task"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/istatistikler.html:61
+#, fuzzy
+msgid "Kurum Bazında Dağılım"
+msgstr "Performans Göstergeleri"
+
+#: ui/templates/platform/admin/istatistikler.html:62
+#, python-format
+msgid "(%(n)s aktif kurum)"
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:70
+#, fuzzy
+msgid "Ana Str."
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/istatistikler.html:71
+#: ui/templates/platform/k_rapor/index.html:827
+#, fuzzy
+msgid "Alt Str."
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/istatistikler.html:107
+#: ui/templates/platform/admin/loglar.html:98
+msgid "Aktif kurum yok."
+msgstr ""
+
+#: ui/templates/platform/admin/istatistikler.html:113
+msgid "SİSTEM TOPLAMI"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:2
+msgid "Kılavuz & Video Oluşturucu — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:3
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:6
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:22
+msgid "Kılavuz & Video Oluşturucu"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:25
+msgid ""
+"Playwright ile gizli pencerede (incognito) sıfırdan <b>YeniTomofil</b> "
+"adımlarını otonom canlandırır, kısa eğitim videoları ve görsel işaretli "
+"ekran görüntüleri alıp kılavuz PDF'ini derler."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:46
+msgid "Otonom Oluşturma Kontrolleri"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:47
+msgid ""
+"YeniTomofil'i sıfırlar, 1920x1080 çözünürlükte video çeker ve PDF'i "
+"derler."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:51
+msgid "Otonom Çekimi Başlat"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:54
+msgid "Çekimi Durdur"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:65
+msgid "Hazırlanıyor..."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:74
+msgid "Otonom Çalışma Logları"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:77
+msgid ""
+"[Sistem] Otonom çalışma bekleniyor. Lütfen \"Otonom Çekimi Başlat\" "
+"butonuna basın."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:84
+msgid "Kısa Konu Anlatım Videoları"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:91
+msgid "Bölüm 1 — Giriş, Kurum & Kullanıcı Yapılandırması"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:97
+msgid "mp4 İndir"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:111
+#, fuzzy
+msgid "YeniTomofil Durumu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:112
+#: ui/templates/platform/admin/yonetim_paneli.html:123
+#: ui/templates/platform/admin/yonetim_paneli.html:148
+#: ui/templates/platform/k_radar/index.html:70
+#: ui/templates/platform/k_radar/index.html:77
+#: ui/templates/platform/k_radar/index.html:127
+msgid "Yükleniyor..."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:117
+msgid "Güncel Kılavuz PDF"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:118
+msgid ""
+"Otonom çekim bittikten sonra derlenen en güncel piksel kalitesindeki "
+"PDF'i indirin."
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:120
+msgid "Kılavuz PDF'ini İndir"
+msgstr ""
+
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:122
+msgid ""
+"Çekim <b>bittiğinde tam</b>, <b>durdurulduğunda</b> o ana kadarki "
+"(taslak) kılavuz PDF'i bu butondan indirilir."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:2
+#: ui/templates/platform/admin/loglar_kurum.html:2
+msgid "Loglar — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:18
+msgid "Kurum bazında ve genel giriş ve veri hareketi kayıtları. Salt-okuma."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:19
+msgid "Saatler tarayıcınızın saat dilimine göre gösterilir."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:27
+msgid "Loglar alınamadı."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:35
+#: ui/templates/platform/admin/loglar.html:71
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Toplam Giriş"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:39
+#: ui/templates/platform/admin/loglar.html:70
+#: ui/templates/platform/admin/yonetim_paneli.html:117
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Son Giriş"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:43
+#: ui/templates/platform/admin/loglar.html:50
+#: ui/templates/platform/admin/loglar_kurum.html:47
+msgid "Kayıt yok"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:46
+#: ui/templates/platform/admin/loglar.html:72
+msgid "Son Veri Hareketi"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:53
+msgid "Hiç Giriş Yapmamış"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:54
+msgid "kullanıcı"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:62
+#, fuzzy
+msgid "Kurum Bazında"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/loglar.html:73
+msgid "Hiç Girmemiş"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:111
+msgid "Hiç Giriş Yapmamış Kullanıcılar"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:112
+msgid "kullanıcı — hesabı aktif ama hiç oturum açmamış."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:121
+#: ui/templates/platform/admin/users.html:99
+msgid "Ad Soyad"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:122
+#: ui/templates/platform/admin/sub_tenants.html:140
+#: ui/templates/platform/admin/tenants.html:243
+#: ui/templates/platform/admin/users.html:100
+#: ui/templates/platform/admin/users.html:196
+#: ui/templates/platform/admin/users.html:247
+#: ui/templates/platform/ayarlar/eposta.html:10
+#: ui/templates/platform/kurum/ayarlar.html:74
+msgid "E-posta"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:122
+#: ui/templates/platform/admin/users.html:101
+#: ui/templates/platform/admin/users.html:204
+#: ui/templates/platform/admin/users.html:256
+#: ui/templates/platform/admin/yonetim_paneli.html:115
+#: ui/templates/platform/k_radar/cross_paydas.html:19
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Rol"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:134
+msgid "Herkes en az bir kez giriş yapmış. 🎉"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:147
+msgid "Son Hareketler"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:148
+#, python-format
+msgid "En son %(n)s giriş ve veri değişikliği (genel)."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:163
+msgid "Henüz hareket yok."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:3
+#, fuzzy
+msgid "Kurum Logları"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/loglar_kurum.html:19
+msgid "Detaylı Loglar"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:22
+msgid "Bu kuruma ilişkin son değişiklikler, kategori bazında zaman çizelgesi."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:23
+msgid "Saatler tarayıcınızın saat dilimine göre."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:38
+#, python-format
+msgid "(%(n)s kayıt)"
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:72
+#, python-format
+msgid "Son %(shown)s kayıt gösteriliyor (toplam %(total)s)."
+msgstr ""
+
+#: ui/templates/platform/admin/loglar_kurum.html:80
+msgid "Loglar'a dön"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:2
+#: ui/templates/platform/admin/notifications.html:3
+#: ui/templates/platform/admin/notifications.html:18
+#, fuzzy
+msgid "Bildirim Merkezi Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/notifications.html:6
+msgid "Bildirim Logları"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:19
+#, python-format
+msgid "Toplam %(n)s bildirim"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:22
+msgid "Toplu Bildirim Gönder"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:31
+#, fuzzy
+msgid "Toplam Bildirim"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/notifications.html:36
+#: ui/templates/platform/admin/notifications.html:64
+msgid "Okunmamış"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:41
+#: ui/templates/platform/admin/notifications.html:65
+msgid "Okunmuş"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:46
+msgid "Yayın Bildirimi"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:53
+msgid "Başlık veya mesaj ara…"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:55
+msgid "Tüm Tipler"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:56
+msgid "Sistem Yayını"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:57
+#, fuzzy
+msgid "Süreç Atama"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/notifications.html:58
+msgid "PG Değişimi"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:59
+#, fuzzy
+msgid "Faaliyet Atama"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/notifications.html:60
+#: ui/templates/platform/ayarlar/eposta.html:160
+msgid "Görev Atama"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:63
+#, fuzzy
+msgid "Tüm Durumlar"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/notifications.html:75
+#, fuzzy
+msgid "Başlık"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/notifications.html:76
+msgid "Mesaj"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:77
+#: ui/templates/platform/admin/tenants.html:68
+msgid "Tip"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:78
+#, fuzzy
+msgid "Alıcı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/notifications.html:79
+#: ui/templates/platform/admin/yedekleme.html:71
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:596
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Tarih"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:80
+#: ui/templates/platform/admin/sub_tenants.html:80
+#: ui/templates/platform/admin/sub_tenants_usage.html:81
+#: ui/templates/platform/admin/tenants.html:73
+#: ui/templates/platform/admin/users.html:103
+#: ui/templates/platform/admin/yonetim_paneli.html:113
+#: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:87
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:574
+#: ui/templates/platform/k_rapor/index.html:603
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
+#, fuzzy
+msgid "Durum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/notifications.html:81
+#: ui/templates/platform/admin/sub_tenants.html:81
+#: ui/templates/platform/admin/tenants.html:74
+#: ui/templates/platform/admin/users.html:104
+#: ui/templates/platform/admin/yonetim_paneli.html:143
+#: ui/templates/platform/bireysel/karne.html:246
+#: ui/templates/platform/bireysel/karne.html:280
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/surec/faaliyetler.html:109
+#: ui/templates/platform/surec/karne.html:222
+#: ui/templates/platform/surec/karne.html:481
+msgid "İşlem"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:106
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:106
+#, fuzzy
+msgid "Okunmadı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/notifications.html:113
+msgid "Sil"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:120
+msgid "Bildirim bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:2
+#, fuzzy
+msgid "Paket Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/packages.html:3
+#: ui/templates/platform/admin/packages.html:22
+msgid "SaaS Paket ve Modül Yönetimi"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:23
+msgid "Abonelik paketleri, sistem modülleri ve bileşen senkronizasyonu"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:27
+msgid "Hiyerarşi (4 katman)"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:30
+msgid "Bileşen Senkronize Et"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:40
+msgid "Abonelik Paketleri"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:44
+#: ui/templates/platform/admin/packages.html:101
+#: ui/templates/platform/k_radar/cross_paydas.html:23
+#: ui/templates/platform/k_radar/kp_olgunluk.html:28
+#: ui/templates/platform/surec/index.html:602
+#: ui/templates/platform/surec/index.html:622
+#, fuzzy
+msgid "Ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/packages.html:61
+#: ui/templates/platform/admin/packages.html:117
+#: ui/templates/platform/admin/tenants.html:129
+#: ui/templates/platform/admin/users.html:69
+#: ui/templates/platform/admin/users.html:133
+#: ui/templates/platform/surec/index.html:127
+#: ui/templates/platform/surec/index.html:532
+msgid "Aktif"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:61
+#: ui/templates/platform/admin/packages.html:117
+#: ui/templates/platform/admin/users.html:74
+#: ui/templates/platform/admin/users.html:133
+#: ui/templates/platform/surec/index.html:533
+msgid "Pasif"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:65
+msgid "Modüller"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:77
+#: ui/templates/platform/admin/packages.html:123
+#: ui/templates/platform/admin/users.html:155
+#: ui/templates/platform/admin/users.html:156
+msgid "Pasife Al"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:77
+#: ui/templates/platform/admin/packages.html:123
+#: ui/templates/platform/admin/tenants.html:169
+#: ui/templates/platform/admin/users.html:155
+#: ui/templates/platform/admin/users.html:156
+msgid "Aktifleştir"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:88
+msgid "Paket tanımlanmamış."
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:97
+msgid "Sistem Modülleri"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:130
+msgid "Modül tanımlanmamış."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:2
+#, fuzzy
+msgid "Alt Kurumlarım — Kokpitim"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:27
+msgid "Kullanım Raporu"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:30
+#: ui/templates/platform/admin/sub_tenants.html:104
+msgid "Yeni Alt Kurum Aç"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:46
+#, fuzzy
+msgid "Aktif Alt Kurum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:50
+#, fuzzy
+msgid "Kota"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:76
+#, fuzzy
+msgid "Alt Kurum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:77
+msgid "İlk Admin"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:78
+#: ui/templates/platform/admin/sub_tenants_usage.html:72
+#: ui/templates/platform/admin/tenants.html:70
+msgid "Paket"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:94
+msgid "İlk alt kurumu açmak için \"Yeni Alt Kurum Aç\" butonuna tıklayın."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:110
+msgid ""
+"Açılan alt kurum otomatik 'normal' tipte oluşur. İlk kurum yöneticisi "
+"(admin) oluşturulur, geçici şifre üretilir. Bu kullanıcı sonra kendi "
+"kullanıcılarını ekleyebilir."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:115
+#: ui/templates/platform/admin/tenants.html:223
+#: ui/templates/platform/kurum/ayarlar.html:42
+#, fuzzy
+msgid "Kurum Adı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:116
+msgid "Örn: ABC Cam"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:119
+#: ui/templates/platform/admin/tenants.html:227
+msgid "Kısa Ad"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:120
+msgid "Örn: ABCCam"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:124
+#: ui/templates/platform/admin/tenants.html:72
+#: ui/templates/platform/admin/tenants.html:263
+msgid "Maks. Kullanıcı"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:128
+#: ui/templates/platform/admin/tenants.html:271
+msgid "Abonelik Paketi"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:130
+msgid "— Paket seçilmedi —"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:138
+#, fuzzy
+msgid "İlk Admin Bilgileri"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants.html:145
+#: ui/templates/platform/admin/sub_tenants.html:146
+#: ui/templates/platform/admin/users.html:188
+#: ui/templates/platform/admin/users.html:189
+#: ui/templates/platform/admin/users.html:239
+#: ui/templates/platform/admin/users.html:240
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+msgid "Ad"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:149
+#: ui/templates/platform/admin/sub_tenants.html:150
+#: ui/templates/platform/admin/users.html:192
+#: ui/templates/platform/admin/users.html:193
+#: ui/templates/platform/admin/users.html:243
+#: ui/templates/platform/admin/users.html:244
+msgid "Soyad"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:154
+#: ui/templates/platform/admin/users.html:200
+#: ui/templates/platform/admin/users.html:201
+#: ui/templates/platform/ayarlar/eposta.html:82
+msgid "Şifre"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:154
+msgid "(boş bırakırsanız otomatik üretilir)"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:155
+msgid "Otomatik üretilecek"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:164
+msgid "Oluştur"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:175
+msgid "Başarılı"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:182
+msgid "Geçici Şifre — Şimdi Kaydet"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:185
+msgid "E-posta:"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:186
+msgid "Şifre:"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:189
+#, fuzzy
+msgid "Kopyala"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/sub_tenants.html:191
+msgid "Bu pencere kapanınca şifre tekrar gösterilmez."
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:195
+#, fuzzy
+msgid "Tamam"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:2
+msgid "Konsolide Kullanım Raporu — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:3
+#: ui/templates/platform/admin/sub_tenants_usage.html:20
+msgid "Konsolide Kullanım Raporu"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:6
+#, fuzzy
+msgid "Alt Kurum Kullanımı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:26
+msgid "Geri"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:29
+#: ui/templates/platform/analiz/index.html:105
+#: ui/templates/platform/k_rapor/index.html:80
+msgid "Excel İndir"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:39
+msgid "Bu Ay"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:46
+msgid "LLM Çağrı"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:55
+#, fuzzy
+msgid "Paket Dağılımı"
+msgstr "Performans Göstergeleri"
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:74
+msgid "Doluluk"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:77
+msgid "Plan Yılı"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:78
+msgid "LLM Çağrı (ay)"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants_usage.html:79
+msgid "LLM Token (ay)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:2
+#: ui/templates/platform/admin/tenants.html:3
+#: ui/templates/platform/admin/tenants.html:25
+#, fuzzy
+msgid "Kurum Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:26
+#, python-format
+msgid "Toplam %(n)s kurum"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:30
+msgid "Arşivlenenleri Göster"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:34
+#, fuzzy
+msgid "Kurum Ekle"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:49
+#, fuzzy
+msgid "Aktif Kurum"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/admin/tenants.html:54
+msgid "Arşivlenmiş"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:69
+#: ui/templates/platform/admin/tenants.html:231
+#: ui/templates/platform/kurum/ayarlar.html:46
+msgid "Sektör"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:71
+msgid "Lisans Bitiş"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:98
+msgid "Grup şirketi — alt-tenantları konsolide görür"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:99
+#: ui/templates/platform/admin/tenants.html:316
+msgid "Holding"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:102
+msgid "Bayi — alt-tenant açabilir, içine girmez"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:103
+#: ui/templates/platform/admin/tenants.html:316
+msgid "Bayi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:106
+msgid "Alt tenant"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:107
+msgid "Alt"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:129
+msgid "Arşiv"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:135
+msgid "Detay"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:169
+msgid "Arşivle"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:177
+#, fuzzy
+msgid "Kurum bulunamadı."
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:190
+#, fuzzy
+msgid "Kurum Detayı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:204
+#, fuzzy
+msgid "Kurum Düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/tenants.html:210
+#: ui/templates/platform/kurum/ayarlar.html:178
+#, fuzzy
+msgid "Kurum logosu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:212
+msgid "Logo (PNG, JPG, WEBP, GIF, SVG — en fazla 2 MB)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:217
+msgid "Sol menüde oturum açan kullanıcının kurumuna gösterilir."
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:220
+#, fuzzy
+msgid "Temel Bilgiler"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:224
+#, fuzzy
+msgid "Kurum adı"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/tenants.html:228
+msgid "Kısa ad"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:232
+msgid "Örn: Danışmanlık"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:235
+#, fuzzy
+msgid "Faaliyet Alanı"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/tenants.html:236
+#, fuzzy
+msgid "Faaliyet alanı"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/tenants.html:240
+#: ui/templates/platform/kurum/ayarlar.html:60
+msgid "İletişim"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:247
+#: ui/templates/platform/kurum/ayarlar.html:70
+msgid "Telefon"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:251
+msgid "Web Adresi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:256
+#, fuzzy
+msgid "Kurumsal & Lisans"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/tenants.html:259
+msgid "Çalışan Sayısı"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:267
+msgid "Lisans Bitiş Tarihi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:273
+msgid "— Paket Seç —"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:280
+msgid "Vergi Dairesi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:281
+msgid "Vergi dairesi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:284
+#: ui/templates/platform/kurum/ayarlar.html:50
+#, fuzzy
+msgid "Vergi No"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/tenants.html:285
+#, fuzzy
+msgid "Vergi numarası"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/tenants.html:291
+msgid "Hiyerarşi (Bayi / Holding)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:294
+msgid ""
+"<strong>⚠️ Dikkat:</strong> Bu alanlar sadece Platform Admin tarafından "
+"değiştirilir. \"Bayi\" → alt-tenant açar ama içine giremez. \"Holding\" →"
+" alt-tenantları konsolide salt-okur görür. \"Alt tenant\" → bir "
+"bayi/holding'e bağlı normal tenant."
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:298
+msgid "Tenant Tipi"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:300
+msgid "Normal (bağımsız)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:301
+msgid "Bayi — alt tenant açar, içine girmez"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:302
+msgid "Holding — alt tenantları konsolide görür"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:307
+msgid "Alt Tenant Limiti"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:307
+msgid "(boş = sınırsız)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:311
+msgid "Parent (Üst) Tenant"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:311
+msgid "(sadece alt-tenant için)"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:313
+msgid "— Bağımsız (parent yok) —"
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:321
+msgid ""
+"Bağımsız bir kurum yerine bir Bayi/Holding'in alt-tenant'ı olarak açmak "
+"için seç. Alt-tenant otomatik 'normal' tipi alır."
+msgstr ""
+
+#: ui/templates/platform/admin/tenants.html:331
+#: ui/templates/platform/admin/users.html:220
+#: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/k_radar/index.html:90
+#: ui/templates/platform/k_radar/ks.html:309
+#: ui/templates/platform/k_radar/ks.html:347
+#: ui/templates/platform/k_radar/ks.html:400
+#: ui/templates/platform/k_radar/risk_management.html:109
+#: ui/templates/platform/kurum/ayarlar.html:201
+#: ui/templates/platform/surec/karne.html:668
+#: ui/templates/platform/surec/karne.html:738
+#: ui/templates/platform/surec/karne.html:771
+#: ui/templates/platform/surec/karne.html:926
+msgid "Kaydet"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:2
+#: ui/templates/platform/admin/users.html:3
+#: ui/templates/platform/admin/users.html:24
+#, fuzzy
+msgid "Kullanıcı Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/users.html:25
+#, python-format
+msgid "Toplam %(n)s kullanıcı"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:29
+msgid "Toplu İçe Aktar"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:32
+msgid "Kullanıcı Ekle"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:41
+msgid "Ad, e-posta, rol veya kurum ile ara…"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:45
+#, python-format
+msgid "— Tüm Kurumlar (%(n)s) —"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:52
+#, fuzzy
+msgid "Filtreleri sıfırla"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/users.html:53
+#, fuzzy
+msgid "Temizle"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/admin/users.html:169
+msgid "Kullanıcı bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:181
+msgid "Yeni Kullanıcı Ekle"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:200
+msgid "(boş = varsayılan atanır)"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:206
+#: ui/templates/platform/admin/users.html:258
+msgid "— Rol Seç —"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:212
+#: ui/templates/platform/admin/users.html:264
+msgid "— Kurum Seç —"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:232
+#, fuzzy
+msgid "Kullanıcı Düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/users.html:252
+#, fuzzy
+msgid "Yeni Şifre"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/users.html:252
+msgid "(boş = değişmez)"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:253
+#: ui/templates/platform/ayarlar/eposta.html:84
+msgid "Değiştirmek için girin"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:277
+msgid "İki Faktörlü Doğrulama (2FA)"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:283
+msgid "2FA'yı Sıfırla"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:287
+msgid ""
+"Kullanıcı telefonunu kaybettiyse veya yedek kodlara erişemiyorsa 2FA'yı "
+"sıfırlayın. Sonraki girişinde profilinden tekrar etkinleştirebilir."
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:294
+msgid "Güncelle"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:2
+msgid "Yedekleme — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:22
+msgid ""
+"Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir "
+"yedekler. DB: PostgreSQL (pg_dump)."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:29
+msgid "Manuel Yedek"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:30
+msgid "Şimdi anlık yedek üretip bu makineye indir."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:33
+msgid "DB Yedeği İndir (.dump)"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:36
+msgid "Kod Yedeği İndir (.tar.gz)"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:39
+msgid "Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:46
+msgid "Otomatik Yedek — her gece 02:00"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:47
+#, python-format
+msgid ""
+"Tam DB + kod (haftada bir tam, diğer günler fark). Son %(n)s yedek "
+"tutulur."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:49
+msgid "Şimdi Çalıştır"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:53
+msgid "Son çalışma:"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:54
+msgid "Son tam kod:"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:64
+msgid "Otomatik Yedekler"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:70
+msgid "Tür"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:70
+msgid "Dosya"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:71
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+msgid "Boyut"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:72
+msgid "İndir"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:89
+msgid "Henüz otomatik yedek yok. \"Şimdi Çalıştır\" ile ilkini üretebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:98
+msgid "DB Geri Yükleme — Yıkıcı İşlem"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:100
+msgid ""
+"Yüklenen <b>.dump</b> dosyası mevcut veritabanının <b>üzerine yazılır</b>"
+" (geri alınamaz). Şifre + onay metni gerekir."
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:104
+msgid "Şifreniz"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:105
+msgid "Onay:"
+msgstr ""
+
+#: ui/templates/platform/admin/yedekleme.html:106
+#, fuzzy
+msgid "Geri Yükle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/admin/yonetim_paneli.html:23
+#, fuzzy
+msgid "Login İstatistikleri"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/yonetim_paneli.html:24
+msgid "Audit log tabanlı yönetim özeti"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:31
+msgid "Bakım modu"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:32
+msgid ""
+"Açıkken yalnızca rolü <strong>Admin</strong> olan kullanıcılar sistemi "
+"normal kullanır; diğerleri bakım sayfası görür. Giriş sayfası açık kalır."
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:35
+msgid "Bakıma al (veritabanı bayrağı)"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:44
+#, fuzzy
+msgid "Kurum Seçimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/yonetim_paneli.html:47
+#, fuzzy
+msgid "Tüm Kurumlar"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/admin/yonetim_paneli.html:61
+msgid "Çevrimiçi"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:63
+msgid "Son 30 dakika"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:68
+msgid "Aktif hesap"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:70
+msgid "Toplam kayıtlı kullanıcı"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:75
+msgid "Son 24 saat"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:77
+#: ui/templates/platform/admin/yonetim_paneli.html:84
+#: ui/templates/platform/admin/yonetim_paneli.html:91
+#: ui/templates/platform/admin/yonetim_paneli.html:98
+msgid "Tekil giriş yapan"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:82
+msgid "Son 7 gün"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:89
+msgid "Son 30 gün"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:96
+#, fuzzy
+msgid "Tüm zamanlar"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/admin/yonetim_paneli.html:105
+msgid "Kullanıcı Durumu"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:116
+msgid "Hesap"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:118
+msgid "30G Giriş"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:119
+msgid "30G İşlem"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:132
+msgid "Son Aktiviteler"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:140
+msgid "İkon"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:141
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:95
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Kaynak"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:144
+msgid "Zaman"
+msgstr ""
+
+#: ui/templates/platform/admin/yonetim_paneli.html:153
+msgid "Daha fazla göster"
+msgstr ""
 
 #: ui/templates/platform/analiz/index.html:34
 msgid "Süreç ara…"
@@ -332,11 +2175,6 @@ msgstr ""
 msgid "Trend Analizi"
 msgstr ""
 
-#: ui/templates/platform/analiz/index.html:105
-#: ui/templates/platform/k_rapor/index.html:80
-msgid "Excel İndir"
-msgstr ""
-
 #: ui/templates/platform/analiz/index.html:112
 msgid "Trend verisi bulunamadı."
 msgstr ""
@@ -366,11 +2204,6 @@ msgstr ""
 #, fuzzy
 msgid "E-posta Ayarları"
 msgstr "Ayarlar"
-
-#: ui/templates/platform/ayarlar/eposta.html:10
-#: ui/templates/platform/kurum/ayarlar.html:74
-msgid "E-posta"
-msgstr ""
 
 #: ui/templates/platform/ayarlar/eposta.html:21
 #: ui/templates/platform/ayarlar/index.html:99
@@ -422,14 +2255,6 @@ msgstr ""
 
 #: ui/templates/platform/ayarlar/eposta.html:76
 msgid "Kullanıcı Adı / E-posta"
-msgstr ""
-
-#: ui/templates/platform/ayarlar/eposta.html:82
-msgid "Şifre"
-msgstr ""
-
-#: ui/templates/platform/ayarlar/eposta.html:84
-msgid "Değiştirmek için girin"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/eposta.html:87
@@ -485,10 +2310,6 @@ msgstr ""
 msgid "Sürece yeni faaliyet eklendiğinde"
 msgstr ""
 
-#: ui/templates/platform/ayarlar/eposta.html:160
-msgid "Görev Atama"
-msgstr ""
-
 #: ui/templates/platform/ayarlar/eposta.html:161
 msgid "Projede kullanıcıya görev atandığında"
 msgstr ""
@@ -497,31 +2318,9 @@ msgstr ""
 msgid "Test Maili Gönder"
 msgstr ""
 
-#: ui/templates/platform/ayarlar/eposta.html:175
-#: ui/templates/platform/k_radar/index.html:90
-#: ui/templates/platform/k_radar/ks.html:309
-#: ui/templates/platform/k_radar/ks.html:347
-#: ui/templates/platform/k_radar/ks.html:400
-#: ui/templates/platform/k_radar/risk_management.html:109
-#: ui/templates/platform/kurum/ayarlar.html:201
-#: ui/templates/platform/surec/karne.html:668
-#: ui/templates/platform/surec/karne.html:738
-#: ui/templates/platform/surec/karne.html:771
-#: ui/templates/platform/surec/karne.html:926
-msgid "Kaydet"
-msgstr ""
-
 #: ui/templates/platform/ayarlar/index.html:35
 msgid "rol yok"
 msgstr ""
-
-#: ui/templates/platform/ayarlar/index.html:38
-#: ui/templates/platform/ayarlar/index.html:40
-#: ui/templates/platform/ayarlar/index.html:92
-#: ui/templates/platform/k_rapor/index.html:795
-#, fuzzy
-msgid "Kurum"
-msgstr "Kurum Paneli"
 
 #: ui/templates/platform/ayarlar/index.html:43
 msgid "Tema"
@@ -605,11 +2404,6 @@ msgstr "Kurum Paneli"
 #: ui/templates/platform/ayarlar/index.html:131
 msgid "YALNIZ ADMIN"
 msgstr ""
-
-#: ui/templates/platform/ayarlar/index.html:139
-#, fuzzy
-msgid "Yönetim Paneli"
-msgstr "Kurum Paneli"
 
 #: ui/templates/platform/ayarlar/index.html:140
 msgid "Login istatistikleri ve aktivite kayıtları"
@@ -999,54 +2793,6 @@ msgstr ""
 msgid "Ara"
 msgstr "Ayarlar"
 
-#: ui/templates/platform/bireysel/karne.html:246
-#: ui/templates/platform/bireysel/karne.html:280
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_radar/kp_olgunluk.html:43
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/surec/faaliyetler.html:109
-#: ui/templates/platform/surec/karne.html:222
-#: ui/templates/platform/surec/karne.html:481
-msgid "İşlem"
-msgstr ""
-
-#: ui/templates/platform/bireysel/karne.html:251
-#: ui/templates/platform/k_radar/kp.html:57
-#: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
-#: ui/templates/platform/k_radar/ks.html:58
-#: ui/templates/platform/k_radar/ks.html:70
-#: ui/templates/platform/k_radar/ks.html:199
-#: ui/templates/platform/k_radar/ks.html:216
-#: ui/templates/platform/k_radar/ks.html:229
-#: ui/templates/platform/k_radar/ks.html:242
-#: ui/templates/platform/k_radar/ks.html:255
-#: ui/templates/platform/k_radar/ks.html:269
-#: ui/templates/platform/k_radar/ks.html:360
-#: ui/templates/platform/k_radar/ks.html:373
-#: ui/templates/platform/k_rapor/index.html:156
-#: ui/templates/platform/k_rapor/index.html:162
-#: ui/templates/platform/k_rapor/index.html:174
-#: ui/templates/platform/k_rapor/index.html:180
-#: ui/templates/platform/k_rapor/index.html:217
-#: ui/templates/platform/k_rapor/index.html:252
-#: ui/templates/platform/k_rapor/index.html:272
-#: ui/templates/platform/k_rapor/index.html:287
-#: ui/templates/platform/k_rapor/index.html:347
-#: ui/templates/platform/k_rapor/index.html:605
-#: ui/templates/platform/k_rapor/index.html:621
-#: ui/templates/platform/k_rapor/index.html:629
-#: ui/templates/platform/k_rapor/index.html:639
-#: ui/templates/platform/k_rapor/index.html:647
-#: ui/templates/platform/k_rapor/index.html:664
-#: ui/templates/platform/k_rapor/index.html:673
-#: ui/templates/platform/k_rapor/index.html:796
-#: ui/templates/platform/k_rapor/index.html:854
-#: ui/templates/platform/k_rapor/index.html:907
-#: ui/templates/platform/masaustu/index.html:63
-#: ui/templates/platform/surec/karne.html:727
-msgid "Yükleniyor…"
-msgstr ""
-
 #: ui/templates/platform/bireysel/karne.html:262
 msgid "Faaliyetlerim"
 msgstr ""
@@ -1065,25 +2811,6 @@ msgstr ""
 #: ui/templates/platform/surec/karne.html:476
 msgid "Faaliyet"
 msgstr ""
-
-#: ui/templates/platform/bireysel/karne.html:274
-#: ui/templates/platform/k_radar/risk_management.html:52
-#: ui/templates/platform/k_radar/risk_management.html:87
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:574
-#: ui/templates/platform/k_rapor/index.html:603
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/surec/faaliyetler.html:105
-#: ui/templates/platform/surec/index.html:530
-#: ui/templates/platform/surec/karne.html:221
-#: ui/templates/platform/surec/karne.html:477
-#, fuzzy
-msgid "Durum"
-msgstr "Kurum Paneli"
 
 #: ui/templates/platform/k_radar/cross.html:12
 msgid "Risk Isi Haritasi (Ozet)"
@@ -1159,12 +2886,6 @@ msgstr ""
 msgid "Paydaş adı"
 msgstr ""
 
-#: ui/templates/platform/k_radar/cross_paydas.html:19
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_rapor/index.html:663
-msgid "Rol"
-msgstr ""
-
 #: ui/templates/platform/k_radar/cross_paydas.html:20
 msgid "Etki 1"
 msgstr ""
@@ -1210,14 +2931,6 @@ msgstr ""
 msgid "Yönetim stratejisi"
 msgstr "Kurum Paneli"
 
-#: ui/templates/platform/k_radar/cross_paydas.html:23
-#: ui/templates/platform/k_radar/kp_olgunluk.html:28
-#: ui/templates/platform/surec/index.html:602
-#: ui/templates/platform/surec/index.html:622
-#, fuzzy
-msgid "Ekle"
-msgstr "Düzenle"
-
 #: ui/templates/platform/k_radar/cross_paydas.html:27
 msgid "Ad/Rol filtrele"
 msgstr ""
@@ -1248,10 +2961,6 @@ msgid "Uygula"
 msgstr ""
 
 #: ui/templates/platform/k_radar/cross_paydas.html:39
-msgid "Ad"
-msgstr ""
-
-#: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_radar/risk_management.html:50
 #: ui/templates/platform/k_rapor/index.html:346
 #: ui/templates/platform/k_rapor/index.html:450
@@ -1263,14 +2972,6 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:663
 msgid "İlgi"
 msgstr ""
-
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_rapor/index.html:663
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/surec/karne.html:864
-#, fuzzy
-msgid "Strateji"
-msgstr "Stratejik Planlama"
 
 #: ui/templates/platform/k_radar/cross_paydas.html:50
 #: ui/templates/platform/k_radar/kp_olgunluk.html:53
@@ -2005,12 +3706,6 @@ msgstr ""
 msgid "Salt Okunur"
 msgstr ""
 
-#: ui/templates/platform/k_radar/index.html:70
-#: ui/templates/platform/k_radar/index.html:77
-#: ui/templates/platform/k_radar/index.html:127
-msgid "Yükleniyor..."
-msgstr ""
-
 #: ui/templates/platform/k_radar/index.html:75
 msgid "Kural Tetikleyiciler"
 msgstr ""
@@ -2300,26 +3995,7 @@ msgid "Seviye (Düşük-Yüksek)"
 msgstr ""
 
 #: ui/templates/platform/k_radar/kp_olgunluk.html:43
-#: ui/templates/platform/k_radar/risk_management.html:98
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:308
-#: ui/templates/platform/k_rapor/index.html:320
-#: ui/templates/platform/k_rapor/index.html:370
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/surec/faaliyetler.html:60
-#: ui/templates/platform/surec/karne.html:691
-msgid "Süreç"
-msgstr ""
-
-#: ui/templates/platform/k_radar/kp_olgunluk.html:43
 msgid "Seviye"
-msgstr ""
-
-#: ui/templates/platform/k_radar/kp_olgunluk.html:43
-msgid "Boyut"
 msgstr ""
 
 #: ui/templates/platform/k_radar/kp_olgunluk.html:43
@@ -2812,15 +4488,6 @@ msgstr ""
 msgid "Önem"
 msgstr ""
 
-#: ui/templates/platform/k_radar/risk_management.html:52
-#: ui/templates/platform/k_radar/risk_management.html:95
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/k_rapor/index.html:697
-msgid "Kaynak"
-msgstr ""
-
 #: ui/templates/platform/k_radar/risk_management.html:66
 msgid "Yeni Risk"
 msgstr ""
@@ -2841,12 +4508,6 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:97
 msgid "Manuel"
-msgstr ""
-
-#: ui/templates/platform/k_radar/risk_management.html:99
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:597
-msgid "Proje"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/anomalies.html:2
@@ -3175,14 +4836,6 @@ msgid "Veri Girilmiş PG"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:271
-msgid "Toplam Giriş"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:271
-msgid "Son Giriş"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:271
 #: ui/templates/platform/k_rapor/index.html:795
 msgid "Ort. Başarı"
 msgstr ""
@@ -3306,12 +4959,6 @@ msgstr ""
 msgid "Son İşlemler"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/k_rapor/index.html:596
-#: ui/templates/platform/k_rapor/index.html:697
-msgid "Tarih"
-msgstr ""
-
 #: ui/templates/platform/k_rapor/index.html:432
 #, fuzzy
 msgid "Kritik Performans Göstergeleri"
@@ -3360,11 +5007,6 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:489
 #, fuzzy
 msgid "Alt Strateji Ağırlıkları"
-msgstr "Stratejik Planlama"
-
-#: ui/templates/platform/k_rapor/index.html:492
-#, fuzzy
-msgid "Alt Strateji"
 msgstr "Stratejik Planlama"
 
 #: ui/templates/platform/k_rapor/index.html:492
@@ -3569,13 +5211,6 @@ msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/k_rapor/index.html:853
-#: ui/templates/platform/surec/faaliyetler.html:77
-#: ui/templates/platform/surec/karne.html:392
-msgid "Toplam"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/k_rapor/index.html:853
 msgid "Devam"
 msgstr ""
 
@@ -3643,11 +5278,6 @@ msgstr "Stratejik Planlama"
 #: ui/templates/platform/k_rapor/index.html:824
 #, fuzzy
 msgid "Strateji Bazlı Kapsama Tablosu"
-msgstr "Stratejik Planlama"
-
-#: ui/templates/platform/k_rapor/index.html:827
-#, fuzzy
-msgid "Alt Str."
 msgstr "Stratejik Planlama"
 
 #: ui/templates/platform/k_rapor/index.html:827
@@ -3787,30 +5417,8 @@ msgstr ""
 msgid "Kurum Bilgileri"
 msgstr "Kurum Paneli"
 
-#: ui/templates/platform/kurum/ayarlar.html:42
-#, fuzzy
-msgid "Kurum Adı"
-msgstr "Kurum Paneli"
-
-#: ui/templates/platform/kurum/ayarlar.html:46
-msgid "Sektör"
-msgstr ""
-
-#: ui/templates/platform/kurum/ayarlar.html:50
-#, fuzzy
-msgid "Vergi No"
-msgstr "Düzenle"
-
-#: ui/templates/platform/kurum/ayarlar.html:60
-msgid "İletişim"
-msgstr ""
-
 #: ui/templates/platform/kurum/ayarlar.html:66
 msgid "Adres"
-msgstr ""
-
-#: ui/templates/platform/kurum/ayarlar.html:70
-msgid "Telefon"
 msgstr ""
 
 #: ui/templates/platform/kurum/ayarlar.html:78
@@ -3902,11 +5510,6 @@ msgstr "Kurum Paneli"
 msgid "Mevcut Logo"
 msgstr ""
 
-#: ui/templates/platform/kurum/ayarlar.html:178
-#, fuzzy
-msgid "Kurum logosu"
-msgstr "Kurum Paneli"
-
 #: ui/templates/platform/kurum/ayarlar.html:181
 msgid "Logo yok"
 msgstr ""
@@ -3978,11 +5581,6 @@ msgstr ""
 #: ui/templates/platform/kurum/index.html:235
 msgid "Aktif Süreç"
 msgstr ""
-
-#: ui/templates/platform/kurum/index.html:242
-#, fuzzy
-msgid "Ana Strateji"
-msgstr "Stratejik Planlama"
 
 #: ui/templates/platform/kurum/index.html:254
 msgid "Süreç özeti"
@@ -4429,10 +6027,6 @@ msgstr ""
 msgid "Okundu işaretle"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:678
-msgid "Okundu"
-msgstr ""
-
 #: ui/templates/platform/masaustu/index.html:682
 msgid "Okunmamış bildirim yok."
 msgstr ""
@@ -4502,11 +6096,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/index.html:122
 msgid "skor &lt; 50"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:127
-#: ui/templates/platform/surec/index.html:532
-msgid "Aktif"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:128
@@ -4596,10 +6185,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/index.html:526
 msgid "Süreç Kodu"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:533
-msgid "Pasif"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:535

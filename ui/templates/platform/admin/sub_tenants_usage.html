@@ -1,9 +1,9 @@
 {% extends "platform/base.html" %}
-{% block title %}Konsolide Kullanım Raporu — Kokpitim{% endblock %}
-{% block page_title %}Konsolide Kullanım Raporu{% endblock %}
+{% block title %}{{ _("Konsolide Kullanım Raporu — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Konsolide Kullanım Raporu") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Alt Kurum Kullanımı', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Alt Kurum Kullanımı'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -17,16 +17,16 @@
     <div>
       <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1);">
         <i class="fas fa-file-invoice-dollar" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
-        Konsolide Kullanım Raporu
+        {{ _("Konsolide Kullanım Raporu") }}
       </h2>
       <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;" id="usage-subtitle">—</p>
     </div>
     <div style="display:flex; gap: var(--space-2);">
       <a href="{{ url_for('app_bp.admin_sub_tenants_page') }}" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Geri
+        <i class="fas fa-arrow-left"></i> {{ _("Geri") }}
       </a>
       <button class="mc-btn mc-btn-primary" id="btn-export">
-        <i class="fas fa-file-excel"></i> Excel İndir
+        <i class="fas fa-file-excel"></i> {{ _("Excel İndir") }}
       </button>
     </div>
   </div>
@@ -36,14 +36,14 @@
        background: linear-gradient(135deg, #1e293b, #312e81); color:#fff; border:none; display:none;">
     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--space-6); align-items:center;">
       <div>
-        <div style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:0.06em;" id="hero-period">Bu Ay</div>
+        <div style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:0.06em;" id="hero-period">{{ _("Bu Ay") }}</div>
         <div id="hero-parent" style="font-size:22px; font-weight:700;">—</div>
       </div>
       <div style="display:grid; grid-template-columns:repeat(5, auto); gap: var(--space-6); font-size:13px;">
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Kurum</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">Kullanıcı</div><div id="h-users" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kurum") }}</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kullanıcı") }}</div><div id="h-users" style="font-size:22px; font-weight:700;">—</div></div>
         <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">KPI</div><div id="h-kpi" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">LLM Çağrı</div><div id="h-llm" style="font-size:22px; font-weight:700;">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("LLM Çağrı") }}</div><div id="h-llm" style="font-size:22px; font-weight:700;">—</div></div>
         <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">LLM USD</div><div id="h-cost" style="font-size:22px; font-weight:700;">—</div></div>
       </div>
     </div>
@@ -52,14 +52,14 @@
   {# Paket dağılımı #}
   <div class="mc-card" id="pkg-card" style="padding: var(--space-5); margin-bottom: var(--space-5); display:none;">
     <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg);">
-      <i class="fas fa-box" style="color: var(--color-primary);"></i> Paket Dağılımı
+      <i class="fas fa-box" style="color: var(--color-primary);"></i> {{ _("Paket Dağılımı") }}
     </h3>
     <div id="pkg-bars"></div>
   </div>
 
   {# Loading #}
   <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
-    <i class="fas fa-spinner fa-spin"></i> Yükleniyor…
+    <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}
   </div>
 
   {# Detay tablo #}
@@ -68,17 +68,17 @@
       <table class="mc-table" style="width:100%; font-size:12px;">
         <thead>
           <tr style="background:#f1f5f9;">
-            <th style="text-align:left;">Kurum</th>
-            <th>Paket</th>
-            <th style="text-align:center;">Kullanıcı</th>
-            <th style="text-align:center;">Doluluk</th>
+            <th style="text-align:left;">{{ _("Kurum") }}</th>
+            <th>{{ _("Paket") }}</th>
+            <th style="text-align:center;">{{ _("Kullanıcı") }}</th>
+            <th style="text-align:center;">{{ _("Doluluk") }}</th>
             <th style="text-align:center;">KPI</th>
-            <th style="text-align:center;">Girişim</th>
-            <th style="text-align:center;">Plan Yılı</th>
-            <th style="text-align:right;">LLM Çağrı (ay)</th>
-            <th style="text-align:right;">LLM Token (ay)</th>
+            <th style="text-align:center;">{{ _("Girişim") }}</th>
+            <th style="text-align:center;">{{ _("Plan Yılı") }}</th>
+            <th style="text-align:right;">{{ _("LLM Çağrı (ay)") }}</th>
+            <th style="text-align:right;">{{ _("LLM Token (ay)") }}</th>
             <th style="text-align:right;">USD</th>
-            <th style="text-align:center;">Durum</th>
+            <th style="text-align:center;">{{ _("Durum") }}</th>
           </tr>
         </thead>
         <tbody id="usage-tbody"></tbody>
@@ -90,7 +90,7 @@
   <div id="empty-state" style="display:none;">
     <div class="mc-empty">
       <i class="fas fa-inbox mc-empty-icon"></i>
-      <div class="mc-empty-title">Henüz alt kurum yok</div>
+      <div class="mc-empty-title">{{ _("Henüz alt kurum yok") }}</div>
     </div>
   </div>
 </div>

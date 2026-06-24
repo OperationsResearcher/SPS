@@ -1,9 +1,9 @@
 {% extends "platform/base.html" %}
-{% block title %}Yedekleme — Kokpitim{% endblock %}
-{% block page_title %}Yedekleme{% endblock %}
+{% block title %}{{ _("Yedekleme — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Yedekleme") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'Yedekleme', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('Yedekleme'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -16,42 +16,42 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-database" style="color:#0d9488;"></i> Yedekleme
+        <i class="fas fa-database" style="color:#0d9488;"></i> {{ _("Yedekleme") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir yedekler. DB: PostgreSQL (pg_dump).
+        {{ _("Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir yedekler. DB: PostgreSQL (pg_dump).") }}
       </p>
     </div>
   </div>
 
   {# ── 1. Manuel yedek (indir) ── #}
   <div class="mc-card" style="padding:18px;margin-bottom:16px;">
-    <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;"><i class="fas fa-download" style="color:#0284c7;"></i> Manuel Yedek</div>
-    <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">Şimdi anlık yedek üretip bu makineye indir.</div>
+    <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;"><i class="fas fa-download" style="color:#0284c7;"></i> {{ _("Manuel Yedek") }}</div>
+    <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">{{ _("Şimdi anlık yedek üretip bu makineye indir.") }}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <form method="post" action="{{ url_for('app_bp.admin_tools_yedekleme_indir_db') }}">
-        <button type="submit" class="mc-btn mc-btn-primary"><i class="fas fa-database"></i> DB Yedeği İndir (.dump)</button>
+        <button type="submit" class="mc-btn mc-btn-primary"><i class="fas fa-database"></i> {{ _("DB Yedeği İndir (.dump)") }}</button>
       </form>
       <form method="post" action="{{ url_for('app_bp.admin_tools_yedekleme_indir_kod') }}">
-        <button type="submit" class="mc-btn mc-btn-secondary"><i class="fas fa-file-code"></i> Kod Yedeği İndir (.tar.gz)</button>
+        <button type="submit" class="mc-btn mc-btn-secondary"><i class="fas fa-file-code"></i> {{ _("Kod Yedeği İndir (.tar.gz)") }}</button>
       </form>
     </div>
-    <div style="font-size:11.5px;color:#94a3b8;margin-top:8px;">Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer.</div>
+    <div style="font-size:11.5px;color:#94a3b8;margin-top:8px;">{{ _("Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer.") }}</div>
   </div>
 
   {# ── 2. Otomatik yedek durumu ── #}
   <div class="mc-card" style="padding:18px;margin-bottom:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div>
-        <div style="font-size:14px;font-weight:700;color:var(--text-default);"><i class="fas fa-clock" style="color:#7c3aed;"></i> Otomatik Yedek — her gece 02:00</div>
-        <div style="font-size:12.5px;color:#64748b;">Tam DB + kod (haftada bir tam, diğer günler fark). Son {{ 14 }} yedek tutulur.</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-default);"><i class="fas fa-clock" style="color:#7c3aed;"></i> {{ _("Otomatik Yedek — her gece 02:00") }}</div>
+        <div style="font-size:12.5px;color:#64748b;">{{ _("Tam DB + kod (haftada bir tam, diğer günler fark). Son %(n)s yedek tutulur.", n=14) }}</div>
       </div>
-      <button id="yd-run" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-play"></i> Şimdi Çalıştır</button>
+      <button id="yd-run" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-play"></i> {{ _("Şimdi Çalıştır") }}</button>
     </div>
     {% if status %}
     <div style="font-size:12.5px;color:#475569;display:flex;gap:18px;flex-wrap:wrap;">
-      <span>Son çalışma: <b data-utc="{{ status.last_run_at }}">{{ status.last_run_at or '—' }}</b></span>
-      <span>Son tam kod: <b data-utc="{{ status.last_full_code_at }}">{{ status.last_full_code_at or '—' }}</b></span>
+      <span>{{ _("Son çalışma:") }} <b data-utc="{{ status.last_run_at }}">{{ status.last_run_at or '—' }}</b></span>
+      <span>{{ _("Son tam kod:") }} <b data-utc="{{ status.last_full_code_at }}">{{ status.last_full_code_at or '—' }}</b></span>
       <span>pg_dump: <b>{{ status.pg_bin }}</b></span>
     </div>
     {% endif %}
@@ -61,15 +61,15 @@
   {# ── 3. Yedek listesi ── #}
   <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
     <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;font-size:14px;font-weight:700;color:var(--text-default);">
-      <i class="fas fa-list" style="color:#475569;"></i> Otomatik Yedekler ({{ backups|length }})
+      <i class="fas fa-list" style="color:#475569;"></i> {{ _("Otomatik Yedekler") }} ({{ backups|length }})
     </div>
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
         <thead>
           <tr style="background:#f8fafc;color:#475569;text-align:left;">
-            <th style="padding:9px 12px;">Tür</th><th style="padding:9px 12px;">Dosya</th>
-            <th style="padding:9px 12px;text-align:right;">Boyut</th><th style="padding:9px 12px;">Tarih</th>
-            <th style="padding:9px 12px;text-align:right;">İndir</th>
+            <th style="padding:9px 12px;">{{ _("Tür") }}</th><th style="padding:9px 12px;">{{ _("Dosya") }}</th>
+            <th style="padding:9px 12px;text-align:right;">{{ _("Boyut") }}</th><th style="padding:9px 12px;">{{ _("Tarih") }}</th>
+            <th style="padding:9px 12px;text-align:right;">{{ _("İndir") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -86,7 +86,7 @@
             </td>
           </tr>
           {% else %}
-          <tr><td colspan="5" style="padding:18px;text-align:center;color:#94a3b8;">Henüz otomatik yedek yok. "Şimdi Çalıştır" ile ilkini üretebilirsiniz.</td></tr>
+          <tr><td colspan="5" style="padding:18px;text-align:center;color:#94a3b8;">{{ _("Henüz otomatik yedek yok. \"Şimdi Çalıştır\" ile ilkini üretebilirsiniz.") }}</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -95,15 +95,15 @@
 
   {# ── 4. DB Geri Yükleme (YIKICI) ── #}
   <div class="mc-card mc-card--accent-danger" style="padding:18px;background:#fef2f2">
-    <div style="font-size:14px;font-weight:700;color:#991b1b;margin-bottom:4px;"><i class="fas fa-triangle-exclamation"></i> DB Geri Yükleme — Yıkıcı İşlem</div>
+    <div style="font-size:14px;font-weight:700;color:#991b1b;margin-bottom:4px;"><i class="fas fa-triangle-exclamation"></i> {{ _("DB Geri Yükleme — Yıkıcı İşlem") }}</div>
     <div style="font-size:12.5px;color:#7f1d1d;margin-bottom:12px;">
-      Yüklenen <b>.dump</b> dosyası mevcut veritabanının <b>üzerine yazılır</b> (geri alınamaz). Şifre + onay metni gerekir.
+      {{ _("Yüklenen <b>.dump</b> dosyası mevcut veritabanının <b>üzerine yazılır</b> (geri alınamaz). Şifre + onay metni gerekir.") }}
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;max-width:480px;">
       <input type="file" id="yd-restore-file" accept=".dump" style="font-size:12.5px;">
-      <input type="password" id="yd-restore-pw" placeholder="Şifreniz" style="padding:7px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;">
-      <input type="text" id="yd-restore-confirm" placeholder='Onay: {{ confirm }}' style="padding:7px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;font-family:monospace;">
-      <button id="yd-restore-btn" class="mc-btn" style="background:#dc2626;color:#fff;align-self:flex-start;"><i class="fas fa-rotate-left"></i> Geri Yükle</button>
+      <input type="password" id="yd-restore-pw" placeholder="{{ _('Şifreniz') }}" style="padding:7px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;">
+      <input type="text" id="yd-restore-confirm" placeholder="{{ _('Onay:') }} {{ confirm }}" style="padding:7px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;font-family:monospace;">
+      <button id="yd-restore-btn" class="mc-btn" style="background:#dc2626;color:#fff;align-self:flex-start;"><i class="fas fa-rotate-left"></i> {{ _("Geri Yükle") }}</button>
     </div>
     <div id="yd-restore-sonuc" style="display:none;margin-top:10px;font-size:12.5px;"></div>
   </div>

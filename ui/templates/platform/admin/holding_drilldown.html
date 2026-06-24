@@ -1,5 +1,5 @@
 {% extends "platform/base.html" %}
-{% block title %}{{ sub_tenant.name }} — Holding Görünümü{% endblock %}
+{% block title %}{{ sub_tenant.name }} — {{ _("Holding Görünümü") }}{% endblock %}
 {% block page_title %}{{ sub_tenant.name }}{% endblock %}
 
 {% block content %}
@@ -16,21 +16,21 @@
       <i class="fas fa-eye" style="color:#92400e; font-size:18px;"></i>
       <div>
         <div style="font-weight:700; color:#78350f; font-size:14px;">
-          🔒 Holding Görünümü — Salt Okur
+          🔒 {{ _("Holding Görünümü — Salt Okur") }}
         </div>
         <div style="font-size:12px; color:#92400e;">
-          <strong>{{ sub_tenant.name }}</strong> alt kurumunun verilerini görüntülüyorsunuz.
-          Düzenleme yetkisi yoktur, tüm aksiyon butonları devre dışı.
+          <strong>{{ sub_tenant.name }}</strong> {{ _("alt kurumunun verilerini görüntülüyorsunuz.") }}
+          {{ _("Düzenleme yetkisi yoktur, tüm aksiyon butonları devre dışı.") }}
         </div>
       </div>
     </div>
     <a href="{{ url_for('app_bp.holding_dashboard_page') }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="background:#fff;">
-      <i class="fas fa-arrow-left"></i> Konsolide Görünüme Dön
+      <i class="fas fa-arrow-left"></i> {{ _("Konsolide Görünüme Dön") }}
     </a>
   </div>
 
   <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
-    <i class="fas fa-spinner fa-spin"></i> Yükleniyor…
+    <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}
   </div>
 
   <div id="content" style="display:none;">
@@ -40,22 +40,22 @@
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-6);">
         <div>
           <div style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
-            Strateji Sağlık Skoru
+            {{ _("Strateji Sağlık Skoru") }}
           </div>
           <div id="d-health" class="mc-num" style="font-size: var(--text-display); font-weight:800; line-height:1; margin: var(--space-2) 0;">—</div>
           <div style="font-size: var(--text-md); opacity:0.85;" id="d-meta">—</div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(3, auto); gap: var(--space-8);">
           <div>
-            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Aktif KPI</div>
+            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Aktif KPI") }}</div>
             <div id="d-kpi" style="font-size: var(--text-2xl); font-weight:700;">—</div>
           </div>
           <div>
-            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Strateji</div>
+            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Strateji") }}</div>
             <div id="d-strat" style="font-size: var(--text-2xl); font-weight:700;">—</div>
           </div>
           <div>
-            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">Girişim</div>
+            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Girişim") }}</div>
             <div id="d-init" style="font-size: var(--text-2xl); font-weight:700;">—</div>
           </div>
         </div>
@@ -65,32 +65,32 @@
     {# ─── 6 KPI tile (salt-okur) ─────────────────────────────────── #}
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-info);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">KPI Hedef Üstü</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("KPI Hedef Üstü") }}</div>
         <div id="t-kpi-pct" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-accent);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">Girişim Ortalaması</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Girişim Ortalaması") }}</div>
         <div id="t-init-avg" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">Gecikmiş Faaliyet</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Gecikmiş Faaliyet") }}</div>
         <div id="t-overdue" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger);">—</div>
         <div id="t-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">Kritik Risk</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kritik Risk") }}</div>
         <div id="t-risk" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger);">—</div>
         <div id="t-risk-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">Yüksek Anomali</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Yüksek Anomali") }}</div>
         <div id="t-anomaly" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
       <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-success);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">Kullanıcı / Senaryo</div>
+        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kullanıcı / Senaryo") }}</div>
         <div id="t-users" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-users-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
@@ -99,7 +99,7 @@
     {# ─── Stratejik girişim listesi ─────────────────────────────────────── #}
     <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-6);">
       <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-        <i class="fas fa-rocket" style="color:#db2777;"></i> Girişimler
+        <i class="fas fa-rocket" style="color:#db2777;"></i> {{ _("Girişimler") }}
         <span id="init-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;"></span>
       </h3>
       <div id="initiatives-list"></div>
@@ -108,7 +108,7 @@
     {# ─── Risk listesi ───────────────────────────────────────────── #}
     <div class="mc-card" style="padding: var(--space-5);">
       <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-        <i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Risk Listesi
+        <i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> {{ _("Risk Listesi") }}
         <span id="risk-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;"></span>
       </h3>
       <div id="risks-list"></div>

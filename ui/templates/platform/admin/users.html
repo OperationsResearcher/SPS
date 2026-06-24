@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Kullanıcı Yönetimi{% endblock %}
-{% block page_title %}Kullanıcı Yönetimi{% endblock %}
+{% block title %}{{ _("Kullanıcı Yönetimi") }}{% endblock %}
+{% block page_title %}{{ _("Kullanıcı Yönetimi") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="admin_users">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Kullanıcılar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Kullanıcılar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -21,15 +21,15 @@
   <!-- Sayfa başlığı -->
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">Kullanıcı Yönetimi</h2>
-      <p class="mc-page-subtitle">Toplam {{ users|length }} kullanıcı</p>
+      <h2 class="mc-page-title">{{ _("Kullanıcı Yönetimi") }}</h2>
+      <p class="mc-page-subtitle">{{ _("Toplam %(n)s kullanıcı", n=users|length) }}</p>
     </div>
     <div style="display:flex; gap:8px;">
       <button id="btn-bulk-import" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-file-import"></i> Toplu İçe Aktar
+        <i class="fas fa-file-import"></i> {{ _("Toplu İçe Aktar") }}
       </button>
       <button id="btn-user-add" class="mc-btn mc-btn-primary">
-        <i class="fas fa-plus"></i> Kullanıcı Ekle
+        <i class="fas fa-plus"></i> {{ _("Kullanıcı Ekle") }}
       </button>
     </div>
   </div>
@@ -38,19 +38,19 @@
   <div class="mc-card" style="margin-bottom:16px;">
     <div class="mc-card-body" style="padding:12px 16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
       <input type="text" id="user-search" class="mc-form-input"
-             placeholder="Ad, e-posta, rol veya kurum ile ara…"
+             placeholder="{{ _('Ad, e-posta, rol veya kurum ile ara…') }}"
              style="flex:1; min-width:280px; max-width:480px;">
       {% if tenants %}
       <select id="tenant-filter" class="mc-form-input" style="min-width:240px; max-width:320px;">
-        <option value="">— Tüm Kurumlar ({{ tenants|length }}) —</option>
+        <option value="">{{ _("— Tüm Kurumlar (%(n)s) —", n=tenants|length) }}</option>
         {% for t in tenants %}
         <option value="{{ t.id }}">{{ t.name }}</option>
         {% endfor %}
       </select>
       {% endif %}
       <button type="button" id="filter-clear" class="mc-btn mc-btn-secondary mc-btn-sm"
-              title="Filtreleri sıfırla">
-        <i class="fas fa-times"></i> Temizle
+              title="{{ _('Filtreleri sıfırla') }}">
+        <i class="fas fa-times"></i> {{ _("Temizle") }}
       </button>
       <span id="filter-count" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
     </div>
@@ -61,17 +61,17 @@
     <div class="mc-stat-card mc-stat-blue">
       <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
       <div class="mc-stat-value">{{ users|length }}</div>
-      <div class="mc-stat-label">Toplam Kullanıcı</div>
+      <div class="mc-stat-label">{{ _("Toplam Kullanıcı") }}</div>
     </div>
     <div class="mc-stat-card mc-stat-emerald">
       <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
       <div class="mc-stat-value">{{ users|selectattr('is_active','eq',true)|list|length }}</div>
-      <div class="mc-stat-label">Aktif</div>
+      <div class="mc-stat-label">{{ _("Aktif") }}</div>
     </div>
     <div class="mc-stat-card mc-stat-red">
       <div class="mc-stat-icon"><i class="fas fa-ban"></i></div>
       <div class="mc-stat-value">{{ users|rejectattr('is_active','eq',true)|list|length }}</div>
-      <div class="mc-stat-label">Pasif</div>
+      <div class="mc-stat-label">{{ _("Pasif") }}</div>
     </div>
   </div>
 
@@ -96,12 +96,12 @@
       </colgroup>
       <thead>
         <tr>
-          <th class="sortable" data-sort-key="name"   style="cursor:pointer; user-select:none;">Ad Soyad <span class="sort-ico">⇅</span></th>
-          <th class="sortable" data-sort-key="email"  style="cursor:pointer; user-select:none;">E-posta <span class="sort-ico">⇅</span></th>
-          <th class="sortable" data-sort-key="role"   style="cursor:pointer; user-select:none;">Rol <span class="sort-ico">⇅</span></th>
-          {% if tenants %}<th class="sortable" data-sort-key="tenant" style="cursor:pointer; user-select:none;">Kurum <span class="sort-ico">⇅</span></th>{% endif %}
-          <th class="sortable" data-sort-key="status" style="text-align:center; cursor:pointer; user-select:none;">Durum <span class="sort-ico">⇅</span></th>
-          <th style="text-align:center;">İşlem</th>
+          <th class="sortable" data-sort-key="name"   style="cursor:pointer; user-select:none;">{{ _("Ad Soyad") }} <span class="sort-ico">⇅</span></th>
+          <th class="sortable" data-sort-key="email"  style="cursor:pointer; user-select:none;">{{ _("E-posta") }} <span class="sort-ico">⇅</span></th>
+          <th class="sortable" data-sort-key="role"   style="cursor:pointer; user-select:none;">{{ _("Rol") }} <span class="sort-ico">⇅</span></th>
+          {% if tenants %}<th class="sortable" data-sort-key="tenant" style="cursor:pointer; user-select:none;">{{ _("Kurum") }} <span class="sort-ico">⇅</span></th>{% endif %}
+          <th class="sortable" data-sort-key="status" style="text-align:center; cursor:pointer; user-select:none;">{{ _("Durum") }} <span class="sort-ico">⇅</span></th>
+          <th style="text-align:center;">{{ _("İşlem") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -130,15 +130,15 @@
           {% endif %}
           <td style="text-align:center;">
             <span class="mc-badge {% if u.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}">
-              {{ 'Aktif' if u.is_active else 'Pasif' }}
+              {{ _('Aktif') if u.is_active else _('Pasif') }}
             </span>
           </td>
           <td style="text-align:center;">
             <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
               {% if current_user.role and current_user.role.name in ['Admin', 'tenant_admin', 'executive_manager'] %}
               <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit"
-                      title="Düzenle"
-                      aria-label="Düzenle"
+                      title="{{ _('Düzenle') }}"
+                      aria-label="{{ _('Düzenle') }}"
                       data-user-id="{{ u.id }}"
                       data-first-name="{{ u.first_name or '' | e }}"
                       data-last-name="{{ u.last_name or '' | e }}"
@@ -152,8 +152,8 @@
                 <i class="fas fa-edit"></i>
               </button>
               <button class="mc-btn mc-btn-sm {% if u.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-user-toggle"
-                      title="{{ 'Pasife Al' if u.is_active else 'Aktifleştir' }}"
-                      aria-label="{{ 'Pasife Al' if u.is_active else 'Aktifleştir' }}"
+                      title="{{ _('Pasife Al') if u.is_active else _('Aktifleştir') }}"
+                      aria-label="{{ _('Pasife Al') if u.is_active else _('Aktifleştir') }}"
                       data-user-id="{{ u.id }}"
                       data-name="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim | e }}"
                       data-active="{{ 'true' if u.is_active else 'false' }}"
@@ -166,7 +166,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">Kullanıcı bulunamadı.</td>
+          <td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">{{ _("Kullanıcı bulunamadı.") }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -178,46 +178,46 @@
       <div class="mc-modal-header">
         <div class="mc-modal-title">
           <i class="fas fa-user-plus"></i>
-          <span>Yeni Kullanıcı Ekle</span>
+          <span>{{ _("Yeni Kullanıcı Ekle") }}</span>
         </div>
-        <button class="mc-modal-close" id="btn-add-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+        <button class="mc-modal-close" id="btn-add-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="mc-modal-body">
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label" for="ua-fname">Ad</label>
-            <input id="ua-fname" class="mc-form-input" placeholder="Ad">
+            <label class="mc-form-label" for="ua-fname">{{ _("Ad") }}</label>
+            <input id="ua-fname" class="mc-form-input" placeholder="{{ _('Ad') }}">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label" for="ua-lname">Soyad</label>
-            <input id="ua-lname" class="mc-form-input" placeholder="Soyad">
+            <label class="mc-form-label" for="ua-lname">{{ _("Soyad") }}</label>
+            <input id="ua-lname" class="mc-form-input" placeholder="{{ _('Soyad') }}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ua-email">E-posta <span class="req">*</span></label>
+            <label class="mc-form-label" for="ua-email">{{ _("E-posta") }} <span class="req">*</span></label>
             <input id="ua-email" class="mc-form-input" type="email" placeholder="ornek@kurum.com">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ua-pass">Şifre <span style="font-size:11px;color:#94a3b8;">(boş = varsayılan atanır)</span></label>
-            <input id="ua-pass" class="mc-form-input" type="password" placeholder="Şifre">
+            <label class="mc-form-label" for="ua-pass">{{ _("Şifre") }} <span style="font-size:11px;color:#94a3b8;">{{ _("(boş = varsayılan atanır)") }}</span></label>
+            <input id="ua-pass" class="mc-form-input" type="password" placeholder="{{ _('Şifre') }}">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label" for="ua-role">Rol</label>
+            <label class="mc-form-label" for="ua-role">{{ _("Rol") }}</label>
             <select id="ua-role" class="mc-form-input">
-              <option value="">— Rol Seç —</option>
+              <option value="">{{ _("— Rol Seç —") }}</option>
             </select>
           </div>
           <div class="tm-field" id="ua-tenant-wrap">
-            <label class="mc-form-label" for="ua-tenant">Kurum</label>
+            <label class="mc-form-label" for="ua-tenant">{{ _("Kurum") }}</label>
             <select id="ua-tenant" class="mc-form-input">
-              <option value="">— Kurum Seç —</option>
+              <option value="">{{ _("— Kurum Seç —") }}</option>
             </select>
           </div>
         </div>
       </div>
       <div class="mc-modal-footer">
-        <button id="btn-add-modal-cancel" class="mc-btn mc-btn-secondary">İptal</button>
+        <button id="btn-add-modal-cancel" class="mc-btn mc-btn-secondary">{{ _("İptal") }}</button>
         <button id="btn-add-modal-save" class="mc-btn mc-btn-primary">
-          <i class="fas fa-save"></i> Kaydet
+          <i class="fas fa-save"></i> {{ _("Kaydet") }}
         </button>
       </div>
     </div>
@@ -229,39 +229,39 @@
       <div class="mc-modal-header">
         <div class="mc-modal-title">
           <i class="fas fa-user-edit"></i>
-          <span>Kullanıcı Düzenle</span>
+          <span>{{ _("Kullanıcı Düzenle") }}</span>
         </div>
-        <button class="mc-modal-close" id="btn-edit-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+        <button class="mc-modal-close" id="btn-edit-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="mc-modal-body">
         <div class="tm-grid-2">
           <div class="tm-field">
-            <label class="mc-form-label" for="ue-fname">Ad</label>
-            <input id="ue-fname" class="mc-form-input" placeholder="Ad">
+            <label class="mc-form-label" for="ue-fname">{{ _("Ad") }}</label>
+            <input id="ue-fname" class="mc-form-input" placeholder="{{ _('Ad') }}">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label" for="ue-lname">Soyad</label>
-            <input id="ue-lname" class="mc-form-input" placeholder="Soyad">
+            <label class="mc-form-label" for="ue-lname">{{ _("Soyad") }}</label>
+            <input id="ue-lname" class="mc-form-input" placeholder="{{ _('Soyad') }}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ue-email">E-posta</label>
+            <label class="mc-form-label" for="ue-email">{{ _("E-posta") }}</label>
             <input id="ue-email" class="mc-form-input" type="email" readonly
                    style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ue-pass">Yeni Şifre <span style="font-size:11px;color:#94a3b8;">(boş = değişmez)</span></label>
-            <input id="ue-pass" class="mc-form-input" type="password" placeholder="Değiştirmek için girin">
+            <label class="mc-form-label" for="ue-pass">{{ _("Yeni Şifre") }} <span style="font-size:11px;color:#94a3b8;">{{ _("(boş = değişmez)") }}</span></label>
+            <input id="ue-pass" class="mc-form-input" type="password" placeholder="{{ _('Değiştirmek için girin') }}">
           </div>
           <div class="tm-field">
-            <label class="mc-form-label" for="ue-role">Rol</label>
+            <label class="mc-form-label" for="ue-role">{{ _("Rol") }}</label>
             <select id="ue-role" class="mc-form-input">
-              <option value="">— Rol Seç —</option>
+              <option value="">{{ _("— Rol Seç —") }}</option>
             </select>
           </div>
           <div class="tm-field" id="ue-tenant-wrap">
-            <label class="mc-form-label" for="ue-tenant">Kurum</label>
+            <label class="mc-form-label" for="ue-tenant">{{ _("Kurum") }}</label>
             <select id="ue-tenant" class="mc-form-input">
-              <option value="">— Kurum Seç —</option>
+              <option value="">{{ _("— Kurum Seç —") }}</option>
             </select>
           </div>
         </div>
@@ -274,25 +274,24 @@
               <i id="ue-2fa-icon" class="fas fa-shield-alt" style="font-size:20px; color:#94a3b8;"></i>
               <div>
                 <div style="font-weight:600; color:var(--text-default); font-size:13px;">
-                  İki Faktörlü Doğrulama (2FA)
+                  {{ _("İki Faktörlü Doğrulama (2FA)") }}
                 </div>
                 <div id="ue-2fa-status" style="font-size:12px; color:#64748b; margin-top:2px;">—</div>
               </div>
             </div>
             <button type="button" id="btn-edit-2fa-reset" class="mc-btn mc-btn-sm" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; display:none;">
-              <i class="fas fa-unlock-alt"></i> 2FA'yı Sıfırla
+              <i class="fas fa-unlock-alt"></i> {{ _("2FA'yı Sıfırla") }}
             </button>
           </div>
           <div id="ue-2fa-hint" style="font-size:11px; color:#94a3b8; margin-top:8px; display:none;">
-            Kullanıcı telefonunu kaybettiyse veya yedek kodlara erişemiyorsa 2FA'yı sıfırlayın.
-            Sonraki girişinde profilinden tekrar etkinleştirebilir.
+            {{ _("Kullanıcı telefonunu kaybettiyse veya yedek kodlara erişemiyorsa 2FA'yı sıfırlayın. Sonraki girişinde profilinden tekrar etkinleştirebilir.") }}
           </div>
         </div>
       </div>
       <div class="mc-modal-footer">
-        <button id="btn-edit-modal-cancel" class="mc-btn mc-btn-secondary">İptal</button>
+        <button id="btn-edit-modal-cancel" class="mc-btn mc-btn-secondary">{{ _("İptal") }}</button>
         <button id="btn-edit-modal-save" class="mc-btn mc-btn-primary">
-          <i class="fas fa-save"></i> Güncelle
+          <i class="fas fa-save"></i> {{ _("Güncelle") }}
         </button>
       </div>
     </div>

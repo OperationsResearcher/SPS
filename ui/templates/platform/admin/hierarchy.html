@@ -1,9 +1,9 @@
 {% extends "platform/base.html" %}
-{% block title %}SaaS Hiyerarşi{% endblock %}
-{% block page_title %}Paket Hiyerarşisi (4 Katman){% endblock %}
+{% block title %}{{ _("SaaS Hiyerarşi") }}{% endblock %}
+{% block page_title %}{{ _("Paket Hiyerarşisi (4 Katman)") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Paket Hiyerarşisi', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Paket Hiyerarşisi'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -14,16 +14,16 @@
 
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">Paket Hiyerarşisi</h2>
-      <p class="mc-page-subtitle">Paket → Modül → Bileşen → Kart → Veri kaynağı. Kartlar template işaretlerinden (data-card-*) keşfedilir.</p>
+      <h2 class="mc-page-title">{{ _("Paket Hiyerarşisi") }}</h2>
+      <p class="mc-page-subtitle">{{ _("Paket → Modül → Bileşen → Kart → Veri kaynağı. Kartlar template işaretlerinden (data-card-*) keşfedilir.") }}</p>
     </div>
     <div style="display:flex; gap:8px;">
-      <a href="{{ url_for('app_bp.admin_packages') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-box"></i> Paketler</a>
-      <button id="btn-discover" class="mc-btn mc-btn-primary"><i class="fas fa-magnifying-glass"></i> Kartları Keşfet</button>
+      <a href="{{ url_for('app_bp.admin_packages') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-box"></i> {{ _("Paketler") }}</a>
+      <button id="btn-discover" class="mc-btn mc-btn-primary"><i class="fas fa-magnifying-glass"></i> {{ _("Kartları Keşfet") }}</button>
     </div>
   </div>
 
-  <div id="hierarchy-loading" style="text-align:center; padding:30px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+  <div id="hierarchy-loading" style="text-align:center; padding:30px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
   <div id="hierarchy-tree" style="display:flex; flex-direction:column; gap:10px;"></div>
 </div>
 {% endblock %}

@@ -1,9 +1,9 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Paket Yönetimi{% endblock %}
-{% block page_title %}SaaS Paket ve Modül Yönetimi{% endblock %}
+{% block title %}{{ _("Paket Yönetimi") }}{% endblock %}
+{% block page_title %}{{ _("SaaS Paket ve Modül Yönetimi") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': url_for('app_bp.yonetim_paneli')}, {'label': 'Paketler', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Paketler'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,15 +19,15 @@
 
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">SaaS Paket ve Modül Yönetimi</h2>
-      <p class="mc-page-subtitle">Abonelik paketleri, sistem modülleri ve bileşen senkronizasyonu</p>
+      <h2 class="mc-page-title">{{ _("SaaS Paket ve Modül Yönetimi") }}</h2>
+      <p class="mc-page-subtitle">{{ _("Abonelik paketleri, sistem modülleri ve bileşen senkronizasyonu") }}</p>
     </div>
     <div style="display:flex; gap:8px;">
       <a href="{{ url_for('app_bp.admin_hierarchy_page') }}" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-sitemap"></i> Hiyerarşi (4 katman)
+        <i class="fas fa-sitemap"></i> {{ _("Hiyerarşi (4 katman)") }}
       </a>
       <button id="btn-sync-components" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-sync-alt"></i> Bileşen Senkronize Et
+        <i class="fas fa-sync-alt"></i> {{ _("Bileşen Senkronize Et") }}
       </button>
     </div>
   </div>
@@ -37,11 +37,11 @@
     <!-- Paketler -->
     <div class="mc-card">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-box" style="color:#6366f1; margin-right:8px;"></i>Abonelik Paketleri</span>
+        <span class="mc-card-title"><i class="fas fa-box" style="color:#6366f1; margin-right:8px;"></i>{{ _("Abonelik Paketleri") }}</span>
         <div style="display:flex; align-items:center; gap:8px;">
           <span class="mc-badge mc-badge-indigo">{{ packages|length }}</span>
           <button id="btn-pkg-add" class="mc-btn mc-btn-primary mc-btn-sm">
-            <i class="fas fa-plus"></i> Ekle
+            <i class="fas fa-plus"></i> {{ _("Ekle") }}
           </button>
         </div>
       </div>
@@ -58,11 +58,11 @@
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
               <span class="mc-badge {% if pkg.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
-                {{ 'Aktif' if pkg.is_active else 'Pasif' }}
+                {{ _('Aktif') if pkg.is_active else _('Pasif') }}
               </span>
               <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-modules"
                       data-pkg-id="{{ pkg.id }}" data-pkg-name="{{ pkg.name | e }}">
-                <i class="fas fa-puzzle-piece"></i> Modüller
+                <i class="fas fa-puzzle-piece"></i> {{ _("Modüller") }}
               </button>
               <button class="mc-btn mc-btn-secondary mc-btn-sm btn-pkg-edit"
                       data-pkg-id="{{ pkg.id }}"
@@ -74,7 +74,7 @@
                       data-pkg-id="{{ pkg.id }}"
                       data-name="{{ pkg.name | e }}"
                       data-active="{{ 'true' if pkg.is_active else 'false' }}">
-                {{ 'Pasife Al' if pkg.is_active else 'Aktifleştir' }}
+                {{ _('Pasife Al') if pkg.is_active else _('Aktifleştir') }}
               </button>
             </div>
           </div>
@@ -85,7 +85,7 @@
         {% else %}
         <div class="mc-empty" style="padding:40px 20px;">
           <div class="mc-empty-icon"><i class="fas fa-box-open"></i></div>
-          <div class="mc-empty-text">Paket tanımlanmamış.</div>
+          <div class="mc-empty-text">{{ _("Paket tanımlanmamış.") }}</div>
         </div>
         {% endfor %}
       </div>
@@ -94,11 +94,11 @@
     <!-- Modüller -->
     <div class="mc-card">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-puzzle-piece" style="color:#8b5cf6; margin-right:8px;"></i>Sistem Modülleri</span>
+        <span class="mc-card-title"><i class="fas fa-puzzle-piece" style="color:#8b5cf6; margin-right:8px;"></i>{{ _("Sistem Modülleri") }}</span>
         <div style="display:flex; align-items:center; gap:8px;">
           <span class="mc-badge mc-badge-purple">{{ modules|length }}</span>
           <button id="btn-mod-add" class="mc-btn mc-btn-primary mc-btn-sm">
-            <i class="fas fa-plus"></i> Ekle
+            <i class="fas fa-plus"></i> {{ _("Ekle") }}
           </button>
         </div>
       </div>
@@ -114,20 +114,20 @@
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             <span class="mc-badge {% if mod.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}" style="font-size:11px;">
-              {{ 'Aktif' if mod.is_active else 'Pasif' }}
+              {{ _('Aktif') if mod.is_active else _('Pasif') }}
             </span>
             <button class="mc-btn mc-btn-sm {% if mod.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-mod-toggle"
                     data-mod-id="{{ mod.id }}"
                     data-name="{{ mod.name | e }}"
                     data-active="{{ 'true' if mod.is_active else 'false' }}">
-              {{ 'Pasife Al' if mod.is_active else 'Aktifleştir' }}
+              {{ _('Pasife Al') if mod.is_active else _('Aktifleştir') }}
             </button>
           </div>
         </div>
         {% else %}
         <div class="mc-empty" style="padding:40px 20px;">
           <div class="mc-empty-icon"><i class="fas fa-puzzle-piece"></i></div>
-          <div class="mc-empty-text">Modül tanımlanmamış.</div>
+          <div class="mc-empty-text">{{ _("Modül tanımlanmamış.") }}</div>
         </div>
         {% endfor %}
       </div>
