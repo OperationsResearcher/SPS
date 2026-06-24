@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 02:50+0300\n"
+"POT-Creation-Date: 2026-06-24 03:14+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -167,3 +167,182 @@ msgstr "Edit"
 #: ui/templates/platform/base.html:826
 msgid "İptal"
 msgstr "Cancel"
+
+#: ui/templates/platform/masaustu/index.html:24
+msgid "Widget görünürlüğü"
+msgstr "Widget visibility"
+
+#: ui/templates/platform/masaustu/index.html:25
+msgid "Widget yönetimi"
+msgstr "Widget management"
+
+#: ui/templates/platform/masaustu/index.html:31
+msgid "Kurum Kullanıcısı"
+msgstr "Organization User"
+
+#: ui/templates/platform/masaustu/index.html:34
+msgid "Merhaba"
+msgstr "Hello"
+
+#: ui/templates/platform/masaustu/index.html:47
+msgid ""
+"<strong>Karalama defteri</strong> ve <strong>widget sırası / gizlenen "
+"kartlar</strong> yalnızca bu tarayıcıda (<code>localStorage</code>) "
+"saklanır; sunucuya yazılmaz. Başka cihaz veya tarayıcıda görünmez, "
+"silinmez yedeklenmez. Widget yönetiminden gizlediğiniz bölümleri geri "
+"açmak için sayfa yenilenir."
+msgstr ""
+"The <strong>scratchpad</strong> and <strong>widget order / hidden "
+"cards</strong> are stored only in this browser (<code>localStorage</code>); "
+"they are not saved to the server. They are not visible on other devices or "
+"browsers, and are not deleted or backed up. Refresh the page to restore "
+"sections you hid from widget management."
+
+#: ui/templates/platform/masaustu/index.html:58
+msgid "Yönetici Sabah Özeti"
+msgstr "Executive Morning Brief"
+
+#: ui/templates/platform/masaustu/index.html:63
+msgid "Yükleniyor…"
+msgstr "Loading…"
+
+#: ui/templates/platform/masaustu/index.html:73
+msgid "Kurumsal Olgunluk Endeksi"
+msgstr "Organizational Maturity Index"
+
+#: ui/templates/platform/masaustu/index.html:78
+msgid "Kimlik & Strateji Netliği"
+msgstr "Identity & Strategy Clarity"
+
+#: ui/templates/platform/masaustu/index.html:79
+msgid "Süreç Mimarisi"
+msgstr "Process Architecture"
+
+#: ui/templates/platform/masaustu/index.html:80
+msgid "Olgunluk"
+msgstr "Maturity"
+
+#: ui/templates/platform/masaustu/index.html:81
+msgid "İcra Disiplini"
+msgstr "Execution Discipline"
+
+#: ui/templates/platform/masaustu/index.html:103
+msgid "Bu dönem önceliklerin"
+msgstr "Your priorities this period"
+
+#: ui/templates/platform/masaustu/index.html:140
+msgid "Okunmamış bildirim"
+msgstr "Unread notifications"
+
+#: ui/templates/platform/masaustu/index.html:148
+msgid "Geciken faaliyet (bitiş tarihi geçti)"
+msgstr "Overdue activities (past due date)"
+
+#: ui/templates/platform/masaustu/index.html:167
+msgid "Bireysel PG"
+msgstr "Individual PI"
+
+#: ui/templates/platform/masaustu/index.html:169
+msgid "Aktif gösterge"
+msgstr "Active indicator"
+
+#: ui/templates/platform/masaustu/index.html:173
+msgid "Devam Eden Faaliyet"
+msgstr "Ongoing Activity"
+
+#: ui/templates/platform/masaustu/index.html:175
+msgid "Aktif faaliyet"
+msgstr "Active activity"
+
+#: ui/templates/platform/masaustu/index.html:179
+msgid "Süreç PG"
+msgstr "Process PI"
+
+#: ui/templates/platform/masaustu/index.html:181
+msgid "Üye/lider olduğunuz süreçlerdeki toplam aktif PG"
+msgstr "Total active PIs in processes you are a member/lead of"
+
+#: ui/templates/platform/masaustu/index.html:185
+msgid "Okunmamış Bildirim"
+msgstr "Unread Notifications"
+
+#: ui/templates/platform/masaustu/index.html:187
+msgid "Bekleyen bildirim"
+msgstr "Pending notifications"
+
+#: ui/templates/platform/masaustu/index.html:202
+msgid "Tümü"
+msgstr "All"
+
+#: ui/templates/platform/masaustu/index.html:203
+msgid "Gecikmiş"
+msgstr "Overdue"
+
+#: ui/templates/platform/masaustu/index.html:204
+msgid "Bugün"
+msgstr "Today"
+
+#: ui/templates/platform/masaustu/index.html:205
+msgid "Bu hafta"
+msgstr "This week"
+
+#: ui/templates/platform/masaustu/index.html:207
+msgid "Yenile"
+msgstr "Refresh"
+
+#: ui/templates/platform/masaustu/index.html:324
+msgid "Önceki sayfayı favorilere ekle"
+msgstr "Add previous page to favorites"
+
+#: ui/templates/platform/masaustu/index.html:479
+msgid "Bugün bitiş tarihli faaliyet yok."
+msgstr "No activities due today."
+
+#: ui/templates/platform/masaustu/index.html:500
+msgid "Geciken faaliyet yok."
+msgstr "No overdue activities."
+
+#: ui/templates/platform/masaustu/index.html:535
+msgid "Bugünkü notunuz…"
+msgstr "Your note for today…"
+
+#: ui/templates/platform/masaustu/index.html:535
+msgid "Karalama notu"
+msgstr "Scratchpad note"
+
+#: ui/templates/platform/masaustu/index.html:565
+msgid "Henüz bireysel PG yok."
+msgstr "No individual PIs yet."
+
+#: ui/templates/platform/masaustu/index.html:593
+msgid "Devam eden faaliyet yok."
+msgstr "No ongoing activities."
+
+#: ui/templates/platform/masaustu/index.html:609
+msgid ""
+"Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle "
+"burada toplanır."
+msgstr ""
+"Indicators you starred from process scorecards are collected here with their "
+"latest measurement values."
+
+#: ui/templates/platform/masaustu/index.html:645
+msgid ""
+"Son güncellenen <strong>5</strong> gösterge listelenir; toplam adet "
+"üstteki istatistik kartındadır."
+msgstr ""
+"The <strong>5</strong> most recently updated indicators are listed; the "
+"total count is in the statistic card above."
+
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu işaretle"
+msgstr "Mark as read"
+
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu"
+msgstr "Read"
+
+#: ui/templates/platform/masaustu/index.html:682
+msgid "Okunmamış bildirim yok."
+msgstr "No unread notifications."
+

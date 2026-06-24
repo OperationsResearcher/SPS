@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-216 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3a — masaustu (Desktop) modülü çevirisi
+**Modül:** ui/masaustu/index.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3 ilk dilim (masaustu = ana sayfa, herkes görür). ~40 görünür HTML metni {{ _() }}
+ile işaretlendi: karşılama, KOE widget, istatistik kartları, görev filtreleri, boş durumlar, karalama,
+alt başlıklar, bildirim. EN çevirileri dolduruldu (PG→PI: "Bireysel PG"→"Individual PI").
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/masaustu/index.html` → ~40 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +40 string tam çeviri (79 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot` güncellendi
+
+### Önemli ayrım
+JS template-literal içindeki metinler (${d.total} olan satırlar: 239, 283-297, 300+) DOKUNULMADI —
+bunlar FAZ 4 (JS) kapsamı; {{ _() }} Jinja JS string'inde çalışmaz. Sadece Jinja-render HTML metni sarıldı.
+Domain terimi koe (Kurumsal Olgunluk Endeksi) İngilizce metinde "Organizational Maturity Index" oldu.
+
+### Test
+compile 0 boş 0 fuzzy. force_locale EN render: "Organizational Maturity Index|Individual PI|Overdue|Refresh".
+masaustu template Jinja parse OK (i18n işaretlemeleri syntax bozmadı).
+
+### Notlar
+Sıradaki FAZ 3b: surec/ + surec.js (en yoğun). Akış kanıtlandı: işaretle→extract→update→EN doldur(fuzzy
+temizle)→compile→render test→parse test→commit. Fuzzy otomatik-eşleşmeler tehlikeli (Bireysel PG→yanlış
+"Individual Performance" eşleşmişti), elle düzeltildi.
+
 ## TASK-215 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 1 — base.html ortak iskelet çevirisi (sidebar, topbar, dropdown, modal)

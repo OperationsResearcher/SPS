@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 02:50+0300\n"
+"POT-Creation-Date: 2026-06-24 03:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,5 +167,174 @@ msgstr ""
 
 #: ui/templates/platform/base.html:826
 msgid "İptal"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:24
+msgid "Widget görünürlüğü"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:25
+msgid "Widget yönetimi"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:31
+msgid "Kurum Kullanıcısı"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:34
+msgid "Merhaba"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:47
+msgid ""
+"<strong>Karalama defteri</strong> ve <strong>widget sırası / gizlenen "
+"kartlar</strong> yalnızca bu tarayıcıda (<code>localStorage</code>) "
+"saklanır; sunucuya yazılmaz. Başka cihaz veya tarayıcıda görünmez, "
+"silinmez yedeklenmez. Widget yönetiminden gizlediğiniz bölümleri geri "
+"açmak için sayfa yenilenir."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:58
+msgid "Yönetici Sabah Özeti"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:63
+msgid "Yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:73
+msgid "Kurumsal Olgunluk Endeksi"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:78
+msgid "Kimlik & Strateji Netliği"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:79
+msgid "Süreç Mimarisi"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:80
+msgid "Olgunluk"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:81
+msgid "İcra Disiplini"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:103
+msgid "Bu dönem önceliklerin"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:140
+msgid "Okunmamış bildirim"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:148
+msgid "Geciken faaliyet (bitiş tarihi geçti)"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:167
+msgid "Bireysel PG"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:169
+msgid "Aktif gösterge"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:173
+msgid "Devam Eden Faaliyet"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:175
+msgid "Aktif faaliyet"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:179
+msgid "Süreç PG"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:181
+msgid "Üye/lider olduğunuz süreçlerdeki toplam aktif PG"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:185
+msgid "Okunmamış Bildirim"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:187
+msgid "Bekleyen bildirim"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:202
+msgid "Tümü"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:203
+msgid "Gecikmiş"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:204
+msgid "Bugün"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:205
+msgid "Bu hafta"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:207
+msgid "Yenile"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:324
+msgid "Önceki sayfayı favorilere ekle"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:479
+msgid "Bugün bitiş tarihli faaliyet yok."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:500
+msgid "Geciken faaliyet yok."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:535
+msgid "Bugünkü notunuz…"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:535
+msgid "Karalama notu"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:565
+msgid "Henüz bireysel PG yok."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:593
+msgid "Devam eden faaliyet yok."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:609
+msgid ""
+"Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle "
+"burada toplanır."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:645
+msgid ""
+"Son güncellenen <strong>5</strong> gösterge listelenir; toplam adet "
+"üstteki istatistik kartındadır."
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu işaretle"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:682
+msgid "Okunmamış bildirim yok."
 msgstr ""
 
