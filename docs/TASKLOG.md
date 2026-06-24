@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-223 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3g — k_rapor (K-Report) modülü çevirisi (2 dosya, ~210 metin)
+**Modül:** ui/k_rapor/{index,anomalies}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/k_rapor/index.html` → 22 sekme (kr_tabs n/d), EVM panelleri, risk/uyarı/paydaş/SWOT tabloları, 135 `<th>`, info-band'ler, kart başlıkları `{{ _() }}`
+- `ui/templates/platform/k_rapor/anomalies.html` → KPI anomali tespiti tüm görünür metin
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → k_rapor sözlüğü + **çok-satır msgid 2. geçiş** (uzun HTML info-band'leri için)
+- `translations/{tr,en}/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+
+### Yapılan İşlem
+docs/lang/ FAZ 3g. k_rapor index (955 satır) hibrit (manuel Edit + replace_all + regex script) ile işaretlendi.
+Fill scriptine k_rapor sözlüğü eklendi; tek-satır filler uzun HTML msgid'leri kaçırdığı için
+**çok-satır blok 2. geçişi** yazıldı. PG→PI, K-Vektör→K-Vector. EN katalog: **0 boş, 0 fuzzy**.
+force_locale('en') render testi 12 örnekte geçti; jinja parse OK. Push YOK (kullanıcı i18n push istemedi).
+
+### Notlar
+Fuzzy auto-eşleşmeler (Orta→Average, Kod→Code yanlış bağlam, ST→Hour) tek tek doğru çeviriyle düzeltildi.
+
 ## TASK-222 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3f — kurum (Organization) modülü çevirisi (2 dosya)
