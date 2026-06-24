@@ -11,32 +11,32 @@
      style="max-width:1000px; margin:0 auto;">
   <div class="mc-card">
     <div class="mc-card-body">
-      <h3 style="margin-top:0;">Paydas Analizi</h3>
+      <h3 style="margin-top:0;">{{ _("Paydas Analizi") }}</h3>
       {% if can_manage_k_radar %}
       <form id="cross-paydas-form" method="post" action="{{ url_for('app_bp.k_radar_cross_paydas_ekle') }}" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input name="name" class="mc-input" placeholder="Paydaş adı" required>
-        <input name="role" class="mc-input" placeholder="Rol">
-        <select name="influence" class="mc-select"><option value="1">Etki 1</option><option value="2">Etki 2</option><option value="3" selected>Etki 3</option><option value="4">Etki 4</option><option value="5">Etki 5</option></select>
-        <select name="interest" class="mc-select"><option value="1">İlgi 1</option><option value="2">İlgi 2</option><option value="3" selected>İlgi 3</option><option value="4">İlgi 4</option><option value="5">İlgi 5</option></select>
-        <input name="strategy" class="mc-input" placeholder="Yönetim stratejisi">
-        <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">Ekle</button>
+        <input name="name" class="mc-input" placeholder="{{ _('Paydaş adı') }}" required>
+        <input name="role" class="mc-input" placeholder="{{ _('Rol') }}">
+        <select name="influence" class="mc-select"><option value="1">{{ _("Etki 1") }}</option><option value="2">{{ _("Etki 2") }}</option><option value="3" selected>{{ _("Etki 3") }}</option><option value="4">{{ _("Etki 4") }}</option><option value="5">{{ _("Etki 5") }}</option></select>
+        <select name="interest" class="mc-select"><option value="1">{{ _("İlgi 1") }}</option><option value="2">{{ _("İlgi 2") }}</option><option value="3" selected>{{ _("İlgi 3") }}</option><option value="4">{{ _("İlgi 4") }}</option><option value="5">{{ _("İlgi 5") }}</option></select>
+        <input name="strategy" class="mc-input" placeholder="{{ _('Yönetim stratejisi') }}">
+        <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">{{ _("Ekle") }}</button>
       </form>
       {% endif %}
       <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
-        <input id="cross-paydas-filter" class="mc-input" placeholder="Ad/Rol filtrele" style="width:240px;">
+        <input id="cross-paydas-filter" class="mc-input" placeholder="{{ _('Ad/Rol filtrele') }}" style="width:240px;">
         <select id="cross-paydas-sort" class="mc-select">
-          <option value="updated_desc">Varsayılan</option>
-          <option value="influence_desc">Etki (Yüksek-Düşük)</option>
-          <option value="influence_asc">Etki (Düşük-Yüksek)</option>
-          <option value="interest_desc">İlgi (Yüksek-Düşük)</option>
-          <option value="interest_asc">İlgi (Düşük-Yüksek)</option>
+          <option value="updated_desc">{{ _("Varsayılan") }}</option>
+          <option value="influence_desc">{{ _("Etki (Yüksek-Düşük)") }}</option>
+          <option value="influence_asc">{{ _("Etki (Düşük-Yüksek)") }}</option>
+          <option value="interest_desc">{{ _("İlgi (Yüksek-Düşük)") }}</option>
+          <option value="interest_asc">{{ _("İlgi (Düşük-Yüksek)") }}</option>
         </select>
-        <button id="cross-paydas-apply" class="mc-btn mc-btn-sm">Uygula</button>
+        <button id="cross-paydas-apply" class="mc-btn mc-btn-sm">{{ _("Uygula") }}</button>
       </div>
       <div style="overflow:auto;">
         <table style="width:100%; border-collapse:collapse;">
-          <thead><tr><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Ad</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Rol</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Etki</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">İlgi</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Strateji</th>{% if can_manage_k_radar %}<th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">İşlem</th>{% endif %}</tr></thead>
+          <thead><tr><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Ad") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Rol") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Etki") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("İlgi") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Strateji") }}</th>{% if can_manage_k_radar %}<th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("İşlem") }}</th>{% endif %}</tr></thead>
           <tbody id="cross-paydas-rows">
             {% for r in rows %}
             <tr>
@@ -47,7 +47,7 @@
               <td style="border-bottom:1px solid #f1f5f9; padding:6px;">{{ r.strategy or '-' }}</td>
             </tr>
             {% else %}
-            <tr><td colspan="5" style="padding:8px; color:#64748b;">Kayıt bulunamadı.</td></tr>
+            <tr><td colspan="5" style="padding:8px; color:#64748b;">{{ _("Kayıt bulunamadı.") }}</td></tr>
             {% endfor %}
           </tbody>
         </table>

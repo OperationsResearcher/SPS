@@ -4,10 +4,10 @@
 {% block content %}
 <div id="k-radar-kpr-risk-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_risk') }}" style="max-width:900px; margin:0 auto;">
   <div class="mc-card"><div class="mc-card-body">
-    <h3 style="margin-top:0;">Risk Özeti</h3>
-    <div><strong>Açık Risk:</strong> <span id="kpr-risk-open">-</span></div>
-    <div><strong>Ortalama RPN:</strong> <span id="kpr-risk-rpn">-</span></div>
-    <div><strong>Yüksek Risk:</strong> <span id="kpr-risk-high">-</span></div>
+    <h3 style="margin-top:0;">{{ _("Risk Özeti") }}</h3>
+    <div><strong>{{ _("Açık Risk:") }}</strong> <span id="kpr-risk-open">-</span></div>
+    <div><strong>{{ _("Ortalama RPN:") }}</strong> <span id="kpr-risk-rpn">-</span></div>
+    <div><strong>{{ _("Yüksek Risk:") }}</strong> <span id="kpr-risk-high">-</span></div>
   </div></div>
 </div>
 {% endblock %}

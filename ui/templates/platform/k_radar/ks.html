@@ -39,13 +39,13 @@
       </div>
       <div>
         <h1 class="kr-header-title">K-Analiz</h1>
-        <p class="kr-header-sub">Stratejik Planlama Analiz Merkezi — SWOT · TOWS · PESTLE · GAP · OKR · BSC · EFQM</p>
+        <p class="kr-header-sub">{{ _("Stratejik Planlama Analiz Merkezi — SWOT · TOWS · PESTLE · GAP · OKR · BSC · EFQM") }}</p>
       </div>
     </div>
     <div style="display:flex;gap:8px;">
-      <a href="{{ url_for('app_bp.k_radar_kp') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Süreç Analizi"><i class="fas fa-cogs"></i> KP</a>
-      <a href="{{ url_for('app_bp.k_radar_kpr') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Proje Analizi"><i class="fas fa-project-diagram"></i> KPR</a>
-      <a href="{{ url_for('app_bp.k_radar_cross') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Çapraz Analiz"><i class="fas fa-network-wired"></i> Çapraz</a>
+      <a href="{{ url_for('app_bp.k_radar_kp') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Süreç Analizi') }}"><i class="fas fa-cogs"></i> KP</a>
+      <a href="{{ url_for('app_bp.k_radar_kpr') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Proje Analizi') }}"><i class="fas fa-project-diagram"></i> KPR</a>
+      <a href="{{ url_for('app_bp.k_radar_cross') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Çapraz Analiz') }}"><i class="fas fa-network-wired"></i> {{ _("Çapraz") }}</a>
     </div>
   </div>
 
@@ -53,25 +53,25 @@
   <div class="mc-grid-4" style="margin-bottom:24px;">
     <div class="mc-stat-card mc-stat-indigo" data-card-code="k_radar_ks.strateji_kapsami">
       <div class="mc-stat-icon"><i class="fas fa-bullseye"></i></div>
-      <div class="mc-stat-label">Strateji Kapsamı</div>
+      <div class="mc-stat-label">{{ _("Strateji Kapsamı") }}</div>
       <div class="mc-stat-value" id="ks-kapsam-pct">—</div>
-      <div class="mc-stat-sub" id="ks-kapsam-sub">Yükleniyor…</div>
+      <div class="mc-stat-sub" id="ks-kapsam-sub">{{ _("Yükleniyor…") }}</div>
     </div>
     <div class="mc-stat-card mc-stat-emerald" data-card-code="k_radar_ks.toplam_strateji">
       <div class="mc-stat-icon"><i class="fas fa-sitemap"></i></div>
-      <div class="mc-stat-label">Toplam Strateji</div>
+      <div class="mc-stat-label">{{ _("Toplam Strateji") }}</div>
       <div class="mc-stat-value" id="ks-strat-count">—</div>
-      <div class="mc-stat-sub" id="ks-sub-strat-count">— alt strateji</div>
+      <div class="mc-stat-sub" id="ks-sub-strat-count">{{ _("— alt strateji") }}</div>
     </div>
     <div class="mc-stat-card mc-stat-amber" data-card-code="k_radar_ks.genel_pg_basarisi">
       <div class="mc-stat-icon"><i class="fas fa-gauge-high"></i></div>
-      <div class="mc-stat-label">Genel PG Başarısı</div>
+      <div class="mc-stat-label">{{ _("Genel PG Başarısı") }}</div>
       <div class="mc-stat-value" id="ks-pg-basari">—</div>
-      <div class="mc-stat-sub" id="ks-pg-sub">Yükleniyor…</div>
+      <div class="mc-stat-sub" id="ks-pg-sub">{{ _("Yükleniyor…") }}</div>
     </div>
     <div class="mc-stat-card" id="ks-skor-card" data-card-code="k_radar_ks.ks_skoru">
       <div class="mc-stat-icon"><i class="fas fa-star"></i></div>
-      <div class="mc-stat-label">KS Skoru</div>
+      <div class="mc-stat-label">{{ _("KS Skoru") }}</div>
       <div class="mc-stat-value" id="ks-skor">—</div>
       <div class="mc-stat-sub" id="ks-band">—</div>
     </div>
@@ -83,7 +83,7 @@
     <!-- SWOT -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="swot" data-card-code="k_radar_ks.swot_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-th-large" style="color:#6366f1;"></i> SWOT Analizi</span>
+        <span class="mc-card-title"><i class="fas fa-th-large" style="color:#6366f1;"></i> {{ _("SWOT Analizi") }}</span>
         <span class="mc-badge mc-badge-indigo" id="ks-swot-badge">—</span>
       </div>
       <div class="mc-card-body">
@@ -93,14 +93,14 @@
           <div class="ks-quad ks-quad-o"><span class="ks-quad-label">O</span><span class="ks-quad-val" id="ks-swot-o">—</span></div>
           <div class="ks-quad ks-quad-t"><span class="ks-quad-label">T</span><span class="ks-quad-val" id="ks-swot-t">—</span></div>
         </div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
     <!-- TOWS -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="tows" data-card-code="k_radar_ks.tows_matrisi" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left" style="color:#8b5cf6;"></i> TOWS Matrisi</span>
+        <span class="mc-card-title"><i class="fas fa-arrows-split-up-and-left" style="color:#8b5cf6;"></i> {{ _("TOWS Matrisi") }}</span>
         <span class="mc-badge mc-badge-purple" id="ks-tows-badge">—</span>
       </div>
       <div class="mc-card-body">
@@ -110,35 +110,35 @@
           <div class="ks-quad ks-quad-wo"><span class="ks-quad-label">WO</span><span class="ks-quad-val" id="ks-tows-wo">—</span></div>
           <div class="ks-quad ks-quad-wt"><span class="ks-quad-label">WT</span><span class="ks-quad-val" id="ks-tows-wt">—</span></div>
         </div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
     <!-- PESTLE -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="pestle" data-card-code="k_radar_ks.pestle_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-globe" style="color:#10b981;"></i> PESTLE Analizi</span>
+        <span class="mc-card-title"><i class="fas fa-globe" style="color:#10b981;"></i> {{ _("PESTLE Analizi") }}</span>
         <span class="mc-badge mc-badge-emerald" id="ks-pestle-badge">—</span>
       </div>
       <div class="mc-card-body">
         <div id="ks-pestle-mini" class="ks-pestle-bars"></div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
     <!-- GAP -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="gap" data-card-code="k_radar_ks.gap_analizi" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#f59e0b;"></i> GAP Analizi</span>
+        <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#f59e0b;"></i> {{ _("GAP Analizi") }}</span>
         <span class="mc-badge mc-badge-warning" id="ks-gap-badge">—</span>
       </div>
       <div class="mc-card-body">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#10b981;" id="ks-gap-hedefte">—</div><div style="font-size:11px;color:#64748b;">Hedefte</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#f59e0b;" id="ks-gap-riskli">—</div><div style="font-size:11px;color:#64748b;">Riskli</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#ef4444;" id="ks-gap-kritik">—</div><div style="font-size:11px;color:#64748b;">Kritik</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#10b981;" id="ks-gap-hedefte">—</div><div style="font-size:11px;color:#64748b;">{{ _("Hedefte") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#f59e0b;" id="ks-gap-riskli">—</div><div style="font-size:11px;color:#64748b;">{{ _("Riskli") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:22px;font-weight:700;color:#ef4444;" id="ks-gap-kritik">—</div><div style="font-size:11px;color:#64748b;">{{ _("Kritik") }}</div></div>
         </div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
@@ -149,8 +149,8 @@
         <span class="mc-badge mc-badge-indigo" id="ks-okr-badge">—</span>
       </div>
       <div class="mc-card-body" style="color:#64748b;font-size:13px;">
-        Hedef ve Anahtar Sonuç hiyerarşisi, çeyrek bazlı ilerleme takibi.
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        {{ _("Hedef ve Anahtar Sonuç hiyerarşisi, çeyrek bazlı ilerleme takibi.") }}
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
@@ -162,12 +162,12 @@
       </div>
       <div class="mc-card-body">
         <div id="ks-bsc-mini" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#6366f1;" id="ks-bsc-fin">—</div><div style="font-size:10px;color:#64748b;">Finansal</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-bsc-mus">—</div><div style="font-size:10px;color:#64748b;">Müşteri</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-bsc-sur">—</div><div style="font-size:10px;color:#64748b;">İç Süreç</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#3b82f6;" id="ks-bsc-ogr">—</div><div style="font-size:10px;color:#64748b;">Öğrenme</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#6366f1;" id="ks-bsc-fin">—</div><div style="font-size:10px;color:#64748b;">{{ _("Finansal") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-bsc-mus">—</div><div style="font-size:10px;color:#64748b;">{{ _("Müşteri") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-bsc-sur">—</div><div style="font-size:10px;color:#64748b;">{{ _("İç Süreç") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#3b82f6;" id="ks-bsc-ogr">—</div><div style="font-size:10px;color:#64748b;">{{ _("Öğrenme") }}</div></div>
         </div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
@@ -179,10 +179,10 @@
       </div>
       <div class="mc-card-body">
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-efqm-criteria">—</div><div style="font-size:10px;color:#64748b;">Kriter Kapsamı</div></div>
-          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-efqm-readiness">—</div><div style="font-size:10px;color:#64748b;">Hazırlık Skoru</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#f59e0b;" id="ks-efqm-criteria">—</div><div style="font-size:10px;color:#64748b;">{{ _("Kriter Kapsamı") }}</div></div>
+          <div style="text-align:center;flex:1;"><div style="font-size:18px;font-weight:700;color:#10b981;" id="ks-efqm-readiness">—</div><div style="font-size:10px;color:#64748b;">{{ _("Hazırlık Skoru") }}</div></div>
         </div>
-        <div class="ks-module-footer">Detay için tıkla <i class="fas fa-expand"></i></div>
+        <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
     </div>
 
@@ -191,12 +191,12 @@
   <!-- Strateji Kapsama Özeti -->
   <div class="mc-card" data-card-code="k_radar_ks.strateji_surec_kapsama_ozeti">
     <div class="mc-card-header">
-      <span class="mc-card-title"><i class="fas fa-sitemap"></i> Strateji → Süreç Kapsama Özeti</span>
+      <span class="mc-card-title"><i class="fas fa-sitemap"></i> {{ _("Strateji → Süreç Kapsama Özeti") }}</span>
       <span id="ks-strat-kapsam-badge" class="mc-badge mc-badge-indigo"></span>
     </div>
     <div class="mc-card-body" style="padding:0;">
       <div id="ks-strat-list" class="kr-rank-list">
-        <div class="kr-loading" style="padding:24px;">Yükleniyor…</div>
+        <div class="kr-loading" style="padding:24px;">{{ _("Yükleniyor…") }}</div>
       </div>
     </div>
   </div>
@@ -209,11 +209,11 @@
 <div id="ks-modal-swot" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-th-large"></i> SWOT Analizi</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-th-large"></i> {{ _("SWOT Analizi") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-modal-swot-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-swot-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -222,11 +222,11 @@
 <div id="ks-modal-tows" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-arrows-split-up-and-left"></i> TOWS Matrisi</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-arrows-split-up-and-left"></i> {{ _("TOWS Matrisi") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-modal-tows-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-tows-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -235,11 +235,11 @@
 <div id="ks-modal-pestle" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-globe"></i> PESTLE Analizi</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-globe"></i> {{ _("PESTLE Analizi") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-modal-pestle-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-pestle-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -248,11 +248,11 @@
 <div id="ks-modal-gap" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-chart-line"></i> GAP Analizi</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-chart-line"></i> {{ _("GAP Analizi") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-modal-gap-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-gap-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
       <canvas id="ks-gap-modal-chart" height="220" style="margin-top:16px;"></canvas>
     </div>
   </div>
@@ -262,11 +262,11 @@
 <div id="ks-modal-okr" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-crosshairs"></i> OKR — Hedefler ve Anahtar Sonuçlar</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-crosshairs"></i> {{ _("OKR — Hedefler ve Anahtar Sonuçlar") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
-      <div id="ks-modal-okr-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-okr-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -275,38 +275,38 @@
 <div id="ks-okr-obj-modal" class="mc-modal-overlay" style="z-index:10000;">
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-bullseye"></i> <span id="ks-okr-obj-modal-title">Hedef Ekle</span></div>
-      <button class="mc-modal-close" id="ks-okr-obj-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-bullseye"></i> <span id="ks-okr-obj-modal-title">{{ _("Hedef Ekle") }}</span></div>
+      <button class="mc-modal-close" id="ks-okr-obj-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div class="mc-form-grid">
         <div class="mc-form-group full">
-          <label class="mc-form-label" for="okr-obj-title">Hedef Başlığı <span class="req">*</span></label>
-          <input type="text" id="okr-obj-title" class="mc-form-input" placeholder="Nereye gitmek istiyoruz?">
+          <label class="mc-form-label" for="okr-obj-title">{{ _("Hedef Başlığı") }} <span class="req">*</span></label>
+          <input type="text" id="okr-obj-title" class="mc-form-input" placeholder="{{ _('Nereye gitmek istiyoruz?') }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label" for="okr-obj-quarter">Çeyrek</label>
+          <label class="mc-form-label" for="okr-obj-quarter">{{ _("Çeyrek") }}</label>
           <select id="okr-obj-quarter" class="mc-form-input">
-            <option value="">Yıllık</option>
-            <option value="1">Ç1 — Ocak–Mart</option>
-            <option value="2">Ç2 — Nisan–Haziran</option>
-            <option value="3">Ç3 — Temmuz–Eylül</option>
-            <option value="4">Ç4 — Ekim–Aralık</option>
+            <option value="">{{ _("Yıllık") }}</option>
+            <option value="1">{{ _("Ç1 — Ocak–Mart") }}</option>
+            <option value="2">{{ _("Ç2 — Nisan–Haziran") }}</option>
+            <option value="3">{{ _("Ç3 — Temmuz–Eylül") }}</option>
+            <option value="4">{{ _("Ç4 — Ekim–Aralık") }}</option>
           </select>
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label" for="okr-obj-owner">Sorumlu</label>
-          <input type="text" id="okr-obj-owner" class="mc-form-input" placeholder="Kişi veya ekip">
+          <label class="mc-form-label" for="okr-obj-owner">{{ _("Sorumlu") }}</label>
+          <input type="text" id="okr-obj-owner" class="mc-form-input" placeholder="{{ _('Kişi veya ekip') }}">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label" for="okr-obj-desc">Açıklama</label>
-          <textarea id="okr-obj-desc" class="mc-form-input" rows="2" placeholder="Opsiyonel açıklama"></textarea>
+          <label class="mc-form-label" for="okr-obj-desc">{{ _("Açıklama") }}</label>
+          <textarea id="okr-obj-desc" class="mc-form-input" rows="2" placeholder="{{ _('Opsiyonel açıklama') }}"></textarea>
         </div>
       </div>
     </div>
     <div class="mc-modal-footer">
-      <button class="mc-btn mc-btn-secondary" id="ks-okr-obj-modal-cancel">İptal</button>
-      <button class="mc-btn mc-btn-primary" id="ks-okr-obj-modal-save"><i class="fas fa-save"></i> Kaydet</button>
+      <button class="mc-btn mc-btn-secondary" id="ks-okr-obj-modal-cancel">{{ _("İptal") }}</button>
+      <button class="mc-btn mc-btn-primary" id="ks-okr-obj-modal-save"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
     </div>
   </div>
 </div>
@@ -315,36 +315,36 @@
 <div id="ks-okr-kr-modal" class="mc-modal-overlay" style="z-index:10000;">
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-key"></i> <span id="ks-okr-kr-modal-title">Anahtar Sonuç Ekle</span></div>
-      <button class="mc-modal-close" id="ks-okr-kr-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-key"></i> <span id="ks-okr-kr-modal-title">{{ _("Anahtar Sonuç Ekle") }}</span></div>
+      <button class="mc-modal-close" id="ks-okr-kr-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div class="mc-form-grid">
         <div class="mc-form-group full">
-          <label class="mc-form-label" for="okr-kr-title">KR Başlığı <span class="req">*</span></label>
-          <input type="text" id="okr-kr-title" class="mc-form-input" placeholder="Oraya vardığımızı nasıl anlayacağız?">
+          <label class="mc-form-label" for="okr-kr-title">{{ _("KR Başlığı") }} <span class="req">*</span></label>
+          <input type="text" id="okr-kr-title" class="mc-form-input" placeholder="{{ _('Oraya vardığımızı nasıl anlayacağız?') }}">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label" for="okr-kr-metric">Ölçüm Birimi</label>
-          <input type="text" id="okr-kr-metric" class="mc-form-input" placeholder="%, adet, puan, TL…">
+          <label class="mc-form-label" for="okr-kr-metric">{{ _("Ölçüm Birimi") }}</label>
+          <input type="text" id="okr-kr-metric" class="mc-form-input" placeholder="{{ _('%%, adet, puan, TL…') }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label" for="okr-kr-start">Başlangıç Değeri</label>
+          <label class="mc-form-label" for="okr-kr-start">{{ _("Başlangıç Değeri") }}</label>
           <input type="number" id="okr-kr-start" class="mc-form-input" placeholder="0" step="any">
         </div>
         <div class="mc-form-group">
-          <label class="mc-form-label" for="okr-kr-target">Hedef Değer <span class="req">*</span></label>
+          <label class="mc-form-label" for="okr-kr-target">{{ _("Hedef Değer") }} <span class="req">*</span></label>
           <input type="number" id="okr-kr-target" class="mc-form-input" placeholder="100" step="any">
         </div>
         <div class="mc-form-group full">
-          <label class="mc-form-label" for="okr-kr-current">Güncel Değer</label>
-          <input type="number" id="okr-kr-current" class="mc-form-input" placeholder="Mevcut ilerleme" step="any">
+          <label class="mc-form-label" for="okr-kr-current">{{ _("Güncel Değer") }}</label>
+          <input type="number" id="okr-kr-current" class="mc-form-input" placeholder="{{ _('Mevcut ilerleme') }}" step="any">
         </div>
       </div>
     </div>
     <div class="mc-modal-footer">
-      <button class="mc-btn mc-btn-secondary" id="ks-okr-kr-modal-cancel">İptal</button>
-      <button class="mc-btn mc-btn-primary" id="ks-okr-kr-modal-save"><i class="fas fa-save"></i> Kaydet</button>
+      <button class="mc-btn mc-btn-secondary" id="ks-okr-kr-modal-cancel">{{ _("İptal") }}</button>
+      <button class="mc-btn mc-btn-primary" id="ks-okr-kr-modal-save"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
     </div>
   </div>
 </div>
@@ -353,11 +353,11 @@
 <div id="ks-modal-bsc" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-table-cells-large"></i> BSC — Balanced Scorecard</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-table-cells-large"></i> {{ _("BSC — Balanced Scorecard") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body" style="padding:0;">
-      <div id="ks-modal-bsc-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-bsc-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -366,11 +366,11 @@
 <div id="ks-modal-efqm" class="mc-modal-overlay">
   <div class="mc-modal mc-modal-xl">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-medal"></i> EFQM Modeli 2025 — Olgunluk Değerlendirmesi</div>
-      <button class="mc-modal-close ks-modal-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-medal"></i> {{ _("EFQM Modeli 2025 — Olgunluk Değerlendirmesi") }}</div>
+      <button class="mc-modal-close ks-modal-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body" style="padding:0;">
-      <div id="ks-modal-efqm-body"><div class="kr-loading" style="padding:32px;">Yükleniyor…</div></div>
+      <div id="ks-modal-efqm-body"><div class="kr-loading" style="padding:32px;">{{ _("Yükleniyor…") }}</div></div>
     </div>
   </div>
 </div>
@@ -379,25 +379,25 @@
 <div id="ks-bsc-assign-modal" class="mc-modal-overlay" style="z-index:10000;">
   <div class="mc-modal mc-modal-md">
     <div class="mc-modal-header">
-      <div class="mc-modal-title"><i class="fas fa-tag"></i> Perspektif Ata</div>
-      <button class="mc-modal-close" id="ks-bsc-assign-close" aria-label="Kapat"><i class="fas fa-times" aria-hidden="true"></i></button>
+      <div class="mc-modal-title"><i class="fas fa-tag"></i> {{ _("Perspektif Ata") }}</div>
+      <button class="mc-modal-close" id="ks-bsc-assign-close" aria-label="{{ _('Kapat') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
     </div>
     <div class="mc-modal-body">
       <div id="ks-bsc-assign-kpi-name" style="font-size:13px;font-weight:600;color:var(--text-default);margin-bottom:16px;"></div>
       <div class="mc-form-group">
-        <label class="mc-form-label" for="ks-bsc-assign-select">Perspektif</label>
+        <label class="mc-form-label" for="ks-bsc-assign-select">{{ _("Perspektif") }}</label>
         <select id="ks-bsc-assign-select" class="mc-form-input">
-          <option value="">— Atama Kaldır —</option>
-          <option value="finansal">Finansal</option>
-          <option value="musteri">Müşteri</option>
-          <option value="ic_surec">İç Süreçler</option>
-          <option value="ogrenme">Öğrenme &amp; Gelişim</option>
+          <option value="">{{ _("— Atama Kaldır —") }}</option>
+          <option value="finansal">{{ _("Finansal") }}</option>
+          <option value="musteri">{{ _("Müşteri") }}</option>
+          <option value="ic_surec">{{ _("İç Süreçler") }}</option>
+          <option value="ogrenme">{{ _("Öğrenme &amp; Gelişim") }}</option>
         </select>
       </div>
     </div>
     <div class="mc-modal-footer">
-      <button class="mc-btn mc-btn-secondary" id="ks-bsc-assign-cancel">İptal</button>
-      <button class="mc-btn mc-btn-primary" id="ks-bsc-assign-save"><i class="fas fa-save"></i> Kaydet</button>
+      <button class="mc-btn mc-btn-secondary" id="ks-bsc-assign-cancel">{{ _("İptal") }}</button>
+      <button class="mc-btn mc-btn-primary" id="ks-bsc-assign-save"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
     </div>
   </div>
 </div>

@@ -11,10 +11,10 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-radar" style="color:#6366f1;"></i> KP-Radar — Süreç Olgunluk Görünümü
+        <i class="fas fa-radar" style="color:#6366f1;"></i> {{ _("KP-Radar — Süreç Olgunluk Görünümü") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        5 boyutlu radar + alt analiz modülleri (Olgunluk, Darboğaz, Değer Zinciri, Pareto, SLA, Benchmark, OEE, VSM, Kapasite)
+        {{ _("5 boyutlu radar + alt analiz modülleri (Olgunluk, Darboğaz, Değer Zinciri, Pareto, SLA, Benchmark, OEE, VSM, Kapasite)") }}
       </p>
     </div>
   </div>
@@ -22,24 +22,24 @@
   {# Üst KPI özet kartları #}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:18px;">
     <div data-card-code="k_radar_kp.toplam_skor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Skor</div>
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam Skor") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;" id="kp-score">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">PG ağırlıklı</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("PG ağırlıklı") }}</div>
     </div>
     <div data-card-code="k_radar_kp.band" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Band</div>
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Band") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;" id="kp-band">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">renk durumu</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("renk durumu") }}</div>
     </div>
     <div data-card-code="k_radar_kp.kritik_pg" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #ef4444;">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik PG</div>
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kritik PG") }}</div>
       <div style="font-size:24px;font-weight:800;color:#ef4444;margin-top:4px;" id="kp-critical">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">hedef altı</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("hedef altı") }}</div>
     </div>
     <div data-card-code="k_radar_kp.hesaplanan_pg" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Hesaplanan PG</div>
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Hesaplanan PG") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;" id="kp-kpi-count">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">aktif kayıt</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("aktif kayıt") }}</div>
     </div>
   </div>
 
@@ -51,10 +51,10 @@
       </div>
       <div>
         <h3 style="margin:0 0 12px; font-size:14px; color:var(--text-default); font-weight:600;">
-          <i class="fas fa-compass" style="color:#6366f1; margin-right:4px;"></i>5 Boyutta Süreç Sağlığı
+          <i class="fas fa-compass" style="color:#6366f1; margin-right:4px;"></i>{{ _("5 Boyutta Süreç Sağlığı") }}
         </h3>
         <div id="kp-radar-summary" style="display:grid; gap:8px; font-size:12.5px;">
-          <div style="color:#94a3b8;">Yükleniyor…</div>
+          <div style="color:#94a3b8;">{{ _("Yükleniyor…") }}</div>
         </div>
       </div>
     </div>
@@ -63,18 +63,18 @@
   {# Alt analiz modülleri #}
   <div class="mc-card" style="padding:14px 18px;">
     <h3 style="margin:0 0 10px; font-size:13.5px; color:var(--text-default); font-weight:600;">
-      <i class="fas fa-cubes" style="color:#8b5cf6; margin-right:4px;"></i>Detaylı Analiz Modülleri
+      <i class="fas fa-cubes" style="color:#8b5cf6; margin-right:4px;"></i>{{ _("Detaylı Analiz Modülleri") }}
     </h3>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_olgunluk') }}"><i class="fas fa-layer-group"></i> Olgunluk</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_darbogaz') }}"><i class="fas fa-bottle-water"></i> Darboğaz</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_deger_zinciri') }}"><i class="fas fa-link"></i> Değer Zinciri</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_pareto') }}"><i class="fas fa-chart-column"></i> Pareto</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_sla') }}"><i class="fas fa-stopwatch"></i> SLA</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_benchmark') }}"><i class="fas fa-flag-checkered"></i> Benchmark</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_oee') }}"><i class="fas fa-industry"></i> OEE</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_vsm') }}"><i class="fas fa-stream"></i> VSM</a>
-      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_kapasite') }}"><i class="fas fa-gauge-high"></i> Kapasite</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_olgunluk') }}"><i class="fas fa-layer-group"></i> {{ _("Olgunluk") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_darbogaz') }}"><i class="fas fa-bottle-water"></i> {{ _("Darboğaz") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_deger_zinciri') }}"><i class="fas fa-link"></i> {{ _("Değer Zinciri") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_pareto') }}"><i class="fas fa-chart-column"></i> {{ _("Pareto") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_sla') }}"><i class="fas fa-stopwatch"></i> {{ _("SLA") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_benchmark') }}"><i class="fas fa-flag-checkered"></i> {{ _("Benchmark") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_oee') }}"><i class="fas fa-industry"></i> {{ _("OEE") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_vsm') }}"><i class="fas fa-stream"></i> {{ _("VSM") }}</a>
+      <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.k_radar_kp_kapasite') }}"><i class="fas fa-gauge-high"></i> {{ _("Kapasite") }}</a>
     </div>
   </div>
 

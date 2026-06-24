@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 05:16+0300\n"
+"POT-Creation-Date: 2026-06-24 05:40+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -65,6 +65,7 @@ msgid "Savaş Odası"
 msgstr ""
 
 #: ui/templates/platform/base.html:220
+#: ui/templates/platform/k_radar/hub.html:76
 #, fuzzy
 msgid "Bireysel Performans"
 msgstr "Bireysel Karne"
@@ -175,6 +176,16 @@ msgid "Kart Bilgisi"
 msgstr ""
 
 #: ui/templates/platform/base.html:563
+#: ui/templates/platform/k_radar/ks.html:213
+#: ui/templates/platform/k_radar/ks.html:226
+#: ui/templates/platform/k_radar/ks.html:239
+#: ui/templates/platform/k_radar/ks.html:252
+#: ui/templates/platform/k_radar/ks.html:266
+#: ui/templates/platform/k_radar/ks.html:279
+#: ui/templates/platform/k_radar/ks.html:319
+#: ui/templates/platform/k_radar/ks.html:357
+#: ui/templates/platform/k_radar/ks.html:370
+#: ui/templates/platform/k_radar/ks.html:383
 #: ui/templates/platform/surec/index.html:506
 #: ui/templates/platform/surec/karne.html:502
 #: ui/templates/platform/surec/karne.html:683
@@ -200,6 +211,10 @@ msgid "Düzenle"
 msgstr "Düzenle"
 
 #: ui/templates/platform/base.html:826
+#: ui/templates/platform/k_radar/ks.html:308
+#: ui/templates/platform/k_radar/ks.html:346
+#: ui/templates/platform/k_radar/ks.html:399
+#: ui/templates/platform/k_radar/risk_management.html:108
 #: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/surec/index.html:634
 #: ui/templates/platform/surec/karne.html:665
@@ -269,6 +284,7 @@ msgid "Mevsimsel"
 msgstr ""
 
 #: ui/templates/platform/analiz/index.html:54
+#: ui/templates/platform/k_radar/kpr_cpm.html:16
 msgid "Analiz Et"
 msgstr ""
 
@@ -482,6 +498,11 @@ msgid "Test Maili Gönder"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/k_radar/index.html:90
+#: ui/templates/platform/k_radar/ks.html:309
+#: ui/templates/platform/k_radar/ks.html:347
+#: ui/templates/platform/k_radar/ks.html:400
+#: ui/templates/platform/k_radar/risk_management.html:109
 #: ui/templates/platform/kurum/ayarlar.html:201
 #: ui/templates/platform/surec/karne.html:668
 #: ui/templates/platform/surec/karne.html:738
@@ -615,6 +636,8 @@ msgstr ""
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:109
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:136
+#: ui/templates/platform/k_radar/risk_management.html:42
+#: ui/templates/platform/k_radar/risk_management.html:89
 #: ui/templates/platform/kurum/ayarlar.html:109
 #: ui/templates/platform/kurum/ayarlar.html:139
 #, fuzzy
@@ -669,6 +692,7 @@ msgid "Önizleme"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:73
+#: ui/templates/platform/k_radar/hub.html:83
 #, fuzzy
 msgid "Sabah Operasyonel Özeti"
 msgstr "Bireysel Karne"
@@ -977,6 +1001,8 @@ msgstr "Ayarlar"
 
 #: ui/templates/platform/bireysel/karne.html:246
 #: ui/templates/platform/bireysel/karne.html:280
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
 #: ui/templates/platform/k_rapor/index.html:405
 #: ui/templates/platform/surec/faaliyetler.html:109
 #: ui/templates/platform/surec/karne.html:222
@@ -985,6 +1011,18 @@ msgid "İşlem"
 msgstr ""
 
 #: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/k_radar/kp.html:57
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
+#: ui/templates/platform/k_radar/ks.html:58
+#: ui/templates/platform/k_radar/ks.html:70
+#: ui/templates/platform/k_radar/ks.html:199
+#: ui/templates/platform/k_radar/ks.html:216
+#: ui/templates/platform/k_radar/ks.html:229
+#: ui/templates/platform/k_radar/ks.html:242
+#: ui/templates/platform/k_radar/ks.html:255
+#: ui/templates/platform/k_radar/ks.html:269
+#: ui/templates/platform/k_radar/ks.html:360
+#: ui/templates/platform/k_radar/ks.html:373
 #: ui/templates/platform/k_rapor/index.html:156
 #: ui/templates/platform/k_rapor/index.html:162
 #: ui/templates/platform/k_rapor/index.html:174
@@ -1029,6 +1067,8 @@ msgid "Faaliyet"
 msgstr ""
 
 #: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:87
 #: ui/templates/platform/k_rapor/index.html:237
 #: ui/templates/platform/k_rapor/index.html:251
 #: ui/templates/platform/k_rapor/index.html:346
@@ -1044,6 +1084,1770 @@ msgstr ""
 #, fuzzy
 msgid "Durum"
 msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/cross.html:12
+msgid "Risk Isi Haritasi (Ozet)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:13
+msgid "Radar bazli olasilik x etki noktalarinin etkilesimli gorunumu."
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:15
+#: ui/templates/platform/k_rapor/index.html:110
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Paydaş"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:16
+msgid "Rekabet"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:17
+msgid "A3/5Neden"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:18
+msgid "Anket"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:21
+msgid "Dusuk Risk: yesil"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:22
+msgid "Orta Risk: sari"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:23
+msgid "Yuksek Risk: kirmizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross.html:29
+msgid "Yukleniyor..."
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_a3.html:7
+msgid "A3 Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_a3.html:8
+msgid "Rapor Sayısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_a3.html:9
+msgid "Kök Neden Kapsamı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_anket.html:7
+msgid "Anket Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_anket.html:8
+msgid "Anket Sayısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_anket.html:9
+msgid "Ortalama Skor:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:14
+msgid "Paydas Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:18
+msgid "Paydaş adı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:19
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Rol"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:20
+msgid "Etki 1"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:20
+msgid "Etki 2"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:20
+msgid "Etki 3"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:20
+msgid "Etki 4"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:20
+msgid "Etki 5"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
+msgid "İlgi 1"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
+msgid "İlgi 2"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
+msgid "İlgi 3"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
+msgid "İlgi 4"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
+msgid "İlgi 5"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:22
+#, fuzzy
+msgid "Yönetim stratejisi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/cross_paydas.html:23
+#: ui/templates/platform/k_radar/kp_olgunluk.html:28
+#: ui/templates/platform/surec/index.html:602
+#: ui/templates/platform/surec/index.html:622
+#, fuzzy
+msgid "Ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/cross_paydas.html:27
+msgid "Ad/Rol filtrele"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:29
+msgid "Varsayılan"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:30
+msgid "Etki (Yüksek-Düşük)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:31
+msgid "Etki (Düşük-Yüksek)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:32
+msgid "İlgi (Yüksek-Düşük)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:33
+msgid "İlgi (Düşük-Yüksek)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:35
+#: ui/templates/platform/k_radar/kp_olgunluk.html:39
+msgid "Uygula"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+msgid "Ad"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_radar/risk_management.html:50
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Etki"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "İlgi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/surec/karne.html:864
+#, fuzzy
+msgid "Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/cross_paydas.html:50
+#: ui/templates/platform/k_radar/kp_olgunluk.html:53
+msgid "Kayıt bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_rekabet.html:7
+msgid "Rekabet Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_rekabet.html:8
+msgid "Kayıt Sayısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_rekabet.html:9
+msgid "Ortalama Gap:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:2
+msgid "K-Radar — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:15
+msgid "K-Radar — Raporlama & Analiz Merkezi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:18
+msgid ""
+"Performans · Yürütme · Risk · Strateji · AI panellerini içeren birleşik "
+"rapor hub'ı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:25
+#: ui/templates/platform/k_radar/index.html:106
+#: ui/templates/platform/masaustu/index.html:202
+msgid "Tümü"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:26
+#, fuzzy
+msgid "📊 Performans"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:27
+msgid "🚀 Yürütme"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:28
+msgid "🛡 Risk &amp; Veri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:29
+#, fuzzy
+msgid "🎯 Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:30
+msgid "🤖 AI &amp; Üst Yönetim"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:36
+msgid "Rapor ara (ad, anahtar kelime)…"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:46
+#, fuzzy
+msgid "📊 Performans & Skor"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:47
+msgid "Stratejilerin, süreçlerin ve PG'lerin nasıl gittiğinin sayısal görünümü"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:50
+#, fuzzy
+msgid "Kurumsal Performans"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:50
+#, fuzzy
+msgid "Vizyon skoru + strateji bazlı başarı tablosu"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:51
+msgid "Süreç & PG Tablosu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:51
+msgid "Süreç bazlı PG performansı, hedef/gerçekleşme"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:52
+#, fuzzy
+msgid "PG Bant Dağılımı"
+msgstr "Performans Göstergeleri"
+
+#: ui/templates/platform/k_radar/hub.html:52
+#, fuzzy
+msgid "PG'lerin performans bantlarına dağılımı"
+msgstr "Performans Göstergeleri"
+
+#: ui/templates/platform/k_radar/hub.html:53
+msgid "K-Vektör Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:53
+msgid "Ağırlıklandırılmış vizyon ve strateji skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:54
+msgid "K-Vektör Çarpıklık"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:54
+msgid "Strateji ağırlığı × gerçek skor uyumsuzluğu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:55
+#: ui/templates/platform/k_rapor/index.html:100
+#, fuzzy
+msgid "Stratejik Uyum"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:55
+#: ui/templates/platform/k_rapor/index.html:100
+#, fuzzy
+msgid "Strateji ↔ süreç hizalama analizi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:56
+#, fuzzy
+msgid "Strateji Kapsama"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:56
+#: ui/templates/platform/k_rapor/index.html:116
+msgid "Strateji kapsama ve boşluk analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:57
+#, fuzzy
+msgid "Stratejik Akış Haritası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:57
+msgid "Vizyon → strateji → süreç → PG akış görseli"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:58
+msgid "Strateji × Proje Matrisi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:58
+#, fuzzy
+msgid "Strateji-proje hizalama ısı haritası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:59
+msgid "PG × Proje Çapraz Etki"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:59
+msgid "Hangi proje hangi PG'yi etkiliyor?"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:60
+#, fuzzy
+msgid "Departman Performans"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:60
+msgid "Departman bazlı bireysel PG ortalaması"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:61
+msgid "Yönetici Liderlik Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:61
+msgid "Süreç liderlerinin etkinlik puanı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:62
+msgid "CMMI Olgunluk Isı Haritası"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:62
+msgid "Süreçlerin 1-5 olgunluk seviyesi (Başlangıç → Optimize)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:63
+msgid "PG Hedef Revizyon Sıklığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:63
+msgid "Yıl içinde hedef değişen PG'ler"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:68
+msgid "🚀 Yürütme & Operasyon"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:69
+msgid "Faaliyet, görev, kişi ve iş ilerlemesinin görünümü"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:72
+#, fuzzy
+msgid "Faaliyet Durumu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:72
+msgid "Faaliyet durum ve ilerleme dağılımı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:73
+msgid "Faaliyet Matrisi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:73
+#: ui/templates/platform/k_rapor/index.html:113
+msgid "Sorumlu × faaliyet matrisi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:74
+msgid "Aktivite Takvimi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:74
+msgid "Aktivite zaman çizelgesi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:75
+#, fuzzy
+msgid "Sorumlu Analizi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:75
+#, fuzzy
+msgid "Kişi yükü ve performans dağılımı"
+msgstr "Performans Göstergeleri"
+
+#: ui/templates/platform/k_radar/hub.html:76
+#, fuzzy
+msgid "Bireysel karne özetleri"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:77
+#, fuzzy
+msgid "Bireysel Hedef Hizalama"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:77
+msgid "Bireysel hedeflerin stratejiyle uyumu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:78
+msgid "EVM (Kazanılmış Değer)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:78
+msgid "PV/EV/AC, CPI/SPI hesapları"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:79
+msgid "Stratejik Girişim Portföyü Balon Grafiği"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:79
+msgid "Bütçe × ilerleme × öncelik balon grafiği"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:80
+#, fuzzy
+msgid "Stratejik Girişim Yol Haritası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:80
+msgid "Çok yıllık girişim yol haritası"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:81
+msgid "Çeyreklik Değerlendirme Hazırlayıcı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:81
+msgid "Üç aylık değerlendirme paketi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:82
+msgid "OKR Akışı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:82
+msgid "Kurum → Takım → Birey OKR akışı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:83
+msgid "Bugün biten/bekleyen faaliyet & kritik PG"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:84
+#, fuzzy
+msgid "Operasyonel İstatistik"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:84
+msgid "Operasyonel veri özet istatistikleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:85
+msgid "7 Muda (İsraf) Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:85
+msgid "Yalın 7 israf türü ölçümü"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:90
+msgid "🛡 Risk & Veri Sağlığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:91
+msgid "Eksiklikler, alarmlar, riskler ve denetim izleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:94
+#: ui/templates/platform/k_radar/kpr_risk.html:7
+msgid "Risk Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:94
+msgid "Açık riskler ve kritik kayıt sayısı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:95
+msgid "Risk Isı Haritası (5×5)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:95
+msgid "Olasılık × etki ısı haritası"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:96
+#, fuzzy
+msgid "Aktif Uyarılar"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_radar/hub.html:96
+msgid "Sistem uyarıları ve tetikleyiciler"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:97
+msgid "AI Erken Uyarı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:97
+msgid "AI tabanlı erken uyarı sinyalleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:98
+msgid "ML Anomali (İzolasyon Ormanı)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:98
+msgid "Makine öğrenmesi ile aykırı PG tespiti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:99
+#: ui/templates/platform/k_rapor/index.html:103
+#, fuzzy
+msgid "Veri Durumu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:99
+#, fuzzy
+msgid "PG veri doluluk durumu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:100
+msgid "Veri Kalitesi Detay"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:100
+msgid "Eksik alan, son giriş tarihi, sıklık"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:101
+msgid "Denetim Kayıtları"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:101
+msgid "Aktivite ve değişiklik denetim izleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:102
+msgid "Bildirim Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:102
+msgid "Bildirim sıklığı ve okuma oranı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:103
+msgid "2FA Kullanım Raporu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:103
+msgid "İki faktörlü doğrulama kapsama"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:104
+msgid "Denetim Çıktı Paketi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:104
+msgid "Denetim için derlenmiş kanıt paketi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:105
+msgid "Onay Zinciri (İş Akışı)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:105
+msgid "Çok adımlı onay süreçleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:110
+#, fuzzy
+msgid "🎯 Strateji, Yapı & Paydaş"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:111
+msgid "SWOT, VRIO, rekabet, paydaş ve uzun vadeli görünüm"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:114
+#, fuzzy
+msgid "Stratejik Analiz Paketi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:114
+msgid "SWOT · TOWS · PESTEL · Porter 5"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:115
+#: ui/templates/platform/k_rapor/index.html:118
+msgid "SWOT Trend"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:115
+msgid "SWOT öğelerinin zaman içinde değişimi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:116
+msgid "VRIO Portföy"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:116
+msgid "Kaynak/yetenek VRIO sınıflandırması"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:117
+#: ui/templates/platform/k_rapor/index.html:658
+msgid "Paydaş Haritası"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:117
+msgid "Paydaş etkileşim ve önem analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:118
+#: ui/templates/platform/k_rapor/index.html:111
+msgid "Rekabet & A3"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:118
+msgid "Rakip kıyas + A3 problem analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:119
+#: ui/templates/platform/k_rapor/index.html:115
+#, fuzzy
+msgid "Kurum Kıyas"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:119
+#, fuzzy
+msgid "Kurumlar arası karşılaştırma"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/hub.html:120
+msgid "Sektörel Plan Paketleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:120
+msgid "Sektöre özel hazır plan şablonları"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:121
+#, fuzzy
+msgid "Strateji Haritası"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:121
+#, fuzzy
+msgid "Strateji → Süreç → KPI interaktif ilişki ağı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:122
+msgid "Stratejik Hiyerarşi Sunburst"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:122
+msgid "Strateji ağacı sunburst görseli"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:123
+msgid "Yıllar Arası Evrim Filmi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:123
+msgid "Strateji ağacının yıldan yıla animasyonu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:124
+#, fuzzy
+msgid "AI Strateji Hikayeleştirici"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:124
+msgid "Strateji metnini AI ile hikaye formuna çevir"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:129
+#, fuzzy
+msgid "🤖 AI & Üst Yönetim Panelleri"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:130
+msgid "Yönetici özetleri, AI üretimli içgörüler ve dışa aktarma paketleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:133
+msgid "AI Sektör Benchmark"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:133
+msgid "AI ile sektör emsali kıyaslama"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:134
+#, fuzzy
+msgid "CFO Paneli"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:134
+msgid "Bütçe, gelir, kâr odaklı panel"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:135
+#, fuzzy
+msgid "COO Paneli"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:135
+msgid "Operasyon ve verimlilik paneli"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:136
+#, fuzzy
+msgid "CHRO Paneli"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/hub.html:136
+msgid "İK ve insan kaynakları paneli"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:137
+msgid "Yatırımcı Sunumu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:137
+msgid "Yatırımcı için hazır sunum paketi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:138
+#, fuzzy
+msgid "Stratejik Yıllık Kitap"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:138
+msgid "Yıllık stratejik özet kitap formatı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:139
+msgid "ESG Yıllık Rapor"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:139
+msgid "Çevre, sosyal, yönetişim raporu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:140
+msgid "Karbon Ayak İzi Trendi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:140
+msgid "Karbon emisyonu zaman analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:141
+#, fuzzy
+msgid "AI Strateji Danışmanı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:141
+#, fuzzy
+msgid "Stratejinize AI tabanlı öneri"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/hub.html:142
+msgid "AI Koç"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:142
+msgid "Yönetici için AI koçluk asistanı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:143
+msgid "AI Yıl Sonu Sunum Üretici"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:143
+msgid "Yıl sonu için AI sunum hazırlama"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:144
+msgid "AI Doğal Dil Sorgu"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:144
+msgid "Türkçe doğal dilde veri sorgulama"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:145
+msgid "Bireysel Karne Batch (ZIP)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:145
+msgid "Tüm bireysel karneleri toplu PDF"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:146
+msgid "Mobil Merkez (PWA)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:146
+msgid "Mobil uygulama girişi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:147
+msgid "BI Bağlayıcı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:147
+msgid "Power BI / Tableau bağlantı bilgisi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/hub.html:156
+msgid "öğe"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:24
+msgid "K-Radar Hub"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:27
+msgid ""
+"Kurumsal stratejik sağlık çapı: <b>KS</b> (Strateji) + <b>KP</b> (Süreç) "
+"+ <b>KPR</b> (Proje) + <b>Bireysel</b> bileşenlerinden oluşan hibrit skor"
+" panosu."
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:33
+#: ui/templates/platform/k_radar/kp.html:25
+msgid "Toplam Skor"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:56
+#, fuzzy
+msgid "Strateji Skoru"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/index.html:56
+#, fuzzy
+msgid "KS-Radar (Strateji)"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/index.html:57
+msgid "Süreç Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:57
+msgid "KP-Radar (Süreç)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:58
+msgid "Proje Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:58
+msgid "KPR-Radar (Proje)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:59
+#, fuzzy
+msgid "Çapraz Karşılaştırma"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/index.html:59
+#: ui/templates/platform/k_radar/ks.html:48
+#, fuzzy
+msgid "Çapraz Analiz"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/index.html:65
+msgid "Önerilen Aksiyonlar"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:67
+msgid "Salt Okunur"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:70
+#: ui/templates/platform/k_radar/index.html:77
+#: ui/templates/platform/k_radar/index.html:127
+msgid "Yükleniyor..."
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:75
+msgid "Kural Tetikleyiciler"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:82
+msgid "Günlük Özet Takvimi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:88
+msgid "Günlük özet aktif"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:89
+msgid "Saat:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:93
+msgid "Takvim ayarlarını yalnızca yönetici roller güncelleyebilir."
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:100
+msgid "Aksiyon Geçmişi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:104
+#, fuzzy
+msgid "Durum:"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/index.html:107
+msgid "Onaylandı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:108
+msgid "Reddedildi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:109
+#: ui/templates/platform/surec/index.html:534
+msgid "Beklemede"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:113
+msgid "Kullanıcı ID:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:114
+msgid "örn: 12"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:117
+msgid "Sayfa Boyutu:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:124
+#, fuzzy
+msgid "Filtrele"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/index.html:125
+msgid "CSV İndir"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:129
+#: ui/templates/platform/surec/karne.html:315
+#: ui/templates/platform/surec/karne.html:837
+msgid "Önceki"
+msgstr ""
+
+#: ui/templates/platform/k_radar/index.html:131
+#: ui/templates/platform/surec/karne.html:322
+#: ui/templates/platform/surec/karne.html:844
+msgid "Sonraki"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:14
+msgid "KP-Radar — Süreç Olgunluk Görünümü"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:17
+msgid ""
+"5 boyutlu radar + alt analiz modülleri (Olgunluk, Darboğaz, Değer "
+"Zinciri, Pareto, SLA, Benchmark, OEE, VSM, Kapasite)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:27
+msgid "PG ağırlıklı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:30
+msgid "Band"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:32
+#, fuzzy
+msgid "renk durumu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/kp.html:35
+msgid "Kritik PG"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:37
+msgid "hedef altı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:40
+msgid "Hesaplanan PG"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:42
+msgid "aktif kayıt"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:54
+msgid "5 Boyutta Süreç Sağlığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:66
+msgid "Detaylı Analiz Modülleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:69
+#: ui/templates/platform/masaustu/index.html:80
+msgid "Olgunluk"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:70
+msgid "Darboğaz"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:71
+msgid "Değer Zinciri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:72
+msgid "Pareto"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:73
+msgid "SLA"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:74
+msgid "Benchmark"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:75
+msgid "OEE"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:76
+msgid "VSM"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp.html:77
+msgid "Kapasite"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_benchmark.html:7
+msgid "Benchmark Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_benchmark.html:8
+msgid "Karşılaştırılabilirlik:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_benchmark.html:9
+msgid "Dönem Satırı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_benchmark.html:10
+#: ui/templates/platform/k_radar/kp_darbogaz.html:10
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:10
+#: ui/templates/platform/k_radar/kp_kapasite.html:10
+#: ui/templates/platform/k_radar/kp_oee.html:12
+#: ui/templates/platform/k_radar/kp_pareto.html:10
+#: ui/templates/platform/k_radar/kp_sla.html:10
+#: ui/templates/platform/k_radar/kp_vsm.html:10
+msgid "30g Trend:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_darbogaz.html:7
+msgid "Darboğaz Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_darbogaz.html:8
+msgid "Kritik KPI:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_darbogaz.html:9
+msgid "Şiddet Endeksi:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:7
+msgid "Değer Zinciri Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:8
+msgid "Eşlenen Süreç:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:9
+msgid "Muda Riski:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:22
+msgid "Değer Zinciri Faaliyetleri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:25
+#, fuzzy
+msgid "Faaliyet ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:31
+msgid "Henüz faaliyet yok. \"Faaliyet ekle\" ile başla."
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_kapasite.html:7
+msgid "Kapasite Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_kapasite.html:8
+msgid "Kullanım Tahmini:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_kapasite.html:9
+msgid "Kaynak Baskısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_oee.html:7
+msgid "OEE Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:14
+msgid "Surec Olgunluk Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:19
+#: ui/templates/platform/surec/karne.html:119
+msgid "Süreç seçin"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:25
+msgid "Seviye 1"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:25
+msgid "Seviye 2"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:25
+msgid "Seviye 3"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:25
+msgid "Seviye 4"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:25
+msgid "Seviye 5"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:27
+msgid "Boyut (opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:32
+msgid "Süreç ID filtrele"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:34
+msgid "Güncelleme (Yeni-Eski)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:35
+msgid "Güncelleme (Eski-Yeni)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:36
+msgid "Seviye (Yüksek-Düşük)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:37
+msgid "Seviye (Düşük-Yüksek)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+#: ui/templates/platform/k_radar/risk_management.html:98
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:370
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
+msgid "Süreç"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+msgid "Seviye"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+msgid "Boyut"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+msgid "Güncelleme"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_pareto.html:7
+#, fuzzy
+msgid "Pareto Özeti"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/kp_pareto.html:8
+msgid "Top Impact Dilimi:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_pareto.html:9
+msgid "KPI Sayısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_sla.html:7
+msgid "SLA Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_sla.html:8
+msgid "İhlal Riski:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_sla.html:9
+msgid "Gözlenen Satır:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_vsm.html:7
+msgid "VSM Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_vsm.html:8
+msgid "Akış Verimliliği:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_vsm.html:9
+msgid "İsraf Baskısı:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:12
+msgid "Proje Radari"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:13
+msgid "Proje saglik + geciken gorev cezasi hibrit puani."
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:18
+msgid "Kaynak Kapasite"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:21
+msgid "Skor:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:22
+msgid "Band:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:23
+msgid "Kritik Proje:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr.html:24
+msgid "Aktif Proje:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:8
+msgid "CPM Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:11
+msgid "Proje seçin"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:19
+msgid "Görev:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:20
+msgid "Bağımlılık:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:21
+msgid "Kritik Başlangıç:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_cpm.html:28
+msgid "Önce bir proje seçin."
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_evm.html:7
+msgid "EVM Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_evm.html:9
+msgid "Ortalama SPI:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_evm.html:10
+msgid "Ortalama CPI:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_gantt.html:7
+msgid "Gantt Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_gantt.html:8
+msgid "Zaman Çizelgeli Görev:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_gantt.html:9
+msgid "Zamanında Tamamlama:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_kaynak_kapasite.html:7
+msgid "Kaynak Kapasite Özeti"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_kaynak_kapasite.html:8
+msgid "Kaynak Yükü:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_kaynak_kapasite.html:9
+msgid "Gecikmiş Açık Görev:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_kaynak_kapasite.html:10
+msgid "Aktif Görev:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_risk.html:8
+#, fuzzy
+msgid "Açık Risk:"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_radar/kpr_risk.html:9
+msgid "Ortalama RPN:"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kpr_risk.html:10
+#, fuzzy
+msgid "Yüksek Risk:"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/ks.html:42
+msgid ""
+"Stratejik Planlama Analiz Merkezi — SWOT · TOWS · PESTLE · GAP · OKR · "
+"BSC · EFQM"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:46
+#, fuzzy
+msgid "Süreç Analizi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:47
+#, fuzzy
+msgid "Proje Analizi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:48
+#, fuzzy
+msgid "Çapraz"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_radar/ks.html:56
+#, fuzzy
+msgid "Strateji Kapsamı"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:62
+#, fuzzy
+msgid "Toplam Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:64
+#, fuzzy
+msgid "— alt strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:68
+msgid "Genel PG Başarısı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:74
+msgid "KS Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:86
+#: ui/templates/platform/k_radar/ks.html:212
+#: ui/templates/platform/k_rapor/index.html:618
+msgid "SWOT Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:96
+#: ui/templates/platform/k_radar/ks.html:113
+#: ui/templates/platform/k_radar/ks.html:125
+#: ui/templates/platform/k_radar/ks.html:141
+#: ui/templates/platform/k_radar/ks.html:153
+#: ui/templates/platform/k_radar/ks.html:170
+#: ui/templates/platform/k_radar/ks.html:185
+msgid "Detay için tıkla"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:103
+#: ui/templates/platform/k_radar/ks.html:225
+#: ui/templates/platform/k_rapor/index.html:626
+msgid "TOWS Matrisi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:120
+#: ui/templates/platform/k_radar/ks.html:238
+#, fuzzy
+msgid "PESTLE Analizi"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:132
+#: ui/templates/platform/k_radar/ks.html:251
+msgid "GAP Analizi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:137
+#: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/surec/index.html:270
+#: ui/templates/platform/surec/karne.html:361
+msgid "Hedefte"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:138
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Riskli"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:139
+#: ui/templates/platform/k_radar/risk_management.html:35
+#: ui/templates/platform/k_rapor/index.html:582
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Kritik"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:152
+msgid "Hedef ve Anahtar Sonuç hiyerarşisi, çeyrek bazlı ilerleme takibi."
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:165
+#: ui/templates/platform/k_radar/ks.html:391
+msgid "Finansal"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:166
+#: ui/templates/platform/k_radar/ks.html:392
+msgid "Müşteri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:167
+msgid "İç Süreç"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:168
+msgid "Öğrenme"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:182
+msgid "Kriter Kapsamı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:183
+msgid "Hazırlık Skoru"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:194
+#, fuzzy
+msgid "Strateji → Süreç Kapsama Özeti"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:265
+msgid "OKR — Hedefler ve Anahtar Sonuçlar"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:278
+msgid "Hedef Ekle"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:284
+msgid "Hedef Başlığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:285
+msgid "Nereye gitmek istiyoruz?"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:288
+msgid "Çeyrek"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:290
+#: ui/templates/platform/k_rapor/index.html:196
+#: ui/templates/platform/surec/karne.html:562
+msgid "Yıllık"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:291
+msgid "Ç1 — Ocak–Mart"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:292
+msgid "Ç2 — Nisan–Haziran"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:293
+msgid "Ç3 — Temmuz–Eylül"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:294
+msgid "Ç4 — Ekim–Aralık"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:298
+#: ui/templates/platform/k_rapor/index.html:117
+#, fuzzy
+msgid "Sorumlu"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/ks.html:299
+msgid "Kişi veya ekip"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:302
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/surec/index.html:572
+#: ui/templates/platform/surec/karne.html:621
+#: ui/templates/platform/surec/karne.html:645
+#: ui/templates/platform/surec/karne.html:920
+msgid "Açıklama"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:303
+#, fuzzy
+msgid "Opsiyonel açıklama"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/k_radar/ks.html:318
+msgid "Anahtar Sonuç Ekle"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:324
+msgid "KR Başlığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:325
+msgid "Oraya vardığımızı nasıl anlayacağız?"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:328
+#: ui/templates/platform/surec/karne.html:527
+msgid "Ölçüm Birimi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:329
+#, python-format
+msgid "%%, adet, puan, TL…"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:332
+msgid "Başlangıç Değeri"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:336
+#: ui/templates/platform/surec/karne.html:522
+msgid "Hedef Değer"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:340
+msgid "Güncel Değer"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:341
+msgid "Mevcut ilerleme"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:356
+msgid "BSC — Balanced Scorecard"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:369
+msgid "EFQM Modeli 2025 — Olgunluk Değerlendirmesi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:382
+msgid "Perspektif Ata"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:388
+msgid "Perspektif"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:390
+msgid "— Atama Kaldır —"
+msgstr ""
+
+#: ui/templates/platform/k_radar/ks.html:393
+#, fuzzy
+msgid "İç Süreçler"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/k_radar/ks.html:394
+msgid "Öğrenme &amp; Gelişim"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:2
+#: ui/templates/platform/k_radar/risk_management.html:7
+#, fuzzy
+msgid "Risk Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/risk_management.html:8
+msgid "RAID + K-Radar Isı Haritası birleşik görünüm"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:11
+#, fuzzy
+msgid "Risk Ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/k_radar/risk_management.html:19
+msgid "Risk Matrisi (5×5)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:26
+msgid "Satır: Olasılık · Sütun: Etki"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:34
+msgid "Tüm severity"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:36
+msgid "Yüksek"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:37
+#: ui/templates/platform/k_rapor/anomalies.html:32
+#, fuzzy
+msgid "Orta"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/risk_management.html:38
+msgid "Düşük"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:41
+#, fuzzy
+msgid "Tüm durum"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/k_radar/risk_management.html:43
+#: ui/templates/platform/k_radar/risk_management.html:90
+msgid "Azaltılıyor"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:44
+#: ui/templates/platform/k_radar/risk_management.html:91
+#: ui/templates/platform/kurum/ayarlar.html:108
+#: ui/templates/platform/kurum/ayarlar.html:138
+#, fuzzy
+msgid "Kapalı"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/k_radar/risk_management.html:50
+#: ui/templates/platform/k_rapor/index.html:104
+msgid "Risk"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:50
+msgid "Olas."
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:51
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "RPN"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:51
+msgid "Önem"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:95
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Kaynak"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:66
+msgid "Yeni Risk"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:72
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "Risk Başlığı"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:77
+msgid "Olasılık (1-5)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:81
+msgid "Etki (1-5)"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:97
+msgid "Manuel"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:99
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:597
+msgid "Proje"
+msgstr ""
 
 #: ui/templates/platform/k_rapor/anomalies.html:2
 #: ui/templates/platform/k_rapor/anomalies.html:7
@@ -1089,11 +2893,6 @@ msgstr ""
 #: ui/templates/platform/k_rapor/anomalies.html:31
 msgid "Düşük (tümü)"
 msgstr ""
-
-#: ui/templates/platform/k_rapor/anomalies.html:32
-#, fuzzy
-msgid "Orta"
-msgstr "Kurum Paneli"
 
 #: ui/templates/platform/k_rapor/anomalies.html:33
 msgid "Yüksek (sadece kritik)"
@@ -1154,16 +2953,6 @@ msgstr ""
 msgid "Süreç bazlı PG performans tablosu"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:100
-#, fuzzy
-msgid "Stratejik Uyum"
-msgstr "Stratejik Planlama"
-
-#: ui/templates/platform/k_rapor/index.html:100
-#, fuzzy
-msgid "Strateji ↔ süreç hizalama analizi"
-msgstr "Stratejik Planlama"
-
 #: ui/templates/platform/k_rapor/index.html:101
 msgid "Faaliyet durumu ve ilerleme dağılımı"
 msgstr ""
@@ -1179,16 +2968,7 @@ msgid "Bireysel performans karne özetleri"
 msgstr "Bireysel Karne"
 
 #: ui/templates/platform/k_rapor/index.html:103
-#, fuzzy
-msgid "Veri Durumu"
-msgstr "Kurum Paneli"
-
-#: ui/templates/platform/k_rapor/index.html:103
 msgid "PG veri doluluk ve eksik kayıtlar"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:104
-msgid "Risk"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:104
@@ -1239,16 +3019,7 @@ msgid "SWOT · TOWS · PESTEL · Porter 5 güç"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:110
-#: ui/templates/platform/k_rapor/index.html:663
-msgid "Paydaş"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:110
 msgid "Paydaş haritası ve etkileşim analizi"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:111
-msgid "Rekabet & A3"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:111
@@ -1268,10 +3039,6 @@ msgstr "Performans Göstergeleri"
 msgid "Faaliyet Matris"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:113
-msgid "Sorumlu × faaliyet matrisi"
-msgstr ""
-
 #: ui/templates/platform/k_rapor/index.html:114
 msgid "Aktivite"
 msgstr ""
@@ -1281,11 +3048,6 @@ msgid "Aktivite zaman çizelgesi takvimi"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:115
-#, fuzzy
-msgid "Kurum Kıyas"
-msgstr "Kurum Paneli"
-
-#: ui/templates/platform/k_rapor/index.html:115
 msgid "Kurum içi karşılaştırma raporları"
 msgstr ""
 
@@ -1293,21 +3055,8 @@ msgstr ""
 msgid "Str. Kapsama"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:116
-msgid "Strateji kapsama ve boşluk analizi"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:117
-#, fuzzy
-msgid "Sorumlu"
-msgstr "Kurum Paneli"
-
 #: ui/templates/platform/k_rapor/index.html:117
 msgid "Sorumlu kişi yük ve performans dağılımı"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:118
-msgid "SWOT Trend"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:118
@@ -1360,11 +3109,6 @@ msgstr ""
 msgid "Süreç × Dönem Isı Haritası"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:196
-#: ui/templates/platform/surec/karne.html:562
-msgid "Yıllık"
-msgstr ""
-
 #: ui/templates/platform/k_rapor/index.html:210
 msgid ""
 "<b>Stratejik Uyum:</b> Strateji → süreç → PG katkı ağacı. Hangi "
@@ -1394,30 +3138,12 @@ msgid "Geciken Faaliyetler"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:308
-#: ui/templates/platform/k_rapor/index.html:320
-#: ui/templates/platform/k_rapor/index.html:370
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/surec/faaliyetler.html:60
-#: ui/templates/platform/surec/karne.html:691
-msgid "Süreç"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:237
 #: ui/templates/platform/k_rapor/index.html:251
 msgid "Bitiş"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:246
 msgid "Proje Portföy Durumu"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:597
-msgid "Proje"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:251
@@ -1499,13 +3225,6 @@ msgstr ""
 msgid "Başarı %"
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/k_rapor/index.html:697
-msgid "Kaynak"
-msgstr ""
-
 #: ui/templates/platform/k_rapor/index.html:296
 msgid ""
 "<b>Veri Durumu:</b> PG ölçüm veri doluluk raporu — hangi PG'lerin son "
@@ -1544,23 +3263,7 @@ msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:346
 #: ui/templates/platform/k_rapor/index.html:450
-msgid "Risk Başlığı"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
 msgid "Olasılık"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:663
-msgid "Etki"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-msgid "RPN"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:353
@@ -1607,14 +3310,6 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:596
 #: ui/templates/platform/k_rapor/index.html:697
 msgid "Tarih"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/surec/index.html:572
-#: ui/templates/platform/surec/karne.html:621
-#: ui/templates/platform/surec/karne.html:645
-#: ui/templates/platform/surec/karne.html:920
-msgid "Açıklama"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:432
@@ -1753,11 +3448,6 @@ msgid "Bütçe iyi ama program gerisinde — hız artırılmalı"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:582
-#: ui/templates/platform/k_rapor/index.html:795
-msgid "Kritik"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:582
 msgid "Hem geç hem pahalı — acil yeniden planlama"
 msgstr ""
 
@@ -1796,14 +3486,6 @@ msgid ""
 " aksiyonlar."
 msgstr ""
 
-#: ui/templates/platform/k_rapor/index.html:618
-msgid "SWOT Analizi"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:626
-msgid "TOWS Matrisi"
-msgstr ""
-
 #: ui/templates/platform/k_rapor/index.html:636
 msgid "PESTEL Analizi"
 msgstr ""
@@ -1818,25 +3500,6 @@ msgid ""
 "konumlandırılması. Yüksek etki + yüksek ilgi = aktif yönetim gerektiren "
 "paydaşlar."
 msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:658
-msgid "Paydaş Haritası"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:663
-msgid "Rol"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:663
-msgid "İlgi"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:663
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/surec/karne.html:864
-#, fuzzy
-msgid "Strateji"
-msgstr "Stratejik Planlama"
 
 #: ui/templates/platform/k_rapor/index.html:670
 msgid "Paydaş Anket Özeti"
@@ -1959,16 +3622,6 @@ msgstr "Kurum Paneli"
 
 #: ui/templates/platform/k_rapor/index.html:795
 msgid "PG Sayısı"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:795
-#: ui/templates/platform/surec/index.html:270
-#: ui/templates/platform/surec/karne.html:361
-msgid "Hedefte"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:795
-msgid "Riskli"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:804
@@ -2195,12 +3848,6 @@ msgstr ""
 #: ui/templates/platform/kurum/ayarlar.html:106
 msgid "Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer."
 msgstr ""
-
-#: ui/templates/platform/kurum/ayarlar.html:108
-#: ui/templates/platform/kurum/ayarlar.html:138
-#, fuzzy
-msgid "Kapalı"
-msgstr "Ayarlar"
 
 #: ui/templates/platform/kurum/ayarlar.html:120
 msgid "Yıllık Plan Dönemleri"
@@ -2672,10 +4319,6 @@ msgstr ""
 msgid "Süreç Mimarisi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:80
-msgid "Olgunluk"
-msgstr ""
-
 #: ui/templates/platform/masaustu/index.html:81
 msgid "İcra Disiplini"
 msgstr ""
@@ -2723,10 +4366,6 @@ msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:187
 msgid "Bekleyen bildirim"
-msgstr ""
-
-#: ui/templates/platform/masaustu/index.html:202
-msgid "Tümü"
 msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:203
@@ -2963,10 +4602,6 @@ msgstr ""
 msgid "Pasif"
 msgstr ""
 
-#: ui/templates/platform/surec/index.html:534
-msgid "Beklemede"
-msgstr ""
-
 #: ui/templates/platform/surec/index.html:535
 msgid "Tamamlandı"
 msgstr ""
@@ -3035,12 +4670,6 @@ msgstr ""
 msgid "Seçilenleri ekle"
 msgstr ""
 
-#: ui/templates/platform/surec/index.html:602
-#: ui/templates/platform/surec/index.html:622
-#, fuzzy
-msgid "Ekle"
-msgstr "Düzenle"
-
 #: ui/templates/platform/surec/index.html:603
 msgid "Seçilenleri çıkar"
 msgstr ""
@@ -3080,10 +4709,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/karne.html:100
 msgid "Rapor yılı"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:119
-msgid "Süreç seçin"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:120
@@ -3180,18 +4805,8 @@ msgstr ""
 msgid "Önceki dönem"
 msgstr ""
 
-#: ui/templates/platform/surec/karne.html:315
-#: ui/templates/platform/surec/karne.html:837
-msgid "Önceki"
-msgstr ""
-
 #: ui/templates/platform/surec/karne.html:321
 msgid "Sonraki dönem"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:322
-#: ui/templates/platform/surec/karne.html:844
-msgid "Sonraki"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:329
@@ -3287,16 +4902,8 @@ msgstr ""
 msgid "Kodu"
 msgstr ""
 
-#: ui/templates/platform/surec/karne.html:522
-msgid "Hedef Değer"
-msgstr ""
-
 #: ui/templates/platform/surec/karne.html:524
 msgid "Hedef değer"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:527
-msgid "Ölçüm Birimi"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:533

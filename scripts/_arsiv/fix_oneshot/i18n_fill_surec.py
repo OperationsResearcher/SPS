@@ -9,6 +9,9 @@ import re
 
 PO = "translations/en/LC_MESSAGES/messages.po"
 
+import os, json
+_SUPP = os.path.join(os.path.dirname(__file__), "i18n_supplement.json")
+
 T = {
     # faaliyetler.html
     "Süreç Faaliyetleri": "Process Activities",
@@ -770,6 +773,13 @@ T = {
     "ST": "ST",
     "Bildirim Türü Dağılımı": "Notification Type Distribution",
 }
+
+# Ek sözlük (modül modül büyür): i18n_supplement.json
+if os.path.exists(_SUPP):
+    with open(_SUPP, encoding="utf-8") as _sf:
+        _extra = json.load(_sf)
+    T.update(_extra)
+    print(f"[i18n_fill_surec] supplement: {len(_extra)} ek girdi yüklendi")
 
 with open(PO, encoding="utf-8") as f:
     content = f.read()

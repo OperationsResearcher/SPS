@@ -11,36 +11,36 @@
      style="max-width:1000px; margin:0 auto;">
   <div class="mc-card">
     <div class="mc-card-body">
-      <h3 style="margin-top:0;">Surec Olgunluk Analizi</h3>
+      <h3 style="margin-top:0;">{{ _("Surec Olgunluk Analizi") }}</h3>
       {% if can_manage_k_radar %}
       <form id="kp-olgunluk-form" method="post" action="{{ url_for('app_bp.k_radar_kp_olgunluk_ekle') }}" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <select name="process_id" class="mc-select" required style="min-width:260px;">
-          <option value="">Süreç seçin</option>
+          <option value="">{{ _("Süreç seçin") }}</option>
           {% for p in processes %}
           <option value="{{ p.id }}">{{ p.code or '' }} {{ p.name }}</option>
           {% endfor %}
         </select>
         <select name="maturity_level" class="mc-select" required>
-          <option value="1">Seviye 1</option><option value="2">Seviye 2</option><option value="3" selected>Seviye 3</option><option value="4">Seviye 4</option><option value="5">Seviye 5</option>
+          <option value="1">{{ _("Seviye 1") }}</option><option value="2">{{ _("Seviye 2") }}</option><option value="3" selected>{{ _("Seviye 3") }}</option><option value="4">{{ _("Seviye 4") }}</option><option value="5">{{ _("Seviye 5") }}</option>
         </select>
-        <input name="dimension" class="mc-input" placeholder="Boyut (opsiyonel)">
-        <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">Ekle</button>
+        <input name="dimension" class="mc-input" placeholder="{{ _('Boyut (opsiyonel)') }}">
+        <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit">{{ _("Ekle") }}</button>
       </form>
       {% endif %}
       <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
-        <input id="kp-olgunluk-filter" class="mc-input" placeholder="Süreç ID filtrele" style="width:180px;">
+        <input id="kp-olgunluk-filter" class="mc-input" placeholder="{{ _('Süreç ID filtrele') }}" style="width:180px;">
         <select id="kp-olgunluk-sort" class="mc-select">
-          <option value="updated_desc">Güncelleme (Yeni-Eski)</option>
-          <option value="updated_asc">Güncelleme (Eski-Yeni)</option>
-          <option value="level_desc">Seviye (Yüksek-Düşük)</option>
-          <option value="level_asc">Seviye (Düşük-Yüksek)</option>
+          <option value="updated_desc">{{ _("Güncelleme (Yeni-Eski)") }}</option>
+          <option value="updated_asc">{{ _("Güncelleme (Eski-Yeni)") }}</option>
+          <option value="level_desc">{{ _("Seviye (Yüksek-Düşük)") }}</option>
+          <option value="level_asc">{{ _("Seviye (Düşük-Yüksek)") }}</option>
         </select>
-        <button id="kp-olgunluk-apply" class="mc-btn mc-btn-sm">Uygula</button>
+        <button id="kp-olgunluk-apply" class="mc-btn mc-btn-sm">{{ _("Uygula") }}</button>
       </div>
       <div style="overflow:auto;">
         <table style="width:100%; border-collapse:collapse;">
-          <thead><tr><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Süreç</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Seviye</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Boyut</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">Güncelleme</th>{% if can_manage_k_radar %}<th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">İşlem</th>{% endif %}</tr></thead>
+          <thead><tr><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Süreç") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Seviye") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Boyut") }}</th><th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("Güncelleme") }}</th>{% if can_manage_k_radar %}<th style="text-align:left; border-bottom:1px solid #e5e7eb; padding:6px;">{{ _("İşlem") }}</th>{% endif %}</tr></thead>
           <tbody id="kp-olgunluk-rows">
           {% for r in rows %}
           <tr>
@@ -50,7 +50,7 @@
             <td style="border-bottom:1px solid #f1f5f9; padding:6px;">{{ r.updated_at }}</td>
           </tr>
           {% else %}
-          <tr><td colspan="4" style="padding:8px; color:#64748b;">Kayıt bulunamadı.</td></tr>
+          <tr><td colspan="4" style="padding:8px; color:#64748b;">{{ _("Kayıt bulunamadı.") }}</td></tr>
           {% endfor %}
           </tbody>
         </table>
