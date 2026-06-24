@@ -7,6 +7,7 @@ from flask_login import current_user, login_required
 from platform_core import app_bp
 from app.models import db
 from app.models.k_radar_domain import StakeholderMap
+from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
     _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
 )
@@ -18,7 +19,7 @@ def k_radar_cross():
     return render_template("platform/k_radar/cross.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/paydas")
+@app_bp.route("/k-radar/cross/stakeholder")
 @login_required
 def k_radar_cross_paydas():
     tenant_id = _required_tenant_id()
@@ -53,7 +54,7 @@ def k_radar_cross_anket():
     return render_template("platform/k_radar/cross_anket.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/paydas/ekle", methods=["POST"])
+@app_bp.route("/k-radar/cross/stakeholder/ekle", methods=["POST"])
 @login_required
 def k_radar_cross_paydas_ekle():
     if not _can_manage_k_radar():
@@ -65,7 +66,7 @@ def k_radar_cross_paydas_ekle():
     influence = request.form.get("influence", type=int)
     interest = request.form.get("interest", type=int)
     if not name:
-        flash("Paydaş adı zorunludur.", "danger")
+        flash(_("Paydaş adı zorunludur."), "danger")
         return redirect(url_for("app_bp.k_radar_cross_paydas"))
     row = StakeholderMap(
         tenant_id=tenant_id,
@@ -78,7 +79,7 @@ def k_radar_cross_paydas_ekle():
     )
     db.session.add(row)
     db.session.commit()
-    flash("Paydaş kaydı eklendi.", "success")
+    flash(_("Paydaş kaydı eklendi."), "success")
     return redirect(url_for("app_bp.k_radar_cross_paydas"))
 
 
@@ -91,7 +92,7 @@ def k_radar_api_cross_risk_heatmap():
     )
 
 
-@app_bp.route("/k-radar/api/cross/paydas")
+@app_bp.route("/k-radar/api/cross/stakeholder")
 @login_required
 def k_radar_api_cross_paydas():
     def _build():
@@ -120,7 +121,7 @@ def k_radar_api_cross_paydas():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/cross/paydas", methods=["POST"])
+@app_bp.route("/k-radar/api/cross/stakeholder", methods=["POST"])
 @login_required
 def k_radar_api_cross_paydas_create():
     if not _can_manage_k_radar():
@@ -149,7 +150,7 @@ def k_radar_api_cross_paydas_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/cross/paydas/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_cross_paydas_update(row_id: int):
     if not _can_manage_k_radar():
@@ -166,7 +167,7 @@ def k_radar_api_cross_paydas_update(row_id: int):
     def _update():
         row = StakeholderMap.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.name = name
         row.role = role
         row.strategy = strategy
@@ -178,7 +179,7 @@ def k_radar_api_cross_paydas_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/cross/paydas/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_cross_paydas_delete(row_id: int):
     if not _can_manage_k_radar():
@@ -187,7 +188,7 @@ def k_radar_api_cross_paydas_delete(row_id: int):
     def _delete():
         row = StakeholderMap.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.is_active = False
         db.session.commit()
         return jsonify({"success": True, "data": {"id": row.id}})

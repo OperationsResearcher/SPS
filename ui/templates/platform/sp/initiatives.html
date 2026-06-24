@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Çok Yıllık Girişimler — Kokpitim{% endblock %}
-{% block page_title %}Çok Yıllık Stratejik Girişimler{% endblock %}
+{% block title %}{{ _("Çok Yıllık Girişimler — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Çok Yıllık Stratejik Girişimler") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_initiatives">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Girişimler', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _("Stratejik Planlama"), 'url': url_for('app_bp.sp_menu')}, {'label': _("Girişimler"), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,18 +19,18 @@
   <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-        <i class="fas fa-rocket"></i> Stratejik Girişimler
+        <i class="fas fa-rocket"></i> {{ _("Stratejik Girişimler") }}
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        Birden çok yıla yayılan stratejik girişimler — yıllık plandan bağımsız yaşam döngüsü.
+        {{ _("Birden çok yıla yayılan stratejik girişimler — yıllık plandan bağımsız yaşam döngüsü.") }}
       </p>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
-      <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="Hiyerarşi rehberi">
-        <i class="fas fa-circle-info"></i> Hiyerarşi Rehberi
+      <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="{{ _('Hiyerarşi rehberi') }}">
+        <i class="fas fa-circle-info"></i> {{ _("Hiyerarşi Rehberi") }}
       </button>
       <button type="button" class="mc-btn mc-btn-primary" id="init-btn-new" data-tour="init-new">
-        <i class="fas fa-plus"></i> Yeni Girişim
+        <i class="fas fa-plus"></i> {{ _("Yeni Girişim") }}
       </button>
     </div>
   </div>
@@ -42,43 +42,43 @@
   <div class="mc-modal-overlay" id="init-modal" style="display:none;">
     <div class="mc-modal-lg">
       <div class="mc-modal-header">
-        <h3>Yeni Girişim</h3>
+        <h3>{{ _("Yeni Girişim") }}</h3>
         <button class="mc-modal-close" type="button" id="init-modal-close">✕</button>
       </div>
       <div class="mc-modal-body">
         <form id="init-form" style="display:grid; gap:12px;">
-          <label>Ad<input class="mc-input" name="name" required></label>
-          <label>Kod<input class="mc-input" name="code" placeholder="INIT-2026-01"></label>
-          <label>Açıklama<textarea class="mc-input" name="description" rows="3"></textarea></label>
+          <label>{{ _("Ad") }}<input class="mc-input" name="name" required></label>
+          <label>{{ _("Kod") }}<input class="mc-input" name="code" placeholder="INIT-2026-01"></label>
+          <label>{{ _("Açıklama") }}<textarea class="mc-input" name="description" rows="3"></textarea></label>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <label>Başlangıç Yılı<input class="mc-input" type="number" name="start_year" value="2026" required></label>
-            <label>Bitiş Yılı<input class="mc-input" type="number" name="end_year" value="2028" required></label>
+            <label>{{ _("Başlangıç Yılı") }}<input class="mc-input" type="number" name="start_year" value="2026" required></label>
+            <label>{{ _("Bitiş Yılı") }}<input class="mc-input" type="number" name="end_year" value="2028" required></label>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <label>Öncelik
+            <label>{{ _("Öncelik") }}
               <select class="mc-input" name="priority">
-                <option value="critical">Kritik</option>
-                <option value="high">Yüksek</option>
-                <option value="medium" selected>Orta</option>
-                <option value="low">Düşük</option>
+                <option value="critical">{{ _("Kritik") }}</option>
+                <option value="high">{{ _("Yüksek") }}</option>
+                <option value="medium" selected>{{ _("Orta") }}</option>
+                <option value="low">{{ _("Düşük") }}</option>
               </select>
             </label>
-            <label>Durum
+            <label>{{ _("Durum") }}
               <select class="mc-input" name="status">
-                <option value="planned" selected>Planlanan</option>
-                <option value="in_progress">Devam Ediyor</option>
-                <option value="on_hold">Beklemede</option>
-                <option value="completed">Tamamlandı</option>
-                <option value="cancelled">İptal</option>
+                <option value="planned" selected>{{ _("Planlanan") }}</option>
+                <option value="in_progress">{{ _("Devam Ediyor") }}</option>
+                <option value="on_hold">{{ _("Beklemede") }}</option>
+                <option value="completed">{{ _("Tamamlandı") }}</option>
+                <option value="cancelled">{{ _("İptal") }}</option>
               </select>
             </label>
           </div>
-          <label>Toplam Bütçe<input class="mc-input" type="number" step="0.01" name="budget_total"></label>
+          <label>{{ _("Toplam Bütçe") }}<input class="mc-input" type="number" step="0.01" name="budget_total"></label>
         </form>
       </div>
       <div class="mc-modal-footer">
-        <button class="mc-btn mc-btn-secondary" type="button" id="init-cancel">İptal</button>
-        <button class="mc-btn mc-btn-primary" type="button" id="init-save">Kaydet</button>
+        <button class="mc-btn mc-btn-secondary" type="button" id="init-cancel">{{ _("İptal") }}</button>
+        <button class="mc-btn mc-btn-primary" type="button" id="init-save">{{ _("Kaydet") }}</button>
       </div>
     </div>
   </div>
@@ -97,12 +97,12 @@
   }
   function priorityBadge(p) {
     const colors = {critical:'#dc2626', high:'#f59e0b', medium:'#0ea5e9', low:'#64748b'};
-    const labels = {critical:'Kritik', high:'Yüksek', medium:'Orta', low:'Düşük'};
+    const labels = {critical:t('Kritik'), high:t('Yüksek'), medium:t('Orta'), low:t('Düşük')};
     return `<span style="background:${colors[p]||'#64748b'};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">${labels[p]||p}</span>`;
   }
   function statusLabel(s) {
-    return {planned:'Planlanan', in_progress:'Devam Ediyor', on_hold:'Beklemede',
-            completed:'Tamamlandı', cancelled:'İptal'}[s] || s;
+    return {planned:t('Planlanan'), in_progress:t('Devam Ediyor'), on_hold:t('Beklemede'),
+            completed:t('Tamamlandı'), cancelled:t('İptal')}[s] || s;
   }
 
   async function load() {
@@ -110,7 +110,7 @@
     const j = await res.json();
     const ul = document.getElementById('init-list');
     if (!j.items || j.items.length === 0) {
-      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz girişim yok.</div>';
+      ul.innerHTML = `<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">${t("Henüz girişim yok.")}</div>`;
       return;
     }
     ul.innerHTML = j.items.map(i => `
@@ -124,15 +124,15 @@
             </div>
             <div style="font-size:15px;font-weight:600;color:var(--text-default);">${i.name}</div>
             <div style="font-size:12px;color:#64748b;margin-top:4px;">
-              ${i.start_year} - ${i.end_year} • ${i.milestone_count} milestone
-              ${i.budget_total ? ' • Bütçe: ' + i.budget_total.toLocaleString('tr-TR') : ''}
+              ${i.start_year} - ${i.end_year} • ${i.milestone_count} ${t("milestone")}
+              ${i.budget_total ? ' • ' + t("Bütçe:") + ' ' + i.budget_total.toLocaleString('tr-TR') : ''}
             </div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:24px;font-weight:700;color:var(--text-default);">%${i.progress_pct.toFixed(0)}</div>
-            <div style="font-size:11px;color:#64748b;">İlerleme</div>
+            <div style="font-size:11px;color:#64748b;">${t("İlerleme")}</div>
             <button type="button" class="init-toggle-projects mc-btn mc-btn-secondary mc-btn-sm" data-iid="${i.id}" style="margin-top:8px;">
-              <i class="fas fa-folder-open"></i> Altındaki Projeler
+              <i class="fas fa-folder-open"></i> ${t("Altındaki Projeler")}
             </button>
           </div>
         </div>
@@ -150,22 +150,22 @@
     if (!wrap) return;
     if (wrap.style.display === 'block') { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
-    wrap.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:10px;font-size:12px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>';
+    wrap.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:10px;font-size:12px;"><i class="fas fa-spinner fa-spin"></i> ${t("Yükleniyor…")}</div>`;
     try {
       const res = await fetch('/sp/api/initiatives/' + iid + '/projects');
       const j = await res.json();
       const items = (j.items || []);
       if (!items.length) {
         wrap.innerHTML = `<div style="background:#f8fafc; padding:14px; border-radius:6px; font-size:12.5px; color:#64748b;">
-          Bu stratejik girişime henüz proje bağlanmamış.
-          <a href="/project" style="color:#6366f1; font-weight:600;">Proje listesine git</a> ve oradan "Stratejik Girişim" alanına bunu seçebilirsiniz.
+          ${t("Bu stratejik girişime henüz proje bağlanmamış.")}
+          <a href="/project" style="color:#6366f1; font-weight:600;">${t("Proje listesine git")}</a> ${t("ve oradan \"Stratejik Girişim\" alanına bunu seçebilirsiniz.")}
         </div>`;
         return;
       }
       const esc = s => String(s||'').replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
       wrap.innerHTML = `
         <div style="font-size:11.5px; color:#64748b; text-transform:uppercase; font-weight:600; margin-bottom:8px;">
-          Altındaki Projeler (${items.length})
+          ${t("Altındaki Projeler")} (${items.length})
         </div>
         <div style="display:grid; gap:6px;">
           ${items.map(p => `
@@ -177,7 +177,7 @@
             </a>`).join('')}
         </div>`;
     } catch(e) {
-      wrap.innerHTML = `<div style="color:#dc2626; font-size:12px;">Yüklenemedi: ${e.message}</div>`;
+      wrap.innerHTML = `<div style="color:#dc2626; font-size:12px;">${t("Yüklenemedi:")} ${e.message}</div>`;
     }
   }
 
@@ -196,7 +196,7 @@
     });
     const j = await res.json();
     if (!res.ok || !j.success) {
-      Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'bilinmeyen'), confirmButtonColor: '#dc2626' });
+      Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('bilinmeyen')), confirmButtonColor: '#dc2626' });
       return;
     }
     modal.style.display = 'none';

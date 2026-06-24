@@ -16,6 +16,7 @@ from app.services.plan_year_template_service import (
 )
 from micro.modules.sp.helpers import _check_sp_role
 from app.utils.decorators import require_module
+from flask_babel import gettext as _
 
 
 def _can():
@@ -51,7 +52,7 @@ def sp_api_exec_snapshot():
         return jsonify({"success": True, "snapshot": snap})
     except Exception as e:
         current_app.logger.error(f"exec_snapshot error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ─── Strateji bazlı performans sıralaması ────────────────────────────────────
@@ -110,7 +111,7 @@ def sp_api_exec_strategy_scores():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_strategy_scores error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ─── K-Vektör puan gelişimi (günlük/aylık/çeyreklik/yıllık) ─────────────────
@@ -230,7 +231,7 @@ def sp_api_exec_kvektor_trend():
         }})
     except Exception as e:
         current_app.logger.error(f"exec_kvektor_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ─── Son 12 ay sağlık trendi (PG hedef üstü oranı) ───────────────────────────
@@ -273,7 +274,7 @@ def sp_api_exec_trend():
         return jsonify({"success": True, "data": {"labels": labels, "values": values}})
     except Exception as e:
         current_app.logger.error(f"exec_trend error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
@@ -294,7 +295,7 @@ def sp_api_ai_pivot():
         return jsonify({"success": True, **result}), status
     except Exception as e:
         current_app.logger.error(f"ai_pivot error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ─── Template Marketplace ────────────────────────────────────────────────────
@@ -381,7 +382,7 @@ def _exec_heuristik_ozet(snap):
     return " ".join(parts)
 
 
-@app_bp.route("/sp/api/exec-ai-ozet")
+@app_bp.route("/sp/api/exec-ai-summary")
 @login_required
 def sp_api_exec_ai_ozet():
     """Tenant-geneli 2-3 cümlelik Türkçe yönetici özeti (exec + kurum üstü).
@@ -445,7 +446,7 @@ def sp_api_template_apply(code):
         }), 201
     except Exception as e:
         current_app.logger.error(f"template_apply error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
 
 
 # ── Savaş Odası cepheleri: alt strateji + süreç + proje sıralaması ────────────
@@ -500,7 +501,7 @@ def _savas_rank(sql, tid, year):
     }
 
 
-@app_bp.route("/sp/api/savas-odasi/fronts")
+@app_bp.route("/sp/api/war-room/fronts")
 @login_required
 def sp_api_savas_odasi_fronts():
     """Savaş Odası ek cepheleri: alt strateji + süreç (hedef üstü %) + proje (sağlık)."""

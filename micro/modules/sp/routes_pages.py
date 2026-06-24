@@ -1,5 +1,6 @@
 """Stratejik Planlama — SP ana sayfa ve kurumsal kimlik."""
 
+from flask_babel import gettext as _
 from datetime import date
 from functools import wraps
 
@@ -222,7 +223,7 @@ def sp_api_k_vektor_weights():
     """K-Vektör ana/alt strateji ham ağırlıkları — düzenleme Stratejik Planlama (/sp) akışında."""
     tid = current_user.tenant_id
     if not tid:
-        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
+        return jsonify({"success": False, "message": _("Tenant bulunamadı.")}), 403
 
     active_py = get_active_plan_year_for_user(current_user)
     if request.method == "GET":
@@ -230,26 +231,26 @@ def sp_api_k_vektor_weights():
 
     ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {}, plan_year=active_py)
     if ok:
-        return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
+        return jsonify({"success": True, "message": _("K-Vektör ağırlıkları kaydedildi.")})
     status = 404 if msg and "bulunamadı" in msg else 400
     if msg == "Kayıt sırasında hata oluştu.":
         status = 500
     return jsonify({"success": False, "message": msg or "Kayıt başarısız."}), status
 
 
-@app_bp.route("/sp/misyon")
+@app_bp.route("/sp/mission")
 @login_required
 def sp_misyon():
     return render_template("platform/sp/misyon.html")
 
 
-@app_bp.route("/sp/vizyon")
+@app_bp.route("/sp/vision")
 @login_required
 def sp_vizyon():
     return render_template("platform/sp/vizyon.html")
 
 
-@app_bp.route("/sp/degerler")
+@app_bp.route("/sp/values")
 @login_required
 def sp_degerler():
     return render_template("platform/sp/degerler.html")
@@ -295,18 +296,18 @@ def sp_api_tenant_identity():
         if changed:
             AuditLogger.log_update("Kurum Yönetimi", tid, {}, changed,
                                    description="Stratejik kimlik güncellendi")
-        return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
+        return jsonify({"success": True, "message": _("Stratejik kimlik güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_tenant_identity] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 
 
 # ── Strateji Haritası ─────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/strateji-haritasi")
+@app_bp.route("/sp/strategy-map")
 @login_required
 def sp_strateji_haritasi():
     """Strateji → Alt Strateji → Süreç → KPI hiyerarşisi görsel haritası."""
@@ -326,13 +327,13 @@ def sp_strateji_haritasi():
     )
 
 
-@app_bp.route("/sp/api/strateji-haritasi")
+@app_bp.route("/sp/api/strategy-map")
 @login_required
 def sp_api_strateji_haritasi():
     """Strateji haritası için ağaç verisi döner (SP ile aynı strateji filtresi)."""
     tid = current_user.tenant_id or getattr(current_user, "kurum_id", None)
     if not tid:
-        return jsonify({"success": False, "message": "Kurum bilgisi bulunamadı.", "nodes": [], "edges": []}), 400
+        return jsonify({"success": False, "message": _("Kurum bilgisi bulunamadı."), "nodes": [], "edges": []}), 400
 
     strategies = load_sp_strategies_for_user(current_user)
     return jsonify(build_strateji_harita_graph(tid, strategies))
@@ -340,7 +341,7 @@ def sp_api_strateji_haritasi():
 
 # ── Dönemsel Rapor ────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/rapor/donemsel")
+@app_bp.route("/sp/report/periodic")
 @login_required
 def sp_rapor_donemsel():
     """Dönemsel karşılaştırma raporunu Excel olarak indirir."""
@@ -358,7 +359,7 @@ def sp_rapor_donemsel():
             download_name=fname,
         )
     except RuntimeError as e:
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
     except Exception as e:
         current_app.logger.error(f"[sp_rapor_donemsel] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Rapor oluşturulamadı.")}), 500

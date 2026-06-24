@@ -6,7 +6,7 @@
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
     <h1 class="mc-page-title"><i class="fas fa-plug" style="color:#7c3aed;"></i> BI Connector</h1>
-    <p class="mc-page-subtitle">Kokpitim verisini Power BI, Tableau ve Excel'e bağla — direkt CSV/JSON endpoint'leri.</p>
+    <p class="mc-page-subtitle">{{ _("Kokpitim verisini Power BI, Tableau ve Excel'e bağla — direkt CSV/JSON endpoint'leri.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
@@ -14,62 +14,63 @@
   <!-- Endpoint kartları -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:20px;">
     {% set endpoints = [
-      {'name': 'KPI Ölçümleri (CSV)', 'url': '/raporlar/api/bi/kpi-data.csv', 'desc': 'Tüm KPI ölçümleri (max 10K satır)', 'format': 'CSV', 'color': '#16a34a'},
-      {'name': 'Stratejiler (JSON)', 'url': '/raporlar/api/bi/strategies.json', 'desc': 'Strateji ağacı + skor metrikleri', 'format': 'JSON', 'color': '#0ea5e9'},
+      {'name': 'KPI Ölçümleri (CSV)', 'url': '/reports/api/bi/kpi-data.csv', 'desc': 'Tüm KPI ölçümleri (max 10K satır)', 'format': 'CSV', 'color': '#16a34a'},
+      {'name': 'Stratejiler (JSON)', 'url': '/reports/api/bi/strategies.json', 'desc': 'Strateji ağacı + skor metrikleri', 'format': 'JSON', 'color': '#0ea5e9'},
     ] %}
+    {% set ep_codes = {'KPI Ölçümleri (CSV)': 'raporlar_bi_connector.kpi_olcumleri_csv', 'Stratejiler (JSON)': 'raporlar_bi_connector.stratejiler_json'} %}
     {% for ep in endpoints %}
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;" data-card-code="{{ ep_codes.get(ep.name, '') }}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="font-size:14px;font-weight:700;color:#0f172a;">{{ ep.name }}</div>
+        <div class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;">{{ ep.name }}</div>
         <span style="background:{{ ep.color }};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;">{{ ep.format }}</span>
       </div>
       <div style="font-size:12px;color:#64748b;margin-bottom:10px;">{{ ep.desc }}</div>
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-family:monospace;font-size:11px;color:#475569;word-break:break-all;cursor:pointer;" onclick="navigator.clipboard.writeText(window.location.origin+'{{ ep.url }}');Swal.fire({icon:'success',title:'Kopyalandı',timer:1200,showConfirmButton:false});" title="Tıkla kopyala">
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-family:monospace;font-size:11px;color:#475569;word-break:break-all;cursor:pointer;" onclick="navigator.clipboard.writeText(window.location.origin+'{{ ep.url }}');Swal.fire({icon:'success',title:'Kopyalandı',timer:1200,showConfirmButton:false});" title="{{ _('Tıkla kopyala') }}">
         {{ request.host_url[:-1] }}{{ ep.url }}
       </div>
       <a href="{{ ep.url }}" target="_blank" style="display:inline-block;margin-top:8px;color:{{ ep.color }};font-size:12px;font-weight:600;text-decoration:none;">
-        <i class="fas fa-download"></i> Doğrudan indir / önizle
+        <i class="fas fa-download"></i> {{ _("Doğrudan indir / önizle") }}
       </a>
     </div>
     {% endfor %}
   </div>
 
   <!-- Power BI rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-pie" style="color:#f2c811;"></i> Power BI Bağlantı Rehberi</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.power_bi_baglanti_rehberi">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-pie" style="color:#f2c811;"></i> {{ _("Power BI Bağlantı Rehberi") }}</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
-      <li><b>Power BI Desktop</b> → Get Data → <b>Web</b></li>
-      <li>URL alanına yukarıdaki "KPI Ölçümleri" CSV bağlantısını yapıştır</li>
-      <li>Authentication → <b>Anonymous</b> (Kokpitim oturumu açık olmalı) veya Basic Auth ile API token</li>
-      <li>Veri yüklendikten sonra Power Query Editor'da gerekli dönüşümleri yap</li>
-      <li>Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)</li>
+      <li>{{ _("<b>Power BI Desktop</b> → Get Data → <b>Web</b>") }}</li>
+      <li>{{ _('URL alanına yukarıdaki "KPI Ölçümleri" CSV bağlantısını yapıştır') }}</li>
+      <li>{{ _("Authentication → <b>Anonymous</b> (Kokpitim oturumu açık olmalı) veya Basic Auth ile API token") }}</li>
+      <li>{{ _("Veri yüklendikten sonra Power Query Editor'da gerekli dönüşümleri yap") }}</li>
+      <li>{{ _("Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)") }}</li>
     </ol>
   </div>
 
   <!-- Tableau rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-bar" style="color:#1f5582;"></i> Tableau Bağlantı Rehberi</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.tableau_baglanti_rehberi">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-chart-bar" style="color:#1f5582;"></i> {{ _("Tableau Bağlantı Rehberi") }}</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
-      <li>Tableau Desktop → Connect → <b>To a Server / Text File</b></li>
-      <li>URL ile bağlanmak için Tableau Web Data Connector (WDC) gerekir</li>
-      <li>Veya CSV'yi indir → Tableau'da <b>Text File</b> kaynağı olarak aç</li>
-      <li>Yenileme manuel; otomatik refresh için Tableau Server gereklidir</li>
+      <li>{{ _("Tableau Desktop → Connect → <b>To a Server / Text File</b>") }}</li>
+      <li>{{ _("URL ile bağlanmak için Tableau Web Data Connector (WDC) gerekir") }}</li>
+      <li>{{ _("Veya CSV'yi indir → Tableau'da <b>Text File</b> kaynağı olarak aç") }}</li>
+      <li>{{ _("Yenileme manuel; otomatik refresh için Tableau Server gereklidir") }}</li>
     </ol>
   </div>
 
   <!-- Excel rehberi -->
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;">
-    <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-file-excel" style="color:#107c41;"></i> Excel / Google Sheets</h3>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:14px;" data-card-code="raporlar_bi_connector.excel_google_sheets">
+    <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-file-excel" style="color:#107c41;"></i> {{ _("Excel / Google Sheets") }}</h3>
     <ol style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
-      <li><b>Excel:</b> Data → From Web → URL'yi yapıştır</li>
-      <li><b>Google Sheets:</b> <code style="background:#f1f5f9;padding:2px 6px;border-radius:3px;">=IMPORTDATA("URL")</code></li>
-      <li>Veri otomatik formatlanır, sütun başlıkları algılanır</li>
+      <li>{{ _("<b>Excel:</b> Data → From Web → URL'yi yapıştır") }}</li>
+      <li>{{ _('<b>Google Sheets:</b> <code style="background:#f1f5f9;padding:2px 6px;border-radius:3px;">=IMPORTDATA("URL")</code>') }}</li>
+      <li>{{ _("Veri otomatik formatlanır, sütun başlıkları algılanır") }}</li>
     </ol>
   </div>
 
   <div style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:14px 18px;border-radius:8px;font-size:12.5px;">
     <i class="fas fa-info-circle"></i>
-    <b>MVP Notu:</b> Bu MVP CSV/JSON endpoint'leri. Tam OData v4 desteği (canlı yenileme, filtre, hiyerarşi navigasyon) için ek geliştirme gerekir (60h tahmini).
+    {{ _("<b>MVP Notu:</b> Bu MVP CSV/JSON endpoint'leri. Tam OData v4 desteği (canlı yenileme, filtre, hiyerarşi navigasyon) için ek geliştirme gerekir (60h tahmini).") }}
   </div>
 </div>
 {% endblock %}

@@ -95,7 +95,7 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         kaydedilen_surec = Surec.query.filter_by(code="SR-01").first()
         self.assertIsNotNone(kaydedilen_surec)
         self.assertEqual(kaydedilen_surec.ad, "Pazarlama Süreci")
-        print("✓ Süreç başarıyla oluşturuldu.")
+        print("[OK] Süreç başarıyla oluşturuldu.")
 
         # 2. PG (Performans Göstergesi) Ekleme
         yeni_pg = SurecPerformansGostergesi(
@@ -114,7 +114,7 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         kaydedilen_pg = SurecPerformansGostergesi.query.filter_by(kodu="PG-01").first()
         self.assertIsNotNone(kaydedilen_pg)
         self.assertEqual(kaydedilen_pg.surec_id, saved_process_id := kaydedilen_surec.id)
-        print("✓ PG başarıyla sürece bağlandı.")
+        print("[OK] PG başarıyla sürece bağlandı.")
         
         return saved_process_id, kaydedilen_pg.id
 
@@ -150,7 +150,7 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         db.session.add(bireysel_pg)
         db.session.commit()
         
-        print(f"✓ Bireysel PG atandı: {bireysel_pg.ad} -> {self.std_user.username}")
+        print(f"[OK] Bireysel PG atandı: {bireysel_pg.ad} -> {self.std_user.username}")
 
         # 2. Veri Girişi (Ocak Ayı için)
         pg_veri = PerformansGostergeVeri(
@@ -170,7 +170,7 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         kayitli_veri = PerformansGostergeVeri.query.filter_by(bireysel_pg_id=bireysel_pg.id).first()
         self.assertIsNotNone(kayitli_veri)
         self.assertEqual(kayitli_veri.gerceklesen_deger, "120")
-        print("✓ PG Verisi başarıyla kaydedildi.")
+        print("[OK] PG Verisi başarıyla kaydedildi.")
 
     def test_rol_bazli_yetki_sinirlari(self):
         """
@@ -203,7 +203,7 @@ class OtonomIsMantigiTesti(unittest.TestCase):
         intersection = set(admin_kpi_ids).intersection(set(std_kpi_ids))
         self.assertEqual(len(intersection), 0)
         
-        print("✓ Veri İzolasyonu Başarılı: Kullanıcılar varsayılan olarak birbirlerinin bireysel hedeflerini görmüyor.")
+        print("[OK] Veri İzolasyonu Başarılı: Kullanıcılar varsayılan olarak birbirlerinin bireysel hedeflerini görmüyor.")
 
 if __name__ == '__main__':
     unittest.main()

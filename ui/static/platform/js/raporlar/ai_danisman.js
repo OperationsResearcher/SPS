@@ -4,7 +4,7 @@
   const ACTION_LABEL = {refocus:'Yeniden Odakla',sunset:'Sonlandır',accelerate:'Hızlandır',new_initiative:'Yeni Girişim',risk_mitigation:'Risk Azalt'};
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/ai-danisman',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/ai-advisor',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

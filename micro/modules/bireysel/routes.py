@@ -30,6 +30,7 @@ from app.services.date_sovereign import (
     get_view_year,
 )
 from app.models.core import Tenant as _Tenant
+from flask_babel import gettext as _
 
 
 def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
@@ -66,7 +67,7 @@ def _normalize_katman(data) -> tuple:
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/karne")
+@app_bp.route("/individual/scorecard")
 @login_required
 def bireysel_karne():
     """Bireysel karne sayfası."""
@@ -90,7 +91,7 @@ def bireysel_karne():
     )
 
 
-@app_bp.route("/bireysel")
+@app_bp.route("/individual")
 @login_required
 def bireysel():
     """Bireysel modül giriş yönlendirmesi."""
@@ -99,7 +100,7 @@ def bireysel():
 
 # ── API: Bireysel PG CRUD ─────────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/pg/ensure-from-process-kpi", methods=["POST"])
+@app_bp.route("/individual/api/pi/ensure-from-process-kpi", methods=["POST"])
 @login_required
 def bireysel_api_pg_ensure_from_process_kpi():
     """
@@ -113,7 +114,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
     try:
         kpi_id = int(raw_id)
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz process_kpi_id."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz process_kpi_id.")}), 400
 
     kpi = (
         ProcessKpi.query.join(Process)
@@ -126,13 +127,13 @@ def bireysel_api_pg_ensure_from_process_kpi():
         .first()
     )
     if not kpi:
-        return jsonify({"success": False, "message": "PG bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("PG bulunamadı.")}), 404
 
     proc = Process.query.filter_by(
         id=kpi.process_id, tenant_id=current_user.tenant_id, is_active=True
     ).first()
     if not proc or not user_can_enter_pgv(current_user, proc):
-        return jsonify({"success": False, "message": "Bu PG için veri girişi yapamazsınız."}), 403
+        return jsonify({"success": False, "message": _("Bu PG için veri girişi yapamazsınız.")}), 403
 
     existing = IndividualPerformanceIndicator.query.filter_by(
         user_id=current_user.id,
@@ -172,10 +173,10 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
-            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+            return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/pg/add", methods=["POST"])
+@app_bp.route("/individual/api/pi/add", methods=["POST"])
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
@@ -212,10 +213,10 @@ def bireysel_api_pg_add():
                 db.session.commit()
                 continue
             current_app.logger.error(f"[bireysel_api_pg_add] {e}")
-            return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+            return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/pg/update/<int:pg_id>", methods=["POST"])
+@app_bp.route("/individual/api/pi/update/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_update(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -234,14 +235,14 @@ def bireysel_api_pg_update(pg_id):
         if "katman" in data:
             pg.katman, pg.strategy_id = _normalize_katman(data)
         db.session.commit()
-        return jsonify({"success": True, "message": "Bireysel PG güncellendi."})
+        return jsonify({"success": True, "message": _("Bireysel PG güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_update] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/pg/delete/<int:pg_id>", methods=["POST"])
+@app_bp.route("/individual/api/pi/delete/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_delete(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -254,12 +255,12 @@ def bireysel_api_pg_delete(pg_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_pg_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # ── API: Bireysel Veri Girişi ─────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/veri/add", methods=["POST"])
+@app_bp.route("/individual/api/data/add", methods=["POST"])
 @login_required
 def bireysel_api_veri_add():
     data = request.get_json() or {}
@@ -322,12 +323,12 @@ def bireysel_api_veri_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_veri_add] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # ── API: Bireysel Faaliyet CRUD ───────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/faaliyet/add", methods=["POST"])
+@app_bp.route("/individual/api/activity/add", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_add():
     data = request.get_json() or {}
@@ -349,10 +350,10 @@ def bireysel_api_faaliyet_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_add] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/faaliyet/update/<int:act_id>", methods=["POST"])
+@app_bp.route("/individual/api/activity/update/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_update(act_id):
     act = IndividualActivity.query.filter_by(
@@ -369,14 +370,14 @@ def bireysel_api_faaliyet_update(act_id):
         if data.get("end_date"):
             act.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
         db.session.commit()
-        return jsonify({"success": True, "message": "Faaliyet güncellendi."})
+        return jsonify({"success": True, "message": _("Faaliyet güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_update] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/faaliyet/delete/<int:act_id>", methods=["POST"])
+@app_bp.route("/individual/api/activity/delete/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_delete(act_id):
     act = IndividualActivity.query.filter_by(
@@ -389,10 +390,10 @@ def bireysel_api_faaliyet_delete(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bireysel/api/faaliyet/track/<int:act_id>", methods=["POST"])
+@app_bp.route("/individual/api/activity/track/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_track(act_id):
     """Bireysel faaliyet aylık tamamlanma toggle."""
@@ -421,12 +422,12 @@ def bireysel_api_faaliyet_track(act_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_faaliyet_track] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # ── API: Favori PG toggle ─────────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/favori/toggle/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/individual/api/favorite/toggle/<int:kpi_id>", methods=["POST"])
 @login_required
 def bireysel_api_favori_toggle(kpi_id):
     """Favori KPI oluştur veya soft delete."""
@@ -450,12 +451,12 @@ def bireysel_api_favori_toggle(kpi_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[bireysel_api_favori_toggle] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # ── API: Bireysel Karne AJAX ──────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/karne")
+@app_bp.route("/individual/api/scorecard")
 @login_required
 def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
@@ -599,7 +600,7 @@ def bireysel_api_karne():
     })
 
 
-@app_bp.route("/bireysel/api/pg/<int:pg_id>/series")
+@app_bp.route("/individual/api/pi/<int:pg_id>/series")
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
@@ -652,7 +653,7 @@ def bireysel_api_pg_series(pg_id):
 
 # ── Hizalama Skoru ────────────────────────────────────────────────────────────
 
-@app_bp.route("/bireysel/api/hizalama-skoru")
+@app_bp.route("/individual/api/alignment-score")
 @login_required
 def bireysel_api_hizalama_skoru():
     """Oturum kullanıcısının bireysel→stratejik hizalama skorunu döner."""
@@ -661,7 +662,7 @@ def bireysel_api_hizalama_skoru():
     return jsonify({"success": True, "data": data})
 
 
-@app_bp.route("/bireysel/api/ekip-hizalama")
+@app_bp.route("/individual/api/team-alignment")
 @login_required
 def bireysel_api_ekip_hizalama():
     """Yöneticiler için tüm ekip hizalama özeti."""
@@ -675,7 +676,7 @@ def bireysel_api_ekip_hizalama():
 
 # ── Bireysel Karne PDF Export (Sprint 11.3) ──────────────────────────────────
 
-@app_bp.route("/bireysel/api/karne/export-pdf")
+@app_bp.route("/individual/api/scorecard/export-pdf")
 @login_required
 def bireysel_api_karne_export_pdf():
     """Kullanıcının bireysel karnesini PDF olarak indir."""
@@ -743,7 +744,7 @@ def bireysel_api_karne_export_pdf():
         )
     except Exception as e:
         current_app.logger.error(f"[bireysel_karne_pdf] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("PDF oluşturulamadı.")}), 500
 
 
 # ── Inline AI Özet (bireysel karne üstü) ──────────────────────────────────────
@@ -767,7 +768,7 @@ def _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa)
     return " ".join(parts)
 
 
-@app_bp.route("/bireysel/api/ai-ozet")
+@app_bp.route("/individual/api/ai-summary")
 @login_required
 def bireysel_api_ai_ozet():
     """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""

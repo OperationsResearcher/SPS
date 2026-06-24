@@ -16,12 +16,13 @@ from platform_core import app_bp
 from app.models import db
 from app.models.core import User
 from extensions import csrf
+from flask_babel import gettext as _
 
 
 # Giriş: kök `/login` → `public_login` (app factory). Eski micro blueprint giriş view'ı kaldırıldı (URL çakışması).
 
 
-@app_bp.route("/profil", methods=["GET", "POST"])
+@app_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profil():
     """Profil sayfası — GET: form, POST: JSON API güncelleme."""
@@ -34,9 +35,9 @@ def profil():
         # Şifre değişikliği
         if data.get("current_password") or data.get("new_password"):
             if not data.get("current_password"):
-                return jsonify({"success": False, "message": "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."}), 400
+                return jsonify({"success": False, "message": _("Şifre değiştirmek için mevcut şifrenizi girmelisiniz.")}), 400
             if not check_password_hash(current_user.password_hash, data["current_password"]):
-                return jsonify({"success": False, "message": "Mevcut şifre yanlış."}), 400
+                return jsonify({"success": False, "message": _("Mevcut şifre yanlış.")}), 400
             new_pw = data.get("new_password", "")
             # validate_password 8 karakter + karmaşıklık kurallarını uygular
             from app.utils.password_policy import validate_password
@@ -49,7 +50,7 @@ def profil():
         new_email = (data.get("email") or "").strip().lower()
         if new_email and new_email != current_user.email:
             if User.query.filter(User.email == new_email, User.id != current_user.id).first():
-                return jsonify({"success": False, "message": "Bu e-posta başka bir kullanıcı tarafından kullanılıyor."}), 400
+                return jsonify({"success": False, "message": _("Bu e-posta başka bir kullanıcı tarafından kullanılıyor.")}), 400
             current_user.email = new_email
 
         # Profil alanları
@@ -61,14 +62,14 @@ def profil():
         # profile_picture yalnızca /profil/foto-yukle endpoint'i üzerinden güncellenir.
 
         db.session.commit()
-        return jsonify({"success": True, "message": "Profil güncellendi."})
+        return jsonify({"success": True, "message": _("Profil güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[profil_update] {e}")
-        return jsonify({"success": False, "message": "Profil güncellenirken hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Profil güncellenirken hata oluştu.")}), 500
 
 
-@app_bp.route("/profil/foto-yukle", methods=["POST"])
+@app_bp.route("/profile/photo-upload", methods=["POST"])
 @login_required
 @csrf.exempt  # multipart/form-data JS fetch ile gönderilir; form body'ye token
               # eklemek için frontend JS'nin FormData'ya csrf_token field eklemesi
@@ -78,10 +79,10 @@ def profil():
 def profil_foto_yukle():
     """Profil fotoğrafı yükleme — fiziksel silme yok, sadece DB güncellenir."""
     if "file" not in request.files:
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
     file = request.files["file"]
     if not file or file.filename == "":
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
 
     allowed_ext   = {"png", "jpg", "jpeg", "gif", "webp"}
     allowed_mime  = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
@@ -89,14 +90,14 @@ def profil_foto_yukle():
     if ext not in allowed_ext:
         return jsonify({"success": False, "message": f"Geçersiz dosya tipi. İzin verilenler: {', '.join(allowed_ext)}"}), 400
     if file.mimetype and file.mimetype not in allowed_mime:
-        return jsonify({"success": False, "message": "Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir.")}), 400
 
     # Dosya boyutu — 15MB üst sınır (büyükse de resize edeceğiz, bu sadece güvenlik)
     file_content = file.read()
     file_size = len(file_content)
     file.seek(0)
     if file_size > 15 * 1024 * 1024:
-        return jsonify({"success": False, "message": "Dosya boyutu çok büyük (max 15 MB)."}), 400
+        return jsonify({"success": False, "message": _("Dosya boyutu çok büyük (max 15 MB).")}), 400
 
     try:
         upload_folder = os.path.join(current_app.static_folder, "uploads", "profiles")
@@ -144,23 +145,23 @@ def profil_foto_yukle():
         db.session.commit()
         return jsonify({
             "success": True,
-            "message": "Fotoğraf yüklendi ve optimize edildi.",
+            "message": _("Fotoğraf yüklendi ve optimize edildi."),
             "photo_url": current_user.profile_picture,
         })
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[profil_foto_yukle] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Fotoğraf yüklenirken bir hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Fotoğraf yüklenirken bir hata oluştu.")}), 500
 
 
-@app_bp.route("/ayarlar")
+@app_bp.route("/settings")
 @login_required
 def ayarlar():
     """Ayarlar hub sayfası."""
     return render_template("platform/ayarlar/index.html")
 
 
-@app_bp.route("/ayarlar/hesap", methods=["GET", "POST"])
+@app_bp.route("/settings/account", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
     """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""
@@ -220,7 +221,7 @@ def api_profile_theme():
     data = request.get_json(silent=True) or {}
     theme = (data.get("theme") or "").lower().strip()
     if theme not in ("light", "dark"):
-        return jsonify({"success": False, "message": "theme alanı 'light' veya 'dark' olmalı."}), 400
+        return jsonify({"success": False, "message": _("theme alanı 'light' veya 'dark' olmalı.")}), 400
     prefs["theme"] = theme
     if data.get("color"):
         prefs["color"] = data.get("color")

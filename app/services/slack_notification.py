@@ -15,6 +15,7 @@ from typing import Optional
 from urllib import request as _urlreq, error as _urlerr
 
 from flask import current_app
+from flask_babel import gettext as _
 
 
 def _get_tenant_webhook(tenant_id: int) -> Optional[str]:
@@ -51,7 +52,7 @@ def send_slack_message(
     """
     url = webhook_url or (_get_tenant_webhook(tenant_id) if tenant_id else None)
     if not url:
-        return {"success": False, "message": "Slack webhook yapılandırılmamış."}
+        return {"success": False, "message": _("Slack webhook yapılandırılmamış.")}
 
     payload = {
         "text": text_msg,
@@ -77,13 +78,13 @@ def send_slack_message(
             current_app.logger.error(f"[slack] URL hatası: {e}")
         except Exception:
             pass
-        return {"success": False, "message": "Slack webhook URL hatası."}
+        return {"success": False, "message": _("Slack webhook URL hatası.")}
     except Exception as e:
         try:
             current_app.logger.error(f"[slack] {e}")
         except Exception:
             pass
-        return {"success": False, "message": "Slack mesajı gönderilemedi."}
+        return {"success": False, "message": _("Slack mesajı gönderilemedi.")}
 
 
 def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim") -> dict:
@@ -92,7 +93,7 @@ def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim")
     Teams webhook URL formatı: https://*.webhook.office.com/...
     """
     if not webhook_url:
-        return {"success": False, "message": "Teams webhook URL boş."}
+        return {"success": False, "message": _("Teams webhook URL boş.")}
 
     payload = {
         "@type": "MessageCard",
@@ -115,13 +116,13 @@ def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim")
             current_app.logger.error(f"[teams] {e}")
         except Exception:
             pass
-        return {"success": False, "message": "Webhook mesajı gönderilemedi."}
+        return {"success": False, "message": _("Webhook mesajı gönderilemedi.")}
 
 
 def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpitim") -> dict:
     """Discord incoming webhook'a mesaj gönder."""
     if not webhook_url:
-        return {"success": False, "message": "Discord webhook URL boş."}
+        return {"success": False, "message": _("Discord webhook URL boş.")}
 
     payload = {
         "content": text_msg[:2000],  # Discord limit
@@ -140,7 +141,7 @@ def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpi
             current_app.logger.error(f"[discord] {e}")
         except Exception:
             pass
-        return {"success": False, "message": "Webhook mesajı gönderilemedi."}
+        return {"success": False, "message": _("Webhook mesajı gönderilemedi.")}
 
 
 def dispatch_webhook(provider: str, text_msg: str, webhook_url: str, **kwargs) -> dict:

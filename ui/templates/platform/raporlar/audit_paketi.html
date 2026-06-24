@@ -1,56 +1,56 @@
 {% extends "platform/base.html" %}
-{% block title %}Audit Çıktı Paketi — Kokpitim{% endblock %}
-{% block page_title %}Üçüncü Parti Audit Çıktı Paketi{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Audit Çıktı Paketi') }}{% endblock %}
+{% block title %}{{ _("Audit Çıktı Paketi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Üçüncü Parti Audit Çıktı Paketi") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Audit Çıktı Paketi')) }}{% endblock %}
 {% block content %}
 
 
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-file-shield" style="color:#dc2626;"></i> Üçüncü Parti Audit Çıktı Paketi</h1>
-    <p class="mc-page-subtitle">PWC/Deloitte tarzı denetçi için kurumsal tek PDF raporu — SP + denetim günlüğü + güvenlik</p>
+    <h1 class="mc-page-title"><i class="fas fa-file-shield" style="color:#dc2626;"></i> {{ _("Üçüncü Parti Audit Çıktı Paketi") }}</h1>
+    <p class="mc-page-subtitle">{{ _("PWC/Deloitte tarzı denetçi için kurumsal tek PDF raporu — SP + denetim günlüğü + güvenlik") }}</p>
   </div>
 </div>
 
 <div style="max-width:1240px;margin:0 auto;">
   <!-- İndir kartı -->
-  <div style="background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fecaca;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+  <div style="background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fecaca;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;" data-card-code="raporlar_audit_paketi.denetci_icin_hazir_pdf">
     <div>
-      <div style="font-size:11px;color:#991b1b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">DENETÇİ İÇİN HAZIR · PDF</div>
-      <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;">Üçüncü Parti Audit Paketi</div>
-      <div style="font-size:12.5px;color:#64748b;margin-top:4px;">Kurum bilgileri + stratejik plan yapısı + son 90 gün denetim günlüğü + kullanıcı güvenliği</div>
+      <div class="mc-stat-label" style="font-size:11px;color:#991b1b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">{{ _("DENETÇİ İÇİN HAZIR · PDF") }}</div>
+      <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _("Üçüncü Parti Audit Paketi") }}</div>
+      <div style="font-size:12.5px;color:#64748b;margin-top:4px;">{{ _("Kurum bilgileri + stratejik plan yapısı + son 90 gün denetim günlüğü + kullanıcı güvenliği") }}</div>
     </div>
     <button id="dl" class="mc-btn mc-btn-primary" style="background:#dc2626;font-size:14px;padding:12px 24px;">
-      <i class="fas fa-download"></i> PDF İndir
+      <i class="fas fa-download"></i> {{ _("PDF İndir") }}
     </button>
   </div>
 
   <!-- Bölümler -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-list-ol" style="color:#6366f1;"></i> PDF Bölümleri</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_audit_paketi.pdf_bolumleri">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-list-ol" style="color:#6366f1;"></i> {{ _("PDF Bölümleri") }}</h3>
       <ol style="font-size:12.5px;color:#475569;line-height:2;margin:0;padding-left:20px;">
-        <li><b>Kurum Bilgileri</b> — Ad, sektör, çalışan sayısı, kurum kimliği</li>
-        <li><b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı</li>
-        <li><b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı</li>
-        <li><b>Kullanıcı Güvenliği</b> — 2FA etkinleştirme oranı, yönetici güvenlik durumu</li>
-        <li><b>KPI Özeti</b> — Aktif gösterge sayısı, ortalama başarı oranı</li>
-        <li><b>Risk Özeti</b> — Açık risk sayısı, kritik RPN listesi</li>
+        <li>{{ _("<b>Kurum Bilgileri</b> — Ad, sektör, çalışan sayısı, kurum kimliği") }}</li>
+        <li>{{ _("<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı") }}</li>
+        <li>{{ _("<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı") }}</li>
+        <li>{{ _("<b>Kullanıcı Güvenliği</b> — 2FA etkinleştirme oranı, yönetici güvenlik durumu") }}</li>
+        <li>{{ _("<b>KPI Özeti</b> — Aktif gösterge sayısı, ortalama başarı oranı") }}</li>
+        <li>{{ _("<b>Risk Özeti</b> — Açık risk sayısı, kritik RPN listesi") }}</li>
       </ol>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-circle-info" style="color:#0ea5e9;"></i> Kullanım Amacı</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_audit_paketi.kullanim_amaci">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-circle-info" style="color:#0ea5e9;"></i> {{ _("Kullanım Amacı") }}</h3>
       <div style="font-size:12.5px;color:#475569;line-height:1.8;">
-        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> Dış denetçilere (PWC, Deloitte, KPMG) kurumsal şeffaflık sunumu</div>
-        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> ISO 9001 / ISO 27001 uyum kanıtı</div>
-        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> Yönetim kurulu ve üst yönetim brifinglerinde kullanım</div>
-        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> Düzenleyici kurum raporlama gereksinimleri (BDDK, SPK vb.)</div>
-        <div><i class="fas fa-lock" style="color:#6366f1;margin-right:6px;"></i> Hassas veri — yalnızca yetkili kullanıcılar indirebilir</div>
+        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> {{ _("Dış denetçilere (PWC, Deloitte, KPMG) kurumsal şeffaflık sunumu") }}</div>
+        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> {{ _("ISO 9001 / ISO 27001 uyum kanıtı") }}</div>
+        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> {{ _("Yönetim kurulu ve üst yönetim brifinglerinde kullanım") }}</div>
+        <div style="margin-bottom:10px;"><i class="fas fa-check" style="color:#10b981;margin-right:6px;"></i> {{ _("Düzenleyici kurum raporlama gereksinimleri (BDDK, SPK vb.)") }}</div>
+        <div><i class="fas fa-lock" style="color:#6366f1;margin-right:6px;"></i> {{ _("Hassas veri — yalnızca yetkili kullanıcılar indirebilir") }}</div>
       </div>
     </div>
   </div>
 
   <div id="ap-status" style="display:none;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/audit_paketi.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/audit_paketi.js') }}" defer></script>
 {% endblock %}

@@ -75,48 +75,57 @@
     {% set _kpi_ns = namespace(n=0) %}
     {% for _p in processes %}{% set _kpi_ns.n = _kpi_ns.n + (_p.kpis|length) %}{% endfor %}
     {% set _total_kpi = _kpi_ns.n %}
-    {% set _ns = namespace(sum=0, cnt=0, low=0, hi=0, no_kpi=0) %}
+    {% set _ns = namespace(sum=0, cnt=0, low=0, hi=0, risk=0, no_data=0, no_kpi=0) %}
     {% for _p in processes %}
-        {% set _s = (process_scores.get(_p.id) or 0)|round|int %}
+        {% set _raw = process_scores.get(_p.id) %}
+        {% set _s = (_raw or 0)|round|int %}
         {% set _ns.sum = _ns.sum + _s %}
         {% set _ns.cnt = _ns.cnt + 1 %}
-        {% if _s < 50 %}{% set _ns.low = _ns.low + 1 %}{% endif %}
-        {% if _s >= 80 %}{% set _ns.hi = _ns.hi + 1 %}{% endif %}
+        {# Sınıflandırma HAM skorla (Kanban kolonlarıyla birebir aynı eşik) #}
+        {% if _raw is none %}
+            {% set _ns.no_data = _ns.no_data + 1 %}
+        {% elif _raw >= 80 %}
+            {% set _ns.hi = _ns.hi + 1 %}
+        {% elif _raw >= 50 %}
+            {% set _ns.risk = _ns.risk + 1 %}
+        {% else %}
+            {% set _ns.low = _ns.low + 1 %}
+        {% endif %}
         {% if (_p.kpis|length) == 0 %}{% set _ns.no_kpi = _ns.no_kpi + 1 %}{% endif %}
     {% endfor %}
     {% set _avg = (_ns.sum / _ns.cnt)|round|int if _ns.cnt else 0 %}
     {% set _root_cnt = roots|length %}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Süreç</div>
+        <div data-card-code="process.toplam_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam Süreç") }}</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_p }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _root_cnt }} kök süreç</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s kök süreç", n=_root_cnt) }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam PG</div>
+        <div data-card-code="process.toplam_pg" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam PG") }}</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_kpi }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _ns.no_kpi }} PG'siz süreç</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s PG'siz süreç", n=_ns.no_kpi) }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Ortalama Skor</div>
+        <div data-card-code="process.ortalama_skor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Ortalama Skor") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};margin-top:4px;">%{{ _avg }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">tüm süreçler</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("tüm süreçler") }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Yüksek Performans</div>
+        <div data-card-code="process.yuksek_performans" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Yüksek Performans") }}</div>
             <div style="font-size:24px;font-weight:800;color:#10b981;margin-top:4px;">{{ _ns.hi }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">skor ≥ 80</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("skor ≥ 80") }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Süreç</div>
+        <div data-card-code="process.kritik_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kritik Süreç") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ _ns.low }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">skor &lt; 50</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("skor &lt; 50") }}</div>
         </div>
         {% if k_vektor_enabled %}
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">K-Vektör</div>
-            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:18px;color:#8b5cf6;"></i> Aktif</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">ağırlıklı skorlama</div>
+        <div data-card-code="process.k_vektor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("K-Vektör") }}</div>
+            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:18px;color:#8b5cf6;"></i> {{ _("Aktif") }}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("ağırlıklı skorlama") }}</div>
         </div>
         {% endif %}
     </div>
@@ -125,20 +134,45 @@
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
         <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
             <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-            <input type="search" id="surec-search" class="mc-form-input" placeholder="Süreç ara (ad veya kod)…"
+            <input type="search" id="surec-search" class="mc-form-input" placeholder="{{ _('Süreç ara (ad veya kod)…') }}"
                    style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
         </div>
         <select id="surec-filter-skor" class="mc-form-input" style="padding:7px 10px; font-size:13px;">
-            <option value="">Tüm performanslar</option>
-            <option value="hi">Yüksek (≥80)</option>
-            <option value="mid">Orta (50-79)</option>
-            <option value="lo">Kritik (&lt;50)</option>
+            <option value="">{{ _("Tüm performanslar") }}</option>
+            <option value="hi">{{ _("Yüksek (≥80)") }}</option>
+            <option value="mid">{{ _("Orta (50-79)") }}</option>
+            <option value="lo">{{ _("Kritik (&lt;50)") }}</option>
             <option value="no_kpi">PG'siz</option>
         </select>
         <span id="surec-count-label" style="font-size:12px; color:#64748b; margin-left:auto;">{{ _total_p }} süreç</span>
     </div>
 
     {% if roots %}
+    {# ── Süreçler kartı: Ağaç/Kanban içeriğini saran kapsayıcı + durum sayaçları ── #}
+    <div class="mc-card" data-card-code="process.surecler" style="margin-bottom:18px;">
+      <div class="mc-card-header" style="flex-wrap:wrap; gap:10px;">
+        <span class="mc-card-title">
+          <i class="fas fa-sitemap" style="color:#6366f1; margin-right:6px;"></i>Süreçler
+        </span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px;">
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#10b981;"></span>Hedefte {{ _ns.hi }}
+          </span>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>Risk altında {{ _ns.risk }}
+          </span>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>Hedef dışı {{ _ns.low }}
+          </span>
+          {% if _ns.no_data %}
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; padding:3px 9px; border-radius:999px; font-weight:600;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#cbd5e1;"></span>Veri yok {{ _ns.no_data }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="mc-card-body">
+
     <div id="surec-tree-view" style="display:flex; flex-direction:column; gap:10px;">
         {% macro render_process(p, depth) %}
         <div class="mc-card surec-tree-item" style="{% if depth > 0 %}margin-left:{{ depth * 24 }}px;{% endif %}">
@@ -233,10 +267,8 @@
           <section class="kb-col kb-col--hedefte">
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--hedefte"></span>
-              <h3 class="kb-col-title">Hedefte</h3>
-              <span class="kb-col-count" id="kb-proc-count-hedefte">
-                {{ processes | selectattr('id', 'in', process_scores.keys() | list) | list | length }}
-              </span>
+              <h3 class="kb-col-title">{{ _("Hedefte") }}</h3>
+              <span class="kb-col-count" id="kb-proc-count-hedefte">{{ _ns.hi }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -286,7 +318,8 @@
           <section class="kb-col kb-col--risk">
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--risk"></span>
-              <h3 class="kb-col-title">Risk altında</h3>
+              <h3 class="kb-col-title">{{ _("Risk altında") }}</h3>
+              <span class="kb-col-count">{{ _ns.risk }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -336,7 +369,8 @@
           <section class="kb-col kb-col--disi">
             <div class="kb-col-head">
               <span class="kb-col-dot kb-col-dot--disi"></span>
-              <h3 class="kb-col-title">Hedef dışı</h3>
+              <h3 class="kb-col-title">{{ _("Hedef dışı") }}</h3>
+              <span class="kb-col-count">{{ _ns.low }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -386,7 +420,8 @@
           <section class="kb-col" style="background:#f8fafc;">
             <div class="kb-col-head">
               <span class="kb-col-dot" style="background:#cbd5e1;"></span>
-              <h3 class="kb-col-title">Veri yok</h3>
+              <h3 class="kb-col-title">{{ _("Veri yok") }}</h3>
+              <span class="kb-col-count">{{ _ns.no_data }}</span>
             </div>
             <div class="kb-col-body">
               {% for p in processes %}
@@ -429,26 +464,29 @@
       </div>
     </div>
 
+      </div>{# /mc-card-body #}
+    </div>{# /mc-card process.surecler #}
+
     {% else %}
     <div class="mc-card">
         <div class="mc-empty" style="padding:32px 20px;">
             <div class="mc-empty-icon"><i class="fas fa-sitemap" style="color:#6366f1;"></i></div>
-            <div class="mc-empty-title">Görüntülenecek süreç yok</div>
+            <div class="mc-empty-title">{{ _("Görüntülenecek süreç yok") }}</div>
             <div class="mc-empty-text" style="max-width:520px; margin:0 auto;">
               {% if can_crud_process %}
-              Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri (PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur.
+              {{ _("Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri (PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur.") }}
               {% else %}
-              Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. Yöneticinizden süreç ataması talep edebilirsiniz.
+              {{ _("Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. Yöneticinizden süreç ataması talep edebilirsiniz.") }}
               {% endif %}
             </div>
             <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
               {% if can_crud_process %}
               <button type="button" id="btn-surec-add-empty" class="mc-btn mc-btn-primary">
-                  <i class="fas fa-plus"></i> İlk Süreci Ekle
+                  <i class="fas fa-plus"></i> {{ _("İlk Süreci Ekle") }}
               </button>
               {% endif %}
               <a href="/sp" class="mc-btn mc-btn-secondary mc-btn-sm">
-                <i class="fas fa-bullseye"></i> Stratejik Planlama
+                <i class="fas fa-bullseye"></i> {{ _("Stratejik Planlama") }}
               </a>
             </div>
         </div>
@@ -463,9 +501,9 @@
         <div class="mc-modal-header">
             <div class="mc-modal-title">
                 <i id="modal-surec-title-icon" class="fas fa-plus-circle" aria-hidden="true"></i>
-                <span id="modal-surec-title-text">Yeni Süreç Oluştur</span>
+                <span id="modal-surec-title-text">{{ _("Yeni Süreç Oluştur") }}</span>
             </div>
-            <button type="button" class="mc-modal-close" id="modal-surec-close" aria-label="Kapat">
+            <button type="button" class="mc-modal-close" id="modal-surec-close" aria-label="{{ _('Kapat') }}">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -473,79 +511,79 @@
             {# Düzenleme modunda JS bu alanı doldurur; yoksa kayıt «yeni süreç» sanılır #}
             <input type="hidden" id="surec-edit-id" value="" autocomplete="off">
             <p class="mc-surec-modal-hint">
-                Süreç en az bir <strong>alt stratejiye</strong> bağlanmalıdır (aşağıda). PG’ler ileride isteğe bağlı alt stratejiye bağlanabilir.
+                {{ _("Süreç en az bir <strong>alt stratejiye</strong> bağlanmalıdır (aşağıda). PG’ler ileride isteğe bağlı alt stratejiye bağlanabilir.") }}
                 {% if k_vektor_enabled %}
-                <strong>K-Vektör:</strong> Her seçili alt strateji için katkı % girin; toplam en fazla 100 olmalıdır.
+                {{ _("<strong>K-Vektör:</strong> Her seçili alt strateji için katkı %% girin; toplam en fazla 100 olmalıdır.") }}
                 {% endif %}
             </p>
 
             <div class="mc-surec-form-grid">
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label" for="surec-name"><i class="fas fa-bookmark" style="color:#6366f1;"></i> Süreç Adı <span class="mc-text-danger">*</span></label>
-                    <input type="text" id="surec-name" class="mc-input mc-input-lg" placeholder="Örn: Satın Alma Süreci">
+                    <label class="mc-label" for="surec-name"><i class="fas fa-bookmark" style="color:#6366f1;"></i> {{ _("Süreç Adı") }} <span class="mc-text-danger">*</span></label>
+                    <input type="text" id="surec-name" class="mc-input mc-input-lg" placeholder="{{ _('Örn: Satın Alma Süreci') }}">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-code">Süreç Kodu</label>
+                    <label class="mc-label" for="surec-code">{{ _("Süreç Kodu") }}</label>
                     <input type="text" id="surec-code" class="mc-input" placeholder="SR-01">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-status">Durum</label>
+                    <label class="mc-label" for="surec-status">{{ _("Durum") }}</label>
                     <select id="surec-status" class="mc-select">
-                        <option value="Aktif">Aktif</option>
-                        <option value="Pasif">Pasif</option>
-                        <option value="Beklemede">Beklemede</option>
-                        <option value="Tamamlandı">Tamamlandı</option>
+                        <option value="Aktif">{{ _("Aktif") }}</option>
+                        <option value="Pasif">{{ _("Pasif") }}</option>
+                        <option value="Beklemede">{{ _("Beklemede") }}</option>
+                        <option value="Tamamlandı">{{ _("Tamamlandı") }}</option>
                     </select>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-doc-no">Doküman No</label>
+                    <label class="mc-label" for="surec-doc-no">{{ _("Doküman No") }}</label>
                     <input type="text" id="surec-doc-no" class="mc-input" placeholder="DOK-001">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-rev-no">Revizyon No</label>
+                    <label class="mc-label" for="surec-rev-no">{{ _("Revizyon No") }}</label>
                     <input type="text" id="surec-rev-no" class="mc-input" placeholder="Rev-1">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-revision-date">Revizyon Tarihi</label>
+                    <label class="mc-label" for="surec-revision-date">{{ _("Revizyon Tarihi") }}</label>
                     <input type="date" id="surec-revision-date" class="mc-input">
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-first-publish-date">İlk Yayın Tarihi</label>
+                    <label class="mc-label" for="surec-first-publish-date">{{ _("İlk Yayın Tarihi") }}</label>
                     <input type="date" id="surec-first-publish-date" class="mc-input">
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label" for="surec-parent-id"><i class="fas fa-sitemap" style="color:#64748b;"></i> Üst Süreç (Parent)</label>
+                    <label class="mc-label" for="surec-parent-id"><i class="fas fa-sitemap" style="color:#64748b;"></i> {{ _("Üst Süreç (Parent)") }}</label>
                     <select id="surec-parent-id" class="mc-select">
-                        <option value="">— Bağımsız (Üst Süreç Yok) —</option>
+                        <option value="">{{ _("— Bağımsız (Üst Süreç Yok) —") }}</option>
                         {% for p, depth in parent_options_with_depth %}
                         <option value="{{ p.id }}">{{ "— " * depth }}{{ p.name }}{% if p.code %} ({{ p.code }}){% endif %}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-start-boundary"><i class="fas fa-arrow-right-to-bracket" style="color:#10b981;"></i> Başlangıç Sınırı</label>
-                    <textarea id="surec-start-boundary" class="mc-textarea" rows="2" placeholder="Sürecin başlangıç noktası..."></textarea>
+                    <label class="mc-label" for="surec-start-boundary"><i class="fas fa-arrow-right-to-bracket" style="color:#10b981;"></i> {{ _("Başlangıç Sınırı") }}</label>
+                    <textarea id="surec-start-boundary" class="mc-textarea" rows="2" placeholder="{{ _('Sürecin başlangıç noktası...') }}"></textarea>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-end-boundary"><i class="fas fa-arrow-left-to-bracket" style="color:#ef4444;"></i> Bitiş Sınırı</label>
-                    <textarea id="surec-end-boundary" class="mc-textarea" rows="2" placeholder="Sürecin bitiş noktası..."></textarea>
+                    <label class="mc-label" for="surec-end-boundary"><i class="fas fa-arrow-left-to-bracket" style="color:#ef4444;"></i> {{ _("Bitiş Sınırı") }}</label>
+                    <textarea id="surec-end-boundary" class="mc-textarea" rows="2" placeholder="{{ _('Sürecin bitiş noktası...') }}"></textarea>
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
-                    <label for="surec-description" class="mc-label">Açıklama</label>
-                    <textarea id="surec-description" class="mc-textarea" rows="2" placeholder="İsteğe bağlı açıklama"></textarea>
+                    <label for="surec-description" class="mc-label">{{ _("Açıklama") }}</label>
+                    <textarea id="surec-description" class="mc-textarea" rows="2" placeholder="{{ _('İsteğe bağlı açıklama') }}"></textarea>
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
                     <label class="mc-label">
                         {% if k_vektor_enabled %}
-                        Alt strateji bağlantısı ve K-Vektör katkı %
+                        {{ _("Alt strateji bağlantısı ve K-Vektör katkı %%") }}
                         {% else %}
-                        Alt strateji bağlantısı
+                        {{ _("Alt strateji bağlantısı") }}
                         {% endif %}
-                        <span class="mc-text-danger">*</span>{% if not k_vektor_enabled %} (en az bir){% endif %}
+                        <span class="mc-text-danger">*</span>{% if not k_vektor_enabled %} {{ _("(en az bir)") }}{% endif %}
                     </label>
                     {% if k_vektor_enabled %}
                     <p class="mc-empty-text" style="margin:0 0 8px;font-size:12px;line-height:1.45;">
-                        Seçili her alt strateji için <strong>katkı %</strong> girin; toplam en fazla 100 olmalıdır. Ana/alt strateji <strong>ham ağırlıkları</strong> Stratejik Planlama (/sp) sayfasındadır.
+                        {{ _("Seçili her alt strateji için <strong>katkı %%</strong> girin; toplam en fazla 100 olmalıdır. Ana/alt strateji <strong>ham ağırlıkları</strong> Stratejik Planlama (/sp) sayfasındadır.") }}
                     </p>
                     {% endif %}
                     <div id="surec-substrategy-box" class="mc-surec-substrategy-box"></div>
@@ -553,19 +591,19 @@
             </div>
 
             <div class="mc-surec-pick-card mc-surec-pick-card--leaders">
-                <div class="mc-surec-pick-card-head"><i class="fas fa-star" style="margin-right:6px;"></i>Süreç Liderleri</div>
+                <div class="mc-surec-pick-card-head"><i class="fas fa-star" style="margin-right:6px;"></i>{{ _("Süreç Liderleri") }}</div>
                 <div class="mc-surec-pick-card-body">
                     <div class="mc-surec-dual-row">
                         <div class="mc-surec-dual-col">
-                            <label for="surec-lider-source" class="mc-label mc-surec-dual-label">Kullanıcılar</label>
+                            <label for="surec-lider-source" class="mc-label mc-surec-dual-label">{{ _("Kullanıcılar") }}</label>
                             <select id="surec-lider-source" class="mc-surec-dual-select" multiple size="6" aria-label="Lider adayı kullanıcılar"></select>
                         </div>
                         <div class="mc-surec-dual-actions">
-                            <button type="button" class="mc-btn mc-btn-success mc-btn-sm mc-surec-transfer-btn" id="btn-surec-lider-add" title="Seçilenleri ekle">→ Ekle</button>
-                            <button type="button" class="mc-btn mc-btn-danger mc-btn-sm mc-surec-transfer-btn" id="btn-surec-lider-remove" title="Seçilenleri çıkar">← Çıkar</button>
+                            <button type="button" class="mc-btn mc-btn-success mc-btn-sm mc-surec-transfer-btn" id="btn-surec-lider-add" title="{{ _('Seçilenleri ekle') }}">→ {{ _("Ekle") }}</button>
+                            <button type="button" class="mc-btn mc-btn-danger mc-btn-sm mc-surec-transfer-btn" id="btn-surec-lider-remove" title="{{ _('Seçilenleri çıkar') }}">← {{ _("Çıkar") }}</button>
                         </div>
                         <div class="mc-surec-dual-col">
-                            <label for="surec-lider-selected" class="mc-label mc-surec-dual-label">Seçilen Liderler</label>
+                            <label for="surec-lider-selected" class="mc-label mc-surec-dual-label">{{ _("Seçilen Liderler") }}</label>
                             <select id="surec-lider-selected" class="mc-surec-dual-select" multiple size="6" aria-label="Seçilen süreç liderleri"></select>
                         </div>
                     </div>
@@ -573,19 +611,19 @@
             </div>
 
             <div class="mc-surec-pick-card mc-surec-pick-card--members">
-                <div class="mc-surec-pick-card-head">Süreç Üyeleri</div>
+                <div class="mc-surec-pick-card-head">{{ _("Süreç Üyeleri") }}</div>
                 <div class="mc-surec-pick-card-body">
                     <div class="mc-surec-dual-row">
                         <div class="mc-surec-dual-col">
-                            <label for="surec-uye-source" class="mc-label mc-surec-dual-label">Kullanıcılar</label>
+                            <label for="surec-uye-source" class="mc-label mc-surec-dual-label">{{ _("Kullanıcılar") }}</label>
                             <select id="surec-uye-source" class="mc-surec-dual-select" multiple size="6" aria-label="Üye adayı kullanıcılar"></select>
                         </div>
                         <div class="mc-surec-dual-actions">
-                            <button type="button" class="mc-btn mc-btn-success mc-btn-sm mc-surec-transfer-btn" id="btn-surec-uye-add">→ Ekle</button>
-                            <button type="button" class="mc-btn mc-btn-danger mc-btn-sm mc-surec-transfer-btn" id="btn-surec-uye-remove">← Çıkar</button>
+                            <button type="button" class="mc-btn mc-btn-success mc-btn-sm mc-surec-transfer-btn" id="btn-surec-uye-add">→ {{ _("Ekle") }}</button>
+                            <button type="button" class="mc-btn mc-btn-danger mc-btn-sm mc-surec-transfer-btn" id="btn-surec-uye-remove">← {{ _("Çıkar") }}</button>
                         </div>
                         <div class="mc-surec-dual-col">
-                            <label for="surec-uye-selected" class="mc-label mc-surec-dual-label">Seçilen Üyeler</label>
+                            <label for="surec-uye-selected" class="mc-label mc-surec-dual-label">{{ _("Seçilen Üyeler") }}</label>
                             <select id="surec-uye-selected" class="mc-surec-dual-select" multiple size="6" aria-label="Seçilen süreç üyeleri"></select>
                         </div>
                     </div>
@@ -593,10 +631,10 @@
             </div>
         </div>
         <div class="mc-modal-footer">
-            <button type="button" class="mc-btn mc-btn-secondary" id="modal-surec-cancel">İptal</button>
+            <button type="button" class="mc-btn mc-btn-secondary" id="modal-surec-cancel">{{ _("İptal") }}</button>
             <button type="button" class="mc-btn mc-btn-success" id="btn-surec-save">
                 <i class="fas fa-check-circle" id="btn-surec-save-icon" aria-hidden="true"></i>
-                <span id="btn-surec-save-text">Süreci Kaydet</span>
+                <span id="btn-surec-save-text">{{ _("Süreci Kaydet") }}</span>
             </button>
         </div>
     </div>
@@ -641,7 +679,7 @@
   if (!sel) return;
   function _surecErr(msg) {
     if (typeof Swal !== "undefined") {
-      Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+      Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
     } else {
       alert(msg);
     }
@@ -661,10 +699,10 @@
       if (j && j.success) {
         window.location.reload();
       } else {
-        _surecErr("Plan dönemi değiştirilemedi: " + (j && j.message || "bilinmeyen hata"));
+        _surecErr(t("Plan dönemi değiştirilemedi:") + " " + (j && j.message || t("bilinmeyen hata")));
       }
     } catch (e) {
-      _surecErr("Sunucuya ulaşılamadı.");
+      _surecErr(t("Sunucuya ulaşılamadı."));
     }
   });
 })();
@@ -699,7 +737,7 @@
         const first = valid[0];
         const color = last >= first ? '#10b981' : '#ef4444';
         line.setAttribute('stroke', color);
-        svg.setAttribute('title', `Son 3 ay: ${valid.map(v => '%' + v).join(' → ')}`);
+        svg.setAttribute('title', `${t("Son 3 ay:")} ${valid.map(v => '%' + v).join(' → ')}`);
       }
     });
   }).catch(() => {});
@@ -734,7 +772,7 @@
       m.el.style.display = ok ? "" : "none";
       if (ok) shown++;
     });
-    if (countLbl) countLbl.textContent = `${shown} süreç`;
+    if (countLbl) countLbl.textContent = `${shown} ${t("süreç")}`;
   }
   search?.addEventListener("input", apply);
   filter?.addEventListener("change", apply);

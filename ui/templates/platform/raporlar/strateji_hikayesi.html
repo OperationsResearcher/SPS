@@ -1,36 +1,36 @@
 {% extends "platform/base.html" %}
-{% block title %}AI Strateji Hikayesi — Kokpitim{% endblock %}
-{% block page_title %}AI Strateji Hikayeleştirici{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('AI Strateji Hikayeleştirici') }}{% endblock %}
+{% block title %}{{ _("AI Strateji Hikayesi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("AI Strateji Hikayeleştirici") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('AI Strateji Hikayeleştirici')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-book-open" style="color:#7c3aed;"></i> AI Strateji Hikayeleştirici</h1>
-    <p class="mc-page-subtitle">Kurumun stratejik plan evrimini AI anlatır — yıllık snapshot, kırılım noktaları ve narrative özet.</p>
+    <h1 class="mc-page-title"><i class="fas fa-book-open" style="color:#7c3aed;"></i> {{ _("AI Strateji Hikayeleştirici") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Kurumun stratejik plan evrimini AI anlatır — yıllık snapshot, kırılım noktaları ve narrative özet.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
-  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> AI yıllık hikayeyi yazıyor…</div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> {{ _("AI yıllık hikayeyi yazıyor…") }}</div>
   <div id="content" style="display:none;">
     <div id="header" style="background:linear-gradient(135deg,#faf5ff,#fff);border:1px solid #ddd6fe;border-radius:10px;padding:20px;margin-bottom:20px;"></div>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-feather" style="color:#7c3aed;"></i> Hikaye</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;" data-card-code="raporlar_strateji_hikayesi.hikaye">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-feather" style="color:#7c3aed;"></i> {{ _("Hikaye") }}</h3>
       <div id="narrative" style="font-size:15px;color:#0f172a;line-height:1.85;font-family:Georgia,serif;background:#faf5ff;padding:20px;border-radius:6px;border-left:4px solid #7c3aed;white-space:pre-wrap;"></div>
     </div>
 
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📊 Yıllık Snapshot</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_strateji_hikayesi.yillik_snapshot">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📊 {{ _("Yıllık Snapshot") }}</h3>
         <div id="snapshots"></div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">⚡ Kırılım Noktaları</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_strateji_hikayesi.kirilim_noktalari">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">⚡ {{ _("Kırılım Noktaları") }}</h3>
         <div id="highlights"></div>
       </div>
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/strateji_hikayesi.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/strateji_hikayesi.js') }}" defer></script>
 {% endblock %}

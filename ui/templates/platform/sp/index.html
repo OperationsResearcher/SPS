@@ -59,86 +59,32 @@
   {% if data_fallback and active_plan_year %}
   <div class="mc-alert mc-alert-info" style="margin-bottom:0.75rem">
     <i class="fas fa-info-circle"></i>
-    Seçili dönemde veri bulunamadı — <strong>{{ active_plan_year.year }} dönemi verisi gösteriliyor</strong>.
-    Dönem yönetimi için <a href="{{ url_for('app_bp.launcher') }}">ana sayfaya</a> gidin.
+    {{ _("Seçili dönemde veri bulunamadı — <strong>%(year)s dönemi verisi gösteriliyor</strong>.", year=active_plan_year.year) }}
+    {{ _('Dönem yönetimi için <a href="%(url)s">ana sayfaya</a> gidin.', url=url_for('app_bp.launcher')) }}
   </div>
   {% endif %}
   {% endif %}
-  <script type="application/json" id="sp-card-help-json">{{ {
-    'misyon': {
-      'title': 'Misyon (Amaç) kartı',
-      'html': '<p class="mc-modal-info-p">Bu adımda kurumun <strong>neden var olduğu</strong> ve temel görevi netleştirilir. Misyon; paydaşlara “biz kimiz, hangi ihtiyaca cevap veriyoruz?” sorusunun kısa ve tutarlı yanıtıdır.</p><p class="mc-modal-info-p">Burada yazılanlar; vizyon, strateji ve süreç kararlarının üstünde duran referans noktasıdır.</p>'
-    },
-    'vizyon': {
-      'title': 'Vizyon kartı',
-      'html': '<p class="mc-modal-info-p">Vizyon; kurumun <strong>orta-uzun vadede ulaşmak istediği</strong> istenen durumu ifade eder. Misyonun “ne iş yapıyoruz?” sorusuna karşılık, vizyon “nereye evrilmek istiyoruz?” sorusuna yanıt verir.</p><p class="mc-modal-info-p">İyi bir vizyon, ekiplere yön verir ve önceliklendirme yapmayı kolaylaştırır.</p>'
-    },
-    'degerler': {
-      'title': 'Değerler ve etik kurallar kartı',
-      'html': '<p class="mc-modal-info-p">Bu kartta kurumun <strong>davranış ilkeleri</strong> (temel değerler) ve <strong>etik çerçeve</strong> tanımlanır. Değerler “nasıl çalışırız?”; etik kurallar ise “hangi sınırlar içinde hareket ederiz?” sorusuna cevap verir.</p><p class="mc-modal-info-p">Bunlar; karar alma, iletişim ve performans değerlendirmede ortak dil oluşturur.</p>'
-    },
-    'strateji-listesi': {
-      'title': 'Strateji listesi (Ana Stratejiler → Alt Stratejiler) kartı',
-      'html': '<p class="mc-modal-info-p">Burada ana stratejiler <strong>detaylandırılır</strong> ve her ana strateji altında <strong>alt stratejiler</strong> tanımlanır. Böylece stratejik plan, yönetilebilir parçalara ayrılır.</p><ul class="mc-modal-info-list"><li>Ana strateji: geniş başlık ve yön</li><li>Alt strateji: somut aksiyon ve ölçülebilir adımlar için temel</li></ul>'
-    },
-    'surec': {
-      'title': 'Süreç iyileştirme faaliyetleri kartı',
-      'html': '<p class="mc-modal-info-p">Bu kart; stratejilerin sahada hayata geçmesi için <strong>süreç bazlı iyileştirme</strong> ve operasyonel faaliyetleri temsil eder. Amaç; tanımlı süreçler üzerinden verimlilik, kalite ve süreklilik sağlamaktır.</p><p class="mc-modal-info-p">Strateji ile günlük iş akışı arasında bağ kurar.</p>'
-    },
-    'surec-hedef': {
-      'title': 'Süreç hedefleri kartı',
-      'html': '<p class="mc-modal-info-p">Süreç hedefleri; belirli süreçler için ölçülebilir <strong>performans ve sonuç</strong> beklentilerini ifade eder. KPI ve göstergelerle takip edilir.</p><p class="mc-modal-info-p">Böylece “stratejiyi sürece, süreci ölçüme” bağlama imkânı doğar.</p>'
-    },
-    'bireysel': {
-      'title': 'Bireysel hedefler kartı',
-      'html': '<p class="mc-modal-info-p">Kurumsal hedeflerin <strong>bireysel düzeyde</strong> karşılığı burada izlenir. Çalışanların rolüne uygun hedefler; performans görüşmeleri ve gelişim planlarıyla ilişkilendirilebilir.</p><p class="mc-modal-info-p">Amaç; kurum stratejisi ile kişisel katkıyı hizalamaktır.</p>'
-    },
-    'kpi-ana-strateji': {
-      'title': 'Ana Strateji kartı',
-      'html': '<p class="mc-modal-info-p">Aktif plan döneminde tanımlanmış <strong>ana strateji</strong> sayısını ve bunların altındaki <strong>alt strateji</strong> toplamını gösterir.</p><p class="mc-modal-info-p">Yetkin örgütlerde tipik aralık: 4–8 ana strateji ve her ana strateji altında 2–4 alt strateji. Çok az olması yön belirsizliği, çok fazlası odak dağılımı işaretidir.</p>'
-    },
-    'kpi-akis-olgunluk': {
-      'title': 'Akış Olgunluğu kartı',
-      'html': '<p class="mc-modal-info-p">Stratejik planlama akışının dört temel adımının (Misyon · Vizyon · Değerler · Strateji listesi) tamamlanma yüzdesidir.</p><ul class="mc-modal-info-list"><li>%75 ve üstü: planlama omurgası hazır</li><li>%50–%74: bazı temel kararlar eksik</li><li>%50 altı: temel tanımları öncelikle tamamlayın</li></ul>'
-    },
-    'kpi-k-vektor': {
-      'title': 'K-Vektör Vizyon Puanı kartı',
-      'html': '<p class="mc-modal-info-p"><strong>K-Vektör</strong>, ağırlıklandırılmış strateji + alt strateji + PG performansından üretilen 0–100 ölçekli bütüncül skordur. Vizyonun ne kadarına yaklaştığınızı tek sayıyla özetler.</p><p class="mc-modal-info-p">Hesap; ana strateji ağırlığı × alt strateji ağırlığı × PG performansı çarpımının toplamına dayanır. Yüksek puan stratejik hizalama ve gerçekleşme uyumunu gösterir.</p>'
-    },
-    'kpi-plan-donemi': {
-      'title': 'Plan Dönemi kartı',
-      'html': '<p class="mc-modal-info-p">Şu an aktif olan stratejik plan yılı. Stratejiler, KPI hedefleri ve süreç bağları bu yıla göre filtrelenir.</p><p class="mc-modal-info-p">Yıl değiştirmek için <strong>masaüstü</strong> veya <strong>SP menüsü</strong> üzerindeki yıl seçicisini kullanın. Yıl değiştiğinde tüm SP modülleri (X-Matrix, Strateji Haritası, Karne vb.) otomatik olarak hizalanır.</p>'
-    },
-    'kpi-etiketsiz': {
-      'title': 'Etiketsiz Strateji kartı',
-      'html': '<p class="mc-modal-info-p"><strong>plan_year_id</strong> alanı boş olan stratejilerin sayısı. Bunlar hiçbir plan yılına bağlı olmayan eski/legacy kayıtlardır.</p><p class="mc-modal-info-p">Sıfır olması iyidir. Sıfırdan büyükse strateji düzenleme modalı ile her birine bir plan yılı atayın; aksi halde yıl bazlı raporlarda atlanırlar.</p>'
-    },
-    'kpi-kimlik': {
-      'title': 'Kurum Kimliği kartı',
-      'html': '<p class="mc-modal-info-p">Misyon · Vizyon · Değerler üçlüsünün tanımlanma durumunu özetler. Her kalem için <span style="color:#10b981;">✓</span> dolu, <span style="color:#cbd5e1;">○</span> boş anlamına gelir.</p><p class="mc-modal-info-p">Üçü de tanımlı olduğunda strateji çıkarımı (X-Matrix, OKR, Strateji Haritası gibi) çok daha tutarlı çalışır.</p>'
-    }
-  }|tojson }}</script>
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-bullseye" style="color:#6366f1;"></i> Stratejik Planlama
+        <i class="fas fa-bullseye" style="color:#6366f1;"></i> {{ _("Stratejik Planlama") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Misyon · Vizyon · Değerler · Ana/Alt stratejiler · Süreç ve bireysel hedef hizalaması
-        {% if active_plan_year_val %} · <b>{{ active_plan_year_val }}</b> dönemi{% endif %}
+        {{ _("Misyon · Vizyon · Değerler · Ana/Alt stratejiler · Süreç ve bireysel hedef hizalaması") }}
+        {% if active_plan_year_val %} · <b>{{ active_plan_year_val }}</b> {{ _("dönemi") }}{% endif %}
       </p>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       {% if can_edit %}
-        <span class="mc-badge mc-badge-success"><i class="fas fa-pen-to-square"></i> Yönetici</span>
+        <span class="mc-badge mc-badge-success"><i class="fas fa-pen-to-square"></i> {{ _("Yönetici") }}</span>
       {% else %}
-        <span class="mc-badge mc-badge-gray"><i class="fas fa-eye"></i> Görüntüleyici</span>
+        <span class="mc-badge mc-badge-gray"><i class="fas fa-eye"></i> {{ _("Görüntüleyici") }}</span>
       {% endif %}
-      <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="Strateji hiyerarşisini öğren">
-        <i class="fas fa-circle-info"></i> Hiyerarşi Rehberi
+      <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="{{ _('Strateji hiyerarşisini öğren') }}">
+        <i class="fas fa-circle-info"></i> {{ _("Hiyerarşi Rehberi") }}
       </button>
-      <a href="{{ url_for('app_bp.sp_menu') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="SP araçlarına git">
-        <i class="fas fa-th"></i> SP Menüsü
+      <a href="{{ url_for('app_bp.sp_menu') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('SP araçlarına git') }}">
+        <i class="fas fa-th"></i> {{ _("SP Menüsü") }}
       </a>
     </div>
   </div>
@@ -147,177 +93,152 @@
   {# ── KPI Dashboard ────────────────────────────────────────────────── #}
   {% set _sub_count = strategies|map(attribute='sub_strategies')|map('length')|sum %}
   {% set _untagged = strategies|selectattr('plan_year_id', 'none')|list|length %}
-  {% macro _info_btn(key) -%}
-    <button type="button" class="btn-sp-card-info mc-kpi-info" data-sp-help="{{ key }}"
-            title="Bu kart hakkında bilgi" aria-label="Bu kart hakkında bilgi"
-            style="position:absolute;top:8px;right:8px;border:none;background:transparent;color:#94a3b8;cursor:pointer;padding:4px;font-size:13px;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;transition:background 0.15s,color 0.15s;">
-      <i class="fas fa-circle-info"></i>
-    </button>
-  {%- endmacro %}
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-      {{ _info_btn('kpi-ana-strateji') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">Ana Strateji</div>
+    <div data-card-code="sp.ana_strateji" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Ana Strateji") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ strategies|length }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _sub_count }} alt strateji</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s alt strateji", n=_sub_count) }}</div>
     </div>
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if progress_percent >= 75 %}#10b981{% elif progress_percent >= 50 %}#f59e0b{% else %}#0ea5e9{% endif %};">
-      {{ _info_btn('kpi-akis-olgunluk') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">Akış Olgunluğu</div>
+    <div data-card-code="sp.akis_olgunlugu" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if progress_percent >= 75 %}#10b981{% elif progress_percent >= 50 %}#f59e0b{% else %}#0ea5e9{% endif %};">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Akış Olgunluğu") }}</div>
       <div style="font-size:24px;font-weight:800;color:{% if progress_percent >= 75 %}#10b981{% elif progress_percent >= 50 %}#f59e0b{% else %}#0ea5e9{% endif %};margin-top:4px;">%{{ progress_percent }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ completed_steps }}/4 adım</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s/4 adım", n=completed_steps) }}</div>
     </div>
     {% if kv_vision_bar %}
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
-      {{ _info_btn('kpi-k-vektor') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">K-Vektör Vizyon</div>
+    <div data-card-code="sp.k_vektor_vizyon" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("K-Vektör Vizyon") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:16px;color:#8b5cf6;"></i> {{ kv_vision_bar.score }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">/ 100 puan</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("/ 100 puan") }}</div>
     </div>
     {% endif %}
     {% if active_plan_year_val %}
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-      {{ _info_btn('kpi-plan-donemi') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">Plan Dönemi</div>
+    <div data-card-code="sp.plan_donemi" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Plan Dönemi") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ active_plan_year_val }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">aktif yıl</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("aktif yıl") }}</div>
     </div>
     {% endif %}
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _untagged > 0 %}#dc2626{% else %}#10b981{% endif %};">
-      {{ _info_btn('kpi-etiketsiz') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">Etiketsiz Strateji</div>
+    <div data-card-code="sp.etiketsiz_strateji" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _untagged > 0 %}#dc2626{% else %}#10b981{% endif %};">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Etiketsiz Strateji") }}</div>
       <div style="font-size:24px;font-weight:800;color:{% if _untagged > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ _untagged }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">plan yılı boş</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("plan yılı boş") }}</div>
     </div>
-    <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if mission_text and vision_text %}#10b981{% else %}#f59e0b{% endif %};">
-      {{ _info_btn('kpi-kimlik') }}
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding-right:24px;">Kimlik</div>
+    <div data-card-code="sp.kimlik" style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if mission_text and vision_text %}#10b981{% else %}#f59e0b{% endif %};">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kimlik") }}</div>
       <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">
-        {% if mission_text %}<span title="Misyon var" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="Misyon yok" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
-        {% if vision_text %}<span title="Vizyon var" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="Vizyon yok" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
-        {% if values_text %}<span title="Değerler var" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="Değerler yok" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
+        {% if mission_text %}<span title="{{ _('Misyon var') }}" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="{{ _('Misyon yok') }}" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
+        {% if vision_text %}<span title="{{ _('Vizyon var') }}" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="{{ _('Vizyon yok') }}" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
+        {% if values_text %}<span title="{{ _('Değerler var') }}" style="color:#10b981;"><i class="fas fa-check"></i></span>{% else %}<span title="{{ _('Değerler yok') }}" style="color:#cbd5e1;"><i class="fas fa-circle"></i></span>{% endif %}
       </div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">Misyon · Vizyon · Değerler</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("Misyon · Vizyon · Değerler") }}</div>
     </div>
   </div>
-  <style>
-    .mc-kpi-info:hover { background:#eef2ff !important; color:#6366f1 !important; }
-  </style>
 
   {% if not can_edit %}
   <div class="mc-alert mc-alert-warning mc-sp-flow-note" style="margin-bottom:14px;">
-    <i class="fas fa-eye"></i> Bu sayfada yalnızca görüntüleme yetkiniz var. Düzenleme yetkisi kurum yöneticisindedir.
+    <i class="fas fa-eye"></i> {{ _("Bu sayfada yalnızca görüntüleme yetkiniz var. Düzenleme yetkisi kurum yöneticisindedir.") }}
   </div>
   {% endif %}
 
   <div class="mc-sp-timeline">
-  <div class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card" data-tour="sp-mission">
+  <div data-card-code="sp.misyon" class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card" data-tour="sp-mission">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-1">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">01</span>
         <span class="mc-sp-icon"><i class="fas fa-bullseye"></i></span>
-        <span>Misyon</span>
+        <span>{{ _("Misyon") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
         <span class="mc-badge {% if mission_text %}mc-badge-success{% else %}mc-badge-warning{% endif %}">
-          {% if mission_text %}Tamamlandı{% else %}Bekliyor{% endif %}
+          {% if mission_text %}{{ _("Tamamlandı") }}{% else %}{{ _("Bekliyor") }}{% endif %}
         </span>
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="misyon" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="misyon" title="Misyonu düzenle" aria-label="Misyonu düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="misyon" title="{{ _('Misyonu düzenle') }}" aria-label="{{ _('Misyonu düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         {% endif %}
       </div>
     </div>
-    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="misyon" role="button" tabindex="0" aria-label="Misyon metnini düzenle veya görüntüle">
+    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="misyon" role="button" tabindex="0" aria-label="{{ _('Misyon metnini düzenle veya görüntüle') }}">
       <div class="mc-card-body">
         {% if mission_text %}
-          <div class="mc-sp-preview mc-sp-card-body-scroll" role="region" aria-label="Misyon özeti" tabindex="0">{{ mission_text }}</div>
+          <div class="mc-sp-preview mc-sp-card-body-scroll" role="region" aria-label="{{ _('Misyon özeti') }}" tabindex="0">{{ mission_text }}</div>
         {% else %}
-          <div class="mc-sp-muted">Henüz eklenmemiş</div>
+          <div class="mc-sp-muted">{{ _("Henüz eklenmemiş") }}</div>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <div class="mc-card mc-card-lift mc-sp-flow-card" data-tour="sp-vision">
+  <div data-card-code="sp.vizyon" class="mc-card mc-card-lift mc-sp-flow-card" data-tour="sp-vision">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-1">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">02</span>
         <span class="mc-sp-icon"><i class="fas fa-binoculars"></i></span>
-        <span>Vizyon</span>
+        <span>{{ _("Vizyon") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
         <span class="mc-badge {% if vision_text %}mc-badge-success{% else %}mc-badge-warning{% endif %}">
-          {% if vision_text %}Tamamlandı{% else %}Bekliyor{% endif %}
+          {% if vision_text %}{{ _("Tamamlandı") }}{% else %}{{ _("Bekliyor") }}{% endif %}
         </span>
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="vizyon" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="vizyon" title="Vizyonu düzenle" aria-label="Vizyonu düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="vizyon" title="{{ _('Vizyonu düzenle') }}" aria-label="{{ _('Vizyonu düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         {% endif %}
       </div>
     </div>
-    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="vizyon" role="button" tabindex="0" aria-label="Vizyon metnini düzenle veya görüntüle">
+    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="vizyon" role="button" tabindex="0" aria-label="{{ _('Vizyon metnini düzenle veya görüntüle') }}">
       <div class="mc-card-body">
         {% if kv_vision_bar %}
-        <div class="mc-sp-kv-vision-section" role="img" aria-label="K-Vektör vizyon puanı {{ kv_vision_bar.score }} üzerinden 100">
+        <div class="mc-sp-kv-vision-section" role="img" aria-label="{{ _('K-Vektör vizyon puanı %(score)s üzerinden 100', score=kv_vision_bar.score) }}">
           <div class="mc-sp-kv-vision-bar-head">
-            <span class="mc-sp-kv-vision-label"><i class="fas fa-vector-square" aria-hidden="true"></i> K-Vektör vizyon puanı</span>
+            <span class="mc-sp-kv-vision-label"><i class="fas fa-vector-square" aria-hidden="true"></i> {{ _("K-Vektör vizyon puanı") }}</span>
             <span class="mc-sp-kv-vision-value">{{ kv_vision_bar.score }} / 100</span>
           </div>
           <div class="mc-sp-kv-vision-track">
             <div class="mc-sp-kv-vision-fill" style="width: {{ kv_vision_bar.pct }}%;"></div>
           </div>
           {% if kv_vision_bar.as_of %}
-          <p class="mc-sp-kv-vision-meta">Hesap tarihi: {{ kv_vision_bar.as_of }} · Hedef ölçek 100</p>
+          <p class="mc-sp-kv-vision-meta">{{ _("Hesap tarihi: %(date)s · Hedef ölçek 100", date=kv_vision_bar.as_of) }}</p>
           {% endif %}
         </div>
         {% endif %}
         {% if vision_text %}
-          <div class="mc-sp-preview mc-sp-card-body-scroll{% if kv_vision_bar %} mc-sp-preview-after-kv{% endif %}" role="region" aria-label="Vizyon özeti" tabindex="0">{{ vision_text }}</div>
+          <div class="mc-sp-preview mc-sp-card-body-scroll{% if kv_vision_bar %} mc-sp-preview-after-kv{% endif %}" role="region" aria-label="{{ _('Vizyon özeti') }}" tabindex="0">{{ vision_text }}</div>
         {% else %}
-          <div class="mc-sp-muted{% if kv_vision_bar %} mc-sp-preview-after-kv{% endif %}">Henüz eklenmemiş</div>
+          <div class="mc-sp-muted{% if kv_vision_bar %} mc-sp-preview-after-kv{% endif %}">{{ _("Henüz eklenmemiş") }}</div>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <div class="mc-card mc-card-lift mc-sp-flow-card">
+  <div data-card-code="sp.degerler_ve_etik_kurallar" class="mc-card mc-card-lift mc-sp-flow-card">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-1">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">03</span>
         <span class="mc-sp-icon"><i class="fas fa-heart"></i></span>
-        <span>Değerler ve Etik Kurallar</span>
+        <span>{{ _("Değerler ve Etik Kurallar") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
         <span class="mc-badge {% if degerler_done %}mc-badge-success{% else %}mc-badge-warning{% endif %}">
-          {% if degerler_done %}Tamamlandı{% else %}Bekliyor{% endif %}
+          {% if degerler_done %}{{ _("Tamamlandı") }}{% else %}{{ _("Bekliyor") }}{% endif %}
         </span>
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="degerler" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="degerler" title="Değerler ve etik kuralları düzenle" aria-label="Değerler ve etik kuralları düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="degerler" title="{{ _('Değerler ve etik kuralları düzenle') }}" aria-label="{{ _('Değerler ve etik kuralları düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         {% endif %}
       </div>
     </div>
-    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="degerler" role="button" tabindex="0" aria-label="Değerler ve etik kurallarını düzenle veya görüntüle">
+    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="degerler" role="button" tabindex="0" aria-label="{{ _('Değerler ve etik kurallarını düzenle veya görüntüle') }}">
       <div class="mc-card-body">
         {% if degerler_done %}
         <div class="mc-sp-preview mc-sp-preview-degerler">
           {% if values_text %}
           <div class="mc-sp-degerler-section">
-            <span class="mc-sp-preview-label">Temel değerler</span>
-            <div class="mc-sp-card-body-scroll mc-sp-degerler-scroll" role="region" aria-label="Temel değerler listesi" tabindex="0">
+            <span class="mc-sp-preview-label">{{ _("Temel değerler") }}</span>
+            <div class="mc-sp-card-body-scroll mc-sp-degerler-scroll" role="region" aria-label="{{ _('Temel değerler listesi') }}" tabindex="0">
               {% if values_text.splitlines()|length > 1 %}
                 {% for line in values_text.splitlines() %}
                   {% if line.strip() %}
@@ -338,8 +259,8 @@
           {% endif %}
           {% if ethics_text %}
           <div class="mc-sp-degerler-section">
-            <span class="mc-sp-preview-label">Etik kurallar</span>
-            <div class="mc-sp-card-body-scroll mc-sp-degerler-scroll" role="region" aria-label="Etik kurallar listesi" tabindex="0">
+            <span class="mc-sp-preview-label">{{ _("Etik kurallar") }}</span>
+            <div class="mc-sp-card-body-scroll mc-sp-degerler-scroll" role="region" aria-label="{{ _('Etik kurallar listesi') }}" tabindex="0">
               {% if ethics_text.splitlines()|length > 1 %}
                 {% for line in ethics_text.splitlines() %}
                   {% if line.strip() %}
@@ -360,7 +281,7 @@
           {% endif %}
         </div>
         {% else %}
-        <div class="mc-sp-muted">Henüz eklenmemiş — temel değerler ve etik kurallar için düzenleyin veya detay sayfasına gidin.</div>
+        <div class="mc-sp-muted">{{ _("Henüz eklenmemiş — temel değerler ve etik kurallar için düzenleyin veya detay sayfasına gidin.") }}</div>
         {% endif %}
       </div>
     </div>
@@ -371,13 +292,13 @@
   {% set _has_weights = (kv_strategy_weights and kv_strategy_weights|length > 0) %}
   {% if _has_weights %}
   {% set _w_max = (kv_strategy_weights.values()|list|map('float')|max) or 1 %}
-  <div class="mc-card mc-sp-step-card" style="margin-bottom:18px;">
+  <div class="mc-card mc-sp-step-card" data-card-code="sp.strateji_agirlik_skor_gorsellestirme" style="margin-bottom:18px;">
     <div class="mc-card-header">
       <div class="mc-card-title">
         <i class="fas fa-circle-nodes" style="color:#8b5cf6; margin-right:6px;"></i>
-        Strateji Ağırlık & Skor Görselleştirme
+        {{ _("Strateji Ağırlık & Skor Görselleştirme") }}
       </div>
-      <span style="font-size:11.5px; color:#64748b;">Daire boyutu = K-Vektör ağırlığı · Renk = mevcut skor</span>
+      <span style="font-size:11.5px; color:#64748b;">{{ _("Daire boyutu = K-Vektör ağırlığı · Renk = mevcut skor") }}</span>
     </div>
     <div class="mc-card-body">
       <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:center; padding:10px 4px;">
@@ -386,7 +307,7 @@
           {% set _score = (kv_strategy_scores.get(s.id) or 0)|float if kv_strategy_scores else 0 %}
           {% set _size = 56 + ((_w / _w_max) * 60) if _w_max > 0 else 56 %}
           {% set _color = '#10b981' if _score >= 75 else ('#f59e0b' if _score >= 50 else ('#ef4444' if _score > 0 else '#cbd5e1')) %}
-          <div style="display:flex; flex-direction:column; align-items:center; gap:6px; min-width:90px;" title="{{ s.title }} — ağırlık: {{ '%.1f'|format(_w) }}, skor: {{ '%.0f'|format(_score) }}">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px; min-width:90px;" title="{{ _('%(title)s — ağırlık: %(w)s, skor: %(score)s', title=s.title, w='%.1f'|format(_w), score='%.0f'|format(_score)) }}">
             <div style="width:{{ _size }}px; height:{{ _size }}px; border-radius:50%; background:{{ _color }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; box-shadow:0 4px 12px rgba(15,23,42,0.12); border:3px solid #fff; outline:2px solid {{ _color }}33;">
               <div style="text-align:center; line-height:1;">
                 <div style="font-size:{{ (_size/4)|int }}px;">{{ '%.0f'|format(_score) if _score > 0 else '—' }}</div>
@@ -394,41 +315,38 @@
               </div>
             </div>
             <div style="font-size:11px; color:#475569; max-width:120px; text-align:center; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ s.title }}</div>
-            <div style="font-size:10px; color:#94a3b8;">ağırlık: <b>{{ '%.1f'|format(_w) }}</b></div>
+            <div style="font-size:10px; color:#94a3b8;">{{ _("ağırlık:") }} <b>{{ '%.1f'|format(_w) }}</b></div>
           </div>
         {% endfor %}
       </div>
       <div style="display:flex; justify-content:center; gap:14px; margin-top:14px; font-size:11px; color:#64748b; flex-wrap:wrap;">
-        <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border-radius:50%; vertical-align:middle;"></span> ≥75 sağlıklı</span>
-        <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; vertical-align:middle;"></span> 50–74 izlenmeli</span>
-        <span><span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%; vertical-align:middle;"></span> &lt;50 kritik</span>
-        <span><span style="display:inline-block; width:10px; height:10px; background:#cbd5e1; border-radius:50%; vertical-align:middle;"></span> veri yok</span>
+        <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border-radius:50%; vertical-align:middle;"></span> {{ _("≥75 sağlıklı") }}</span>
+        <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; vertical-align:middle;"></span> {{ _("50–74 izlenmeli") }}</span>
+        <span><span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%; vertical-align:middle;"></span> {{ _("&lt;50 kritik") }}</span>
+        <span><span style="display:inline-block; width:10px; height:10px; background:#cbd5e1; border-radius:50%; vertical-align:middle;"></span> {{ _("veri yok") }}</span>
       </div>
     </div>
   </div>
   {% endif %}
   {% endif %}
 
-  <div id="strategy-list" class="mc-card mc-sp-step-card" data-tour="sp-strategies">
+  <div data-card-code="sp.strateji_listesi_ana_stratejiler_alt_stratejiler" id="strategy-list" class="mc-card mc-sp-step-card" data-tour="sp-strategies">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-2">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">04</span>
         <span class="mc-sp-icon"><i class="fas fa-sitemap"></i></span>
-        <span>Strateji Listesi (Ana Stratejiler → Alt Stratejiler)</span>
+        <span>{{ _("Strateji Listesi (Ana Stratejiler → Alt Stratejiler)") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
         <span class="mc-badge {% if has_strategies %}mc-badge-success{% else %}mc-badge-warning{% endif %}">
-          {{ strategies|length }} ana strateji
+          {{ _("%(n)s ana strateji", n=strategies|length) }}
         </span>
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="strateji-listesi" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="strateji-listesi" title="Ana strateji ekle" aria-label="Strateji listesini düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="strateji-listesi" title="{{ _('Ana strateji ekle') }}" aria-label="{{ _('Strateji listesini düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         <button id="btn-strategy-add" class="mc-btn mc-btn-primary mc-btn-sm">
-          <i class="fas fa-plus"></i> Ana Strateji Ekle
+          <i class="fas fa-plus"></i> {{ _("Ana Strateji Ekle") }}
         </button>
         {% endif %}
       </div>
@@ -440,17 +358,17 @@
         <div class="mc-sp-strategy-compact" data-strategy-id="{{ s.id }}">
           <div class="mc-sp-strategy-compact-head">
             <div class="mc-sp-strategy-main">
-              <span class="mc-badge mc-badge-purple">Ana</span>
+              <span class="mc-badge mc-badge-purple">{{ _("Ana") }}</span>
               <span class="mc-badge mc-badge-indigo mc-sp-monospace">{{ s.code or '—' }}</span>
               <span class="mc-sp-strategy-compact-title" title="{{ s.title }}{% if s.description %} — {{ s.description }}{% endif %}">{{ s.title }}</span>
             </div>
             <div class="mc-sp-row-actions">
-              <span class="mc-badge mc-badge-gray mc-sp-badge-alt-count" title="Bu ana stratejiye bağlı alt strateji sayısı">
-                <i class="fas fa-link" aria-hidden="true"></i> {{ active_subs|length }} alt
+              <span class="mc-badge mc-badge-gray mc-sp-badge-alt-count" title="{{ _('Bu ana stratejiye bağlı alt strateji sayısı') }}">
+                <i class="fas fa-link" aria-hidden="true"></i> {{ _("%(n)s alt", n=active_subs|length) }}
               </span>
               {% if can_edit %}
               <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-sub-add" data-strategy-id="{{ s.id }}">
-                <i class="fas fa-plus"></i> Alt Ekle
+                <i class="fas fa-plus"></i> {{ _("Alt Ekle") }}
               </button>
               <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-main-edit"
                       data-strategy-id="{{ s.id }}"
@@ -474,9 +392,9 @@
           {% set qm = (kv_quotas_main.get(s.id, 0) or 0)|float %}
           {% set cm = (kv_contrib_main.get(s.id, 0) or 0)|float %}
           {% set pct_m = ((100.0 * cm / qm)|round(2)) if qm > 0.000001 else 0 %}
-          <div class="mc-sp-kv-strat-row" role="group" aria-label="Ana strateji K-Vektör gerçekleşen katkısı">
+          <div class="mc-sp-kv-strat-row" role="group" aria-label="{{ _('Ana strateji K-Vektör gerçekleşen katkısı') }}">
             <div class="mc-sp-kv-vision-bar-head mc-sp-kv-strat-bar-head">
-              <span class="mc-sp-kv-vision-label"><i class="fas fa-chart-line" aria-hidden="true"></i> Gerçekleşen K-Vektör</span>
+              <span class="mc-sp-kv-vision-label"><i class="fas fa-chart-line" aria-hidden="true"></i> {{ _("Gerçekleşen K-Vektör") }}</span>
               <span class="mc-sp-kv-vision-value">
                 {% if qm > 0.000001 %}{{ '%.2f'|format(cm) }} / {{ '%.2f'|format(qm) }}{% else %}—{% endif %}
               </span>
@@ -485,12 +403,12 @@
               <div class="mc-sp-kv-vision-fill" style="width: {{ pct_m }}%;"></div>
             </div>
             <p class="mc-sp-kv-vision-meta mc-sp-kv-strat-meta">
-              {% if qm > 0.000001 %}Kotaya göre doluluk · Vizyon 100 içindeki pay{% else %}Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez.{% endif %}
+              {% if qm > 0.000001 %}{{ _("Kotaya göre doluluk · Vizyon 100 içindeki pay") }}{% else %}{{ _("Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez.") }}{% endif %}
             </p>
           </div>
           {% endif %}
           <div class="mc-sp-strategy-subs-row">
-            <span class="mc-sp-subs-label"><i class="fas fa-code-branch" aria-hidden="true"></i> Bağlı alt stratejiler</span>
+            <span class="mc-sp-subs-label"><i class="fas fa-code-branch" aria-hidden="true"></i> {{ _("Bağlı alt stratejiler") }}</span>
             <div class="mc-sp-sub-chips">
               {% if active_subs %}
                 {% for ss in active_subs %}
@@ -509,22 +427,22 @@
                             {% if k_vektor_enabled %}
                             data-kv-weight-raw="{% if kv_sub_strategy_weights.get(ss.id) is not none %}{{ kv_sub_strategy_weights.get(ss.id) }}{% endif %}"
                             {% endif %}
-                            title="Alt stratejiyi düzenle" aria-label="Alt stratejiyi düzenle">
+                            title="{{ _('Alt stratejiyi düzenle') }}" aria-label="{{ _('Alt stratejiyi düzenle') }}">
                       <i class="fas fa-pen"></i>
                     </button>
                     <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm mc-sp-chip-btn btn-sub-delete"
                             data-sub-id="{{ ss.id }}"
                             data-title="{{ ss.title|e }}"
-                            title="Alt stratejiyi sil" aria-label="Alt stratejiyi sil">
+                            title="{{ _('Alt stratejiyi sil') }}" aria-label="{{ _('Alt stratejiyi sil') }}">
                       <i class="fas fa-trash"></i>
                     </button>
                   </span>
                   {% endif %}
                   </span>
                   {% if k_vektor_enabled and kv_vision_bar %}
-                  <div class="mc-sp-kv-sub-bar-wrap" role="img" aria-label="Alt strateji K-Vektör skoru {{ '%.1f'|format(sc) }} üzerinden 100">
+                  <div class="mc-sp-kv-sub-bar-wrap" role="img" aria-label="{{ _('Alt strateji K-Vektör skoru %(score)s üzerinden 100', score='%.1f'|format(sc)) }}">
                     <div class="mc-sp-kv-sub-bar-head">
-                      <span class="mc-sp-kv-sub-label">Gerçekleşen</span>
+                      <span class="mc-sp-kv-sub-label">{{ _("Gerçekleşen") }}</span>
                       <span class="mc-sp-kv-sub-val">{{ '%.1f'|format(sc) }} / 100</span>
                     </div>
                     <div class="mc-sp-kv-vision-track mc-sp-kv-track--sub">
@@ -535,7 +453,7 @@
                 </span>
                 {% endfor %}
               {% else %}
-                <span class="mc-sp-muted mc-sp-sub-empty">Henüz alt strateji tanımlanmamış.</span>
+                <span class="mc-sp-muted mc-sp-sub-empty">{{ _("Henüz alt strateji tanımlanmamış.") }}</span>
               {% endif %}
             </div>
           </div>
@@ -543,21 +461,21 @@
         {% else %}
         <div class="mc-empty" style="padding:32px 20px;">
           <div class="mc-empty-icon"><i class="fas fa-layer-group" style="color:#6366f1;"></i></div>
-          <div class="mc-empty-title">Henüz ana strateji yok</div>
+          <div class="mc-empty-title">{{ _("Henüz ana strateji yok") }}</div>
           <div class="mc-empty-text" style="max-width:520px; margin:0 auto;">
-            Stratejik plan, kurumun yön kararlarını somutlaştıran ana başlıklarla başlar. Tipik bir Hoshin/BSC planında <b>4–8 ana strateji</b> yer alır (örnek: <i>Pazar Liderliği, Operasyonel Mükemmellik, Dijital Dönüşüm, Yetenek ve Kültür</i>).
+            {{ _("Stratejik plan, kurumun yön kararlarını somutlaştıran ana başlıklarla başlar. Tipik bir Hoshin/BSC planında <b>4–8 ana strateji</b> yer alır (örnek: <i>Pazar Liderliği, Operasyonel Mükemmellik, Dijital Dönüşüm, Yetenek ve Kültür</i>).") }}
           </div>
           <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
             {% if can_edit %}
             <button id="btn-strategy-add-empty" class="mc-btn mc-btn-primary">
-              <i class="fas fa-plus"></i> İlk Ana Stratejiyi Ekle
+              <i class="fas fa-plus"></i> {{ _("İlk Ana Stratejiyi Ekle") }}
             </button>
             <a href="{{ url_for('app_bp.sp_templates_page') if 'app_bp.sp_templates_page' in current_app.view_functions else '/sp/templates' }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-              <i class="fas fa-file-import"></i> Hazır Şablondan Başla
+              <i class="fas fa-file-import"></i> {{ _("Hazır Şablondan Başla") }}
             </a>
             {% endif %}
             <a href="{{ url_for('app_bp.sp_menu') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-              <i class="fas fa-th"></i> SP Araç Kutusu
+              <i class="fas fa-th"></i> {{ _("SP Araç Kutusu") }}
             </a>
           </div>
         </div>
@@ -566,53 +484,47 @@
     </div>
   </div>
 
-  <div class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card">
+  <div data-card-code="sp.surec_iyilestirme_faaliyetleri" class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-3">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">06</span>
         <span class="mc-sp-icon"><i class="fas fa-wrench"></i></span>
-        <span>Süreç İyileştirme Faaliyetleri</span>
+        <span>{{ _("Süreç İyileştirme Faaliyetleri") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="surec" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="surec" title="Süreç modülüne git" aria-label="Süreçleri düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="surec" title="{{ _('Süreç modülüne git') }}" aria-label="{{ _('Süreçleri düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         {% endif %}
       </div>
     </div>
-    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="surec" role="button" tabindex="0" aria-label="Süreç iyileştirme modülüne git">
+    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="surec" role="button" tabindex="0" aria-label="{{ _('Süreç iyileştirme modülüne git') }}">
       <div class="mc-card-body">
-        <div class="mc-sp-muted">İyileştirme aksiyonları ve uygulama faaliyetleri</div>
+        <div class="mc-sp-muted">{{ _("İyileştirme aksiyonları ve uygulama faaliyetleri") }}</div>
       </div>
     </div>
   </div>
 
-  <div class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card">
+  <div data-card-code="sp.bireysel_hedefler" class="mc-card mc-card-lift mc-sp-flow-card mc-sp-step-card">
     <div class="mc-card-header mc-sp-header mc-sp-header-level-3">
       <div class="mc-card-title mc-sp-title-row">
         <span class="mc-sp-step-badge">07</span>
         <span class="mc-sp-icon"><i class="fas fa-user-check"></i></span>
-        <span>Bireysel Hedefler</span>
+        <span>{{ _("Bireysel Hedefler") }}</span>
       </div>
       <div class="mc-sp-card-header-actions">
-        <span class="mc-badge mc-badge-gray">Kişisel</span>
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-info" data-sp-help="bireysel" title="Bu kartın amacı" aria-label="Bu kart hakkında bilgi">
-          <i class="fas fa-circle-info"></i>
-        </button>
+        <span class="mc-badge mc-badge-gray">{{ _("Kişisel") }}</span>
         {% if can_edit %}
-        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="bireysel" title="Bireysel hedeflere git" aria-label="Bireysel hedefleri düzenle">
+        <button type="button" class="mc-btn mc-btn-ghost mc-btn-sm btn-sp-card-edit" data-sp-edit="bireysel" title="{{ _('Bireysel hedeflere git') }}" aria-label="{{ _('Bireysel hedefleri düzenle') }}">
           <i class="fas fa-pen"></i>
         </button>
         {% endif %}
       </div>
     </div>
-    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="bireysel" role="button" tabindex="0" aria-label="Bireysel hedefler modülüne git">
+    <div class="mc-sp-card-body-link mc-sp-card-body-trigger" data-sp-body-edit="bireysel" role="button" tabindex="0" aria-label="{{ _('Bireysel hedefler modülüne git') }}">
       <div class="mc-card-body">
-        <div class="mc-sp-muted">Bireysel hedef kartları ve performans izleme</div>
+        <div class="mc-sp-muted">{{ _("Bireysel hedef kartları ve performans izleme") }}</div>
       </div>
     </div>
   </div>

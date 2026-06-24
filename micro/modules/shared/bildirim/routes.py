@@ -8,9 +8,10 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app.models import db
 from app.models.core import Notification
+from flask_babel import gettext as _
 
 
-@app_bp.route("/bildirim")
+@app_bp.route("/notification")
 @login_required
 def bildirim():
     """Bildirim Merkezi ana sayfası — okunmamışlar önce."""
@@ -24,7 +25,7 @@ def bildirim():
     return render_template("platform/bildirim/index.html", bildirimler=bildirimler)
 
 
-@app_bp.route("/bildirim/api/unread-count")
+@app_bp.route("/notification/api/unread-count")
 @login_required
 def bildirim_api_unread_count():
     """Okunmamış bildirim sayısı — topbar badge için."""
@@ -32,7 +33,7 @@ def bildirim_api_unread_count():
     return jsonify({"count": count})
 
 
-@app_bp.route("/bildirim/api/mark-read/<int:notif_id>", methods=["POST"])
+@app_bp.route("/notification/api/mark-read/<int:notif_id>", methods=["POST"])
 @login_required
 def bildirim_api_mark_read(notif_id):
     """Tekil bildirimi okundu işaretle."""
@@ -45,10 +46,10 @@ def bildirim_api_mark_read(notif_id):
         db.session.rollback()
         from flask import current_app
         current_app.logger.error(f"[bildirim_api_mark_read] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/bildirim/api/mark-all-read", methods=["POST"])
+@app_bp.route("/notification/api/mark-all-read", methods=["POST"])
 @login_required
 def bildirim_api_mark_all_read():
     """Tüm bildirimleri okundu işaretle."""
@@ -62,4 +63,4 @@ def bildirim_api_mark_all_read():
         db.session.rollback()
         from flask import current_app
         current_app.logger.error(f"[bildirim_api_mark_all_read] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400

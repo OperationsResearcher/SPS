@@ -52,14 +52,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btn-test-conn').addEventListener('click', function () {
         var data = _collectData();
         if (!data.smtp_host || !data.smtp_username) {
-            MicroUI.uyari('Sunucu adresi ve kullanıcı adı zorunludur.');
+            MicroUI.uyari(t('Sunucu adresi ve kullanıcı adı zorunludur.'));
             return;
         }
         var resultEl = document.getElementById('test-conn-result');
-        resultEl.textContent = 'Test ediliyor...';
+        resultEl.textContent = t('Test ediliyor...');
         resultEl.className = 'eposta-test-result';
 
-        MicroUI.yukleniyor('SMTP bağlantısı test ediliyor...');
+        MicroUI.yukleniyor(t('SMTP bağlantısı test ediliyor...'));
         MicroUI.post(testUrl, data,
             function (res) {
                 MicroUI.kapat();
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             function (res) {
                 MicroUI.kapat();
-                resultEl.textContent = '✗ ' + (res.message || 'Bağlantı başarısız.');
+                resultEl.textContent = '✗ ' + (res.message || t('Bağlantı başarısız.'));
                 resultEl.className = 'eposta-test-result eposta-test-fail';
             }
         );
@@ -78,18 +78,18 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btn-save').addEventListener('click', function () {
         var data = _collectData();
         if (data.use_custom_smtp && (!data.smtp_host || !data.smtp_username)) {
-            MicroUI.uyari('Özel SMTP aktifken sunucu adresi ve kullanıcı adı zorunludur.');
+            MicroUI.uyari(t('Özel SMTP aktifken sunucu adresi ve kullanıcı adı zorunludur.'));
             return;
         }
-        MicroUI.yukleniyor('Kaydediliyor...');
+        MicroUI.yukleniyor(t('Kaydediliyor...'));
         MicroUI.post(saveUrl, data,
             function (res) {
                 MicroUI.kapat();
-                MicroUI.basari(res.message || 'Ayarlar kaydedildi.');
+                MicroUI.basari(res.message || t('Ayarlar kaydedildi.'));
             },
             function (res) {
                 MicroUI.kapat();
-                MicroUI.hata(res.message || 'Kayıt başarısız.');
+                MicroUI.hata(res.message || t('Kayıt başarısız.'));
             }
         );
     });
@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Test Maili Gönder ── */
     document.getElementById('btn-send-test').addEventListener('click', function () {
         MicroUI.onayla(
-            'Kayıtlı ayarlarla kendi e-posta adresinize test maili gönderilecek.',
+            t('Kayıtlı ayarlarla kendi e-posta adresinize test maili gönderilecek.'),
             function () {
-                MicroUI.yukleniyor('Mail gönderiliyor...');
+                MicroUI.yukleniyor(t('Mail gönderiliyor...'));
                 MicroUI.post(sendTestUrl, {},
                     function (res) {
                         MicroUI.kapat();
@@ -107,12 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     function (res) {
                         MicroUI.kapat();
-                        MicroUI.hata(res.message || 'Mail gönderilemedi.');
+                        MicroUI.hata(res.message || t('Mail gönderilemedi.'));
                     }
                 );
             },
-            'Test Maili',
-            'Gönder',
+            t('Test Maili'),
+            t('Gönder'),
             { icon: 'info', confirmButtonColor: '#6366f1' }
         );
     });

@@ -19,7 +19,7 @@
   }
 
   function swalError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
 
   function validateEmail(email) {
@@ -53,11 +53,11 @@
 
       var allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
       if (allowedTypes.indexOf(file.type) === -1) {
-        swalError("Geçersiz dosya tipi. PNG, JPG, GIF veya WEBP seçin.");
+        swalError(t("Geçersiz dosya tipi. PNG, JPG, GIF veya WEBP seçin."));
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        swalError("Dosya boyutu çok büyük. Maksimum 5MB yükleyebilirsiniz.");
+        swalError(t("Dosya boyutu çok büyük. Maksimum 5MB yükleyebilirsiniz."));
         return;
       }
 
@@ -78,7 +78,7 @@
           if (!ct.includes("application/json")) {
             return r.text().then(function (txt) {
               console.error("Geçersiz yanıt:", txt);
-              throw new Error("Sunucudan geçersiz yanıt alındı (HTTP " + r.status + ").");
+              throw new Error(t("Sunucudan geçersiz yanıt alındı (HTTP ") + r.status + ").");
             });
           }
           return r.json();
@@ -106,7 +106,7 @@
               var newImg = document.createElement("img");
               newImg.id        = "profilePhotoImg";
               newImg.src       = photoUrl + "?t=" + Date.now();
-              newImg.alt       = "Profil";
+              newImg.alt       = t("Profil");
               newImg.className = "profil-avatar-img";
               newImg.onerror   = function () {
                 this.style.display = "none";
@@ -115,15 +115,15 @@
               if (placeholder) placeholder.style.display = "none";
               if (container) container.insertBefore(newImg, container.firstChild);
             }
-            swalSuccess("Profil fotoğrafı güncellendi.");
+            swalSuccess(t("Profil fotoğrafı güncellendi."));
           } else {
-            swalError(d.message || "Fotoğraf yüklenemedi.");
+            swalError(d.message || t("Fotoğraf yüklenemedi."));
           }
         })
         .catch(function (err) {
           if (progressEl) progressEl.style.display = "none";
           if (btnFoto) btnFoto.disabled = false;
-          swalError(err.message || "Sunucuya bağlanılamadı.");
+          swalError(err.message || t("Sunucuya bağlanılamadı."));
         });
     });
   }
@@ -141,23 +141,23 @@
       var confirmPas = document.getElementById("pf-confirm-pass").value;
 
       if (email && !validateEmail(email)) {
-        swalError("Lütfen geçerli bir e-posta adresi girin.");
+        swalError(t("Lütfen geçerli bir e-posta adresi girin."));
         return;
       }
       if (phone && !validatePhone(phone)) {
-        swalError("Lütfen geçerli bir telefon numarası girin. (Örnek: 0555 123 45 67)");
+        swalError(t("Lütfen geçerli bir telefon numarası girin. (Örnek: 0555 123 45 67)"));
         return;
       }
       if (newPass && newPass.length < 6) {
-        swalError("Yeni şifre en az 6 karakter olmalıdır.");
+        swalError(t("Yeni şifre en az 6 karakter olmalıdır."));
         return;
       }
       if (newPass && newPass !== confirmPas) {
-        swalError("Yeni şifreler eşleşmiyor.");
+        swalError(t("Yeni şifreler eşleşmiyor."));
         return;
       }
       if ((newPass || confirmPas) && !curPass) {
-        swalError("Şifre değiştirmek için mevcut şifrenizi girmelisiniz.");
+        swalError(t("Şifre değiştirmek için mevcut şifrenizi girmelisiniz."));
         return;
       }
 
@@ -186,23 +186,23 @@
           var ct = r.headers.get("content-type") || "";
           if (!ct.includes("application/json")) {
             return r.text().then(function () {
-              throw new Error("Sunucudan geçersiz yanıt alındı. Sayfayı yenileyip tekrar deneyin.");
+              throw new Error(t("Sunucudan geçersiz yanıt alındı. Sayfayı yenileyip tekrar deneyin."));
             });
           }
           return r.json();
         })
         .then(function (d) {
           if (d.success) {
-            swalSuccess(d.message || "Profil güncellendi.");
+            swalSuccess(d.message || t("Profil güncellendi."));
             document.getElementById("pf-cur-pass").value     = "";
             document.getElementById("pf-new-pass").value     = "";
             document.getElementById("pf-confirm-pass").value = "";
           } else {
-            swalError(d.message || "Güncelleme başarısız.");
+            swalError(d.message || t("Güncelleme başarısız."));
           }
         })
         .catch(function (err) {
-          swalError(err.message || "Sunucuya bağlanılamadı.");
+          swalError(err.message || t("Sunucuya bağlanılamadı."));
         });
     });
   }

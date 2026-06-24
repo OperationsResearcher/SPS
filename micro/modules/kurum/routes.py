@@ -17,6 +17,7 @@ from app.services.k_vektor_config_service import (
     save_k_vektor_weights,
 )
 from app_platform.modules.kurum.kurum_overview import build_kurum_overview
+from flask_babel import gettext as _
 
 _KURUM_ROLES = ("tenant_admin", "executive_manager")
 
@@ -25,7 +26,7 @@ def _check_kurum_role():
     return current_user.role and current_user.role.name in _KURUM_ROLES
 
 
-@app_bp.route("/kurum/ayarlar", methods=["GET", "POST"])
+@app_bp.route("/organization/settings", methods=["GET", "POST"])
 @login_required
 def kurum_ayarlar():
     """Kurum bilgileri ayarları + logo yükleme."""
@@ -128,7 +129,7 @@ def kurum_ayarlar():
 
             blob = logo_file.read()
             if len(blob) > max_size:
-                return jsonify({"success": False, "message": "Logo dosyası 2MB'dan büyük olamaz."}), 400
+                return jsonify({"success": False, "message": _("Logo dosyası 2MB'dan büyük olamaz.")}), 400
 
             ok, msg, detected_ext = validate_uploaded_image(blob, allowed_ext, accept_svg=True)
             if not ok:
@@ -143,7 +144,7 @@ def kurum_ayarlar():
             dest = os.path.join(folder, fname)
             if not os.path.abspath(dest).startswith(os.path.abspath(folder)):
                 current_app.logger.error(f"[kurum_ayarlar logo] path traversal blocked: {dest}")
-                return jsonify({"success": False, "message": "Geçersiz dosya yolu."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz dosya yolu.")}), 400
 
             # Eski uzantılı dosyaları temizle
             for old in os.listdir(folder):
@@ -159,17 +160,17 @@ def kurum_ayarlar():
             tenant.logo_updated_at = _dt.datetime.now(_dt.timezone.utc)
 
         db.session.commit()
-        return jsonify({"success": True, "message": "Kurum ayarları kaydedildi."}), 200
+        return jsonify({"success": True, "message": _("Kurum ayarları kaydedildi.")}), 200
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_ayarlar] {e}")
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/kurum")
+@app_bp.route("/organization")
 @login_required
 def kurum():
     """Kurum Paneli ana sayfası — tüm giriş yapmış tenant kullanıcıları; düzenleme API’leri rol ile sınırlı."""
@@ -222,12 +223,12 @@ def kurum():
     )
 
 
-@app_bp.route("/kurum/api/overview")
+@app_bp.route("/organization/api/overview")
 @login_required
 def kurum_api_overview():
     """Panel özet metrikleri (yenileme / yarı-gerçek zamanlı)."""
     if current_user.tenant is None:
-        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Tenant bulunamadı.")}), 404
 
     tid = current_user.tenant_id
     kid = getattr(current_user, "kurum_id", None) or tid
@@ -249,12 +250,12 @@ def kurum_api_overview():
 
 # ── API: Stratejik Kimlik ─────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/update-strategy", methods=["POST"])
+@app_bp.route("/organization/api/update-strategy", methods=["POST"])
 @login_required
 def kurum_api_update_strategy():
     """Stratejik kimlik alanlarını güncelle (purpose, vision, core_values, ...)."""
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     tenant = Tenant.query.get_or_404(current_user.tenant_id)
     data = request.get_json() or {}
@@ -263,11 +264,11 @@ def kurum_api_update_strategy():
             if field in data:
                 setattr(tenant, field, data[field])
         db.session.commit()
-        return jsonify({"success": True, "message": "Stratejik kimlik güncellendi."})
+        return jsonify({"success": True, "message": _("Stratejik kimlik güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_update_strategy] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 # ── API: Kimlik maddeleri (çok-satırlı Değer / Etik / Kalite) ────────────────
@@ -286,13 +287,13 @@ def _kimlik_model(kind):
     return pair if pair else (None, None)
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/list", methods=["GET"])
+@app_bp.route("/organization/api/identity/<kind>/list", methods=["GET"])
 @login_required
 def kurum_api_kimlik_list(kind):
     """Bir kimlik boyutunun aktif maddelerini sıralı döndür."""
     Model, _etiket = _kimlik_model(kind)
     if Model is None:
-        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz tür.")}), 400
 
     rows = (
         Model.query
@@ -309,20 +310,20 @@ def kurum_api_kimlik_list(kind):
     })
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/add", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/add", methods=["POST"])
 @login_required
 def kurum_api_kimlik_add(kind):
     """Yeni kimlik maddesi ekle (sıra = mevcut maks + 1)."""
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     Model, etiket = _kimlik_model(kind)
     if Model is None:
-        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz tür.")}), 400
 
     data = request.get_json() or {}
     baslik = (data.get("baslik") or "").strip()
     if not baslik:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
 
     from sqlalchemy import func
     son_sira = (
@@ -344,29 +345,29 @@ def kurum_api_kimlik_add(kind):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_kimlik_add:{kind}] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/update/<int:item_id>", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/update/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_update(kind, item_id):
     """Kimlik maddesini güncelle (tenant izolasyonlu)."""
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     Model, etiket = _kimlik_model(kind)
     if Model is None:
-        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz tür.")}), 400
 
     row = Model.query.filter_by(
         id=item_id, tenant_id=current_user.tenant_id, is_active=True,
     ).first()
     if row is None:
-        return jsonify({"success": False, "message": "Madde bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Madde bulunamadı.")}), 404
 
     data = request.get_json() or {}
     baslik = (data.get("baslik") or "").strip()
     if not baslik:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
 
     row.baslik = baslik
     row.aciklama = (data.get("aciklama") or "").strip() or None
@@ -376,24 +377,24 @@ def kurum_api_kimlik_update(kind, item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_kimlik_update:{kind}] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/kimlik/<kind>/delete/<int:item_id>", methods=["POST"])
+@app_bp.route("/organization/api/identity/<kind>/delete/<int:item_id>", methods=["POST"])
 @login_required
 def kurum_api_kimlik_delete(kind, item_id):
     """Kimlik maddesini soft-delete (is_active=False)."""
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     Model, etiket = _kimlik_model(kind)
     if Model is None:
-        return jsonify({"success": False, "message": "Geçersiz tür."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz tür.")}), 400
 
     row = Model.query.filter_by(
         id=item_id, tenant_id=current_user.tenant_id, is_active=True,
     ).first()
     if row is None:
-        return jsonify({"success": False, "message": "Madde bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Madde bulunamadı.")}), 404
 
     row.is_active = False
     try:
@@ -402,21 +403,21 @@ def kurum_api_kimlik_delete(kind, item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_kimlik_delete:{kind}] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── API: Ana Strateji CRUD ────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/add-strategy", methods=["POST"])
+@app_bp.route("/organization/api/add-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_strategy():
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
 
     st = Strategy(
         tenant_id=current_user.tenant_id,
@@ -431,14 +432,14 @@ def kurum_api_add_strategy():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_add_strategy] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/organization/api/update-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_update_main_strategy(strategy_id):
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     st = Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id
@@ -449,18 +450,18 @@ def kurum_api_update_main_strategy(strategy_id):
         st.code  = (data.get("code") or "").strip() or st.code
         st.description = data.get("description", st.description)
         db.session.commit()
-        return jsonify({"success": True, "message": "Strateji güncellendi."})
+        return jsonify({"success": True, "message": _("Strateji güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_update_main_strategy] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/organization/api/delete-main-strategy/<int:strategy_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_main_strategy(strategy_id):
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     st = Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id
@@ -472,22 +473,22 @@ def kurum_api_delete_main_strategy(strategy_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_delete_main_strategy] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/add-sub-strategy", methods=["POST"])
+@app_bp.route("/organization/api/add-sub-strategy", methods=["POST"])
 @login_required
 def kurum_api_add_sub_strategy():
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     data = request.get_json() or {}
     strategy_id = data.get("strategy_id")
     title = (data.get("title") or "").strip()
     if not strategy_id or not title:
-        return jsonify({"success": False, "message": "Strateji ve başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Strateji ve başlık zorunludur.")}), 400
 
     Strategy.query.filter_by(
         id=strategy_id, tenant_id=current_user.tenant_id, is_active=True
@@ -506,14 +507,14 @@ def kurum_api_add_sub_strategy():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_add_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/organization/api/update-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_update_sub_strategy(sub_id):
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
@@ -525,18 +526,18 @@ def kurum_api_update_sub_strategy(sub_id):
         sub.code  = (data.get("code") or "").strip() or sub.code
         sub.description = data.get("description", sub.description)
         db.session.commit()
-        return jsonify({"success": True, "message": "Alt strateji güncellendi."})
+        return jsonify({"success": True, "message": _("Alt strateji güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_update_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/kurum/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
+@app_bp.route("/organization/api/delete-sub-strategy/<int:sub_id>", methods=["POST"])
 @login_required
 def kurum_api_delete_sub_strategy(sub_id):
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     sub = SubStrategy.query.join(Strategy).filter(
         SubStrategy.id == sub_id,
@@ -549,17 +550,17 @@ def kurum_api_delete_sub_strategy(sub_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kurum_api_delete_sub_strategy] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── K-Vektör ağırlıkları ─────────────────────────────────────────────────────
 
-@app_bp.route("/kurum/api/k-vektor/weights", methods=["GET", "POST"])
+@app_bp.route("/organization/api/k-vektor/weights", methods=["GET", "POST"])
 @login_required
 def kurum_api_k_vektor_weights():
     """Ana / alt strateji ham ağırlıkları (geriye dönük; asıl düzenleme /sp sayfasında)."""
     if not _check_kurum_role():
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     tid = current_user.tenant_id
     from app.services.plan_year_service import get_active_plan_year_for_user
@@ -569,7 +570,7 @@ def kurum_api_k_vektor_weights():
 
     ok, msg = save_k_vektor_weights(tid, current_user.id, request.get_json() or {}, plan_year=active_py)
     if ok:
-        return jsonify({"success": True, "message": "K-Vektör ağırlıkları kaydedildi."})
+        return jsonify({"success": True, "message": _("K-Vektör ağırlıkları kaydedildi.")})
     status = 404 if "bulunamadı" in (msg or "") else 400
     if msg == "Kayıt sırasında hata oluştu.":
         status = 500

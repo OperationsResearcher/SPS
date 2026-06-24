@@ -1,33 +1,33 @@
 {% extends "platform/base.html" %}
-{% block title %}Yatırımcı Sunumu — Kokpitim{% endblock %}
-{% block page_title %}AI Yatırımcı Sunumu (PPTX){% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Yatırımcı Sunumu') }}{% endblock %}
+{% block title %}{{ _("Yatırımcı Sunumu — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("AI Yatırımcı Sunumu (PPTX)") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Yatırımcı Sunumu')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-handshake" style="color:#0ea5e9;"></i> Yatırımcı Sunumu</h1>
-    <p class="mc-page-subtitle">18 slaytlık AI destekli PPTX — finansal özet, ESG metrikleri ve risk analizi.</p>
+    <h1 class="mc-page-title"><i class="fas fa-handshake" style="color:#0ea5e9;"></i> {{ _("Yatırımcı Sunumu") }}</h1>
+    <p class="mc-page-subtitle">{{ _("18 slaytlık AI destekli PPTX — finansal özet, ESG metrikleri ve risk analizi.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
   <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>
   <div id="content" style="display:none;">
-    <div style="background:linear-gradient(135deg,#e0f2fe,#fff);border:1px solid #bae6fd;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div style="background:linear-gradient(135deg,#e0f2fe,#fff);border:1px solid #bae6fd;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;" data-card-code="raporlar_yatirimci_sunum.pptx_sunum_16_9">
       <div>
-        <div style="font-size:11px;color:#0369a1;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">PPTX SUNUM · 16:9</div>
+        <div class="mc-stat-label" style="font-size:11px;color:#0369a1;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">{{ _("PPTX SUNUM · 16:9") }}</div>
         <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;" id="title">—</div>
         <div style="font-size:12.5px;color:#64748b;margin-top:4px;" id="meta">—</div>
       </div>
       <button id="dl" class="mc-btn mc-btn-primary" style="background:#0ea5e9;font-size:14px;padding:12px 24px;">
-        <i class="fas fa-download"></i> PPTX İndir
+        <i class="fas fa-download"></i> {{ _("PPTX İndir") }}
       </button>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">🎯 Slayt Yapısı</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_yatirimci_sunum.slayt_yapisi">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">🎯 {{ _("Slayt Yapısı") }}</h3>
       <div id="slides" style="display:grid;gap:6px;"></div>
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/yatirimci_sunum.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/yatirimci_sunum.js') }}" defer></script>
 {% endblock %}

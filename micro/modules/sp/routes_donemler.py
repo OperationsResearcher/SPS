@@ -1,5 +1,6 @@
 """Stratejik Planlama — Dönem karşılaştırma."""
 
+from flask_babel import gettext as _
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -54,7 +55,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/donemler")
+@app_bp.route("/sp/periods")
 @login_required
 def sp_donemler():
     """SP Dönem yönetimi sayfası."""
@@ -87,7 +88,7 @@ def sp_donemler():
     )
 
 
-@app_bp.route("/sp/api/donem-karsilastir", methods=["GET"])
+@app_bp.route("/sp/api/period-compare", methods=["GET"])
 @login_required
 def sp_api_donem_karsilastir():
     """İki stratejik plan dönemini karşılaştırır ve farkları döner."""
@@ -96,9 +97,9 @@ def sp_api_donem_karsilastir():
     y2 = request.args.get("y2", type=int)
 
     if not y1 or not y2:
-        return jsonify({"success": False, "message": "İki dönem yılı gerekli (y1, y2)."}), 400
+        return jsonify({"success": False, "message": _("İki dönem yılı gerekli (y1, y2).")}), 400
     if y1 == y2:
-        return jsonify({"success": False, "message": "Aynı dönemi karşılaştıramazsınız."}), 400
+        return jsonify({"success": False, "message": _("Aynı dönemi karşılaştıramazsınız.")}), 400
 
     py1 = get_plan_year(tid, y1)
     py2 = get_plan_year(tid, y2)
@@ -532,4 +533,4 @@ def sp_api_quarterly_review():
         return jsonify({"success": True, "review": data.to_dict()})
     except Exception as e:
         current_app.logger.error(f"quarterly_review error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500

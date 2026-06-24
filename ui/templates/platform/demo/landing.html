@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Kokpitim Demo — Sistemi 60 Dakika Boyunca Deneyin</title>
+  <title>{{ _("Kokpitim Demo — Sistemi 60 Dakika Boyunca Deneyin") }}</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -276,7 +276,7 @@
       </a>
       <span class="demo-pill">
         <span class="dot"></span>
-        Canlı Demo · Tomofil verisi
+        {{ _("Canlı Demo · Tomofil verisi") }}
       </span>
     </div>
 
@@ -291,16 +291,13 @@
     <section class="demo-hero">
       <div class="demo-hero-badge">
         <i class="fas fa-flask" style="font-size:11px;"></i>
-        DENEME ORTAMI
+        {{ _("DENEME ORTAMI") }}
       </div>
       <h1>
-        Kokpitim'i <span class="accent">gerçek veriyle</span> deneyin
+        {{ _("Kokpitim'i <span class=\"accent\">gerçek veriyle</span> deneyin") }}
       </h1>
       <p>
-        Tomofil'in 2020–2026 dönemine ait <b>99.000 satır</b> stratejik planlama verisi
-        üzerinde tüm modülleri kullanabilirsiniz. Performans göstergesi girin, K-Vektör
-        puanının nasıl değiştiğini izleyin, yıllar arası karşılaştırmaları açın,
-        süreçleri yönetin.
+        {{ _("Tomofil'in 2020–2026 dönemine ait <b>99.000 satır</b> stratejik planlama verisi üzerinde tüm modülleri kullanabilirsiniz. Performans göstergesi girin, K-Vektör puanının nasıl değiştiğini izleyin, yıllar arası karşılaştırmaları açın, süreçleri yönetin.") }}
       </p>
     </section>
 
@@ -309,31 +306,30 @@
       <div class="demo-fact">
         <i class="fas fa-bolt"></i>
         <div>
-          <strong>Kayıt zorunluluğu yok</strong>
-          <span>Tek tıkla seçtiğiniz rolle giriş.</span>
+          <strong>{{ _("Kayıt zorunluluğu yok") }}</strong>
+          <span>{{ _("Tek tıkla seçtiğiniz rolle giriş.") }}</span>
         </div>
       </div>
       <div class="demo-fact">
         <i class="fas fa-clock"></i>
         <div>
-          <strong>{{ demo_minutes }} dakika</strong>
-          <span>Tüm sistemi keşfetmek için yeterli süre.</span>
+          <strong>{{ _("%(min)s dakika", min=demo_minutes) }}</strong>
+          <span>{{ _("Tüm sistemi keşfetmek için yeterli süre.") }}</span>
         </div>
       </div>
       <div class="demo-fact">
         <i class="fas fa-shield-halved"></i>
         <div>
-          <strong>İzole ve geçici</strong>
-          <span>Çıkışta tüm verileriniz silinir.</span>
+          <strong>{{ _("İzole ve geçici") }}</strong>
+          <span>{{ _("Çıkışta tüm verileriniz silinir.") }}</span>
         </div>
       </div>
     </div>
 
     <!-- Rol seçim -->
     <div class="demo-roles-title">
-      <h2>Hangi rolle deneyimlemek istersiniz?</h2>
-      <p>Her rol farklı bir bakış sunar — Kokpitim'in tüm yüzlerini görmek için
-         birkaçını sırayla deneyin.</p>
+      <h2>{{ _("Hangi rolle deneyimlemek istersiniz?") }}</h2>
+      <p>{{ _("Her rol farklı bir bakış sunar — Kokpitim'in tüm yüzlerini görmek için birkaçını sırayla deneyin.") }}</p>
     </div>
 
     <div class="demo-roles">
@@ -352,7 +348,7 @@
           {% endfor %}
         </ul>
         <span class="demo-role-card-btn">
-          {{ spec.label }} olarak başla
+          {{ _("%(label)s olarak başla", label=spec.label) }}
           <i class="fas fa-arrow-right"></i>
         </span>
       </a>
@@ -361,37 +357,31 @@
 
     <!-- Davranış kartı -->
     <div class="demo-behavior">
-      <h2><i class="fas fa-circle-info"></i> Demo nasıl davranır?</h2>
+      <h2><i class="fas fa-circle-info"></i> {{ _("Demo nasıl davranır?") }}</h2>
       <div class="demo-behavior-grid">
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-database"></i>Gerçek veri</strong>
-          Tomofil'in 7 yıllık stratejik plan verisi — 71 süreç, 221 PG, 91.000+ ölçüm,
-          7 yıllık SWOT/PESTEL/OKR seti. Tam set.
+          <strong><i class="fas fa-database"></i>{{ _("Gerçek veri") }}</strong>
+          {{ _("Tomofil'in 7 yıllık stratejik plan verisi — 71 süreç, 221 PG, 91.000+ ölçüm, 7 yıllık SWOT/PESTEL/OKR seti. Tam set.") }}
         </div>
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-pen"></i>Yazma erişimi açık</strong>
-          PG verisi girin, yeni süreç ekleyin, dönem değiştirin. Skor motoru gerçekten
-          çalışır, raporlar gerçekten hesaplanır.
+          <strong><i class="fas fa-pen"></i>{{ _("Yazma erişimi açık") }}</strong>
+          {{ _("PG verisi girin, yeni süreç ekleyin, dönem değiştirin. Skor motoru gerçekten çalışır, raporlar gerçekten hesaplanır.") }}
         </div>
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-hourglass-half"></i>Otomatik sonlanır</strong>
-          {{ demo_minutes }} dakika sonra session kapanır. İnaktif kalırsanız
-          daha erken sonlanabilir. Üst banner kalan süreyi gösterir.
+          <strong><i class="fas fa-hourglass-half"></i>{{ _("Otomatik sonlanır") }}</strong>
+          {{ _("%(min)s dakika sonra session kapanır. İnaktif kalırsanız daha erken sonlanabilir. Üst banner kalan süreyi gösterir.", min=demo_minutes) }}
         </div>
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-eraser"></i>Veri silinir</strong>
-          Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki ziyaretçi
-          sıfırdan başlar. Tomofil'in orijinal verisi etkilenmez.
+          <strong><i class="fas fa-eraser"></i>{{ _("Veri silinir") }}</strong>
+          {{ _("Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki ziyaretçi sıfırdan başlar. Tomofil'in orijinal verisi etkilenmez.") }}
         </div>
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-envelope-open-text"></i>E-posta gönderilmez</strong>
-          Demo modunda gerçek e-posta/SMS gönderimi devre dışıdır. "Bildirim gönder"
-          dediğinizde içeriği görürsünüz ama kimseye ulaşmaz.
+          <strong><i class="fas fa-envelope-open-text"></i>{{ _("E-posta gönderilmez") }}</strong>
+          {{ _("Demo modunda gerçek e-posta/SMS gönderimi devre dışıdır. \"Bildirim gönder\" dediğinizde içeriği görürsünüz ama kimseye ulaşmaz.") }}
         </div>
         <div class="demo-behavior-item">
-          <strong><i class="fas fa-arrow-right-from-bracket"></i>İstediğiniz an çıkın</strong>
-          Üst banner'daki "Çıkış" butonuyla session'ı erken bitirebilirsiniz. Verileriniz
-          anında temizlenir.
+          <strong><i class="fas fa-arrow-right-from-bracket"></i>{{ _("İstediğiniz an çıkın") }}</strong>
+          {{ _("Üst banner'daki \"Çıkış\" butonuyla session'ı erken bitirebilirsiniz. Verileriniz anında temizlenir.") }}
         </div>
       </div>
     </div>
@@ -399,7 +389,7 @@
     <!-- Footer -->
     <div class="demo-footer">
       <a href="https://kokpitim.com">www.kokpitim.com</a>
-      &nbsp;·&nbsp; Sorularınız için
+      &nbsp;·&nbsp; {{ _("Sorularınız için") }}
       <a href="mailto:bilgi@kokpitim.com">bilgi@kokpitim.com</a>
     </div>
 

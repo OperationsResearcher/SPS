@@ -41,7 +41,7 @@
     var ct = (res.headers && res.headers.get("content-type")) || "";
     if (!ct.includes("application/json")) {
       return Promise.reject(
-        new Error("API yanıtı JSON değil (oturum veya /api adresi). Sayfayı yenileyin.")
+        new Error(t("API yanıtı JSON değil (oturum veya /api adresi). Sayfayı yenileyin."))
       );
     }
     return res.json();
@@ -62,7 +62,7 @@
       renderLists();
     } catch (e) {
       console.error(e);
-      if (window.showToast) window.showToast("error", e.message, "RAID Yükleme Hatası");
+      if (window.showToast) window.showToast("error", e.message, t("RAID Yükleme Hatası"));
     }
   };
 
@@ -76,7 +76,7 @@
       var items = raidData[type] || [];
 
       if (items.length === 0) {
-        container.innerHTML = '<p class="micro-raid-muted">Henüz öğe eklenmedi.</p>';
+        container.innerHTML = '<p class="micro-raid-muted">' + t("Henüz öğe eklenmedi.") + '</p>';
         return;
       }
 
@@ -87,25 +87,25 @@
           if (type === "Risk" && item.probability) {
             extraInfo =
               '<div style="margin-top:8px;">' +
-              '<span class="micro-raid-badge">Olasılık: ' +
+              '<span class="micro-raid-badge">' + t("Olasılık") + ': ' +
               item.probability +
               "/5</span> " +
-              '<span class="micro-raid-badge">Etki: ' +
+              '<span class="micro-raid-badge">' + t("Etki") + ': ' +
               item.impact +
               "/5</span></div>";
           } else if (type === "Assumption" && item.assumption_validation_date) {
             extraInfo =
-              '<div style="margin-top:8px;"><span class="micro-raid-badge">Doğrulama: ' +
+              '<div style="margin-top:8px;"><span class="micro-raid-badge">' + t("Doğrulama") + ': ' +
               item.assumption_validation_date +
               "</span></div>";
           } else if (type === "Issue" && item.issue_urgency) {
             extraInfo =
-              '<div style="margin-top:8px;"><span class="micro-raid-badge">Aciliyet: ' +
+              '<div style="margin-top:8px;"><span class="micro-raid-badge">' + t("Aciliyet") + ': ' +
               item.issue_urgency +
               "</span></div>";
           } else if (type === "Dependency" && item.dependency_type) {
             extraInfo =
-              '<div style="margin-top:8px;"><span class="micro-raid-badge">Tip: ' +
+              '<div style="margin-top:8px;"><span class="micro-raid-badge">' + t("Tip") + ': ' +
               item.dependency_type +
               "</span></div>";
           }
@@ -191,7 +191,7 @@
       document.getElementById("item-task-id").value = "";
     }
 
-    document.getElementById("modalTitle").textContent = type + " Ekle";
+    document.getElementById("modalTitle").textContent = type + " " + t("Ekle");
     window.getRaidModal().show();
   };
 
@@ -211,7 +211,7 @@
     document.getElementById("item-title").value = item.title;
     document.getElementById("item-description").value = item.description || "";
     document.getElementById("item-status").value = item.status;
-    document.getElementById("modalTitle").textContent = item.item_type + " Düzenle";
+    document.getElementById("modalTitle").textContent = item.item_type + " " + t("Düzenle");
 
     document.getElementById("risk-fields").style.display = "none";
     document.getElementById("assumption-fields").style.display = "none";
@@ -248,7 +248,7 @@
     var status = document.getElementById("item-status").value;
 
     if (!title) {
-      Swal.fire({ toast: true, position: "top-end", icon: "warning", title: "Başlık gerekli", showConfirmButton: false, timer: 2500 });
+      Swal.fire({ toast: true, position: "top-end", icon: "warning", title: t("Başlık gerekli"), showConfirmButton: false, timer: 2500 });
       return;
     }
 
@@ -285,26 +285,26 @@
 
       window.getRaidModal().hide();
       await window.loadRAID();
-      if (window.showToast) window.showToast("success", "RAID öğesi kaydedildi", "Başarılı");
+      if (window.showToast) window.showToast("success", t("RAID öğesi kaydedildi"), t("Başarılı"));
     } catch (e) {
       console.error(e);
-      if (window.showToast) window.showToast("error", e.message, "Kaydetme Hatası");
+      if (window.showToast) window.showToast("error", e.message, t("Kaydetme Hatası"));
     }
   };
 
   async function confirmDelete(title, text) {
     if (typeof Swal === "undefined") return true;
     var r = await Swal.fire({
-      title: title || "Emin misiniz?", text: text || "Bu işlem geri alınamaz.",
+      title: title || t("Emin misiniz?"), text: text || t("Bu işlem geri alınamaz."),
       icon: "warning", showCancelButton: true,
       confirmButtonColor: "#dc2626", cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil", cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"), cancelButtonText: t("İptal"),
     });
     return r.isConfirmed;
   }
 
   window.deleteItem = async function deleteItem(id) {
-    if (!(await confirmDelete("RAID öğesi silinsin mi?", "Bu öğeyi silmek istediğinizden emin misiniz?"))) return;
+    if (!(await confirmDelete(t("RAID öğesi silinsin mi?"), t("Bu öğeyi silmek istediğinizden emin misiniz?")))) return;
 
     try {
       var csrfDel = document.querySelector('meta[name="csrf-token"]')?.content || "";
@@ -313,10 +313,10 @@
       if (!data.success) throw new Error(data.message);
 
       await window.loadRAID();
-      if (window.showToast) window.showToast("success", "RAID öğesi silindi", "Başarılı");
+      if (window.showToast) window.showToast("success", t("RAID öğesi silindi"), t("Başarılı"));
     } catch (e) {
       console.error(e);
-      if (window.showToast) window.showToast("error", e.message, "Silme Hatası");
+      if (window.showToast) window.showToast("error", e.message, t("Silme Hatası"));
     }
   };
 

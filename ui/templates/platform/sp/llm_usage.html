@@ -15,19 +15,19 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-robot" style="color:#6366f1;"></i> LLM Kullanımı & Kota
+        <i class="fas fa-robot" style="color:#6366f1;"></i> {{ _("LLM Kullanımı & Kota") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">Bu kurumun yapay zekâ çağrı/maliyet kullanımı ve kotaları.</p>
+      <p style="font-size:13px;color:#64748b;margin:0;">{{ _("Bu kurumun yapay zekâ çağrı/maliyet kullanımı ve kotaları.") }}</p>
     </div>
   </div>
 
   <div id="llm-ozet" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
-    <div class="mc-card" style="padding:16px;color:#64748b;">Yükleniyor…</div>
+    <div class="mc-card" style="padding:16px;color:#64748b;">{{ _("Yükleniyor…") }}</div>
   </div>
 
   <div class="mc-card" style="padding:18px;">
-    <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--text-default);">Son Çağrılar</h3>
-    <div id="llm-recent" style="font-size:12.5px;color:#64748b;">Yükleniyor…</div>
+    <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--text-default);">{{ _("Son Çağrılar") }}</h3>
+    <div id="llm-recent" style="font-size:12.5px;color:#64748b;">{{ _("Yükleniyor…") }}</div>
   </div>
 </div>
 
@@ -44,20 +44,20 @@
   fetch(root.dataset.summaryUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
     .then(function(r){return r.json();}).then(function(j){
       var box=document.getElementById("llm-ozet");
-      if(!j||!j.success){box.innerHTML='<div class="mc-card" style="padding:16px;color:#94a3b8;">Özet alınamadı.</div>';return;}
+      if(!j||!j.success){box.innerHTML='<div class="mc-card" style="padding:16px;color:#94a3b8;">'+t("Özet alınamadı.")+'</div>';return;}
       var s=j.summary||{};
       box.innerHTML=
-        card("Bugün çağrı",(s.today&&s.today.used||0)+" / "+(s.today&&s.today.limit||0),"%"+(s.today&&s.today.pct||0),"#0ea5e9")+
-        card("Bu ay çağrı",(s.month_calls&&s.month_calls.used||0)+" / "+(s.month_calls&&s.month_calls.limit||0),"%"+(s.month_calls&&s.month_calls.pct||0),"#6366f1")+
-        card("Bu ay maliyet","$"+(s.month_cost&&s.month_cost.used_usd||0),"limit $"+(s.month_cost&&s.month_cost.limit_usd||0)+" · %"+(s.month_cost&&s.month_cost.pct||0),"#10b981")+
-        card("Durum",(s.paused?"Durduruldu":"Aktif"),"",(s.paused?"#dc2626":"#16a34a"));
+        card(t("Bugün çağrı"),(s.today&&s.today.used||0)+" / "+(s.today&&s.today.limit||0),"%"+(s.today&&s.today.pct||0),"#0ea5e9")+
+        card(t("Bu ay çağrı"),(s.month_calls&&s.month_calls.used||0)+" / "+(s.month_calls&&s.month_calls.limit||0),"%"+(s.month_calls&&s.month_calls.pct||0),"#6366f1")+
+        card(t("Bu ay maliyet"),"$"+(s.month_cost&&s.month_cost.used_usd||0),t("limit")+" $"+(s.month_cost&&s.month_cost.limit_usd||0)+" · %"+(s.month_cost&&s.month_cost.pct||0),"#10b981")+
+        card(t("Durum"),(s.paused?t("Durduruldu"):t("Aktif")),"",(s.paused?"#dc2626":"#16a34a"));
     }).catch(function(){});
   fetch(root.dataset.recentUrl,{headers:{"X-Requested-With":"XMLHttpRequest"},credentials:"same-origin"})
     .then(function(r){return r.json();}).then(function(j){
       var box=document.getElementById("llm-recent");
-      if(!j||!j.success||!(j.items||[]).length){box.textContent="Kayıt yok.";return;}
+      if(!j||!j.success||!(j.items||[]).length){box.textContent=t("Kayıt yok.");return;}
       box.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px;">'+
-        '<tr style="text-align:left;color:#94a3b8;"><th style="padding:4px 6px;">Tarih</th><th>Uç</th><th>Model</th><th>Token</th><th>Durum</th></tr>'+
+        '<tr style="text-align:left;color:#94a3b8;"><th style="padding:4px 6px;">'+t("Tarih")+'</th><th>'+t("Uç")+'</th><th>'+t("Model")+'</th><th>'+t("Token")+'</th><th>'+t("Durum")+'</th></tr>'+
         j.items.map(function(it){return '<tr style="border-top:1px solid #f1f5f9;">'+
           '<td style="padding:4px 6px;">'+esc((it.created_at||"").slice(0,16))+'</td>'+
           '<td>'+esc(it.endpoint||"")+'</td><td>'+esc(it.model||"")+'</td>'+

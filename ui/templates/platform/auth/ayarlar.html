@@ -1,6 +1,6 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Ayarlar — Kokpitim{% endblock %}
-{% block page_title %}Ayarlar{% endblock %}
+{% block title %}{{ _("Ayarlar") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Ayarlar") }}{% endblock %}
 
 {% block content %}
 <div style="max-width:720px; margin:0 auto;">
@@ -12,15 +12,15 @@
     <div class="mc-card" style="margin-bottom:16px;">
       <div class="mc-card-header">
         <span class="mc-card-title">
-          <i class="fas fa-bell" style="color:#6366f1; margin-right:8px;"></i>Bildirim Ayarları
+          <i class="fas fa-bell" style="color:#6366f1; margin-right:8px;"></i>{{ _("Bildirim Ayarları") }}
         </span>
       </div>
       <div class="mc-card-body">
         {% for field, label, icon in [
-            ('notify_email',    'E-posta Bildirimleri',       'fa-envelope'),
-            ('notify_process',  'Süreç Bildirimleri',         'fa-project-diagram'),
-            ('notify_task',     'Görev Bildirimleri',         'fa-tasks'),
-            ('notify_deadline', 'Son Tarih Hatırlatmaları',   'fa-clock')
+            ('notify_email',    _('E-posta Bildirimleri'),       'fa-envelope'),
+            ('notify_process',  _('Süreç Bildirimleri'),         'fa-project-diagram'),
+            ('notify_task',     _('Görev Bildirimleri'),         'fa-tasks'),
+            ('notify_deadline', _('Son Tarih Hatırlatmaları'),   'fa-clock')
         ] %}
         <label style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f1f5f9; cursor:pointer;">
           <span style="display:flex; align-items:center; gap:10px; font-size:13.5px; color:#374151;">
@@ -39,27 +39,27 @@
     <div class="mc-card" style="margin-bottom:16px;">
       <div class="mc-card-header">
         <span class="mc-card-title">
-          <i class="fas fa-globe" style="color:#6366f1; margin-right:8px;"></i>Dil ve Bölge
+          <i class="fas fa-globe" style="color:#6366f1; margin-right:8px;"></i>{{ _("Dil ve Bölge") }}
         </span>
       </div>
       <div class="mc-card-body">
         <div class="mc-grid-3">
           <div class="mc-form-group">
-            <label class="mc-label">Dil</label>
+            <label class="mc-label">{{ _("Dil") }}</label>
             <select name="language" class="mc-select">
               <option value="tr" {{ 'selected' if locale_prefs.get('language') == 'tr' else '' }}>Türkçe</option>
               <option value="en" {{ 'selected' if locale_prefs.get('language') == 'en' else '' }}>English</option>
             </select>
           </div>
           <div class="mc-form-group">
-            <label class="mc-label">Saat Dilimi</label>
+            <label class="mc-label">{{ _("Saat Dilimi") }}</label>
             <select name="timezone" class="mc-select">
-              <option value="Europe/Istanbul" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/Istanbul' else '' }}>İstanbul (GMT+3)</option>
-              <option value="Europe/London" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/London' else '' }}>Londra (GMT+0)</option>
+              <option value="Europe/Istanbul" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/Istanbul' else '' }}>{{ _("İstanbul (GMT+3)") }}</option>
+              <option value="Europe/London" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/London' else '' }}>{{ _("Londra (GMT+0)") }}</option>
             </select>
           </div>
           <div class="mc-form-group">
-            <label class="mc-label">Tarih Formatı</label>
+            <label class="mc-label">{{ _("Tarih Formatı") }}</label>
             <select name="date_format" class="mc-select">
               <option value="dd.mm.yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'dd.mm.yyyy' else '' }}>GG.AA.YYYY</option>
               <option value="mm/dd/yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'mm/dd/yyyy' else '' }}>AA/GG/YYYY</option>
@@ -74,20 +74,20 @@
     <div class="mc-card" style="margin-bottom:24px;">
       <div class="mc-card-header">
         <span class="mc-card-title">
-          <i class="fas fa-palette" style="color:#6366f1; margin-right:8px;"></i>Görünüm
+          <i class="fas fa-palette" style="color:#6366f1; margin-right:8px;"></i>{{ _("Görünüm") }}
         </span>
       </div>
       <div class="mc-card-body">
         <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="font-size:13.5px; color:#374151;">Karanlık Mod</span>
-          <span style="font-size:12px; color:#94a3b8;">Üst bardaki kullanıcı menüsünden değiştirilebilir</span>
+          <span style="font-size:13.5px; color:#374151;">{{ _("Karanlık Mod") }}</span>
+          <span style="font-size:12px; color:#94a3b8;">{{ _("Üst bardaki kullanıcı menüsünden değiştirilebilir") }}</span>
         </div>
       </div>
     </div>
 
     <div style="display:flex; justify-content:flex-end;">
       <button type="submit" class="mc-btn mc-btn-primary mc-btn-lg">
-        <i class="fas fa-save"></i> Ayarları Kaydet
+        <i class="fas fa-save"></i> {{ _("Ayarları Kaydet") }}
       </button>
     </div>
   </form>

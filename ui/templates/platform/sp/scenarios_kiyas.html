@@ -1,7 +1,7 @@
 {% extends "platform/base.html" %}
-{% block title %}Senaryo Kıyas — Kokpitim{% endblock %}
-{% block page_title %}Senaryo / What-if Kıyas{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Senaryo Kıyas') }}{% endblock %}
+{% block title %}{{ _("Senaryo Kıyas — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Senaryo / What-if Kıyas") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Senaryo Kıyas')) }}{% endblock %}
 
 {% block content %}
 <div id="senaryo-kiyas-root"
@@ -11,40 +11,40 @@
 
   <div style="margin-bottom:20px;">
     <h1 style="font-size:21px; font-weight:700; color:var(--text-default); margin:0 0 4px;" class="dark:text-white">
-      <i class="fas fa-code-compare" style="color:#6366f1;"></i> Senaryo / What-if Kıyas
+      <i class="fas fa-code-compare" style="color:#6366f1;"></i> {{ _("Senaryo / What-if Kıyas") }}
     </h1>
     <p style="font-size:13px; color:#64748b; margin:0;">
-      Baseline ve senaryo plan yıllarını seç, vizyon skorlarını yan yana karşılaştır. Kaydırıcı ile iki senaryo arasını harmanla.
+      {{ _("Baseline ve senaryo plan yıllarını seç, vizyon skorlarını yan yana karşılaştır. Kaydırıcı ile iki senaryo arasını harmanla.") }}
     </p>
   </div>
 
   {# Seçim #}
   <div class="mc-card" style="padding:18px 20px; margin-bottom:18px;">
     <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:12px;" class="dark:text-white">
-      <i class="fas fa-list-check" style="color:#6366f1;"></i> Karşılaştırılacak plan yılları / senaryolar (2-6)
+      <i class="fas fa-list-check" style="color:#6366f1;"></i> {{ _("Karşılaştırılacak plan yılları / senaryolar (2-6)") }}
     </div>
     <div id="kiyas-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">
-      <div style="color:#94a3b8; font-size:12.5px;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+      <div style="color:#94a3b8; font-size:12.5px;"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
     </div>
     <div style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
       <button id="kiyas-btn" class="mc-btn mc-btn-primary mc-btn-sm" disabled>
-        <i class="fas fa-code-compare"></i> Karşılaştır
+        <i class="fas fa-code-compare"></i> {{ _("Karşılaştır") }}
       </button>
-      <span id="kiyas-hint" style="font-size:11.5px; color:#94a3b8;">En az 2 öğe seç.</span>
+      <span id="kiyas-hint" style="font-size:11.5px; color:#94a3b8;">{{ _("En az 2 öğe seç.") }}</span>
     </div>
   </div>
 
   {# Sonuç #}
   <div id="kiyas-sonuc" class="mc-card" style="padding:20px; display:none;">
     <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:16px;" class="dark:text-white">
-      <i class="fas fa-chart-simple" style="color:#6366f1;"></i> Vizyon skoru karşılaştırması
+      <i class="fas fa-chart-simple" style="color:#6366f1;"></i> {{ _("Vizyon skoru karşılaştırması") }}
     </div>
     <div id="kiyas-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
 
     {# What-if blend slider (ilk iki seçim arası) #}
     <div id="kiyas-blend" style="display:none; margin-top:24px; padding-top:18px; border-top:1px dashed #e2e8f0;">
       <div style="font-size:12px; font-weight:700; color:#4338ca; margin-bottom:10px;">
-        <i class="fas fa-sliders"></i> What-if harmanı
+        <i class="fas fa-sliders"></i> {{ _("What-if harmanı") }}
       </div>
       <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <span id="blend-a-label" style="font-size:12px; color:#64748b; min-width:120px;">—</span>
@@ -52,7 +52,7 @@
         <span id="blend-b-label" style="font-size:12px; color:#64748b; min-width:120px; text-align:right;">—</span>
       </div>
       <div style="text-align:center; margin-top:14px;">
-        <div style="font-size:11px; color:#94a3b8; letter-spacing:.04em;">HARMANLANMIŞ VİZYON SKORU</div>
+        <div style="font-size:11px; color:#94a3b8; letter-spacing:.04em;">{{ _("HARMANLANMIŞ VİZYON SKORU") }}</div>
         <div id="blend-value" style="font-size:34px; font-weight:800; color:#4338ca;">—</div>
       </div>
     </div>
@@ -81,8 +81,8 @@
 
   function labelText(it) {
     var l = (it.label || "").toLowerCase();
-    var map = { baseline: "Baseline", optimistic: "İyimser", pessimistic: "Kötümser" };
-    return (map[l] || it.label || "Senaryo");
+    var map = { baseline: "Baseline", optimistic: t("İyimser"), pessimistic: t("Kötümser") };
+    return (map[l] || it.label || t("Senaryo"));
   }
 
   function showError(m) { errEl.textContent = m; errEl.style.display = "block"; }
@@ -96,7 +96,7 @@
   function refreshBtn() {
     var n = selectedIds().length;
     btn.disabled = n < 2;
-    hint.textContent = n < 2 ? "En az 2 öğe seç." : (n + " öğe seçili (max 6).");
+    hint.textContent = n < 2 ? t("En az 2 öğe seç.") : (n + " " + t("öğe seçili (max 6)."));
   }
 
   function loadList() {
@@ -104,7 +104,7 @@
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) {
         if (!d || !d.success || !d.items || !d.items.length) {
-          listEl.innerHTML = '<div style="color:#94a3b8;font-size:12.5px;">Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun.</div>';
+          listEl.innerHTML = `<div style="color:#94a3b8;font-size:12.5px;">${t("Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun.")}</div>`;
           return;
         }
         listEl.innerHTML = "";
@@ -115,7 +115,7 @@
           wrap.style.cssText = "display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid #e2e8f0;border-radius:9px;cursor:pointer;font-size:12.5px;";
           var tag = it.is_scenario
             ? '<span style="font-size:10px;background:#eef2ff;color:#4338ca;border-radius:6px;padding:1px 6px;">' + labelText(it) + '</span>'
-            : '<span style="font-size:10px;background:#f0fdf4;color:#15803d;border-radius:6px;padding:1px 6px;">Plan</span>';
+            : '<span style="font-size:10px;background:#f0fdf4;color:#15803d;border-radius:6px;padding:1px 6px;">' + t("Plan") + '</span>';
           wrap.innerHTML =
             '<input type="checkbox" id="' + id + '" value="' + it.id + '" style="accent-color:#6366f1;">' +
             '<span style="font-weight:600;color:#0f172a;">' + it.year + '</span>' +
@@ -126,7 +126,7 @@
         listEl.addEventListener("change", refreshBtn);
         refreshBtn();
       })
-      .catch(function() { showError("Senaryo listesi yüklenemedi."); });
+      .catch(function() { showError(t("Senaryo listesi yüklenemedi.")); });
   }
 
   function renderBars(items) {
@@ -141,7 +141,7 @@
       row.innerHTML =
         '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">' +
           '<span style="font-weight:600;color:#0f172a;">' + it.year + ' · ' + labelText(it) + '</span>' +
-          '<span style="font-weight:700;color:' + c + ';">' + (v === null ? "veri yok" : v) + '</span>' +
+          '<span style="font-weight:700;color:' + c + ';">' + (v === null ? t("veri yok") : v) + '</span>' +
         '</div>' +
         '<div style="height:14px;background:#f1f5f9;border-radius:7px;overflow:hidden;">' +
           '<div style="height:100%;width:0;background:' + c + ';border-radius:7px;transition:width .8s cubic-bezier(.2,.8,.2,1);"></div>' +
@@ -174,16 +174,16 @@
     if (ids.length < 2) return;
     errEl.style.display = "none";
     btn.disabled = true;
-    hint.textContent = "Hesaplanıyor…";
+    hint.textContent = t("Hesaplanıyor…");
     fetch(compareUrl + "?ids=" + encodeURIComponent(ids.join(",")), { headers: { "X-Requested-With": "XMLHttpRequest" } })
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) {
         btn.disabled = false; refreshBtn();
-        if (!d || !d.success || !d.items) { showError("Karşılaştırma hesaplanamadı."); return; }
+        if (!d || !d.success || !d.items) { showError(t("Karşılaştırma hesaplanamadı.")); return; }
         sonuc.style.display = "block";
         renderBars(d.items);
       })
-      .catch(function() { btn.disabled = false; refreshBtn(); showError("Sunucu hatası."); });
+      .catch(function() { btn.disabled = false; refreshBtn(); showError(t("Sunucu hatası.")); });
   });
 
   loadList();

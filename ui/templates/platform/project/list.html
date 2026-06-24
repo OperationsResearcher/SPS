@@ -1,9 +1,9 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Proje listesi — Kokpitim{% endblock %}
-{% block page_title %}Proje Yönetimi{% endblock %}
+{% block title %}{{ _("Proje listesi") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Proje Yönetimi") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -12,31 +12,31 @@
     <div class="mc-page-header" style="margin-bottom:16px;">
         <div>
             <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-                <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Proje Yönetimi
+                <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> {{ _("Proje Yönetimi") }}
             </h2>
             {% set a = request.args %}
             {% set has_active_filters = a.get('q') or a.get('priority') or a.get('end_from') or a.get('end_to') or a.get('start_from') or a.get('start_to') or a.get('leader_id') or a.get('surec_id') or a.get('overdue_only') or a.get('due_soon') or (a.get('sort') and a.get('sort') != 'updated') or (privileged and a.get('scope') == 'my') %}
             <p style="font-size:13px;color:#64748b;margin:0;">
-                Proje portföyü · RAID kayıtları · görevler · Gantt/Kanban/Takvim görünümleri · stratejik hizalama.
+                {{ _("Proje portföyü · RAID kayıtları · görevler · Gantt/Kanban/Takvim görünümleri · stratejik hizalama.") }}
             </p>
         </div>
         <div class="flex flex-wrap gap-2">
             {% if show_portfolio %}
             <a href="{{ url_for('app_bp.project_portfolio') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-                <i class="fas fa-layer-group"></i> Stratejik Portföy
+                <i class="fas fa-layer-group"></i> {{ _("Stratejik Portföy") }}
             </a>
             {% endif %}
-            <a href="{{ export_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="UTF-8 CSV (Excel uyumlu)">
+            <a href="{{ export_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('UTF-8 CSV (Excel uyumlu)') }}">
                 <i class="fas fa-file-csv"></i> CSV
             </a>
-            <a href="{{ ics_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Proje bitiş tarihleri">
+            <a href="{{ ics_url }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Proje bitiş tarihleri') }}">
                 <i class="fas fa-calendar-alt"></i> .ics
             </a>
-            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="Strateji hiyerarşisini öğren">
-                <i class="fas fa-circle-info"></i> Hiyerarşi Rehberi
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="{{ _('Strateji hiyerarşisini öğren') }}">
+                <i class="fas fa-circle-info"></i> {{ _("Hiyerarşi Rehberi") }}
             </button>
             <a href="{{ url_for('app_bp.project_new') }}" class="mc-btn mc-btn-primary">
-                <i class="fas fa-plus"></i> Yeni Proje
+                <i class="fas fa-plus"></i> {{ _("Yeni Proje") }}
             </a>
         </div>
     </div>
@@ -45,33 +45,33 @@
     <!-- KPI Dashboard -->
     {% set ov = overview %}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #4f46e5;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Toplam Proje</div>
+        <div data-card-code="project.toplam_proje" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #4f46e5;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam Proje") }}</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.total_projects or 0 }}</div>
             <div style="font-size:11px;color:#64748b;margin-top:2px;">
-                {% if ov.avg_health_score is not none %}Sağlık: <b>{{ ov.avg_health_score }}/100</b>{% else %}—{% endif %}
+                {% if ov.avg_health_score is not none %}{{ _("Sağlık:") }} <b>{{ ov.avg_health_score }}/100</b>{% else %}—{% endif %}
             </div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık Görev</div>
+        <div data-card-code="project.acik_gorev" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Açık Görev") }}</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.open_tasks or 0 }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ ov.total_tasks or 0 }} toplam</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s toplam", n=(ov.total_tasks or 0)) }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Gecikmiş Görev</div>
+        <div data-card-code="project.gecikmis_gorev" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Gecikmiş Görev") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if ov.overdue_tasks and ov.overdue_tasks > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ ov.overdue_tasks or 0 }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">acil eylem</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("acil eylem") }}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Bu Hafta Biten</div>
+        <div data-card-code="project.bu_hafta_biten" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #f59e0b;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Bu Hafta Biten") }}</div>
             <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ ov.tasks_due_7d or 0 }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">görev · {{ ov.projects_end_7d or 0 }} proje</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("görev · %(n)s proje", n=(ov.projects_end_7d or 0)) }}</div>
         </div>
         {% set _raid = (ov.charts.raid_by_type if ov.charts else None) or {'labels':['Risk','Assumption','Issue','Dependency'],'data':[0,0,0,0]} %}
         {% set _raid_total = (_raid.data | sum) or 0 %}
         {% set _raid_colors = ['#dc2626', '#f59e0b', '#ea580c', '#0ea5e9'] %}
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #ef4444; position:relative;">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Açık RAID</div>
+        <div data-card-code="project.acik_raid" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #ef4444; position:relative;">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Açık RAID") }}</div>
             <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
               {% if _raid_total > 0 %}
               {# Mini donut (conic-gradient) #}
@@ -84,7 +84,7 @@
                   {% set _ = _ns.segs.append(_raid_colors[loop.index0 % 4] ~ ' ' ~ _pct_from ~ 'deg ' ~ _pct_to ~ 'deg') %}
                 {% endif %}
               {% endfor %}
-              <div style="width:42px; height:42px; border-radius:50%; background: conic-gradient({{ _ns.segs | join(', ') }}); position:relative; flex-shrink:0;" title="Risk/Varsayım/Sorun/Bağımlılık dağılımı">
+              <div style="width:42px; height:42px; border-radius:50%; background: conic-gradient({{ _ns.segs | join(', ') }}); position:relative; flex-shrink:0;" title="{{ _('Risk/Varsayım/Sorun/Bağımlılık dağılımı') }}">
                 <div style="position:absolute; inset:8px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#0f172a;">{{ _raid_total }}</div>
               </div>
               {% else %}
@@ -94,7 +94,7 @@
                 <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
                   {% for lbl in _raid.labels %}
                     {% set _v = _raid.data[loop.index0] %}
-                    {% set _tr = {'Risk':'Risk','Assumption':'Varsayım','Issue':'Sorun','Dependency':'Bağımlılık'}.get(lbl, lbl) %}
+                    {% set _tr = {'Risk':_('Risk'),'Assumption':_('Varsayım'),'Issue':_('Sorun'),'Dependency':_('Bağımlılık')}.get(lbl, lbl) %}
                     <div style="display:flex; align-items:center; gap:5px; color:#475569;">
                       <span style="width:8px; height:8px; border-radius:2px; background:{{ _raid_colors[loop.index0 % 4] }}; flex-shrink:0;"></span>
                       <span style="font-size:10px;">{{ _tr }}: <b>{{ _v }}</b></span>
@@ -104,21 +104,21 @@
               </div>
             </div>
         </div>
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kritik Sağlık</div>
+        <div data-card-code="project.kritik_saglik" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};">
+            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kritik Sağlık") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if ov.low_health_projects and ov.low_health_projects > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ ov.low_health_projects or 0 }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">sağlık &lt; 50</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("sağlık &lt; 50") }}</div>
         </div>
     </div>
 
-    <div class="mb-6">
-        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Proje listesi</h3>
+    <div class="mb-6" data-card-code="project.proje_listesi">
+        <h3 class="mc-card-title text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{{ _("Proje listesi") }}</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            Yaklaşık <strong>10 proje</strong> yüksekliği görünür; sayfadaki diğer kayıtlar için alanı <strong>aşağı kaydırın</strong> (kaydırma çubuğu).
+            {{ _("Yaklaşık <strong>10 proje</strong> yüksekliği görünür; sayfadaki diğer kayıtlar için alanı <strong>aşağı kaydırın</strong> (kaydırma çubuğu).") }}
         </p>
         {% if projects %}
         <div class="mc-card p-2 sm:p-3 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-700">
-            <div class="mc-project-list-scroll max-h-[min(52rem,72vh)] overflow-y-auto overflow-x-hidden pr-1 -mr-1 scroll-smooth" tabindex="0" aria-label="Proje listesi, kaydırılabilir">
+            <div class="mc-project-list-scroll max-h-[min(52rem,72vh)] overflow-y-auto overflow-x-hidden pr-1 -mr-1 scroll-smooth" tabindex="0" aria-label="{{ _('Proje listesi, kaydırılabilir') }}">
                 <div class="flex flex-col gap-2 p-1">
                     {% for p in projects %}
                     <div class="mc-card p-3 flex flex-wrap gap-3 items-start justify-between bg-white dark:bg-slate-900/90">
@@ -142,8 +142,8 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-2 shrink-0">
-                            <a href="{{ url_for('app_bp.project_new', clone_from=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="Benzer proje oluştur"><i class="fas fa-copy"></i> Kopya</a>
-                            <a href="{{ url_for('app_bp.project_detail', project_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-columns"></i> Aç</a>
+                            <a href="{{ url_for('app_bp.project_new', clone_from=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Benzer proje oluştur') }}"><i class="fas fa-copy"></i> {{ _("Kopya") }}</a>
+                            <a href="{{ url_for('app_bp.project_detail', project_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-columns"></i> {{ _("Aç") }}</a>
                         </div>
                     </div>
                     {% endfor %}
@@ -152,15 +152,15 @@
         </div>
         {% if pagination.pages > 1 %}
         <div class="flex justify-center gap-2 mt-4 flex-wrap">
-            {% if list_url_prev %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_prev }}">Önceki</a>{% endif %}
-            <span class="text-sm text-slate-500 self-center">Sayfa {{ pagination.page }} / {{ pagination.pages }}</span>
-            {% if list_url_next %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_next }}">Sonraki</a>{% endif %}
+            {% if list_url_prev %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_prev }}">{{ _("Önceki") }}</a>{% endif %}
+            <span class="text-sm text-slate-500 self-center">{{ _("Sayfa %(p)s / %(t)s", p=pagination.page, t=pagination.pages) }}</span>
+            {% if list_url_next %}<a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ list_url_next }}">{{ _("Sonraki") }}</a>{% endif %}
         </div>
         {% endif %}
         {% else %}
         <div class="mc-card p-10 text-center">
-            <p class="text-slate-500">Filtreye uygun proje yok.</p>
-            <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm mt-3">Filtreleri sıfırla</a>
+            <p class="text-slate-500">{{ _("Filtreye uygun proje yok.") }}</p>
+            <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm mt-3">{{ _("Filtreleri sıfırla") }}</a>
         </div>
         {% endif %}
     </div>
@@ -174,31 +174,31 @@
       <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
         <div style="display:flex; align-items:center; gap:8px;">
           <i class="fas fa-check-circle" style="color:#10b981;"></i>
-          <span><b id="mc-bulk-count">0</b> proje seçildi</span>
+          <span><b id="mc-bulk-count">0</b> {{ _("proje seçildi") }}</span>
         </div>
         <div style="flex:1;"></div>
         <button type="submit" form="mc-bulk-form" name="action" value="email_on"
                 class="mc-btn mc-btn-sm" style="background:#10b981; color:#fff; border:none;">
-          <i class="fas fa-envelope-open-text"></i> E-posta Aç
+          <i class="fas fa-envelope-open-text"></i> {{ _("E-posta Aç") }}
         </button>
         <button type="submit" form="mc-bulk-form" name="action" value="email_off"
                 class="mc-btn mc-btn-sm" style="background:#475569; color:#fff; border:none;">
-          <i class="fas fa-envelope"></i> E-posta Kapat
+          <i class="fas fa-envelope"></i> {{ _("E-posta Kapat") }}
         </button>
         <button type="button" id="mc-bulk-export"
-                class="mc-btn mc-btn-sm" style="background:#0ea5e9; color:#fff; border:none;" title="Seçili projeleri CSV olarak indir">
-          <i class="fas fa-file-csv"></i> CSV İndir
+                class="mc-btn mc-btn-sm" style="background:#0ea5e9; color:#fff; border:none;" title="{{ _('Seçili projeleri CSV olarak indir') }}">
+          <i class="fas fa-file-csv"></i> {{ _("CSV İndir") }}
         </button>
         <button type="button" id="mc-bulk-clear"
                 class="mc-btn mc-btn-sm" style="background:transparent; color:#94a3b8; border:1px solid #475569;">
-          Seçimi Temizle
+          {{ _("Seçimi Temizle") }}
         </button>
       </div>
     </div>
     <div style="display:flex; gap:8px; align-items:center; font-size:12.5px; color:#64748b; margin-bottom:10px;">
       <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
         <input type="checkbox" id="mc-bulk-select-all"/>
-        <span>Görünenleri seç</span>
+        <span>{{ _("Görünenleri seç") }}</span>
       </label>
     </div>
     <script>
@@ -251,8 +251,8 @@
         <summary class="mc-filters-accordion-summary flex items-center justify-between gap-3 cursor-pointer px-4 py-3.5 select-none text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50">
             <span class="flex items-center gap-2 flex-wrap">
                 <i class="fas fa-sliders-h text-indigo-500"></i>
-                Filtreler ve sıralama
-                {% if has_active_filters %}<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200">Aktif filtre</span>{% endif %}
+                {{ _("Filtreler ve sıralama") }}
+                {% if has_active_filters %}<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200">{{ _("Aktif filtre") }}</span>{% endif %}
             </span>
             <i class="fas fa-chevron-down text-slate-400 mc-acc-chevron transition-transform duration-200 shrink-0" aria-hidden="true"></i>
         </summary>
@@ -261,57 +261,57 @@
                 <div class="flex flex-wrap gap-3 mb-3 items-end">
                     {% if privileged %}
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Kapsam</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Kapsam") }}</label>
                         <select name="scope" class="mc-select" style="min-width:160px;">
-                            <option value="all" {% if filters.scope == 'all' %}selected{% endif %}>Tüm kurum projeleri</option>
-                            <option value="my" {% if filters.scope == 'my' %}selected{% endif %}>Benim projelerim</option>
+                            <option value="all" {% if filters.scope == 'all' %}selected{% endif %}>{{ _("Tüm kurum projeleri") }}</option>
+                            <option value="my" {% if filters.scope == 'my' %}selected{% endif %}>{{ _("Benim projelerim") }}</option>
                         </select>
                     </div>
                     {% endif %}
                     <div class="flex-1 min-w-[160px]">
-                        <label class="mc-label text-xs mb-1 block">Ara</label>
-                        <input type="search" name="q" class="mc-input" value="{{ filters.q }}" placeholder="Ad / açıklama" autocomplete="off"/>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Ara") }}</label>
+                        <input type="search" name="q" class="mc-input" value="{{ filters.q }}" placeholder="{{ _('Ad / açıklama') }}" autocomplete="off"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Öncelik</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Öncelik") }}</label>
                         <select name="priority" class="mc-select" style="min-width:120px;">
-                            <option value="">Tümü</option>
+                            <option value="">{{ _("Tümü") }}</option>
                             {% for o in ['Düşük','Orta','Yüksek','Kritik'] %}
                             <option value="{{ o }}" {% if filters.priority == o %}selected{% endif %}>{{ o }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Sırala</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Sırala") }}</label>
                         <select name="sort" class="mc-select" style="min-width:150px;">
-                            <option value="updated" {% if filters.sort == 'updated' %}selected{% endif %}>Son güncelleme</option>
-                            <option value="end_date" {% if filters.sort == 'end_date' %}selected{% endif %}>Proje bitiş tarihi</option>
-                            <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>Ad (A-Z)</option>
-                            <option value="overdue" {% if filters.sort == 'overdue' %}selected{% endif %}>Geciken görev (çoğa)</option>
+                            <option value="updated" {% if filters.sort == 'updated' %}selected{% endif %}>{{ _("Son güncelleme") }}</option>
+                            <option value="end_date" {% if filters.sort == 'end_date' %}selected{% endif %}>{{ _("Proje bitiş tarihi") }}</option>
+                            <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>{{ _("Ad (A-Z)") }}</option>
+                            <option value="overdue" {% if filters.sort == 'overdue' %}selected{% endif %}>{{ _("Geciken görev (çoğa)") }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-3">
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Bitiş ≥</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Bitiş ≥") }}</label>
                         <input type="date" name="end_from" class="mc-input" value="{{ filters.end_from.isoformat() if filters.end_from else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Bitiş ≤</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Bitiş ≤") }}</label>
                         <input type="date" name="end_to" class="mc-input" value="{{ filters.end_to.isoformat() if filters.end_to else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Başlangıç ≥</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≥") }}</label>
                         <input type="date" name="start_from" class="mc-input" value="{{ filters.start_from.isoformat() if filters.start_from else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Başlangıç ≤</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≤") }}</label>
                         <input type="date" name="start_to" class="mc-input" value="{{ filters.start_to.isoformat() if filters.start_to else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Lider</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Lider") }}</label>
                         <select name="leader_id" class="mc-select" style="width:100%;">
-                            <option value="">Tümü</option>
+                            <option value="">{{ _("Tümü") }}</option>
                             {% for u in filter_leaders %}
                             {% set lname = ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim %}
                             <option value="{{ u.id }}" {% if filters.leader_id == u.id %}selected{% endif %}>{{ lname or u.email or ('#' ~ u.id|string) }}</option>
@@ -319,9 +319,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">Süreç</label>
+                        <label class="mc-label text-xs mb-1 block">{{ _("Süreç") }}</label>
                         <select name="surec_id" class="mc-select" style="width:100%;">
-                            <option value="">Tümü</option>
+                            <option value="">{{ _("Tümü") }}</option>
                             {% for s in surecler %}
                             <option value="{{ s.id }}" {% if filters.surec_id == s.id %}selected{% endif %}>{{ s.code or '—' }} — {{ s.ad }}</option>
                             {% endfor %}
@@ -329,54 +329,54 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-4 items-center mb-3">
-                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="overdue_only" value="1" {% if filters.overdue_only %}checked{% endif %}/> Yalnız geciken (görev veya plan)</label>
-                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="due_soon" value="1" {% if filters.due_soon_only %}checked{% endif %}/> Yakında bitiş (≤7 gün)</label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="overdue_only" value="1" {% if filters.overdue_only %}checked{% endif %}/> {{ _("Yalnız geciken (görev veya plan)") }}</label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="due_soon" value="1" {% if filters.due_soon_only %}checked{% endif %}/> {{ _("Yakında bitiş (≤7 gün)") }}</label>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button type="submit" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-filter"></i> Uygula</button>
-                    <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm">Sıfırla</a>
+                    <button type="submit" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-filter"></i> {{ _("Uygula") }}</button>
+                    <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm">{{ _("Sıfırla") }}</a>
                 </div>
             </form>
         </div>
     </details>
 
-    <section class="mb-6" aria-label="Proje operasyon özeti">
-        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
-            <i class="fas fa-chart-pie text-indigo-500"></i> Operasyon özeti
+    <section class="mb-6" aria-label="{{ _('Proje operasyon özeti') }}" data-card-code="project.operasyon_ozeti">
+        <h3 class="mc-card-title text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-pie text-indigo-500"></i> {{ _("Operasyon özeti") }}
         </h3>
 
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 mb-4">
             <div class="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-indigo-600/80 dark:text-indigo-300 font-medium">Projeler</div>
+                <div class="text-[10px] uppercase text-indigo-600/80 dark:text-indigo-300 font-medium">{{ _("Projeler") }}</div>
                 <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.total_projects }}</div>
             </div>
             <div class="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-slate-500 font-medium">Açık görev</div>
+                <div class="text-[10px] uppercase text-slate-500 font-medium">{{ _("Açık görev") }}</div>
                 <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.open_tasks }}</div>
                 <div class="text-[9px] text-slate-400">/ {{ overview.total_tasks }}</div>
             </div>
             <div class="rounded-xl border p-2.5 shadow-sm {% if overview.overdue_tasks %}border-rose-300 bg-gradient-to-br from-rose-50 to-white dark:border-rose-800 dark:from-rose-950/50 dark:to-slate-900{% else %}border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900{% endif %}">
-                <div class="text-[10px] uppercase {% if overview.overdue_tasks %}text-rose-600{% else %}text-slate-500{% endif %} font-medium">Geciken görev</div>
+                <div class="text-[10px] uppercase {% if overview.overdue_tasks %}text-rose-600{% else %}text-slate-500{% endif %} font-medium">{{ _("Geciken görev") }}</div>
                 <div class="text-xl font-bold {% if overview.overdue_tasks %}text-rose-700 dark:text-rose-200{% else %}text-slate-800 dark:text-slate-100{% endif %}">{{ overview.overdue_tasks }}</div>
             </div>
             <div class="rounded-xl border border-amber-200/80 dark:border-amber-900/60 bg-gradient-to-br from-amber-50/80 to-white dark:from-amber-950/30 dark:to-slate-900 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-amber-700 dark:text-amber-300 font-medium">Görev ≤7g</div>
+                <div class="text-[10px] uppercase text-amber-700 dark:text-amber-300 font-medium">{{ _("Görev ≤7g") }}</div>
                 <div class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ overview.tasks_due_7d }}</div>
             </div>
             <div class="rounded-xl border p-2.5 shadow-sm {% if overview.overdue_projects %}border-orange-300 bg-orange-50/80 dark:border-orange-800 dark:bg-orange-950/30{% else %}border-slate-200/80 dark:border-slate-700{% endif %}">
-                <div class="text-[10px] uppercase font-medium {% if overview.overdue_projects %}text-orange-700 dark:text-orange-300{% else %}text-slate-500{% endif %}">Plan geciken</div>
+                <div class="text-[10px] uppercase font-medium {% if overview.overdue_projects %}text-orange-700 dark:text-orange-300{% else %}text-slate-500{% endif %}">{{ _("Plan geciken") }}</div>
                 <div class="text-xl font-bold">{{ overview.overdue_projects }}</div>
             </div>
             <div class="rounded-xl border border-cyan-200/80 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-cyan-700 dark:text-cyan-300 font-medium">Proje ≤7g</div>
+                <div class="text-[10px] uppercase text-cyan-700 dark:text-cyan-300 font-medium">{{ _("Proje ≤7g") }}</div>
                 <div class="text-xl font-bold">{{ overview.projects_end_7d }}</div>
             </div>
             <div class="rounded-xl border border-violet-200/80 dark:border-violet-900/50 bg-violet-50/50 dark:bg-violet-950/20 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-violet-700 dark:text-violet-300 font-medium">Açık RAID</div>
+                <div class="text-[10px] uppercase text-violet-700 dark:text-violet-300 font-medium">{{ _("Açık RAID") }}</div>
                 <div class="text-xl font-bold">{{ overview.raid_open_total }}</div>
             </div>
             <div class="rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 p-2.5 shadow-sm">
-                <div class="text-[10px] uppercase text-emerald-700 dark:text-emerald-300 font-medium">Sağlık Ø</div>
+                <div class="text-[10px] uppercase text-emerald-700 dark:text-emerald-300 font-medium">{{ _("Sağlık Ø") }}</div>
                 <div class="text-xl font-bold">{% if overview.avg_health_score is not none %}{{ '%.0f'|format(overview.avg_health_score) }}{% else %}—{% endif %}</div>
                 <div class="text-[9px] text-slate-500">&lt;50: {{ overview.low_health_projects }}</div>
             </div>
@@ -384,39 +384,39 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-4">
             <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Haftalık tamamlanan</h4>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{{ _("Haftalık tamamlanan") }}</h4>
                 {% if overview.total_tasks %}
-                <div class="relative h-[140px] w-full"><canvas id="mcChartWeekly" aria-label="Haftalık trend"></canvas></div>
-                {% else %}<p class="text-xs text-slate-500 py-6 text-center">Görev yok</p>{% endif %}
+                <div class="relative h-[140px] w-full"><canvas id="mcChartWeekly" aria-label="{{ _('Haftalık trend') }}"></canvas></div>
+                {% else %}<p class="text-xs text-slate-500 py-6 text-center">{{ _("Görev yok") }}</p>{% endif %}
             </div>
             <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Görev durumu</h4>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{{ _("Görev durumu") }}</h4>
                 {% if overview.total_tasks %}
                 <div class="relative h-[180px] w-full max-w-[200px] mx-auto"><canvas id="mcProjectChartTaskStatus"></canvas></div>
                 {% else %}<p class="text-xs text-slate-500 py-6 text-center">—</p>{% endif %}
             </div>
             <div class="xl:col-span-3 mc-card p-3 dark:bg-slate-900/80">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Öncelik</h4>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{{ _("Öncelik") }}</h4>
                 {% if overview.total_projects %}
                 <div class="relative h-[200px] w-full"><canvas id="mcProjectChartPriority"></canvas></div>
                 {% else %}<p class="text-xs text-slate-500 py-6">—</p>{% endif %}
             </div>
             <div class="xl:col-span-2 mc-card p-3 dark:bg-slate-900/80">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">RAID (açık)</h4>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{{ _("RAID (açık)") }}</h4>
                 {% if overview.raid_open_total %}
                 <div class="relative h-[200px] w-full"><canvas id="mcChartRaid"></canvas></div>
-                {% else %}<p class="text-xs text-slate-500 py-8 text-center">Açık RAID yok</p>{% endif %}
+                {% else %}<p class="text-xs text-slate-500 py-8 text-center">{{ _("Açık RAID yok") }}</p>{% endif %}
             </div>
             <div class="xl:col-span-3 mc-card p-3 dark:bg-slate-900/80">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Tamamlanan görev — 4 hafta (ısı)</h4>
-                <p class="text-[10px] text-slate-500 mb-2">Pzt→Paz; koyu = daha çok tamamlanan.</p>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{{ _("Tamamlanan görev — 4 hafta (ısı)") }}</h4>
+                <p class="text-[10px] text-slate-500 mb-2">{{ _("Pzt→Paz; koyu = daha çok tamamlanan.") }}</p>
                 <div id="mcHeatmap" class="heatmap-grid text-[10px]"></div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
             <div class="mc-card p-4 dark:bg-slate-900/80 xl:col-span-4">
-                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2"><i class="fas fa-exclamation-triangle text-amber-500"></i> Dikkat</h4>
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2"><i class="fas fa-exclamation-triangle text-amber-500"></i> {{ _("Dikkat") }}</h4>
                 {% if overview.attention %}
                 <ul class="grid sm:grid-cols-2 gap-2 text-sm max-h-[200px] overflow-y-auto">
                     {% for row in overview.attention %}
@@ -424,15 +424,15 @@
                         <a href="{{ url_for('app_bp.project_detail', project_id=row.id) }}" class="block rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/80">
                             <span class="font-medium text-indigo-600 dark:text-indigo-300 line-clamp-1">{{ row.name }}</span>
                             <div class="flex flex-wrap gap-1 mt-1">
-                                {% if row.project_deadline_overdue %}<span class="text-[10px] px-1.5 rounded bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200">Plan</span>{% endif %}
-                                {% if row.overdue_tasks %}<span class="text-[10px] px-1.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">{{ row.overdue_tasks }} görev</span>{% endif %}
+                                {% if row.project_deadline_overdue %}<span class="text-[10px] px-1.5 rounded bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200">{{ _("Plan") }}</span>{% endif %}
+                                {% if row.overdue_tasks %}<span class="text-[10px] px-1.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">{{ _("%(n)s görev", n=row.overdue_tasks) }}</span>{% endif %}
                             </div>
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-xs text-slate-500">Gecikme yok.</p>
+                <p class="text-xs text-slate-500">{{ _("Gecikme yok.") }}</p>
                 {% endif %}
             </div>
         </div>
@@ -484,7 +484,7 @@
       (row || []).forEach(function (v) { if (v != null && v > maxV) maxV = v; });
     });
     var html = '';
-    var dayNames = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+    var dayNames = [t('Pt'), t('Sa'), t('Ça'), t('Pe'), t('Cu'), t('Ct'), t('Pz')];
     html += '<div></div>';
     dayNames.forEach(function (d) { html += '<div class="text-center text-slate-400" style="font-size:9px">' + d + '</div>'; });
     weeks.forEach(function (row, ri) {
@@ -520,7 +520,7 @@
         data: {
           labels: wl,
           datasets: [{
-            label: 'Tamamlanan',
+            label: t('Tamamlanan'),
             data: wd,
             borderColor: '#6366f1',
             backgroundColor: 'rgba(99,102,241,0.12)',
@@ -575,7 +575,7 @@
         data: {
           labels: pr.labels,
           datasets: [{
-            label: 'Proje',
+            label: t('Proje'),
             data: pr.data,
             backgroundColor: pr.labels.map(function (_, i) { return palette[i % palette.length]; }),
             borderRadius: 8,

@@ -17,12 +17,12 @@
       font-size:11px; font-weight:700; letter-spacing:0.04em;
     ">
       <i class="fas fa-flask" style="font-size:10px;"></i>
-      DEMO MODU
+      {{ _("DEMO MODU") }}
     </span>
     <span style="font-size:13px; font-weight:500; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-      Rol: <b>{{ session.get('demo_role_label', '-') }}</b>
+      {{ _("Rol:") }} <b>{{ session.get('demo_role_label', '-') }}</b>
       &nbsp;·&nbsp;
-      Kalan süre: <b id="kk-demo-countdown">--</b>
+      {{ _("Kalan süre:") }} <b id="kk-demo-countdown">--</b>
     </span>
   </div>
   <div style="display:flex; align-items:center; gap:10px;">
@@ -37,7 +37,7 @@
     " onmouseover="this.style.background='rgba(255,255,255,0.26)'"
        onmouseout="this.style.background='rgba(255,255,255,0.16)'">
       <i class="fas fa-rocket" style="font-size:11px;"></i>
-      Hesap Aç
+      {{ _("Hesap Aç") }}
     </a>
     <button type="button" id="kk-demo-exit-btn" style="
       display:inline-flex; align-items:center; gap:6px;
@@ -49,7 +49,7 @@
     " onmouseover="this.style.background='#fff'"
        onmouseout="this.style.background='rgba(255,255,255,0.95)'">
       <i class="fas fa-arrow-right-from-bracket" style="font-size:11px;"></i>
-      Çıkış
+      {{ _("Çıkış") }}
     </button>
   </div>
 </div>
@@ -76,8 +76,8 @@
         if (j.expired) {
           Swal.fire({
             icon: 'info',
-            title: 'Demo süreniz doldu',
-            text: 'Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz.',
+            title: t('Demo süreniz doldu'),
+            text: t('Tekrar başlamak için demo sayfasına yönlendiriliyorsunuz.'),
             timer: 2500, showConfirmButton: false,
           });
           setTimeout(() => { window.location.href = '/demo/'; }, 2400);
@@ -105,13 +105,13 @@
   if (EXIT_BTN) {
     EXIT_BTN.addEventListener('click', () => {
       Swal.fire({
-        title: 'Demo\'yu sonlandır?',
-        html: 'Yaptığınız tüm değişiklikler silinecek.<br><br>'
-            + '<small style="color:#64748b;">Beğendiyseniz <a href="https://kokpitim.com" target="_blank" style="color:#4f46e5;">hesap açarak</a> Kokpitim\'i kuruma getirebilirsiniz.</small>',
+        title: t('Demo\'yu sonlandır?'),
+        html: t('Yaptığınız tüm değişiklikler silinecek.') + '<br><br>'
+            + '<small style="color:#64748b;">' + t('Beğendiyseniz') + ' <a href="https://kokpitim.com" target="_blank" style="color:#4f46e5;">' + t('hesap açarak') + '</a> ' + t('Kokpitim\'i kuruma getirebilirsiniz.') + '</small>',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Evet, çık',
-        cancelButtonText: 'Vazgeç',
+        confirmButtonText: t('Evet, çık'),
+        cancelButtonText: t('Vazgeç'),
         confirmButtonColor: '#4f46e5',
       }).then(res => {
         if (res.isConfirmed) {

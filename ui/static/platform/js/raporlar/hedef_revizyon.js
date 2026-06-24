@@ -1,7 +1,7 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const statCard = (l,v,c,sub) => `<div class="mc-card" style="padding:12px 14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
+  const statCard = (l,v,c,sub,code) => `<div class="mc-card" style="padding:12px 14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:800;color:${c};margin-top:3px;">${esc(v)}</div>
     ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(sub)}</div>` : ''}
   </div>`;
@@ -32,15 +32,15 @@
 
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/hedef-revizyon',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/target-revision',{credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        statCard('Toplam Plan Dönemi', s.total_years, '#0f172a', 'kayıtlı tüm yıllar'),
-        statCard('Revizyon Yapılan Yıl', s.years_with_revisions, '#16a34a', 'en az 1 PG değişti'),
-        statCard('Toplam Revizyon',    s.total_revisions, '#f59e0b', 'hedef · ağırlık · periyot'),
+        statCard('Toplam Plan Dönemi', s.total_years, '#0f172a', 'kayıtlı tüm yıllar', 'raporlar_hedef_revizyon.toplam_plan_donemi'),
+        statCard('Revizyon Yapılan Yıl', s.years_with_revisions, '#16a34a', 'en az 1 PG değişti', 'raporlar_hedef_revizyon.revizyon_yapilan_yil'),
+        statCard('Toplam Revizyon',    s.total_revisions, '#f59e0b', 'hedef · ağırlık · periyot', 'raporlar_hedef_revizyon.toplam_revizyon'),
       ].join('');
 
       // Yıl çubukları — durumla birlikte

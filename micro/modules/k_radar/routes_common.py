@@ -10,6 +10,7 @@ from app.models import db
 from services import k_radar_scheduler_service as _scheduler
 
 from app.constants.roles import WRITE_ROLES as _WRITE_ROLES
+from flask_babel import gettext as _
 
 
 def _can_manage_k_radar() -> bool:
@@ -112,7 +113,7 @@ def k_radar_api_recommendation_action():
     try:
         return _do()
     except ValueError as e:
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
     except Exception as e:
         current_app.logger.exception("[k_radar_action] %s", e)
         return jsonify({"success": False, "message": "Aksiyon kaydi olusturulamadi."}), 500

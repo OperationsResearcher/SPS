@@ -1,6 +1,6 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  const stat = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   const PRIO = {critical:'#dc2626',high:'#f59e0b',medium:'#0ea5e9',low:'#94a3b8'};
   function drawGantt(inits, container){
     if(!inits.length){ container.innerHTML='<div style="text-align:center;padding:30px;color:#94a3b8;font-style:italic;">Stratejik girişim yok.</div>'; return; }
@@ -35,15 +35,15 @@
   }
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/initiative-roadmap',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/initiative-roadmap',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Stratejik Girişim',s.total,'#0f172a'),
-        stat('Yıl Aralığı',s.year_range,'#16a34a'),
-        stat('Milestone',s.total_milestones,'#0ea5e9'),
+        stat('Toplam Stratejik Girişim',s.total,'#0f172a','raporlar_initiative_roadmap.toplam_stratejik_girisim'),
+        stat('Yıl Aralığı',s.year_range,'#16a34a','raporlar_initiative_roadmap.yil_araligi'),
+        stat('Milestone',s.total_milestones,'#0ea5e9','raporlar_initiative_roadmap.milestone'),
       ].join('');
       drawGantt(j.initiatives, document.getElementById('gantt'));
     } catch(e){

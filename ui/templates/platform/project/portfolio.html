@@ -1,9 +1,9 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Stratejik proje portföyü — Kokpitim{% endblock %}
-{% block page_title %}Stratejik proje portföyü{% endblock %}
+{% block title %}{{ _("Stratejik proje portföyü") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Stratejik proje portföyü") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Stratejik Portföy', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': _('Stratejik Portföy'), 'url': None}]) }}
 {% endblock %}
 
 {% block extra_css %}
@@ -14,25 +14,25 @@
 <div style="max-width:1100px; margin:0 auto;">
     <div class="mc-page-header">
         <div>
-            <h2 class="mc-page-title">Stratejik proje portföyü</h2>
+            <h2 class="mc-page-title">{{ _("Stratejik proje portföyü") }}</h2>
             <p class="mc-page-subtitle">
-                Süreç–strateji matrisi puanlarına göre sıralı
+                {{ _("Süreç–strateji matrisi puanlarına göre sıralı") }}
                 {% if portfolio_source == 'app_tenant' %}
-                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">Kurum (Uygulama süreci)</span>
+                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">{{ _("Kurum (Uygulama süreci)") }}</span>
                 {% else %}
-                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">Kurum (klasik matris)</span>
+                <span class="mc-badge mc-badge-gray" style="font-size:11px; margin-left:6px;">{{ _("Kurum (klasik matris)") }}</span>
                 {% endif %}
             </p>
         </div>
         <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-            <i class="fas fa-list"></i> Proje listesi
+            <i class="fas fa-list"></i> {{ _("Proje listesi") }}
         </a>
     </div>
 
     {% if projects_with_scores|length == 0 %}
     <div class="mc-card" style="padding:32px; text-align:center;">
-        <p style="color:#64748b;">Henüz proje tanımlanmamış.</p>
-        <a href="{{ url_for('app_bp.project_new') }}" class="mc-btn mc-btn-primary mt-2">Yeni proje</a>
+        <p style="color:#64748b;">{{ _("Henüz proje tanımlanmamış.") }}</p>
+        <a href="{{ url_for('app_bp.project_new') }}" class="mc-btn mc-btn-primary mt-2">{{ _("Yeni proje") }}</a>
     </div>
     {% else %}
     {# Program zaman çizelgesi — tüm projeler tek Gantt'ta (L3 eksik tamamlama) #}
@@ -40,12 +40,12 @@
          data-program='{{ program_gantt | tojson }}'>
         <div class="mc-card-header" style="display:flex;align-items:center;gap:8px;">
             <i class="fas fa-stream" style="color:#4f46e5;"></i>
-            <span class="mc-card-title">Program Zaman Çizelgesi</span>
-            <span style="margin-left:auto;font-size:11px;color:#94a3b8;">Tarihi olan projeler</span>
+            <span class="mc-card-title">{{ _("Program Zaman Çizelgesi") }}</span>
+            <span style="margin-left:auto;font-size:11px;color:#94a3b8;">{{ _("Tarihi olan projeler") }}</span>
         </div>
         <div class="mc-card-body" style="padding:8px 14px;">
             <div id="program-gantt-empty" style="display:none;color:#94a3b8;font-size:12.5px;padding:8px 0;">
-                Hiçbir projede başlangıç/bitiş tarihi tanımlı değil — çizelge boş.
+                {{ _("Hiçbir projede başlangıç/bitiş tarihi tanımlı değil — çizelge boş.") }}
             </div>
             <div style="overflow-x:auto;"><svg id="program-gantt"></svg></div>
         </div>
@@ -55,10 +55,10 @@
             <thead>
                 <tr>
                     <th style="width:48px;">#</th>
-                    <th>Proje</th>
-                    <th>Bağlı süreçler</th>
-                    <th style="text-align:center;">Skor</th>
-                    <th style="text-align:center;">İşlem</th>
+                    <th>{{ _("Proje") }}</th>
+                    <th>{{ _("Bağlı süreçler") }}</th>
+                    <th style="text-align:center;">{{ _("Skor") }}</th>
+                    <th style="text-align:center;">{{ _("İşlem") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -69,7 +69,7 @@
                     <td>
                         <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" style="font-weight:600; color:#4f46e5;">{{ project.name }}</a>
                         <br>
-                        <a href="{{ url_for('app_bp.project_strategy', project_id=project.id) }}" style="font-size:11px; color:#64748b;">Stratejik analiz</a>
+                        <a href="{{ url_for('app_bp.project_strategy', project_id=project.id) }}" style="font-size:11px; color:#64748b;">{{ _("Stratejik analiz") }}</a>
                     </td>
                     <td>
                         {% if item.related_processes %}
@@ -86,7 +86,7 @@
                         </span>
                     </td>
                     <td style="text-align:center;">
-                        <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm">Görevler</a>
+                        <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm">{{ _("Görevler") }}</a>
                     </td>
                 </tr>
                 {% endfor %}

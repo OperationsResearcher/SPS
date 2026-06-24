@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}Operasyonel Sabah Özeti — Kokpitim{% endblock %}
-{% block page_title %}Operasyonel Sabah Özeti{% endblock %}
+{% block title %}{{ _("Operasyonel Sabah Özeti — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Operasyonel Sabah Özeti") }}{% endblock %}
 
-{% block breadcrumb %}{{ mc_breadcrumb('Operasyonel Sabah Özeti') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Operasyonel Sabah Özeti')) }}{% endblock %}
 
 {% block content %}
 <div style="max-width:1240px; margin:0 auto;">
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-sun" style="color:#0d9488;"></i> Operasyonel Sabah Özeti
+        <i class="fas fa-sun" style="color:#0d9488;"></i> {{ _("Operasyonel Sabah Özeti") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son veri girişleri
+        {{ _("Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son veri girişleri") }}
       </p>
     </div>
   </div>
@@ -22,14 +22,14 @@
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:14px;margin-bottom:24px;" id="metrics"></div>
 
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
-        <i class="fas fa-stream" style="color:#0ea5e9;"></i> Son Veri Girişleri
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_sabah_ozeti.son_veri_girisleri">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+        <i class="fas fa-stream" style="color:#0ea5e9;"></i> {{ _("Son Veri Girişleri") }}
       </h3>
       <div id="recent"></div>
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/sabah_ozeti.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/sabah_ozeti.js') }}" defer></script>
 {% endblock %}

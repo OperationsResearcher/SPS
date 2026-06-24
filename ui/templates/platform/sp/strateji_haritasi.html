@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Strateji Haritası — Kokpitim{% endblock %}
-{% block page_title %}Strateji Haritası{% endblock %}
+{% block title %}{{ _("Strateji Haritası — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Strateji Haritası") }}{% endblock %}
 
 {% block extra_css %}
 {# vis-network@9 standalone UMD bundle stilleri kendi enjekte eder; bu CSS yolu
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb('Strateji Haritası') }}
+    {{ mc_breadcrumb(_('Strateji Haritası')) }}
 {% endblock %}
 
 {% block content %}
@@ -18,63 +18,63 @@
     <div class="mc-page-header" style="margin-bottom:16px;">
         <div class="mc-page-header-left">
             <h1 class="mc-page-title">
-                <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Strateji Haritası
+                <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> {{ _("Strateji Haritası") }}
             </h1>
             <p class="mc-page-subtitle">
-                Strateji → Alt Strateji → Süreç → KPI ilişki ağı.
-                Aktif SP döneminde <strong>{{ strategy_count }}</strong> ana strateji görüntülenir.
+                {{ _("Strateji → Alt Strateji → Süreç → KPI ilişki ağı.") }}
+                {{ _("Aktif SP döneminde <strong>%(count)s</strong> ana strateji görüntülenir.", count=strategy_count) }}
             </p>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <button type="button" id="harita-fit" class="mc-btn mc-btn-primary mc-btn-sm" title="Tüm grafiği sığdır">
-                <i class="fas fa-compress-arrows-alt"></i> Tümünü Göster
+            <button type="button" id="harita-fit" class="mc-btn mc-btn-primary mc-btn-sm" title="{{ _('Tüm grafiği sığdır') }}">
+                <i class="fas fa-compress-arrows-alt"></i> {{ _("Tümünü Göster") }}
             </button>
             <a href="{{ url_for('app_bp.sp') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-                <i class="fas fa-arrow-left"></i> SP Modülü
+                <i class="fas fa-arrow-left"></i> {{ _("SP Modülü") }}
             </a>
         </div>
     </div>
 
     <div class="kr-info-band" style="margin-bottom:16px;">
         <i class="fas fa-circle-info"></i>
-        <span><b>Nasıl kullanılır?</b> Düğüme tıklayınca bağlı tüm yol vurgulanır. Tekerlek ile yakınlaştırın, sürükleyerek kaydırın. Arama kutusuna yazarak düğüm bulabilirsiniz. <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">+</kbd> <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">−</kbd> zoom.</span>
+        <span>{{ _("<b>Nasıl kullanılır?</b> Düğüme tıklayınca bağlı tüm yol vurgulanır. Tekerlek ile yakınlaştırın, sürükleyerek kaydırın. Arama kutusuna yazarak düğüm bulabilirsiniz.") }} <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">+</kbd> <kbd style="background:#fff;border:1px solid #bae6fd;border-radius:4px;padding:1px 6px;">−</kbd> {{ _("zoom.") }}</span>
     </div>
 
     <div class="sh-stats">
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.ana_strateji">
             <div class="sh-stat-icon sh-stat-icon--strategy"><i class="fas fa-bullseye"></i></div>
             <div>
                 <div class="sh-stat-val">{{ strategy_count }}</div>
-                <div class="sh-stat-lbl">Ana Strateji</div>
+                <div class="sh-stat-lbl mc-stat-label">{{ _("Ana Strateji") }}</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.alt_strateji">
             <div class="sh-stat-icon sh-stat-icon--sub"><i class="fas fa-sitemap"></i></div>
             <div>
                 <div class="sh-stat-val">{{ sub_count }}</div>
-                <div class="sh-stat-lbl">Alt Strateji</div>
+                <div class="sh-stat-lbl mc-stat-label">{{ _("Alt Strateji") }}</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.surec">
             <div class="sh-stat-icon sh-stat-icon--process"><i class="fas fa-diagram-project"></i></div>
             <div>
                 <div class="sh-stat-val">{{ process_count }}</div>
-                <div class="sh-stat-lbl">Süreç</div>
+                <div class="sh-stat-lbl mc-stat-label">{{ _("Süreç") }}</div>
             </div>
         </div>
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.pg">
             <div class="sh-stat-icon sh-stat-icon--kpi"><i class="fas fa-chart-line"></i></div>
             <div>
                 <div class="sh-stat-val">{{ pg_count }}</div>
-                <div class="sh-stat-lbl">PG</div>
+                <div class="sh-stat-lbl mc-stat-label">{{ _("PG") }}</div>
             </div>
         </div>
         {% if initiative_count %}
-        <div class="sh-stat">
+        <div class="sh-stat" data-card-code="sp_strateji_haritasi.str_girisim">
             <div class="sh-stat-icon" style="background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#db2777;"><i class="fas fa-rocket"></i></div>
             <div>
                 <div class="sh-stat-val">{{ initiative_count }}</div>
-                <div class="sh-stat-lbl">Str. Girişim</div>
+                <div class="sh-stat-lbl mc-stat-label">{{ _("Str. Girişim") }}</div>
             </div>
         </div>
         {% endif %}
@@ -83,7 +83,7 @@
             <div class="sh-stat-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#059669;"><i class="fas fa-folder-open"></i></div>
             <div>
                 <div class="sh-stat-val">{{ proje_count }}</div>
-                <div class="sh-stat-lbl">Proje</div>
+                <div class="sh-stat-lbl">{{ _("Proje") }}</div>
             </div>
         </div>
         {% endif %}
@@ -91,52 +91,52 @@
 
     <div id="strateji-harita-error" role="alert"></div>
 
-    <div class="sh-canvas-wrap">
+    <div class="sh-canvas-wrap" data-card-code="sp_strateji_haritasi.strateji_haritasi">
         <div class="sh-flow-strip" aria-hidden="true">
-            <span class="sh-flow-col sh-flow-col--v"><span class="sh-flow-dot"></span> Vizyon</span>
-            <span class="sh-flow-col sh-flow-col--s"><span class="sh-flow-dot"></span> Strateji</span>
-            <span class="sh-flow-col sh-flow-col--ss"><span class="sh-flow-dot"></span> Alt Strateji</span>
-            <span class="sh-flow-col sh-flow-col--p"><span class="sh-flow-dot"></span> Süreç / Girişim</span>
-            <span class="sh-flow-col sh-flow-col--k"><span class="sh-flow-dot"></span> PG / Proje</span>
+            <span class="sh-flow-col sh-flow-col--v"><span class="sh-flow-dot"></span> {{ _("Vizyon") }}</span>
+            <span class="sh-flow-col sh-flow-col--s"><span class="sh-flow-dot"></span> {{ _("Strateji") }}</span>
+            <span class="sh-flow-col sh-flow-col--ss"><span class="sh-flow-dot"></span> {{ _("Alt Strateji") }}</span>
+            <span class="sh-flow-col sh-flow-col--p"><span class="sh-flow-dot"></span> {{ _("Süreç / Girişim") }}</span>
+            <span class="sh-flow-col sh-flow-col--k"><span class="sh-flow-dot"></span> {{ _("PG / Proje") }}</span>
         </div>
 
         <div class="sh-toolbar">
             <div class="sh-toolbar-left">
                 <label class="sh-search">
                     <i class="fas fa-search" aria-hidden="true"></i>
-                    <input type="search" id="harita-search" placeholder="Düğüm ara…" autocomplete="off" aria-label="Haritada ara">
+                    <input type="search" id="harita-search" placeholder="{{ _('Düğüm ara…') }}" autocomplete="off" aria-label="{{ _('Haritada ara') }}">
                 </label>
                 <div class="sh-legend">
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#0ea5e9;"></span> Vizyon</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#4f46e5;"></span> Strateji</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#7c3aed;"></span> Alt Strateji</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#059669;"></span> Süreç</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#f59e0b;"></span> PG</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#db2777;"></span> Girişim</span>
-                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#10b981;"></span> Proje</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#0ea5e9;"></span> {{ _("Vizyon") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#4f46e5;"></span> {{ _("Strateji") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#7c3aed;"></span> {{ _("Alt Strateji") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#059669;"></span> {{ _("Süreç") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#f59e0b;"></span> {{ _("PG") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#db2777;"></span> {{ _("Girişim") }}</span>
+                    <span class="sh-legend-pill"><span class="sh-legend-dot" style="background:#10b981;"></span> {{ _("Proje") }}</span>
                 </div>
             </div>
             <div class="sh-zoom-group">
-                <button type="button" class="sh-zoom-btn" id="harita-zoom-in" title="Yakınlaştır"><i class="fas fa-plus"></i></button>
-                <button type="button" class="sh-zoom-btn" id="harita-zoom-out" title="Uzaklaştır"><i class="fas fa-minus"></i></button>
-                <button type="button" class="sh-zoom-btn" id="harita-fit-2" title="Sığdır"><i class="fas fa-expand"></i></button>
+                <button type="button" class="sh-zoom-btn" id="harita-zoom-in" title="{{ _('Yakınlaştır') }}"><i class="fas fa-plus"></i></button>
+                <button type="button" class="sh-zoom-btn" id="harita-zoom-out" title="{{ _('Uzaklaştır') }}"><i class="fas fa-minus"></i></button>
+                <button type="button" class="sh-zoom-btn" id="harita-fit-2" title="{{ _('Sığdır') }}"><i class="fas fa-expand"></i></button>
             </div>
         </div>
 
         <div id="strateji-harita-loading">
             <div class="sh-loading-pulse" aria-hidden="true"></div>
-            <span class="sh-loading-text">Harita oluşturuluyor…</span>
+            <span class="sh-loading-text">{{ _("Harita oluşturuluyor…") }}</span>
         </div>
 
-        <div id="strateji-harita-container" style="display:none;" aria-label="Strateji ilişki grafiği"></div>
+        <div id="strateji-harita-container" style="display:none;" aria-label="{{ _('Strateji ilişki grafiği') }}"></div>
     </div>
 
     <div id="strateji-harita-empty">
         <div class="sh-empty-icon"><i class="fas fa-map"></i></div>
-        <p class="sh-empty-title">Henüz strateji tanımlanmamış</p>
-        <p class="sh-empty-desc">Stratejik Planlama modülünden ana ve alt strateji ekledikten sonra harita burada görünecek.</p>
+        <p class="sh-empty-title">{{ _("Henüz strateji tanımlanmamış") }}</p>
+        <p class="sh-empty-desc">{{ _("Stratejik Planlama modülünden ana ve alt strateji ekledikten sonra harita burada görünecek.") }}</p>
         <p class="sh-empty-cta">
-            <a href="{{ url_for('app_bp.sp') }}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-plus"></i> SP'ye Git</a>
+            <a href="{{ url_for('app_bp.sp') }}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-plus"></i> {{ _("SP'ye Git") }}</a>
         </p>
     </div>
 

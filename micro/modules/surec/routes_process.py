@@ -1,6 +1,7 @@
 """Süreç modülü — Sayfa ve süreç CRUD."""
 
 from __future__ import annotations
+from flask_babel import gettext as _
 
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
@@ -218,8 +219,10 @@ def surec_karne(process_id):
     from app.utils.plan_year_filter import filter_by_plan_year
     ap_q = Process.query.filter_by(tenant_id=tid, is_active=True)
     if active_py:
-        # Karne dropdown'unda sadece aktif yıl (NULL legacy hariç tutuldu)
-        ap_q = filter_by_plan_year(ap_q, Process, active_py.id, include_null=False)
+        # Karne dropdown'u: aktif yıl + plan yılına bağlanmamış (NULL legacy) süreçler.
+        # include_null=False yapılırsa KMF gibi tüm süreçleri plan_year_id=NULL olan
+        # kurumlarda dropdown TAMAMEN boşalır (görüntülenen süreç bile listelenmez).
+        ap_q = filter_by_plan_year(ap_q, Process, active_py.id, include_null=True)
     ap_q = ap_q.order_by(Process.code)
     all_processes = accessible_processes_filter(ap_q, current_user, tid).all()
 
@@ -315,7 +318,7 @@ def surec_faaliyetler(process_id):
 @login_required
 def surec_api_add():
     if not can_crud_process_entity(current_user):
-        return jsonify({"success": False, "message": "Süreç oluşturma yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Süreç oluşturma yetkiniz yok.")}), 403
     data = request.get_json() or {}
     try:
         parent_id_raw = data.get("parent_id") or None
@@ -383,11 +386,11 @@ def surec_api_add():
             AuditLogger.log_create("Süreç Yönetimi", p.id, {"name": p.name, "code": p.code})
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Süreç başarıyla oluşturuldu.", "id": p.id})
+        return jsonify({"success": True, "message": _("Süreç başarıyla oluşturuldu."), "id": p.id})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_add] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/get/<int:process_id>", methods=["GET"])
@@ -444,7 +447,7 @@ def surec_api_update(process_id):
     if not p:
         abort(404)
     if not user_can_edit_process_record(current_user, p):
-        return jsonify({"success": False, "message": "Bu süreci güncelleme yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu süreci güncelleme yetkiniz yok.")}), 403
     p = (
         Process.query.options(selectinload(Process.process_sub_strategy_links))
         .filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True)
@@ -515,18 +518,18 @@ def surec_api_update(process_id):
             AuditLogger.log_update("Süreç Yönetimi", p.id, {}, {"name": p.name, "code": p.code, "status": p.status})
         except Exception as e:
             current_app.logger.error(f"Audit log hatası: {e}")
-        return jsonify({"success": True, "message": "Süreç güncellendi."})
+        return jsonify({"success": True, "message": _("Süreç güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_update] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 @app_bp.route("/process/api/delete/<int:process_id>", methods=["POST"])
 @login_required
 def surec_api_delete(process_id):
     if not can_crud_process_entity(current_user):
-        return jsonify({"success": False, "message": "Süreç silme yetkiniz yok."}), 403
+        return jsonify({"success": False, "message": _("Süreç silme yetkiniz yok.")}), 403
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
     try:
         # Soft-delete cascade: torun süreçleri de pasif yap
@@ -544,11 +547,11 @@ def surec_api_delete(process_id):
         ).update({"is_active": False, "deleted_at": now, "deleted_by": current_user.id},
                  synchronize_session="fetch")
         db.session.commit()
-        return jsonify({"success": True, "message": "Süreç silindi.", "cascade_count": len(to_delete)})
+        return jsonify({"success": True, "message": _("Süreç silindi."), "cascade_count": len(to_delete)})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[surec_api_delete] {e}")
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 400
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
 # ── PG Mini Sparkline (C2) — Süreç başına son 3 ay PG hedef üstü % ─────────
@@ -623,4 +626,4 @@ def surec_api_sparklines():
         return jsonify({"success": True, "data": result, "labels": labels})
     except Exception as e:
         current_app.logger.error(f"[surec_api_sparklines] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sparkline verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Sparkline verisi alınamadı.")}), 500

@@ -1,20 +1,20 @@
 {% extends "platform/base.html" %}
-{% block title %}AI Strateji Danışmanı — Kokpitim{% endblock %}
-{% block page_title %}AI Strateji Danışmanı{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('AI Strateji Danışmanı') }}{% endblock %}
+{% block title %}{{ _("AI Strateji Danışmanı — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("AI Strateji Danışmanı") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('AI Strateji Danışmanı')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-robot" style="color:#6366f1;"></i> AI Strateji Danışmanı</h1>
-    <p class="mc-page-subtitle">Sistem verilerinden AI'nın ürettiği strateji pivot önerileri — refocus, sunset veya accelerate.</p>
+    <h1 class="mc-page-title"><i class="fas fa-robot" style="color:#6366f1;"></i> {{ _("AI Strateji Danışmanı") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Sistem verilerinden AI'nın ürettiği strateji pivot önerileri — refocus, sunset veya accelerate.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
-  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> AI önerileri hazırlanıyor (5-15sn)…</div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> {{ _("AI önerileri hazırlanıyor (5-15sn)…") }}</div>
   <div id="content" style="display:none;">
     <div id="recommendations"></div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/ai_danisman.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/ai_danisman.js') }}" defer></script>
 {% endblock %}

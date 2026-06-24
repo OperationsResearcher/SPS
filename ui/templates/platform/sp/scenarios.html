@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Senaryolar — Kokpitim{% endblock %}
-{% block page_title %}Senaryo Dalları{% endblock %}
+{% block title %}{{ _("Senaryolar — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Senaryo Dalları") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_scenarios">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Senaryolar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Stratejik Planlama'), 'url': url_for('app_bp.sp_menu')}, {'label': _('Senaryolar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,33 +19,33 @@
   <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-        <i class="fas fa-code-branch"></i> Senaryo Dalları
+        <i class="fas fa-code-branch"></i> {{ _("Senaryo Dalları") }}
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        Bir plan yılından "iyimser / kötümser / temel senaryo" varyasyonları üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız düzenlenebilir.
+        {{ _("Bir plan yılından \"iyimser / kötümser / temel senaryo\" varyasyonları üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız düzenlenebilir.") }}
       </p>
     </div>
     <a href="{{ url_for('app_bp.sp_scenarios_compare_page') }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="flex:0 0 auto;">
-      <i class="fas fa-code-compare"></i> Senaryoları Kıyasla
+      <i class="fas fa-code-compare"></i> {{ _("Senaryoları Kıyasla") }}
     </a>
   </div>
 
   <div class="mc-card" style="padding:16px; margin-bottom:20px;">
     <form id="sc-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Kaynak Plan Yılı</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Kaynak Plan Yılı") }}</label>
         <select id="sc-base" class="mc-input" style="min-width:280px;"></select>
       </div>
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Senaryo Etiketi</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Senaryo Etiketi") }}</label>
         <select id="sc-label" class="mc-input" style="width:180px;">
-          <option value="optimistic">İyimser</option>
-          <option value="pessimistic">Kötümser</option>
-          <option value="baseline">Temel Senaryo</option>
+          <option value="optimistic">{{ _("İyimser") }}</option>
+          <option value="pessimistic">{{ _("Kötümser") }}</option>
+          <option value="baseline">{{ _("Temel Senaryo") }}</option>
         </select>
       </div>
       <button type="submit" class="mc-btn mc-btn-primary">
-        <i class="fas fa-plus"></i> Senaryo Oluştur
+        <i class="fas fa-plus"></i> {{ _("Senaryo Oluştur") }}
       </button>
     </form>
   </div>
@@ -60,14 +60,14 @@
   const createUrl = root.dataset.createUrl;
 
   function labelTr(l) {
-    return {optimistic:'İyimser', pessimistic:'Kötümser', baseline:'Baseline'}[l] || l;
+    return {optimistic:t('İyimser'), pessimistic:t('Kötümser'), baseline:'Baseline'}[l] || l;
   }
 
   async function load() {
     const res = await fetch(listUrl);
     const j = await res.json();
     const items = j.items || [];
-    const STATUS_TR = { active: 'aktif', closed: 'kapalı', draft: 'taslak', archived: 'arşiv' };
+    const STATUS_TR = { active: t('aktif'), closed: t('kapalı'), draft: t('taslak'), archived: t('arşiv') };
     const statusTr = (s) => STATUS_TR[s] || s || '—';
 
     // Base selector
@@ -87,7 +87,7 @@
     const ul = document.getElementById('sc-list');
     const parents = items.filter(i => !i.is_scenario);
     if (parents.length === 0) {
-      ul.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Plan yılı yok.</div>';
+      ul.innerHTML = `<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">${t("Plan yılı yok.")}</div>`;
       return;
     }
     ul.innerHTML = parents.map(p => {
@@ -99,7 +99,7 @@
             <span style="font-size:11px;color:#64748b;font-weight:400;">(${statusTr(p.status)})</span>
           </div>
           ${scenarios.length === 0 ?
-            '<div style="color:#94a3b8;font-size:12px;margin-top:8px;">— Senaryo yok</div>' :
+            `<div style="color:#94a3b8;font-size:12px;margin-top:8px;">${t("— Senaryo yok")}</div>` :
             '<div style="margin-top:12px;padding-left:24px;border-left:2px solid #e2e8f0;">' +
             scenarios.map(s => `
               <div style="padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
@@ -107,7 +107,7 @@
                   <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${labelTr(s.scenario_label)}</span>
                   <span style="margin-left:8px;color:#475569;font-size:13px;">${s.name}</span>
                 </div>
-                <a href="/sp/donemler" style="font-size:12px;color:#0ea5e9;">Düzenle →</a>
+                <a href="/sp/periods" style="font-size:12px;color:#0ea5e9;">${t("Düzenle →")}</a>
               </div>
             `).join('') + '</div>'
           }
@@ -122,7 +122,7 @@
     const scenario_label = document.getElementById('sc-label').value;
     const btn = e.target.querySelector('button');
     btn.disabled = true;
-    btn.textContent = 'Oluşturuluyor...';
+    btn.textContent = t('Oluşturuluyor...');
     try {
       const res = await fetch(createUrl, {
         method: 'POST',
@@ -130,11 +130,11 @@
         body: JSON.stringify({base_plan_year_id, scenario_label}),
       });
       const j = await res.json();
-      if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
+      if (!res.ok) { Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('İşlem başarısız')), confirmButtonColor: '#dc2626' }); return; }
       load();
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-plus"></i> Senaryo Oluştur';
+      btn.innerHTML = '<i class="fas fa-plus"></i> ' + t('Senaryo Oluştur');
     }
   });
 

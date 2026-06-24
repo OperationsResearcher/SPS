@@ -1,20 +1,20 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c,sub) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
+  const stat = (l,v,c,sub,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
   const scoreColor = s => s==null?'#94a3b8':s>=70?'#10b981':s>=50?'#f59e0b':'#dc2626';
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/coo-dashboard',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/coo-dashboard',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const m=j.metrics;
       document.getElementById('kpis').innerHTML=[
-        stat('Süreç',m.total_processes,'#0f172a'),
-        stat('Ort. Sağlık',m.avg_score||'—',scoreColor(m.avg_score)),
-        stat('Geciken Faaliyet',m.overdue_activities,m.overdue_activities>0?'#dc2626':'#10b981'),
-        stat('Aktif Darboğaz',m.active_bottlenecks,m.active_bottlenecks>0?'#f59e0b':'#10b981'),
-        stat('Ort. CMMI',m.avg_cmmi_level||'—','#6366f1'),
+        stat('Süreç',m.total_processes,'#0f172a','','raporlar_coo_dashboard.surec'),
+        stat('Ort. Sağlık',m.avg_score||'—',scoreColor(m.avg_score),'','raporlar_coo_dashboard.ort_saglik'),
+        stat('Geciken Faaliyet',m.overdue_activities,m.overdue_activities>0?'#dc2626':'#10b981','','raporlar_coo_dashboard.geciken_faaliyet'),
+        stat('Aktif Darboğaz',m.active_bottlenecks,m.active_bottlenecks>0?'#f59e0b':'#10b981','','raporlar_coo_dashboard.aktif_darbogaz'),
+        stat('Ort. CMMI',m.avg_cmmi_level||'—','#6366f1','','raporlar_coo_dashboard.ort_cmmi'),
       ].join('');
       const d=j.distribution;
       const total = d.good+d.medium+d.low+d.no_data || 1;

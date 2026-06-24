@@ -1,6 +1,6 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Takvim — {{ project.name }} — Kokpitim{% endblock %}
-{% block page_title %}Takvim — {{ project.name }}{% endblock %}
+{% block title %}{{ _("Takvim") }} — {{ project.name }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Takvim") }} — {{ project.name }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_views.css') }}?v={{ config['VERSION'] }}">
@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Takvim', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': _('Takvim'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -16,14 +16,14 @@
 <div style="max-width:1280px; margin:0 auto;">
     <div class="micro-project-view-toolbar">
         <div>
-            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> Projeye dön</a>
-            <div class="micro-project-view-title"><i class="fas fa-calendar-alt text-sky-600"></i> Takvim</div>
+            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> {{ _("Projeye dön") }}</a>
+            <div class="micro-project-view-title"><i class="fas fa-calendar-alt text-sky-600"></i> {{ _("Takvim") }}</div>
         </div>
         {% include "platform/project/_project_views_nav.html" %}
     </div>
     <div class="mc-card" style="padding:16px;">
         <div id="calendar-loading" style="text-align:center; padding:48px 16px; color:#64748b; font-size:14px;">
-            <i class="fas fa-spinner fa-spin"></i> Takvim yükleniyor…
+            <i class="fas fa-spinner fa-spin"></i> {{ _("Takvim yükleniyor…") }}
         </div>
         <div id="calendar"></div>
     </div>
@@ -51,7 +51,7 @@
         body: JSON.stringify(body)
       });
       var data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Güncelleme hatası');
+      if (!data.success) throw new Error(data.message || t('Güncelleme hatası'));
     }
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -68,7 +68,7 @@
         try {
           var res = await fetch('/api/projeler/' + projectId + '/gorevler');
           var data = await res.json();
-          if (!data.success) throw new Error(data.message || 'Listeleme hatası');
+          if (!data.success) throw new Error(data.message || t('Listeleme hatası'));
           var evts = (data.gorevler || []).filter(function (t) { return t.due_date || t.start_date; }).map(function (t) {
             return {
               id: t.id,
@@ -83,8 +83,8 @@
           success(evts);
         } catch (e) {
           var ld2 = document.getElementById('calendar-loading');
-          if (ld2) ld2.innerHTML = '<span style="color:#dc2626;">Yüklenemedi: ' + (e.message || '') + '</span>';
-          if (window.showToast) showToast('error', e.message || 'Takvim yüklenemedi');
+          if (ld2) ld2.innerHTML = '<span style="color:#dc2626;">' + t('Yüklenemedi:') + ' ' + (e.message || '') + '</span>';
+          if (window.showToast) showToast('error', e.message || t('Takvim yüklenemedi'));
           fail(e);
         }
       },
@@ -96,10 +96,10 @@
           var start = info.event.startStr.slice(0, 10);
           var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
           await updateTaskDates(info.event.id, start, end);
-          showToast('success', 'Tarih güncellendi');
+          showToast('success', t('Tarih güncellendi'));
         } catch (e) {
           info.revert();
-          showToast('error', e.message || 'Güncellenemedi');
+          showToast('error', e.message || t('Güncellenemedi'));
         }
       },
       eventResize: async function (info) {
@@ -107,10 +107,10 @@
           var start = info.event.startStr.slice(0, 10);
           var end = info.event.endStr ? info.event.endStr.slice(0, 10) : start;
           await updateTaskDates(info.event.id, start, end);
-          showToast('success', 'Süre güncellendi');
+          showToast('success', t('Süre güncellendi'));
         } catch (e) {
           info.revert();
-          showToast('error', e.message || 'Güncellenemedi');
+          showToast('error', e.message || t('Güncellenemedi'));
         }
       }
     });

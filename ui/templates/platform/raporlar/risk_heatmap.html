@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}Risk Isı Haritası — Kokpitim{% endblock %}
-{% block page_title %}Risk Isı Haritası (5×5){% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Risk Isı Haritası') }}{% endblock %}
+{% block title %}{{ _("Risk Isı Haritası") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Risk Isı Haritası (5×5)") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Risk Isı Haritası')) }}{% endblock %}
 {% block content %}
 
 
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-shield-alt" style="color:#dc2626;"></i> Risk Isı Haritası</h1>
-    <p class="mc-page-subtitle">5×5 Olasılık × Etki matrisi · RPN = Olasılık × Etki · Seçili plan yılı risklerini gösterir</p>
+    <h1 class="mc-page-title"><i class="fas fa-shield-alt" style="color:#dc2626;"></i> {{ _("Risk Isı Haritası") }}</h1>
+    <p class="mc-page-subtitle">{{ _("5×5 Olasılık × Etki matrisi · RPN = Olasılık × Etki · Seçili plan yılı risklerini gösterir") }}</p>
   </div>
   <div class="mc-page-header-right" style="display:flex;gap:10px;align-items:center;">
     <select id="rh-year" class="mc-select" style="font-size:13px;padding:6px 12px;min-width:110px;">
-      <option value="">Tüm Yıllar</option>
+      <option value="">{{ _("Tüm Yıllar") }}</option>
     </select>
   </div>
 </div>
@@ -21,12 +21,12 @@
 <div style="max-width:1240px;margin:0 auto 18px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#78350f;display:flex;gap:10px;align-items:flex-start;">
   <i class="fas fa-circle-info" style="margin-top:2px;flex-shrink:0;"></i>
   <div>
-    <strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık (1–5) × Etki (1–5) &nbsp;·&nbsp; Hücre rengi:
-    <span style="background:#dc2626;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;">Kritik ≥15</span>
-    <span style="background:#f59e0b;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;margin:0 3px;">Yüksek 8–14</span>
-    <span style="background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #fcd34d;">Orta 4–7</span>
-    <span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #bbf7d0;margin-left:3px;">Düşük &lt;4</span>
-    &nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir.
+    {{ _("<strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık (1–5) × Etki (1–5) &nbsp;·&nbsp; Hücre rengi:") }}
+    <span style="background:#dc2626;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;">{{ _("Kritik ≥15") }}</span>
+    <span style="background:#f59e0b;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;margin:0 3px;">{{ _("Yüksek 8–14") }}</span>
+    <span style="background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #fcd34d;">{{ _("Orta 4–7") }}</span>
+    <span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #bbf7d0;margin-left:3px;">{{ _("Düşük &lt;4") }}</span>
+    {{ _("&nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir.") }}
   </div>
 </div>
 
@@ -38,18 +38,18 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
       <!-- 5×5 Matris -->
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">5×5 Risk Matrisi</h3>
-        <p style="font-size:11.5px;color:#64748b;margin:0 0 12px;">Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki (1=Önemsiz, 5=Felaket)</p>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.5_5_risk_matrisi">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">{{ _("5×5 Risk Matrisi") }}</h3>
+        <p style="font-size:11.5px;color:#64748b;margin:0 0 12px;">{{ _("Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki (1=Önemsiz, 5=Felaket)") }}</p>
         <div id="rh-grid" style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:3px;font-size:11px;"></div>
         <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:6px;">
-          <span style="padding-left:60px;">← Düşük Etki</span><span>Yüksek Etki →</span>
+          <span style="padding-left:60px;">{{ _("← Düşük Etki") }}</span><span>{{ _("Yüksek Etki →") }}</span>
         </div>
       </div>
 
       <!-- Top 10 -->
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> En Yüksek RPN — İlk 10</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.en_yuksek_rpn_ilk_10">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> {{ _("En Yüksek RPN — İlk 10") }}</h3>
         <div id="rh-top10"></div>
       </div>
     </div>
@@ -59,10 +59,10 @@
 
 <script>
 (function(){
-  const STATUS_TR = {"open":"Açık","mitigated":"Azaltıldı","closed":"Kapalı","accepted":"Kabul Edildi","transferred":"Transfer Edildi"};
+  const STATUS_TR = {"open":t("Açık"),"mitigated":t("Azaltıldı"),"closed":t("Kapalı"),"accepted":t("Kabul Edildi"),"transferred":t("Transfer Edildi")};
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l, v, c, desc) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
+  const stat = (l, v, c, desc, code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>
     ${desc ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:2px;">${esc(desc)}</div>` : ''}
   </div>`;
@@ -79,8 +79,8 @@
     return rpn >= 8 ? '#fff' : '#0f172a';
   }
 
-  const olasılikLabels = ['','Çok Düşük','Düşük','Orta','Yüksek','Neredeyse Kesin'];
-  const etkiLabels = ['','Önemsiz','Az','Orta','Önemli','Felaket'];
+  const olasılikLabels = ['',t("Çok Düşük"),t("Düşük"),t("Orta"),t("Yüksek"),t("Neredeyse Kesin")];
+  const etkiLabels = ['',t("Önemsiz"),t("Az"),t("Orta"),t("Önemli"),t("Felaket")];
 
   // Yıl seçicisini doldur
   const yearSel = document.getElementById('rh-year');
@@ -88,7 +88,7 @@
     if (j.success && j.plan_years) {
       j.plan_years.forEach(py => {
         const opt = document.createElement('option');
-        opt.value = py.year; opt.textContent = py.year + (py.is_active ? ' (Aktif)' : '');
+        opt.value = py.year; opt.textContent = py.year + (py.is_active ? ' (' + t("Aktif") + ')' : '');
         if (py.is_active) opt.selected = true;
         yearSel.appendChild(opt);
       });
@@ -102,21 +102,21 @@
     document.getElementById('rh-error').style.display = 'none';
     try {
       const yr = yearSel.value;
-      const url = '/raporlar/api/risk-heatmap' + (yr ? '?year=' + yr : '');
+      const url = '/reports/api/risk-heatmap' + (yr ? '?year=' + yr : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('rh-loading').style.display = 'none';
       document.getElementById('rh-content').style.display = 'block';
       const s = j.summary;
       document.getElementById('rh-summary').innerHTML = [
-        stat('Toplam Risk',    s.total,    '#0f172a', 'Seçili dönemdeki tüm riskler'),
-        stat('Açık',          s.open,     '#dc2626', 'Henüz kapatılmamış riskler'),
-        stat('Azaltıldı',     s.mitigated,'#10b981', 'Önlem alınmış riskler'),
-        stat('Kritik (≥15)',  s.high_rpn, '#f59e0b', 'RPN ≥ 15 olan yüksek öncelikli'),
+        stat(t("Toplam Risk"),    s.total,    '#0f172a', t("Seçili dönemdeki tüm riskler"), 'raporlar_risk_heatmap.toplam_risk'),
+        stat(t("Açık"),          s.open,     '#dc2626', t("Henüz kapatılmamış riskler"), 'raporlar_risk_heatmap.acik'),
+        stat(t("Azaltıldı"),     s.mitigated,'#10b981', t("Önlem alınmış riskler"), 'raporlar_risk_heatmap.azaltildi'),
+        stat(t("Kritik (≥15)"),  s.high_rpn, '#f59e0b', t("RPN ≥ 15 olan yüksek öncelikli"), 'raporlar_risk_heatmap.kritik_15'),
       ].join('');
 
       // Grid
-      let html = '<div style="font-weight:700;color:#64748b;font-size:10px;text-align:center;align-self:end;padding-bottom:4px;">OL. \\ ETKİ</div>';
+      let html = '<div style="font-weight:700;color:#64748b;font-size:10px;text-align:center;align-self:end;padding-bottom:4px;">'+t("OL. \\ ETKİ")+'</div>';
       for (let i = 1; i <= 5; i++)
         html += `<div style="text-align:center;font-weight:600;color:#64748b;font-size:10px;" title="${etkiLabels[i]}">${i}<br><span style="font-size:9px;">${etkiLabels[i]}</span></div>`;
       for (let p = 5; p >= 1; p--) {
@@ -125,7 +125,7 @@
           const items = j.grid[p - 1][imp - 1];
           const cnt = items.length;
           const titles = items.map(r => r.title).join('\n').substring(0, 200);
-          html += `<div style="background:${cellColor(p,imp)};color:${cellTextColor(p,imp)};min-height:56px;border-radius:4px;padding:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:default;" title="RPN=${p*imp}\n${cnt} risk:\n${titles}">${cnt || ''}</div>`;
+          html += `<div style="background:${cellColor(p,imp)};color:${cellTextColor(p,imp)};min-height:56px;border-radius:4px;padding:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:default;" title="RPN=${p*imp}\n${cnt} ${t("risk")}:\n${titles}">${cnt || ''}</div>`;
         }
       }
       document.getElementById('rh-grid').innerHTML = html;
@@ -133,17 +133,17 @@
       // Top 10
       const tops = j.top_risks;
       if (!tops.length) {
-        document.getElementById('rh-top10').innerHTML = '<div style="color:#94a3b8;font-style:italic;padding:12px 0;">Risk kaydı yok.</div>';
+        document.getElementById('rh-top10').innerHTML = '<div style="color:#94a3b8;font-style:italic;padding:12px 0;">'+t("Risk kaydı yok.")+'</div>';
       } else {
         document.getElementById('rh-top10').innerHTML = '<div style="display:grid;gap:6px;">' + tops.map(r => {
           const statusRaw = (r.status || '').toLowerCase();
-          const statusTR = STATUS_TR[statusRaw] || r.status || 'Açık';
+          const statusTR = STATUS_TR[statusRaw] || r.status || t("Açık");
           const statusColor = statusRaw === 'open' ? '#ef4444' : statusRaw === 'mitigated' ? '#10b981' : '#64748b';
           return `<div style="display:flex;align-items:center;gap:10px;padding:8px;background:#f8fafc;border-radius:6px;font-size:12px;border-left:3px solid ${cellColor(r.probability||1,r.impact||1)};">
             <div style="width:44px;height:34px;background:${cellColor(r.probability||1,r.impact||1)};color:${cellTextColor(r.probability||1,r.impact||1)};font-weight:700;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">${r.rpn||0}</div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.title)}</div>
-              <div style="font-size:10.5px;color:#64748b;">Olasılık: ${r.probability} · Etki: ${r.impact} · <span style="color:${statusColor};font-weight:600;">${esc(statusTR)}</span></div>
+              <div style="font-size:10.5px;color:#64748b;">${t("Olasılık")}: ${r.probability} · ${t("Etki")}: ${r.impact} · <span style="color:${statusColor};font-weight:600;">${esc(statusTR)}</span></div>
             </div>
           </div>`;
         }).join('') + '</div>';
@@ -152,7 +152,7 @@
       document.getElementById('rh-loading').style.display = 'none';
       const err = document.getElementById('rh-error');
       err.style.display = 'block';
-      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Hata: ' + esc(e.message);
+      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + t("Hata") + ': ' + esc(e.message);
     }
   }
   load();

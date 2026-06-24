@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'RAID Kayıtları', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': _('RAID Kayıtları'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -15,30 +15,30 @@
 <div style="max-width:1200px; margin:0 auto;" class="pb-4 raid-micro-root">
     <div class="micro-project-view-toolbar align-items-center">
         <div>
-            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> Projeye dön</a>
+            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> {{ _("Projeye dön") }}</a>
             <div class="micro-project-view-title"><i class="fas fa-shield-alt text-rose-600"></i> RAID</div>
         </div>
         {% include "platform/project/_project_views_nav.html" %}
     </div>
 
     <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
-        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="showToolInfo('raid')" title="Bu araç hakkında bilgi">
-            <i class="fas fa-info-circle"></i> Nasıl kullanılır?
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="showToolInfo('raid')" title="{{ _('Bu araç hakkında bilgi') }}">
+            <i class="fas fa-info-circle"></i> {{ _("Nasıl kullanılır?") }}
         </button>
     </div>
 
     <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
-        <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddModal('Risk')"><i class="fas fa-plus"></i> Risk</button>
-        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Assumption')"><i class="fas fa-plus"></i> Varsayım</button>
-        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Issue')"><i class="fas fa-plus"></i> Sorun</button>
-        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Dependency')"><i class="fas fa-plus"></i> Bağımlılık</button>
+        <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddModal('Risk')"><i class="fas fa-plus"></i> {{ _("Risk") }}</button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Assumption')"><i class="fas fa-plus"></i> {{ _("Varsayım") }}</button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Issue')"><i class="fas fa-plus"></i> {{ _("Sorun") }}</button>
+        <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="openAddModal('Dependency')"><i class="fas fa-plus"></i> {{ _("Bağımlılık") }}</button>
     </div>
 
     <div class="micro-raid-tabs" id="raidTabBar" role="tablist">
-        <button type="button" class="is-active" data-raid-pane="raid-pane-risks" role="tab">Riskler</button>
-        <button type="button" data-raid-pane="raid-pane-assumptions" role="tab">Varsayımlar</button>
-        <button type="button" data-raid-pane="raid-pane-issues" role="tab">Sorunlar</button>
-        <button type="button" data-raid-pane="raid-pane-dependencies" role="tab">Bağımlılıklar</button>
+        <button type="button" class="is-active" data-raid-pane="raid-pane-risks" role="tab">{{ _("Riskler") }}</button>
+        <button type="button" data-raid-pane="raid-pane-assumptions" role="tab">{{ _("Varsayımlar") }}</button>
+        <button type="button" data-raid-pane="raid-pane-issues" role="tab">{{ _("Sorunlar") }}</button>
+        <button type="button" data-raid-pane="raid-pane-dependencies" role="tab">{{ _("Bağımlılıklar") }}</button>
     </div>
 
     <div id="raid-pane-risks" class="micro-raid-pane is-active mc-card" style="padding:14px;" role="tabpanel"><div id="risks-list"></div></div>
@@ -51,81 +51,81 @@
     <div class="micro-raid-modal__backdrop" data-raid-modal-close></div>
     <div class="micro-raid-modal__panel mc-card">
         <div class="micro-raid-modal__head">
-            <h5 style="margin:0;font-size:16px;font-weight:600;" id="modalTitle">RAID öğesi</h5>
-            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" data-raid-modal-close aria-label="Kapat"><i class="fas fa-times"></i></button>
+            <h5 style="margin:0;font-size:16px;font-weight:600;" id="modalTitle">{{ _("RAID öğesi") }}</h5>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" data-raid-modal-close aria-label="{{ _('Kapat') }}"><i class="fas fa-times"></i></button>
         </div>
         <div class="micro-raid-modal__body">
             <input type="hidden" id="item-id">
             <input type="hidden" id="item-type">
-            <label class="mc-label" for="item-title">Başlık</label>
+            <label class="mc-label" for="item-title">{{ _("Başlık") }}</label>
             <input type="text" class="mc-input" id="item-title" required>
-            <label class="mc-label mt-3" for="item-description">Açıklama</label>
+            <label class="mc-label mt-3" for="item-description">{{ _("Açıklama") }}</label>
             <textarea class="mc-input" id="item-description" rows="3" style="min-height:72px;"></textarea>
             <div id="risk-fields" style="display:none;">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
                     <div>
-                        <label class="mc-label" for="item-probability">Olasılık (1-5)</label>
+                        <label class="mc-label" for="item-probability">{{ _("Olasılık (1-5)") }}</label>
                         <select class="mc-select" id="item-probability" style="width:100%;">
-                            <option value="1">1 - Düşük</option>
-                            <option value="2">2 - Az olası</option>
-                            <option value="3" selected>3 - Orta</option>
-                            <option value="4">4 - Olası</option>
-                            <option value="5">5 - Yüksek</option>
+                            <option value="1">{{ _("1 - Düşük") }}</option>
+                            <option value="2">{{ _("2 - Az olası") }}</option>
+                            <option value="3" selected>{{ _("3 - Orta") }}</option>
+                            <option value="4">{{ _("4 - Olası") }}</option>
+                            <option value="5">{{ _("5 - Yüksek") }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label" for="item-impact">Etki (1-5)</label>
+                        <label class="mc-label" for="item-impact">{{ _("Etki (1-5)") }}</label>
                         <select class="mc-select" id="item-impact" style="width:100%;">
-                            <option value="1">1 - Düşük</option>
-                            <option value="2">2 - Az ciddi</option>
-                            <option value="3" selected>3 - Orta</option>
-                            <option value="4">4 - Ciddi</option>
-                            <option value="5">5 - Kritik</option>
+                            <option value="1">{{ _("1 - Düşük") }}</option>
+                            <option value="2">{{ _("2 - Az ciddi") }}</option>
+                            <option value="3" selected>{{ _("3 - Orta") }}</option>
+                            <option value="4">{{ _("4 - Ciddi") }}</option>
+                            <option value="5">{{ _("5 - Kritik") }}</option>
                         </select>
                     </div>
                 </div>
-                <label class="mc-label mt-3" for="item-mitigation">Azaltma stratejisi</label>
-                <textarea class="mc-input" id="item-mitigation" rows="3" placeholder="Bu riski nasıl azaltacaksınız?"></textarea>
+                <label class="mc-label mt-3" for="item-mitigation">{{ _("Azaltma stratejisi") }}</label>
+                <textarea class="mc-input" id="item-mitigation" rows="3" placeholder="{{ _('Bu riski nasıl azaltacaksınız?') }}"></textarea>
             </div>
             <div id="assumption-fields" style="display:none;">
-                <label class="mc-label mt-3" for="item-validation-date">Doğrulama tarihi</label>
+                <label class="mc-label mt-3" for="item-validation-date">{{ _("Doğrulama tarihi") }}</label>
                 <input type="date" class="mc-input" id="item-validation-date">
-                <label class="mc-label mt-3" for="item-assumption-notes">Doğrulama notları</label>
+                <label class="mc-label mt-3" for="item-assumption-notes">{{ _("Doğrulama notları") }}</label>
                 <textarea class="mc-input" id="item-assumption-notes" rows="3"></textarea>
             </div>
             <div id="issue-fields" style="display:none;">
-                <label class="mc-label mt-3" for="item-urgency">Aciliyet</label>
+                <label class="mc-label mt-3" for="item-urgency">{{ _("Aciliyet") }}</label>
                 <select class="mc-select" id="item-urgency" style="width:100%;">
-                    <option value="Düşük">Düşük</option>
-                    <option value="Orta" selected>Orta</option>
-                    <option value="Yüksek">Yüksek</option>
-                    <option value="Kritik">Kritik</option>
+                    <option value="Düşük">{{ _("Düşük") }}</option>
+                    <option value="Orta" selected>{{ _("Orta") }}</option>
+                    <option value="Yüksek">{{ _("Yüksek") }}</option>
+                    <option value="Kritik">{{ _("Kritik") }}</option>
                 </select>
-                <label class="mc-label mt-3" for="item-affected-work">Etkilenen çalışma</label>
-                <input type="text" class="mc-input" id="item-affected-work" placeholder="Hangi çalışmaları etkiliyor?">
+                <label class="mc-label mt-3" for="item-affected-work">{{ _("Etkilenen çalışma") }}</label>
+                <input type="text" class="mc-input" id="item-affected-work" placeholder="{{ _('Hangi çalışmaları etkiliyor?') }}">
             </div>
             <div id="dependency-fields" style="display:none;">
-                <label class="mc-label mt-3" for="item-dependency-type">Bağımlılık tipi</label>
+                <label class="mc-label mt-3" for="item-dependency-type">{{ _("Bağımlılık tipi") }}</label>
                 <select class="mc-select" id="item-dependency-type" style="width:100%;">
-                    <option value="FS">FS - Bitiş-Başlangıç</option>
-                    <option value="SS" selected>SS - Başlangıç-Başlangıç</option>
-                    <option value="FF">FF - Bitiş-Bitiş</option>
-                    <option value="SF">SF - Başlangıç-Bitiş</option>
+                    <option value="FS">{{ _("FS - Bitiş-Başlangıç") }}</option>
+                    <option value="SS" selected>{{ _("SS - Başlangıç-Başlangıç") }}</option>
+                    <option value="FF">{{ _("FF - Bitiş-Bitiş") }}</option>
+                    <option value="SF">{{ _("SF - Başlangıç-Bitiş") }}</option>
                 </select>
-                <label class="mc-label mt-3" for="item-task-id">Bağımlı görev ID</label>
-                <input type="number" class="mc-input" id="item-task-id" placeholder="Görev numarası">
+                <label class="mc-label mt-3" for="item-task-id">{{ _("Bağımlı görev ID") }}</label>
+                <input type="number" class="mc-input" id="item-task-id" placeholder="{{ _('Görev numarası') }}">
             </div>
-            <label class="mc-label mt-3" for="item-status">Durum</label>
+            <label class="mc-label mt-3" for="item-status">{{ _("Durum") }}</label>
             <select class="mc-select" id="item-status" style="width:100%;">
-                <option value="Open">Açık</option>
-                <option value="In Progress">Devam ediyor</option>
-                <option value="Mitigated">Azaltıldı</option>
-                <option value="Closed">Kapalı</option>
+                <option value="Open">{{ _("Açık") }}</option>
+                <option value="In Progress">{{ _("Devam ediyor") }}</option>
+                <option value="Mitigated">{{ _("Azaltıldı") }}</option>
+                <option value="Closed">{{ _("Kapalı") }}</option>
             </select>
         </div>
         <div class="micro-raid-modal__foot">
-            <button type="button" class="mc-btn mc-btn-secondary" data-raid-modal-close>İptal</button>
-            <button type="button" class="mc-btn mc-btn-primary" onclick="saveItem()">Kaydet</button>
+            <button type="button" class="mc-btn mc-btn-secondary" data-raid-modal-close>{{ _("İptal") }}</button>
+            <button type="button" class="mc-btn mc-btn-primary" onclick="saveItem()">{{ _("Kaydet") }}</button>
         </div>
     </div>
 </div>

@@ -41,7 +41,7 @@
   }
   function toastErr(msg) {
     if (window.Swal) {
-      Swal.fire({ icon: "error", title: "Hata", text: msg });
+      Swal.fire({ icon: "error", title: t("Hata"), text: msg });
     }
   }
 
@@ -55,10 +55,10 @@
         if (data.success) {
           window.location.reload();
         } else {
-          toastErr(data.message || "Dönem değiştirilemedi.");
+          toastErr(data.message || t("Dönem değiştirilemedi."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       }
     });
   }
@@ -72,12 +72,12 @@
 
       const result = await Swal.fire({
         icon: "warning",
-        title: `${year} Dönemini Kapat`,
-        html: `<p>${year} stratejik plan dönemi kapatılacak. Kapalı dönemler artık düzenlenemez.</p>
-               <p><strong>Bu işlem geri alınamaz.</strong></p>`,
+        title: `${year} ${t("Dönemini Kapat")}`,
+        html: `<p>${year} ${t("stratejik plan dönemi kapatılacak. Kapalı dönemler artık düzenlenemez.")}</p>
+               <p><strong>${t("Bu işlem geri alınamaz.")}</strong></p>`,
         showCancelButton: true,
-        confirmButtonText: "Evet, Kapat",
-        cancelButtonText: "Vazgeç",
+        confirmButtonText: t("Evet, Kapat"),
+        cancelButtonText: t("Vazgeç"),
         confirmButtonColor: "#dc2626",
       });
       if (!result.isConfirmed) return;
@@ -85,13 +85,13 @@
       try {
         const data = await postJson(closeUrl, {});
         if (data.success) {
-          toastOk(data.message || `${year} dönemi kapatıldı.`);
+          toastOk(data.message || `${year} ${t("dönemi kapatıldı.")}`);
           setTimeout(() => window.location.reload(), 1200);
         } else {
-          toastErr(data.message || "Dönem kapatılamadı.");
+          toastErr(data.message || t("Dönem kapatılamadı."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       }
     });
   }
@@ -126,7 +126,7 @@
       const fromYear = fromYearInput ? parseInt(fromYearInput.value, 10) || null : null;
 
       if (!newYear || newYear < 2000 || newYear > 2100) {
-        toastErr("Geçerli bir yıl girin (2000-2100).");
+        toastErr(t("Geçerli bir yıl girin (2000-2100)."));
         return;
       }
 
@@ -138,14 +138,14 @@
 
         const data = await postJson(CREATE_URL, payload);
         if (data.success) {
-          toastOk(data.message || `${newYear} dönemi oluşturuldu.`);
+          toastOk(data.message || `${newYear} ${t("dönemi oluşturuldu.")}`);
           closeModal();
           setTimeout(() => window.location.reload(), 1200);
         } else {
-          toastErr(data.message || "Dönem oluşturulamadı.");
+          toastErr(data.message || t("Dönem oluşturulamadı."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       } finally {
         btnSave.disabled = false;
       }

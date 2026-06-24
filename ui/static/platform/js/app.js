@@ -93,7 +93,7 @@ var MicroUI = {
     basari: function (mesaj, baslik) {
         Swal.fire({
             icon: 'success',
-            title: baslik || 'Başarılı',
+            title: baslik || t('Başarılı'),
             text: mesaj,
             confirmButtonColor: '#6366f1',
             timer: 2500,
@@ -105,20 +105,20 @@ var MicroUI = {
     hata: function (mesaj, baslik) {
         Swal.fire({
             icon: 'error',
-            title: baslik || 'Hata',
-            text: mesaj || 'Bir hata oluştu. Lütfen tekrar deneyin.',
+            title: baslik || t('Hata'),
+            text: mesaj || t('Bir hata oluştu. Lütfen tekrar deneyin.'),
             confirmButtonColor: '#6366f1',
-            confirmButtonText: 'Tamam'
+            confirmButtonText: t('Tamam')
         });
     },
 
     uyari: function (mesaj, baslik) {
         Swal.fire({
             icon: 'warning',
-            title: baslik || 'Uyarı',
+            title: baslik || t('Uyarı'),
             text: mesaj,
             confirmButtonColor: '#6366f1',
-            confirmButtonText: 'Tamam'
+            confirmButtonText: t('Tamam')
         });
     },
 
@@ -130,13 +130,13 @@ var MicroUI = {
         opts = opts || {};
         Swal.fire({
             icon: opts.icon || 'question',
-            title: baslik || 'Emin misiniz?',
+            title: baslik || t('Emin misiniz?'),
             text: mesaj,
             showCancelButton: true,
             confirmButtonColor: opts.confirmButtonColor || '#6366f1',
             cancelButtonColor: '#6b7280',
-            confirmButtonText: confirmText || 'Evet, devam et',
-            cancelButtonText: 'İptal',
+            confirmButtonText: confirmText || t('Evet, devam et'),
+            cancelButtonText: t('İptal'),
             reverseButtons: true
         }).then(function (result) {
             if (result.isConfirmed && typeof onConfirm === 'function') {
@@ -147,7 +147,7 @@ var MicroUI = {
 
     yukleniyor: function (mesaj) {
         Swal.fire({
-            title: mesaj || 'İşleniyor...',
+            title: mesaj || t('İşleniyor...'),
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: function () { Swal.showLoading(); }
@@ -170,8 +170,8 @@ var MicroUI = {
         .then(function (r) {
             var ct = (r.headers.get('content-type') || '');
             if (ct.indexOf('application/json') === -1) {
-                return r.text().then(function (t) {
-                    throw new Error(r.status === 403 ? 'Bu işlem için yetkiniz yok.' : ('HTTP ' + r.status));
+                return r.text().then(function () {
+                    throw new Error(r.status === 403 ? t('Bu işlem için yetkiniz yok.') : ('HTTP ' + r.status));
                 });
             }
             return r.json();
@@ -181,12 +181,12 @@ var MicroUI = {
                 if (typeof onSuccess === 'function') onSuccess(res);
             } else {
                 if (typeof onError === 'function') onError(res);
-                else MicroUI.hata(res.message || 'İşlem başarısız.');
+                else MicroUI.hata(res.message || t('İşlem başarısız.'));
             }
         })
         .catch(function (err) {
             console.error(err);
-            var msg = (err && err.message) ? err.message : 'Sunucu bağlantı hatası.';
+            var msg = (err && err.message) ? err.message : t('Sunucu bağlantı hatası.');
             if (typeof onError === 'function') onError({ message: msg });
             else MicroUI.hata(msg);
         });

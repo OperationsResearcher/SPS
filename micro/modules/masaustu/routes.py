@@ -24,6 +24,8 @@ from app.models.process import (
     ProcessKpi,
     ProcessActivity,
     Process,
+    KpiData,
+    FavoriteKpi,
     process_members,
     process_leaders,
 )
@@ -32,6 +34,7 @@ from app.models.portfolio_project import Project, Task, project_members, project
 
 from app_platform.modules.proje.permissions import is_privileged, user_can_edit_tasks
 from app_platform.modules.surec.permissions import user_can_access_process
+from flask_babel import gettext as _
 
 
 def _table_exists(table_name: str) -> bool:
@@ -64,7 +67,7 @@ def _individual_pg_has_monthly_entry(pg_id: int, user_id: int, year: int, month:
     return False
 
 
-@app_bp.route("/masaustu")
+@app_bp.route("/desktop")
 @login_required
 def masaustu():
     """Masaüstüm ana sayfası."""
@@ -117,6 +120,42 @@ def masaustu():
     surec_pgs = (
         surec_pg_sorgu.order_by(ProcessKpi.updated_at.desc()).limit(5).all()
     )
+
+    # Favori PG'ler — kullanıcının yıldızladığı süreç PG'leri + son ölçüm değeri
+    favori_pg_kayitlari = (
+        ProcessKpi.query
+        .join(FavoriteKpi, FavoriteKpi.process_kpi_id == ProcessKpi.id)
+        .join(ProcessKpi.process)
+        .filter(
+            FavoriteKpi.user_id == user_id,
+            FavoriteKpi.is_active.is_(True),
+            ProcessKpi.is_active.is_(True),
+            Process.is_active.is_(True),
+            Process.tenant_id == current_user.tenant_id,
+        )
+        .order_by(ProcessKpi.updated_at.desc())
+        .all()
+    )
+    favori_pgs = []
+    for _pg in favori_pg_kayitlari:
+        _son = (
+            KpiData.query
+            .filter_by(process_kpi_id=_pg.id, is_active=True)
+            .order_by(KpiData.year.desc(), KpiData.data_date.desc())
+            .first()
+        )
+        favori_pgs.append({
+            "id": _pg.id,
+            "name": _pg.name,
+            "code": _pg.code,
+            "unit": _pg.unit,
+            "target_value": _pg.target_value,
+            "process_id": _pg.process_id,
+            "process_name": _pg.process.name if _pg.process else None,
+            "actual_value": _son.actual_value if _son else None,
+            "status": _son.status if _son else None,
+            "status_percentage": _son.status_percentage if _son else None,
+        })
 
     # Okunmamış bildirimler
     bildirimler = (
@@ -257,6 +296,7 @@ def masaustu():
         bireysel_pgs=bireysel_pgs,
         bireysel_faaliyetler=bireysel_faaliyetler,
         surec_pgs=surec_pgs,
+        favori_pgs=favori_pgs,
         bildirimler=bildirimler,
         stratejiler=stratejiler,
         toplam_bireysel_pg=toplam_bireysel_pg,
@@ -547,7 +587,7 @@ def _collect_calendar_events(start_d: date, end_d: date, *, org_scope: bool) -> 
                 "backgroundColor": "#f59e0b",
                 "borderColor": "#d97706",
                 "textColor": "#ffffff",
-                "url": "/bireysel/karne",
+                "url": "/individual/scorecard",
                 "extendedProps": {"sourceType": "individual_activity"},
             }
         )
@@ -620,9 +660,9 @@ def api_calendar_activity_form_meta(process_id: int):
         is_active=True,
     ).first()
     if not p:
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     if not user_can_access_process(current_user, p):
-        return jsonify({"success": False, "message": "Bu sürece erişiminiz yok."}), 403
+        return jsonify({"success": False, "message": _("Bu sürece erişiminiz yok.")}), 403
 
     kpis = (
         ProcessKpi.query.filter_by(process_id=p.id, is_active=True)
@@ -671,7 +711,7 @@ def api_morning_summary():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[morning_summary] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Özet yüklenemedi."}), 500
+        return jsonify({"success": False, "message": _("Özet yüklenemedi.")}), 500
 
 
 @app_bp.route("/api/tenant-last-change")
@@ -711,7 +751,7 @@ _KOE_DANISMAN_ROLES = (
 )
 
 
-@app_bp.route("/masaustu/api/koe-danisman-ai", methods=["POST"])
+@app_bp.route("/desktop/api/koe-advisor-ai", methods=["POST"])
 @login_required
 def masaustu_koe_danisman_ai():
     """KOE Yapı-Danışmanı anlatı + önerilerini LLM ile zenginleştirir (lazy).
@@ -721,11 +761,11 @@ def masaustu_koe_danisman_ai():
     """
     rn = current_user.role.name if current_user.role else None
     if rn not in _KOE_DANISMAN_ROLES:
-        return jsonify({"success": False, "message": "Yetkisiz işlem."}), 403
+        return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
 
     tenant_id = current_user.tenant_id
     if not tenant_id:
-        return jsonify({"success": False, "message": "Kurum bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 404
 
     try:
         from app.services.koe_service import compute_koe, yapi_danismani
@@ -742,4 +782,4 @@ def masaustu_koe_danisman_ai():
         })
     except Exception as e:
         current_app.logger.warning(f"[koe-danisman-ai] {e}")
-        return jsonify({"success": False, "message": "AI danışman çağrılamadı."}), 500
+        return jsonify({"success": False, "message": _("AI danışman çağrılamadı.")}), 500

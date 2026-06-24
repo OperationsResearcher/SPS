@@ -7,6 +7,7 @@ from platform_core import app_bp
 from app.models.process import Process, ProcessKpi
 from app.models.core import User
 from app.models.core import Strategy, SubStrategy
+from flask_babel import gettext as _
 
 _MIN_Q = 2
 _LIMIT = 8
@@ -164,11 +165,11 @@ def api_global_search():
                 "icon": _icon("user"),
                 "title": full,
                 "subtitle": u.email or "",
-                "url": "/profil",
+                "url": "/profile",
             })
 
     except Exception as e:
         current_app.logger.error(f"[api_global_search] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Arama hatası."}), 500
+        return jsonify({"success": False, "message": _("Arama hatası.")}), 500
 
     return jsonify({"success": True, "items": items[: _LIMIT * 6]})

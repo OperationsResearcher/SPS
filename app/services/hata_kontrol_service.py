@@ -42,7 +42,7 @@ _MODULE_MAP = [
     ("/settings", "Hesap"),
     ("/ayarlar", "Ayarlar"),
     ("/bildirim", "Bildirim"),
-    ("/masaustu", "Masaüstü"),
+    ("/desktop", "Masaüstü"),
     ("/analiz", "Analiz"),
 ]
 

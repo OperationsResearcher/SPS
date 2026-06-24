@@ -1,5 +1,6 @@
 """Stratejik Planlama — SWOT/TOWS/PESTLE/OKR/BSC API."""
 
+from flask_babel import gettext as _
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -131,7 +132,7 @@ def sp_api_porter_get():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[sp_api_porter_get] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Porter verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Porter verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/porter", methods=["POST"])
@@ -146,7 +147,7 @@ def sp_api_porter_save():
         payload = request.get_json(silent=True) or {}
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         porter = PorterFiveForcesAnalysis.query.filter_by(
             tenant_id=tid, plan_year_id=active_py.id).first()
@@ -208,7 +209,7 @@ def sp_api_swot_get():
         }})
     except Exception as e:
         current_app.logger.error(f"[sp_api_swot_get] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "SWOT verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("SWOT verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/swot", methods=["POST"])
@@ -223,7 +224,7 @@ def sp_api_swot_save():
         payload = request.get_json(silent=True) or {}
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         swot = SwotAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
         if not swot:
@@ -272,7 +273,7 @@ def sp_api_tows_get():
         }})
     except Exception as e:
         current_app.logger.error(f"[sp_api_tows_get] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "TOWS verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("TOWS verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/tows", methods=["POST"])
@@ -287,7 +288,7 @@ def sp_api_tows_save():
         payload = request.get_json(silent=True) or {}
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         tows = TowsAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
         if not tows:
@@ -336,7 +337,7 @@ def sp_api_pestle_get():
         }})
     except Exception as e:
         current_app.logger.error(f"[sp_api_pestle_get] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "PESTLE verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("PESTLE verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/pestle", methods=["POST"])
@@ -351,7 +352,7 @@ def sp_api_pestle_save():
         payload = request.get_json(silent=True) or {}
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         pestle = PestelAnalysis.query.filter_by(tenant_id=tid, plan_year_id=active_py.id).first()
         if not pestle:
@@ -460,7 +461,7 @@ def sp_api_okr_list():
         })
     except Exception as e:
         current_app.logger.error(f"[sp_api_okr_list] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "OKR verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("OKR verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/okr/objective", methods=["POST"])
@@ -474,17 +475,17 @@ def sp_api_okr_objective_create():
         payload = request.get_json(silent=True) or {}
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
         title = (payload.get("title") or "").strip()
         if not title:
-            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+            return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
 
         # H-14: cross-tenant doğrulama
         linked_strategy_id = payload.get("linked_strategy_id") or None
         linked_sub_strategy_id = payload.get("linked_sub_strategy_id") or None
         if linked_strategy_id:
             if not Strategy.query.filter_by(id=linked_strategy_id, tenant_id=tid, is_active=True).first():
-                return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz strateji.")}), 400
         if linked_sub_strategy_id:
             valid_ss = SubStrategy.query.join(Strategy).filter(
                 SubStrategy.id == linked_sub_strategy_id,
@@ -492,7 +493,7 @@ def sp_api_okr_objective_create():
                 SubStrategy.is_active.is_(True),
             ).first()
             if not valid_ss:
-                return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz alt strateji.")}), 400
 
         obj = OkrObjective(
             tenant_id=tid, plan_year_id=active_py.id,
@@ -526,7 +527,7 @@ def sp_api_okr_objective_update(obj_id):
         obj = OkrObjective.query.filter_by(id=obj_id, tenant_id=tid, is_active=True).first_or_404()
         title = (payload.get("title") or "").strip()
         if not title:
-            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+            return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
         obj.title       = title
         obj.description = (payload.get("description") or "").strip() or None
         obj.quarter     = payload.get("quarter") or None
@@ -536,7 +537,7 @@ def sp_api_okr_objective_update(obj_id):
             new_sid = payload.get("linked_strategy_id") or None
             if new_sid:
                 if not Strategy.query.filter_by(id=new_sid, tenant_id=tid, is_active=True).first():
-                    return jsonify({"success": False, "message": "Geçersiz strateji."}), 400
+                    return jsonify({"success": False, "message": _("Geçersiz strateji.")}), 400
             obj.linked_strategy_id = new_sid
         if "linked_sub_strategy_id" in payload:
             new_ssid = payload.get("linked_sub_strategy_id") or None
@@ -547,14 +548,14 @@ def sp_api_okr_objective_update(obj_id):
                     SubStrategy.is_active.is_(True),
                 ).first()
                 if not valid_ss:
-                    return jsonify({"success": False, "message": "Geçersiz alt strateji."}), 400
+                    return jsonify({"success": False, "message": _("Geçersiz alt strateji.")}), 400
             obj.linked_sub_strategy_id = new_ssid
         db.session.commit()
         return jsonify({"success": True})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_okr_objective_update] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Güncellenemedi.")}), 500
 
 
 @app_bp.route("/sp/api/okr/objective/<int:obj_id>", methods=["DELETE"])
@@ -587,7 +588,7 @@ def sp_api_okr_kr_create(obj_id):
         obj = OkrObjective.query.filter_by(id=obj_id, tenant_id=tid, is_active=True).first_or_404()
         title = (payload.get("title") or "").strip()
         if not title:
-            return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+            return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
         kr = OkrKeyResult(
             objective_id=obj.id,
             title=title,
@@ -633,7 +634,7 @@ def sp_api_okr_kr_update(kr_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_okr_kr_update] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "KR güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("KR güncellenemedi.")}), 500
 
 
 @app_bp.route("/sp/api/okr/kr/<int:kr_id>", methods=["DELETE"])
@@ -818,7 +819,7 @@ def sp_api_bsc_get():
         })
     except Exception as e:
         current_app.logger.error(f"[sp_api_bsc_get] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "BSC verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("BSC verisi alınamadı.")}), 500
 
 
 @app_bp.route("/sp/api/bsc/assign", methods=["POST"])
@@ -834,7 +835,7 @@ def sp_api_bsc_assign():
         perspective = (payload.get("perspective") or "").strip()
         active_py   = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
         if not kpi_id:
             return jsonify({"success": False, "message": "kpi_id zorunludur."}), 400
 
@@ -843,7 +844,7 @@ def sp_api_bsc_assign():
             ProcessKpi.id == kpi_id, Process.tenant_id == tid
         ).first()
         if not kpi_owner:
-            return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+            return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
 
         row = BscKpiPerspective.query.filter_by(
             tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
@@ -885,7 +886,7 @@ def sp_api_bsc_assign_bulk():
         perspective = (payload.get("perspective") or "").strip()
         active_py   = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         # H-13: cross-tenant doğrulama — yalnızca bu tenant'a ait kpi_id'lere izin ver
         if kpi_ids:
@@ -896,7 +897,7 @@ def sp_api_bsc_assign_bulk():
             }
             invalid = [kid for kid in kpi_ids if kid not in valid_ids]
             if invalid:
-                return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
 
         # Mevcut row'ları tek sorguda topla (N+1 önlemi)
         _existing_rows = {r.process_kpi_id: r for r in BscKpiPerspective.query.filter(
@@ -981,7 +982,7 @@ def sp_api_bsc_auto_suggest():
                         "total_unassigned": len(suggestions)})
     except Exception as e:
         current_app.logger.error(f"[sp_api_bsc_auto_suggest] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öneri üretilemedi."}), 500
+        return jsonify({"success": False, "message": _("Öneri üretilemedi.")}), 500
 
 
 @app_bp.route("/sp/api/bsc/auto-assign", methods=["POST"])
@@ -1000,7 +1001,7 @@ def sp_api_bsc_auto_assign():
 
         active_py = get_active_plan_year_for_user(current_user)
         if not active_py:
-            return jsonify({"success": False, "message": "Aktif plan yılı bulunamadı."}), 400
+            return jsonify({"success": False, "message": _("Aktif plan yılı bulunamadı.")}), 400
 
         assigned_ids = {r.process_kpi_id for r in BscKpiPerspective.query.filter_by(
             tenant_id=tid, plan_year_id=active_py.id
@@ -1046,7 +1047,7 @@ def sp_api_bsc_auto_assign():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_bsc_auto_assign] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Otomatik atama yapılamadı."}), 500
+        return jsonify({"success": False, "message": _("Otomatik atama yapılamadı.")}), 500
 
 
 @app_bp.route("/sp/api/bsc/balance", methods=["GET"])
@@ -1098,4 +1099,4 @@ def sp_api_bsc_balance():
                         "recommendations": recommendations})
     except Exception as e:
         current_app.logger.error(f"[sp_api_bsc_balance] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Denge skoru hesaplanamadı."}), 500
+        return jsonify({"success": False, "message": _("Denge skoru hesaplanamadı.")}), 500

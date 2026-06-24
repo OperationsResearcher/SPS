@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}SP Projeler — Kokpitim{% endblock %}
-{% block page_title %}SP Projeler{% endblock %}
+{% block title %}{{ _("SP Projeler — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("SP Projeler") }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sp.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Projeler', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Stratejik Planlama'), 'url': url_for('app_bp.sp_menu')}, {'label': _('Projeler'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -20,17 +20,17 @@
 
 {% if not plan_year_feature or not active_plan_year %}
 <div class="mc-alert mc-alert-warning">
-  SP Projeleri için aktif bir SPDönemi gereklidir.
-  <a href="{{ url_for('app_bp.sp') }}">Stratejik Planlama</a> sayfasından dönem oluşturun.
+  {{ _("SP Projeleri için aktif bir SPDönemi gereklidir.") }}
+  <a href="{{ url_for('app_bp.sp') }}">{{ _("Stratejik Planlama") }}</a> {{ _("sayfasından dönem oluşturun.") }}
 </div>
 {% else %}
 
 <div class="mc-page-header mc-mb-4" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-  <span class="mc-badge mc-badge-primary">{{ active_plan_year.year }} Dönemi</span>
+  <span class="mc-badge mc-badge-primary">{{ active_plan_year.year }} {{ _("Dönemi") }}</span>
   {% if active_plan_year.name %}<span class="mc-text-muted">{{ active_plan_year.name }}</span>{% endif %}
   {% if sp_can_manage %}
   <button class="mc-btn mc-btn-primary mc-btn-sm mc-ml-auto" id="btn-proje-add">
-    <i class="fas fa-plus"></i> Yeni Proje
+    <i class="fas fa-plus"></i> {{ _("Yeni Proje") }}
   </button>
   {% endif %}
 </div>
@@ -38,7 +38,7 @@
 <!-- Proje kartları -->
 <div id="proje-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;"></div>
 <div id="proje-empty" class="mc-text-muted mc-text-center mc-py-8" style="display:none;">
-  Bu dönem için henüz proje yok.
+  {{ _("Bu dönem için henüz proje yok.") }}
 </div>
 
 {% endif %}
@@ -48,47 +48,47 @@
 <div class="mc-modal-overlay" id="modal-proje-edit">
   <div class="mc-modal-lg">
     <div class="mc-modal-header">
-      <h3 id="modal-proje-title">Proje Ekle</h3>
+      <h3 id="modal-proje-title">{{ _("Proje Ekle") }}</h3>
       <button class="mc-modal-close" data-modal="modal-proje-edit">✕</button>
     </div>
     <div class="mc-modal-body">
       <input type="hidden" id="proje-edit-id">
       <div class="mc-form-group">
-        <label class="mc-label" for="proje-edit-name">Proje Adı *</label>
-        <input type="text" id="proje-edit-name" class="mc-input" placeholder="Proje adı">
+        <label class="mc-label" for="proje-edit-name">{{ _("Proje Adı *") }}</label>
+        <input type="text" id="proje-edit-name" class="mc-input" placeholder="{{ _('Proje adı') }}">
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="proje-edit-desc">Açıklama</label>
-        <textarea id="proje-edit-desc" class="mc-input" rows="3" placeholder="Kısa açıklama..."></textarea>
+        <label class="mc-label" for="proje-edit-desc">{{ _("Açıklama") }}</label>
+        <textarea id="proje-edit-desc" class="mc-input" rows="3" placeholder="{{ _('Kısa açıklama...') }}"></textarea>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="proje-edit-status">Durum</label>
+        <label class="mc-label" for="proje-edit-status">{{ _("Durum") }}</label>
         <select id="proje-edit-status" class="mc-input">
-          <option value="Planlandı">Planlandı</option>
-          <option value="Devam Ediyor">Devam Ediyor</option>
-          <option value="Tamamlandı">Tamamlandı</option>
-          <option value="İptal">İptal</option>
-          <option value="Beklemede">Beklemede</option>
+          <option value="Planlandı">{{ _("Planlandı") }}</option>
+          <option value="Devam Ediyor">{{ _("Devam Ediyor") }}</option>
+          <option value="Tamamlandı">{{ _("Tamamlandı") }}</option>
+          <option value="İptal">{{ _("İptal") }}</option>
+          <option value="Beklemede">{{ _("Beklemede") }}</option>
         </select>
       </div>
       <div class="mc-row mc-gap-2">
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label" for="proje-edit-start">Başlangıç Tarihi</label>
+          <label class="mc-label" for="proje-edit-start">{{ _("Başlangıç Tarihi") }}</label>
           <input type="date" id="proje-edit-start" class="mc-input">
         </div>
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label" for="proje-edit-end">Bitiş Tarihi</label>
+          <label class="mc-label" for="proje-edit-end">{{ _("Bitiş Tarihi") }}</label>
           <input type="date" id="proje-edit-end" class="mc-input">
         </div>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="proje-edit-progress">İlerleme (%)</label>
+        <label class="mc-label" for="proje-edit-progress">{{ _("İlerleme (%%)") }}</label>
         <input type="number" min="0" max="100" id="proje-edit-progress" class="mc-input" placeholder="0-100">
       </div>
     </div>
     <div class="mc-modal-footer">
-      <button class="mc-btn mc-btn-secondary" data-modal="modal-proje-edit">İptal</button>
-      <button class="mc-btn mc-btn-primary" id="btn-proje-save">Kaydet</button>
+      <button class="mc-btn mc-btn-secondary" data-modal="modal-proje-edit">{{ _("İptal") }}</button>
+      <button class="mc-btn mc-btn-primary" id="btn-proje-save">{{ _("Kaydet") }}</button>
     </div>
   </div>
 </div>
@@ -97,42 +97,42 @@
 <div class="mc-modal-overlay" id="modal-gorev-edit">
   <div class="mc-modal-md">
     <div class="mc-modal-header">
-      <h3 id="modal-gorev-title">Görev Ekle</h3>
+      <h3 id="modal-gorev-title">{{ _("Görev Ekle") }}</h3>
       <button class="mc-modal-close" data-modal="modal-gorev-edit">✕</button>
     </div>
     <div class="mc-modal-body">
       <input type="hidden" id="gorev-edit-project-id">
       <input type="hidden" id="gorev-edit-id">
       <div class="mc-form-group">
-        <label class="mc-label" for="gorev-edit-name">Görev Adı *</label>
+        <label class="mc-label" for="gorev-edit-name">{{ _("Görev Adı *") }}</label>
         <input type="text" id="gorev-edit-name" class="mc-input">
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="gorev-edit-desc">Açıklama</label>
+        <label class="mc-label" for="gorev-edit-desc">{{ _("Açıklama") }}</label>
         <textarea id="gorev-edit-desc" class="mc-input" rows="2"></textarea>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="gorev-edit-status">Durum</label>
+        <label class="mc-label" for="gorev-edit-status">{{ _("Durum") }}</label>
         <select id="gorev-edit-status" class="mc-input">
-          <option value="Planlandı">Planlandı</option>
-          <option value="Devam Ediyor">Devam Ediyor</option>
-          <option value="Tamamlandı">Tamamlandı</option>
+          <option value="Planlandı">{{ _("Planlandı") }}</option>
+          <option value="Devam Ediyor">{{ _("Devam Ediyor") }}</option>
+          <option value="Tamamlandı">{{ _("Tamamlandı") }}</option>
         </select>
       </div>
       <div class="mc-row mc-gap-2">
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label" for="gorev-edit-start">Başlangıç</label>
+          <label class="mc-label" for="gorev-edit-start">{{ _("Başlangıç") }}</label>
           <input type="date" id="gorev-edit-start" class="mc-input">
         </div>
         <div class="mc-form-group mc-flex-1">
-          <label class="mc-label" for="gorev-edit-end">Bitiş</label>
+          <label class="mc-label" for="gorev-edit-end">{{ _("Bitiş") }}</label>
           <input type="date" id="gorev-edit-end" class="mc-input">
         </div>
       </div>
     </div>
     <div class="mc-modal-footer">
-      <button class="mc-btn mc-btn-secondary" data-modal="modal-gorev-edit">İptal</button>
-      <button class="mc-btn mc-btn-primary" id="btn-gorev-save">Kaydet</button>
+      <button class="mc-btn mc-btn-secondary" data-modal="modal-gorev-edit">{{ _("İptal") }}</button>
+      <button class="mc-btn mc-btn-primary" id="btn-gorev-save">{{ _("Kaydet") }}</button>
     </div>
   </div>
 </div>

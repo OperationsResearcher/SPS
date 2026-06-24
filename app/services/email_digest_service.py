@@ -17,6 +17,7 @@ import datetime as _dt
 from typing import Optional
 
 from flask import current_app, render_template_string
+from flask_babel import gettext as _
 
 
 _DIGEST_TEMPLATE = """
@@ -151,13 +152,13 @@ def send_digest(tenant_id: int, recipients: Optional[list[str]] = None) -> dict:
     try:
         data = build_digest_content(tenant_id)
         if not data:
-            return {"success": False, "message": "Tenant bulunamadı"}
+            return {"success": False, "message": _("Tenant bulunamadı")}
 
         if recipients is None:
             recipients = get_digest_recipients(tenant_id)
 
         if not recipients:
-            return {"success": False, "message": "Alıcı yönetici bulunamadı"}
+            return {"success": False, "message": _("Alıcı yönetici bulunamadı")}
 
         html = render_template_string(_DIGEST_TEMPLATE, **data)
 
@@ -173,7 +174,7 @@ def send_digest(tenant_id: int, recipients: Optional[list[str]] = None) -> dict:
         }
     except Exception as e:
         current_app.logger.error(f"[send_digest] {e}", exc_info=True)
-        return {"success": False, "message": "Özet e-postası gönderilemedi."}
+        return {"success": False, "message": _("Özet e-postası gönderilemedi.")}
 
 
 def _send_via_smtp(tenant_id: int, recipients: list[str], subject: str, html: str) -> int:

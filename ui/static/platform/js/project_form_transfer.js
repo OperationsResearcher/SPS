@@ -114,7 +114,7 @@
     var max = opts.max || 0;
     var sel = selectedOptions(src);
     if (!sel.length) {
-      toast("warning", "Önce soldan seçim yapın.");
+      toast("warning", t("Önce soldan seçim yapın."));
       return;
     }
     if (max === 1 && dst.options.length) {
@@ -135,7 +135,7 @@
   function removeFromTo(dst, src, onAfter) {
     var sel = selectedOptions(dst);
     if (!sel.length) {
-      toast("warning", "Önce sağdan seçim yapın.");
+      toast("warning", t("Önce sağdan seçim yapın."));
       return;
     }
     sel.forEach(function (opt) {
@@ -219,7 +219,7 @@
     clearSelect(mgrDst);
     leaderIds.forEach(function (lid) {
       if (byId[lid]) mgrDst.appendChild(new Option(byId[lid].label, String(lid)));
-      else mgrDst.appendChild(new Option("Kullanıcı #" + lid, String(lid)));
+      else mgrDst.appendChild(new Option(t("Kullanıcı") + " #" + lid, String(lid)));
     });
 
     initDestFromIds(memDst, init.memberIds || []);
@@ -266,7 +266,7 @@
       for (var i = 0; i < sel.length; i++) {
         var uid = parseInt(sel[i].value, 10);
         if (memberIds(memDst).indexOf(uid) !== -1) {
-          toast("warning", "Üye olan kullanıcı gözlemci olamaz; önce üyelikten çıkarın.");
+          toast("warning", t("Üye olan kullanıcı gözlemci olamaz; önce üyelikten çıkarın."));
           return;
         }
       }
@@ -309,7 +309,7 @@
     form.addEventListener("submit", function (e) {
       if (!mgrDst.options.length) {
         e.preventDefault();
-        toast("warning", "En az bir proje lideri seçmelisiniz.");
+        toast("warning", t("En az bir proje lideri seçmelisiniz."));
         return;
       }
       syncHiddenFromSelect(mgrDst, hidLeaders, "leaders");

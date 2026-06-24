@@ -19,6 +19,7 @@ from flask import Blueprint, request, jsonify, current_app
 from extensions import db
 from app.models.core import User
 from app.models.process import KpiData, ProcessKpi, Process
+from flask_babel import gettext as _
 
 
 dataconn_bp = Blueprint("dataconn_bp", __name__, url_prefix="/api/v1/dataconn")
@@ -75,7 +76,7 @@ def dataconn_kpi_data():
     """
     user = _auth_or_401()
     if not user:
-        return jsonify({"success": False, "message": "Geçersiz token. X-API-Token header veya ?token= ile gönder"}), 401
+        return jsonify({"success": False, "message": _("Geçersiz token. X-API-Token header veya ?token= ile gönder")}), 401
 
     tid = user.tenant_id
     year = request.args.get("year", type=int)
@@ -148,7 +149,7 @@ def dataconn_processes():
     """Süreç listesi (Power BI için master data)."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"success": False, "message": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": _("Geçersiz token")}), 401
 
     rows = (
         Process.query.filter_by(tenant_id=user.tenant_id, is_active=True)
@@ -171,7 +172,7 @@ def dataconn_kpis():
     """KPI tanım listesi."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"success": False, "message": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": _("Geçersiz token")}), 401
 
     rows = (
         ProcessKpi.query.join(Process)
@@ -196,7 +197,7 @@ def dataconn_metadata():
     """OData-style metadata + token info (Power BI bağlantı için)."""
     user = _auth_or_401()
     if not user:
-        return jsonify({"success": False, "message": "Geçersiz token"}), 401
+        return jsonify({"success": False, "message": _("Geçersiz token")}), 401
 
     base = request.url_root.rstrip("/")
     return jsonify({

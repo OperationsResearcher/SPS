@@ -1,0 +1,265 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Kılavuz & Video Oluşturucu — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Kılavuz & Video Oluşturucu") }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('Kılavuz & Video Oluşturucu'), 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1050px;margin:0 auto;"
+     id="ko-root"
+     data-durum-url="{{ url_for('app_bp.admin_tools_kilavuz_kurum_durum') }}"
+     data-baslat-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_baslat') }}"
+     data-durum-api-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_durum') }}"
+     data-durdur-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_durdur') }}"
+     data-indir-pdf-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_indir_pdf') }}"
+     data-is-local="{{ '1' if is_local else '0' }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-book-open" style="color:#d97706;"></i> {{ _("Kılavuz & Video Oluşturucu") }}
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        {{ _("Playwright ile gizli pencerede (incognito) sıfırdan <b>YeniTomofil</b> adımlarını otonom canlandırır, kısa eğitim videoları ve görsel işaretli ekran görüntüleri alıp kılavuz PDF'ini derler.") }}
+      </p>
+    </div>
+  </div>
+
+  {% if not is_local %}
+  <div class=" mc-card--accent-danger" style="padding:12px 16px;margin-bottom:16px;background:#fef2f2;">
+    <i class="fas fa-lock" style="color:#b91c1c;"></i>
+    <span style="font-size:13px;color:#991b1b;">{{ _("Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.") }}</span>
+  </div>
+  {% endif %}
+
+  <div style="display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start;">
+    
+    {# Sol sütun: Kontrol Paneli ve Canlı Log Terminali #}
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      {# Kontrol Paneli #}
+      <div class="mc-card" style="padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:15px; font-weight:700; color:var(--text-default); margin:0 0 4px;">{{ _("Otonom Oluşturma Kontrolleri") }}</h3>
+            <p style="font-size:12px; color:#64748b; margin:0;">{{ _("YeniTomofil'i sıfırlar, 1920x1080 çözünürlükte video çeker ve PDF'i derler.") }}</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="ko-btn-baslat" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}>
+              <i class="fas fa-play"></i> {{ _("Otonom Çekimi Başlat") }}
+            </button>
+            <button id="ko-btn-durdur" class="mc-btn" style="display:none; background:#dc2626; color:#fff;">
+              <i class="fas fa-stop"></i> {{ _("Çekimi Durdur") }}
+            </button>
+          </div>
+        </div>
+
+        {# Progress Bar #}
+        <div id="ko-progress-wrap" style="display:none; margin:15px 0 10px;">
+          <div style="height:8px; background:#e2e8f0; border-radius:6px; overflow:hidden;">
+            <div id="ko-progress-bar" style="height:100%; width:0; background:linear-gradient(90deg, #d97706, #f59e0b); transition:width .3s;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#64748b; margin-top:5px;">
+            <span id="ko-progress-text">{{ _("Hazırlanıyor...") }}</span>
+            <span id="ko-progress-pct">0%</span>
+          </div>
+        </div>
+      </div>
+
+      {# Canlı Log Terminali #}
+      <div class="mc-card" style="padding:18px;">
+        <h3 style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 8px; display:flex; align-items:center; gap:6px;">
+          <i class="fas fa-terminal" style="color:#64748b;"></i> {{ _("Otonom Çalışma Logları") }}
+        </h3>
+        <div id="ko-terminal" style="background:#0f172a; color:#38bdf8; font-family:monospace; font-size:12.5px; padding:12px 14px; border-radius:8px; height:240px; overflow-y:auto; line-height:1.5;">
+          <div style="color:#64748b;">{{ _('[Sistem] Otonom çalışma bekleniyor. Lütfen "Otonom Çekimi Başlat" butonuna basın.') }}</div>
+        </div>
+      </div>
+
+      {# Video Galeri Kartı #}
+      <div class="mc-card" style="padding:18px;">
+        <h3 style="font-size:15px; font-weight:700; color:var(--text-default); margin:0 0 12px;">
+          <i class="fas fa-photo-film" style="color:#d97706;"></i> {{ _("Kısa Konu Anlatım Videoları") }}
+        </h3>
+        
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px;" id="ko-video-grid">
+          
+          {# Bölüm 1 — Senaryo v3 (1.1–1.4 tek video). SP/Süreç/Proje/K-Radar bölümleri sıraları gelince eklenecek. #}
+          <div class="ko-video-card" style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; background:#f8fafc; padding:8px;">
+            <div style="font-size:12.5px; font-weight:600; color:#334155; margin-bottom:6px;">{{ _("Bölüm 1 — Giriş, Kurum & Kullanıcı Yapılandırması") }}</div>
+            <video width="100%" controls style="border-radius:4px; background:#000;">
+              <source src="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.mp4" type="video/mp4">
+              <source src="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.webm" type="video/webm">
+            </video>
+            <div style="margin-top:6px; text-align:right;">
+              <a href="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.mp4" class="mc-btn mc-btn-secondary mc-btn-xs" download style="font-size:11px; padding:2px 6px;"><i class="fas fa-download"></i> {{ _("mp4 İndir") }}</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    {# Sağ sütun: YeniTomofil Bilgi Kartı ve Kılavuz PDF İndirme #}
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      {# Kurum Bilgi Kartı #}
+      <div class="mc-card" style="padding:18px;">
+        <h3 style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 10px;">{{ _("YeniTomofil Durumu") }}</h3>
+        <div id="ko-durum" style="font-size:12.5px; color:#475569; line-height:1.5;">{{ _("Yükleniyor...") }}</div>
+      </div>
+
+      {# Kılavuz İndirme Kartı #}
+      <div class="mc-card" style="padding:18px; border-top: 3px solid #10b981;">
+        <h3 style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 6px;">{{ _("Güncel Kılavuz PDF") }}</h3>
+        <p style="font-size:12px; color:#64748b; margin:0 0 14px;">{{ _("Otonom çekim bittikten sonra derlenen en güncel piksel kalitesindeki PDF'i indirin.") }}</p>
+        <a id="ko-btn-pdf" href="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_indir_pdf') }}" class="mc-btn mc-btn-success" style="width:100%; text-align:center; display:block; box-sizing:border-box;">
+          <i class="fas fa-file-pdf"></i> {{ _("Kılavuz PDF'ini İndir") }}
+        </a>
+        <p style="font-size:11px; color:#94a3b8; margin:8px 0 0;">{{ _("Çekim <b>bittiğinde tam</b>, <b>durdurulduğunda</b> o ana kadarki (taslak) kılavuz PDF'i bu butondan indirilir.") }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById("ko-root"); if(!root) return;
+  var durumUrl = root.dataset.durumUrl;
+  var baslatUrl = root.dataset.baslatUrl;
+  var durumApiUrl = root.dataset.durumApiUrl;
+  var indirPdfUrl = root.dataset.indirPdfUrl;
+  var isLocal = root.dataset.isLocal === "1";
+
+  var btnBaslat = document.getElementById("ko-btn-baslat");
+  var btnDurdur = document.getElementById("ko-btn-durdur");
+  var btnPdf = document.getElementById("ko-btn-pdf");
+  var durdurUrl = root.dataset.durdurUrl;
+  var currentRunId = null;
+  var durumEl = document.getElementById("ko-durum");
+  var terminal = document.getElementById("ko-terminal");
+  var progressWrap = document.getElementById("ko-progress-wrap");
+  var progressBar = document.getElementById("ko-progress-bar");
+  var progressText = document.getElementById("ko-progress-text");
+  var progressPct = document.getElementById("ko-progress-pct");
+
+  var pollTimer = null;
+
+  function loadDurum() {
+    fetch(durumUrl, {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success){durumEl.textContent=t("Kurum durumu alınamadı.");return;}
+        var d = j.durum || {};
+        // YeniTomofil kurumunun gerçek durumu (kurum-durum ucu).
+        if(!d.exists){
+          durumEl.innerHTML = '<span style="color:#b45309;"><i class="fas fa-triangle-exclamation"></i> '+t("YeniTomofil henüz kurulmamış.")+'</span>';
+        } else {
+          durumEl.innerHTML = '<span style="color:#15803d; font-weight:600;"><i class="fas fa-check-circle"></i> '+t("Kuruldu")+' (TID: '+d.tid+')</span>' +
+            '<div style="margin-top:6px; font-size:12px; color:#64748b;">' +
+            t("Strateji")+': <b>'+d.strategies+'</b><br>' +
+            t("Süreçler")+': <b>'+d.processes+'</b><br>' +
+            t("PG/KPI Sayısı")+': <b>'+d.process_kpis+'</b><br>' +
+            t("Admin")+': <b>'+d.admin_email+'</b>' +
+            '</div>';
+        }
+      }).catch(function(){durumEl.textContent=t("Durum alınamadı.");});
+  }
+
+  function appendLog(line) {
+    var d = document.createElement("div");
+    d.textContent = line;
+    terminal.appendChild(d);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  function poll(runId) {
+    fetch(durumApiUrl + "?run=" + encodeURIComponent(runId), {headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success) {
+          clearInterval(pollTimer);
+          appendLog("[Sistem] " + t("Durum API hatası."));
+          btnBaslat.disabled = !isLocal;
+          return;
+        }
+        var d = j.durum || {};
+        
+        // Terminal loglarını güncelle
+        terminal.innerHTML = "";
+        (d.logs || []).forEach(function(l){
+          appendLog(l);
+        });
+
+        // İlerleme çubuğunu güncelle
+        var pct = d.total ? Math.round((d.done / d.total) * 100) : 0;
+        progressBar.style.width = pct + "%";
+        progressPct.textContent = pct + "%";
+        progressText.textContent = d.current || t("Yürütülüyor...");
+
+        if(d.status === "done" || d.status === "error" || d.status === "cancelled") {
+          clearInterval(pollTimer);
+          btnBaslat.disabled = !isLocal;
+          if(btnDurdur) btnDurdur.style.display = "none";
+          progressText.textContent = d.status === "done" ? t("Tüm işlemler başarıyla tamamlandı!")
+            : (d.status === "cancelled" ? t("Çekim durduruldu — Taslak PDF ile görselleri inceleyebilirsiniz.") : t("Bir hata ile kesildi."));
+          loadDurum();
+          // Videoları yenilemek için video elementlerini yeniden yükle
+          document.querySelectorAll("video").forEach(function(v){
+            v.load();
+          });
+        }
+      }).catch(function(){});
+  }
+
+  function baslat() {
+    if(!isLocal) return;
+    btnBaslat.disabled = true;
+    progressWrap.style.display = "block";
+    terminal.innerHTML = "<div>[Sistem] " + t("Otonom Playwright çekim süreci başlatılıyor...") + "</div>";
+    
+    fetch(baslatUrl, {method:"POST", headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin", body:"{}"})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.success) {
+          appendLog("[Hata] " + ((j&&j.message)||t("Başlatılamadı.")));
+          btnBaslat.disabled = false;
+          return;
+        }
+        currentRunId = j.run_id;
+        if(btnDurdur){ btnDurdur.style.display = ""; btnDurdur.disabled = false; btnDurdur.innerHTML = '<i class="fas fa-stop"></i> '+t("Çekimi Durdur"); }
+        pollTimer = setInterval(function(){ poll(j.run_id); }, 1500);
+        poll(j.run_id);
+      }).catch(function(){
+        appendLog("[Hata] " + t("Sunucuyla bağlantı kurulamadı."));
+        btnBaslat.disabled = false;
+      });
+  }
+
+  btnBaslat.addEventListener("click", baslat);
+
+  // Çekimi durdur (kooperatif iptal — güvenli noktada durur)
+  if(btnDurdur) btnDurdur.addEventListener("click", function(){
+    if(!currentRunId){ return; }
+    btnDurdur.disabled = true;
+    btnDurdur.innerHTML = '<i class="fas fa-spinner fa-spin"></i> '+t("Durduruluyor…");
+    appendLog("[Sistem] " + t("Durdurma isteği gönderildi — çekim güvenli noktada duracak."));
+    fetch(durdurUrl + "?run=" + encodeURIComponent(currentRunId), {method:"POST", headers:{"X-Requested-With":"XMLHttpRequest"}, credentials:"same-origin"})
+      .then(function(r){return r.json();})
+      .then(function(j){ if(j && j.message) appendLog("[Sistem] " + j.message); })
+      .catch(function(){ appendLog("[Hata] " + t("Durdurma isteği gönderilemedi.")); btnDurdur.disabled = false; });
+  });
+  
+  // PDF İndir butonu
+  btnPdf.href = indirPdfUrl;
+
+  loadDurum();
+})();
+</script>
+{% endblock %}

@@ -14,6 +14,7 @@ from utils.karne_hesaplamalar import (
     hesapla_basari_puani, hesapla_agirlikli_basari_puani, parse_basari_puani_araliklari
 )
 from app.utils.errors import AuthorizationError, ResourceNotFoundError
+from flask_babel import gettext as _
 
 
 class ProcessPerformanceService:
@@ -666,11 +667,11 @@ class ProcessPerformanceService:
         """Süreç karnesi verilerini Excel olarak dışa aktarır."""
     
         if not surec_id or not yil:
-            return dict({"success": False, "message": "Süreç ID ve Yıl gereklidir."}), 400
+            return dict({"success": False, "message": _("Süreç ID ve Yıl gereklidir.")}), 400
     
         surec = Surec.query.get(surec_id)
         if not surec:
-            return dict({"success": False, "message": "Süreç bulunamadı."}), 404
+            return dict({"success": False, "message": _("Süreç bulunamadı.")}), 404
     
         # Check user permission
         if user.sistem_rol == 'admin':
@@ -679,7 +680,7 @@ class ProcessPerformanceService:
         elif user.sistem_rol in ['kurum_yoneticisi', 'ust_yonetim']:
             # Kurum yöneticileri kendi kurumlarındaki süreçleri görüntüleyebilir
             if surec.kurum_id != user.kurum_id:
-                return dict({"success": False, "message": "Bu süreci görüntüleme yetkiniz yok."}), 403
+                return dict({"success": False, "message": _("Bu süreci görüntüleme yetkiniz yok.")}), 403
         else:
             # Normal kullanıcı için lider/üye kontrolü
             lider_mi = db.session.query(surec_liderleri).filter(
@@ -693,7 +694,7 @@ class ProcessPerformanceService:
             ).first() is not None
         
             if not (lider_mi or uye_mi):
-                return dict({"success": False, "message": "Bu süreci görüntüleme yetkiniz yok."}), 403
+                return dict({"success": False, "message": _("Bu süreci görüntüleme yetkiniz yok.")}), 403
     
         try:
             try:
@@ -703,7 +704,7 @@ class ProcessPerformanceService:
                 current_app.logger.error(f'openpyxl import hatası: {import_err}')
                 return dict({
                     "success": False,
-                    "message": "Excel aktarımı için openpyxl gerekli. Lütfen bağımlılığı yükleyin."
+                    "message": _("Excel aktarımı için openpyxl gerekli. Lütfen bağımlılığı yükleyin.")
                 }), 500
 
             # Create workbook and sheets

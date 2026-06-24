@@ -23,6 +23,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from flask_babel import gettext as _
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 1 — 15 HIZLI KAZANC RAPORU (PLAN-TUM-RAPORLAR.md Faz 1)
@@ -34,13 +35,13 @@ def _tid_or_none():
 
 # ─── ST-01: Stratejik Hiyerarşi Sunburst ─────────────────────────────────────
 
-@app_bp.route("/raporlar/sunburst")
+@app_bp.route("/reports/sunburst")
 @login_required
 def raporlar_sunburst():
-    return render_template("platform/raporlar/sunburst.html")
+    return render_template("platform/reports/sunburst.html")
 
 
-@app_bp.route("/raporlar/api/sunburst")
+@app_bp.route("/reports/api/sunburst")
 @login_required
 def raporlar_api_sunburst():
     tid = _tid_or_none()
@@ -101,13 +102,13 @@ def raporlar_api_sunburst():
 
 # ─── ST-06: VRIO Portföy 4-Köşe ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/vrio-portfoy")
+@app_bp.route("/reports/vrio-portfoy")
 @login_required
 def raporlar_vrio_portfoy():
-    return render_template("platform/raporlar/vrio_portfoy.html")
+    return render_template("platform/reports/vrio_portfoy.html")
 
 
-@app_bp.route("/raporlar/api/vrio-portfoy")
+@app_bp.route("/reports/api/vrio-portfoy")
 @login_required
 def raporlar_api_vrio_portfoy():
     from app.models.strategy_frameworks import VRIOResource
@@ -141,13 +142,13 @@ def raporlar_api_vrio_portfoy():
 
 # ─── ST-09: OKR Cascade Görseli ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/okr-cascade")
+@app_bp.route("/reports/okr-cascade")
 @login_required
 def raporlar_okr_cascade():
-    return render_template("platform/raporlar/okr_cascade.html")
+    return render_template("platform/reports/okr_cascade.html")
 
 
-@app_bp.route("/raporlar/api/okr-cascade")
+@app_bp.route("/reports/api/okr-cascade")
 @login_required
 def raporlar_api_okr_cascade():
     from app.models.okr import OkrObjective, OkrKeyResult
@@ -193,13 +194,13 @@ def raporlar_api_okr_cascade():
 
 # ─── ST-11: Initiative Roadmap Gantt ────────────────────────────────────────
 
-@app_bp.route("/raporlar/initiative-roadmap")
+@app_bp.route("/reports/initiative-roadmap")
 @login_required
 def raporlar_initiative_roadmap():
-    return render_template("platform/raporlar/initiative_roadmap.html")
+    return render_template("platform/reports/initiative_roadmap.html")
 
 
-@app_bp.route("/raporlar/api/initiative-roadmap")
+@app_bp.route("/reports/api/initiative-roadmap")
 @login_required
 def raporlar_api_initiative_roadmap():
     from app.models.initiative import InitiativeMilestone
@@ -234,7 +235,7 @@ def raporlar_api_initiative_roadmap():
 
 # ─── OP-04: 7 Muda Waste Analizi ───────────────────────────────────────────
 
-@app_bp.route("/raporlar/muda-analizi")
+@app_bp.route("/reports/muda-analysis")
 @login_required
 def raporlar_muda_analizi():
     from app.services.plan_year_service import list_plan_years
@@ -243,11 +244,11 @@ def raporlar_muda_analizi():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/muda_analizi.html",
+    return render_template("platform/reports/muda_analizi.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/muda-analizi")
+@app_bp.route("/reports/api/muda-analysis")
 @login_required
 def raporlar_api_muda_analizi():
     from app.services.plan_year_service import get_plan_year
@@ -287,13 +288,13 @@ def raporlar_api_muda_analizi():
 
     # 7 muda tipinin Türkçe etiketleri + açıklamaları + örnekleri
     muda_meta = {
-        "overproduction":  {"label": "Aşırı Üretim",      "color": "#dc2626", "desc": "İhtiyaçtan fazla üretim, ham veri/rapor hazırlama. Stoğa eklenir, çürür.",      "ex": "Talep edilmemiş raporlar; satılamayan ürün stoku"},
-        "waiting":         {"label": "Bekleme",            "color": "#f59e0b", "desc": "Onay, malzeme, makine veya bilgi beklemesi. Üretim akışını keser.",          "ex": "Onay zincirinde bekleyen evrak; teslimat geciken malzeme"},
-        "transport":       {"label": "Taşıma / Nakliye",   "color": "#0ea5e9", "desc": "Gereksiz malzeme/dosya/insan hareketi. Değer üretmez.",                    "ex": "Atölyeden depoya gereksiz gidip-gelme; çoklu dosya kopyaları"},
-        "overprocessing":  {"label": "Aşırı İşlem",        "color": "#8b5cf6", "desc": "Müşterinin değer vermediği fazladan adımlar/kontroller/standart fazlası.",   "ex": "Aynı veriye 3 farklı yerden imza; gereksiz detaylı paketleme"},
-        "inventory":       {"label": "Stok",               "color": "#0d9488", "desc": "Bilgi/malzeme/iş emrinin kuyrukta birikmesi. Para bağlar, kaliteyi gizler.",  "ex": "Yarı mamul yığını; iş listesi 100+ açık iş emri"},
-        "motion":          {"label": "Hareket",            "color": "#16a34a", "desc": "Çalışanın gereksiz fiziksel/dijital hareketi (arama, eğilme, yürüme).",       "ex": "Doğru klasörü bulmak için 10 ekran tıklama"},
-        "defects":         {"label": "Kusurlar / Hatalar", "color": "#ef4444", "desc": "Yeniden yapım, düzeltme, iade gerektiren hatalı çıktı.",                     "ex": "Hatalı veri girişi nedeniyle yeniden raporlama"},
+        "overproduction":  {"label": _("Aşırı Üretim"),      "color": "#dc2626", "desc": _("İhtiyaçtan fazla üretim, ham veri/rapor hazırlama. Stoğa eklenir, çürür."),      "ex": _("Talep edilmemiş raporlar; satılamayan ürün stoku")},
+        "waiting":         {"label": _("Bekleme"),            "color": "#f59e0b", "desc": _("Onay, malzeme, makine veya bilgi beklemesi. Üretim akışını keser."),          "ex": _("Onay zincirinde bekleyen evrak; teslimat geciken malzeme")},
+        "transport":       {"label": _("Taşıma / Nakliye"),   "color": "#0ea5e9", "desc": _("Gereksiz malzeme/dosya/insan hareketi. Değer üretmez."),                    "ex": _("Atölyeden depoya gereksiz gidip-gelme; çoklu dosya kopyaları")},
+        "overprocessing":  {"label": _("Aşırı İşlem"),        "color": "#8b5cf6", "desc": _("Müşterinin değer vermediği fazladan adımlar/kontroller/standart fazlası."),   "ex": _("Aynı veriye 3 farklı yerden imza; gereksiz detaylı paketleme")},
+        "inventory":       {"label": _("Stok"),               "color": "#0d9488", "desc": _("Bilgi/malzeme/iş emrinin kuyrukta birikmesi. Para bağlar, kaliteyi gizler."),  "ex": _("Yarı mamul yığını; iş listesi 100+ açık iş emri")},
+        "motion":          {"label": _("Hareket"),            "color": "#16a34a", "desc": _("Çalışanın gereksiz fiziksel/dijital hareketi (arama, eğilme, yürüme)."),       "ex": _("Doğru klasörü bulmak için 10 ekran tıklama")},
+        "defects":         {"label": _("Kusurlar / Hatalar"), "color": "#ef4444", "desc": _("Yeniden yapım, düzeltme, iade gerektiren hatalı çıktı."),                     "ex": _("Hatalı veri girişi nedeniyle yeniden raporlama")},
     }
     muda_summary = [{
         "key": k, **muda_meta.get(k, {"label": k, "color": "#64748b", "desc": "", "ex": ""}),
@@ -314,7 +315,7 @@ def raporlar_api_muda_analizi():
 
 # ─── OP-15: CMMI Olgunluk Heatmap ──────────────────────────────────────────
 
-@app_bp.route("/raporlar/cmmi-heatmap")
+@app_bp.route("/reports/cmmi-heatmap")
 @login_required
 def raporlar_cmmi_heatmap():
     from app.services.plan_year_service import list_plan_years
@@ -323,11 +324,11 @@ def raporlar_cmmi_heatmap():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/cmmi_heatmap.html",
+    return render_template("platform/reports/cmmi_heatmap.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/cmmi-heatmap")
+@app_bp.route("/reports/api/cmmi-heatmap")
 @login_required
 def raporlar_api_cmmi_heatmap():
     from app.models.k_radar_domain import ProcessMaturity
@@ -367,11 +368,11 @@ def raporlar_api_cmmi_heatmap():
 
     # CMMI seviyeleri — Türkçe açıklamalar
     level_meta = {
-        1: {"label": "1 — Başlangıç",        "en": "Initial",                  "color": "#dc2626", "desc": "Süreç ad-hoc/kaotik; kişiye bağımlı, tekrarlanabilirlik yok."},
-        2: {"label": "2 — Yönetilen",        "en": "Managed",                  "color": "#f59e0b", "desc": "Temel süreç disiplini var; planlama, izleme, kontrol uygulanıyor."},
-        3: {"label": "3 — Tanımlı",          "en": "Defined",                  "color": "#0ea5e9", "desc": "Süreç dokümante edilmiş, kurum standardı; iyileştirmeler proaktif."},
-        4: {"label": "4 — Sayısal Yönetilen","en": "Quantitatively Managed",   "color": "#6366f1", "desc": "Süreç istatistiksel teknikleriyle ölçülüyor; sapmalar sayısal kontrol altında."},
-        5: {"label": "5 — Optimize Eden",    "en": "Optimizing",               "color": "#10b981", "desc": "Sürekli iyileştirme döngüsü; inovasyon ve teknolojik yenilik kurumsallaşmış."},
+        1: {"label": _("1 — Başlangıç"),        "en": "Initial",                  "color": "#dc2626", "desc": _("Süreç ad-hoc/kaotik; kişiye bağımlı, tekrarlanabilirlik yok.")},
+        2: {"label": _("2 — Yönetilen"),        "en": "Managed",                  "color": "#f59e0b", "desc": _("Temel süreç disiplini var; planlama, izleme, kontrol uygulanıyor.")},
+        3: {"label": _("3 — Tanımlı"),          "en": "Defined",                  "color": "#0ea5e9", "desc": _("Süreç dokümante edilmiş, kurum standardı; iyileştirmeler proaktif.")},
+        4: {"label": _("4 — Sayısal Yönetilen"),"en": "Quantitatively Managed",   "color": "#6366f1", "desc": _("Süreç istatistiksel teknikleriyle ölçülüyor; sapmalar sayısal kontrol altında.")},
+        5: {"label": _("5 — Optimize Eden"),    "en": "Optimizing",               "color": "#10b981", "desc": _("Sürekli iyileştirme döngüsü; inovasyon ve teknolojik yenilik kurumsallaşmış.")},
     }
     distribution_list = [{
         "level": k, "label": level_meta[k]["label"], "en": level_meta[k]["en"],
@@ -382,25 +383,25 @@ def raporlar_api_cmmi_heatmap():
 
     # Genel olgunluk yorumu
     if avg_level >= 4.5:
-        overall_label = "Mükemmel — Optimize Eden"
+        overall_label = _("Mükemmel — Optimize Eden")
         overall_color = "#10b981"
-        overall_advice = "Süreçleriniz sınıfın en iyisi seviyesinde. İnovasyonu kurumsallaştırma odaklı kalın."
+        overall_advice = _("Süreçleriniz sınıfın en iyisi seviyesinde. İnovasyonu kurumsallaştırma odaklı kalın.")
     elif avg_level >= 3.5:
-        overall_label = "Çok İyi — Sayısal Yönetim"
+        overall_label = _("Çok İyi — Sayısal Yönetim")
         overall_color = "#6366f1"
-        overall_advice = "Sayısal teknik uygulanıyor; süreçleri optimize etmeye geçiş zamanı."
+        overall_advice = _("Sayısal teknik uygulanıyor; süreçleri optimize etmeye geçiş zamanı.")
     elif avg_level >= 2.5:
-        overall_label = "İyi — Tanımlı"
+        overall_label = _("İyi — Tanımlı")
         overall_color = "#0ea5e9"
-        overall_advice = "Standart süreçler var; ölçüm ve istatistik kontrol için yatırım yapın."
+        overall_advice = _("Standart süreçler var; ölçüm ve istatistik kontrol için yatırım yapın.")
     elif avg_level >= 1.5:
-        overall_label = "Orta — Yönetilen"
+        overall_label = _("Orta — Yönetilen")
         overall_color = "#f59e0b"
-        overall_advice = "Temel disiplin var; dokümantasyon ve kurum standardı için çalışın."
+        overall_advice = _("Temel disiplin var; dokümantasyon ve kurum standardı için çalışın.")
     else:
-        overall_label = "Düşük — Başlangıç"
+        overall_label = _("Düşük — Başlangıç")
         overall_color = "#dc2626"
-        overall_advice = "Süreçler ad-hoc; öncelik temel planlama ve izleme disiplinini kurmaktır."
+        overall_advice = _("Süreçler ad-hoc; öncelik temel planlama ve izleme disiplinini kurmaktır.")
 
     # Olgunluk hesaplanmamış süreçler
     measured_ids = {p["id"] for p in processes}
@@ -422,7 +423,7 @@ def raporlar_api_cmmi_heatmap():
 
 # ─── OP-17: Operasyonel İstatistik Sayfası (süreç bazlı) ───────────────────
 
-@app_bp.route("/raporlar/operasyon-istatistik")
+@app_bp.route("/reports/operation-statistics")
 @login_required
 def raporlar_op_istatistik():
     from app.services.plan_year_service import list_plan_years
@@ -431,11 +432,11 @@ def raporlar_op_istatistik():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/op_istatistik.html",
+    return render_template("platform/reports/op_istatistik.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/operasyon-istatistik")
+@app_bp.route("/reports/api/operation-statistics")
 @login_required
 def raporlar_api_op_istatistik():
     from app.services.plan_year_service import get_plan_year
@@ -486,13 +487,13 @@ def raporlar_api_op_istatistik():
 
 # ─── HR-07: Bireysel Hedef Hizalama ────────────────────────────────────────
 
-@app_bp.route("/raporlar/bireysel-hizalama")
+@app_bp.route("/reports/individual-alignment")
 @login_required
 def raporlar_bireysel_hizalama():
-    return render_template("platform/raporlar/bireysel_hizalama.html")
+    return render_template("platform/reports/bireysel_hizalama.html")
 
 
-@app_bp.route("/raporlar/api/bireysel-hizalama")
+@app_bp.route("/reports/api/individual-alignment")
 @login_required
 def raporlar_api_bireysel_hizalama():
     tid = _tid_or_none()
@@ -538,13 +539,13 @@ def raporlar_api_bireysel_hizalama():
 
 # ─── RK-01: Risk Heatmap Detay ─────────────────────────────────────────────
 
-@app_bp.route("/raporlar/risk-heatmap")
+@app_bp.route("/reports/risk-heatmap")
 @login_required
 def raporlar_risk_heatmap():
-    return render_template("platform/raporlar/risk_heatmap.html")
+    return render_template("platform/reports/risk_heatmap.html")
 
 
-@app_bp.route("/raporlar/api/risk-heatmap")
+@app_bp.route("/reports/api/risk-heatmap")
 @login_required
 def raporlar_api_risk_heatmap():
     from app.models.k_radar_domain import RiskHeatmapItem
@@ -596,13 +597,13 @@ def raporlar_api_risk_heatmap():
 
 # ─── RK-08: 2FA Kullanım Raporu ────────────────────────────────────────────
 
-@app_bp.route("/raporlar/iki-fa")
+@app_bp.route("/reports/two-fa")
 @login_required
 def raporlar_iki_fa():
-    return render_template("platform/raporlar/iki_fa.html")
+    return render_template("platform/reports/iki_fa.html")
 
 
-@app_bp.route("/raporlar/api/iki-fa")
+@app_bp.route("/reports/api/two-fa")
 @login_required
 def raporlar_api_iki_fa():
     tid = _tid_or_none()
@@ -633,13 +634,13 @@ def raporlar_api_iki_fa():
 
 # ─── ES-01: Carbon Footprint Toplam Trend ──────────────────────────────────
 
-@app_bp.route("/raporlar/carbon-trend")
+@app_bp.route("/reports/carbon-trend")
 @login_required
 def raporlar_carbon_trend():
-    return render_template("platform/raporlar/carbon_trend.html")
+    return render_template("platform/reports/carbon_trend.html")
 
 
-@app_bp.route("/raporlar/api/carbon-trend")
+@app_bp.route("/reports/api/carbon-trend")
 @login_required
 def raporlar_api_carbon_trend():
     from app.models.esg import EsgMetric, EsgMetricValue
@@ -678,13 +679,13 @@ def raporlar_api_carbon_trend():
 
 # ─── AI-02: AI Strateji Danışmanı ──────────────────────────────────────────
 
-@app_bp.route("/raporlar/ai-danisman")
+@app_bp.route("/reports/ai-advisor")
 @login_required
 def raporlar_ai_danisman():
-    return render_template("platform/raporlar/ai_danisman.html")
+    return render_template("platform/reports/ai_danisman.html")
 
 
-@app_bp.route("/raporlar/api/ai-danisman")
+@app_bp.route("/reports/api/ai-advisor")
 @login_required
 def raporlar_api_ai_danisman():
     tid = _tid_or_none()
@@ -701,13 +702,13 @@ def raporlar_api_ai_danisman():
 
 # ─── AI-04: AI Coach ───────────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/ai-coach")
+@app_bp.route("/reports/ai-coach")
 @login_required
 def raporlar_ai_coach():
-    return render_template("platform/raporlar/ai_coach.html")
+    return render_template("platform/reports/ai_coach.html")
 
 
-@app_bp.route("/raporlar/api/ai-coach")
+@app_bp.route("/reports/api/ai-coach")
 @login_required
 def raporlar_api_ai_coach():
     tid = _tid_or_none()
@@ -783,13 +784,13 @@ def raporlar_api_ai_coach():
 
 # ─── AI-05: AI Early Warning Dashboard ─────────────────────────────────────
 
-@app_bp.route("/raporlar/early-warning")
+@app_bp.route("/reports/early-warning")
 @login_required
 def raporlar_early_warning():
-    return render_template("platform/raporlar/early_warning.html")
+    return render_template("platform/reports/early_warning.html")
 
 
-@app_bp.route("/raporlar/api/early-warning")
+@app_bp.route("/reports/api/early-warning")
 @login_required
 def raporlar_api_early_warning():
     tid = _tid_or_none()

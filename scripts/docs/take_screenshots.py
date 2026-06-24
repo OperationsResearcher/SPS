@@ -35,7 +35,7 @@ PAGES = [
     # (sıra_no, slug, path, açıklama, ek_bekleme_ms)
     (1,  "masaustu",          "/masaustu",                     "Masaüstüm",                  1500),
     (2,  "sp-anasayfa",       "/sp",                           "SP Ana Sayfa",               1500),
-    (3,  "plan-yillari",      "/sp/donemler",                  "Plan Yılları",               1000),
+    (3,  "plan-yillari",      "/sp/periods",                   "Plan Yılları",               1000),
     (4,  "exec-dashboard",    "/sp/exec-dashboard",            "Exec Dashboard",             2500),
     (5,  "ceyreklik-review",  "/sp/ceyreklik-review",          "Çeyreklik Review",           2500),
     (6,  "initiatives",       "/sp/initiatives",               "Initiative'ler",             1500),

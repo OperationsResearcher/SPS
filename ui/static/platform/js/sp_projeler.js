@@ -77,8 +77,8 @@
         <div class="sp-proje-card-header" style="border-left:4px solid ${color}">
           <div class="sp-proje-card-title">${escHtml(p.name)}</div>
           <div class="sp-proje-card-actions">
-            ${CAN_MANAGE ? `<button class="mc-btn mc-btn-ghost mc-btn-xs btn-proje-edit" data-id="${p.id}" title="Düzenle">✎</button>
-            <button class="mc-btn mc-btn-ghost mc-btn-xs btn-proje-delete" data-id="${p.id}" title="Sil">✕</button>` : ""}
+            ${CAN_MANAGE ? `<button class="mc-btn mc-btn-ghost mc-btn-xs btn-proje-edit" data-id="${p.id}" title="${t("Düzenle")}">✎</button>
+            <button class="mc-btn mc-btn-ghost mc-btn-xs btn-proje-delete" data-id="${p.id}" title="${t("Sil")}">✕</button>` : ""}
           </div>
         </div>
         <div class="sp-proje-card-body">
@@ -90,13 +90,13 @@
           <div class="sp-proje-progress-wrap">
             <div class="sp-proje-progress-bar" style="background:${color};width:${progressPct}%"></div>
           </div>
-          <div class="sp-proje-progress-label">${progressPct}% tamamlandı</div>
+          <div class="sp-proje-progress-label">${progressPct}% ${t("tamamlandı")}</div>
         </div>
         <div class="sp-proje-card-footer">
           <button class="mc-btn mc-btn-ghost mc-btn-xs btn-gorev-toggle" data-id="${p.id}">
-            <i class="fas fa-tasks"></i> Görevler <span class="gorev-count" id="gorev-count-${p.id}"></span>
+            <i class="fas fa-tasks"></i> ${t("Görevler")} <span class="gorev-count" id="gorev-count-${p.id}"></span>
           </button>
-          ${CAN_MANAGE ? `<button class="mc-btn mc-btn-ghost mc-btn-xs btn-gorev-add" data-project-id="${p.id}">+ Görev Ekle</button>` : ""}
+          ${CAN_MANAGE ? `<button class="mc-btn mc-btn-ghost mc-btn-xs btn-gorev-add" data-project-id="${p.id}">+ ${t("Görev Ekle")}</button>` : ""}
         </div>
         <div class="sp-gorev-list" id="gorev-list-${p.id}" style="display:none;"></div>
       `;
@@ -117,9 +117,9 @@
     document.querySelectorAll(".btn-proje-delete").forEach(btn => {
       btn.addEventListener("click", () => {
         const id = btn.dataset.id;
-        if (!window.Swal) { if (!confirm("Silinsin mi?")) return; deleteProject(id); return; }
-        Swal.fire({ title: "Proje silinsin mi?", text: "Görevleri de silinecek.", icon: "warning",
-          showCancelButton: true, confirmButtonText: "Evet, Sil", cancelButtonText: "İptal",
+        if (!window.Swal) { if (!confirm(t("Silinsin mi?"))) return; deleteProject(id); return; }
+        Swal.fire({ title: t("Proje silinsin mi?"), text: t("Görevleri de silinecek."), icon: "warning",
+          showCancelButton: true, confirmButtonText: t("Evet, Sil"), cancelButtonText: t("İptal"),
           confirmButtonColor: "#ef4444" }).then(r => { if (r.isConfirmed) deleteProject(id); });
       });
     });
@@ -147,8 +147,8 @@
     fetch(PROJE_DEL_BASE + id, {
       method: "DELETE", headers: { "X-Requested-With": "XMLHttpRequest" }
     }).then(r => r.json()).then(d => {
-      if (d.success) { toast("Proje silindi."); loadProjects(); }
-      else toast(d.message || "Hata.", "error");
+      if (d.success) { toast(t("Proje silindi.")); loadProjects(); }
+      else toast(d.message || t("Hata."), "error");
     });
   }
 
@@ -156,7 +156,7 @@
   document.getElementById("btn-proje-add")?.addEventListener("click", () => openProjeModal(null));
 
   function openProjeModal(p) {
-    document.getElementById("modal-proje-title").textContent = p ? "Proje Düzenle" : "Proje Ekle";
+    document.getElementById("modal-proje-title").textContent = p ? t("Proje Düzenle") : t("Proje Ekle");
     document.getElementById("proje-edit-id").value     = p?.id || "";
     document.getElementById("proje-edit-name").value   = p?.name || "";
     document.getElementById("proje-edit-desc").value   = p?.description || "";
@@ -170,7 +170,7 @@
   document.getElementById("btn-proje-save")?.addEventListener("click", () => {
     const id   = document.getElementById("proje-edit-id").value;
     const name = document.getElementById("proje-edit-name").value.trim();
-    if (!name) { toast("Proje adı zorunludur.", "warning"); return; }
+    if (!name) { toast(t("Proje adı zorunludur."), "warning"); return; }
     const body = {
       name,
       description: document.getElementById("proje-edit-desc").value.trim(),
@@ -182,8 +182,8 @@
     if (id) body.id = parseInt(id);
     apiFetch(PROJE_SAVE_URL, { method: "POST", body: JSON.stringify(body) }).then(d => {
       closeModal("modal-proje-edit");
-      if (d.success) { toast("Proje kaydedildi."); loadProjects(); }
-      else toast(d.message || "Hata.", "error");
+      if (d.success) { toast(t("Proje kaydedildi.")); loadProjects(); }
+      else toast(d.message || t("Hata."), "error");
     });
   });
 
@@ -212,7 +212,7 @@
     const tasks = tasksCache[projectId] || [];
     listEl.innerHTML = "";
     if (!tasks.length) {
-      listEl.innerHTML = '<div class="mc-text-muted mc-text-sm mc-p-2">Henüz görev yok.</div>';
+      listEl.innerHTML = `<div class="mc-text-muted mc-text-sm mc-p-2">${t("Henüz görev yok.")}</div>`;
       return;
     }
     tasks.forEach(t => {
@@ -239,7 +239,7 @@
   }
 
   function openGorevModal(projectId, task) {
-    document.getElementById("modal-gorev-title").textContent = task ? "Görevi Düzenle" : "Görev Ekle";
+    document.getElementById("modal-gorev-title").textContent = task ? t("Görevi Düzenle") : t("Görev Ekle");
     document.getElementById("gorev-edit-project-id").value = projectId;
     document.getElementById("gorev-edit-id").value    = task?.id || "";
     document.getElementById("gorev-edit-name").value  = task?.name || "";
@@ -254,7 +254,7 @@
     const projectId = document.getElementById("gorev-edit-project-id").value;
     const id   = document.getElementById("gorev-edit-id").value;
     const name = document.getElementById("gorev-edit-name").value.trim();
-    if (!name) { toast("Görev adı zorunludur.", "warning"); return; }
+    if (!name) { toast(t("Görev adı zorunludur."), "warning"); return; }
     const saveUrl = getGorevUrl(projectId);
     const body = {
       name,
@@ -266,8 +266,8 @@
     if (id) body.id = parseInt(id);
     apiFetch(saveUrl, { method: "POST", body: JSON.stringify(body) }).then(d => {
       closeModal("modal-gorev-edit");
-      if (d.success) { toast("Görev kaydedildi."); loadTasks(projectId); }
-      else toast(d.message || "Hata.", "error");
+      if (d.success) { toast(t("Görev kaydedildi.")); loadTasks(projectId); }
+      else toast(d.message || t("Hata."), "error");
     });
   });
 

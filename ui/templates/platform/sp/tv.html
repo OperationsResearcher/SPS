@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KOKPİTİM — Savaş Odası</title>
+  <title>{{ _("KOKPİTİM — Savaş Odası") }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -109,8 +109,8 @@
       data-uid="{{ savas_uid }}" data-tid="{{ savas_tid }}">
   <div class="tv-head" id="tv-head">
     <div>
-      <div class="tv-title">KOKPİTİM <span class="dot">●</span> SAVAŞ ODASI</div>
-      <div class="tv-sub" id="tv-sub">Yönetici Kokpiti — canlı izleme</div>
+      <div class="tv-title">{{ _("KOKPİTİM") }} <span class="dot">●</span> {{ _("SAVAŞ ODASI") }}</div>
+      <div class="tv-sub" id="tv-sub">{{ _("Yönetici Kokpiti — canlı izleme") }}</div>
     </div>
     <div class="tv-right">
       <div class="scene-dots" id="scene-dots">
@@ -119,12 +119,12 @@
       </div>
       <div>
         <div class="tv-clock" id="tv-clock">--:--:--</div>
-        <div class="tv-meta" id="tv-updated">güncelleniyor…</div>
+        <div class="tv-meta" id="tv-updated">{{ _("güncelleniyor…") }}</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
-        <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
-        <button class="tv-fs" id="tv-anim">✈️ Animasyonu kapat</button>
-        <button class="tv-fs" id="tv-settings">⚙️ Cepheleri düzenle</button>
+        <button class="tv-fs" id="tv-fs">{{ _("⛶ Tam ekran") }}</button>
+        <button class="tv-fs" id="tv-anim">{{ _("✈️ Animasyonu kapat") }}</button>
+        <button class="tv-fs" id="tv-settings">{{ _("⚙️ Cepheleri düzenle") }}</button>
       </div>
     </div>
   </div>
@@ -146,29 +146,29 @@
 
   <div class="stage" id="stage"></div>
 
-  <div class="ticker"><div class="ticker-track" id="ticker">Yükleniyor…</div></div>
+  <div class="ticker"><div class="ticker-track" id="ticker">{{ _("Yükleniyor…") }}</div></div>
 
-  <div class="tv-loading" id="tv-loading">Savaş Odası yükleniyor…</div>
+  <div class="tv-loading" id="tv-loading">{{ _("Savaş Odası yükleniyor…") }}</div>
   <div class="tv-err" id="tv-err"></div>
 
   {# Ayarlar #}
   <div class="settings-overlay" id="settings-overlay">
     <div class="settings-panel">
-      <h2>⚙️ Cepheleri Düzenle</h2>
-      <div class="s-sub">Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.</div>
+      <h2>{{ _("⚙️ Cepheleri Düzenle") }}</h2>
+      <div class="s-sub">{{ _("Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.") }}</div>
       <div class="s-row">
-        <span class="s-label">Sahne süresi (sn):</span>
+        <span class="s-label">{{ _("Sahne süresi (sn):") }}</span>
         <input type="number" id="s-duration" class="s-input" min="6" max="120" style="width:80px;">
       </div>
       <div id="s-fronts"></div>
       <div class="s-row">
-        <button class="s-btn" id="s-add-metrics">+ Metrik panosu</button>
-        <button class="s-btn" id="s-add-ranking">+ Sıralama cephesi</button>
+        <button class="s-btn" id="s-add-metrics">{{ _("+ Metrik panosu") }}</button>
+        <button class="s-btn" id="s-add-ranking">{{ _("+ Sıralama cephesi") }}</button>
       </div>
       <div class="s-actions">
-        <button class="s-btn primary" id="s-save">Kaydet</button>
-        <button class="s-btn" id="s-cancel">İptal</button>
-        <button class="s-btn danger" id="s-reset">Varsayılana dön</button>
+        <button class="s-btn primary" id="s-save">{{ _("Kaydet") }}</button>
+        <button class="s-btn" id="s-cancel">{{ _("İptal") }}</button>
+        <button class="s-btn danger" id="s-reset">{{ _("Varsayılana dön") }}</button>
       </div>
     </div>
   </div>
@@ -190,23 +190,23 @@
 
     // ── Katalog: metrik tile'ları ──
     var TILES = {
-      on_target: { label: "Hedef Üstü %", get: function(s){ var k=s.kpi||{}; return { v: pf(k.on_target_pct)+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:"PG hedefin üstünde", cls:band(k.on_target_pct) }; } },
-      coverage: { label: "PG Veri Kapsamı", get: function(s){ var k=s.kpi||{}; var c=k.total?Math.round((k.with_data/k.total)*100):0; return { v: c+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:(k.with_data||0)+" / "+(k.total||0)+" PG", cls:band(c) }; } },
-      strategies: { label: "Strateji Sayısı", get: function(s){ var st=s.strategy||{}; return { v: pf(st.count), sub:(st.sub_count||0)+" alt strateji", cls:"c-purple" }; } },
-      activities_active: { label: "Aktif Faaliyet", get: function(s){ var a=s.activity||{}; return { v: pf(a.active), sub:(a.total||0)+" toplam", cls:"c-blue" }; } },
-      activities_overdue: { label: "Geciken Faaliyet", get: function(s){ var a=s.activity||{}; return { v: pf(a.overdue), sub:"termini geçti", cls:(a.overdue?"c-bad":"c-good") }; } },
-      risk_open: { label: "Açık Risk", get: function(s){ var r=s.risk||{}; return { v: pf(r.open), sub:(r.critical||0)+" kritik", cls:(r.critical?"c-bad":"c-warn") }; } },
-      anomaly_high: { label: "Yüksek Anomali", get: function(s){ var an=s.anomaly||{}; return { v: pf(an.high), sub:(an.medium||0)+" orta", cls:(an.high?"c-bad":"c-good") }; } },
-      triggers: { label: "Tetiklenen Kural (7g)", get: function(s){ var t=s.trigger||{}; return { v: pf(t.fired_last_7d), sub:(t.active||0)+" aktif kural", cls:"c-sky" }; } }
+      on_target: { label: t("Hedef Üstü %"), get: function(s){ var k=s.kpi||{}; return { v: pf(k.on_target_pct)+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:t("PG hedefin üstünde"), cls:band(k.on_target_pct) }; } },
+      coverage: { label: t("PG Veri Kapsamı"), get: function(s){ var k=s.kpi||{}; var c=k.total?Math.round((k.with_data/k.total)*100):0; return { v: c+"<span style='font-size:20px;color:#64748b;'>%</span>", sub:(k.with_data||0)+" / "+(k.total||0)+" "+t("PG"), cls:band(c) }; } },
+      strategies: { label: t("Strateji Sayısı"), get: function(s){ var st=s.strategy||{}; return { v: pf(st.count), sub:(st.sub_count||0)+" "+t("alt strateji"), cls:"c-purple" }; } },
+      activities_active: { label: t("Aktif Faaliyet"), get: function(s){ var a=s.activity||{}; return { v: pf(a.active), sub:(a.total||0)+" "+t("toplam"), cls:"c-blue" }; } },
+      activities_overdue: { label: t("Geciken Faaliyet"), get: function(s){ var a=s.activity||{}; return { v: pf(a.overdue), sub:t("termini geçti"), cls:(a.overdue?"c-bad":"c-good") }; } },
+      risk_open: { label: t("Açık Risk"), get: function(s){ var r=s.risk||{}; return { v: pf(r.open), sub:(r.critical||0)+" "+t("kritik"), cls:(r.critical?"c-bad":"c-warn") }; } },
+      anomaly_high: { label: t("Yüksek Anomali"), get: function(s){ var an=s.anomaly||{}; return { v: pf(an.high), sub:(an.medium||0)+" "+t("orta"), cls:(an.high?"c-bad":"c-good") }; } },
+      triggers: { label: t("Tetiklenen Kural (7g)"), get: function(s){ var t2=s.trigger||{}; return { v: pf(t2.fired_last_7d), sub:(t2.active||0)+" "+t("aktif kural"), cls:"c-sky" }; } }
     };
     var TILE_ORDER = ["on_target","coverage","strategies","activities_active","activities_overdue","risk_open","anomaly_high","triggers"];
 
     // ── Katalog: sıralama veri kümeleri ──
     var DATASETS = {
-      strategies: { label: "Ana Stratejiler", get: function(){ return DATA.strat || {}; } },
-      sub_strategies: { label: "Alt Stratejiler", get: function(){ return (DATA.fronts||{}).sub_strategies || {}; } },
-      processes: { label: "Süreçler", get: function(){ return (DATA.fronts||{}).processes || {}; } },
-      projects: { label: "Projeler (sağlık)", get: function(){ return (DATA.fronts||{}).projects || {}; } }
+      strategies: { label: t("Ana Stratejiler"), get: function(){ return DATA.strat || {}; } },
+      sub_strategies: { label: t("Alt Stratejiler"), get: function(){ return (DATA.fronts||{}).sub_strategies || {}; } },
+      processes: { label: t("Süreçler"), get: function(){ return (DATA.fronts||{}).processes || {}; } },
+      projects: { label: t("Projeler (sağlık)"), get: function(){ return (DATA.fronts||{}).projects || {}; } }
     };
     var DATASET_ORDER = ["strategies","sub_strategies","processes","projects"];
 
@@ -217,10 +217,10 @@
     var ANIM_KEY = "savasAnim" + _scope;
     function defaultConfig() {
       return { duration: 22, fronts: [
-        { id:"f1", name:"Genel Sağlık",   type:"metrics", hero:true, tiles: TILE_ORDER.slice() },
-        { id:"f2", name:"Strateji Cephesi", type:"ranking", datasets:["strategies","sub_strategies"], top:true, bottom:true },
-        { id:"f3", name:"Süreç Cephesi",  type:"ranking", datasets:["processes"], top:true, bottom:true },
-        { id:"f4", name:"Proje Cephesi",  type:"ranking", datasets:["projects"], top:true, bottom:true }
+        { id:"f1", name:t("Genel Sağlık"),   type:"metrics", hero:true, tiles: TILE_ORDER.slice() },
+        { id:"f2", name:t("Strateji Cephesi"), type:"ranking", datasets:["strategies","sub_strategies"], top:true, bottom:true },
+        { id:"f3", name:t("Süreç Cephesi"),  type:"ranking", datasets:["processes"], top:true, bottom:true },
+        { id:"f4", name:t("Proje Cephesi"),  type:"ranking", datasets:["projects"], top:true, bottom:true }
       ]};
     }
     function loadConfig() {
@@ -237,7 +237,7 @@
       if (f.hero) {
         var hero = document.createElement("div"); hero.className = "hero";
         hero.innerHTML = '<div style="display:flex;align-items:baseline;gap:10px;"><span class="hero-num">—</span><span class="hero-unit">/100</span></div>' +
-          '<div style="flex:1;"><div class="hero-label">Genel Sağlık Skoru</div><div class="hero-bar"><div class="hero-fill"></div></div></div>';
+          '<div style="flex:1;"><div class="hero-label">'+t("Genel Sağlık Skoru")+'</div><div class="hero-bar"><div class="hero-fill"></div></div></div>';
         sec.appendChild(hero);
         f._heroNum = hero.querySelector(".hero-num");
         f._heroFill = hero.querySelector(".hero-fill");
@@ -279,11 +279,11 @@
       var top = null, bottom = null;
       if (f.top !== false) {
         var c1 = document.createElement("div"); c1.className = "front-col good";
-        c1.innerHTML = '<h4>▲ En Güçlü'+(dsLabel?" "+dsLabel:"")+'</h4>'; var t = document.createElement("div"); c1.appendChild(t); parent.appendChild(c1); top = t;
+        c1.innerHTML = '<h4>▲ '+t("En Güçlü")+(dsLabel?" "+dsLabel:"")+'</h4>'; var el1 = document.createElement("div"); c1.appendChild(el1); parent.appendChild(c1); top = el1;
       }
       if (f.bottom !== false) {
         var c2 = document.createElement("div"); c2.className = "front-col bad";
-        c2.innerHTML = '<h4>▼ En Zayıf'+(dsLabel?" "+dsLabel:"")+'</h4>'; var b = document.createElement("div"); c2.appendChild(b); parent.appendChild(c2); bottom = b;
+        c2.innerHTML = '<h4>▼ '+t("En Zayıf")+(dsLabel?" "+dsLabel:"")+'</h4>'; var b = document.createElement("div"); c2.appendChild(b); parent.appendChild(c2); bottom = b;
       }
       return { top: top, bottom: bottom };
     }
@@ -335,7 +335,7 @@
     function fillCol(el, list, good) {
       if (!el) return; el.innerHTML = "";
       var arr = (list || []).slice(0, 5);
-      if (!arr.length) { el.innerHTML = '<div class="front-empty">Karşılaştırılabilir veri yok.</div>'; return; }
+      if (!arr.length) { el.innerHTML = '<div class="front-empty">'+t("Karşılaştırılabilir veri yok.")+'</div>'; return; }
       arr.forEach(function(x){ el.appendChild(frow(x, good)); });
     }
     function countTo(el, to) {
@@ -372,7 +372,7 @@
       var risk = s.risk||{}, ano = s.anomaly||{};
       document.getElementById("tv-head").classList.toggle("alarm", !!(risk.critical || ano.high));
       var now = new Date();
-      document.getElementById("tv-updated").textContent = "güncellendi " + ("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2);
+      document.getElementById("tv-updated").textContent = t("güncellendi") + " " + ("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2);
       buildTicker(s, DATA.strat);
       setCurTiles();
     }
@@ -380,15 +380,15 @@
     function buildTicker(s, strat) {
       var kpi=s.kpi||{}, act=s.activity||{}, risk=s.risk||{}, ano=s.anomaly||{};
       var items = [];
-      if (risk.critical) items.push('<span class="crit">🛡️ '+risk.critical+' kritik risk</span>');
-      if (act.overdue) items.push('<span class="crit">⏰ '+act.overdue+' geciken faaliyet</span>');
-      if (ano.high) items.push('<span class="crit">📊 '+ano.high+' yüksek anomali</span>');
-      if (typeof kpi.on_target_pct === "number") items.push('<span>🎯 Hedef üstü %'+kpi.on_target_pct+'</span>');
+      if (risk.critical) items.push('<span class="crit">🛡️ '+risk.critical+' '+t("kritik risk")+'</span>');
+      if (act.overdue) items.push('<span class="crit">⏰ '+act.overdue+' '+t("geciken faaliyet")+'</span>');
+      if (ano.high) items.push('<span class="crit">📊 '+ano.high+' '+t("yüksek anomali")+'</span>');
+      if (typeof kpi.on_target_pct === "number") items.push('<span>🎯 '+t("Hedef üstü")+' %'+kpi.on_target_pct+'</span>');
       var cov = (kpi.total ? Math.round((kpi.with_data/kpi.total)*100) : 0);
-      items.push('<span>📥 Veri kapsamı %'+cov+'</span>');
-      if (strat && strat.bottom && strat.bottom.length) { var w=strat.bottom[0]; items.push('<span class="crit">🔻 En zayıf strateji: '+((w.code||"")+" "+(w.title||"")).trim()+' %'+(w.on_target_pct==null?"—":w.on_target_pct)+'</span>'); }
-      if (strat && strat.top && strat.top.length) { var b=strat.top[0]; items.push('<span class="ok">🏆 En güçlü strateji: '+((b.code||"")+" "+(b.title||"")).trim()+' %'+(b.on_target_pct==null?"—":b.on_target_pct)+'</span>'); }
-      if (!items.length) items.push('<span class="ok">✅ Tüm cephelerde durum sakin</span>');
+      items.push('<span>📥 '+t("Veri kapsamı")+' %'+cov+'</span>');
+      if (strat && strat.bottom && strat.bottom.length) { var w=strat.bottom[0]; items.push('<span class="crit">🔻 '+t("En zayıf strateji")+': '+((w.code||"")+" "+(w.title||"")).trim()+' %'+(w.on_target_pct==null?"—":w.on_target_pct)+'</span>'); }
+      if (strat && strat.top && strat.top.length) { var b=strat.top[0]; items.push('<span class="ok">🏆 '+t("En güçlü strateji")+': '+((b.code||"")+" "+(b.title||"")).trim()+' %'+(b.on_target_pct==null?"—":b.on_target_pct)+'</span>'); }
+      if (!items.length) items.push('<span class="ok">✅ '+t("Tüm cephelerde durum sakin")+'</span>');
       document.getElementById("ticker").innerHTML = items.join("") + items.join("");
     }
 
@@ -483,7 +483,7 @@
     // ── Animasyon aç/kapat ──
     var animBtn = document.getElementById("tv-anim");
     function applyAnim() {
-      if (animBtn) animBtn.textContent = animOn ? "✈️ Animasyonu kapat" : "✈️ Animasyonu aç";
+      if (animBtn) animBtn.textContent = animOn ? t("✈️ Animasyonu kapat") : t("✈️ Animasyonu aç");
       if (!animOn) { if (jetRAF) cancelAnimationFrame(jetRAF); if (jetTimer) clearTimeout(jetTimer); if (jet && runwayDep) { jet.style.opacity="1"; parkOn(runwayDep.getBoundingClientRect()); } }
       else launchJet();
     }
@@ -501,14 +501,14 @@
         var card = document.createElement("div"); card.className = "s-front";
         var head = '<div class="s-front-head">' +
           '<input class="s-input s-name" data-i="'+idx+'" value="'+(f.name||"").replace(/"/g,"&quot;")+'" style="flex:1;min-width:160px;">' +
-          '<span class="s-badge">'+(f.type==="metrics"?"Metrik panosu":"Sıralama")+'</span>' +
+          '<span class="s-badge">'+(f.type==="metrics"?t("Metrik panosu"):t("Sıralama"))+'</span>' +
           '<button class="s-btn s-up" data-i="'+idx+'">↑</button>' +
           '<button class="s-btn s-down" data-i="'+idx+'">↓</button>' +
-          '<button class="s-btn danger s-del" data-i="'+idx+'">Sil</button>' +
+          '<button class="s-btn danger s-del" data-i="'+idx+'">'+t("Sil")+'</button>' +
           '</div>';
         var body = "";
         if (f.type === "metrics") {
-          body += '<label class="s-chk" style="margin-bottom:8px;display:block;"><label><input type="checkbox" class="s-hero" data-i="'+idx+'" '+(f.hero?"checked":"")+'> Büyük sağlık skoru (hero)</label></label>';
+          body += '<label class="s-chk" style="margin-bottom:8px;display:block;"><label><input type="checkbox" class="s-hero" data-i="'+idx+'" '+(f.hero?"checked":"")+'> '+t("Büyük sağlık skoru (hero)")+'</label></label>';
           body += '<div class="s-chk">';
           TILE_ORDER.forEach(function(k){ body += '<label><input type="checkbox" class="s-tile" data-i="'+idx+'" data-k="'+k+'" '+((f.tiles||[]).indexOf(k)>=0?"checked":"")+'> '+TILES[k].label+'</label>'; });
           body += '</div>';
@@ -516,8 +516,8 @@
           body += '<div class="s-chk" style="margin-bottom:8px;">';
           DATASET_ORDER.forEach(function(k){ body += '<label><input type="checkbox" class="s-ds" data-i="'+idx+'" data-k="'+k+'" '+((f.datasets||[]).indexOf(k)>=0?"checked":"")+'> '+DATASETS[k].label+'</label>'; });
           body += '</div><div class="s-chk">' +
-            '<label><input type="checkbox" class="s-top" data-i="'+idx+'" '+(f.top!==false?"checked":"")+'> En güçlü</label>' +
-            '<label><input type="checkbox" class="s-bottom" data-i="'+idx+'" '+(f.bottom!==false?"checked":"")+'> En zayıf</label>' +
+            '<label><input type="checkbox" class="s-top" data-i="'+idx+'" '+(f.top!==false?"checked":"")+'> '+t("En güçlü")+'</label>' +
+            '<label><input type="checkbox" class="s-bottom" data-i="'+idx+'" '+(f.bottom!==false?"checked":"")+'> '+t("En zayıf")+'</label>' +
             '</div>';
         }
         card.innerHTML = head + body;
@@ -539,8 +539,8 @@
     document.getElementById("tv-settings").addEventListener("click", openSettings);
     document.getElementById("s-cancel").addEventListener("click", closeSettings);
     overlay.addEventListener("click", function(e){ if (e.target === overlay) closeSettings(); });
-    document.getElementById("s-add-metrics").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:"Yeni Pano", type:"metrics", hero:false, tiles:["on_target","coverage"] }); renderEditor(); });
-    document.getElementById("s-add-ranking").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:"Yeni Cephe", type:"ranking", datasets:["strategies"], top:true, bottom:true }); renderEditor(); });
+    document.getElementById("s-add-metrics").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:t("Yeni Pano"), type:"metrics", hero:false, tiles:["on_target","coverage"] }); renderEditor(); });
+    document.getElementById("s-add-ranking").addEventListener("click", function(){ draft.fronts.push({ id:uid(), name:t("Yeni Cephe"), type:"ranking", datasets:["strategies"], top:true, bottom:true }); renderEditor(); });
     document.getElementById("s-reset").addEventListener("click", function(){ draft = defaultConfig(); renderEditor(); });
     document.getElementById("s-save").addEventListener("click", function(){
       var dv = parseInt(document.getElementById("s-duration").value, 10); draft.duration = (dv && dv >= 6) ? dv : 22;
@@ -560,7 +560,7 @@
         DATA.snap = res[0] && res[0].success ? res[0].snapshot : null;
         DATA.strat = res[1] && res[1].success ? res[1].data : null;
         DATA.fronts = res[2] && res[2].success ? res[2].data : null;
-        if (!DATA.snap) { errEl.textContent = "Veri alınamadı — 30 sn sonra tekrar."; errEl.style.display = "block"; loading.style.display = "none"; return; }
+        if (!DATA.snap) { errEl.textContent = t("Veri alınamadı — 30 sn sonra tekrar."); errEl.style.display = "block"; loading.style.display = "none"; return; }
         errEl.style.display = "none"; loading.style.display = "none";
         fillData();
       });

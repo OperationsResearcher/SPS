@@ -4,6 +4,7 @@ from functools import wraps
 
 from flask import flash, jsonify, redirect, request, url_for
 from flask_login import current_user, login_required
+from flask_babel import gettext as _
 
 
 def require_component(component_code):
@@ -24,13 +25,13 @@ def require_component(component_code):
             if not current_user.tenant:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Tenant required"}), 403
-                flash("Kurum bilginiz bulunamadı.", "danger")
+                flash(_("Kurum bilginiz bulunamadı."), "danger")
                 return redirect(url_for("app_bp.masaustu"))
             pkg = current_user.tenant.package
             if not pkg:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Package required"}), 403
-                flash("Paket bilginiz bulunamadı.", "danger")
+                flash(_("Paket bilginiz bulunamadı."), "danger")
                 return redirect(url_for("app_bp.masaustu"))
             has_access = False
             for mod in pkg.modules:
@@ -43,7 +44,7 @@ def require_component(component_code):
             if not has_access:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Unauthorized"}), 403
-                flash("Bu bileşene erişim yetkiniz yok.", "danger")
+                flash(_("Bu bileşene erişim yetkiniz yok."), "danger")
                 return redirect(url_for("app_bp.masaustu"))
             return f(*args, **kwargs)
 
@@ -83,7 +84,7 @@ def require_module(module_id):
             if module_id not in allowed:
                 if _is_ajax():
                     return jsonify({"success": False, "error": "Paket kapsamı dışında."}), 403
-                flash("Bu bölüm mevcut paketinizde yer almıyor.", "warning")
+                flash(_("Bu bölüm mevcut paketinizde yer almıyor."), "warning")
                 return redirect(url_for("app_bp.masaustu"))
             return f(*args, **kwargs)
 

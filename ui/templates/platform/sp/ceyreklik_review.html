@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Çeyreklik Değerlendirme — Kokpitim{% endblock %}
-{% block page_title %}Çeyreklik Strateji Değerlendirme{% endblock %}
+{% block title %}{{ _("Çeyreklik Değerlendirme — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Çeyreklik Strateji Değerlendirme") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_quarterly">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Çeyreklik Review', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Stratejik Planlama'), 'url': url_for('app_bp.sp_menu')}, {'label': _('Çeyreklik Review'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,72 +19,72 @@
 
   <div class="mc-page-header" style="margin-bottom:24px;">
     <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-      <i class="fas fa-calendar-check"></i> Çeyreklik Değerlendirme
+      <i class="fas fa-calendar-check"></i> {{ _("Çeyreklik Değerlendirme") }}
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">
-      Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip.
+      {{ _("Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip.") }}
     </p>
   </div>
 
   <div class="mc-card" style="padding:16px; margin-bottom:20px;">
     <form id="qr-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Yıl</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Yıl") }}</label>
         <input type="number" id="qr-year" class="mc-input" value="{{ default_year }}"
                min="2020" max="2035" style="width:120px;">
       </div>
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Çeyrek</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Çeyrek") }}</label>
         <select id="qr-quarter" class="mc-input" style="width:140px;">
-          <option value="1" {% if default_quarter==1 %}selected{% endif %}>Q1 (Oca-Mar)</option>
-          <option value="2" {% if default_quarter==2 %}selected{% endif %}>Q2 (Nis-Haz)</option>
-          <option value="3" {% if default_quarter==3 %}selected{% endif %}>Q3 (Tem-Eyl)</option>
-          <option value="4" {% if default_quarter==4 %}selected{% endif %}>Q4 (Eki-Ara)</option>
+          <option value="1" {% if default_quarter==1 %}selected{% endif %}>{{ _("Q1 (Oca-Mar)") }}</option>
+          <option value="2" {% if default_quarter==2 %}selected{% endif %}>{{ _("Q2 (Nis-Haz)") }}</option>
+          <option value="3" {% if default_quarter==3 %}selected{% endif %}>{{ _("Q3 (Tem-Eyl)") }}</option>
+          <option value="4" {% if default_quarter==4 %}selected{% endif %}>{{ _("Q4 (Eki-Ara)") }}</option>
         </select>
       </div>
       <button type="submit" class="mc-btn mc-btn-primary">
-        <i class="fas fa-sync"></i> Değerlendirme Oluştur
+        <i class="fas fa-sync"></i> {{ _("Değerlendirme Oluştur") }}
       </button>
     </form>
   </div>
 
   <div id="qr-loading" style="display:none; text-align:center; padding:40px; color:#64748b;">
-    <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+    <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor...") }}
   </div>
 
   <div id="qr-result" style="display:none;">
     <h3 id="qr-period" style="font-size:18px; color:var(--text-default); margin:0 0 16px;"></h3>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:24px;">
-      <a href="/raporlar/veri-kalitesi" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">PG Durumu</div>
+      <a href="/reports/data-quality" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("PG Durumu") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-kpi-ontarget">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">— / — PG'de veri</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">{{ _("— / — PG'de veri") }}</div>
       </a>
-      <a href="/sp/donemler" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Strateji</div>
+      <a href="/sp/periods" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Strateji") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-strategy">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-strategy-detail">— alt strateji</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-strategy-detail">{{ _("— alt strateji") }}</div>
       </a>
       <a href="/sp/okr" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">OKR İlerleme</div>
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("OKR İlerleme") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-okr">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-okr-detail">— objektif</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-okr-detail">{{ _("— objektif") }}</div>
       </a>
       <a href="/surec" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Faaliyet</div>
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Faaliyet") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-activity">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-activity-detail">— gecikmiş</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-activity-detail">{{ _("— gecikmiş") }}</div>
       </a>
-      <a href="/raporlar/risk-heatmap" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Risk</div>
+      <a href="/reports/risk-heatmap" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Risk") }}</div>
         <div style="font-size:24px; font-weight:700; color:#dc2626;" id="qr-risk">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-risk-detail">— kritik</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-risk-detail">{{ _("— kritik") }}</div>
       </a>
-      <a href="/raporlar/ml-anomaly" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">Anomali</div>
+      <a href="/reports/ml-anomaly" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
+        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Anomali") }}</div>
         <div style="font-size:24px; font-weight:700; color:#f59e0b;" id="qr-anomaly">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-anomaly-detail">— orta</div>
+        <div style="font-size:12px; color:#64748b;" id="qr-anomaly-detail">{{ _("— orta") }}</div>
       </a>
     </div>
     <style>
@@ -94,7 +94,7 @@
 
     <div class="mc-card" style="padding:20px;">
       <h4 style="margin:0 0 12px; font-size:15px; color:var(--text-default);">
-        <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> Aksiyon Önerileri
+        <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> {{ _("Aksiyon Önerileri") }}
       </h4>
       <ul id="qr-recommendations" style="margin:0; padding-left:20px; line-height:1.8;"></ul>
     </div>

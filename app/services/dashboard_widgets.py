@@ -85,7 +85,7 @@ register(WidgetDefinition(
     key="strategy_progress", title="Stratejik İlerleme",
     description="Aktif plan year ana strateji yüzdeleri",
     category="strategy", component="StrategyProgress",
-    data_endpoint="/k-rapor/api/kurumsal",
+    data_endpoint="/k-rapor/api/corporate",
     default_size="2x1",
     icon="bi-bullseye",
 ))
@@ -125,7 +125,7 @@ register(WidgetDefinition(
     key="stakeholder_map", title="Paydaş Haritası",
     description="Influence × Interest matrix",
     category="strategy", component="StakeholderMap",
-    data_endpoint="/k-rapor/api/paydas",
+    data_endpoint="/k-rapor/api/stakeholder",
     default_size="2x2",
     icon="bi-people",
 ))

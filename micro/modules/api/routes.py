@@ -8,6 +8,7 @@ from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, KpiDataAudit
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
+from flask_babel import gettext as _
 
 
 def _tenant_guard(process_id):
@@ -18,7 +19,7 @@ def _tenant_guard(process_id):
 
 
 def _unauth():
-    return jsonify({"success": False, "message": "Kimlik doğrulama gerekli."}), 401
+    return jsonify({"success": False, "message": _("Kimlik doğrulama gerekli.")}), 401
 
 
 # ── Süreç Endpoint'leri ───────────────────────────────────────────────────────
@@ -40,7 +41,7 @@ def api_processes_list():
 def api_processes_detail(process_id):
     p = _tenant_guard(process_id)
     if not p:
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     return jsonify({
         "success": True,
         "data": {
@@ -66,7 +67,7 @@ def api_kpi_data_create():
         ProcessKpi.is_active.is_(True),
     ).first()
     if not kpi:
-        return jsonify({"success": False, "message": "PG bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("PG bulunamadı.")}), 404
     try:
         from datetime import date
         entry = None
@@ -105,7 +106,7 @@ def api_kpi_data_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[api_kpi_data_create] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/api/v1/kpi-data/<int:entry_id>")
@@ -146,11 +147,11 @@ def api_kpi_data_update(entry_id):
             old_value=old_val, new_value=entry.actual_value, user_id=current_user.id,
         ))
         db.session.commit()
-        return jsonify({"success": True, "message": "Güncellendi."})
+        return jsonify({"success": True, "message": _("Güncellendi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[api_kpi_data_update] {e}")
-        return jsonify({"success": False, "message": "Güncelleme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/api/v1/kpi-data/<int:entry_id>", methods=["DELETE"])
@@ -175,11 +176,11 @@ def api_kpi_data_delete(entry_id):
         except Exception as _audit_err:
             current_app.logger.error("[audit] KpiData delete audit kaydı başarısız: %s", _audit_err)
         db.session.commit()
-        return jsonify({"success": True, "message": "Silindi."})
+        return jsonify({"success": True, "message": _("Silindi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[api_kpi_data_delete] {e}")
-        return jsonify({"success": False, "message": "Silme sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Silme sırasında hata oluştu.")}), 500
 
 
 # ── Analitik Endpoint'leri ────────────────────────────────────────────────────
@@ -188,26 +189,26 @@ def api_kpi_data_delete(entry_id):
 @login_required
 def api_analytics_trend(process_id):
     if not _tenant_guard(process_id):
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     try:
         from app.services.analytics_service import AnalyticsService
         return jsonify({"success": True, "data": AnalyticsService.get_performance_trend(process_id)})
     except Exception as e:
         current_app.logger.error(f"[api_analytics_trend] {e}")
-        return jsonify({"success": False, "message": "Veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500
 
 
 @app_bp.route("/api/v1/analytics/health/<int:process_id>")
 @login_required
 def api_analytics_health(process_id):
     if not _tenant_guard(process_id):
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     try:
         from app.services.analytics_service import AnalyticsService
         return jsonify({"success": True, "data": AnalyticsService.get_process_health_score(process_id)})
     except Exception as e:
         current_app.logger.error(f"[api_analytics_health] {e}")
-        return jsonify({"success": False, "message": "Veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500
 
 
 @app_bp.route("/api/v1/analytics/comparison", methods=["POST"])
@@ -226,21 +227,21 @@ def api_analytics_comparison():
         return jsonify({"success": True, "data": AnalyticsService.get_comparative_analysis(ids)})
     except Exception as e:
         current_app.logger.error(f"[api_analytics_comparison] {e}")
-        return jsonify({"success": False, "message": "Veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500
 
 
 @app_bp.route("/api/v1/analytics/forecast/<int:process_id>")
 @login_required
 def api_analytics_forecast(process_id):
     if not _tenant_guard(process_id):
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     try:
         from app.services.analytics_service import AnalyticsService
         periods = request.args.get("periods", 3, type=int)
         return jsonify({"success": True, "data": AnalyticsService.get_forecast(process_id, periods=periods)})
     except Exception as e:
         current_app.logger.error(f"[api_analytics_forecast] {e}")
-        return jsonify({"success": False, "message": "Veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500
 
 
 # ── Rapor Endpoint'leri ───────────────────────────────────────────────────────
@@ -249,13 +250,13 @@ def api_analytics_forecast(process_id):
 @login_required
 def api_reports_performance(process_id):
     if not _tenant_guard(process_id):
-        return jsonify({"success": False, "message": "Süreç bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Süreç bulunamadı.")}), 404
     try:
         from app.services.report_service import ReportService
         return jsonify({"success": True, "data": ReportService.generate_performance_report(process_id)})
     except Exception as e:
         current_app.logger.error(f"[api_reports_performance] {e}")
-        return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Rapor oluşturulamadı.")}), 500
 
 
 @app_bp.route("/api/v1/reports/dashboard")
@@ -268,7 +269,7 @@ def api_reports_dashboard():
         )})
     except Exception as e:
         current_app.logger.error(f"[api_reports_dashboard] {e}")
-        return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Rapor oluşturulamadı.")}), 500
 
 
 # ── AI & Push Delegasyonu ─────────────────────────────────────────────────────
@@ -281,7 +282,7 @@ def api_ai_recommend():
         return smart_insights()
     except Exception as e:
         current_app.logger.error(f"[api_ai_recommend] {e}")
-        return jsonify({"success": False, "message": "AI servisi kullanılamıyor."}), 503
+        return jsonify({"success": False, "message": _("AI servisi kullanılamıyor.")}), 503
 
 
 @app_bp.route("/api/v1/push/subscribe", methods=["POST"])
@@ -292,7 +293,7 @@ def api_push_subscribe():
         return subscribe()
     except Exception as e:
         current_app.logger.error(f"[api_push_subscribe] {e}")
-        return jsonify({"success": False, "message": "Push servisi kullanılamıyor."}), 503
+        return jsonify({"success": False, "message": _("Push servisi kullanılamıyor.")}), 503
 
 
 # ── API Dokümantasyonu ────────────────────────────────────────────────────────
@@ -302,17 +303,17 @@ def api_push_subscribe():
 def api_docs():
     """Swagger/OpenAPI dokümantasyon sayfası."""
     endpoints = [
-        {"method": "GET",    "url": "/api/v1/processes",           "desc": "Süreç listesi"},
-        {"method": "GET",    "url": "/api/v1/processes/<id>",       "desc": "Süreç detayı"},
-        {"method": "POST",   "url": "/api/v1/kpi-data",             "desc": "KPI veri oluştur"},
-        {"method": "GET",    "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri detayı"},
-        {"method": "PATCH",  "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri güncelle"},
-        {"method": "DELETE", "url": "/api/v1/kpi-data/<id>",        "desc": "KPI veri soft delete"},
-        {"method": "GET",    "url": "/api/v1/analytics/trend/<id>", "desc": "Trend analizi"},
-        {"method": "GET",    "url": "/api/v1/analytics/health/<id>","desc": "Sağlık skoru"},
-        {"method": "POST",   "url": "/api/v1/analytics/comparison", "desc": "Karşılaştırma"},
-        {"method": "GET",    "url": "/api/v1/analytics/forecast/<id>","desc": "Tahmin"},
-        {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": "Performans raporu"},
-        {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": "Dashboard raporu"},
+        {"method": "GET",    "url": "/api/v1/processes",           "desc": _("Süreç listesi")},
+        {"method": "GET",    "url": "/api/v1/processes/<id>",       "desc": _("Süreç detayı")},
+        {"method": "POST",   "url": "/api/v1/kpi-data",             "desc": _("KPI veri oluştur")},
+        {"method": "GET",    "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri detayı")},
+        {"method": "PATCH",  "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri güncelle")},
+        {"method": "DELETE", "url": "/api/v1/kpi-data/<id>",        "desc": _("KPI veri soft delete")},
+        {"method": "GET",    "url": "/api/v1/analytics/trend/<id>", "desc": _("Trend analizi")},
+        {"method": "GET",    "url": "/api/v1/analytics/health/<id>","desc": _("Sağlık skoru")},
+        {"method": "POST",   "url": "/api/v1/analytics/comparison", "desc": _("Karşılaştırma")},
+        {"method": "GET",    "url": "/api/v1/analytics/forecast/<id>","desc": _("Tahmin")},
+        {"method": "GET",    "url": "/api/v1/reports/performance/<id>","desc": _("Performans raporu")},
+        {"method": "GET",    "url": "/api/v1/reports/dashboard",    "desc": _("Dashboard raporu")},
     ]
     return render_template("platform/api/docs.html", endpoints=endpoints)

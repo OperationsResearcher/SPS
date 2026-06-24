@@ -6,6 +6,7 @@ from flask_login import login_required, current_user
 
 from platform_core import app_bp
 from extensions import db, csrf
+from flask_babel import gettext as _
 
 
 _DEFAULT_PREFS = {
@@ -38,7 +39,7 @@ def _save_subs(subs, prefs_obj):
     db.session.commit()
 
 
-@app_bp.route("/ayarlar/zamanlanmis-raporlar")
+@app_bp.route("/settings/scheduled-reports")
 @login_required
 def scheduled_reports_page():
     subs, _ = _load_subs()
@@ -60,7 +61,7 @@ def api_scheduled_reports_save():
     data = request.get_json(silent=True) or {}
     incoming = data.get("subscriptions")
     if not isinstance(incoming, dict):
-        return jsonify({"success": False, "message": "subscriptions alanı zorunlu."}), 400
+        return jsonify({"success": False, "message": _("subscriptions alanı zorunlu.")}), 400
     try:
         subs, prefs = _load_subs()
         for k in _DEFAULT_PREFS.keys():

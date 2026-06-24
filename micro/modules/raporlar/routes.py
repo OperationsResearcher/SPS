@@ -8,7 +8,7 @@ from flask_login import login_required
 from platform_core import app_bp
 
 
-@app_bp.route("/raporlar")
+@app_bp.route("/reports")
 @login_required
 def raporlar_index():
     """Eski rapor merkezi — K-Radar hub'ı ile birleştirildi, yönlendirir."""

@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Yönetim Paneli{% endblock %}
-{% block page_title %}Yönetim Paneli{% endblock %}
+{% block title %}{{ _("Yönetim Paneli") }}{% endblock %}
+{% block page_title %}{{ _("Yönetim Paneli") }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/admin.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Yönetim Paneli', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -20,19 +20,19 @@
 
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">Login İstatistikleri</h2>
-      <p class="mc-page-subtitle">Audit log tabanlı yönetim özeti</p>
+      <h2 class="mc-page-title">{{ _("Login İstatistikleri") }}</h2>
+      <p class="mc-page-subtitle">{{ _("Audit log tabanlı yönetim özeti") }}</p>
     </div>
   </div>
 
   {% if current_user.role and current_user.role.name == 'Admin' %}
   <div class="mc-card yp-maintenance-card" id="yp-maintenance-card" data-bakim-url="{{ url_for('app_bp.admin_bakim_modu') }}">
     <div class="mc-card-body">
-      <h3 class="yp-activity-title">Bakım modu</h3>
-      <p class="karne-field-hint">Açıkken yalnızca rolü <strong>Admin</strong> olan kullanıcılar sistemi normal kullanır; diğerleri bakım sayfası görür. Giriş sayfası açık kalır.</p>
+      <h3 class="yp-activity-title">{{ _("Bakım modu") }}</h3>
+      <p class="karne-field-hint">{{ _("Açıkken yalnızca rolü <strong>Admin</strong> olan kullanıcılar sistemi normal kullanır; diğerleri bakım sayfası görür. Giriş sayfası açık kalır.") }}</p>
       <label class="mc-form-check-label" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;">
         <input type="checkbox" id="yp-maintenance-chk" />
-        <span>Bakıma al (veritabanı bayrağı)</span>
+        <span>{{ _("Bakıma al (veritabanı bayrağı)") }}</span>
       </label>
       <p id="yp-maintenance-lock-hint" class="karne-field-hint" style="display:none;margin-top:0.5rem;color:#b45309;"></p>
     </div>
@@ -41,10 +41,10 @@
 
   <div class="mc-card yp-filter-card">
     <div class="mc-card-body yp-filter-body">
-      <label for="tenant-select" class="yp-filter-label">Kurum Seçimi</label>
+      <label for="tenant-select" class="yp-filter-label">{{ _("Kurum Seçimi") }}</label>
       <select id="tenant-select" class="mc-form-select yp-filter-select">
         {% if current_user.role and current_user.role.name == 'Admin' %}
-        <option value="">Tüm Kurumlar</option>
+        <option value="">{{ _("Tüm Kurumlar") }}</option>
         {% endif %}
         {% for t in tenant_list %}
         <option value="{{ t.id }}" {% if default_tenant_id and default_tenant_id == t.id %}selected{% endif %}>
@@ -58,51 +58,51 @@
   <div class="yp-grid">
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Çevrimiçi</div>
+        <div class="yp-stat-title">{{ _("Çevrimiçi") }}</div>
         <div class="yp-stat-value" data-key="online_now">...</div>
-        <div class="yp-stat-sub">Son 30 dakika</div>
+        <div class="yp-stat-sub">{{ _("Son 30 dakika") }}</div>
       </div>
     </div>
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Aktif hesap</div>
+        <div class="yp-stat-title">{{ _("Aktif hesap") }}</div>
         <div class="yp-stat-value" data-key="active_now">...</div>
-        <div class="yp-stat-sub">Toplam kayıtlı kullanıcı</div>
+        <div class="yp-stat-sub">{{ _("Toplam kayıtlı kullanıcı") }}</div>
       </div>
     </div>
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Son 24 saat</div>
+        <div class="yp-stat-title">{{ _("Son 24 saat") }}</div>
         <div class="yp-stat-value" data-key="last_24h">...</div>
-        <div class="yp-stat-sub">Tekil giriş yapan</div>
+        <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Son 7 gün</div>
+        <div class="yp-stat-title">{{ _("Son 7 gün") }}</div>
         <div class="yp-stat-value" data-key="last_7d">...</div>
-        <div class="yp-stat-sub">Tekil giriş yapan</div>
+        <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Son 30 gün</div>
+        <div class="yp-stat-title">{{ _("Son 30 gün") }}</div>
         <div class="yp-stat-value" data-key="last_30d">...</div>
-        <div class="yp-stat-sub">Tekil giriş yapan</div>
+        <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
     <div class="mc-card yp-stat-card">
       <div class="mc-card-body">
-        <div class="yp-stat-title">Tüm zamanlar</div>
+        <div class="yp-stat-title">{{ _("Tüm zamanlar") }}</div>
         <div class="yp-stat-value" data-key="all_time">...</div>
-        <div class="yp-stat-sub">Tekil giriş yapan</div>
+        <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
   </div>
 
   <div class="mc-card yp-accordion-card" id="acc-kullanici">
     <button type="button" class="yp-accordion-header" aria-expanded="true" aria-controls="acc-kullanici-body">
-      <span class="yp-accordion-title">Kullanıcı Durumu</span>
+      <span class="yp-accordion-title">{{ _("Kullanıcı Durumu") }}</span>
       <span class="yp-accordion-chevron">&#8964;</span>
     </button>
     <div class="yp-accordion-body" id="acc-kullanici-body">
@@ -110,17 +110,17 @@
         <table class="mc-table yp-activity-table">
           <thead>
             <tr>
-              <th>Durum</th>
-              <th>Kullanıcı</th>
-              <th>Rol</th>
-              <th>Hesap</th>
-              <th>Son Giriş</th>
-              <th>30G Giriş</th>
-              <th>30G İşlem</th>
+              <th>{{ _("Durum") }}</th>
+              <th>{{ _("Kullanıcı") }}</th>
+              <th>{{ _("Rol") }}</th>
+              <th>{{ _("Hesap") }}</th>
+              <th>{{ _("Son Giriş") }}</th>
+              <th>{{ _("30G Giriş") }}</th>
+              <th>{{ _("30G İşlem") }}</th>
             </tr>
           </thead>
           <tbody id="user-tbody">
-            <tr><td colspan="7">Yükleniyor...</td></tr>
+            <tr><td colspan="7">{{ _("Yükleniyor...") }}</td></tr>
           </tbody>
         </table>
       </div>
@@ -129,7 +129,7 @@
 
   <div class="mc-card yp-accordion-card" id="acc-aktivite">
     <button type="button" class="yp-accordion-header" aria-expanded="true" aria-controls="acc-aktivite-body">
-      <span class="yp-accordion-title">Son Aktiviteler</span>
+      <span class="yp-accordion-title">{{ _("Son Aktiviteler") }}</span>
       <span class="yp-accordion-chevron">&#8964;</span>
     </button>
     <div class="yp-accordion-body" id="acc-aktivite-body">
@@ -137,20 +137,20 @@
         <table class="mc-table yp-activity-table">
           <thead>
             <tr>
-              <th>İkon</th>
-              <th>Kaynak</th>
-              <th>Kullanıcı</th>
-              <th>İşlem</th>
-              <th>Zaman</th>
+              <th>{{ _("İkon") }}</th>
+              <th>{{ _("Kaynak") }}</th>
+              <th>{{ _("Kullanıcı") }}</th>
+              <th>{{ _("İşlem") }}</th>
+              <th>{{ _("Zaman") }}</th>
             </tr>
           </thead>
           <tbody id="activity-tbody">
-            <tr><td colspan="5">Yükleniyor...</td></tr>
+            <tr><td colspan="5">{{ _("Yükleniyor...") }}</td></tr>
           </tbody>
         </table>
       </div>
       <div class="yp-activity-footer">
-        <button type="button" id="activity-more-btn" class="mc-btn mc-btn-secondary">Daha fazla göster</button>
+        <button type="button" id="activity-more-btn" class="mc-btn mc-btn-secondary">{{ _("Daha fazla göster") }}</button>
       </div>
     </div>
   </div>

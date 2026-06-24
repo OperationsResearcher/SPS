@@ -1,28 +1,28 @@
 {% extends "platform/base.html" %}
 {% block title %}AI Coach — Kokpitim{% endblock %}
 {% block page_title %}AI Coach{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('AI Coach') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('AI Coach')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
     <h1 class="mc-page-title"><i class="fas fa-graduation-cap" style="color:#10b981;"></i> AI Coach</h1>
-    <p class="mc-page-subtitle">En düşük performanslı 3 strateji için AI destekli yönetici koçluk aksiyonları.</p>
+    <p class="mc-page-subtitle">{{ _("En düşük performanslı 3 strateji için AI destekli yönetici koçluk aksiyonları.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
-  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> Coach hazırlanıyor…</div>
+  <div id="loading" style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i> {{ _("Coach hazırlanıyor…") }}</div>
   <div id="content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">🎯 En Düşük Performanslı 3 Strateji</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_ai_coach.en_dusuk_performansli_3_strateji">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">🎯 {{ _("En Düşük Performanslı 3 Strateji") }}</h3>
       <div id="bottom3"></div>
     </div>
-    <div style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:24px;">
-      <h3 style="font-size:13px;font-weight:700;color:#065f46;margin:0 0 14px;"><i class="fas fa-lightbulb"></i> AI Önerisi</h3>
+    <div style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:24px;" data-card-code="raporlar_ai_coach.ai_onerisi">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#065f46;margin:0 0 14px;"><i class="fas fa-lightbulb"></i> {{ _("AI Önerisi") }}</h3>
       <div id="advice" style="font-size:14px;color:#0f172a;line-height:1.7;white-space:pre-wrap;"></div>
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/ai_coach.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/ai_coach.js') }}" defer></script>
 {% endblock %}

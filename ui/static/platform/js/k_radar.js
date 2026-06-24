@@ -16,10 +16,10 @@
   async function confirmDelete(title, text) {
     if (typeof Swal === "undefined") return true;
     const r = await Swal.fire({
-      title: title || "Emin misiniz?", text: text || "Bu işlem geri alınamaz.",
+      title: title || t("Emin misiniz?"), text: text || t("Bu işlem geri alınamaz."),
       icon: "warning", showCancelButton: true,
       confirmButtonColor: "#dc2626", cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil", cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"), cancelButtonText: t("İptal"),
     });
     return r.isConfirmed;
   }
@@ -75,10 +75,10 @@
     if (!tr || typeof tr !== "object") return "-";
     const delta = Number(tr.delta || 0);
     const sign = delta > 0 ? "+" : "";
-    const label = tr.label || "stabil";
+    const label = tr.label || t("stabil");
     const cur = Number(tr.current_period_avg || 0).toFixed(1);
     const prev = Number(tr.previous_period_avg || 0).toFixed(1);
-    return label + " (" + sign + delta.toFixed(1) + " puan, son30=" + cur + ", onceki30=" + prev + ")";
+    return label + " (" + sign + delta.toFixed(1) + " " + t("puan, son30=") + cur + ", " + t("onceki30=") + prev + ")";
   }
 
   async function loadHub(root) {
@@ -118,10 +118,10 @@
               "</span>" +
               '<button class="mc-btn mc-btn-sm kr-action-btn" data-action="approved" data-item="' +
               encodeURIComponent(item.text) +
-              '">Onayla</button>' +
+              '">' + t("Onayla") + '</button>' +
               '<button class="mc-btn mc-btn-sm kr-action-btn" data-action="rejected" data-item="' +
               encodeURIComponent(item.text) +
-              '">Reddet</button>' +
+              '">' + t("Reddet") + '</button>' +
               "</div>"
             );
           })
@@ -134,11 +134,11 @@
               const item = decodeURIComponent(btn.dataset.item || "");
               try {
                 await postJson(actionUrl, { action, item });
-                notify("success", "Aksiyon güncellendi.");
+                notify("success", t("Aksiyon güncellendi."));
                 await loadHub(root);
               } catch (e) {
                 console.error("[k_radar_action]", e);
-                notify("error", e.message || "Aksiyon güncellenemedi.");
+                notify("error", e.message || t("Aksiyon güncellenemedi."));
               }
             });
           });
@@ -149,7 +149,7 @@
           ? triggers
               .map((t) => "- [" + (t.rule_code || "-") + "] " + (t.module || "-") + " / " + (t.severity || "-"))
               .join("<br>")
-          : "Aktif kural tetikleyici yok.";
+          : t("Aktif kural tetikleyici yok.");
       }
     }
     await loadHistory(root);
@@ -176,10 +176,10 @@
     historyLastPage = Math.max(1, Number(pag.pages || 1));
     historyPage = Math.min(Math.max(1, historyPage), historyLastPage);
     if (pageInfo) {
-      pageInfo.textContent = "Sayfa " + pag.page + " / " + pag.pages + " (Toplam: " + pag.total + ")";
+      pageInfo.textContent = t("Sayfa") + " " + pag.page + " / " + pag.pages + " (" + t("Toplam:") + " " + pag.total + ")";
     }
     if (!items.length) {
-      container.textContent = "Gecmis aksiyon kaydi yok.";
+      container.textContent = t("Gecmis aksiyon kaydi yok.");
       const prevBtn = document.getElementById("kr-history-prev");
       const nextBtn = document.getElementById("kr-history-next");
       if (prevBtn) prevBtn.disabled = historyPage <= 1;
@@ -204,10 +204,10 @@
       "<div style=\"overflow:auto;\">" +
       "<table style=\"width:100%; border-collapse:collapse;\">" +
       "<thead><tr>" +
-      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">Durum</th>" +
-      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">Kullanici</th>" +
-      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">Zaman</th>" +
-      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">Oneri</th>" +
+      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">" + t("Durum") + "</th>" +
+      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">" + t("Kullanici") + "</th>" +
+      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">" + t("Zaman") + "</th>" +
+      "<th style=\"text-align:left; padding:6px; border-bottom:1px solid #e5e7eb;\">" + t("Oneri") + "</th>" +
       "</tr></thead>" +
       "<tbody>" + rows + "</tbody></table></div>";
 
@@ -259,7 +259,7 @@
     const points = (payload.data && payload.data.points) || [];
     if (!target) return;
     if (!points.length) {
-      target.textContent = "Veri bulunamadi.";
+      target.textContent = t("Veri bulunamadi.");
       return;
     }
     target.innerHTML = points
@@ -309,10 +309,10 @@
       detailWrap.style.display = "block";
       detailBody.innerHTML =
         "<strong>" + esc(p.name) + "</strong><br>" +
-        "Kategori: " + esc(p.category || "-") + "<br>" +
-        "Kaynak: " + esc(p.source || "-") + "<br>" +
-        "Olasilik x Etki: " + esc(p.probability) + " x " + esc(p.impact) + " = " + esc(p.rpn) + "<br>" +
-        "Oneri: " + esc(p.recommendation || "Yok");
+        t("Kategori:") + " " + esc(p.category || "-") + "<br>" +
+        t("Kaynak:") + " " + esc(p.source || "-") + "<br>" +
+        t("Olasilik x Etki:") + " " + esc(p.probability) + " x " + esc(p.impact) + " = " + esc(p.rpn) + "<br>" +
+        t("Oneri:") + " " + esc(p.recommendation || t("Yok"));
     };
     target.querySelectorAll(".cross-point-btn").forEach((btn) => {
       btn.addEventListener("click", (ev) => {
@@ -426,11 +426,11 @@
             maturity_level: fd.get("maturity_level"),
             dimension: fd.get("dimension"),
           });
-          notify("success", "Olgunluk kaydı eklendi.");
+          notify("success", t("Olgunluk kaydı eklendi."));
           await loadKpOlgunluk(root);
         } catch (e) {
           console.error("[kp_olgunluk_create]", e);
-          notify("error", e.message || "Olgunluk kaydı eklenemedi.");
+          notify("error", e.message || t("Olgunluk kaydı eklenemedi."));
         }
       });
     }
@@ -582,13 +582,13 @@
                 "</td>" +
                 ((document.getElementById("k-radar-kp-olgunluk-root")?.dataset.canManage === "1")
                   ? ("<td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                    "<button class=\"mc-btn mc-btn-sm kp-edit\" data-id=\"" + r.id + "\" data-level=\"" + r.maturity_level + "\" data-dimension=\"" + encodeURIComponent(r.dimension || "") + "\">Düzenle</button> " +
-                    "<button class=\"mc-btn mc-btn-sm kp-del\" data-id=\"" + r.id + "\">Sil</button></td>")
+                    "<button class=\"mc-btn mc-btn-sm kp-edit\" data-id=\"" + r.id + "\" data-level=\"" + r.maturity_level + "\" data-dimension=\"" + encodeURIComponent(r.dimension || "") + "\">" + t("Düzenle") + "</button> " +
+                    "<button class=\"mc-btn mc-btn-sm kp-del\" data-id=\"" + r.id + "\">" + t("Sil") + "</button></td>")
                   : "") +
                 "</tr>"
             )
             .join("")
-        : "<tr><td colspan=\"5\" style=\"padding:8px; color:#64748b;\">Kayıt bulunamadı.</td></tr>";
+        : "<tr><td colspan=\"5\" style=\"padding:8px; color:#64748b;\">" + t("Kayıt bulunamadı.") + "</td></tr>";
       const root = document.getElementById("k-radar-kp-olgunluk-root");
       if (root && root.dataset.canManage === "1") {
         tbody.querySelectorAll(".kp-edit").forEach((btn) => {
@@ -596,28 +596,28 @@
             const id = btn.dataset.id;
             const curLevel = btn.dataset.level || "3";
             const curDim = decodeURIComponent(btn.dataset.dimension || "");
-            const level = window.prompt("Yeni seviye (1-5):", curLevel);
+            const level = window.prompt(t("Yeni seviye (1-5):"), curLevel);
             if (!level) return;
-            const dim = window.prompt("Boyut:", curDim);
+            const dim = window.prompt(t("Boyut:"), curDim);
             try {
               await putJson(root.dataset.updateBase + id, { maturity_level: Number(level), dimension: dim || "" });
-              notify("success", "Kayıt güncellendi.");
+              notify("success", t("Kayıt güncellendi."));
               await loadKpOlgunluk(root);
             } catch (e) {
-              notify("error", e.message || "Güncelleme başarısız.");
+              notify("error", e.message || t("Güncelleme başarısız."));
             }
           });
         });
         tbody.querySelectorAll(".kp-del").forEach((btn) => {
           btn.addEventListener("click", async () => {
-            if (!(await confirmDelete("Kayıt silinsin mi?"))) return;
+            if (!(await confirmDelete(t("Kayıt silinsin mi?")))) return;
             const id = btn.dataset.id;
             try {
               await deleteJson(root.dataset.deleteBase + id);
-              notify("success", "Kayıt silindi.");
+              notify("success", t("Kayıt silindi."));
               await loadKpOlgunluk(root);
             } catch (e) {
-              notify("error", e.message || "Silme başarısız.");
+              notify("error", e.message || t("Silme başarısız."));
             }
           });
         });
@@ -641,11 +641,11 @@
       if (list) {
         const cs = d.critical_starts || [];
         list.innerHTML = cs.length
-          ? cs.map((t) => "<div>- [#" + t.id + "] " + t.title + "</div>").join("")
-          : "<div style=\"color:#64748b;\">Kritik başlangıç görevi bulunamadı.</div>";
+          ? cs.map((task) => "<div>- [#" + task.id + "] " + task.title + "</div>").join("")
+          : "<div style=\"color:#64748b;\">" + t("Kritik başlangıç görevi bulunamadı.") + "</div>";
       }
       if (empty) empty.style.display = "none";
-      notify("success", "CPM analizi güncellendi.");
+      notify("success", t("CPM analizi güncellendi."));
     };
     if (form && form.dataset.bound !== "1") {
       form.dataset.bound = "1";
@@ -683,11 +683,11 @@
             strategy: fd.get("strategy"),
           });
           form.reset();
-          notify("success", "Paydaş kaydı eklendi.");
+          notify("success", t("Paydaş kaydı eklendi."));
           await loadCrossPaydas(root);
         } catch (e) {
           console.error("[cross_paydas_create]", e);
-          notify("error", e.message || "Paydaş kaydı eklenemedi.");
+          notify("error", e.message || t("Paydaş kaydı eklenemedi."));
         }
       });
     }
@@ -726,43 +726,43 @@
                 "</td>" +
                 ((document.getElementById("k-radar-cross-paydas-root")?.dataset.canManage === "1")
                   ? ("<td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                    "<button class=\"mc-btn mc-btn-sm paydas-edit\" data-id=\"" + r.id + "\" data-name=\"" + encodeURIComponent(r.name || "") + "\" data-role=\"" + encodeURIComponent(r.role || "") + "\" data-inf=\"" + (r.influence || 3) + "\" data-int=\"" + (r.interest || 3) + "\" data-strategy=\"" + encodeURIComponent(r.strategy || "") + "\">Düzenle</button> " +
-                    "<button class=\"mc-btn mc-btn-sm paydas-del\" data-id=\"" + r.id + "\">Sil</button></td>")
+                    "<button class=\"mc-btn mc-btn-sm paydas-edit\" data-id=\"" + r.id + "\" data-name=\"" + encodeURIComponent(r.name || "") + "\" data-role=\"" + encodeURIComponent(r.role || "") + "\" data-inf=\"" + (r.influence || 3) + "\" data-int=\"" + (r.interest || 3) + "\" data-strategy=\"" + encodeURIComponent(r.strategy || "") + "\">" + t("Düzenle") + "</button> " +
+                    "<button class=\"mc-btn mc-btn-sm paydas-del\" data-id=\"" + r.id + "\">" + t("Sil") + "</button></td>")
                   : "") +
                 "</tr>"
             )
             .join("")
-        : "<tr><td colspan=\"6\" style=\"padding:8px; color:#64748b;\">Kayıt bulunamadı.</td></tr>";
+        : "<tr><td colspan=\"6\" style=\"padding:8px; color:#64748b;\">" + t("Kayıt bulunamadı.") + "</td></tr>";
       const root = document.getElementById("k-radar-cross-paydas-root");
       if (root && root.dataset.canManage === "1") {
         tbody.querySelectorAll(".paydas-edit").forEach((btn) => {
           btn.addEventListener("click", async () => {
             const id = btn.dataset.id;
-            const name = window.prompt("Ad:", decodeURIComponent(btn.dataset.name || ""));
+            const name = window.prompt(t("Ad:"), decodeURIComponent(btn.dataset.name || ""));
             if (!name) return;
-            const role = window.prompt("Rol:", decodeURIComponent(btn.dataset.role || "")) || "";
-            const influence = Number(window.prompt("Etki (1-5):", btn.dataset.inf || "3") || 3);
-            const interest = Number(window.prompt("İlgi (1-5):", btn.dataset.int || "3") || 3);
-            const strategy = window.prompt("Strateji:", decodeURIComponent(btn.dataset.strategy || "")) || "";
+            const role = window.prompt(t("Rol:"), decodeURIComponent(btn.dataset.role || "")) || "";
+            const influence = Number(window.prompt(t("Etki (1-5):"), btn.dataset.inf || "3") || 3);
+            const interest = Number(window.prompt(t("İlgi (1-5):"), btn.dataset.int || "3") || 3);
+            const strategy = window.prompt(t("Strateji:"), decodeURIComponent(btn.dataset.strategy || "")) || "";
             try {
               await putJson(root.dataset.updateBase + id, { name, role, influence, interest, strategy });
-              notify("success", "Paydaş güncellendi.");
+              notify("success", t("Paydaş güncellendi."));
               await loadCrossPaydas(root);
             } catch (e) {
-              notify("error", e.message || "Güncelleme başarısız.");
+              notify("error", e.message || t("Güncelleme başarısız."));
             }
           });
         });
         tbody.querySelectorAll(".paydas-del").forEach((btn) => {
           btn.addEventListener("click", async () => {
-            if (!(await confirmDelete("Paydaş silinsin mi?"))) return;
+            if (!(await confirmDelete(t("Paydaş silinsin mi?")))) return;
             const id = btn.dataset.id;
             try {
               await deleteJson(root.dataset.deleteBase + id);
-              notify("success", "Paydaş silindi.");
+              notify("success", t("Paydaş silindi."));
               await loadCrossPaydas(root);
             } catch (e) {
-              notify("error", e.message || "Silme başarısız.");
+              notify("error", e.message || t("Silme başarısız."));
             }
           });
         });

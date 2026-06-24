@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Yapay Zeka Ayarları — Kokpitim{% endblock %}
-{% block page_title %}Yapay Zeka Yapılandırması{% endblock %}
+{% block title %}{{ _("Yapay Zeka Ayarları — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Yapay Zeka Yapılandırması") }}{% endblock %}
 
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto;"
@@ -13,75 +13,75 @@
   <div class="mc-page-header" style="margin-bottom: var(--space-6);">
     <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1);">
       <i class="fas fa-robot" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
-      Yapay Zeka Yapılandırması
+      {{ _("Yapay Zeka Yapılandırması") }}
     </h2>
     <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;">
-      Kendi API anahtarınızı bağlayın (BYOK) veya Kokpitim'in ücretsiz sistem AI'sını kullanın.
+      {{ _("Kendi API anahtarınızı bağlayın (BYOK) veya Kokpitim'in ücretsiz sistem AI'sını kullanın.") }}
     </p>
   </div>
 
   {# ── Mod seçimi ────────────────────────────────────────────────────── #}
   <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4);">
-    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">AI Kaynak Modu</h3>
+    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("AI Kaynak Modu") }}</h3>
 
     <label style="display:block; padding: var(--space-3); border:2px solid var(--border-default); border-radius:8px; margin-bottom:var(--space-2); cursor:pointer;" data-mode-label="system">
       <input type="radio" name="ai-mode" value="system" id="mode-system">
-      <strong>Kokpitim sistem AI'sı (ücretsiz, kotalı)</strong>
+      <strong>{{ _("Kokpitim sistem AI'sı (ücretsiz, kotalı)") }}</strong>
       <div style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-1); margin-left:22px;">
-        Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok.
+        {{ _("Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok.") }}
       </div>
     </label>
 
     <label style="display:block; padding: var(--space-3); border:2px solid var(--border-default); border-radius:8px; cursor:pointer;" data-mode-label="byok">
       <input type="radio" name="ai-mode" value="byok" id="mode-byok">
-      <strong>Kendi API anahtarımı kullan (sınırsız, kendi faturam)</strong>
+      <strong>{{ _("Kendi API anahtarımı kullan (sınırsız, kendi faturam)") }}</strong>
       <div style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-1); margin-left:22px;">
-        Gemini, OpenAI, Anthropic, Groq veya OpenRouter — kendi sağlayıcınız, kendi faturanız.
+        {{ _("Gemini, OpenAI, Anthropic, Groq veya OpenRouter — kendi sağlayıcınız, kendi faturanız.") }}
       </div>
     </label>
   </div>
 
   {# ── BYOK alanları (sadece byok seçilince görünür) ─────────────────── #}
   <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4); display:none;" id="byok-fields">
-    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">API Anahtarı Bilgileri</h3>
+    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("API Anahtarı Bilgileri") }}</h3>
 
     <div style="display:grid; gap: var(--space-4);">
       <div>
         <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
-          Sağlayıcı
+          {{ _("Sağlayıcı") }}
         </label>
         <select class="mc-input" id="byok-provider" style="width:100%;">
-          <option value="gemini">Google Gemini</option>
-          <option value="openai">OpenAI (ChatGPT)</option>
-          <option value="anthropic">Anthropic (Claude)</option>
-          <option value="groq">Groq (en hızlı, ücretsiz katman geniş)</option>
-          <option value="openrouter">OpenRouter (200+ model)</option>
+          <option value="gemini">{{ _("Google Gemini") }}</option>
+          <option value="openai">{{ _("OpenAI (ChatGPT)") }}</option>
+          <option value="anthropic">{{ _("Anthropic (Claude)") }}</option>
+          <option value="groq">{{ _("Groq (en hızlı, ücretsiz katman geniş)") }}</option>
+          <option value="openrouter">{{ _("OpenRouter (200+ model)") }}</option>
         </select>
       </div>
 
       <div>
         <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
-          Model
+          {{ _("Model") }}
         </label>
         <input type="text" class="mc-input" id="byok-model" placeholder="gemini-2.0-flash" style="width:100%;">
         <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-1);">
-          Boş bırakırsan sağlayıcının varsayılan modeli kullanılır.
+          {{ _("Boş bırakırsan sağlayıcının varsayılan modeli kullanılır.") }}
         </div>
       </div>
 
       <div>
         <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
-          API Anahtarı
+          {{ _("API Anahtarı") }}
         </label>
         <input type="password" class="mc-input" id="byok-key" placeholder="••••••••" style="width:100%; font-family:monospace;">
         <div style="font-size: var(--text-xs); color: var(--text-subtle); margin-top: var(--space-1);">
-          Şifreli saklanır (Fernet). Görüntülenmez. Değiştirmek için yeni anahtar gir.
+          {{ _("Şifreli saklanır (Fernet). Görüntülenmez. Değiştirmek için yeni anahtar gir.") }}
         </div>
       </div>
 
       <div id="base-url-row" style="display:none;">
         <label style="display:block; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-1); font-weight:500;">
-          Base URL <span style="color: var(--text-disabled);">(opsiyonel)</span>
+          {{ _("Base URL") }} <span style="color: var(--text-disabled);">{{ _("(opsiyonel)") }}</span>
         </label>
         <input type="text" class="mc-input" id="byok-base-url" placeholder="https://openrouter.ai/api/v1" style="width:100%;">
       </div>
@@ -89,7 +89,7 @@
       <div style="border-top:1px solid var(--border-default); padding-top: var(--space-4);">
         <label style="display:flex; align-items:center; gap: var(--space-2); cursor:pointer;">
           <input type="checkbox" id="byok-pii" checked>
-          <span style="font-size: var(--text-md);">KVKK — Hassas veri otomatik maskelensin (TC kimlik, IBAN vb.)</span>
+          <span style="font-size: var(--text-md);">{{ _("KVKK — Hassas veri otomatik maskelensin (TC kimlik, IBAN vb.)") }}</span>
         </label>
       </div>
     </div>
@@ -101,13 +101,13 @@
   {# ── Butonlar ────────────────────────────────────────────────────────── #}
   <div style="display:flex; gap: var(--space-3); flex-wrap:wrap;">
     <button class="mc-btn mc-btn-primary" id="btn-save">
-      <i class="fas fa-save"></i> Kaydet
+      <i class="fas fa-save"></i> {{ _("Kaydet") }}
     </button>
     <button class="mc-btn mc-btn-secondary" id="btn-test" style="display:none;">
-      <i class="fas fa-vial"></i> Anahtarı Test Et
+      <i class="fas fa-vial"></i> {{ _("Anahtarı Test Et") }}
     </button>
     <button class="mc-btn mc-btn-secondary" id="btn-delete" style="display:none; margin-left:auto; color: var(--color-danger);">
-      <i class="fas fa-trash"></i> BYOK Anahtarını Sil
+      <i class="fas fa-trash"></i> {{ _("BYOK Anahtarını Sil") }}
     </button>
   </div>
 
@@ -155,14 +155,14 @@
       document.getElementById('byok-base-url').value = j.config.base_url || '';
       document.getElementById('byok-pii').checked = j.config.pii_mask_enabled;
       document.getElementById('byok-key').placeholder = j.config.api_key_masked
-        ? `Mevcut: ${j.config.api_key_masked} (yeni anahtar girin ya da boş bırakın)`
-        : 'API anahtarı';
+        ? `${t("Mevcut:")} ${j.config.api_key_masked} ${t("(yeni anahtar girin ya da boş bırakın)")}`
+        : t('API anahtarı');
       if (j.config.last_test_at) {
         const lt = document.getElementById('last-test');
         const okIcon = j.config.last_test_status === 'ok'
           ? '<i class="fas fa-check-circle" style="color: var(--color-success);"></i>'
           : '<i class="fas fa-times-circle" style="color: var(--color-danger);"></i>';
-        lt.innerHTML = `Son test: ${new Date(j.config.last_test_at).toLocaleString('tr-TR')} ${okIcon} ${j.config.last_test_message || ''}`;
+        lt.innerHTML = `${t("Son test:")} ${new Date(j.config.last_test_at).toLocaleString('tr-TR')} ${okIcon} ${j.config.last_test_message || ''}`;
         lt.style.display = 'block';
       }
     } else {
@@ -186,9 +186,9 @@
       body: JSON.stringify(payload),
     });
     const j = await res.json();
-    if (!res.ok) { Swal.fire({ icon: 'error', title: 'Hata', text: (j.error || 'İşlem başarısız'), confirmButtonColor: '#dc2626' }); return; }
+    if (!res.ok) { Swal.fire({ icon: 'error', title: t('Hata'), text: (j.error || t('İşlem başarısız')), confirmButtonColor: '#dc2626' }); return; }
     Swal.fire({toast:true, position:'top-end', icon:'success',
-               title: 'Kaydedildi', showConfirmButton:false, timer: 2500});
+               title: t('Kaydedildi'), showConfirmButton:false, timer: 2500});
     document.getElementById('byok-key').value = '';
     load();
   };
@@ -196,17 +196,17 @@
   document.getElementById('btn-test').onclick = async () => {
     const btn = document.getElementById('btn-test');
     const orig = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test ediliyor…';
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Test ediliyor…');
     const res = await fetch(r.dataset.testUrl, {method: 'POST'});
     const j = await res.json();
     btn.disabled = false; btn.innerHTML = orig;
     const box = document.getElementById('test-result');
     if (j.success) {
       box.className = 'mc-alert mc-alert-success';
-      box.innerHTML = `<i class="fas fa-check-circle"></i> Bağlantı başarılı. Yanıt: <code>${j.message}</code> · ${j.tokens_used || 0} token kullanıldı.`;
+      box.innerHTML = `<i class="fas fa-check-circle"></i> ${t("Bağlantı başarılı. Yanıt:")} <code>${j.message}</code> · ${j.tokens_used || 0} ${t("token kullanıldı.")}`;
     } else {
       box.className = 'mc-alert mc-alert-error';
-      box.innerHTML = `<i class="fas fa-times-circle"></i> Test başarısız: ${j.message}`;
+      box.innerHTML = `<i class="fas fa-times-circle"></i> ${t("Test başarısız:")} ${j.message}`;
     }
     box.style.padding = 'var(--space-3)';
     box.style.display = 'block';
@@ -214,15 +214,15 @@
 
   document.getElementById('btn-delete').onclick = async () => {
     const ok = await Swal.fire({
-      title: 'BYOK anahtarını sil?', text: 'Tenant tekrar sistem AI\'sına döner.',
+      title: t('BYOK anahtarını sil?'), text: t('Tenant tekrar sistem AI\'sına döner.'),
       icon: 'warning', showCancelButton: true,
-      confirmButtonText: 'Sil', cancelButtonText: 'İptal',
+      confirmButtonText: t('Sil'), cancelButtonText: t('İptal'),
     }).then(r => r.isConfirmed);
     if (!ok) return;
     await fetch(r.dataset.deleteUrl, {method: 'DELETE'});
     load();
     Swal.fire({toast:true, position:'top-end', icon:'info',
-               title: 'BYOK anahtarı silindi', showConfirmButton:false, timer: 2500});
+               title: t('BYOK anahtarı silindi'), showConfirmButton:false, timer: 2500});
   };
 
   load();

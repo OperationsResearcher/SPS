@@ -12,6 +12,7 @@ from extensions import db
 from app.constants.roles import PLATFORM_ADMIN_ROLES, PRIVILEGED_ROLES as _PRIVILEGED_ROLES
 import re as _re
 import ipaddress as _ipaddress
+from flask_babel import gettext as _
 
 
 def _check_webhook_url(url: str):
@@ -62,7 +63,7 @@ def k_rapor_api_forecast(kpi_id):
         .first()
     )
     if not kpi:
-        return jsonify({"success": False, "message": "KPI bulunamadı"}), 404
+        return jsonify({"success": False, "message": _("KPI bulunamadı")}), 404
 
     periods = request.args.get("periods", 3, type=int)
     periods = max(1, min(periods, 12))
@@ -73,7 +74,7 @@ def k_rapor_api_forecast(kpi_id):
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[forecast] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 # ── Ana Sayfa ─────────────────────────────────────────────────────────────────
@@ -126,7 +127,7 @@ def k_rapor():
 
 # ── Rapor 1: Kurumsal Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/kurumsal")
+@app_bp.route("/k-rapor/api/corporate")
 @login_required
 def k_rapor_api_kurumsal():
     """Vizyon skoru + strateji bazlı başarı + en iyi/kötü süreçler."""
@@ -188,12 +189,12 @@ def k_rapor_api_kurumsal():
         return jsonify({"success": True, "data": result, "year": year})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_kurumsal] {e}")
-        return jsonify({"success": False, "message": "Kurumsal veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Kurumsal veri alınamadı.")}), 500
 
 
 # ── Rapor 2: Süreç & PG Isı Haritası ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/surec-pg")
+@app_bp.route("/k-rapor/api/process-pg")
 @login_required
 def k_rapor_api_surec_pg():
     """Süreçler × dönemler ısı haritası verisi."""
@@ -336,7 +337,7 @@ def k_rapor_api_surec_pg():
         return jsonify({"success": True, "data": rows, "labels": labels, "year": year, "period": period})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_surec_pg] {e}")
-        return jsonify({"success": False, "message": "Süreç/PG verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Süreç/PG verisi alınamadı.")}), 500
 
 
 # ── Rapor 3: PG Trend ─────────────────────────────────────────────────────────
@@ -375,12 +376,12 @@ def k_rapor_api_trend(kpi_id):
         return jsonify({"success": True, "data": result, "kpi_name": kpi.name, "kpi_code": kpi.code})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_trend] {e}")
-        return jsonify({"success": False, "message": "Trend verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Trend verisi alınamadı.")}), 500
 
 
 # ── Rapor 4: Stratejik Uyum ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/uyum")
+@app_bp.route("/k-rapor/api/compliance")
 @login_required
 def k_rapor_api_uyum():
     """Strateji → Alt Strateji → Süreç katkı ağacı."""
@@ -449,12 +450,12 @@ def k_rapor_api_uyum():
         return jsonify({"success": True, "data": tree, "vision_score": vision.get("vision_score", 0), "year": year})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_uyum] {e}")
-        return jsonify({"success": False, "message": "Stratejik uyum verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Stratejik uyum verisi alınamadı.")}), 500
 
 
 # ── Rapor 5: Faaliyet ─────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/faaliyet")
+@app_bp.route("/k-rapor/api/activity")
 @login_required
 def k_rapor_api_faaliyet():
     """Faaliyet tamamlanma oranı, geciken ve tamamlanan."""
@@ -563,12 +564,12 @@ def k_rapor_api_faaliyet():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_faaliyet] {e}")
-        return jsonify({"success": False, "message": "Faaliyet verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Faaliyet verisi alınamadı.")}), 500
 
 
 # ── Rapor 6: Bireysel Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/bireysel")
+@app_bp.route("/k-rapor/api/individual")
 @login_required
 def k_rapor_api_bireysel():
     """Kullanıcı bazlı bireysel PG — özet + detay + sağlık."""
@@ -684,12 +685,12 @@ def k_rapor_api_bireysel():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_bireysel] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Bireysel veri alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Bireysel veri alınamadı.")}), 500
 
 
 # ── Rapor 7: Veri Giriş Durumu ────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/veri-durumu")
+@app_bp.route("/k-rapor/api/data-status")
 @login_required
 def k_rapor_api_veri_durumu():
     """Aktif plan yılında cari döneme ait PG veri giriş durumu."""
@@ -771,7 +772,7 @@ def k_rapor_api_veri_durumu():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_veri_durumu] {e}")
-        return jsonify({"success": False, "message": "Veri durumu alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Veri durumu alınamadı.")}), 500
 
 
 # ── Rapor 8: Risk ─────────────────────────────────────────────────────────────
@@ -863,12 +864,12 @@ def k_rapor_api_risk():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_risk] {e}")
-        return jsonify({"success": False, "message": "Risk verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Risk verisi alınamadı.")}), 500
 
 
 # ── Rapor 9: Denetim ──────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/denetim")
+@app_bp.route("/k-rapor/api/audit")
 @login_required
 def k_rapor_api_denetim():
     """Audit log özeti — kim ne yaptı."""
@@ -923,12 +924,12 @@ def k_rapor_api_denetim():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_denetim] {e}")
-        return jsonify({"success": False, "message": "Denetim verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Denetim verisi alınamadı.")}), 500
 
 
 # ── Rapor 10: Uyarı Merkezi ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/uyari")
+@app_bp.route("/k-rapor/api/alert")
 @login_required
 def k_rapor_api_uyari():
     """Uyarı merkezi — kritik PG'ler, geciken faaliyetler, yüksek riskler."""
@@ -1056,7 +1057,7 @@ def k_rapor_api_uyari():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_uyari] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Uyarı verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Uyarı verisi alınamadı.")}), 500
 
 
 # ── Rapor 11: K-Vektör Ağırlık Dağılımı ─────────────────────────────────────
@@ -1071,7 +1072,7 @@ def k_rapor_api_k_vektor():
         try:
             from app.services.k_vektor_engine import compute_k_vektor_bundle
         except ImportError:
-            return jsonify({"success": False, "message": "K-Vektör servisi henüz aktif değil."}), 200
+            return jsonify({"success": False, "message": _("K-Vektör servisi henüz aktif değil.")}), 200
         from app.services.plan_year_service import get_plan_year
         from app.models.core import Strategy, SubStrategy
         from sqlalchemy import or_, and_
@@ -1139,7 +1140,7 @@ def k_rapor_api_k_vektor():
         return jsonify({"success": True, "data": {"strateji": strat_data, "alt_strateji": sub_data}})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_k_vektor] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "K-Vektör verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("K-Vektör verisi alınamadı.")}), 500
 
 
 # ── Rapor 11: EVM (Kazanılmış Değer) ─────────────────────────────────────────
@@ -1185,12 +1186,12 @@ def k_rapor_api_evm():
         return jsonify({"success": True, "data": data})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_evm] {e}")
-        return jsonify({"success": False, "message": "EVM verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("EVM verisi alınamadı.")}), 500
 
 
 # ── Rapor 12: Stratejik Analiz Özeti ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/stratejik-analiz")
+@app_bp.route("/k-rapor/api/strategic-analysis")
 @login_required
 def k_rapor_api_stratejik_analiz():
     """SWOT / TOWS / PESTEL / Porter özet — yıl yoksa en son analizi döner."""
@@ -1285,12 +1286,12 @@ def k_rapor_api_stratejik_analiz():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_stratejik_analiz] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Stratejik analiz verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Stratejik analiz verisi alınamadı.")}), 500
 
 
 # ── Rapor 13: Paydaş Haritası ─────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/paydas")
+@app_bp.route("/k-rapor/api/stakeholder")
 @login_required
 def k_rapor_api_paydas():
     """Paydaş haritası + anket özeti."""
@@ -1337,12 +1338,12 @@ def k_rapor_api_paydas():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_paydas] {e}")
-        return jsonify({"success": False, "message": "Paydaş verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Paydaş verisi alınamadı.")}), 500
 
 
 # ── Rapor 14: Rekabet & A3 ────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/rekabet")
+@app_bp.route("/k-rapor/api/competition")
 @login_required
 def k_rapor_api_rekabet():
     """Rekabetçi analiz + A3 raporları özeti."""
@@ -1394,7 +1395,7 @@ def k_rapor_api_rekabet():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_rekabet] {e}")
-        return jsonify({"success": False, "message": "Rekabet/A3 verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Rekabet/A3 verisi alınamadı.")}), 500
 
 
 # ── Export: Excel ─────────────────────────────────────────────────────────────
@@ -1563,7 +1564,7 @@ def k_rapor_api_export_excel():
         )
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_export_excel] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Excel oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Excel oluşturulamadı.")}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1597,7 +1598,7 @@ def k_rapor_api_anomalies():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_anomalies] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Anomali tespiti başarısız."}), 500
+        return jsonify({"success": False, "message": _("Anomali tespiti başarısız.")}), 500
 
 
 @app_bp.route("/k-rapor/api/webhook/test", methods=["POST"])
@@ -1668,7 +1669,7 @@ def k_rapor_anomalies_notify_webhook():
         return jsonify({**result, "anomaly_count": len(filtered)})
     except Exception as e:
         current_app.logger.error(f"[notify_webhook] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 @app_bp.route("/k-rapor/api/anomalies/notify-slack", methods=["POST"])
@@ -1720,7 +1721,7 @@ def k_rapor_api_anomalies_notify_slack():
         return jsonify({"success": True, "sent": sent, "anomaly_count": len(filtered)})
     except Exception as e:
         current_app.logger.error(f"[anomalies_notify_slack] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Slack gönderimi başarısız."}), 500
+        return jsonify({"success": False, "message": _("Slack gönderimi başarısız.")}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1735,11 +1736,11 @@ def k_rapor_digest_preview():
     try:
         html = render_digest_html(current_user.tenant_id)
         if not html:
-            return jsonify({"success": False, "message": "Tenant bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Tenant bulunamadı")}), 404
         return html  # render HTML
     except Exception as e:
         current_app.logger.error(f"[digest_preview] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 @app_bp.route("/k-rapor/api/digest/send", methods=["POST"])
@@ -1762,7 +1763,7 @@ def k_rapor_digest_send():
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f"[digest_send] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1788,7 +1789,7 @@ def k_rapor_api_export_pdf():
     try:
         tenant = Tenant.query.get(tid)
         if not tenant:
-            return jsonify({"success": False, "message": "Kurum bulunamadı."}), 404
+            return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 404
 
         # Özet sayılar
         strategy_count = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
@@ -1835,7 +1836,7 @@ def k_rapor_api_export_pdf():
         )
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_export_pdf] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "PDF oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("PDF oluşturulamadı.")}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1844,7 +1845,7 @@ def k_rapor_api_export_pdf():
 
 # ── Yeni Rapor 1: PG Performans Dağılımı (Histogram) ─────────────────────────
 
-@app_bp.route("/k-rapor/api/pg-dagilim")
+@app_bp.route("/k-rapor/api/pi-dagilim")
 @login_required
 def k_rapor_api_pg_dagilim():
     """Tüm PG'lerin başarı yüzdesi dağılımı — histogram + özet."""
@@ -1927,12 +1928,12 @@ def k_rapor_api_pg_dagilim():
         return jsonify({"success": True, "data": {"buckets": buckets, "ozet": ozet, "scatter": scatter[:100]}})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_pg_dagilim] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "PG dağılım verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("PG dağılım verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 2: Süreç Faaliyet Matrisi ─────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/faaliyet-matris")
+@app_bp.route("/k-rapor/api/activity-matrix")
 @login_required
 def k_rapor_api_faaliyet_matris():
     """Her süreç için faaliyet durumu dağılımı — yatay bar chart."""
@@ -1995,12 +1996,12 @@ def k_rapor_api_faaliyet_matris():
         return jsonify({"success": True, "data": rows})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_faaliyet_matris] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Faaliyet matris verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Faaliyet matris verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 3: Veri Giriş Aktivite Takvimi ────────────────────────────────
 
-@app_bp.route("/k-rapor/api/aktivite-takvim")
+@app_bp.route("/k-rapor/api/activity-calendar")
 @login_required
 def k_rapor_api_aktivite_takvim():
     """Son 365 günde günlük veri giriş sayısı — GitHub heatmap tarzı."""
@@ -2071,12 +2072,12 @@ def k_rapor_api_aktivite_takvim():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_aktivite_takvim] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Aktivite takvim verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Aktivite takvim verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 4: Kurum Karşılaştırma ────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/kurum-karsilastirma")
+@app_bp.route("/k-rapor/api/org-comparison")
 @login_required
 def k_rapor_api_kurum_karsilastirma():
     """Kurumları ortalama PG başarısına göre karşılaştır (yalnız Admin)."""
@@ -2172,12 +2173,12 @@ def k_rapor_api_kurum_karsilastirma():
         return jsonify({"success": True, "data": results, "year": year, "is_admin": role_name in PLATFORM_ADMIN_ROLES})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_kurum_karsilastirma] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Kurum karşılaştırma verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Kurum karşılaştırma verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 5: Strateji Kapsama Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/strateji-kapsama")
+@app_bp.route("/k-rapor/api/strategy-coverage")
 @login_required
 def k_rapor_api_strateji_kapsama():
     """Hangi stratejilerin altında süreç yok, hangi süreçler stratejisiz."""
@@ -2272,12 +2273,12 @@ def k_rapor_api_strateji_kapsama():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_strateji_kapsama] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Strateji kapsama verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Strateji kapsama verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 6: Faaliyet Sorumlu Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/sorumlu-analiz")
+@app_bp.route("/k-rapor/api/responsible-analysis")
 @login_required
 def k_rapor_api_sorumlu_analiz():
     """Kişi başına faaliyet yükü, tamamlanma ve gecikme oranları."""
@@ -2346,7 +2347,7 @@ def k_rapor_api_sorumlu_analiz():
         return jsonify({"success": True, "data": rows})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_sorumlu_analiz] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sorumlu analiz verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Sorumlu analiz verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 7: SWOT/TOWS Trend ────────────────────────────────────────────
@@ -2417,12 +2418,12 @@ def k_rapor_api_swot_trend():
         return jsonify({"success": True, "data": trend})
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_swot_trend] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "SWOT trend verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("SWOT trend verisi alınamadı.")}), 500
 
 
 # ── Yeni Rapor 8: Bildirim Analizi ───────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/bildirim-analiz")
+@app_bp.route("/k-rapor/api/notification-analysis")
 @login_required
 def k_rapor_api_bildirim_analiz():
     """Bildirim türü dağılımı, okunma oranı, günlük trend, yaşlanma, kullanıcı bazlı."""
@@ -2531,4 +2532,4 @@ def k_rapor_api_bildirim_analiz():
         })
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_bildirim_analiz] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Bildirim analiz verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Bildirim analiz verisi alınamadı.")}), 500

@@ -7,9 +7,10 @@ from flask_login import login_required, current_user
 
 from platform_core import app_bp
 from app.models.process import Process, ProcessKpi
+from flask_babel import gettext as _
 
 
-@app_bp.route("/analiz")
+@app_bp.route("/analysis")
 @login_required
 def analiz():
     """Analitik özet — tenant süreçleri üzerinden."""
@@ -24,7 +25,7 @@ def analiz():
 
 # ── Trend Analizi ─────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/trend/<int:process_id>")
+@app_bp.route("/analysis/api/trend/<int:process_id>")
 @login_required
 def analiz_api_trend(process_id):
     """Süreçteki tüm aktif PG'ler için trend serileri döner (frontend çoklu seri çizer)."""
@@ -76,12 +77,12 @@ def analiz_api_trend(process_id):
         }})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_trend] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Trend verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Trend verisi alınamadı.")}), 500
 
 
 # ── Sağlık Skoru ──────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/health/<int:process_id>")
+@app_bp.route("/analysis/api/health/<int:process_id>")
 @login_required
 def analiz_api_health(process_id):
     Process.query.filter_by(
@@ -95,12 +96,12 @@ def analiz_api_health(process_id):
         return jsonify({"success": True, "data": result})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_health] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sağlık skoru alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Sağlık skoru alınamadı.")}), 500
 
 
 # ── Tahmin Analizi ────────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/forecast/<int:process_id>")
+@app_bp.route("/analysis/api/forecast/<int:process_id>")
 @login_required
 def analiz_api_forecast(process_id):
     Process.query.filter_by(
@@ -114,12 +115,12 @@ def analiz_api_forecast(process_id):
         return jsonify({"success": True, "data": result})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_forecast] {e}")
-        return jsonify({"success": False, "message": "Tahmin verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Tahmin verisi alınamadı.")}), 500
 
 
 # ── Karşılaştırma Analizi ─────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/comparison", methods=["POST"])
+@app_bp.route("/analysis/api/comparison", methods=["POST"])
 @login_required
 def analiz_api_comparison():
     data = request.get_json() or {}
@@ -138,12 +139,12 @@ def analiz_api_comparison():
         return jsonify({"success": True, "data": result})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_comparison] {e}")
-        return jsonify({"success": False, "message": "Karşılaştırma verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Karşılaştırma verisi alınamadı.")}), 500
 
 
 # ── Performans Raporu ─────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/report/<int:process_id>")
+@app_bp.route("/analysis/api/report/<int:process_id>")
 @login_required
 def analiz_api_report(process_id):
     Process.query.filter_by(
@@ -171,12 +172,12 @@ def analiz_api_report(process_id):
         return jsonify({"success": True, "data": result})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_report] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Rapor oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Rapor oluşturulamadı.")}), 500
 
 
 # ── Anomali Tespiti ───────────────────────────────────────────────────────────
 
-@app_bp.route("/analiz/api/anomalies")
+@app_bp.route("/analysis/api/anomalies")
 @login_required
 def analiz_api_anomalies():
     """Tenant geneli (veya tek süreç) için tüm aktif PG'lerde anomali tarar."""
@@ -231,4 +232,4 @@ def analiz_api_anomalies():
         }})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_anomalies] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Anomali verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Anomali verisi alınamadı.")}), 500

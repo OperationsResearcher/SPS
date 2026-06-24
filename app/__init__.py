@@ -141,8 +141,11 @@ def create_app(config_class=None):
         Template: {{ role_label_tr(user.role.name) }}
         JS gömme: {{ ROLE_LABELS_TR | tojson }}
         """
-        from app.constants.roles import role_label_tr, ROLE_LABELS_TR
-        return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR}
+        from app.constants.roles import role_label_tr, ROLE_LABELS_TR, role_labels_json
+        # ROLE_LABELS_TR değerleri lazy_gettext; JS'e tojson ile gömmek için
+        # role_labels_json() (düz-metin, aktif dilde) kullanılmalı.
+        return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR,
+                "role_labels_json": role_labels_json}
 
     @app.context_processor
     def _inject_component_visibility():
@@ -176,7 +179,30 @@ def create_app(config_class=None):
                 return True
             return slug in slugs
 
-        return {"component_visible": component_visible}
+        def card_data_visible(card_code, data_key):
+            """Kart-içi veri parçası paket'e göre görünür mü? (KART katmanı).
+
+            CardDataSource.required_component_code → component_visible ile kontrol.
+            Eşleme yoksa görünür (fail-open). slugs None ise (Admin/paketsiz) görünür.
+            """
+            if slugs is None:
+                return True
+            try:
+                from app.models.saas import SystemCard, CardDataSource
+                row = (CardDataSource.query
+                       .join(SystemCard, CardDataSource.card_id == SystemCard.id)
+                       .filter(SystemCard.code == card_code,
+                               CardDataSource.data_key == data_key,
+                               CardDataSource.is_active.is_(True))
+                       .first())
+            except Exception:
+                return True
+            if not row or not row.required_component_code:
+                return True  # eşleme/kısıt yok → göster
+            return row.required_component_code in slugs
+
+        return {"component_visible": component_visible,
+                "card_data_visible": card_data_visible}
 
     @app.context_processor
     def _inject_sidebar_modules():
@@ -214,14 +240,14 @@ def create_app(config_class=None):
         ("/k-rapor", "k-vektor"): "performans",
         ("/k-rapor", "uyum"): "performans",
         ("/k-rapor", "strateji-kapsama"): "performans",
-        ("/raporlar/k-vektor-carpiklik", None): "performans",
-        ("/raporlar/hizalama-sankey", None): "performans",
-        ("/sp/strateji-proje-matris", None): "performans",
-        ("/raporlar/pg-proje-etki", None): "performans",
-        ("/raporlar/departman-performans", None): "performans",
-        ("/raporlar/yonetici-liderlik", None): "performans",
-        ("/raporlar/cmmi-heatmap", None): "performans",
-        ("/raporlar/hedef-revizyon", None): "performans",
+        ("/reports/k-vector-skewness", None): "performans",
+        ("/reports/alignment-sankey", None): "performans",
+        ("/sp/strategy-project-matrix", None): "performans",
+        ("/reports/pi-project-impact", None): "performans",
+        ("/reports/department-performance", None): "performans",
+        ("/reports/executive-leadership", None): "performans",
+        ("/reports/cmmi-heatmap", None): "performans",
+        ("/reports/target-revision", None): "performans",
         ("/k-radar/ks", None): "performans",
         # Yürütme
         ("/k-rapor", "faaliyet"): "yurutme",
@@ -230,55 +256,55 @@ def create_app(config_class=None):
         ("/k-rapor", "sorumlu-analiz"): "yurutme",
         ("/k-rapor", "bireysel"): "yurutme",
         ("/k-rapor", "evm"): "yurutme",
-        ("/raporlar/bireysel-hizalama", None): "yurutme",
-        ("/raporlar/initiative-bubble", None): "yurutme",
-        ("/raporlar/initiative-roadmap", None): "yurutme",
-        ("/raporlar/quarterly-review", None): "yurutme",
-        ("/raporlar/okr-cascade", None): "yurutme",
-        ("/raporlar/sabah-ozeti", None): "yurutme",
-        ("/raporlar/operasyon-istatistik", None): "yurutme",
-        ("/raporlar/muda-analizi", None): "yurutme",
+        ("/reports/individual-alignment", None): "yurutme",
+        ("/reports/initiative-bubble", None): "yurutme",
+        ("/reports/initiative-roadmap", None): "yurutme",
+        ("/reports/quarterly-review", None): "yurutme",
+        ("/reports/okr-cascade", None): "yurutme",
+        ("/reports/morning-summary", None): "yurutme",
+        ("/reports/operation-statistics", None): "yurutme",
+        ("/reports/muda-analysis", None): "yurutme",
         # Risk & Veri
         ("/k-rapor", "risk"): "risk",
         ("/k-rapor", "uyari"): "risk",
         ("/k-rapor", "veri-durumu"): "risk",
         ("/k-rapor", "denetim"): "risk",
         ("/k-rapor", "bildirim-analiz"): "risk",
-        ("/raporlar/risk-heatmap", None): "risk",
-        ("/raporlar/early-warning", None): "risk",
-        ("/raporlar/ml-anomaly", None): "risk",
-        ("/raporlar/veri-kalitesi", None): "risk",
-        ("/raporlar/iki-fa", None): "risk",
-        ("/raporlar/audit-paketi", None): "risk",
-        ("/raporlar/onay-zinciri", None): "risk",
+        ("/reports/risk-heatmap", None): "risk",
+        ("/reports/early-warning", None): "risk",
+        ("/reports/ml-anomaly", None): "risk",
+        ("/reports/data-quality", None): "risk",
+        ("/reports/two-fa", None): "risk",
+        ("/reports/audit-package", None): "risk",
+        ("/reports/approval-chain", None): "risk",
         # Strateji
         ("/k-rapor", "stratejik-analiz"): "strateji",
         ("/k-rapor", "swot-trend"): "strateji",
         ("/k-rapor", "paydas"): "strateji",
         ("/k-rapor", "rekabet"): "strateji",
         ("/k-rapor", "kurum-karsilastirma"): "strateji",
-        ("/raporlar/vrio-portfoy", None): "strateji",
-        ("/raporlar/sektor-benchmark", None): "ai",
-        ("/raporlar/sektorel", None): "strateji",
-        ("/raporlar/sunburst", None): "strateji",
-        ("/sp/strateji-haritasi", None): "strateji",
-        ("/raporlar/evrim-filmi", None): "strateji",
-        ("/raporlar/strateji-hikayesi", None): "strateji",
+        ("/reports/vrio-portfoy", None): "strateji",
+        ("/reports/sektor-benchmark", None): "ai",
+        ("/reports/sectoral", None): "strateji",
+        ("/reports/sunburst", None): "strateji",
+        ("/sp/strategy-map", None): "strateji",
+        ("/reports/evolution-film", None): "strateji",
+        ("/reports/strategy-story", None): "strateji",
         # AI & Üst Yönetim
-        ("/raporlar/cfo-dashboard", None): "ai",
-        ("/raporlar/coo-dashboard", None): "ai",
-        ("/raporlar/chro-dashboard", None): "ai",
-        ("/raporlar/yatirimci-sunum", None): "ai",
-        ("/raporlar/stratejik-yillik", None): "ai",
-        ("/raporlar/esg-rapor", None): "ai",
-        ("/raporlar/carbon-trend", None): "ai",
-        ("/raporlar/ai-danisman", None): "ai",
-        ("/raporlar/ai-coach", None): "ai",
-        ("/raporlar/ai-sunum", None): "ai",
-        ("/raporlar/nlp-query", None): "ai",
-        ("/raporlar/bireysel-karne-batch", None): "ai",
-        ("/raporlar/mobile", None): "ai",
-        ("/raporlar/bi-connector", None): "ai",
+        ("/reports/cfo-dashboard", None): "ai",
+        ("/reports/coo-dashboard", None): "ai",
+        ("/reports/chro-dashboard", None): "ai",
+        ("/reports/investor-presentation", None): "ai",
+        ("/reports/strategic-annual", None): "ai",
+        ("/reports/esg-report", None): "ai",
+        ("/reports/carbon-trend", None): "ai",
+        ("/reports/ai-advisor", None): "ai",
+        ("/reports/ai-coach", None): "ai",
+        ("/reports/ai-presentation", None): "ai",
+        ("/reports/nlp-query", None): "ai",
+        ("/reports/individual-scorecard-batch", None): "ai",
+        ("/reports/mobile", None): "ai",
+        ("/reports/bi-connector", None): "ai",
     }
 
     @app.context_processor
@@ -307,8 +333,8 @@ def create_app(config_class=None):
         # Path → (etiket, url) eşlemesi. Önek eşleşmesi sıralı; ilk eşleşen kazanır.
         # Sıra: daha uzun/spesifik önek önce.
         sections = [
-            ("/masaustu-launcher", "Masaüstü", "/masaustu-launcher"),
-            ("/masaustu",          "Masaüstü", "/masaustu-launcher"),
+            ("/desktop-launcher",  "Masaüstü", "/desktop-launcher"),
+            ("/desktop",           "Masaüstü", "/desktop-launcher"),
             ("/sp",                "Stratejik Planlama", "/sp"),
             ("/process",           "Süreç Yönetimi", "/process"),
             ("/proje",             "Proje Yönetimi", "/project"),
@@ -316,15 +342,15 @@ def create_app(config_class=None):
             ("/k-radar",           "K-Radar", "/k-radar"),
             ("/k-analiz",          "K-Radar", "/k-radar"),
             ("/k-rapor",           "K-Radar", "/k-radar"),
-            ("/raporlar",          "K-Radar", "/k-radar"),
-            ("/bireysel",          "Bireysel Performans", "/bireysel/karne"),
-            ("/analiz",            "Performans Analitiği", "/analiz"),
-            ("/bildirim",          "Bildirimler", "/bildirim"),
-            ("/ayarlar",           "Ayarlar", "/ayarlar"),
-            ("/kurum",             "Kurum", "/kurum"),
+            ("/reports",          "K-Radar", "/k-radar"),
+            ("/individual",        "Bireysel Performans", "/individual/scorecard"),
+            ("/analysis",          "Performans Analitiği", "/analysis"),
+            ("/notification",      "Bildirimler", "/notification"),
+            ("/settings",          "Ayarlar", "/settings"),
+            ("/organization",      "Kurum", "/organization"),
             ("/admin",             "Yönetim Paneli", "/admin/yonetim-paneli"),
             ("/yonetim",           "Yönetim Paneli", "/admin/yonetim-paneli"),
-            ("/profil",            "Profil", "/profil"),
+            ("/profile",           "Profil", "/profile"),
         ]
         try:
             path = request.path
@@ -334,6 +360,34 @@ def create_app(config_class=None):
             if path == prefix or path.startswith(prefix + "/") or path.startswith(prefix + "?"):
                 return {"current_section": {"label": label, "url": url, "prefix": prefix, "is_root": (path == prefix or path == url)}}
         return {"current_section": None}
+
+    @app.route("/set-language/<lang>", methods=["GET", "POST"])
+    def set_language(lang):
+        """Aktif UI dilini değiştir (i18n). session + (giriş yapmışsa) user.locale_preferences yazar.
+
+        Locale seçim zinciri için bkz. app/i18n.py::get_locale. Referer'a (veya köke) döner.
+        """
+        import json as _json
+        from flask import session, redirect, request as _req
+        from flask_login import current_user
+
+        supported = app.config.get("BABEL_SUPPORTED_LOCALES", ["tr", "en"])
+        if lang not in supported:
+            lang = app.config.get("BABEL_DEFAULT_LOCALE", "tr")
+        session["lang"] = lang
+
+        if current_user.is_authenticated:
+            try:
+                prefs = current_user.locale_preferences
+                prefs = _json.loads(prefs) if isinstance(prefs, str) and prefs else (prefs or {})
+                prefs["language"] = lang
+                current_user.locale_preferences = _json.dumps(prefs)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f"[set_language] locale_preferences kaydedilemedi: {e}")
+
+        return redirect(_req.referrer or "/")
 
     @app.route("/health")
     def global_health():

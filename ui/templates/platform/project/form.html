@@ -1,13 +1,13 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}{% if project %}Projeyi düzenle{% else %}Yeni proje{% endif %} — Kokpitim{% endblock %}
-{% block page_title %}{% if project %}Projeyi düzenle{% else %}Yeni proje{% endif %}{% endblock %}
+{% block title %}{% if project %}{{ _("Projeyi düzenle") }}{% else %}{{ _("Yeni proje") }}{% endif %} — Kokpitim{% endblock %}
+{% block page_title %}{% if project %}{{ _("Projeyi düzenle") }}{% else %}{{ _("Yeni proje") }}{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_form_transfer.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Proje Yönetimi', 'url': url_for('app_bp.project_list')}, {'label': 'Yeni / Düzenle', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': _('Yeni / Düzenle'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -16,11 +16,11 @@
 <script type="application/json" id="micro-proj-form-init">{{ form_init|tojson }}</script>
 
 <div style="max-width:920px; margin:0 auto;">
-    <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-3"><i class="fas fa-arrow-left"></i> Liste</a>
+    <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-3"><i class="fas fa-arrow-left"></i> {{ _("Liste") }}</a>
 
     {% if clone_src and not project %}
     <div class="mc-alert mc-alert-info mc-fade-in mb-3" style="font-size:13px;">
-        <i class="fas fa-copy"></i> <strong>Benzer proje:</strong> «{{ clone_src.name }}» ayarlarıyla yeni proje oluşturuyorsunuz. Kayıtta yeni kayıt açılır.
+        <i class="fas fa-copy"></i> {{ _("<strong>Benzer proje:</strong> «%(name)s» ayarlarıyla yeni proje oluşturuyorsunuz. Kayıtta yeni kayıt açılır.", name=clone_src.name) }}
     </div>
     {% endif %}
 
@@ -30,13 +30,13 @@
         <div id="micro-proj-hidden-mem"></div>
         <div id="micro-proj-hidden-obs"></div>
 
-        <label class="mc-label" for="pf-name">Proje adı *</label>
+        <label class="mc-label" for="pf-name">{{ _("Proje adı *") }}</label>
         <input type="text" id="pf-name" name="name" class="mc-input" required value="{% if project %}{{ project.name }}{% elif clone_src %}{{ clone_src.name }} (kopya){% endif %}"/>
 
-        <label class="mc-label mt-3" for="pf-description">Açıklama</label>
+        <label class="mc-label mt-3" for="pf-description">{{ _("Açıklama") }}</label>
         <textarea id="pf-description" name="description" class="mc-input" rows="3">{{ pref.description if pref else '' }}</textarea>
 
-        <label class="mc-label mt-3" for="pf-priority">Öncelik</label>
+        <label class="mc-label mt-3" for="pf-priority">{{ _("Öncelik") }}</label>
         <select id="pf-priority" name="priority" class="mc-select">
             {% set pr = pref.priority if pref else 'Orta' %}
             {% for o in ['Düşük','Orta','Yüksek','Kritik'] %}
@@ -45,13 +45,13 @@
         </select>
 
         <label class="mc-label mt-3" for="pf-initiative">
-            Bağlı Olduğu Stratejik Girişim
-            <span style="font-size:11px; color:#94a3b8; font-weight:400;" title="Stratejik girişim = çok yıllık hamle. Bu proje hangi büyük hedefin altında? Opsiyonel.">
+            {{ _("Bağlı Olduğu Stratejik Girişim") }}
+            <span style="font-size:11px; color:#94a3b8; font-weight:400;" title="{{ _('Stratejik girişim = çok yıllık hamle. Bu proje hangi büyük hedefin altında? Opsiyonel.') }}">
               <i class="fas fa-circle-info"></i>
             </span>
         </label>
         <select id="pf-initiative" name="initiative_id" class="mc-select">
-            <option value="">— Hiçbiri (bağımsız proje) —</option>
+            <option value="">{{ _("— Hiçbiri (bağımsız proje) —") }}</option>
             {% for init in initiatives or [] %}
             <option value="{{ init.id }}" {% if project and project.initiative_id == init.id %}selected{% endif %}>
               {{ (init.code ~ ' · ') if init.code else '' }}{{ init.name }}
@@ -61,29 +61,29 @@
         </select>
         <p style="font-size:11.5px; color:#94a3b8; margin:4px 0 0;">
             <i class="fas fa-info-circle"></i>
-            Bu projeyi bir <a href="{{ url_for('app_bp.sp_initiatives_page') }}" target="_blank" style="color:#6366f1;">Stratejik Girişim</a>'in altında konumlandırır. "Almanya pazarına giriş" gibi 2-3 yıllık hamlenin somut çıktısı olarak işaretlenebilir.
+            {{ _('Bu projeyi bir <a href="%(url)s" target="_blank" style="color:#6366f1;">Stratejik Girişim</a>\'in altında konumlandırır. "Almanya pazarına giriş" gibi 2-3 yıllık hamlenin somut çıktısı olarak işaretlenebilir.', url=url_for('app_bp.sp_initiatives_page')) }}
         </p>
 
         <div class="micro-proj-transfer-card mt-3">
             <div class="micro-proj-transfer-title">
-                <i class="fas fa-star text-amber-500"></i> Proje liderleri (yöneticiler) *
+                <i class="fas fa-star text-amber-500"></i> {{ _("Proje liderleri (yöneticiler) *") }}
             </div>
-            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Birden fazla lider seçebilirsiniz: soldan seçip <strong>Ekle</strong> ile sağa alın. İlk sıradaki birincil lider kaydı olarak da kullanılır. Çift tıklama da ekler/çıkarır.</p>
+            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">{{ _("Birden fazla lider seçebilirsiniz: soldan seçip <strong>Ekle</strong> ile sağa alın. İlk sıradaki birincil lider kaydı olarak da kullanılır. Çift tıklama da ekler/çıkarır.") }}</p>
             {% if not form_users %}
-            <p class="text-amber-600 text-sm">Kurumda kullanıcı bulunamadı; lider atanamaz.</p>
+            <p class="text-amber-600 text-sm">{{ _("Kurumda kullanıcı bulunamadı; lider atanamaz.") }}</p>
             {% else %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mgr-filter" placeholder="Kullanıcılarda ara…" autocomplete="off"/>
+            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mgr-filter" placeholder="{{ _('Kullanıcılarda ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-mgr-src" class="micro-proj-transfer-hint">Kurum kullanıcıları</label>
+                    <label for="micro-proj-mgr-src" class="micro-proj-transfer-hint">{{ _("Kurum kullanıcıları") }}</label>
                     <select class="mc-input" id="micro-proj-mgr-src" multiple size="8"></select>
                 </div>
                 <div class="micro-proj-transfer-actions">
-                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-mgr-add" title="Seçilenleri ekle"><i class="fas fa-arrow-right"></i> Ekle</button>
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-mgr-rem" title="Seçilenleri çıkar"><i class="fas fa-arrow-left"></i> Çıkar</button>
+                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-mgr-add" title="{{ _('Seçilenleri ekle') }}"><i class="fas fa-arrow-right"></i> {{ _("Ekle") }}</button>
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-mgr-rem" title="{{ _('Seçilenleri çıkar') }}"><i class="fas fa-arrow-left"></i> {{ _("Çıkar") }}</button>
                 </div>
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-mgr-dst" class="micro-proj-transfer-hint">Seçilen liderler</label>
+                    <label for="micro-proj-mgr-dst" class="micro-proj-transfer-hint">{{ _("Seçilen liderler") }}</label>
                     <select class="mc-input" id="micro-proj-mgr-dst" multiple size="8"></select>
                 </div>
             </div>
@@ -92,18 +92,18 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
             <div>
-                <label class="mc-label" for="pf-start">Başlangıç</label>
+                <label class="mc-label" for="pf-start">{{ _("Başlangıç") }}</label>
                 <input type="date" id="pf-start" name="start_date" class="mc-input"
                        value="{{ pref.start_date.strftime('%Y-%m-%d') if pref and pref.start_date else '' }}"/>
             </div>
             <div>
-                <label class="mc-label" for="pf-end">Bitiş</label>
+                <label class="mc-label" for="pf-end">{{ _("Bitiş") }}</label>
                 <input type="date" id="pf-end" name="end_date" class="mc-input"
                        value="{{ pref.end_date.strftime('%Y-%m-%d') if pref and pref.end_date else '' }}"/>
             </div>
         </div>
 
-        <label class="mc-label mt-3">Bağlı süreçler</label>
+        <label class="mc-label mt-3">{{ _("Bağlı süreçler") }}</label>
         <div style="max-height:180px; overflow:auto; border:1px solid rgba(0,0,0,.08); border-radius:8px; padding:8px;">
             {% set selected_surec_ids = pref.related_process_ids if pref else [] %}
             {% for s in surecler %}
@@ -117,22 +117,22 @@
 
         <div class="micro-proj-transfer-card members mt-3">
             <div class="micro-proj-transfer-title">
-                <i class="fas fa-users text-slate-600"></i> Proje üyeleri
+                <i class="fas fa-users text-slate-600"></i> {{ _("Proje üyeleri") }}
             </div>
-            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Görev ekleyebilen ekip. Süreç üyesi seçimi ile aynı: Ekle / Çıkar veya çift tıklama.</p>
+            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">{{ _("Görev ekleyebilen ekip. Süreç üyesi seçimi ile aynı: Ekle / Çıkar veya çift tıklama.") }}</p>
             {% if form_users %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mem-filter" placeholder="Üyelerde ara…" autocomplete="off"/>
+            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mem-filter" placeholder="{{ _('Üyelerde ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-mem-src" class="micro-proj-transfer-hint">Kullanıcılar</label>
+                    <label for="micro-proj-mem-src" class="micro-proj-transfer-hint">{{ _("Kullanıcılar") }}</label>
                     <select class="mc-input" id="micro-proj-mem-src" multiple size="8"></select>
                 </div>
                 <div class="micro-proj-transfer-actions">
-                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-mem-add"><i class="fas fa-arrow-right"></i> Ekle</button>
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-mem-rem"><i class="fas fa-arrow-left"></i> Çıkar</button>
+                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-mem-add"><i class="fas fa-arrow-right"></i> {{ _("Ekle") }}</button>
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-mem-rem"><i class="fas fa-arrow-left"></i> {{ _("Çıkar") }}</button>
                 </div>
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-mem-dst" class="micro-proj-transfer-hint">Seçilen üyeler</label>
+                    <label for="micro-proj-mem-dst" class="micro-proj-transfer-hint">{{ _("Seçilen üyeler") }}</label>
                     <select class="mc-input" id="micro-proj-mem-dst" multiple size="8"></select>
                 </div>
             </div>
@@ -141,22 +141,22 @@
 
         <div class="micro-proj-transfer-card observers mt-3">
             <div class="micro-proj-transfer-title">
-                <i class="fas fa-eye text-sky-600"></i> Gözlemciler
+                <i class="fas fa-eye text-sky-600"></i> {{ _("Gözlemciler") }}
             </div>
-            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Salt okunur erişim. Üye olanlar gözlemci olarak seçilemez.</p>
+            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">{{ _("Salt okunur erişim. Üye olanlar gözlemci olarak seçilemez.") }}</p>
             {% if form_users %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-obs-filter" placeholder="Gözlemcilerde ara…" autocomplete="off"/>
+            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-obs-filter" placeholder="{{ _('Gözlemcilerde ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-obs-src" class="micro-proj-transfer-hint">Kullanıcılar</label>
+                    <label for="micro-proj-obs-src" class="micro-proj-transfer-hint">{{ _("Kullanıcılar") }}</label>
                     <select class="mc-input" id="micro-proj-obs-src" multiple size="8"></select>
                 </div>
                 <div class="micro-proj-transfer-actions">
-                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-obs-add"><i class="fas fa-arrow-right"></i> Ekle</button>
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-obs-rem"><i class="fas fa-arrow-left"></i> Çıkar</button>
+                    <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="micro-proj-obs-add"><i class="fas fa-arrow-right"></i> {{ _("Ekle") }}</button>
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="micro-proj-obs-rem"><i class="fas fa-arrow-left"></i> {{ _("Çıkar") }}</button>
                 </div>
                 <div class="micro-proj-transfer-col">
-                    <label for="micro-proj-obs-dst" class="micro-proj-transfer-hint">Seçilen gözlemciler</label>
+                    <label for="micro-proj-obs-dst" class="micro-proj-transfer-hint">{{ _("Seçilen gözlemciler") }}</label>
                     <select class="mc-input" id="micro-proj-obs-dst" multiple size="8"></select>
                 </div>
             </div>
@@ -164,15 +164,15 @@
         </div>
 
         <fieldset class="mt-3" style="border:1px solid rgba(0,0,0,.08); border-radius:8px; padding:12px;">
-            <legend style="font-size:12px; padding:0 6px;">Bildirim {% if not project %}(yeni proje){% endif %}</legend>
-            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_notify_manager" {% if not pref %}checked{% elif pref.get_notification_settings().get('notify_manager', True) %}checked{% endif %}/> Lidere / yöneticiye hatırlat</label>
-            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_notify_observers" {% if pref and pref.get_notification_settings().get('notify_observers') %}checked{% endif %}/> Gözlemcilere</label>
-            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_channel_email" {% if pref and pref.get_notification_settings().get('channels', {}).get('email') %}checked{% endif %}/> E-posta</label>
+            <legend style="font-size:12px; padding:0 6px;">{{ _("Bildirim") }} {% if not project %}{{ _("(yeni proje)") }}{% endif %}</legend>
+            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_notify_manager" {% if not pref %}checked{% elif pref.get_notification_settings().get('notify_manager', True) %}checked{% endif %}/> {{ _("Lidere / yöneticiye hatırlat") }}</label>
+            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_notify_observers" {% if pref and pref.get_notification_settings().get('notify_observers') %}checked{% endif %}/> {{ _("Gözlemcilere") }}</label>
+            <label style="display:flex; gap:8px; font-size:13px;"><input type="checkbox" name="notification_channel_email" {% if pref and pref.get_notification_settings().get('channels', {}).get('email') %}checked{% endif %}/> {{ _("E-posta") }}</label>
         </fieldset>
 
         <div style="margin-top:20px; display:flex; gap:10px;">
-            <button type="submit" class="mc-btn mc-btn-primary">Kaydet</button>
-            <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary">İptal</a>
+            <button type="submit" class="mc-btn mc-btn-primary">{{ _("Kaydet") }}</button>
+            <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary">{{ _("İptal") }}</a>
         </div>
     </form>
 </div>

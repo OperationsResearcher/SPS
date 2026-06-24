@@ -7,8 +7,8 @@
   function showError(message) {
     Swal.fire({
       icon: "error",
-      title: "Hata",
-      text: message || "İstatistikler yüklenemedi.",
+      title: t("Hata"),
+      text: message || t("İstatistikler yüklenemedi."),
       confirmButtonColor: "#dc2626",
     });
   }
@@ -32,13 +32,13 @@
     var d = new Date(isoDate);
     if (Number.isNaN(d.getTime())) return "-";
     var diffSec = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
-    if (diffSec < 60) return diffSec + " sn önce";
+    if (diffSec < 60) return diffSec + " " + t("sn önce");
     var diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return diffMin + " dk önce";
+    if (diffMin < 60) return diffMin + " " + t("dk önce");
     var diffHour = Math.floor(diffMin / 60);
-    if (diffHour < 24) return diffHour + " saat önce";
+    if (diffHour < 24) return diffHour + " " + t("saat önce");
     var diffDay = Math.floor(diffHour / 24);
-    return diffDay + " gün önce";
+    return diffDay + " " + t("gün önce");
   }
 
   function setUserLoadingState() {
@@ -64,18 +64,18 @@
     var tbody = document.getElementById("user-tbody");
     if (!tbody) return;
     if (!items || !items.length) {
-      tbody.innerHTML = '<tr><td colspan="7">Kayıt bulunamadı.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7">' + t("Kayıt bulunamadı.") + '</td></tr>';
       return;
     }
     tbody.innerHTML = "";
     items.forEach(function (u) {
       var tr = document.createElement("tr");
       var onlineBadge = u.is_online
-        ? '<span style="display:inline-flex;align-items:center;gap:4px;color:#16a34a;font-weight:600;font-size:12px;"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a;display:inline-block;"></span>Çevrimiçi</span>'
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;color:#16a34a;font-weight:600;font-size:12px;"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a;display:inline-block;"></span>' + t("Çevrimiçi") + '</span>'
         : '<span style="font-size:12px;color:#94a3b8;">—</span>';
       var accountBadge = u.is_active
-        ? '<span class="mc-badge mc-badge-success" style="font-size:11px;">Aktif</span>'
-        : '<span class="mc-badge mc-badge-gray" style="font-size:11px;">Pasif</span>';
+        ? '<span class="mc-badge mc-badge-success" style="font-size:11px;">' + t("Aktif") + '</span>'
+        : '<span class="mc-badge mc-badge-gray" style="font-size:11px;">' + t("Pasif") + '</span>';
       var nameCell = '<strong>' + _esc(u.name) + '</strong><br><span style="font-size:11px;color:#94a3b8;">' + _esc(u.email || '') + '</span>';
       var lastLogin = u.last_login_at ? formatTimeAgo(u.last_login_at) + '<br><span style="font-size:10px;color:#94a3b8;">' + _shortDate(u.last_login_at) + '</span>' : '<span style="color:#94a3b8;">—</span>';
       tr.innerHTML =
@@ -117,13 +117,13 @@
       var body = await res.json();
       if (!res.ok || !body.success) {
         var tbody = document.getElementById("user-tbody");
-        if (tbody) tbody.innerHTML = '<tr><td colspan="7">Kullanıcı verisi alınamadı.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7">' + t("Kullanıcı verisi alınamadı.") + '</td></tr>';
         return;
       }
       setUserDataState(body.data || []);
     } catch (err) {
       var tbody = document.getElementById("user-tbody");
-      if (tbody) tbody.innerHTML = '<tr><td colspan="7">Sunucuya erişilemedi.</td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="7">' + t("Sunucuya erişilemedi.") + '</td></tr>';
     }
   }
 
@@ -147,7 +147,7 @@
   function setActivityEmptyState() {
     var tbody = document.getElementById("activity-tbody");
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5">Kayıt bulunamadı.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">' + t("Kayıt bulunamadı.") + '</td></tr>';
   }
 
   function setActivityDataState(items) {
@@ -160,7 +160,7 @@
     tbody.innerHTML = "";
     items.forEach(function (item) {
       var tr = document.createElement("tr");
-      var userName = item.user_name || "Bilinmiyor";
+      var userName = item.user_name || t("Bilinmiyor");
       tr.innerHTML =
         "<td>" + (item.resource_icon || "📌") + "</td>" +
         "<td>" + (item.resource_type || "-") + "</td>" +
@@ -183,12 +183,12 @@
       var res = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
       var body = await res.json();
       if (!res.ok || !body.success) {
-        showError((body && body.message) || "İstatistikler alınamadı.");
+        showError((body && body.message) || t("İstatistikler alınamadı."));
         return;
       }
       setDataState(body.data || {});
     } catch (err) {
-      showError("Sunucuya erişilemedi. Lütfen tekrar deneyin.");
+      showError(t("Sunucuya erişilemedi. Lütfen tekrar deneyin."));
     }
   }
 
@@ -206,13 +206,13 @@
       var res = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
       var body = await res.json();
       if (!res.ok || !body.success) {
-        showError((body && body.message) || "Aktivite listesi alınamadı.");
+        showError((body && body.message) || t("Aktivite listesi alınamadı."));
         setActivityEmptyState();
         return;
       }
       setActivityDataState(body.data || []);
     } catch (err) {
-      showError("Aktivite listesi alınırken sunucuya erişilemedi.");
+      showError(t("Aktivite listesi alınırken sunucuya erişilemedi."));
       setActivityEmptyState();
     }
   }
@@ -243,12 +243,12 @@
           maintLock.style.display = "block";
           if (d.env_force) {
             maintLock.textContent =
-              "Bakım şu an ortam değişkeni MAINTENANCE_MODE ile zorlanıyor; panelden kapatılamaz.";
+              t("Bakım şu an ortam değişkeni MAINTENANCE_MODE ile zorlanıyor; panelden kapatılamaz.");
           } else if (d.override_off) {
             maintLock.textContent =
-              "MAINTENANCE_OVERRIDE_OFF etkin; yalnızca ortam/SSH ile yönetilir.";
+              t("MAINTENANCE_OVERRIDE_OFF etkin; yalnızca ortam/SSH ile yönetilir.");
           } else {
-            maintLock.textContent = "Bu bayrak şu an panelden değiştirilemiyor.";
+            maintLock.textContent = t("Bu bayrak şu an panelden değiştirilemiyor.");
           }
         } else if (maintLock) {
           maintLock.style.display = "none";
@@ -272,7 +272,7 @@
         var body = await res.json();
         if (!res.ok || !body.success) {
           maintChk.checked = prev;
-          showError((body && body.message) || "Bakım modu kaydedilemedi.");
+          showError((body && body.message) || t("Bakım modu kaydedilemedi."));
           return;
         }
         if (body.data) {
@@ -280,7 +280,7 @@
         }
       } catch (err) {
         maintChk.checked = prev;
-        showError("Sunucuya erişilemedi.");
+        showError(t("Sunucuya erişilemedi."));
       }
     });
 

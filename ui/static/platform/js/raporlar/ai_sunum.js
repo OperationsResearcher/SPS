@@ -8,7 +8,7 @@
 
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/ai-sunum/preview',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/ai-presentation/preview',{credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
@@ -45,7 +45,7 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Üretiliyor… (10-30sn)';
     try {
-      const r = await fetch('/raporlar/api/ai-sunum/generate', {method:'GET', credentials:'same-origin'});
+      const r = await fetch('/reports/api/ai-presentation/generate', {method:'GET', credentials:'same-origin'});
       if (!r.ok) {
         const j = await r.json().catch(() => ({message:'Üretim başarısız'}));
         throw new Error(j.message || ('HTTP ' + r.status));

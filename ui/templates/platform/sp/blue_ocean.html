@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Mavi Okyanus — Kokpitim{% endblock %}
-{% block page_title %}Mavi Okyanus Stratejisi — Canvas & ERRC{% endblock %}
+{% block title %}{{ _("Mavi Okyanus — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Mavi Okyanus Stratejisi — Canvas & ERRC") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_blue_ocean">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Blue Ocean', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _("Stratejik Planlama"), 'url': url_for('app_bp.sp_menu')}, {'label': _("Blue Ocean"), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,14 +19,14 @@
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-water"></i> Mavi Okyanus Stratejisi
+        <i class="fas fa-water"></i> {{ _("Mavi Okyanus Stratejisi") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Strateji Tuvali (Değer Eğrisi) + ERRC Tablosu: rakipsiz pazar alanı tasarımı.
+        {{ _("Strateji Tuvali (Değer Eğrisi) + ERRC Tablosu: rakipsiz pazar alanı tasarımı.") }}
       </p>
     </div>
     <button class="mc-btn mc-btn-primary" id="bo-new">
-      <i class="fas fa-plus"></i> Yeni Tuval
+      <i class="fas fa-plus"></i> {{ _("Yeni Tuval") }}
     </button>
   </div>
 
@@ -40,32 +40,32 @@
   <div class="mc-modal-lg" style="max-width:520px;">
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);">
-        <i class="fas fa-water" style="color:#0ea5e9;"></i> Yeni Tuval
+        <i class="fas fa-water" style="color:#0ea5e9;"></i> {{ _("Yeni Tuval") }}
       </h3>
       <button type="button" class="mc-modal-close" id="bo-modal-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <div id="bo-modal-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;"></div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-c-name">Tuval adı <span style="color:#dc2626;">*</span></label>
-        <input id="bo-c-name" type="text" class="mc-form-input" placeholder="Örn. 2026 Pazar Konumlandırma">
+        <label class="mc-label" for="bo-c-name">{{ _("Tuval adı") }} <span style="color:#dc2626;">*</span></label>
+        <input id="bo-c-name" type="text" class="mc-form-input" placeholder="{{ _('Örn. 2026 Pazar Konumlandırma') }}">
       </div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-c-ind">Sektör</label>
-        <input id="bo-c-ind" type="text" class="mc-form-input" placeholder="Örn. Yazılım / Üretim">
+        <label class="mc-label" for="bo-c-ind">{{ _("Sektör") }}</label>
+        <input id="bo-c-ind" type="text" class="mc-form-input" placeholder="{{ _('Örn. Yazılım / Üretim') }}">
       </div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-c-desc">Açıklama</label>
-        <textarea id="bo-c-desc" class="mc-form-input" rows="2" placeholder="Kısa açıklama (opsiyonel)"></textarea>
+        <label class="mc-label" for="bo-c-desc">{{ _("Açıklama") }}</label>
+        <textarea id="bo-c-desc" class="mc-form-input" rows="2" placeholder="{{ _('Kısa açıklama (opsiyonel)') }}"></textarea>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="bo-c-comp">Rakipler</label>
-        <input id="bo-c-comp" type="text" class="mc-form-input" placeholder="Virgülle ayırın: Rakip A, Rakip B">
+        <label class="mc-label" for="bo-c-comp">{{ _("Rakipler") }}</label>
+        <input id="bo-c-comp" type="text" class="mc-form-input" placeholder="{{ _('Virgülle ayırın: Rakip A, Rakip B') }}">
       </div>
     </div>
     <div class="mc-modal-footer" style="padding:14px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;">
-      <button type="button" class="mc-btn mc-btn-secondary" id="bo-modal-cancel">İptal</button>
-      <button type="button" class="mc-btn mc-btn-primary" id="bo-modal-save"><i class="fas fa-check"></i> Oluştur</button>
+      <button type="button" class="mc-btn mc-btn-secondary" id="bo-modal-cancel">{{ _("İptal") }}</button>
+      <button type="button" class="mc-btn mc-btn-primary" id="bo-modal-save"><i class="fas fa-check"></i> {{ _("Oluştur") }}</button>
     </div>
   </div>
 </div>
@@ -75,34 +75,32 @@
   <div class="mc-modal-lg" style="max-width:560px;">
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);">
-        <i class="fas fa-plus" style="color:#0ea5e9;"></i> Faktör Ekle
+        <i class="fas fa-plus" style="color:#0ea5e9;"></i> {{ _("Faktör Ekle") }}
       </h3>
       <button type="button" class="mc-modal-close" id="bo-f-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <div id="bo-f-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;"></div>
       <div style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.5;">
-        <b>Faktör</b>, sektördeki rekabet boyutudur (örn. <i>fiyat, hız, kalite, marka, kullanım kolaylığı</i>).
-        Her faktörün <b>0-10 arası puanı</b>, o boyutta ne kadar güçlü olunduğunu temsil eder.
-        Amaç: <b>kendi eğrinizi rakiplerden ayrıştırmak</b>.
+        {{ _("<b>Faktör</b>, sektördeki rekabet boyutudur (örn. <i>fiyat, hız, kalite, marka, kullanım kolaylığı</i>). Her faktörün <b>0-10 arası puanı</b>, o boyutta ne kadar güçlü olunduğunu temsil eder. Amaç: <b>kendi eğrinizi rakiplerden ayrıştırmak</b>.") }}
       </div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-f-name">Faktör adı <span style="color:#dc2626;">*</span></label>
-        <input id="bo-f-name" type="text" class="mc-form-input" placeholder="Örn: Fiyat, Hız, Kalite, Marka Bilinirliği…">
+        <label class="mc-label" for="bo-f-name">{{ _("Faktör adı") }} <span style="color:#dc2626;">*</span></label>
+        <input id="bo-f-name" type="text" class="mc-form-input" placeholder="{{ _('Örn: Fiyat, Hız, Kalite, Marka Bilinirliği…') }}">
       </div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-f-self">Bizim kurum puanı (0-10)</label>
+        <label class="mc-label" for="bo-f-self">{{ _("Bizim kurum puanı (0-10)") }}</label>
         <input id="bo-f-self" type="number" min="0" max="10" step="0.5" class="mc-form-input" value="5">
-        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">0 = boyutta yokuz, 10 = sektör lideriyiz</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">{{ _("0 = boyutta yokuz, 10 = sektör lideriyiz") }}</div>
       </div>
       <div class="mc-form-group">
-        <label class="mc-label">Rakip puanları (0-10)</label>
+        <label class="mc-label">{{ _("Rakip puanları (0-10)") }}</label>
         <div id="bo-f-comp-rows"></div>
       </div>
     </div>
     <div class="mc-modal-footer" style="padding:14px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;">
-      <button type="button" class="mc-btn mc-btn-secondary" id="bo-f-cancel">İptal</button>
-      <button type="button" class="mc-btn mc-btn-primary" id="bo-f-save"><i class="fas fa-check"></i> Faktör Ekle</button>
+      <button type="button" class="mc-btn mc-btn-secondary" id="bo-f-cancel">{{ _("İptal") }}</button>
+      <button type="button" class="mc-btn mc-btn-primary" id="bo-f-save"><i class="fas fa-check"></i> {{ _("Faktör Ekle") }}</button>
     </div>
   </div>
 </div>
@@ -112,37 +110,37 @@
   <div class="mc-modal-lg" style="max-width:480px;">
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);" id="bo-e-title">
-        <i class="fas fa-th-large" style="color:#0ea5e9;"></i> ERRC Öğesi Ekle
+        <i class="fas fa-th-large" style="color:#0ea5e9;"></i> {{ _("ERRC Öğesi Ekle") }}
       </h3>
       <button type="button" class="mc-modal-close" id="bo-e-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <div id="bo-e-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;"></div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-e-action">Eylem</label>
+        <label class="mc-label" for="bo-e-action">{{ _("Eylem") }}</label>
         <select id="bo-e-action" class="mc-form-input">
-          <option value="eliminate">❌ Kaldır</option>
-          <option value="reduce">⬇️ Azalt</option>
-          <option value="raise">⬆️ Yükselt</option>
-          <option value="create">⭐ Yarat</option>
+          <option value="eliminate">{{ _("❌ Kaldır") }}</option>
+          <option value="reduce">{{ _("⬇️ Azalt") }}</option>
+          <option value="raise">{{ _("⬆️ Yükselt") }}</option>
+          <option value="create">{{ _("⭐ Yarat") }}</option>
         </select>
       </div>
       <div class="mc-form-group" style="margin-bottom:14px;">
-        <label class="mc-label" for="bo-e-text">Açıklama <span style="color:#dc2626;">*</span></label>
-        <input id="bo-e-text" type="text" class="mc-form-input" placeholder="Açıklama">
+        <label class="mc-label" for="bo-e-text">{{ _("Açıklama") }} <span style="color:#dc2626;">*</span></label>
+        <input id="bo-e-text" type="text" class="mc-form-input" placeholder="{{ _('Açıklama') }}">
       </div>
       <div class="mc-form-group">
-        <label class="mc-label" for="bo-e-impact">Etki</label>
+        <label class="mc-label" for="bo-e-impact">{{ _("Etki") }}</label>
         <select id="bo-e-impact" class="mc-form-input">
-          <option value="high">Yüksek etki</option>
-          <option value="medium" selected>Orta etki</option>
-          <option value="low">Düşük etki</option>
+          <option value="high">{{ _("Yüksek etki") }}</option>
+          <option value="medium" selected>{{ _("Orta etki") }}</option>
+          <option value="low">{{ _("Düşük etki") }}</option>
         </select>
       </div>
     </div>
     <div class="mc-modal-footer" style="padding:14px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;">
-      <button type="button" class="mc-btn mc-btn-secondary" id="bo-e-cancel">İptal</button>
-      <button type="button" class="mc-btn mc-btn-primary" id="bo-e-save"><i class="fas fa-check"></i> Ekle</button>
+      <button type="button" class="mc-btn mc-btn-secondary" id="bo-e-cancel">{{ _("İptal") }}</button>
+      <button type="button" class="mc-btn mc-btn-primary" id="bo-e-save"><i class="fas fa-check"></i> {{ _("Ekle") }}</button>
     </div>
   </div>
 </div>
@@ -158,15 +156,15 @@
     const j = await r.json();
     const list = document.getElementById('bo-list');
     if (!j.items || !j.items.length) {
-      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">Henüz tuval yok. "Yeni Tuval" ile başlayın.</div>';
+      list.innerHTML = '<div class="mc-card" style="padding:30px;text-align:center;color:#64748b;">'+t("Henüz tuval yok. \"Yeni Tuval\" ile başlayın.")+'</div>';
       return;
     }
     list.innerHTML = j.items.map(c => `
       <div class="mc-card" style="padding:14px;margin-bottom:8px;cursor:pointer;" onclick="bo_open(${c.id})">
         <div style="font-size:14px;font-weight:600;color:var(--text-default);">${c.name}</div>
         <div style="font-size:12px;color:#64748b;margin-top:4px;">
-          ${c.industry || ''} • ${c.factor_count} faktör • ${c.errc_count} ERRC öğesi
-          ${c.competitor_names.length ? '• Rakip: ' + c.competitor_names.join(', ') : ''}
+          ${c.industry || ''} • ${c.factor_count} ${t("faktör")} • ${c.errc_count} ${t("ERRC öğesi")}
+          ${c.competitor_names.length ? '• ' + t("Rakip") + ': ' + c.competitor_names.join(', ') : ''}
         </div>
       </div>
     `).join('');
@@ -191,30 +189,30 @@
         <div style="color:#64748b;font-size:13px;margin-top:4px;">${j.canvas.industry || ''}</div>
         ${j.canvas.description ? `<p style="margin-top:8px;color:#475569;">${j.canvas.description}</p>` : ''}
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> Faktör Ekle</button>
-          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ERRC Öğesi Ekle</button>
+          <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> ${t("Faktör Ekle")}</button>
+          <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ${t("ERRC Öğesi Ekle")}</button>
         </div>
       </div>
 
       <div class="mc-card" style="padding:20px;margin-bottom:16px;">
-        <h4 style="margin:0 0 12px;">📈 Değer Eğrisi (Strateji Tuvali)</h4>
+        <h4 style="margin:0 0 12px;">📈 ${t("Değer Eğrisi (Strateji Tuvali)")}</h4>
         <canvas id="bo-chart" height="120"></canvas>
       </div>
 
       <div class="mc-card" style="padding:20px;">
-        <h4 style="margin:0 0 12px;">🎯 ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)</h4>
+        <h4 style="margin:0 0 12px;">🎯 ${t("ERRC Tablosu (Kaldır / Azalt / Yükselt / Yarat)")}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           ${['eliminate','reduce','raise','create'].map(a => {
             const colors = {eliminate:'#fecaca', reduce:'#fed7aa', raise:'#bbf7d0', create:'#bfdbfe'};
-            const titles = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
-            const impactLabels = {high:'Yüksek', medium:'Orta', low:'Düşük'};
+            const titles = {eliminate:'❌ '+t("Kaldır"), reduce:'⬇️ '+t("Azalt"), raise:'⬆️ '+t("Yükselt"), create:'⭐ '+t("Yarat")};
+            const impactLabels = {high:t("Yüksek"), medium:t("Orta"), low:t("Düşük")};
             return `
               <div style="background:${colors[a]};padding:12px;border-radius:8px;min-height:140px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                   <div style="font-weight:600;">${titles[a]}</div>
-                  <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> Ekle</button>
+                  <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> ${t("Ekle")}</button>
                 </div>
-                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || '<div style="color:#64748b;font-size:12px;">— Boş</div>'}
+                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || `<div style="color:#64748b;font-size:12px;">— ${t("Boş")}</div>`}
               </div>
             `;
           }).join('')}
@@ -227,7 +225,7 @@
     const ctx = document.getElementById('bo-chart').getContext('2d');
     const labels = factors.map(f => f.name);
     const datasets = [{
-      label: 'Bizim Kurum',
+      label: t("Bizim Kurum"),
       data: factors.map(f => f.self_score),
       borderColor: '#0ea5e9',
       backgroundColor: 'rgba(14,165,233,0.1)',
@@ -275,7 +273,7 @@
             <input type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${c}" placeholder="0-10" style="width:110px;">
           </div>
         `).join('')
-      : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">Canvas\'a rakip eklenmemiş — yalnız kendi puanı girilecek.</div>';
+      : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">'+t("Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek.")+'</div>';
     fModal.style.display = 'flex';
     setTimeout(() => document.getElementById('bo-f-name').focus(), 50);
   };
@@ -286,10 +284,10 @@
 
   document.getElementById('bo-f-save').onclick = async () => {
     const name = document.getElementById('bo-f-name').value.trim();
-    if (!name) { fShowErr('Faktör adı gerekli.'); return; }
+    if (!name) { fShowErr(t("Faktör adı gerekli.")); return; }
     const self_score = parseFloat(document.getElementById('bo-f-self').value);
     if (isNaN(self_score) || self_score < 0 || self_score > 10) {
-      fShowErr('Kendi puan 0-10 arası olmalı.'); return;
+      fShowErr(t("Kendi puan 0-10 arası olmalı.")); return;
     }
     const comp = {};
     document.querySelectorAll('#bo-f-comp-rows .bo-comp-input').forEach(inp => {
@@ -304,8 +302,8 @@
         body: JSON.stringify({ name, self_score, competitor_scores: comp }),
       });
       if (r.ok) { fClose(); bo_open(fCid); }
-      else fShowErr('Faktör eklenemedi.');
-    } catch (e) { fShowErr('Sunucu hatası.'); }
+      else fShowErr(t("Faktör eklenemedi."));
+    } catch (e) { fShowErr(t("Sunucu hatası.")); }
     finally { btn.disabled = false; }
   };
 
@@ -313,7 +311,7 @@
   const eModal = document.getElementById('modal-bo-errc');
   const eErr = document.getElementById('bo-e-error');
   let eCid = null;
-  const ERRC_LABELS = {eliminate:'❌ Kaldır', reduce:'⬇️ Azalt', raise:'⬆️ Yükselt', create:'⭐ Yarat'};
+  const ERRC_LABELS = {eliminate:'❌ '+t("Kaldır"), reduce:'⬇️ '+t("Azalt"), raise:'⬆️ '+t("Yükselt"), create:'⭐ '+t("Yarat")};
   function eClose(){ eModal.style.display = 'none'; }
   function eShowErr(msg){ eErr.textContent = msg; eErr.style.display = 'block'; }
 
@@ -326,7 +324,7 @@
     actSel.value = (preAction && ERRC_LABELS[preAction]) ? preAction : 'eliminate';
     document.getElementById('bo-e-title').innerHTML = preAction
       ? `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ERRC: ${ERRC_LABELS[preAction]}`
-      : `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ERRC Öğesi Ekle`;
+      : `<i class="fas fa-th-large" style="color:#0ea5e9;"></i> ${t("ERRC Öğesi Ekle")}`;
     eModal.style.display = 'flex';
     setTimeout(() => document.getElementById('bo-e-text').focus(), 50);
   };
@@ -337,7 +335,7 @@
 
   document.getElementById('bo-e-save').onclick = async () => {
     const text = document.getElementById('bo-e-text').value.trim();
-    if (!text) { eShowErr('Açıklama gerekli.'); return; }
+    if (!text) { eShowErr(t("Açıklama gerekli.")); return; }
     const form = {
       action: document.getElementById('bo-e-action').value,
       text: text,
@@ -351,8 +349,8 @@
         body: JSON.stringify(form),
       });
       if (r.ok) { eClose(); bo_open(eCid); }
-      else eShowErr('ERRC öğesi eklenemedi.');
-    } catch (e) { eShowErr('Sunucu hatası.'); }
+      else eShowErr(t("ERRC öğesi eklenemedi."));
+    } catch (e) { eShowErr(t("Sunucu hatası.")); }
     finally { btn.disabled = false; }
   };
 
@@ -374,7 +372,7 @@
 
   document.getElementById('bo-modal-save').onclick = async () => {
     const name = document.getElementById('bo-c-name').value.trim();
-    if (!name) { boShowErr('Tuval adı gerekli.'); document.getElementById('bo-c-name').focus(); return; }
+    if (!name) { boShowErr(t("Tuval adı gerekli.")); document.getElementById('bo-c-name').focus(); return; }
     const form = {
       name,
       industry: document.getElementById('bo-c-ind').value.trim(),
@@ -389,9 +387,9 @@
         body: JSON.stringify(form),
       });
       if (r.ok) { boModalClose(); load(); }
-      else { boShowErr('Tuval oluşturulamadı.'); }
+      else { boShowErr(t("Tuval oluşturulamadı.")); }
     } catch (e) {
-      boShowErr('Sunucu hatası.');
+      boShowErr(t("Sunucu hatası."));
     } finally {
       btn.disabled = false;
     }

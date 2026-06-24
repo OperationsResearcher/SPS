@@ -15,6 +15,7 @@ from app.legacy_redirect_config import (
     GONE_PREFIXES,
     LEGACY_HGS_DISABLED_EXACT,
     PREFIX_REWRITE,
+    REPORTS_SEGMENT_REWRITE,
 )
 
 _SKIP_PREFIXES = (
@@ -59,21 +60,24 @@ def _should_skip(path: str) -> bool:
 
 def _is_platform_canonical(path: str) -> bool:
     """Platform kök yolları — legacy yönlendirme uygulanmaz (/kurum-paneli vb. hariç)."""
-    if path in ("/kurum", "/bireysel", "/sp", "/launcher", "/masaustu", "/surec"):
+    if path in ("/organization", "/individual", "/sp", "/launcher", "/desktop", "/surec"):
         return True
     platform_prefixes = (
-        "/kurum/",
-        "/bireysel/",
+        "/organization/",
+        "/individual/",
         "/sp/",
         "/project/",
-        "/masaustu/",
+        "/desktop/",
         "/surec/",
         "/admin/",
         "/k-radar/",
         "/k_rapor/",
-        "/analiz/",
+        "/reports/",
+        "/analysis/",
         "/launcher/",
-        "/ayarlar/",
+        "/settings/",
+        "/profile/",
+        "/notification/",
     )
     return any(path.startswith(p) for p in platform_prefixes)
 
@@ -115,6 +119,17 @@ def init_legacy_sunset(app) -> None:
         if request.method not in ("GET", "HEAD"):
             return None
         path = request.path or "/"
+
+        # İç Türkçe segment köprüleri: canonical (/reports/, /k-rapor/) muafiyetinden ÖNCE (TASK-204/205).
+        # old_seg/new_seg tam yoldur (ör. /k-rapor/api/kurumsal → /k-rapor/api/corporate). Alt yollar da kapsanır.
+        for old_seg, new_seg in REPORTS_SEGMENT_REWRITE:
+            if path == old_seg or path.startswith(old_seg + "/"):
+                target = new_seg + path[len(old_seg):]
+                qs = request.query_string.decode()
+                if qs:
+                    target = f"{target}?{qs}"
+                return redirect(target, code=301)
+
         if _should_skip(path):
             return None
 

@@ -9,6 +9,7 @@ from app.models.process import Process, ProcessKpi, KpiData
 from app.services.ml_service import MLService
 from app.services.anomaly_service import AnomalyService
 from app.utils.numeric import safe_float
+from flask_babel import gettext as _
 import logging
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ class RecommendationService:
         try:
             process = Process.query.get(process_id)
             if not process:
-                return {'success': False, 'error': 'Süreç bulunamadı'}
+                return {'success': False, 'error': _('Süreç bulunamadı')}
             
             recommendations = []
             insights = []
@@ -79,7 +80,7 @@ class RecommendationService:
             
         except Exception as e:
             logger.error(f"Process recommendations failed: {e}")
-            return {'success': False, 'error': 'Öneri oluşturulurken hata oluştu.'}
+            return {'success': False, 'error': _('Öneri oluşturulurken hata oluştu.')}
 
     
     def _analyze_kpi_performance(self, kpi):
@@ -117,9 +118,9 @@ class RecommendationService:
                 'kpi_name': kpi.name,
                 'priority': 'high',
                 'type': 'performance',
-                'title': 'Düşük Performans',
-                'message': f'Son 3 ayda ortalama %{avg_achievement:.1f} başarı. Hedefin altında.',
-                'action': 'Kök neden analizi yapın ve aksiyon planı oluşturun'
+                'title': _('Düşük Performans'),
+                'message': _('Son 3 ayda ortalama %%%(pct).1f başarı. Hedefin altında.') % {"pct": avg_achievement},
+                'action': _('Kök neden analizi yapın ve aksiyon planı oluşturun')
             })
         
         # Orta performans
@@ -129,9 +130,9 @@ class RecommendationService:
                 'kpi_name': kpi.name,
                 'priority': 'medium',
                 'type': 'performance',
-                'title': 'İyileştirme Fırsatı',
-                'message': f'Ortalama %{avg_achievement:.1f} başarı. Hedefe yakın.',
-                'action': 'Küçük iyileştirmelerle hedefe ulaşabilirsiniz'
+                'title': _('İyileştirme Fırsatı'),
+                'message': _('Ortalama %%%(pct).1f başarı. Hedefe yakın.') % {"pct": avg_achievement},
+                'action': _('Küçük iyileştirmelerle hedefe ulaşabilirsiniz')
             })
         
         return recommendations
@@ -154,7 +155,7 @@ class RecommendationService:
                     'kpi_name': kpi.name,
                     'type': 'trend',
                     'severity': 'warning',
-                    'message': f'Negatif trend tespit edildi (güç: {strength:.2f})',
+                    'message': _('Negatif trend tespit edildi (güç: %(s).2f)') % {"s": strength},
                     'forecast': forecast['predictions']
                 }
             elif trend == 'increasing' and strength > 0.5:
@@ -163,7 +164,7 @@ class RecommendationService:
                     'kpi_name': kpi.name,
                     'type': 'trend',
                     'severity': 'positive',
-                    'message': f'Pozitif trend devam ediyor (güç: {strength:.2f})',
+                    'message': _('Pozitif trend devam ediyor (güç: %(s).2f)') % {"s": strength},
                     'forecast': forecast['predictions']
                 }
             
@@ -188,9 +189,10 @@ class RecommendationService:
                     'kpi_name': kpi.name,
                     'priority': 'high' if latest['severity'] == 'high' else 'medium',
                     'type': 'anomaly',
-                    'title': 'Anormal Değer Tespit Edildi',
-                    'message': f"Tarih: {latest['date']}, Değer: {latest['value']}, Sapma: {latest['deviation']}%",
-                    'action': 'Veri doğruluğunu kontrol edin ve nedeni araştırın'
+                    'title': _('Anormal Değer Tespit Edildi'),
+                    'message': _("Tarih: %(date)s, Değer: %(value)s, Sapma: %(dev)s%%") % {
+                        "date": latest['date'], "value": latest['value'], "dev": latest['deviation']},
+                    'action': _('Veri doğruluğunu kontrol edin ve nedeni araştırın')
                 })
         
         except Exception as e:
@@ -303,4 +305,4 @@ class RecommendationService:
             
         except Exception as e:
             logger.error(f"Smart insights failed: {e}")
-            return {'success': False, 'error': 'Anlık analiz oluşturulamadı.'}
+            return {'success': False, 'error': _('Anlık analiz oluşturulamadı.')}

@@ -1,19 +1,19 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c,sub) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
+  const stat = (l,v,c,sub,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>${sub?'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+esc(sub)+'</div>':''}</div>`;
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/chro-dashboard',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/chro-dashboard',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const m=j.metrics;
       document.getElementById('kpis').innerHTML=[
-        stat('Çalışan',m.total_users,'#0f172a'),
-        stat('Departman',m.total_departments,'#db2777'),
-        stat('Bireysel PG',m.total_pgs,'#8b5cf6',m.users_with_pg+' kişide'),
-        stat('Ort. PG / Kişi',m.avg_pg_per_user,'#0ea5e9'),
-        stat('2FA Oranı','%'+m.totp_pct,m.totp_pct>=80?'#10b981':m.totp_pct>=40?'#f59e0b':'#dc2626'),
+        stat('Çalışan',m.total_users,'#0f172a','','raporlar_chro_dashboard.calisan'),
+        stat('Departman',m.total_departments,'#db2777','','raporlar_chro_dashboard.departman'),
+        stat('Bireysel PG',m.total_pgs,'#8b5cf6',m.users_with_pg+' kişide','raporlar_chro_dashboard.bireysel_pg'),
+        stat('Ort. PG / Kişi',m.avg_pg_per_user,'#0ea5e9','','raporlar_chro_dashboard.ort_pg_kisi'),
+        stat('2FA Oranı','%'+m.totp_pct,m.totp_pct>=80?'#10b981':m.totp_pct>=40?'#f59e0b':'#dc2626','','raporlar_chro_dashboard.2fa_orani'),
       ].join('');
       const maxD = Math.max(...j.departments.map(d=>d.count),1);
       document.getElementById('depts').innerHTML = j.departments.map(d => `

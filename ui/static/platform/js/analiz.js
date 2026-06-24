@@ -41,7 +41,7 @@
   let forecastChartInst = null;
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
 
   // ── Sağlık skoru rengi ────────────────────────────────────────────────────
@@ -69,7 +69,7 @@
 
     const colors = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#3b82f6"];
     const datasets = series.map((s, i) => ({
-      label: s.kpi_name || s.label || `PG ${i + 1}`,
+      label: s.kpi_name || s.label || `${t("PG")} ${i + 1}`,
       data: s.values,
       borderColor: colors[i % colors.length],
       backgroundColor: colors[i % colors.length] + "18",
@@ -128,7 +128,7 @@
         labels: allLabels.length ? allLabels : labels,
         datasets: [
           ...(historical.length ? [{
-            label: "Gerçekleşen",
+            label: t("Gerçekleşen"),
             data: histData,
             backgroundColor: "#6366f120",
             borderColor: "#6366f1",
@@ -138,7 +138,7 @@
             pointRadius: 3,
           }] : []),
           {
-            label: "Tahmin",
+            label: t("Tahmin"),
             data: allLabels.length ? fcData : forecast,
             backgroundColor: "#8b5cf640",
             borderColor: "#8b5cf6",
@@ -181,13 +181,13 @@
 
     const summary = (scanned !== null)
       ? `<div style="font-size:11.5px;color:#64748b;margin-bottom:10px;">
-           ${scanned}/${total} PG tarandı · yöntem: <b>${escHtml(data?.method || 'zscore')}</b>
+           ${scanned}/${total} ${t("PG tarandı")} · ${t("yöntem:")} <b>${escHtml(data?.method || 'zscore')}</b>
          </div>` : "";
 
     if (!items.length) {
       listEl.innerHTML = summary + `<div class="mc-empty" style="padding:30px;">
         <div class="mc-empty-icon"><i class="fas fa-check-circle" style="color:#10b981;"></i></div>
-        <div class="mc-empty-title" style="color:#10b981;">Anomali tespit edilmedi</div>
+        <div class="mc-empty-title" style="color:#10b981;">${t("Anomali tespit edilmedi")}</div>
       </div>`;
       return;
     }
@@ -198,13 +198,13 @@
           <i class="fas fa-exclamation-triangle"></i>
         </span>
         <div style="flex:1; min-width:0;">
-          <div style="font-size:13.5px; font-weight:600; color:#1e293b;">${escHtml(item.kpi_name || item.name || 'Bilinmeyen PG')}</div>
+          <div style="font-size:13.5px; font-weight:600; color:#1e293b;">${escHtml(item.kpi_name || item.name || t('Bilinmeyen PG'))}</div>
           ${item.description ? `<div style="font-size:12px; color:#64748b; margin-top:2px;">${escHtml(item.description)}</div>` : ''}
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; font-size:11.5px; color:#64748b;">
-            ${item.value !== undefined && item.value !== null ? `<span>Değer: <b style="color:#f59e0b;">${escHtml(String(item.value))}</b></span>` : ''}
-            ${item.date ? `<span>Tarih: <b>${escHtml(item.date)}</b></span>` : ''}
-            ${item.score !== undefined && item.score !== null ? `<span>Z-skor: <b>${escHtml(String(Number(item.score).toFixed(2)))}</b></span>` : ''}
-            ${item.process_id ? `<a href="/process/${item.process_id}/karne" style="color:#6366f1; text-decoration:underline;">Süreç karnesi →</a>` : ''}
+            ${item.value !== undefined && item.value !== null ? `<span>${t("Değer:")} <b style="color:#f59e0b;">${escHtml(String(item.value))}</b></span>` : ''}
+            ${item.date ? `<span>${t("Tarih:")} <b>${escHtml(item.date)}</b></span>` : ''}
+            ${item.score !== undefined && item.score !== null ? `<span>${t("Z-skor:")} <b>${escHtml(String(Number(item.score).toFixed(2)))}</b></span>` : ''}
+            ${item.process_id ? `<a href="/process/${item.process_id}/karne" style="color:#6366f1; text-decoration:underline;">${t("Süreç karnesi →")}</a>` : ''}
           </div>
         </div>
       </div>
@@ -219,7 +219,7 @@
   // ── Ana analiz yükle ──────────────────────────────────────────────────────
   async function loadAnaliz() {
     const pid = processSelect.value;
-    if (!pid) { showError("Lütfen bir süreç seçin."); return; }
+    if (!pid) { showError(t("Lütfen bir süreç seçin.")); return; }
 
     if (emptyEl) emptyEl.style.display = "none";
     if (resultsEl) resultsEl.style.display = "";
@@ -251,7 +251,7 @@
       }
       if (labelEl) {
         const num = typeof score === "number" ? score : parseFloat(score);
-        labelEl.textContent = isNaN(num) ? "" : (num >= 80 ? "İyi" : num >= 50 ? "Orta" : "Düşük");
+        labelEl.textContent = isNaN(num) ? "" : (num >= 80 ? t("İyi") : num >= 50 ? t("Orta") : t("Düşük"));
       }
     }
 
@@ -265,7 +265,7 @@
       const dirEl = document.getElementById("trend-direction");
       if (dirEl) {
         const dir = trendData?.direction || trendData?.series?.[0]?.direction;
-        dirEl.textContent = dir === "up" ? "↑ Artış" : dir === "down" ? "↓ Düşüş" : "→ Sabit";
+        dirEl.textContent = dir === "up" ? t("↑ Artış") : dir === "down" ? t("↓ Düşüş") : t("→ Sabit");
         dirEl.style.color = dir === "up" ? "#10b981" : dir === "down" ? "#ef4444" : "#f59e0b";
       }
 
@@ -295,7 +295,7 @@
   async function loadAnomalies() {
     if (anomalySection) anomalySection.style.display = "";
     const listEl = document.getElementById("anomaly-list");
-    if (listEl) listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Taranıyor…</div>`;
+    if (listEl) listEl.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> ${t("Taranıyor…")}</div>`;
 
     try {
       const pid = processSelect?.value || "";
@@ -305,11 +305,11 @@
       if (data.success) {
         renderAnomalies(data.data);
       } else {
-        showError(data.message || "Anomali verisi alınamadı.");
-        if (listEl) listEl.innerHTML = `<div class="mc-alert mc-alert-danger">Veri alınamadı.</div>`;
+        showError(data.message || t("Anomali verisi alınamadı."));
+        if (listEl) listEl.innerHTML = `<div class="mc-alert mc-alert-danger">${t("Veri alınamadı.")}</div>`;
       }
     } catch (e) {
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası: ") + e.message);
     }
   }
 

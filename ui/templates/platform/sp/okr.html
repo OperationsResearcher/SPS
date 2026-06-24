@@ -12,15 +12,15 @@
         <div>
             <h2 class="mb-1">
                 <i class="bi bi-bullseye"></i>
-                OKR — Hedefler ve Anahtar Sonuçlar
+                {{ _("OKR — Hedefler ve Anahtar Sonuçlar") }}
             </h2>
             <p class="text-muted mb-0">
-                {% if active_year %}{{ active_year }} Plan Yılı{% else %}Plan yılı seçilmemiş{% endif %}
+                {% if active_year %}{{ _("%(year)s Plan Yılı", year=active_year) }}{% else %}{{ _("Plan yılı seçilmemiş") }}{% endif %}
             </p>
         </div>
         <div>
             <button class="btn btn-primary" onclick="openObjectiveModal()">
-                <i class="bi bi-plus-circle"></i> Yeni Hedef Ekle
+                <i class="bi bi-plus-circle"></i> {{ _("Yeni Hedef Ekle") }}
             </button>
         </div>
     </div>
@@ -29,8 +29,8 @@
     <div id="okr-list" class="row g-3"></div>
     <div id="okr-empty" class="text-center py-5 d-none">
         <i class="bi bi-bullseye fs-1 text-muted"></i>
-        <h4 class="text-muted mt-3">Henüz hedef tanımlanmamış</h4>
-        <p class="text-muted">İlk hedefi eklemek için yukarıdaki butona tıklayın.</p>
+        <h4 class="text-muted mt-3">{{ _("Henüz hedef tanımlanmamış") }}</h4>
+        <p class="text-muted">{{ _("İlk hedefi eklemek için yukarıdaki butona tıklayın.") }}</p>
     </div>
 </div>
 
@@ -38,25 +38,25 @@
 <div class="mc-modal-overlay" id="modal-objective">
     <div class="mc-modal-lg">
         <div class="mc-modal-header">
-            <h3 id="obj-modal-title">Yeni Hedef</h3>
+            <h3 id="obj-modal-title">{{ _("Yeni Hedef") }}</h3>
             <button class="mc-modal-close" onclick="closeObjectiveModal()">✕</button>
         </div>
         <div class="mc-modal-body">
             <form id="form-objective">
                 <input type="hidden" id="obj-id" />
                 <div class="mb-3">
-                    <label class="form-label" for="obj-title">Hedef Başlığı <span class="text-danger">*</span></label>
+                    <label class="form-label" for="obj-title">{{ _("Hedef Başlığı") }} <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="obj-title" required maxlength="300" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="obj-description">Açıklama</label>
+                    <label class="form-label" for="obj-description">{{ _("Açıklama") }}</label>
                     <textarea class="form-control" id="obj-description" rows="3"></textarea>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="obj-quarter">Çeyrek</label>
+                        <label class="form-label" for="obj-quarter">{{ _("Çeyrek") }}</label>
                         <select class="form-select" id="obj-quarter">
-                            <option value="">Yıllık (çeyrek seçme)</option>
+                            <option value="">{{ _("Yıllık (çeyrek seçme)") }}</option>
                             <option value="1">Q1</option>
                             <option value="2">Q2</option>
                             <option value="3">Q3</option>
@@ -64,30 +64,30 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="obj-owner">Sorumlu / Ekip</label>
+                        <label class="form-label" for="obj-owner">{{ _("Sorumlu / Ekip") }}</label>
                         <input type="text" class="form-control" id="obj-owner" maxlength="200" />
                     </div>
                 </div>
                 <!-- Sprint 17: Strateji bağı -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="obj-strategy">Bağlı Ana Strateji</label>
+                        <label class="form-label" for="obj-strategy">{{ _("Bağlı Ana Strateji") }}</label>
                         <select class="form-select" id="obj-strategy">
-                            <option value="">— Strateji yok —</option>
+                            <option value="">{{ _("— Strateji yok —") }}</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="obj-sub-strategy">Bağlı Alt Strateji</label>
+                        <label class="form-label" for="obj-sub-strategy">{{ _("Bağlı Alt Strateji") }}</label>
                         <select class="form-select" id="obj-sub-strategy">
-                            <option value="">— Alt strateji yok —</option>
+                            <option value="">{{ _("— Alt strateji yok —") }}</option>
                         </select>
                     </div>
                 </div>
             </form>
         </div>
         <div class="mc-modal-footer">
-            <button class="mc-btn mc-btn-secondary" onclick="closeObjectiveModal()">İptal</button>
-            <button class="mc-btn mc-btn-primary" onclick="saveObjective()">Kaydet</button>
+            <button class="mc-btn mc-btn-secondary" onclick="closeObjectiveModal()">{{ _("İptal") }}</button>
+            <button class="mc-btn mc-btn-primary" onclick="saveObjective()">{{ _("Kaydet") }}</button>
         </div>
     </div>
 </div>
@@ -96,7 +96,7 @@
 <div class="mc-modal-overlay" id="modal-kr">
     <div class="mc-modal-lg">
         <div class="mc-modal-header">
-            <h3 id="kr-modal-title">Yeni Anahtar Sonuç</h3>
+            <h3 id="kr-modal-title">{{ _("Yeni Anahtar Sonuç") }}</h3>
             <button class="mc-modal-close" onclick="closeKrModal()">✕</button>
         </div>
         <div class="mc-modal-body">
@@ -104,32 +104,32 @@
                 <input type="hidden" id="kr-id" />
                 <input type="hidden" id="kr-objective-id" />
                 <div class="mb-3">
-                    <label class="form-label" for="kr-title">KR Başlığı <span class="text-danger">*</span></label>
+                    <label class="form-label" for="kr-title">{{ _("KR Başlığı") }} <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="kr-title" required maxlength="300" />
                 </div>
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label class="form-label" for="kr-metric">Metrik</label>
-                        <input type="text" class="form-control" id="kr-metric" placeholder="%, adet, TL..." maxlength="100" />
+                        <label class="form-label" for="kr-metric">{{ _("Metrik") }}</label>
+                        <input type="text" class="form-control" id="kr-metric" placeholder="{{ _('%%, adet, TL...') }}" maxlength="100" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label class="form-label" for="kr-start-value">Başlangıç</label>
+                        <label class="form-label" for="kr-start-value">{{ _("Başlangıç") }}</label>
                         <input type="number" step="0.01" class="form-control" id="kr-start-value" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label class="form-label" for="kr-target-value">Hedef</label>
+                        <label class="form-label" for="kr-target-value">{{ _("Hedef") }}</label>
                         <input type="number" step="0.01" class="form-control" id="kr-target-value" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label class="form-label" for="kr-current-value">Güncel</label>
+                        <label class="form-label" for="kr-current-value">{{ _("Güncel") }}</label>
                         <input type="number" step="0.01" class="form-control" id="kr-current-value" />
                     </div>
                 </div>
             </form>
         </div>
         <div class="mc-modal-footer">
-            <button class="mc-btn mc-btn-secondary" onclick="closeKrModal()">İptal</button>
-            <button class="mc-btn mc-btn-primary" onclick="saveKr()">Kaydet</button>
+            <button class="mc-btn mc-btn-secondary" onclick="closeKrModal()">{{ _("İptal") }}</button>
+            <button class="mc-btn mc-btn-primary" onclick="saveKr()">{{ _("Kaydet") }}</button>
         </div>
     </div>
 </div>
@@ -161,14 +161,14 @@ function populateStrategyDropdowns() {
     const sSel = document.getElementById("obj-strategy");
     const ssSel = document.getElementById("obj-sub-strategy");
     if (!sSel || !ssSel) return;
-    sSel.innerHTML = '<option value="">— Strateji yok —</option>';
+    sSel.innerHTML = `<option value="">${t("— Strateji yok —")}</option>`;
     allStrategies.forEach(s => {
         const opt = document.createElement("option");
         opt.value = s.id;
         opt.textContent = `${s.code || ""} — ${s.title || ""}`.trim();
         sSel.appendChild(opt);
     });
-    ssSel.innerHTML = '<option value="">— Alt strateji yok —</option>';
+    ssSel.innerHTML = `<option value="">${t("— Alt strateji yok —")}</option>`;
     allSubStrategies.forEach(ss => {
         const opt = document.createElement("option");
         opt.value = ss.id;
@@ -181,12 +181,12 @@ async function loadOkrs() {
     try {
         const resp = await fetch(OKR_API);
         const data = await resp.json();
-        if (!data.success) throw new Error(data.message || "OKR verisi alınamadı");
+        if (!data.success) throw new Error(data.message || t("OKR verisi alınamadı"));
         allObjectives = data.data || [];
         renderOkrs();
     } catch (e) {
         console.error(e);
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
@@ -208,9 +208,9 @@ function renderOkrs() {
     summary.innerHTML = `
         <div class="card border-0 shadow-sm">
             <div class="card-body d-flex justify-content-around text-center">
-                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">Hedef</small></div>
-                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">Anahtar Sonuç</small></div>
-                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">Ortalama İlerleme</small></div>
+                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">${t("Hedef")}</small></div>
+                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">${t("Anahtar Sonuç")}</small></div>
+                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">${t("Ortalama İlerleme")}</small></div>
             </div>
         </div>`;
 
@@ -235,7 +235,7 @@ function renderOkrs() {
                     <small class="text-muted">
                         ${kr.start_value ?? "—"} → ${kr.target_value ?? "—"}
                         ${kr.metric ? `<span class="ms-1">${escapeHtml(kr.metric)}</span>` : ""}
-                        | Güncel: <strong>${kr.current_value ?? "—"}</strong>
+                        | ${t("Güncel:")} <strong>${kr.current_value ?? "—"}</strong>
                     </small>
                     <div class="progress mt-1" style="height:4px;">
                         <div class="progress-bar ${cls}" style="width:${pct}%"></div>
@@ -249,7 +249,7 @@ function renderOkrs() {
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                     <div>
-                        ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : '<span class="badge bg-light text-dark me-2">Yıllık</span>'}
+                        ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : `<span class="badge bg-light text-dark me-2">${t("Yıllık")}</span>`}
                         <strong>${escapeHtml(obj.title)}</strong>
                     </div>
                     <div>
@@ -260,13 +260,13 @@ function renderOkrs() {
                 <div class="card-body">
                     ${obj.description ? `<p class="text-muted small">${escapeHtml(obj.description)}</p>` : ""}
                     ${obj.owner ? `<div class="small mb-2"><i class="bi bi-person"></i> ${escapeHtml(obj.owner)}</div>` : ""}
-                    ${obj.linked_strategy ? `<div class="small mb-1"><i class="bi bi-link-45deg"></i> Strateji: <span class="badge bg-primary-subtle text-primary">${escapeHtml(obj.linked_strategy.code)} — ${escapeHtml(obj.linked_strategy.title)}</span></div>` : ""}
-                    ${obj.linked_sub_strategy ? `<div class="small mb-2"><i class="bi bi-link-45deg"></i> Alt: <span class="badge bg-info-subtle text-info">${escapeHtml(obj.linked_sub_strategy.code)} — ${escapeHtml(obj.linked_sub_strategy.title)}</span></div>` : ""}
-                    ${krsHtml || '<p class="text-muted small mb-0">Henüz anahtar sonuç yok.</p>'}
+                    ${obj.linked_strategy ? `<div class="small mb-1"><i class="bi bi-link-45deg"></i> ${t("Strateji:")} <span class="badge bg-primary-subtle text-primary">${escapeHtml(obj.linked_strategy.code)} — ${escapeHtml(obj.linked_strategy.title)}</span></div>` : ""}
+                    ${obj.linked_sub_strategy ? `<div class="small mb-2"><i class="bi bi-link-45deg"></i> ${t("Alt:")} <span class="badge bg-info-subtle text-info">${escapeHtml(obj.linked_sub_strategy.code)} — ${escapeHtml(obj.linked_sub_strategy.title)}</span></div>` : ""}
+                    ${krsHtml || `<p class="text-muted small mb-0">${t("Henüz anahtar sonuç yok.")}</p>`}
                 </div>
                 <div class="card-footer bg-white border-top">
                     <button class="btn btn-sm btn-outline-primary w-100" onclick="addKr(${obj.id})">
-                        <i class="bi bi-plus"></i> Anahtar Sonuç Ekle
+                        <i class="bi bi-plus"></i> ${t("Anahtar Sonuç Ekle")}
                     </button>
                 </div>
             </div>`;
@@ -279,7 +279,7 @@ function escapeHtml(s) {
 }
 
 function openObjectiveModal() {
-    document.getElementById("obj-modal-title").textContent = "Yeni Hedef";
+    document.getElementById("obj-modal-title").textContent = t("Yeni Hedef");
     document.getElementById("obj-id").value = "";
     document.getElementById("form-objective").reset();
     document.getElementById("obj-strategy").value = "";
@@ -294,7 +294,7 @@ function closeObjectiveModal() {
 function editObjective(id) {
     const o = allObjectives.find(x => x.id === id);
     if (!o) return;
-    document.getElementById("obj-modal-title").textContent = "Hedef Düzenle";
+    document.getElementById("obj-modal-title").textContent = t("Hedef Düzenle");
     document.getElementById("obj-id").value = id;
     document.getElementById("obj-title").value = o.title || "";
     document.getElementById("obj-description").value = o.description || "";
@@ -315,7 +315,7 @@ async function saveObjective() {
         linked_strategy_id: parseInt(document.getElementById("obj-strategy").value) || null,
         linked_sub_strategy_id: parseInt(document.getElementById("obj-sub-strategy").value) || null,
     };
-    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    if (!body.title) { Swal.fire({ icon: "warning", title: t("Başlık gerekli") }); return; }
     try {
         const url = id ? `${OKR_API}/objective/${id}` : `${OKR_API}/objective`;
         const resp = await fetch(url, {
@@ -324,31 +324,31 @@ async function saveObjective() {
             body: JSON.stringify(body),
         });
         const data = await resp.json();
-        if (!data.success) throw new Error(data.message || "Kaydedilemedi");
+        if (!data.success) throw new Error(data.message || t("Kaydedilemedi"));
         closeObjectiveModal();
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Kaydedildi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 async function deleteObjective(id) {
-    const r = await Swal.fire({ icon: "warning", title: "Silinsin mi?", showCancelButton: true, confirmButtonText: "Evet, sil" });
+    const r = await Swal.fire({ icon: "warning", title: t("Silinsin mi?"), showCancelButton: true, confirmButtonText: t("Evet, sil") });
     if (!r.isConfirmed) return;
     try {
         const resp = await fetch(`${OKR_API}/objective/${id}`, { method: "DELETE" });
         const data = await resp.json();
         if (!data.success) throw new Error(data.message);
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Silindi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Silindi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 function addKr(objId) {
-    document.getElementById("kr-modal-title").textContent = "Yeni Anahtar Sonuç";
+    document.getElementById("kr-modal-title").textContent = t("Yeni Anahtar Sonuç");
     document.getElementById("kr-id").value = "";
     document.getElementById("kr-objective-id").value = objId;
     document.getElementById("form-kr").reset();
@@ -361,7 +361,7 @@ function editKr(objId, krId) {
     if (!o) return;
     const kr = o.key_results.find(k => k.id === krId);
     if (!kr) return;
-    document.getElementById("kr-modal-title").textContent = "KR Düzenle";
+    document.getElementById("kr-modal-title").textContent = t("KR Düzenle");
     document.getElementById("kr-id").value = krId;
     document.getElementById("kr-objective-id").value = objId;
     document.getElementById("kr-title").value = kr.title || "";
@@ -386,7 +386,7 @@ async function saveKr() {
         target_value: parseFloat(document.getElementById("kr-target-value").value) || null,
         current_value: parseFloat(document.getElementById("kr-current-value").value) || null,
     };
-    if (!body.title) { Swal.fire({ icon: "warning", title: "Başlık gerekli" }); return; }
+    if (!body.title) { Swal.fire({ icon: "warning", title: t("Başlık gerekli") }); return; }
     try {
         const url = id ? `${OKR_API}/kr/${id}` : `${OKR_API}/objective/${objId}/kr`;
         const resp = await fetch(url, {
@@ -398,14 +398,14 @@ async function saveKr() {
         if (!data.success) throw new Error(data.message);
         closeKrModal();
         await loadOkrs();
-        Swal.fire({ icon: "success", title: "Kaydedildi", timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("Kaydedildi"), timer: 1500, showConfirmButton: false });
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 
 async function deleteKr(krId) {
-    const r = await Swal.fire({ icon: "warning", title: "KR silinsin mi?", showCancelButton: true, confirmButtonText: "Evet" });
+    const r = await Swal.fire({ icon: "warning", title: t("KR silinsin mi?"), showCancelButton: true, confirmButtonText: t("Evet") });
     if (!r.isConfirmed) return;
     try {
         const resp = await fetch(`${OKR_API}/kr/${krId}`, { method: "DELETE" });
@@ -413,7 +413,7 @@ async function deleteKr(krId) {
         if (!data.success) throw new Error(data.message);
         await loadOkrs();
     } catch (e) {
-        Swal.fire({ icon: "error", title: "Hata", text: e.message });
+        Swal.fire({ icon: "error", title: t("Hata"), text: e.message });
     }
 }
 

@@ -43,9 +43,9 @@ from app_platform.modules.raporlar import routes as raporlar_routes  # noqa: E40
 # sp/kurum/masaustu/ayarlar/bildirim → her zaman erişilebilir (gate edilmez).
 _GATED_PREFIX_MODULE = [
     ("/process", "surec"),
-    ("/bireysel", "bireysel"),
+    ("/individual", "bireysel"),
     ("/project", "proje"),
-    ("/analiz", "analiz"),
+    ("/analysis", "analiz"),
     ("/k-radar", "k_radar"),
     ("/k-rapor", "k_rapor"),
 ]

@@ -1,9 +1,9 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  const stat = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/quarterly-review',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/quarterly-review',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
@@ -13,9 +13,9 @@
         <div style="font-size:20px;font-weight:800;color:#0f172a;">Çeyreklik Review Toplantısı</div>
         <div style="font-size:12.5px;color:#64748b;margin-top:4px;">${esc(d.period_start)} – ${esc(d.period_end)}${d.plan_year?' · Plan yılı '+d.plan_year:''}</div>`;
       document.getElementById('metrics').innerHTML = [
-        stat('Ölçüm Hacmi (Q)', d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a'),
-        stat('Yeni Stratejik Girişim', d.metrics.new_initiatives, '#0ea5e9'),
-        stat('Tamamlanan Stratejik Girişim', d.metrics.completed_initiatives, '#10b981'),
+        stat('Ölçüm Hacmi (Q)', d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a', 'raporlar_quarterly_review.olcum_hacmi_q'),
+        stat('Yeni Stratejik Girişim', d.metrics.new_initiatives, '#0ea5e9', 'raporlar_quarterly_review.yeni_stratejik_girisim'),
+        stat('Tamamlanan Stratejik Girişim', d.metrics.completed_initiatives, '#10b981', 'raporlar_quarterly_review.tamamlanan_stratejik_girisim'),
       ].join('');
       document.getElementById('ai-text').textContent = d.ai_summary;
       document.getElementById('agenda').innerHTML = '<ol style="margin:0;padding-left:20px;font-size:12.5px;color:#0f172a;line-height:1.7;">' +

@@ -61,7 +61,7 @@ Oku → Plan göster → Onay al → Uygula → Test et → TASKLOG yaz → Dur
 | DB instance | `extensions.py::db` |
 | DB dosyası | `instance/kokpitim.db` |
 | Login view | `auth.login` (kök — micro değil) |
-| PG | Performans Göstergesi (PostgreSQL DEĞİL) |
+| PG | Performans Göstergesi (PostgreSQL DEĞİL). Kod/DB'de `pg` (pg_id, ProcessKpi). **URL'de `pi`** (Performance Indicator) — tek-dil, TASK-209 |
 | Bildirim | SweetAlert2 11 |
 | CSS sistemi | `var(--text-*)`, `var(--color-*)` token'ları |
 
@@ -115,6 +115,18 @@ SweetAlert2 yalnızca şunlar için kullanılır:
 - Onay diyalogları (`swal.fire({ ... confirm ... }}`)
 - Başarı/hata toast bildirimleri
 - Basit bilgi mesajları
+
+---
+
+## 5.1 KART GÖRSEL STANDARDI (ZORUNLU)
+
+> Yeni/değiştirilen **her kart** bu yapıda olmalı. Mekanizma `base.html`'de merkezî.
+> Tam yordam + checklist + sayfa-harf eşlemesi: **`docs/paketler/KART-KATMANI-TASARIM.md` §Kart Görsel Standardı**.
+
+Başlık satırı: **[mini ikon] Kart Başlığı (i)** solda (herkese) · **Kart ID (short_id)** sağ üstte (yalnız Admin).
+- Kart konteynerine `data-card-code="<sayfa>.<kart>"` ekle; başlık `mc-card-title`/`mc-stat-label` taşısın.
+- Keşfet → `system_cards`'a yaz → `short_id` (2 harf+no) + `description` (i butonu gösterir) ata.
+- base.html/route değişince **`python pybasla.py`** ile yeniden başlat (auto-reload bu makinede güvenilmez).
 
 ---
 

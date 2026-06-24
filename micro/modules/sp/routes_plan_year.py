@@ -1,5 +1,6 @@
 """Stratejik Planlama — Plan yılı API."""
 
+from flask_babel import gettext as _
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session
@@ -60,7 +61,7 @@ def sp_api_plan_years_list():
     """Tenant'ın tüm plan yıllarını döner."""
     tid = current_user.tenant_id
     if not tid:
-        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
+        return jsonify({"success": False, "message": _("Tenant bulunamadı.")}), 403
     plan_years_list = list_plan_years(tid)
     import datetime as _dt
     active_year = session.get("sp_active_year", _dt.date.today().year)
@@ -82,19 +83,19 @@ def sp_api_plan_years_create():
     """
     tid = current_user.tenant_id
     if not tid:
-        return jsonify({"success": False, "message": "Tenant bulunamadı."}), 403
+        return jsonify({"success": False, "message": _("Tenant bulunamadı.")}), 403
 
     data = request.get_json() or {}
     new_year = data.get("year")
     if not new_year:
-        return jsonify({"success": False, "message": "Yıl zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Yıl zorunludur.")}), 400
     try:
         new_year = int(new_year)
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz yıl değeri."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz yıl değeri.")}), 400
 
     if new_year < 2000 or new_year > 2100:
-        return jsonify({"success": False, "message": "Yıl 2000-2100 aralığında olmalıdır."}), 400
+        return jsonify({"success": False, "message": _("Yıl 2000-2100 aralığında olmalıdır.")}), 400
 
     # Zaten var mı?
     existing = get_plan_year(tid, new_year)
@@ -115,7 +116,7 @@ def sp_api_plan_years_create():
             try:
                 from_year = int(from_year)
             except (TypeError, ValueError):
-                return jsonify({"success": False, "message": "Geçersiz kaynak yıl."}), 400
+                return jsonify({"success": False, "message": _("Geçersiz kaynak yıl.")}), 400
             source_py = get_plan_year(tid, from_year)
             if not source_py:
                 return jsonify({"success": False, "message": f"{from_year} yılı planı bulunamadı."}), 404
@@ -141,7 +142,7 @@ def sp_api_plan_years_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_plan_years_create] {e}")
-        return jsonify({"success": False, "message": "Plan yılı oluşturulurken hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Plan yılı oluşturulurken hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/plan-years/set-active", methods=["POST"])
@@ -155,7 +156,7 @@ def sp_api_plan_years_set_active():
     try:
         year = int(year)
     except (TypeError, ValueError):
-        return jsonify({"success": False, "message": "Geçersiz yıl."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz yıl.")}), 400
 
     tid = current_user.tenant_id
     if tid:
@@ -176,7 +177,7 @@ def sp_api_plan_year_close(year_id):
     tid = current_user.tenant_id
     py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
     if py.status == "closed":
-        return jsonify({"success": False, "message": "Bu yıl zaten kapalı."}), 400
+        return jsonify({"success": False, "message": _("Bu yıl zaten kapalı.")}), 400
     try:
         close_plan_year(py, actor_id=current_user.id)
         return jsonify({
@@ -186,7 +187,7 @@ def sp_api_plan_year_close(year_id):
         })
     except Exception as e:
         current_app.logger.error(f"[sp_api_plan_year_close] {e}")
-        return jsonify({"success": False, "message": "Yıl kapatılırken hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Yıl kapatılırken hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs", methods=["GET"])
@@ -228,25 +229,25 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
     tid = current_user.tenant_id
     py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
     if py.status == "closed":
-        return jsonify({"success": False, "message": "Kapalı plan yılı düzenlenemez."}), 400
+        return jsonify({"success": False, "message": _("Kapalı plan yılı düzenlenemez.")}), 400
 
     # H-16: cross-tenant doğrulama
     kpi_owner = ProcessKpi.query.join(Process).filter(
         ProcessKpi.id == kpi_id, Process.tenant_id == tid
     ).first()
     if not kpi_owner:
-        return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
 
     data = request.get_json() or {}
     try:
         cfg = upsert_kpi_year_config(py, kpi_id, data)
-        return jsonify({"success": True, "id": cfg.id, "message": "KPI yıllık hedef güncellendi."})
+        return jsonify({"success": True, "id": cfg.id, "message": _("KPI yıllık hedef güncellendi.")})
     except ValueError:
-        return jsonify({"success": False, "message": "Geçersiz KPI."}), 404
+        return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 404
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_plan_year_kpi_config_upsert] {e}")
-        return jsonify({"success": False, "message": "Kayıt sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
@@ -261,12 +262,12 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
     tid = current_user.tenant_id
     py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
     if py.status == "closed":
-        return jsonify({"success": False, "message": "Kapalı plan yılı düzenlenemez."}), 400
+        return jsonify({"success": False, "message": _("Kapalı plan yılı düzenlenemez.")}), 400
 
     data = request.get_json() or {}
     configs = data.get("configs", [])
     if not configs:
-        return jsonify({"success": False, "message": "Konfigürasyon listesi boş."}), 400
+        return jsonify({"success": False, "message": _("Konfigürasyon listesi boş.")}), 400
 
     # H-16: cross-tenant doğrulama — tüm kpi_id'lerin tenant'a ait olduğunu doğrula
     requested_ids = [int(item["kpi_id"]) for item in configs if item.get("kpi_id")]
@@ -277,7 +278,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
             ).all()
         }
         if len(valid_ids) < len(set(requested_ids)):
-            return jsonify({"success": False, "message": "Geçersiz KPI."}), 400
+            return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
 
     updated = 0
     errors = []
@@ -293,7 +294,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
 
     if errors:
         db.session.rollback()
-        return jsonify({"success": False, "message": "Bazı kayıtlarda hata oluştu.", "errors": errors}), 400
+        return jsonify({"success": False, "message": _("Bazı kayıtlarda hata oluştu."), "errors": errors}), 400
 
     return jsonify({"success": True, "message": f"{updated} KPI hedefi güncellendi.", "updated": updated})
 
@@ -303,7 +304,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
 
 # ── Plan Yılı Geçiş Sihirbazı ─────────────────────────────────────────────────
 
-@app_bp.route("/sp/sihirbaz/yeni-yil")
+@app_bp.route("/sp/wizard/new-year")
 @login_required
 @sp_manage_required
 def sp_sihirbaz_yeni_yil():
@@ -316,7 +317,7 @@ def sp_sihirbaz_yeni_yil():
     )
 
 
-@app_bp.route("/sp/api/sihirbaz/yeni-yil/preview", methods=["POST"])
+@app_bp.route("/sp/api/wizard/new-year/preview", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_preview():
@@ -331,7 +332,7 @@ def sp_api_sihirbaz_preview():
     tid = current_user.tenant_id
     source = PlanYear.query.filter_by(id=source_year_id, tenant_id=tid).first()
     if not source:
-        return jsonify({"success": False, "message": "Kaynak yıl bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Kaynak yıl bulunamadı.")}), 404
 
     process_count = Process.query.filter_by(tenant_id=tid, plan_year_id=source.id, is_active=True).count()
     kpi_count = (
@@ -356,7 +357,7 @@ def sp_api_sihirbaz_preview():
     })
 
 
-@app_bp.route("/sp/api/sihirbaz/yeni-yil/uygula", methods=["POST"])
+@app_bp.route("/sp/api/wizard/new-year/apply", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_uygula():
@@ -372,7 +373,7 @@ def sp_api_sihirbaz_uygula():
     tid = current_user.tenant_id
     source = PlanYear.query.filter_by(id=source_year_id, tenant_id=tid).first()
     if not source:
-        return jsonify({"success": False, "message": "Kaynak yıl bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Kaynak yıl bulunamadı.")}), 404
 
     existing = get_plan_year(tid, new_year)
     if existing:
@@ -389,4 +390,4 @@ def sp_api_sihirbaz_uygula():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_sihirbaz_uygula] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Geçiş sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("Geçiş sırasında hata oluştu.")}), 500

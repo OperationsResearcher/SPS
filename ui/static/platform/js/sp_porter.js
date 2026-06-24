@@ -32,7 +32,7 @@
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
   function toast(msg) {
     Swal.fire({ toast: true, position: "top-end", icon: "success", title: msg,
@@ -55,11 +55,11 @@
   function renderForce(def) {
     const f = state[def.key] || { score: null, items: [] };
     const items = f.items || [];
-    const lis = items.map((t, i) => `
+    const lis = items.map((it, i) => `
       <li style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #eef2f7;">
-        <span style="flex:1;font-size:13px;line-height:1.5;color:var(--text-default);">${esc(t)}</span>
+        <span style="flex:1;font-size:13px;line-height:1.5;color:var(--text-default);">${esc(it)}</span>
         ${CAN_EDIT ? `<button type="button" class="porter-del" data-key="${def.key}" data-idx="${i}"
-          style="flex:none;background:none;border:none;color:#cbd5e1;cursor:pointer;" title="Sil"><i class="fas fa-times"></i></button>` : ""}
+          style="flex:none;background:none;border:none;color:#cbd5e1;cursor:pointer;" title="${t("Sil")}"><i class="fas fa-times"></i></button>` : ""}
       </li>`).join("");
 
     return `
@@ -67,14 +67,14 @@
         <div class="mc-card-header" style="display:flex;align-items:center;gap:8px;">
           <i class="fas ${def.icon}" style="color:${def.color};"></i>
           <span class="mc-card-title">${esc(def.label)}</span>
-          <span style="margin-left:auto;font-size:11px;color:#94a3b8;">${f.score ? "Baskı " + f.score + "/5" : "—"}</span>
+          <span style="margin-left:auto;font-size:11px;color:#94a3b8;">${f.score ? t("Baskı") + " " + f.score + "/5" : "—"}</span>
         </div>
         <div class="mc-card-body" style="padding:10px 14px;">
           ${scoreButtons(def.key, f.score)}
-          <ul style="list-style:none;margin:0 0 8px;padding:0;">${lis || '<li style="color:#94a3b8;font-size:12px;padding:5px 0;">Madde yok.</li>'}</ul>
+          <ul style="list-style:none;margin:0 0 8px;padding:0;">${lis || `<li style="color:#94a3b8;font-size:12px;padding:5px 0;">${t("Madde yok.")}</li>`}</ul>
           ${CAN_EDIT ? `<button type="button" class="porter-add" data-key="${def.key}"
             style="font-size:12px;font-weight:600;color:${def.color};background:none;border:none;cursor:pointer;padding:2px 0;">
-            <i class="fas fa-plus" style="font-size:10px;"></i> Madde ekle</button>` : ""}
+            <i class="fas fa-plus" style="font-size:10px;"></i> ${t("Madde ekle")}</button>` : ""}
         </div>
       </div>`;
   }
@@ -85,10 +85,10 @@
 
   async function onAdd(key) {
     const { value: txt } = await Swal.fire({
-      title: "Madde ekle", input: "textarea", inputPlaceholder: "Gözlem / faktör…",
-      showCancelButton: true, confirmButtonText: "Ekle", cancelButtonText: "İptal",
+      title: t("Madde ekle"), input: "textarea", inputPlaceholder: t("Gözlem / faktör…"),
+      showCancelButton: true, confirmButtonText: t("Ekle"), cancelButtonText: t("İptal"),
       confirmButtonColor: "#ea580c",
-      inputValidator: (v) => (!v || !v.trim()) ? "Boş olamaz." : undefined,
+      inputValidator: (v) => (!v || !v.trim()) ? t("Boş olamaz.") : undefined,
     });
     if (!txt || !txt.trim()) return;
     const f = (state[key] = state[key] || { score: null, items: [] });
@@ -100,7 +100,7 @@
     if (!CAN_EDIT) return;
     saveBtn.disabled = true;
     const orig = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor…';
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t("Kaydediliyor…");
     try {
       const body = {};
       FORCES.forEach((d) => { body[d.key] = state[d.key] || { score: null, items: [] }; });
@@ -110,10 +110,10 @@
         credentials: "same-origin", body: JSON.stringify(body),
       });
       const d = await res.json();
-      if (d.success) toast("Kaydedildi.");
-      else showError(d.message || "Kaydedilemedi.");
+      if (d.success) toast(t("Kaydedildi."));
+      else showError(d.message || t("Kaydedilemedi."));
     } catch (e) {
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası: ") + e.message);
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = orig;
@@ -145,14 +145,14 @@
     try {
       const res = await fetch(GET_URL, { credentials: "same-origin" });
       const d = await res.json();
-      if (!d.success) { showError(d.message || "Veri alınamadı."); return; }
+      if (!d.success) { showError(d.message || t("Veri alınamadı.")); return; }
       FORCES.forEach((def) => {
         const v = d.data[def.key] || {};
         state[def.key] = { score: v.score || null, items: Array.isArray(v.items) ? v.items : [] };
       });
       render();
     } catch (e) {
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası: ") + e.message);
     }
   }
 

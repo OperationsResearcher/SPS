@@ -29,13 +29,13 @@ from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 
 # ─── PD-01: CFO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/cfo-dashboard")
+@app_bp.route("/reports/cfo-dashboard")
 @login_required
 def raporlar_cfo_dashboard():
-    return render_template("platform/raporlar/cfo_dashboard.html")
+    return render_template("platform/reports/cfo_dashboard.html")
 
 
-@app_bp.route("/raporlar/api/cfo-dashboard")
+@app_bp.route("/reports/api/cfo-dashboard")
 @login_required
 def raporlar_api_cfo_dashboard():
     from app.models.llm_usage import LLMUsageLog
@@ -123,13 +123,13 @@ def raporlar_api_cfo_dashboard():
 
 # ─── PD-02: COO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/coo-dashboard")
+@app_bp.route("/reports/coo-dashboard")
 @login_required
 def raporlar_coo_dashboard():
-    return render_template("platform/raporlar/coo_dashboard.html")
+    return render_template("platform/reports/coo_dashboard.html")
 
 
-@app_bp.route("/raporlar/api/coo-dashboard")
+@app_bp.route("/reports/api/coo-dashboard")
 @login_required
 def raporlar_api_coo_dashboard():
     from app.models.k_radar_domain import BottleneckLog, ProcessMaturity
@@ -210,13 +210,13 @@ def raporlar_api_coo_dashboard():
 
 # ─── PD-03: CHRO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/chro-dashboard")
+@app_bp.route("/reports/chro-dashboard")
 @login_required
 def raporlar_chro_dashboard():
-    return render_template("platform/raporlar/chro_dashboard.html")
+    return render_template("platform/reports/chro_dashboard.html")
 
 
-@app_bp.route("/raporlar/api/chro-dashboard")
+@app_bp.route("/reports/api/chro-dashboard")
 @login_required
 def raporlar_api_chro_dashboard():
     tid = _tid_or_none()
@@ -303,13 +303,13 @@ def raporlar_api_chro_dashboard():
 
 # ─── AI-11: AI Quarterly Review Hazırlayıcısı ──────────────────────────────
 
-@app_bp.route("/raporlar/quarterly-review")
+@app_bp.route("/reports/quarterly-review")
 @login_required
 def raporlar_quarterly_review():
-    return render_template("platform/raporlar/quarterly_review.html")
+    return render_template("platform/reports/quarterly_review.html")
 
 
-@app_bp.route("/raporlar/api/quarterly-review")
+@app_bp.route("/reports/api/quarterly-review")
 @login_required
 def raporlar_api_quarterly_review():
     tid = _tid_or_none()
@@ -412,13 +412,13 @@ def raporlar_api_quarterly_review():
 
 # ─── AI-12: AI Strateji Hikayeleştirici ────────────────────────────────────
 
-@app_bp.route("/raporlar/strateji-hikayesi")
+@app_bp.route("/reports/strategy-story")
 @login_required
 def raporlar_strateji_hikayesi():
-    return render_template("platform/raporlar/strateji_hikayesi.html")
+    return render_template("platform/reports/strateji_hikayesi.html")
 
 
-@app_bp.route("/raporlar/api/strateji-hikayesi")
+@app_bp.route("/reports/api/strategy-story")
 @login_required
 def raporlar_api_strateji_hikayesi():
     tid = _tid_or_none()

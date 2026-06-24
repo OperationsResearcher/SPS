@@ -1,8 +1,8 @@
 {% extends "platform/base.html" %}
-{% block title %}Girişim Portföyü — Balon Grafik | Kokpitim{% endblock %}
-{% block page_title %}Girişim Portföyü{% endblock %}
+{% block title %}{{ _("Girişim Portföyü — Balon Grafik") }} | Kokpitim{% endblock %}
+{% block page_title %}{{ _("Girişim Portföyü") }}{% endblock %}
 
-{% block breadcrumb %}{{ mc_breadcrumb('Girişim Portföyü Balon Grafiği') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Girişim Portföyü Balon Grafiği')) }}{% endblock %}
 
 {% block content %}
 <div style="max-width:1240px; margin:0 auto;" id="ib-root">
@@ -10,67 +10,66 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-        <i class="fas fa-rocket" style="color:#ef4444;"></i> Girişim Portföyü — Balon Grafiği
+        <i class="fas fa-rocket" style="color:#ef4444;"></i> {{ _("Girişim Portföyü — Balon Grafiği") }}
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        Tüm stratejik girişimlerin tek görselde portföy gösterimi — ilerleme, bütçe ve öncelik bir arada
+        {{ _("Tüm stratejik girişimlerin tek görselde portföy gösterimi — ilerleme, bütçe ve öncelik bir arada") }}
       </p>
     </div>
   </div>
 
   {# Bilgilendirme #}
-  <div class="mc-card" style="padding:14px 18px; margin-bottom:14px; background:#fef2f2; border-left:4px solid #ef4444;">
+  <div class="mc-card mc-card--accent-danger" style="padding:14px 18px; margin-bottom:14px; background:#fef2f2">
     <div style="font-size:13px; color:#7f1d1d; line-height:1.6;">
-      <b>Stratejik Girişim nedir?</b> Bir veya birden fazla stratejik alt hedefi ileriye taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır.
-      Bu rapor tüm girişimleri tek görselde gösterir; <b>hangileri sağlıklı ilerliyor, hangileri bütçesini aşıyor, hangileri öncelik almalı</b> sorularına anında yanıt verir.
+      {{ _("<b>Stratejik Girişim nedir?</b> Bir veya birden fazla stratejik alt hedefi ileriye taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır. Bu rapor tüm girişimleri tek görselde gösterir; <b>hangileri sağlıklı ilerliyor, hangileri bütçesini aşıyor, hangileri öncelik almalı</b> sorularına anında yanıt verir.") }}
     </div>
   </div>
 
   {# 4 eksen açıklaması #}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-bottom:14px;">
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #6366f1;">
-      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Yatay Eksen (X)</div>
-      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">İlerleme %</div>
-      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Sağa gittikçe tamamlanmaya yakın</div>
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.yatay_eksen_x" style="padding:12px 14px; border-top:3px solid #6366f1;">
+      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">{{ _("Yatay Eksen (X)") }}</div>
+      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">{{ _("İlerleme %%") }}</div>
+      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">{{ _("Sağa gittikçe tamamlanmaya yakın") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #f59e0b;">
-      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Dikey Eksen (Y)</div>
-      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Bütçe Kullanımı %</div>
-      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Yukarı çıktıkça bütçesi tükeniyor</div>
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.dikey_eksen_y" style="padding:12px 14px; border-top:3px solid #f59e0b;">
+      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">{{ _("Dikey Eksen (Y)") }}</div>
+      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">{{ _("Bütçe Kullanımı %%") }}</div>
+      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">{{ _("Yukarı çıktıkça bütçesi tükeniyor") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #10b981;">
-      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Daire Boyutu</div>
-      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Toplam Bütçe</div>
-      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Büyük daire = büyük bütçe</div>
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.daire_boyutu" style="padding:12px 14px; border-top:3px solid #10b981;">
+      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">{{ _("Daire Boyutu") }}</div>
+      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">{{ _("Toplam Bütçe") }}</div>
+      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">{{ _("Büyük daire = büyük bütçe") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px 14px; border-top:3px solid #ef4444;">
-      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">Daire Rengi</div>
-      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">Öncelik Seviyesi</div>
-      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">Kırmızı = kritik, mavi = düşük</div>
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.daire_rengi" style="padding:12px 14px; border-top:3px solid #ef4444;">
+      <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:600;">{{ _("Daire Rengi") }}</div>
+      <div style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">{{ _("Öncelik Seviyesi") }}</div>
+      <div style="font-size:11.5px; color:#475569; margin-top:4px; line-height:1.5;">{{ _("Kırmızı = kritik, mavi = düşük") }}</div>
     </div>
   </div>
 
   {# Kadran yorumlama anahtarı #}
-  <details class="mc-card" style="padding:12px 16px; margin-bottom:14px;">
+  <details class="mc-card" data-card-code="raporlar_initiative_bubble.4_kadran_nasil_yorumlanir" style="padding:12px 16px; margin-bottom:14px;">
     <summary style="cursor:pointer; font-size:13px; font-weight:600; color:#0f172a;">
-      <i class="fas fa-compass" style="color:#6366f1;"></i> 4 Kadran nasıl yorumlanır?
+      <i class="fas fa-compass" style="color:#6366f1;"></i> {{ _("4 Kadran nasıl yorumlanır?") }}
     </summary>
     <div style="margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; font-size:12px;">
       <div style="background:#dcfce7; border:1px solid #86efac; border-radius:6px; padding:10px;">
-        <b style="color:#166534;">↘ Sağ Alt — İdeal</b><br>
-        <span style="color:#475569;">Hızlı ilerliyor, az bütçe harcadı. Verimli portföy.</span>
+        <b style="color:#166534;">{{ _("↘ Sağ Alt — İdeal") }}</b><br>
+        <span style="color:#475569;">{{ _("Hızlı ilerliyor, az bütçe harcadı. Verimli portföy.") }}</span>
       </div>
       <div style="background:#dbeafe; border:1px solid #93c5fd; border-radius:6px; padding:10px;">
-        <b style="color:#1e40af;">↗ Sağ Üst — Tamamlanıyor</b><br>
-        <span style="color:#475569;">İlerleme yüksek, bütçe de büyük oranda harcandı — normal bitiş.</span>
+        <b style="color:#1e40af;">{{ _("↗ Sağ Üst — Tamamlanıyor") }}</b><br>
+        <span style="color:#475569;">{{ _("İlerleme yüksek, bütçe de büyük oranda harcandı — normal bitiş.") }}</span>
       </div>
       <div style="background:#fef3c7; border:1px solid #fcd34d; border-radius:6px; padding:10px;">
-        <b style="color:#92400e;">↙ Sol Alt — Henüz Başlangıç</b><br>
-        <span style="color:#475569;">Az ilerleme + az harcama. Yeni başlamış veya tıkanmış olabilir.</span>
+        <b style="color:#92400e;">{{ _("↙ Sol Alt — Henüz Başlangıç") }}</b><br>
+        <span style="color:#475569;">{{ _("Az ilerleme + az harcama. Yeni başlamış veya tıkanmış olabilir.") }}</span>
       </div>
       <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:6px; padding:10px;">
-        <b style="color:#991b1b;">↖ Sol Üst — Riskli</b><br>
-        <span style="color:#475569;">Bütçe yandı ama ilerleme zayıf — acil aksiyon gerekir.</span>
+        <b style="color:#991b1b;">{{ _("↖ Sol Üst — Riskli") }}</b><br>
+        <span style="color:#475569;">{{ _("Bütçe yandı ama ilerleme zayıf — acil aksiyon gerekir.") }}</span>
       </div>
     </div>
   </details>
@@ -82,38 +81,38 @@
   <div id="content" style="display:none;">
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:14px;" id="summary"></div>
 
-    <div class="mc-card" style="padding:18px; margin-bottom:14px;">
-      <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 8px;">
-        <i class="fas fa-chart-scatter" style="color:#ef4444;"></i> Portföy Balon Grafiği
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.portfoy_balon_grafigi" style="padding:18px; margin-bottom:14px;">
+      <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 8px;">
+        <i class="fas fa-chart-scatter" style="color:#ef4444;"></i> {{ _("Portföy Balon Grafiği") }}
       </h3>
       <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px;">
-        Daire üzerine gelince ayrıntılar açılır · tıklayınca girişim listesine gider
+        {{ _("Daire üzerine gelince ayrıntılar açılır · tıklayınca girişim listesine gider") }}
       </p>
       <svg id="bubble" width="100%" height="500" style="overflow:visible;"></svg>
       <div style="display:flex; gap:14px; margin-top:14px; font-size:12px; color:#64748b; flex-wrap:wrap;">
-        <span style="font-weight:600; color:#475569;">Öncelik:</span>
-        <span><span style="display:inline-block; width:11px; height:11px; background:#dc2626; border-radius:50%; vertical-align:middle;"></span> Kritik</span>
-        <span><span style="display:inline-block; width:11px; height:11px; background:#f59e0b; border-radius:50%; vertical-align:middle;"></span> Yüksek</span>
-        <span><span style="display:inline-block; width:11px; height:11px; background:#0ea5e9; border-radius:50%; vertical-align:middle;"></span> Orta</span>
-        <span><span style="display:inline-block; width:11px; height:11px; background:#94a3b8; border-radius:50%; vertical-align:middle;"></span> Düşük</span>
+        <span style="font-weight:600; color:#475569;">{{ _("Öncelik:") }}</span>
+        <span><span style="display:inline-block; width:11px; height:11px; background:#dc2626; border-radius:50%; vertical-align:middle;"></span> {{ _("Kritik") }}</span>
+        <span><span style="display:inline-block; width:11px; height:11px; background:#f59e0b; border-radius:50%; vertical-align:middle;"></span> {{ _("Yüksek") }}</span>
+        <span><span style="display:inline-block; width:11px; height:11px; background:#0ea5e9; border-radius:50%; vertical-align:middle;"></span> {{ _("Orta") }}</span>
+        <span><span style="display:inline-block; width:11px; height:11px; background:#94a3b8; border-radius:50%; vertical-align:middle;"></span> {{ _("Düşük") }}</span>
       </div>
     </div>
 
-    <div class="mc-card" style="padding:18px; overflow-x:auto;">
-      <h3 style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
-        <i class="fas fa-list" style="color:#6366f1;"></i> Detay Tablosu
+    <div class="mc-card" data-card-code="raporlar_initiative_bubble.detay_tablosu" style="padding:18px; overflow-x:auto;">
+      <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
+        <i class="fas fa-list" style="color:#6366f1;"></i> {{ _("Detay Tablosu") }}
       </h3>
       <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
         <thead><tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
-          <th style="padding:10px; text-align:left; color:#475569;">Kod</th>
-          <th style="padding:10px; text-align:left; color:#475569;">Girişim Adı</th>
-          <th style="padding:10px; text-align:left; color:#475569;">Durum</th>
-          <th style="padding:10px; text-align:left; color:#475569;">Öncelik</th>
-          <th style="padding:10px; text-align:right; color:#475569;">Toplam Bütçe</th>
-          <th style="padding:10px; text-align:right; color:#475569;">Harcanan</th>
-          <th style="padding:10px; text-align:right; color:#475569;">Bütçe Kullanımı</th>
-          <th style="padding:10px; text-align:right; color:#475569;">İlerleme</th>
-          <th style="padding:10px; text-align:right; color:#475569;">Süre</th>
+          <th style="padding:10px; text-align:left; color:#475569;">{{ _("Kod") }}</th>
+          <th style="padding:10px; text-align:left; color:#475569;">{{ _("Girişim Adı") }}</th>
+          <th style="padding:10px; text-align:left; color:#475569;">{{ _("Durum") }}</th>
+          <th style="padding:10px; text-align:left; color:#475569;">{{ _("Öncelik") }}</th>
+          <th style="padding:10px; text-align:right; color:#475569;">{{ _("Toplam Bütçe") }}</th>
+          <th style="padding:10px; text-align:right; color:#475569;">{{ _("Harcanan") }}</th>
+          <th style="padding:10px; text-align:right; color:#475569;">{{ _("Bütçe Kullanımı") }}</th>
+          <th style="padding:10px; text-align:right; color:#475569;">{{ _("İlerleme") }}</th>
+          <th style="padding:10px; text-align:right; color:#475569;">{{ _("Süre") }}</th>
         </tr></thead><tbody id="tbl"></tbody>
       </table>
     </div>
@@ -125,5 +124,5 @@
   <div id="error" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:14px; border-radius:8px; font-size:13px;"></div>
 </div>
 
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/initiative_bubble.js') }}?v={{ config['VERSION'] }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/initiative_bubble.js') }}?v={{ config['VERSION'] }}" defer></script>
 {% endblock %}

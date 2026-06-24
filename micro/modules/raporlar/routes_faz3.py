@@ -33,6 +33,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES, _ai_text
+from flask_babel import gettext as _
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 3 — PREMIUM ÜRÜNLER (indirilebilir PDF/PPTX/Excel/ZIP)
@@ -60,13 +61,13 @@ def _pdf_helpers():
 
 # ─── ST-16: Stratejik Yıllık Kitap PDF ─────────────────────────────────────
 
-@app_bp.route("/raporlar/stratejik-yillik")
+@app_bp.route("/reports/strategic-annual")
 @login_required
 def raporlar_stratejik_yillik():
-    return render_template("platform/raporlar/stratejik_yillik.html")
+    return render_template("platform/reports/stratejik_yillik.html")
 
 
-@app_bp.route("/raporlar/api/stratejik-yillik/preview")
+@app_bp.route("/reports/api/strategic-annual/preview")
 @login_required
 def raporlar_api_stratejik_yillik_preview():
     tid = _tid_or_none()
@@ -76,31 +77,31 @@ def raporlar_api_stratejik_yillik_preview():
     active_py = get_active_plan_year_for_user(current_user)
 
     sections = [
-        {"no": 1, "title": "Kapak", "content": "Kurum logo + yıl + başlık"},
-        {"no": 2, "title": "Önsöz", "content": "AI özet — 1 sayfa giriş"},
-        {"no": 3, "title": "Yönetici Özeti", "content": "Yıl özetinde 3 cümle + 5 kritik metrik"},
-        {"no": 4, "title": "Kurumsal Kimlik", "content": "Vizyon, misyon, değerler, etik"},
-        {"no": 5, "title": "Stratejik Direkler", "content": "Ana stratejiler + K-Vektör ağırlık"},
-        {"no": 6, "title": "Süreç Mükemmelliği", "content": "Süreç sağlığı + CMMI olgunluk"},
-        {"no": 7, "title": "Initiative Portföyü", "content": "Yıl içi girişimler + bütçe"},
-        {"no": 8, "title": "Performans Göstergeleri", "content": "PG hedef-gerçek özet"},
-        {"no": 9, "title": "Risk Yönetimi", "content": "Risk heatmap + top 10"},
-        {"no": 10, "title": "Sürdürülebilirlik (ESG)", "content": "Carbon + sosyal + yönetişim"},
-        {"no": 11, "title": "İK ve Yetenek", "content": "Çalışan + departman + bireysel başarı"},
-        {"no": 12, "title": "Yıllar Arası Karşılaştırma", "content": "Önceki yıllarla evrim"},
-        {"no": 13, "title": "Önümüzdeki Dönem", "content": "Yol haritası + AI önerileri"},
-        {"no": 14, "title": "Ekler", "content": "Veri kaynağı, metodoloji, terimler"},
+        {"no": 1, "title": _("Kapak"), "content": _("Kurum logo + yıl + başlık")},
+        {"no": 2, "title": _("Önsöz"), "content": _("AI özet — 1 sayfa giriş")},
+        {"no": 3, "title": _("Yönetici Özeti"), "content": _("Yıl özetinde 3 cümle + 5 kritik metrik")},
+        {"no": 4, "title": _("Kurumsal Kimlik"), "content": _("Vizyon, misyon, değerler, etik")},
+        {"no": 5, "title": _("Stratejik Direkler"), "content": _("Ana stratejiler + K-Vektör ağırlık")},
+        {"no": 6, "title": _("Süreç Mükemmelliği"), "content": _("Süreç sağlığı + CMMI olgunluk")},
+        {"no": 7, "title": _("Initiative Portföyü"), "content": _("Yıl içi girişimler + bütçe")},
+        {"no": 8, "title": _("Performans Göstergeleri"), "content": _("PG hedef-gerçek özet")},
+        {"no": 9, "title": _("Risk Yönetimi"), "content": _("Risk heatmap + top 10")},
+        {"no": 10, "title": _("Sürdürülebilirlik (ESG)"), "content": _("Carbon + sosyal + yönetişim")},
+        {"no": 11, "title": _("İK ve Yetenek"), "content": _("Çalışan + departman + bireysel başarı")},
+        {"no": 12, "title": _("Yıllar Arası Karşılaştırma"), "content": _("Önceki yıllarla evrim")},
+        {"no": 13, "title": _("Önümüzdeki Dönem"), "content": _("Yol haritası + AI önerileri")},
+        {"no": 14, "title": _("Ekler"), "content": _("Veri kaynağı, metodoloji, terimler")},
     ]
     return jsonify({"success": True, "preview": {
         "tenant_name": tenant.name if tenant else "—",
         "plan_year": active_py.year if active_py else None,
         "sections": sections,
         "estimated_pages": 35,
-        "format": "PDF (reportlab)",
+        "format": _("PDF (reportlab)"),
     }})
 
 
-@app_bp.route("/raporlar/api/stratejik-yillik/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/strategic-annual/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_stratejik_yillik_generate():
     from flask import send_file
@@ -185,29 +186,29 @@ def raporlar_api_stratejik_yillik_generate():
     elems.append(P(tname, title_style))
     elems.append(P(f"{year_label}", title_style))
     elems.append(h["Spacer"](1, 1*h["cm"]))
-    elems.append(P("STRATEJİK YILLIK", h["ParagraphStyle"](
+    elems.append(P(_("STRATEJİK YILLIK"), h["ParagraphStyle"](
         "Sub", parent=body, fontSize=16, alignment=h["TA_CENTER"],
         textColor=h["colors"].HexColor("#64748b"), spaceAfter=8)))
     elems.append(h["Spacer"](1, 3*h["cm"]))
-    elems.append(P(f"Hazırlık tarihi: {_date.today().strftime('%d %B %Y')}",
+    elems.append(P(f"{_('Hazırlık tarihi')}: {_date.today().strftime('%d %B %Y')}",
                     h["ParagraphStyle"]("date", parent=small, alignment=h["TA_CENTER"])))
     elems.append(h["PageBreak"]())
 
     # Önsöz
-    elems.append(P("Önsöz", h1))
+    elems.append(P(_("Önsöz"), h1))
     elems.append(P(onsoz, body))
     elems.append(h["PageBreak"]())
 
     # Yönetici özeti
-    elems.append(P("Yönetici Özeti", h1))
-    elems.append(P(f"<b>{year_label}</b> yılı için kurum geneli görünümü:", body))
+    elems.append(P(_("Yönetici Özeti"), h1))
+    elems.append(P(f"<b>{year_label}</b> {_('yılı için kurum geneli görünümü:')}", body))
     summary_rows = [
-        ["Strateji sayısı", str(len(strategies))],
-        ["Aktif süreç", str(proc_count)],
-        ["Performans göstergesi", str(kpi_count)],
-        ["Stratejik girişim", str(len(initiatives))],
-        ["Aktif çalışan", str(user_count)],
-        ["Toplam ölçüm", f"{meas_count:,}"],
+        [_("Strateji sayısı"), str(len(strategies))],
+        [_("Aktif süreç"), str(proc_count)],
+        [_("Performans göstergesi"), str(kpi_count)],
+        [_("Stratejik girişim"), str(len(initiatives))],
+        [_("Aktif çalışan"), str(user_count)],
+        [_("Toplam ölçüm"), f"{meas_count:,}"],
     ]
     tbl = h["Table"](summary_rows, colWidths=[8*h["cm"], 5*h["cm"]])
     tbl.setStyle(h["TableStyle"]([
@@ -223,24 +224,24 @@ def raporlar_api_stratejik_yillik_generate():
     elems.append(h["PageBreak"]())
 
     # Kurumsal Kimlik
-    elems.append(P("Kurumsal Kimlik", h1))
+    elems.append(P(_("Kurumsal Kimlik"), h1))
     if tenant:
         if tenant.purpose:
-            elems.append(P("Amaç", h2)); elems.append(P(tenant.purpose, body))
+            elems.append(P(_("Amaç"), h2)); elems.append(P(tenant.purpose, body))
         if tenant.vision:
-            elems.append(P("Vizyon", h2)); elems.append(P(tenant.vision, body))
+            elems.append(P(_("Vizyon"), h2)); elems.append(P(tenant.vision, body))
         if tenant.core_values:
-            elems.append(P("Değerler", h2)); elems.append(P(tenant.core_values, body))
+            elems.append(P(_("Değerler"), h2)); elems.append(P(tenant.core_values, body))
         if tenant.code_of_ethics:
-            elems.append(P("Etik Kurallar", h2)); elems.append(P(tenant.code_of_ethics, body))
+            elems.append(P(_("Etik Kurallar"), h2)); elems.append(P(tenant.code_of_ethics, body))
     else:
-        elems.append(P("Kurumsal kimlik bilgisi tanımlanmamış.", small))
+        elems.append(P(_("Kurumsal kimlik bilgisi tanımlanmamış."), small))
     elems.append(h["PageBreak"]())
 
     # Stratejik Direkler
-    elems.append(P(f"Stratejik Direkler — {len(strategies)} Ana Strateji", h1))
+    elems.append(P(f"{_('Stratejik Direkler')} — {len(strategies)} {_('Ana Strateji')}", h1))
     if strategies:
-        rows = [["Kod", "Ad", "K-Vektör %"]]
+        rows = [[_("Kod"), _("Ad"), _("K-Vektör %")]]
         for s in strategies:
             w_pct = round(weights.get(s.id, 0) / total_w * 100, 1)
             rows.append([s.code or "—", (s.title or "")[:60], f"%{w_pct}"])
@@ -258,13 +259,13 @@ def raporlar_api_stratejik_yillik_generate():
         ]))
         elems.append(tbl)
     else:
-        elems.append(P("Strateji tanımlanmamış.", small))
+        elems.append(P(_("Strateji tanımlanmamış."), small))
     elems.append(h["PageBreak"]())
 
     # Initiative Portföyü
-    elems.append(P(f"Initiative Portföyü — {len(initiatives)} Girişim", h1))
+    elems.append(P(f"{_('Initiative Portföyü')} — {len(initiatives)} {_('Girişim')}", h1))
     if initiatives:
-        rows = [["Kod", "Ad", "Durum", "İlerleme", "Bütçe (₺)"]]
+        rows = [[_("Kod"), _("Ad"), _("Durum"), _("İlerleme"), _("Bütçe (₺)")]]
         for i in initiatives[:30]:
             rows.append([
                 i.code or "—", (i.name or "")[:40],
@@ -285,11 +286,11 @@ def raporlar_api_stratejik_yillik_generate():
         ]))
         elems.append(tbl)
     else:
-        elems.append(P("Initiative tanımlanmamış.", small))
+        elems.append(P(_("Initiative tanımlanmamış."), small))
     elems.append(h["PageBreak"]())
 
     # Önümüzdeki dönem
-    elems.append(P("Önümüzdeki Dönem", h1))
+    elems.append(P(_("Önümüzdeki Dönem"), h1))
     next_year_text = _ai_text(
         prompt=f"{tname} için {year_label+1} yılı önerilen 3-4 stratejik öncelik yaz. "
                "Mevcut yıldaki verilere bakarak (özellikle düşük performanslı alanlar).",
@@ -304,14 +305,12 @@ def raporlar_api_stratejik_yillik_generate():
     elems.append(h["PageBreak"]())
 
     # Kapanış
-    elems.append(P("Teşekkürler", h1))
-    elems.append(P(f"Bu yıllık, {tname} ekibinin yıl boyunca verdiği emeğin yansımasıdır. "
-                   "Kokpitim platformu üzerinde sistemli olarak toplanan veriler ile "
-                   "üretilmiştir.", body))
+    elems.append(P(_("Teşekkürler"), h1))
+    elems.append(P(f"{_('Bu yıllık,')} {tname} {_('ekibinin yıl boyunca verdiği emeğin yansımasıdır. Kokpitim platformu üzerinde sistemli olarak toplanan veriler ile üretilmiştir.')}", body))
     elems.append(h["Spacer"](1, 3*h["cm"]))
-    elems.append(P(f"<b>{tname}</b> · {year_label} Stratejik Yıllık",
+    elems.append(P(f"<b>{tname}</b> · {year_label} {_('Stratejik Yıllık')}",
                     h["ParagraphStyle"]("FootCenter", parent=body, alignment=h["TA_CENTER"])))
-    elems.append(P("Kokpitim — Kurumsal Performans Yönetim Platformu",
+    elems.append(P(_("Kokpitim — Kurumsal Performans Yönetim Platformu"),
                     h["ParagraphStyle"]("FootSmall", parent=small, alignment=h["TA_CENTER"])))
 
     doc.build(elems)
@@ -324,13 +323,13 @@ def raporlar_api_stratejik_yillik_generate():
 
 # ─── AI-17: Yatırımcı Sunum PPTX ───────────────────────────────────────────
 
-@app_bp.route("/raporlar/yatirimci-sunum")
+@app_bp.route("/reports/investor-presentation")
 @login_required
 def raporlar_yatirimci_sunum():
-    return render_template("platform/raporlar/yatirimci_sunum.html")
+    return render_template("platform/reports/yatirimci_sunum.html")
 
 
-@app_bp.route("/raporlar/api/yatirimci-sunum/preview")
+@app_bp.route("/reports/api/investor-presentation/preview")
 @login_required
 def raporlar_api_yatirimci_sunum_preview():
     tid = _tid_or_none()
@@ -340,35 +339,35 @@ def raporlar_api_yatirimci_sunum_preview():
     active_py = get_active_plan_year_for_user(current_user)
 
     slides = [
-        {"no": 1, "title": "Kapak", "content": f"{tenant.name if tenant else 'Kurum'} — Yatırımcı Sunumu"},
-        {"no": 2, "title": "Yönetici Özeti", "content": "AI 4-cümle özet"},
-        {"no": 3, "title": "Vizyon & Misyon", "content": "Stratejik kimlik"},
-        {"no": 4, "title": "Pazardaki Yerimiz", "content": "Sektör + rakip benchmark"},
-        {"no": 5, "title": "İş Modeli", "content": "Gelir kalemleri + büyüme stratejisi"},
-        {"no": 6, "title": "Stratejik Direkler", "content": f"{Strategy.query.filter_by(tenant_id=tid, is_active=True).count()} ana strateji"},
-        {"no": 7, "title": "Operasyonel Mükemmellik", "content": "Süreç olgunluk + verimlilik"},
-        {"no": 8, "title": "Finansal Performans", "content": "Bütçe + initiative ROI"},
-        {"no": 9, "title": "İnsan Kaynağı", "content": "Çalışan + yetenek geliştirme"},
-        {"no": 10, "title": "ESG & Sürdürülebilirlik", "content": "Çevre + sosyal + yönetişim"},
-        {"no": 11, "title": "Risk Yönetimi", "content": "Risk register + mitigation"},
-        {"no": 12, "title": "Initiative Portföyü", "content": f"{Initiative.query.filter_by(tenant_id=tid, is_active=True).count()} girişim"},
-        {"no": 13, "title": "Geçmiş Performans (7 yıl)", "content": "Yıllar arası trend"},
-        {"no": 14, "title": "3 Yıllık Projeksiyon", "content": "Senaryo bazlı tahmin"},
-        {"no": 15, "title": "Yatırım Talebi", "content": "Bütçe + use of funds"},
-        {"no": 16, "title": "Yönetim Ekibi", "content": "Lider ekip"},
-        {"no": 17, "title": "Soru-Cevap", "content": "Hazır cevaplar"},
-        {"no": 18, "title": "Teşekkürler", "content": "İletişim"},
+        {"no": 1, "title": _("Kapak"), "content": f"{tenant.name if tenant else 'Kurum'} — {_('Yatırımcı Sunumu')}"},
+        {"no": 2, "title": _("Yönetici Özeti"), "content": _("AI 4-cümle özet")},
+        {"no": 3, "title": _("Vizyon & Misyon"), "content": _("Stratejik kimlik")},
+        {"no": 4, "title": _("Pazardaki Yerimiz"), "content": _("Sektör + rakip benchmark")},
+        {"no": 5, "title": _("İş Modeli"), "content": _("Gelir kalemleri + büyüme stratejisi")},
+        {"no": 6, "title": _("Stratejik Direkler"), "content": f"{Strategy.query.filter_by(tenant_id=tid, is_active=True).count()} {_('ana strateji')}"},
+        {"no": 7, "title": _("Operasyonel Mükemmellik"), "content": _("Süreç olgunluk + verimlilik")},
+        {"no": 8, "title": _("Finansal Performans"), "content": _("Bütçe + initiative ROI")},
+        {"no": 9, "title": _("İnsan Kaynağı"), "content": _("Çalışan + yetenek geliştirme")},
+        {"no": 10, "title": _("ESG & Sürdürülebilirlik"), "content": _("Çevre + sosyal + yönetişim")},
+        {"no": 11, "title": _("Risk Yönetimi"), "content": _("Risk register + mitigation")},
+        {"no": 12, "title": _("Initiative Portföyü"), "content": f"{Initiative.query.filter_by(tenant_id=tid, is_active=True).count()} {_('girişim')}"},
+        {"no": 13, "title": _("Geçmiş Performans (7 yıl)"), "content": _("Yıllar arası trend")},
+        {"no": 14, "title": _("3 Yıllık Projeksiyon"), "content": _("Senaryo bazlı tahmin")},
+        {"no": 15, "title": _("Yatırım Talebi"), "content": _("Bütçe + use of funds")},
+        {"no": 16, "title": _("Yönetim Ekibi"), "content": _("Lider ekip")},
+        {"no": 17, "title": _("Soru-Cevap"), "content": _("Hazır cevaplar")},
+        {"no": 18, "title": _("Teşekkürler"), "content": _("İletişim")},
     ]
     return jsonify({"success": True, "preview": {
         "tenant_name": tenant.name if tenant else "—",
         "plan_year": active_py.year if active_py else None,
         "slides": slides,
-        "format": "PPTX (python-pptx, 16:9)",
+        "format": _("PPTX (python-pptx, 16:9)"),
         "slide_count": len(slides),
     }})
 
 
-@app_bp.route("/raporlar/api/yatirimci-sunum/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/investor-presentation/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_yatirimci_sunum_generate():
     from flask import send_file
@@ -448,75 +447,75 @@ def raporlar_api_yatirimci_sunum_generate():
     # Slaytları üret
     s = prs.slides.add_slide(prs.slide_layouts[6])
     add_slide_title(s, tname, DARK)
-    add_body(s, f"\n\n{year_label} Yatırımcı Sunumu\n\n{_date.today().strftime('%d %B %Y')}", font=20)
+    add_body(s, f"\n\n{year_label} {_('Yatırımcı Sunumu')}\n\n{_date.today().strftime('%d %B %Y')}", font=20)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Yönetici Özeti", BLUE)
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Yönetici Özeti"), BLUE)
     add_body(s, investor_summary); add_footer(s, 2)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Vizyon", BLUE)
-    add_body(s, (tenant.vision if tenant else None) or "Vizyon tanımlanmamış."); add_footer(s, 3)
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Vizyon"), BLUE)
+    add_body(s, (tenant.vision if tenant else None) or _("Vizyon tanımlanmamış.")); add_footer(s, 3)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Misyon ve Değerler", BLUE)
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Misyon ve Değerler"), BLUE)
     bullets = []
-    if tenant and tenant.purpose: bullets.append("Amaç: " + (tenant.purpose[:200]))
-    if tenant and tenant.core_values: bullets.append("Değerler: " + (tenant.core_values[:200]))
+    if tenant and tenant.purpose: bullets.append(_("Amaç: ") + (tenant.purpose[:200]))
+    if tenant and tenant.core_values: bullets.append(_("Değerler: ") + (tenant.core_values[:200]))
     add_body(s, None, bullets); add_footer(s, 4)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Stratejik Direkler", BLUE)
-    add_body(s, f"{len(strategies)} ana stratejik direk:",
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Stratejik Direkler"), BLUE)
+    add_body(s, f"{len(strategies)} {_('ana stratejik direk:')}",
         bullets=[f"{st.code} — {st.title}" for st in strategies[:8]])
     add_footer(s, 5)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Operasyonel Performans", BLUE)
-    add_body(s, "Yıllık operasyonel göstergeler:",
-        bullets=[f"{proc_count} aktif süreç", f"{meas_count:,} KPI ölçümü",
-                 f"{user_count} aktif çalışan",
-                 "Süreçler CMMI olgunluk seviyesinde izlenmektedir"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Operasyonel Performans"), BLUE)
+    add_body(s, _("Yıllık operasyonel göstergeler:"),
+        bullets=[f"{proc_count} {_('aktif süreç')}", f"{meas_count:,} {_('KPI ölçümü')}",
+                 f"{user_count} {_('aktif çalışan')}",
+                 _("Süreçler CMMI olgunluk seviyesinde izlenmektedir")])
     add_footer(s, 6)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Finansal Görünüm", BLUE)
-    add_body(s, "Stratejik girişim portföyü:",
-        bullets=[f"Toplam initiative bütçesi: ₺{total_budget:,.0f}",
-                 f"Aktif initiative: {len(inits)}",
-                 f"Ortalama bütçe/initiative: ₺{total_budget/max(len(inits),1):,.0f}",
-                 "EVM (PV/EV/AC) modeliyle takip"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Finansal Görünüm"), BLUE)
+    add_body(s, _("Stratejik girişim portföyü:"),
+        bullets=[f"{_('Toplam initiative bütçesi:')} ₺{total_budget:,.0f}",
+                 f"{_('Aktif initiative:')} {len(inits)}",
+                 f"{_('Ortalama bütçe/initiative:')} ₺{total_budget/max(len(inits),1):,.0f}",
+                 _("EVM (PV/EV/AC) modeliyle takip")])
     add_footer(s, 7)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Initiative Portföyü", BLUE)
-    add_body(s, f"En öne çıkan {min(8, len(inits))} stratejik girişim:",
-        bullets=[f"{i.code or 'INI'} — {i.name} (%{i.progress_pct or 0} ilerleme, durum: {i.status})"
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Initiative Portföyü"), BLUE)
+    add_body(s, f"{_('En öne çıkan')} {min(8, len(inits))} {_('stratejik girişim:')}",
+        bullets=[f"{i.code or 'INI'} — {i.name} (%{i.progress_pct or 0} {_('ilerleme, durum:')} {i.status})"
                  for i in sorted(inits, key=lambda x: -(x.progress_pct or 0))[:8]])
     add_footer(s, 8)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "İnsan Sermayesi", BLUE)
-    add_body(s, f"{user_count} aktif çalışan ile yetenek odaklı büyüme.",
-        bullets=["Bireysel performans takibi", "Süreç sahipliği ve liderlik geliştirme",
-                 "2FA güvenlik standartları"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("İnsan Sermayesi"), BLUE)
+    add_body(s, f"{user_count} {_('aktif çalışan ile yetenek odaklı büyüme.')}",
+        bullets=[_("Bireysel performans takibi"), _("Süreç sahipliği ve liderlik geliştirme"),
+                 _("2FA güvenlik standartları")])
     add_footer(s, 9)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "ESG ve Sürdürülebilirlik", GREEN)
-    add_body(s, "Çevre, sosyal ve yönetişim taahhütleri:",
-        bullets=["Scope 1+2+3 emisyon takibi", "SDG katkı haritası",
-                 "İş güvenliği ve çeşitlilik metrikleri", "Bağımsız yatırımcı raporlaması"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("ESG ve Sürdürülebilirlik"), GREEN)
+    add_body(s, _("Çevre, sosyal ve yönetişim taahhütleri:"),
+        bullets=[_("Scope 1+2+3 emisyon takibi"), _("SDG katkı haritası"),
+                 _("İş güvenliği ve çeşitlilik metrikleri"), _("Bağımsız yatırımcı raporlaması")])
     add_footer(s, 10)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Risk Yönetimi", BLUE)
-    add_body(s, "Stratejik risk register ile proaktif yönetim:",
-        bullets=["5×5 risk heatmap (olasılık × etki)",
-                 "Sahip atamalı mitigation planları",
-                 "Çeyreklik risk değerlendirme", "AI Erken Uyarı sistemi"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Risk Yönetimi"), BLUE)
+    add_body(s, _("Stratejik risk register ile proaktif yönetim:"),
+        bullets=[_("5×5 risk heatmap (olasılık × etki)"),
+                 _("Sahip atamalı mitigation planları"),
+                 _("Çeyreklik risk değerlendirme"), _("AI Erken Uyarı sistemi")])
     add_footer(s, 11)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Yatırım Talebi", BLUE)
-    add_body(s, "Önerilen yatırım kullanım planı:",
-        bullets=["Ürün geliştirme ve Ar-Ge (~%40)",
-                 "Operasyonel kapasite (~%30)",
-                 "Pazarlama ve büyüme (~%20)",
-                 "Yedek (~%10)"])
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Yatırım Talebi"), BLUE)
+    add_body(s, _("Önerilen yatırım kullanım planı:"),
+        bullets=[_("Ürün geliştirme ve Ar-Ge (~%40)"),
+                 _("Operasyonel kapasite (~%30)"),
+                 _("Pazarlama ve büyüme (~%20)"),
+                 _("Yedek (~%10)")])
     add_footer(s, 12)
 
-    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, "Teşekkürler", DARK)
-    add_body(s, f"\n\n{tname}\n\nİletişim: investor@example.com\n\nDetaylı analiz: Kokpitim platformu")
+    s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Teşekkürler"), DARK)
+    add_body(s, f"\n\n{tname}\n\n{_('İletişim: investor@example.com')}\n\n{_('Detaylı analiz: Kokpitim platformu')}")
     add_footer(s, 13)
 
     buf = io.BytesIO(); prs.save(buf); buf.seek(0)
@@ -528,13 +527,13 @@ def raporlar_api_yatirimci_sunum_generate():
 
 # ─── ES-08: GRI/CDP/TCFD ESG Rapor PDF ─────────────────────────────────────
 
-@app_bp.route("/raporlar/esg-rapor")
+@app_bp.route("/reports/esg-report")
 @login_required
 def raporlar_esg_rapor():
-    return render_template("platform/raporlar/esg_rapor.html")
+    return render_template("platform/reports/esg_rapor.html")
 
 
-@app_bp.route("/raporlar/api/esg-rapor/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/esg-report/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_esg_rapor_generate():
     from flask import send_file
@@ -568,30 +567,30 @@ def raporlar_api_esg_rapor_generate():
     elems.append(P(f"<font color='#16a34a'>{tname}</font>",
                     h["ParagraphStyle"]("Cover", parent=body, fontSize=24, alignment=h["TA_CENTER"])))
     elems.append(h["Spacer"](1, 0.3*h["cm"]))
-    elems.append(P(f"ESG YILLIK RAPOR — {year}",
+    elems.append(P(f"{_('ESG YILLIK RAPOR')} — {year}",
                     h["ParagraphStyle"]("Cover2", parent=body, fontSize=18, alignment=h["TA_CENTER"],
                     textColor=h["colors"].HexColor("#475569"))))
     elems.append(h["Spacer"](1, 0.5*h["cm"]))
-    elems.append(P("GRI · CDP · TCFD Uyumlu",
+    elems.append(P(_("GRI · CDP · TCFD Uyumlu"),
                     h["ParagraphStyle"]("Cover3", parent=body, fontSize=11, alignment=h["TA_CENTER"],
                     textColor=h["colors"].HexColor("#94a3b8"))))
     elems.append(h["PageBreak"]())
 
     # GRI 102 — Genel Bilgiler
-    elems.append(P("GRI 102 — Organizasyonel Profil", h1))
-    elems.append(P(f"<b>Kurum:</b> {tname}", body))
+    elems.append(P(_("GRI 102 — Organizasyonel Profil"), h1))
+    elems.append(P(f"<b>{_('Kurum:')}</b> {tname}", body))
     if tenant:
-        if tenant.sector: elems.append(P(f"<b>Sektör:</b> {tenant.sector}", body))
-        if tenant.employee_count: elems.append(P(f"<b>Çalışan sayısı:</b> {tenant.employee_count}", body))
-        if tenant.vision: elems.append(P(f"<b>Vizyon:</b> {tenant.vision[:300]}", body))
+        if tenant.sector: elems.append(P(f"<b>{_('Sektör:')}</b> {tenant.sector}", body))
+        if tenant.employee_count: elems.append(P(f"<b>{_('Çalışan sayısı:')}</b> {tenant.employee_count}", body))
+        if tenant.vision: elems.append(P(f"<b>{_('Vizyon:')}</b> {tenant.vision[:300]}", body))
     elems.append(h["Spacer"](1, 0.5*h["cm"]))
 
     # GRI 305 — Emisyonlar
-    elems.append(P("GRI 305 — Emisyonlar", h1))
+    elems.append(P(_("GRI 305 — Emisyonlar"), h1))
     e_metrics = EsgMetric.query.filter_by(tenant_id=tid, is_active=True).filter(
         EsgMetric.category == "E").all()
     if e_metrics:
-        rows = [["Kod", "Metrik", "Scope", "Birim"]]
+        rows = [[_("Kod"), _("Metrik"), _("Scope"), _("Birim")]]
         for m in e_metrics:
             rows.append([m.code or "—", m.name or "—", m.scope or "—", m.unit or "—"])
         tbl = h["Table"](rows, colWidths=[2.5*h["cm"], 7*h["cm"], 3*h["cm"], 3*h["cm"]])
@@ -618,57 +617,57 @@ def raporlar_api_esg_rapor_generate():
         if years_sorted:
             latest = years_sorted[-1]
             elems.append(h["Spacer"](1, 0.5*h["cm"]))
-            elems.append(P(f"<b>{latest} Yılı Toplam Emisyonlar:</b>", body))
+            elems.append(P(f"<b>{latest} {_('Yılı Toplam Emisyonlar:')}</b>", body))
             for scope in ("scope1", "scope2", "scope3"):
                 v = by_year_scope[latest].get(scope, 0)
                 if v > 0:
                     elems.append(P(f"  {scope.upper()}: {v:,.2f} tCO₂e", body))
     else:
-        elems.append(P("Henüz çevre metriği tanımlanmamış.", body))
+        elems.append(P(_("Henüz çevre metriği tanımlanmamış."), body))
 
     elems.append(h["PageBreak"]())
 
     # GRI 403 — Sosyal
-    elems.append(P("GRI 403 — Sosyal Göstergeler (LTIFR, vb.)", h1))
+    elems.append(P(_("GRI 403 — Sosyal Göstergeler (LTIFR, vb.)"), h1))
     s_metrics = EsgMetric.query.filter_by(tenant_id=tid, is_active=True, category="S").all()
     if s_metrics:
         for m in s_metrics:
             elems.append(P(f"<b>{m.name}</b>", body))
-            elems.append(P(f"Kod: {m.code or '—'} · Birim: {m.unit or '—'}", body))
+            elems.append(P(f"{_('Kod:')} {m.code or '—'} · {_('Birim:')} {m.unit or '—'}", body))
             if m.description: elems.append(P(m.description, body))
     else:
-        elems.append(P("Henüz sosyal metriği tanımlanmamış.", body))
+        elems.append(P(_("Henüz sosyal metriği tanımlanmamış."), body))
 
     elems.append(h["Spacer"](1, 1*h["cm"]))
 
     # GRI 102-22 — Yönetişim
-    elems.append(P("GRI 102-22 — Yönetişim", h1))
+    elems.append(P(_("GRI 102-22 — Yönetişim"), h1))
     g_metrics = EsgMetric.query.filter_by(tenant_id=tid, is_active=True, category="G").all()
     if g_metrics:
         for m in g_metrics:
             elems.append(P(f"<b>{m.name}:</b> {m.description or '—'}", body))
     else:
-        elems.append(P("Henüz yönetişim metriği tanımlanmamış.", body))
+        elems.append(P(_("Henüz yönetişim metriği tanımlanmamış."), body))
 
     elems.append(h["PageBreak"]())
 
     # TCFD — İklim Risk Açıklaması
-    elems.append(P("TCFD — İklim Risk Açıklaması", h1))
-    elems.append(P("Yönetişim, Strateji, Risk Yönetimi, Metrik ve Hedefler dört "
-                   "boyutta iklim ile ilgili açıklamalar:", body))
-    elems.append(P("<b>1. Yönetişim:</b> İklim risklerinin yönetim kurulu seviyesinde "
-                   "değerlendirilmesi.", body))
-    elems.append(P("<b>2. Strateji:</b> İklim ile ilgili kısa/orta/uzun vadeli stratejik "
-                   "etki analizi.", body))
-    elems.append(P("<b>3. Risk yönetimi:</b> Risk register'a iklim risklerinin entegrasyonu.", body))
-    elems.append(P("<b>4. Metrik ve hedefler:</b> Scope 1/2/3 emisyon ölçümü ve Net Zero "
-                   "hedefi (varsa).", body))
+    elems.append(P(_("TCFD — İklim Risk Açıklaması"), h1))
+    elems.append(P(_("Yönetişim, Strateji, Risk Yönetimi, Metrik ve Hedefler dört "
+                   "boyutta iklim ile ilgili açıklamalar:"), body))
+    elems.append(P(_("<b>1. Yönetişim:</b> İklim risklerinin yönetim kurulu seviyesinde "
+                   "değerlendirilmesi."), body))
+    elems.append(P(_("<b>2. Strateji:</b> İklim ile ilgili kısa/orta/uzun vadeli stratejik "
+                   "etki analizi."), body))
+    elems.append(P(_("<b>3. Risk yönetimi:</b> Risk register'a iklim risklerinin entegrasyonu."), body))
+    elems.append(P(_("<b>4. Metrik ve hedefler:</b> Scope 1/2/3 emisyon ölçümü ve Net Zero "
+                   "hedefi (varsa)."), body))
 
     # Kapanış
     elems.append(h["Spacer"](1, 1*h["cm"]))
-    elems.append(P("Bu rapor Kokpitim platformu üzerinden, GRI/CDP/TCFD standart "
+    elems.append(P(_("Bu rapor Kokpitim platformu üzerinden, GRI/CDP/TCFD standart "
                    "yapısına uygun olarak otomatik üretilmiştir. Detay veri ve "
-                   "yöntem için ek ekleri talep edebilirsiniz.",
+                   "yöntem için ek ekleri talep edebilirsiniz."),
                    h["ParagraphStyle"]("Foot", parent=body, fontSize=9,
                        textColor=h["colors"].HexColor("#64748b"))))
 
@@ -680,13 +679,13 @@ def raporlar_api_esg_rapor_generate():
 
 # ─── RK-14: Audit Çıktı Paketi PDF ─────────────────────────────────────────
 
-@app_bp.route("/raporlar/audit-paketi")
+@app_bp.route("/reports/audit-package")
 @login_required
 def raporlar_audit_paketi():
-    return render_template("platform/raporlar/audit_paketi.html")
+    return render_template("platform/reports/audit_paketi.html")
 
 
-@app_bp.route("/raporlar/api/audit-paketi/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/audit-package/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_audit_paketi_generate():
     from flask import send_file
@@ -719,24 +718,24 @@ def raporlar_api_audit_paketi_generate():
     # Kapak
     elems.append(P(f"<b>{tname}</b>",
                     h["ParagraphStyle"]("C1", parent=body, fontSize=24, alignment=h["TA_CENTER"])))
-    elems.append(P(f"AUDIT ÇIKTI PAKETİ — {year}",
+    elems.append(P(f"{_('AUDIT ÇIKTI PAKETİ')} — {year}",
                     h["ParagraphStyle"]("C2", parent=body, fontSize=16, alignment=h["TA_CENTER"],
                     textColor=h["colors"].HexColor("#dc2626"))))
     elems.append(h["Spacer"](1, 1*h["cm"]))
-    elems.append(P("Bu doküman, üçüncü parti denetçilere kurum içi stratejik plan, "
-                   "performans, risk ve kullanıcı aktivite verisinin özet sunumudur.",
+    elems.append(P(_("Bu doküman, üçüncü parti denetçilere kurum içi stratejik plan, "
+                   "performans, risk ve kullanıcı aktivite verisinin özet sunumudur."),
                    h["ParagraphStyle"]("CI", parent=body, alignment=h["TA_CENTER"])))
     elems.append(h["PageBreak"]())
 
     # 1. Tenant özeti
-    elems.append(P("1. Kurum Bilgileri", h1))
-    info_rows = [["Kurum", tname]]
+    elems.append(P(_("1. Kurum Bilgileri"), h1))
+    info_rows = [[_("Kurum"), tname]]
     if tenant:
-        if tenant.short_name: info_rows.append(["Kısa Ad", tenant.short_name])
-        if tenant.sector: info_rows.append(["Sektör", tenant.sector])
-        if tenant.employee_count: info_rows.append(["Çalışan", str(tenant.employee_count)])
-        info_rows.append(["Plan Year Aktif", "Evet" if tenant.plan_year_enabled else "Hayır"])
-        info_rows.append(["Tenant ID", str(tid)])
+        if tenant.short_name: info_rows.append([_("Kısa Ad"), tenant.short_name])
+        if tenant.sector: info_rows.append([_("Sektör"), tenant.sector])
+        if tenant.employee_count: info_rows.append([_("Çalışan"), str(tenant.employee_count)])
+        info_rows.append([_("Plan Year Aktif"), _("Evet") if tenant.plan_year_enabled else _("Hayır")])
+        info_rows.append([_("Tenant ID"), str(tid)])
     tbl = h["Table"](info_rows, colWidths=[5*h["cm"], 11*h["cm"]])
     tbl.setStyle(h["TableStyle"]([
         ("BACKGROUND", (0, 0), (0, -1), h["colors"].HexColor("#f8fafc")),
@@ -749,15 +748,15 @@ def raporlar_api_audit_paketi_generate():
     elems.append(h["PageBreak"]())
 
     # 2. Stratejik plan özet
-    elems.append(P("2. Stratejik Plan Yapısı", h1))
+    elems.append(P(_("2. Stratejik Plan Yapısı"), h1))
     strat = Strategy.query.filter_by(tenant_id=tid, is_active=True).count()
     sub = db.session.query(func.count(SubStrategy.id)).join(Strategy).filter(
         Strategy.tenant_id == tid, SubStrategy.is_active.is_(True)).scalar() or 0
     proc = Process.query.filter_by(tenant_id=tid, is_active=True).count()
     kpi = ProcessKpi.query.join(Process).filter(
         Process.tenant_id == tid, ProcessKpi.is_active.is_(True)).count()
-    sp_rows = [["Ana Strateji", str(strat)], ["Alt Strateji", str(sub)],
-               ["Süreç", str(proc)], ["Performans Göstergesi", str(kpi)]]
+    sp_rows = [[_("Ana Strateji"), str(strat)], [_("Alt Strateji"), str(sub)],
+               [_("Süreç"), str(proc)], [_("Performans Göstergesi"), str(kpi)]]
     tbl = h["Table"](sp_rows, colWidths=[8*h["cm"], 4*h["cm"]])
     tbl.setStyle(h["TableStyle"]([
         ("BACKGROUND", (0, 0), (0, -1), h["colors"].HexColor("#f8fafc")),
@@ -770,7 +769,7 @@ def raporlar_api_audit_paketi_generate():
     elems.append(h["PageBreak"]())
 
     # 3. Audit log son 90 gün
-    elems.append(P("3. Audit Log — Son 90 Gün", h1))
+    elems.append(P(_("3. Audit Log — Son 90 Gün"), h1))
     last_90 = datetime.now(timezone.utc) - timedelta(days=90)
     audit_logs = AuditLog.query.filter(
         AuditLog.tenant_id == tid, AuditLog.created_at >= last_90,
@@ -781,15 +780,15 @@ def raporlar_api_audit_paketi_generate():
     for a in audit_logs:
         action_count[a.action] += 1
     if action_count:
-        elems.append(P("<b>Aksiyon Dağılımı (top 50):</b>", body))
+        elems.append(P(f"<b>{_('Aksiyon Dağılımı (top 50):')}</b>", body))
         for act, cnt in sorted(action_count.items(), key=lambda x: -x[1]):
             elems.append(P(f"  {act}: {cnt}", small))
         elems.append(h["Spacer"](1, 0.5*h["cm"]))
 
     # En son 20 audit log
     if audit_logs:
-        elems.append(P("<b>Son 20 İşlem:</b>", body))
-        rows = [["Tarih", "Kullanıcı", "Aksiyon", "Kaynak"]]
+        elems.append(P(f"<b>{_('Son 20 İşlem:')}</b>", body))
+        rows = [[_("Tarih"), _("Kullanıcı"), _("Aksiyon"), _("Kaynak")]]
         for a in audit_logs[:20]:
             rows.append([
                 a.created_at.strftime("%d.%m %H:%M") if a.created_at else "—",
@@ -811,21 +810,20 @@ def raporlar_api_audit_paketi_generate():
         ]))
         elems.append(tbl)
     else:
-        elems.append(P("Son 90 günde audit log kaydı yok.", small))
+        elems.append(P(_("Son 90 günde audit log kaydı yok."), small))
     elems.append(h["PageBreak"]())
 
     # 4. Kullanıcı + 2FA
-    elems.append(P("4. Kullanıcı Güvenlik Özeti", h1))
+    elems.append(P(_("4. Kullanıcı Güvenlik Özeti"), h1))
     total_u = User.query.filter_by(tenant_id=tid, is_active=True).count()
     totp_u = User.query.filter_by(tenant_id=tid, is_active=True, totp_enabled=True).count()
-    elems.append(P(f"<b>Toplam aktif kullanıcı:</b> {total_u}", body))
-    elems.append(P(f"<b>2FA etkin:</b> {totp_u} (%{round(totp_u/max(total_u,1)*100,1)})", body))
-    elems.append(P(f"<b>2FA pasif:</b> {total_u - totp_u}", body))
+    elems.append(P(f"<b>{_('Toplam aktif kullanıcı:')}</b> {total_u}", body))
+    elems.append(P(f"<b>{_('2FA etkin:')}</b> {totp_u} (%{round(totp_u/max(total_u,1)*100,1)})", body))
+    elems.append(P(f"<b>{_('2FA pasif:')}</b> {total_u - totp_u}", body))
 
     # Footer
     elems.append(h["Spacer"](1, 2*h["cm"]))
-    elems.append(P(f"Bu rapor {_date.today().strftime('%d.%m.%Y')} tarihinde "
-                   f"Kokpitim platformundan otomatik üretilmiştir.",
+    elems.append(P(f"{_('Bu rapor')} {_date.today().strftime('%d.%m.%Y')} {_('tarihinde Kokpitim platformundan otomatik üretilmiştir.')}",
                    h["ParagraphStyle"]("Foot", parent=small, alignment=h["TA_CENTER"])))
 
     doc.build(elems); buf.seek(0)
@@ -836,13 +834,13 @@ def raporlar_api_audit_paketi_generate():
 
 # ─── HR-01: Bireysel Karne PDF Batch (ZIP) ─────────────────────────────────
 
-@app_bp.route("/raporlar/bireysel-karne-batch")
+@app_bp.route("/reports/individual-scorecard-batch")
 @login_required
 def raporlar_bireysel_karne_batch():
-    return render_template("platform/raporlar/bireysel_karne_batch.html")
+    return render_template("platform/reports/bireysel_karne_batch.html")
 
 
-@app_bp.route("/raporlar/api/bireysel-karne-batch/preview")
+@app_bp.route("/reports/api/individual-scorecard-batch/preview")
 @login_required
 def raporlar_api_bireysel_karne_batch_preview():
     tid = _tid_or_none()
@@ -858,12 +856,12 @@ def raporlar_api_bireysel_karne_batch_preview():
     total = User.query.filter_by(tenant_id=tid, is_active=True).count()
     return jsonify({"success": True, "preview": {
         "total_users": total, "users_with_pg": users_with_pg,
-        "format": "ZIP (PDF her kullanıcı için)",
+        "format": _("ZIP (PDF her kullanıcı için)"),
         "estimated_size_mb": round(users_with_pg * 0.05, 2),
     }})
 
 
-@app_bp.route("/raporlar/api/bireysel-karne-batch/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_bireysel_karne_batch_generate():
     from flask import send_file
@@ -884,7 +882,7 @@ def raporlar_api_bireysel_karne_batch_generate():
     ).all()]
 
     if not user_ids_with_pg:
-        return jsonify({"success": False, "message": "Bireysel PG'si olan kullanıcı yok."}), 400
+        return jsonify({"success": False, "message": _("Bireysel PG'si olan kullanıcı yok.")}), 400
 
     h = _pdf_helpers()
     P = h["Paragraph"]
@@ -926,24 +924,24 @@ def raporlar_api_bireysel_karne_batch_generate():
             elems.append(P(f"<b>{tname}</b>",
                 h["ParagraphStyle"]("Top", parent=body, fontSize=10,
                     textColor=h["colors"].HexColor("#64748b"))))
-            elems.append(P(f"BİREYSEL PERFORMANS KARNESİ", h1))
+            elems.append(P(_("BİREYSEL PERFORMANS KARNESİ"), h1))
             elems.append(P(f"<b>{uname}</b>", body))
-            elems.append(P(f"E-posta: {u.email}", body))
-            if u.department: elems.append(P(f"Departman: {u.department}", body))
+            elems.append(P(f"{_('E-posta:')} {u.email}", body))
+            if u.department: elems.append(P(f"{_('Departman:')} {u.department}", body))
             elems.append(h["Spacer"](1, 0.5*h["cm"]))
-            elems.append(P(f"<b>Özet:</b> {len(pgs)} bireysel PG · "
-                f"{aligned} kurum stratejisine bağlı (%{alignment_pct} hizalama)", body))
+            elems.append(P(f"<b>{_('Özet:')}</b> {len(pgs)} {_('bireysel PG ·')} "
+                f"{aligned} {_('kurum stratejisine bağlı')} (%{alignment_pct} {_('hizalama')})", body))
             elems.append(h["Spacer"](1, 0.5*h["cm"]))
 
             if pgs:
-                rows = [["Kod", "PG Adı", "Hedef", "Birim", "Tip"]]
+                rows = [[_("Kod"), _("PG Adı"), _("Hedef"), _("Birim"), _("Tip")]]
                 for p in pgs[:30]:
                     rows.append([
                         (p.code or "—")[:15],
                         (p.name or "")[:40],
                         (p.target_value or "—")[:10],
                         (p.unit or "—")[:10],
-                        "Kurumdan" if p.source_process_id else "Bireysel",
+                        _("Kurumdan") if p.source_process_id else _("Bireysel"),
                     ])
                 tbl = h["Table"](rows, colWidths=[2*h["cm"], 7*h["cm"], 2.5*h["cm"], 2*h["cm"], 3*h["cm"]])
                 tbl.setStyle(h["TableStyle"]([
@@ -959,7 +957,7 @@ def raporlar_api_bireysel_karne_batch_generate():
                 ]))
                 elems.append(tbl)
             elems.append(h["Spacer"](1, 1.5*h["cm"]))
-            elems.append(P("Bu karne Kokpitim platformu üzerinden otomatik üretilmiştir.",
+            elems.append(P(_("Bu karne Kokpitim platformu üzerinden otomatik üretilmiştir."),
                 h["ParagraphStyle"]("F", parent=body, fontSize=9,
                     textColor=h["colors"].HexColor("#94a3b8"))))
 

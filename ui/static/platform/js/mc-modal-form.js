@@ -18,11 +18,11 @@
    */
   window.openMcFormModal = function openMcFormModal(opts) {
     const o = opts || {};
-    const title = o.title || "Düzenle";
+    const title = o.title || t("Düzenle");
     const iconClass = o.iconClass || "fas fa-pen-to-square";
     const bodyHtml = o.bodyHtml || "";
-    const confirmText = o.confirmText || "Kaydet";
-    const cancelText = o.cancelText || "İptal";
+    const confirmText = o.confirmText || t("Kaydet");
+    const cancelText = o.cancelText || t("İptal");
     const onConfirm = o.onConfirm;
 
     return new Promise(function (resolve) {
@@ -121,10 +121,10 @@
    */
   window.openMcInfoModal = function openMcInfoModal(opts) {
     var o = opts || {};
-    var title = o.title || "Bilgi";
+    var title = o.title || t("Bilgi");
     var bodyHtml = o.bodyHtml || "";
     var iconClass = o.iconClass || "fas fa-circle-info";
-    var confirmText = o.confirmText || "Tamam";
+    var confirmText = o.confirmText || t("Tamam");
 
     return new Promise(function (resolve) {
       var overlay = document.getElementById("mc-modal-form-global");

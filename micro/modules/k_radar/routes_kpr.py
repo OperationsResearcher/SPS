@@ -60,7 +60,7 @@ def k_radar_kpr_risk():
     return render_template("platform/k_radar/kpr_risk.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kpr/kaynak-kapasite")
+@app_bp.route("/k-radar/kpr/resource-capacity")
 @login_required
 def k_radar_kpr_kaynak_kapasite():
     return render_template("platform/k_radar/kpr_kaynak_kapasite.html", can_manage_k_radar=_can_manage_k_radar())
@@ -124,7 +124,7 @@ def k_radar_api_kpr_risk():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id()).get("risk", {})}))
 
 
-@app_bp.route("/k-radar/api/kpr/kaynak-kapasite")
+@app_bp.route("/k-radar/api/kpr/resource-capacity")
 @login_required
 def k_radar_api_kpr_kaynak_kapasite():
     from services.k_radar_service import get_kpr_extended_data

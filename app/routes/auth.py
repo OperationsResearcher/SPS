@@ -12,6 +12,7 @@ from app.models import db
 from app.models.core import User
 from app.utils.audit_logger import AuditLogger
 from app.utils.security import limiter
+from flask_babel import gettext as _
 
 auth_bp = Blueprint("auth_bp", __name__, url_prefix="")
 
@@ -57,7 +58,7 @@ def login():
         ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
 
         if not email or not password:
-            flash("E-posta ve şifre gereklidir.", "danger")
+            flash(_("E-posta ve şifre gereklidir."), "danger")
             return render_template("auth/login.html")
 
         # Sprint 19.2: brute force koruması
@@ -74,8 +75,7 @@ def login():
             _write_auth_audit("LOGIN_FAILED", None)
             now_locked, attempts = record_failure(email, ip)
             if now_locked:
-                flash(
-                    "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi.",
+                flash(_("Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi."),
                     "danger"
                 )
                 _write_auth_audit("ACCOUNT_LOCKED", None)
@@ -100,7 +100,7 @@ def login():
             session['next'] = _next
         login_user(user)
         _write_auth_audit("OTURUM AÇMA", user)
-        flash("Giriş başarılı.", "success")
+        flash(_("Giriş başarılı."), "success")
         from app.utils.tenant_scope import default_landing_endpoint
         from urllib.parse import urlparse
         raw_next = request.args.get("next") or ""
@@ -146,18 +146,18 @@ def profile():
 
         existing = User.query.filter_by(email=email).first()
         if existing and existing.id != current_user.id:
-            flash("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.", "danger")
+            flash(_("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."), "danger")
             return redirect(url_for("auth_bp.profile"))
 
         if new_password or current_password:
             if not current_password:
-                flash("Şifre değiştirmek için mevcut şifrenizi girmelisiniz.", "danger")
+                flash(_("Şifre değiştirmek için mevcut şifrenizi girmelisiniz."), "danger")
                 return redirect(url_for("auth_bp.profile"))
             if not check_password_hash(current_user.password_hash, current_password):
-                flash("Mevcut şifre yanlış.", "danger")
+                flash(_("Mevcut şifre yanlış."), "danger")
                 return redirect(url_for("auth_bp.profile"))
             if len(new_password) < 8:
-                flash("Yeni şifre en az 8 karakter olmalıdır.", "danger")
+                flash(_("Yeni şifre en az 8 karakter olmalıdır."), "danger")
                 return redirect(url_for("auth_bp.profile"))
 
         current_user.email = email
@@ -190,7 +190,7 @@ def profile():
                 )
             except Exception as e:
                 current_app.logger.error(f"[password_audit] {e}")
-        flash("Profil başarıyla güncellendi.", "success")
+        flash(_("Profil başarıyla güncellendi."), "success")
         return redirect(url_for("auth_bp.profile"))
 
     return render_template("auth/profile.html")
@@ -203,21 +203,21 @@ def upload_profile_photo():
     from flask import jsonify
 
     if "file" not in request.files:
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
     file = request.files["file"]
     if not file or file.filename == "":
-        return jsonify({"success": False, "message": "Dosya seçilmedi."}), 400
+        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
     allowed = {"png", "jpg", "jpeg", "gif", "webp"}  # svg XSS riski nedeniyle çıkarıldı
     allowed_mime = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in allowed:
-        return jsonify({"success": False, "message": "Geçersiz dosya tipi. İzin verilenler: PNG, JPG, GIF, WEBP."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz dosya tipi. İzin verilenler: PNG, JPG, GIF, WEBP.")}), 400
     # MIME type kontrolü: Content-Type başlığını doğrula. Not: bu başlık
     # da istemci tarafından gönderilebilir; asıl güvenlik Pillow ile
     # re-encode yapan micro endpoint'te (profil_foto_yukle) sağlanmaktadır.
     # Bu legacy endpoint Pillow kullanmıyor; bu nedenle MIME check ek katman sağlar.
     if file.mimetype and file.mimetype not in allowed_mime:
-        return jsonify({"success": False, "message": "Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir.")}), 400
 
     # Boyut limiti: 5 MB
     MAX_BYTES = 5 * 1024 * 1024
@@ -225,7 +225,7 @@ def upload_profile_photo():
     file_size = file.tell()
     file.seek(0)
     if file_size > MAX_BYTES:
-        return jsonify({"success": False, "message": "Dosya boyutu 5 MB'ı aşamaz."}), 400
+        return jsonify({"success": False, "message": _("Dosya boyutu 5 MB'ı aşamaz.")}), 400
 
     filename = secure_filename(file.filename) or "photo"
     unique = f"{uuid.uuid4().hex}_{filename}"
@@ -247,7 +247,7 @@ def upload_profile_photo():
 
     current_user.profile_picture = f"/static/uploads/profiles/{unique}"
     db.session.commit()
-    return jsonify({"success": True, "message": "Fotoğraf yüklendi.", "photo_url": current_user.profile_picture})
+    return jsonify({"success": True, "message": _("Fotoğraf yüklendi."), "photo_url": current_user.profile_picture})
 
 
 def _parse_json_prefs(val, default=None):
@@ -430,7 +430,7 @@ def kvkk_user_delete():
         _json_body = request.get_json(silent=True) or {}
         password = (request.form.get("password") or _json_body.get("password", "") if request.is_json else request.form.get("password", "")) or ""
         if not check_password_hash(current_user.password_hash, password):
-            return jsonify({"success": False, "message": "Şifre yanlış."}), 401
+            return jsonify({"success": False, "message": _("Şifre yanlış.")}), 401
 
         # Tenant admin koruması
         if current_user.role and (current_user.role.name or "").lower() in ("admin", "tenant_admin"):
@@ -447,7 +447,7 @@ def kvkk_user_delete():
                 if other_admins == 0:
                     return jsonify({
                         "success": False,
-                        "message": "Son tenant yöneticisi silinemez. Önce başka bir yönetici atayın."
+                        "message": _("Son tenant yöneticisi silinemez. Önce başka bir yönetici atayın.")
                     }), 403
 
         # Audit log (silinmeden önce)
@@ -477,9 +477,9 @@ def kvkk_user_delete():
 
         from flask_login import logout_user
         logout_user()
-        return jsonify({"success": True, "message": "Hesabınız silindi. Veriler anonimleştirildi."})
+        return jsonify({"success": True, "message": _("Hesabınız silindi. Veriler anonimleştirildi.")})
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[kvkk_delete] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Silme işlemi başarısız."}), 500
+        return jsonify({"success": False, "message": _("Silme işlemi başarısız.")}), 500
 

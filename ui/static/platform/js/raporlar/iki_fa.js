@@ -1,6 +1,6 @@
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l,v,c) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
+  const stat = (l,v,c,code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}><div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div><div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div></div>`;
   function donut(enabled, disabled) {
     const total = enabled + disabled || 1;
     const pct = enabled / total;
@@ -15,17 +15,17 @@
   }
   async function load(){
     try {
-      const j = await (await fetch('/raporlar/api/iki-fa',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/two-fa',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const s=j.summary;
       const pctC = s.enable_pct>=80?'#10b981':s.enable_pct>=40?'#f59e0b':'#dc2626';
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Kullanıcı',s.total_users,'#0f172a'),
-        stat('2FA Etkin',s.totp_enabled,'#10b981'),
-        stat('2FA Yok',s.totp_disabled,'#dc2626'),
-        stat('Etkinlik %','%'+s.enable_pct,pctC),
+        stat('Toplam Kullanıcı',s.total_users,'#0f172a','raporlar_iki_fa.toplam_kullanici'),
+        stat('2FA Etkin',s.totp_enabled,'#10b981','raporlar_iki_fa.2fa_etkin'),
+        stat('2FA Yok',s.totp_disabled,'#dc2626','raporlar_iki_fa.2fa_yok'),
+        stat('Etkinlik %','%'+s.enable_pct,pctC,'raporlar_iki_fa.etkinlik'),
       ].join('');
       donut(s.totp_enabled, s.totp_disabled);
       document.getElementById('donut-label').innerHTML = `<b>${s.totp_enabled}</b> kullanıcı 2FA etkin · <b>${s.totp_disabled}</b> etkin değil`;

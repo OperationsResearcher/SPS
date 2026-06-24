@@ -24,7 +24,7 @@
 
   async function runPattern(pid){
     document.getElementById('result').innerHTML = '<div style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:20px;"></i></div>';
-    const r = await fetch('/raporlar/api/nlp-query?pattern_id=' + encodeURIComponent(pid), {credentials:'same-origin'});
+    const r = await fetch('/reports/api/nlp-query?pattern_id=' + encodeURIComponent(pid), {credentials:'same-origin'});
     const j = await r.json();
     renderResult(j);
   }
@@ -33,13 +33,13 @@
     const q = document.getElementById('free-q').value.trim();
     if(!q){ Swal.fire({icon:'info',title:'Soru gerekli',text:'Lütfen bir soru yazın.',timer:1800,showConfirmButton:false}); return; }
     document.getElementById('result').innerHTML = '<div style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:20px;"></i> AI düşünüyor…</div>';
-    const r = await fetch('/raporlar/api/nlp-query?query=' + encodeURIComponent(q), {credentials:'same-origin'});
+    const r = await fetch('/reports/api/nlp-query?query=' + encodeURIComponent(q), {credentials:'same-origin'});
     const j = await r.json();
     renderResult(j);
   }
 
   async function loadPatterns(){
-    const r = await fetch('/raporlar/api/nlp-query/patterns',{credentials:'same-origin'});
+    const r = await fetch('/reports/api/nlp-query/patterns',{credentials:'same-origin'});
     const j = await r.json();
     if(!j.success) return;
     document.getElementById('patterns').innerHTML = j.patterns.map(p => `

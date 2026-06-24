@@ -23,10 +23,11 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from flask_babel import gettext as _
 
 # ─── Rapor 1: Veri Kalitesi ──────────────────────────────────────────────────
 
-@app_bp.route("/raporlar/veri-kalitesi")
+@app_bp.route("/reports/data-quality")
 @login_required
 def raporlar_veri_kalitesi():
     """Veri Kalitesi Raporu — PG doluluk, eksik alanlar, son giriş tarihleri."""
@@ -37,11 +38,11 @@ def raporlar_veri_kalitesi():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/veri_kalitesi.html",
+    return render_template("platform/reports/veri_kalitesi.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/veri-kalitesi")
+@app_bp.route("/reports/api/data-quality")
 @login_required
 def raporlar_api_veri_kalitesi():
     """Veri kalitesi metriklerini JSON döner."""
@@ -168,7 +169,7 @@ def raporlar_api_veri_kalitesi():
 
 # ─── Rapor 2: K-Vektör Çarpıklık ──────────────────────────────────────────────
 
-@app_bp.route("/raporlar/k-vektor-carpiklik")
+@app_bp.route("/reports/k-vector-skewness")
 @login_required
 def raporlar_kv_carpiklik():
     """K-Vektör Çarpıklık — strateji ağırlığı × skor uyumsuzluğu."""
@@ -179,11 +180,11 @@ def raporlar_kv_carpiklik():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/kv_carpiklik.html",
+    return render_template("platform/reports/kv_carpiklik.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/k-vektor-carpiklik")
+@app_bp.route("/reports/api/k-vector-skewness")
 @login_required
 def raporlar_api_kv_carpiklik():
     """Her ana stratejinin K-Vektör ağırlığı vs gerçek skor uyumsuzluğu."""
@@ -285,7 +286,7 @@ def raporlar_api_kv_carpiklik():
 
 # ─── Rapor 3: Stratejik Akış Haritası ────────────────────────────────────────
 
-@app_bp.route("/raporlar/hizalama-sankey")
+@app_bp.route("/reports/alignment-sankey")
 @login_required
 def raporlar_hizalama_sankey():
     from app.services.plan_year_service import list_plan_years
@@ -294,11 +295,11 @@ def raporlar_hizalama_sankey():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/raporlar/hizalama_sankey.html",
+    return render_template("platform/reports/hizalama_sankey.html",
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/raporlar/api/hizalama-sankey")
+@app_bp.route("/reports/api/alignment-sankey")
 @login_required
 def raporlar_api_hizalama_sankey():
     """Vizyon → Strateji → Alt Strateji → Süreç → PG akış verisi (5 seviye)."""
@@ -350,7 +351,7 @@ def raporlar_api_hizalama_sankey():
     strategies = strat_q.order_by(Strategy.code).all()
 
     nodes = [{
-        "id": "vision", "label": "Vizyon", "level": 0, "color": "#0f172a",
+        "id": "vision", "label": _("Vizyon"), "level": 0, "color": "#0f172a",
         "score": None, "weight": None, "url": "/sp",
     }]
     links = []
@@ -442,7 +443,7 @@ def raporlar_api_hizalama_sankey():
                         k_score = round(pg_scores.get(k.id, 0) or 0, 1) if pg_scores else None
                         node_index[kid] = len(nodes)
                         nodes.append({
-                            "id": kid, "label": k.name or "(adsız PG)",
+                            "id": kid, "label": k.name or _("(adsız PG)"),
                             "level": 4, "color": _score_color(k_score),
                             "score": k_score, "weight": None,
                             "url": f"/process/{p.id}/karne",
@@ -473,7 +474,7 @@ def raporlar_api_hizalama_sankey():
             "unaligned_processes": len(unaligned_processes),
             "plan_year": year_val,
         },
-        "level_labels": ["Vizyon", "Ana Strateji", "Alt Strateji", "Süreç", "PG"],
+        "level_labels": [_("Vizyon"), _("Ana Strateji"), _("Alt Strateji"), _("Süreç"), _("PG")],
         "nodes": nodes,
         "links": links,
         "unaligned": {
@@ -484,13 +485,13 @@ def raporlar_api_hizalama_sankey():
 
 # ─── Rapor 4: PG Hedef Revizyon Sıklığı ──────────────────────────────────────
 
-@app_bp.route("/raporlar/hedef-revizyon")
+@app_bp.route("/reports/target-revision")
 @login_required
 def raporlar_hedef_revizyon():
-    return render_template("platform/raporlar/hedef_revizyon.html")
+    return render_template("platform/reports/hedef_revizyon.html")
 
 
-@app_bp.route("/raporlar/api/hedef-revizyon")
+@app_bp.route("/reports/api/target-revision")
 @login_required
 def raporlar_api_hedef_revizyon():
     """Yıl bazlı hedef override sayımı (kpi_year_configs vs ProcessKpi.target_value)."""
@@ -559,13 +560,13 @@ def raporlar_api_hedef_revizyon():
 
 # ─── Rapor 5: Departman Performans Skoru ─────────────────────────────────────
 
-@app_bp.route("/raporlar/departman-performans")
+@app_bp.route("/reports/department-performance")
 @login_required
 def raporlar_departman_performans():
-    return render_template("platform/raporlar/departman_performans.html")
+    return render_template("platform/reports/departman_performans.html")
 
 
-@app_bp.route("/raporlar/api/departman-performans")
+@app_bp.route("/reports/api/department-performance")
 @login_required
 def raporlar_api_departman_performans():
     """Departman bazlı kullanıcı + bireysel PG + atanan görev sayısı."""
@@ -631,13 +632,13 @@ def raporlar_api_departman_performans():
 
 # ─── Rapor 6: Yönetici Liderlik Skoru ────────────────────────────────────────
 
-@app_bp.route("/raporlar/yonetici-liderlik")
+@app_bp.route("/reports/executive-leadership")
 @login_required
 def raporlar_yonetici_liderlik():
-    return render_template("platform/raporlar/yonetici_liderlik.html")
+    return render_template("platform/reports/yonetici_liderlik.html")
 
 
-@app_bp.route("/raporlar/api/yonetici-liderlik")
+@app_bp.route("/reports/api/executive-leadership")
 @login_required
 def raporlar_api_yonetici_liderlik():
     """Süreç liderlerinin liderliğindeki süreçlerin ortalama performans skoru."""
@@ -738,13 +739,13 @@ def raporlar_api_yonetici_liderlik():
 
 # ─── Rapor 7: Initiative Portföy Bubble ──────────────────────────────────────
 
-@app_bp.route("/raporlar/initiative-bubble")
+@app_bp.route("/reports/initiative-bubble")
 @login_required
 def raporlar_initiative_bubble():
-    return render_template("platform/raporlar/initiative_bubble.html")
+    return render_template("platform/reports/initiative_bubble.html")
 
 
-@app_bp.route("/raporlar/api/initiative-bubble")
+@app_bp.route("/reports/api/initiative-bubble")
 @login_required
 def raporlar_api_initiative_bubble():
     """Initiative portföyü: bütçe × ilerleme × öncelik."""
@@ -805,13 +806,13 @@ def raporlar_api_initiative_bubble():
 
 # ─── Rapor 8: Operasyonel Sabah Özeti+ ──────────────────────────────────────
 
-@app_bp.route("/raporlar/sabah-ozeti")
+@app_bp.route("/reports/morning-summary")
 @login_required
 def raporlar_sabah_ozeti():
-    return render_template("platform/raporlar/sabah_ozeti.html")
+    return render_template("platform/reports/sabah_ozeti.html")
 
 
-@app_bp.route("/raporlar/api/sabah-ozeti")
+@app_bp.route("/reports/api/morning-summary")
 @login_required
 def raporlar_api_sabah_ozeti():
     """Bugünün ve son 7 günün operasyonel özeti."""
@@ -910,13 +911,13 @@ def raporlar_api_sabah_ozeti():
 
 # ─── Rapor 9: Yıllar Arası Evrim Filmi ──────────────────────────────────────
 
-@app_bp.route("/raporlar/evrim-filmi")
+@app_bp.route("/reports/evolution-film")
 @login_required
 def raporlar_evrim_filmi():
-    return render_template("platform/raporlar/evrim_filmi.html")
+    return render_template("platform/reports/evrim_filmi.html")
 
 
-@app_bp.route("/raporlar/api/evrim-filmi")
+@app_bp.route("/reports/api/evolution-film")
 @login_required
 def raporlar_api_evrim_filmi():
     """Yıllar boyunca strateji ağacının evrimi — her yıl için snapshot."""
@@ -1016,13 +1017,13 @@ def raporlar_api_evrim_filmi():
 
 # ─── Rapor 10: AI Yıl Sonu Sunum Üretici ────────────────────────────────────
 
-@app_bp.route("/raporlar/ai-sunum")
+@app_bp.route("/reports/ai-presentation")
 @login_required
 def raporlar_ai_sunum():
-    return render_template("platform/raporlar/ai_sunum.html")
+    return render_template("platform/reports/ai_sunum.html")
 
 
-@app_bp.route("/raporlar/api/ai-sunum/preview")
+@app_bp.route("/reports/api/ai-presentation/preview")
 @login_required
 def raporlar_api_ai_sunum_preview():
     """Sunumun veri özetini ve üretilecek slayt başlıklarını döner (preview)."""
@@ -1050,21 +1051,21 @@ def raporlar_api_ai_sunum_preview():
     ).join(Process).filter(Process.tenant_id == tid).scalar() or 0
 
     slides = [
-        {"no": 1, "title": "Kapak", "content": f"{tenant.name if tenant else 'Kurum'} — {active_py.year if active_py else 'Yıllık'} Stratejik Plan Sunumu"},
-        {"no": 2, "title": "Yönetici Özeti", "content": "AI tarafından üretilen 3-cümle özet"},
-        {"no": 3, "title": "Vizyon ve Misyon", "content": "Kurumsal kimlik alanları"},
-        {"no": 4, "title": "Stratejik Yıl Özeti", "content": f"{strat_count} strateji · {proc_count} süreç · {init_count} initiative"},
-        {"no": 5, "title": "Strateji Ağacı", "content": "Ana stratejiler + ağırlık dağılımı"},
-        {"no": 6, "title": "Süreç Sağlık Heatmap", "content": f"{proc_count} süreç performans özeti"},
-        {"no": 7, "title": "K-Vektör Analizi", "content": "Ağırlık × performans çarpıklık tespiti"},
-        {"no": 8, "title": "Initiative Portföyü", "content": f"{init_count} girişimin bütçe + ilerleme durumu"},
-        {"no": 9, "title": "Yıllar Arası Değişim", "content": "Önceki yılla karşılaştırma — strateji, süreç, PG farkları"},
-        {"no": 10, "title": "İnsan Kaynakları", "content": f"{user_count} çalışan + departman dağılımı"},
-        {"no": 11, "title": "Risk Haritası", "content": "Top 10 risk + olasılık × etki matrisi"},
-        {"no": 12, "title": "ESG & Sürdürülebilirlik", "content": "E/S/G metrikleri + SDG katkı"},
-        {"no": 13, "title": "Veri Kalitesi", "content": f"{meas_count:,} toplam ölçüm · doluluk oranları"},
-        {"no": 14, "title": "Önümüzdeki Dönem Yol Haritası", "content": "Yeni initiative önerileri + öncelikler"},
-        {"no": 15, "title": "Kapanış", "content": "Teşekkür + Q&A"},
+        {"no": 1, "title": _("Kapak"), "content": f"{tenant.name if tenant else 'Kurum'} — {active_py.year if active_py else _('Yıllık')} {_('Stratejik Plan Sunumu')}"},
+        {"no": 2, "title": _("Yönetici Özeti"), "content": _("AI tarafından üretilen 3-cümle özet")},
+        {"no": 3, "title": _("Vizyon ve Misyon"), "content": _("Kurumsal kimlik alanları")},
+        {"no": 4, "title": _("Stratejik Yıl Özeti"), "content": f"{strat_count} {_('strateji')} · {proc_count} {_('süreç')} · {init_count} initiative"},
+        {"no": 5, "title": _("Strateji Ağacı"), "content": _("Ana stratejiler + ağırlık dağılımı")},
+        {"no": 6, "title": _("Süreç Sağlık Heatmap"), "content": f"{proc_count} {_('süreç performans özeti')}"},
+        {"no": 7, "title": _("K-Vektör Analizi"), "content": _("Ağırlık × performans çarpıklık tespiti")},
+        {"no": 8, "title": _("Initiative Portföyü"), "content": f"{init_count} {_('girişimin bütçe + ilerleme durumu')}"},
+        {"no": 9, "title": _("Yıllar Arası Değişim"), "content": _("Önceki yılla karşılaştırma — strateji, süreç, PG farkları")},
+        {"no": 10, "title": _("İnsan Kaynakları"), "content": f"{user_count} {_('çalışan + departman dağılımı')}"},
+        {"no": 11, "title": _("Risk Haritası"), "content": _("Top 10 risk + olasılık × etki matrisi")},
+        {"no": 12, "title": _("ESG & Sürdürülebilirlik"), "content": _("E/S/G metrikleri + SDG katkı")},
+        {"no": 13, "title": _("Veri Kalitesi"), "content": f"{meas_count:,} {_('toplam ölçüm · doluluk oranları')}"},
+        {"no": 14, "title": _("Önümüzdeki Dönem Yol Haritası"), "content": _("Yeni initiative önerileri + öncelikler")},
+        {"no": 15, "title": _("Kapanış"), "content": _("Teşekkür + Q&A")},
     ]
 
     return jsonify({
@@ -1086,7 +1087,7 @@ def raporlar_api_ai_sunum_preview():
     })
 
 
-@app_bp.route("/raporlar/api/ai-sunum/generate", methods=["GET", "POST"])
+@app_bp.route("/reports/api/ai-presentation/generate", methods=["GET", "POST"])
 @login_required
 def raporlar_api_ai_sunum_generate():
     """Gerçek PowerPoint dosyasını üretir + indirme URL'i döner."""
@@ -1106,7 +1107,7 @@ def raporlar_api_ai_sunum_generate():
     except ImportError:
         return jsonify({
             "success": False,
-            "message": "python-pptx kurulu değil. Kurulum: pip install python-pptx",
+            "message": _("python-pptx kurulu değil. Kurulum: pip install python-pptx"),
         }), 500
 
     active_py = get_active_plan_year_for_user(current_user)
@@ -1234,55 +1235,55 @@ def raporlar_api_ai_sunum_generate():
     # Slaytları üret
     add_title_slide(prs,
         f"{tenant_name}",
-        f"{year_label} Stratejik Plan Sunumu · {_date.today().strftime('%d %B %Y')}")
+        f"{year_label} {_('Stratejik Plan Sunumu')} · {_date.today().strftime('%d %B %Y')}")
 
-    add_content_slide(prs, 2, "Yönetici Özeti", ai_summary)
+    add_content_slide(prs, 2, _("Yönetici Özeti"), ai_summary)
 
-    add_content_slide(prs, 3, f"Stratejik Yıl Özeti — {year_label}",
-        "Tüm sistem aşağıdaki ana boyutlarda izlendi:",
+    add_content_slide(prs, 3, f"{_('Stratejik Yıl Özeti')} — {year_label}",
+        _("Tüm sistem aşağıdaki ana boyutlarda izlendi:"),
         body_bullets=[
-            f"{len(strategies)} ana strateji",
-            f"{proc_count} aktif süreç",
-            f"{kpi_count} performans göstergesi",
-            f"{len(initiatives)} stratejik girişim (initiative)",
-            f"{user_count} aktif çalışan",
-            f"{meas_count:,} toplam KPI ölçümü",
+            f"{len(strategies)} {_('ana strateji')}",
+            f"{proc_count} {_('aktif süreç')}",
+            f"{kpi_count} {_('performans göstergesi')}",
+            f"{len(initiatives)} {_('stratejik girişim (initiative)')}",
+            f"{user_count} {_('aktif çalışan')}",
+            f"{meas_count:,} {_('toplam KPI ölçümü')}",
         ])
 
-    add_content_slide(prs, 4, "Ana Stratejiler ve K-Vektör Ağırlıkları",
+    add_content_slide(prs, 4, _("Ana Stratejiler ve K-Vektör Ağırlıkları"),
         None, body_bullets=[
-            f"{s['code']} — {s['title']} (Ağırlık: %{s['weight_pct']})"
+            f"{s['code']} — {s['title']} ({_('Ağırlık')}: %{s['weight_pct']})"
             for s in strategies[:12]
-        ] or ["Aktif plan yılında strateji bulunamadı."])
+        ] or [_("Aktif plan yılında strateji bulunamadı.")])
 
-    add_content_slide(prs, 5, "Initiative Portföyü",
-        f"Aktif ve tamamlanmış toplam {len(initiatives)} girişim.",
+    add_content_slide(prs, 5, _("Initiative Portföyü"),
+        f"{_('Aktif ve tamamlanmış toplam')} {len(initiatives)} {_('girişim.')}",
         body_bullets=[
-            f"{i.code or 'INI-'+str(i.id)} — {i.name} (durum: {i.status}, ilerleme: %{i.progress_pct or 0})"
+            f"{i.code or 'INI-'+str(i.id)} — {i.name} ({_('durum:')} {i.status}, {_('ilerleme:')} %{i.progress_pct or 0})"
             for i in initiatives[:10]
         ])
 
-    add_content_slide(prs, 6, "Veri Akışı ve Ölçüm Hacmi",
-        f"{tenant_name} sistemine girilen toplam {meas_count:,} ölçüm verisi.",
+    add_content_slide(prs, 6, _("Veri Akışı ve Ölçüm Hacmi"),
+        f"{tenant_name} {_('sistemine girilen toplam')} {meas_count:,} {_('ölçüm verisi.')}",
         body_bullets=[
-            f"Aktif süreç: {proc_count}",
-            f"Aktif PG: {kpi_count}",
-            f"Ortalama ölçüm/PG: {round(meas_count / max(kpi_count, 1), 1)}",
-            "Veri girişi düzenli sürdürüldü — kalite skoru raporu detay sağlar.",
+            f"{_('Aktif süreç:')} {proc_count}",
+            f"{_('Aktif PG:')} {kpi_count}",
+            f"{_('Ortalama ölçüm/PG:')} {round(meas_count / max(kpi_count, 1), 1)}",
+            _("Veri girişi düzenli sürdürüldü — kalite skoru raporu detay sağlar."),
         ])
 
-    add_content_slide(prs, 7, "Önümüzdeki Dönem — Öneriler",
-        "Bu sunumun arka planındaki Kokpitim verisinden çıkan öneriler:",
+    add_content_slide(prs, 7, _("Önümüzdeki Dönem — Öneriler"),
+        _("Bu sunumun arka planındaki Kokpitim verisinden çıkan öneriler:"),
         body_bullets=[
-            "Stratejik öncelikleri K-Vektör çarpıklık raporundan gözden geçir",
-            "Yıllar arası karşılaştırma sayfasından evrim haritasını incele",
-            "Veri kalitesi raporundaki eksik PG'leri planla",
-            "Initiative portföyünde geri kalanlara odak",
+            _("Stratejik öncelikleri K-Vektör çarpıklık raporundan gözden geçir"),
+            _("Yıllar arası karşılaştırma sayfasından evrim haritasını incele"),
+            _("Veri kalitesi raporundaki eksik PG'leri planla"),
+            _("Initiative portföyünde geri kalanlara odak"),
         ])
 
-    add_content_slide(prs, 8, "Teşekkürler",
-        f"{tenant_name} ekibinin katkılarıyla hazırlandı.",
-        body_bullets=["Sorular ve detay için: kokpitim.com"])
+    add_content_slide(prs, 8, _("Teşekkürler"),
+        f"{tenant_name} {_('ekibinin katkılarıyla hazırlandı.')}",
+        body_bullets=[_("Sorular ve detay için: kokpitim.com")])
 
     # Bellek üzerinden gönder
     buf = io.BytesIO()

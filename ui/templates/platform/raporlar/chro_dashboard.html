@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}CHRO Dashboard — Kokpitim{% endblock %}
-{% block page_title %}CHRO Dashboard{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('CHRO Dashboard') }}{% endblock %}
+{% block title %}{{ _("CHRO Dashboard — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("CHRO Dashboard") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('CHRO Dashboard')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1300px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-users" style="color:#db2777;"></i> CHRO Dashboard</h1>
-    <p class="mc-page-subtitle">İK özeti — çalışan dağılımı, departman, bireysel PG sahipliği ve 2FA güvenlik kapsamı.</p>
+    <h1 class="mc-page-title"><i class="fas fa-users" style="color:#db2777;"></i> {{ _("CHRO Dashboard") }}</h1>
+    <p class="mc-page-subtitle">{{ _("İK özeti — çalışan dağılımı, departman, bireysel PG sahipliği ve 2FA güvenlik kapsamı.") }}</p>
   </div>
 </div>
 <div style="max-width:1300px;margin:0 auto;">
@@ -15,28 +15,28 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="kpis"></div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Departman Dağılımı</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_chro_dashboard.departman_dagilimi">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("Departman Dağılımı") }}</h3>
         <div id="depts"></div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Rol Dağılımı</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_chro_dashboard.rol_dagilimi">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("Rol Dağılımı") }}</h3>
         <div id="roles"></div>
       </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">🏆 En Çok Bireysel PG Sahibi (Top 10)</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_chro_dashboard.en_cok_bireysel_pg_sahibi_top_10">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("🏆 En Çok Bireysel PG Sahibi (Top 10)") }}</h3>
         <div id="top-users"></div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-        <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📌 En Çok Süreç Üyeliği (Top 5)</h3>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_chro_dashboard.en_cok_surec_uyeligi_top_5">
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("📌 En Çok Süreç Üyeliği (Top 5)") }}</h3>
         <div id="most-loaded"></div>
       </div>
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/chro_dashboard.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/chro_dashboard.js') }}" defer></script>
 {% endblock %}

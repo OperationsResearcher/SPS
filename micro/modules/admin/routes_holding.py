@@ -13,6 +13,7 @@ from app.services.holding_consolidated_service import (
     build_holding_snapshot, build_sub_tenant_drilldown,
 )
 from app.utils.tenant_scope import is_holding_admin, is_platform_admin, is_holding_user
+from flask_babel import gettext as _
 
 
 def _403():
@@ -56,7 +57,7 @@ def holding_api_snapshot():
         return jsonify({"success": True, **snap})
     except Exception as e:
         current_app.logger.error(f"[holding_api_snapshot] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 # ─── Sprint E: Read-Only Drill-Down ──────────────────────────────────────────
@@ -67,9 +68,9 @@ def _validate_holding_access(sub_tenant_id: int):
         return None, (_403(), 403)
     sub = Tenant.query.get(sub_tenant_id)
     if not sub:
-        return None, (jsonify({"success": False, "message": "Alt kurum bulunamadı."}), 404)
+        return None, (jsonify({"success": False, "message": _("Alt kurum bulunamadı.")}), 404)
     if not sub.parent_tenant_id:
-        return None, (jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400)
+        return None, (jsonify({"success": False, "message": _("Bu kurum bir alt kurum değil.")}), 400)
     # Platform Admin → tümüne erişebilir
     # Holding user → sadece kendi children'ı
     if is_holding_user(current_user) and sub.parent_tenant_id != current_user.tenant_id:
@@ -116,4 +117,4 @@ def holding_api_drilldown(sub_tenant_id):
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"[holding_api_drilldown] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500

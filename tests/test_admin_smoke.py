@@ -11,7 +11,7 @@ PAGES = [
     "/admin/tenants",
     "/admin/packages",
     "/admin/bakim-modu",
-    "/ayarlar/yedekleme",
+    "/admin/araclar/yedekleme",
 ]
 
 # KVKK endpoint'ler (Sprint 12)

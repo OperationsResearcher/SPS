@@ -8,6 +8,7 @@ from platform_core import app_bp
 from app.models import db
 from app.models.process import Process
 from app.models.k_radar_domain import ProcessMaturity
+from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
     _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
 )
@@ -25,7 +26,7 @@ def k_radar_kp_darbogaz():
     return render_template("platform/k_radar/kp_darbogaz.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/deger-zinciri")
+@app_bp.route("/k-radar/kp/value-chain")
 @login_required
 def k_radar_kp_deger_zinciri():
     return render_template("platform/k_radar/kp_deger_zinciri.html", can_manage_k_radar=_can_manage_k_radar())
@@ -61,13 +62,13 @@ def k_radar_kp_vsm():
     return render_template("platform/k_radar/kp_vsm.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/kapasite")
+@app_bp.route("/k-radar/kp/capacity")
 @login_required
 def k_radar_kp_kapasite():
     return render_template("platform/k_radar/kp_kapasite.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/olgunluk")
+@app_bp.route("/k-radar/kp/maturity")
 @login_required
 def k_radar_kp_olgunluk():
     tenant_id = _required_tenant_id()
@@ -90,7 +91,7 @@ def k_radar_kp_olgunluk():
     )
 
 
-@app_bp.route("/k-radar/kp/olgunluk/ekle", methods=["POST"])
+@app_bp.route("/k-radar/kp/maturity/add", methods=["POST"])
 @login_required
 def k_radar_kp_olgunluk_ekle():
     if not _can_manage_k_radar():
@@ -100,7 +101,7 @@ def k_radar_kp_olgunluk_ekle():
     maturity_level = request.form.get("maturity_level", type=int)
     dimension = (request.form.get("dimension") or "").strip() or None
     if not process_id or not maturity_level:
-        flash("Süreç ve seviye zorunludur.", "danger")
+        flash(_("Süreç ve seviye zorunludur."), "danger")
         return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
     row = ProcessMaturity(
         tenant_id=tenant_id,
@@ -113,7 +114,7 @@ def k_radar_kp_olgunluk_ekle():
     )
     db.session.add(row)
     db.session.commit()
-    flash("Olgunluk kaydı eklendi.", "success")
+    flash(_("Olgunluk kaydı eklendi."), "success")
     return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
 
 
@@ -216,10 +217,10 @@ def k_radar_api_kp_radar():
         }})
     except Exception as e:
         current_app.logger.exception("[kp_radar] %s", e)
-        return jsonify({"success": False, "message": "Radar verisi alınamadı."}), 500
+        return jsonify({"success": False, "message": _("Radar verisi alınamadı.")}), 500
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk")
+@app_bp.route("/k-radar/api/kp/maturity")
 @login_required
 def k_radar_api_kp_olgunluk():
     def _build():
@@ -248,7 +249,7 @@ def k_radar_api_kp_olgunluk():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/maturity", methods=["POST"])
 @login_required
 def k_radar_api_kp_olgunluk_create():
     if not _can_manage_k_radar():
@@ -275,7 +276,7 @@ def k_radar_api_kp_olgunluk_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_kp_olgunluk_update(row_id: int):
     if not _can_manage_k_radar():
@@ -289,7 +290,7 @@ def k_radar_api_kp_olgunluk_update(row_id: int):
     def _update():
         row = ProcessMaturity.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.maturity_level = max(1, min(5, int(maturity_level)))
         row.dimension = dimension
         row.assessed_by = current_user.id
@@ -300,7 +301,7 @@ def k_radar_api_kp_olgunluk_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/kp/olgunluk/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_kp_olgunluk_delete(row_id: int):
     if not _can_manage_k_radar():
@@ -309,7 +310,7 @@ def k_radar_api_kp_olgunluk_delete(row_id: int):
     def _delete():
         row = ProcessMaturity.query.filter_by(id=row_id, tenant_id=_required_tenant_id(), is_active=True).first()
         if not row:
-            return jsonify({"success": False, "message": "Kayıt bulunamadı"}), 404
+            return jsonify({"success": False, "message": _("Kayıt bulunamadı")}), 404
         row.is_active = False
         db.session.commit()
         return jsonify({"success": True, "data": {"id": row.id}})
@@ -324,7 +325,7 @@ def k_radar_api_kp_darbogaz():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("darbogaz", {})}))
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri")
+@app_bp.route("/k-radar/api/kp/value-chain")
 @login_required
 def k_radar_api_kp_deger_zinciri():
     from services.k_radar_service import get_kp_extended_data
@@ -348,7 +349,7 @@ def _vc_item_dict(it):
     }
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["GET"])
+@app_bp.route("/k-radar/api/kp/value-chain/items", methods=["GET"])
 @login_required
 def k_radar_api_vc_items_list():
     """Değer zinciri öğeleri (birincil/destek) — liste."""
@@ -371,7 +372,7 @@ def k_radar_api_vc_items_list():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_add():
     if not _can_manage_k_radar():
@@ -382,9 +383,9 @@ def k_radar_api_vc_item_add():
     title = (data.get("title") or "").strip()
     category = (data.get("category") or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
     if category not in _VC_CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori.")}), 400
     try:
         it = ValueChainItem(
             tenant_id=tid, title=title, category=category,
@@ -399,10 +400,10 @@ def k_radar_api_vc_item_add():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_add] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe eklenemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe eklenemedi.")}), 500
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_update(item_id):
     if not _can_manage_k_radar():
@@ -411,14 +412,14 @@ def k_radar_api_vc_item_update(item_id):
     tid = _required_tenant_id()
     it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
     if not it:
-        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Öğe bulunamadı.")}), 404
     data = request.get_json(silent=True) or {}
     title = (data.get("title") or "").strip()
     category = (data.get("category") or it.category or "").strip()
     if not title:
-        return jsonify({"success": False, "message": "Başlık zorunludur."}), 400
+        return jsonify({"success": False, "message": _("Başlık zorunludur.")}), 400
     if category not in _VC_CATEGORIES:
-        return jsonify({"success": False, "message": "Geçersiz kategori."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz kategori.")}), 400
     try:
         it.title = title
         it.category = category
@@ -430,10 +431,10 @@ def k_radar_api_vc_item_update(item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_update] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe güncellenemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe güncellenemedi.")}), 500
 
 
-@app_bp.route("/k-radar/api/kp/deger-zinciri/items/<int:item_id>/delete", methods=["POST"])
+@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>/delete", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_delete(item_id):
     if not _can_manage_k_radar():
@@ -442,7 +443,7 @@ def k_radar_api_vc_item_delete(item_id):
     tid = _required_tenant_id()
     it = ValueChainItem.query.filter_by(id=item_id, tenant_id=tid, is_active=True).first()
     if not it:
-        return jsonify({"success": False, "message": "Öğe bulunamadı."}), 404
+        return jsonify({"success": False, "message": _("Öğe bulunamadı.")}), 404
     try:
         it.is_active = False  # soft delete (KURALLAR §3)
         db.session.commit()
@@ -450,7 +451,7 @@ def k_radar_api_vc_item_delete(item_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[vc_item_delete] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Öğe silinemedi."}), 500
+        return jsonify({"success": False, "message": _("Öğe silinemedi.")}), 500
 
 
 def _vc_proc(raw, tid):
@@ -500,7 +501,7 @@ def k_radar_api_kp_vsm():
     return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("vsm", {})}))
 
 
-@app_bp.route("/k-radar/api/kp/kapasite")
+@app_bp.route("/k-radar/api/kp/capacity")
 @login_required
 def k_radar_api_kp_kapasite():
     from services.k_radar_service import get_kp_extended_data

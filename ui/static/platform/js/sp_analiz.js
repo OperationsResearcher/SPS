@@ -25,7 +25,7 @@
     const el = document.getElementById(elId);
     if (!el) return;
     if (!items.length) {
-      el.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:6px 0;">Henüz eklenmemiş</div>';
+      el.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:6px 0;">' + t("Henüz eklenmemiş") + '</div>';
       return;
     }
     el.innerHTML = items.map((item, i) => {
@@ -104,8 +104,8 @@
 
   document.getElementById("sp-swot-save-btn")?.addEventListener("click", () => {
     postJson(card.dataset.swotSaveUrl, state.swot)
-      .then(r => toast(r.success ? "SWOT kaydedildi." : (r.message || "Hata"), r.success))
-      .catch(() => toast("Bağlantı hatası.", false));
+      .then(r => toast(r.success ? t("SWOT kaydedildi.") : (r.message || t("Hata")), r.success))
+      .catch(() => toast(t("Bağlantı hatası."), false));
   });
 
   fetch(card.dataset.swotUrl).then(r => r.json()).then(res => {
@@ -117,7 +117,7 @@
     renderSwot();
     const total = state.swot.s.length + state.swot.w.length + state.swot.o.length + state.swot.t.length;
     const badge = document.getElementById("sp-analiz-badge");
-    if (badge && total > 0) badge.textContent = `SWOT: ${total} madde`;
+    if (badge && total > 0) badge.textContent = `SWOT: ${total} ${t("madde")}`;
   }).catch(() => {});
 
   // ── TOWS ──────────────────────────────────────────────────────────────────
@@ -141,8 +141,8 @@
 
   document.getElementById("sp-tows-save-btn")?.addEventListener("click", () => {
     postJson(card.dataset.towsSaveUrl, state.tows)
-      .then(r => toast(r.success ? "TOWS kaydedildi." : (r.message || "Hata"), r.success))
-      .catch(() => toast("Bağlantı hatası.", false));
+      .then(r => toast(r.success ? t("TOWS kaydedildi.") : (r.message || t("Hata")), r.success))
+      .catch(() => toast(t("Bağlantı hatası."), false));
   });
 
   fetch(card.dataset.towsUrl).then(r => r.json()).then(res => {
@@ -177,8 +177,8 @@
 
   document.getElementById("sp-pestle-save-btn")?.addEventListener("click", () => {
     postJson(card.dataset.pestleSaveUrl, state.pestle)
-      .then(r => toast(r.success ? "PESTLE kaydedildi." : (r.message || "Hata"), r.success))
-      .catch(() => toast("Bağlantı hatası.", false));
+      .then(r => toast(r.success ? t("PESTLE kaydedildi.") : (r.message || t("Hata")), r.success))
+      .catch(() => toast(t("Bağlantı hatası."), false));
   });
 
   fetch(card.dataset.pestleUrl).then(r => r.json()).then(res => {

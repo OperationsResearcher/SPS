@@ -7,7 +7,7 @@
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
     <h1 class="mc-page-title"><i class="fas fa-chart-line" style="color:#0d9488;"></i> AI Sektör Benchmark</h1>
-    <p class="mc-page-subtitle">Kurum veriniz ile sektör ortalamaları karşılaştırması — AI destekli değerlendirme.</p>
+    <p class="mc-page-subtitle">{{ _("Kurum veriniz ile sektör ortalamaları karşılaştırması — AI destekli değerlendirme.") }}</p>
   </div>
 </div>
 
@@ -23,47 +23,46 @@
     <div id="sb-sektor-bar"></div>
 
     {# ── Kurum başlığı ── #}
-    <div id="sb-header" style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:12px;padding:20px;margin-bottom:20px;"></div>
+    <div id="sb-header" style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:12px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_sektor_benchmark.sektor_otomotiv_yan_sanayi"></div>
 
     {# ── Benchmark metrikleri ── #}
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
-        <i class="fas fa-chart-bar" style="color:#0d9488;"></i> Sektör Ortalamaları
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_sektor_benchmark.sektor_ortalamalari">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+        <i class="fas fa-chart-bar" style="color:#0d9488;"></i> {{ _("Sektör Ortalamaları") }}
       </h3>
       <div id="sb-bench"></div>
       <div style="margin-top:12px;padding:10px;background:#fffbeb;border-left:3px solid #fde68a;color:#92400e;font-size:11.5px;border-radius:0 6px 6px 0;">
         <i class="fas fa-triangle-exclamation"></i>
-        <b>Önemli:</b> Gösterilen değerler sektörün <b>genel ortalamasıdır</b> — kurumunuzun bu metriklerdeki gerçek değerleri değildir.
-        Gerçek karşılaştırma yapabilmek için OEE, OTIF, NPS gibi metriklerin PG olarak sisteme eklenmesi ve ölçüm yapılması gerekir.
+        {{ _("<b>Önemli:</b> Gösterilen değerler sektörün <b>genel ortalamasıdır</b> — kurumunuzun bu metriklerdeki gerçek değerleri değildir. Gerçek karşılaştırma yapabilmek için OEE, OTIF, NPS gibi metriklerin PG olarak sisteme eklenmesi ve ölçüm yapılması gerekir.") }}
       </div>
     </div>
 
     {# ── AI Yorum bölümü ── #}
-    <div style="background:linear-gradient(135deg,#f0fdfa,#fff);border:1px solid #99f6e4;border-radius:10px;padding:20px;">
+    <div style="background:linear-gradient(135deg,#f0fdfa,#fff);border:1px solid #99f6e4;border-radius:10px;padding:20px;" data-card-code="raporlar_sektor_benchmark.ai_sektor_degerlendirmesi">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
-        <h3 style="font-size:13px;font-weight:700;color:#065f46;margin:0;">
-          <i class="fas fa-robot"></i> AI Sektör Değerlendirmesi
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#065f46;margin:0;">
+          <i class="fas fa-robot"></i> {{ _("AI Sektör Değerlendirmesi") }}
         </h3>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
           <span id="sb-ai-badge" style="font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;">
-            <i class="fas fa-spinner fa-spin"></i> Kota kontrol ediliyor…
+            <i class="fas fa-spinner fa-spin"></i> {{ _("Kota kontrol ediliyor…") }}
           </span>
           <button id="sb-ai-btn" class="mc-btn mc-btn-primary mc-btn-sm">
-            <i class="fas fa-robot"></i> AI Yorumu Al
+            <i class="fas fa-robot"></i> {{ _("AI Yorumu Al") }}
           </button>
         </div>
       </div>
 
       <div id="sb-ai-result" style="display:none;background:#fff;border:1px solid #a7f3d0;border-radius:8px;padding:16px;">
         <div style="font-size:11px;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;">
-          <i class="fas fa-sparkles"></i> AI Yorumu
+          <i class="fas fa-sparkles"></i> {{ _("AI Yorumu") }}
         </div>
         <div id="sb-ai-text" style="font-size:13.5px;color:#0f172a;line-height:1.75;white-space:pre-wrap;"></div>
       </div>
 
       <div style="margin-top:10px;font-size:11.5px;color:#94a3b8;">
         <i class="fas fa-circle-info"></i>
-        AI yorumu gerçek zamanlı olarak Gemini modeli ile üretilir. Her istek kota sayacına dahildir.
+        {{ _("AI yorumu gerçek zamanlı olarak Gemini modeli ile üretilir. Her istek kota sayacına dahildir.") }}
       </div>
     </div>
 
@@ -72,5 +71,5 @@
   <div id="sb-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>
 </div>
 
-<script src="{{ url_for('app_bp.static', filename='platform/js/raporlar/sektor_benchmark.js') }}" defer></script>
+<script src="{{ url_for('app_bp.static', filename='platform/js/reports/sektor_benchmark.js') }}" defer></script>
 {% endblock %}

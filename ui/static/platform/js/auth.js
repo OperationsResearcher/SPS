@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             Swal.fire({
                 icon: 'warning',
-                title: 'Eksik Bilgi',
-                text: 'Lütfen e-posta ve şifrenizi girin.',
+                title: t('Eksik Bilgi'),
+                text: t('Lütfen e-posta ve şifrenizi girin.'),
                 confirmButtonColor: '#4F46E5',
-                confirmButtonText: 'Tamam'
+                confirmButtonText: t('Tamam')
             });
             return;
         }
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var btn = form.querySelector('button[type="submit"]');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Giriş yapılıyor…';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Giriş yapılıyor…');
         }
     });
 });

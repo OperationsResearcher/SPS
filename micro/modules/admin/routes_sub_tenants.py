@@ -11,6 +11,7 @@ Holding:
   - +  Ek olarak alt-tenant verilerini READ-ONLY görür (Sprint D)
 """
 from __future__ import annotations
+from flask_babel import gettext as _
 
 from datetime import datetime, timezone
 
@@ -77,13 +78,13 @@ def admin_api_sub_tenants_list():
     if is_platform_admin(current_user):
         parent_id = request.args.get("parent_id", type=int)
         if not parent_id:
-            return jsonify({"success": False, "message": "Platform Admin için parent_id gerekli."}), 400
+            return jsonify({"success": False, "message": _("Platform Admin için parent_id gerekli.")}), 400
         parent = Tenant.query.get_or_404(parent_id)
     else:
         parent = current_user.tenant
 
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum açamaz."}), 400
+        return jsonify({"success": False, "message": _("Bu kurum tipi alt kurum açamaz.")}), 400
 
     rows = Tenant.query.filter_by(parent_tenant_id=parent.id).order_by(Tenant.created_at.desc()).all()
 
@@ -142,22 +143,22 @@ def admin_api_sub_tenants_create():
     admin_last = (data.get("admin_last_name") or "").strip()
 
     if not name or not admin_email:
-        return jsonify({"success": False, "message": "Kurum adı ve admin e-posta zorunlu."}), 400
+        return jsonify({"success": False, "message": _("Kurum adı ve admin e-posta zorunlu.")}), 400
     import re as _re
     if not _re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', admin_email):
-        return jsonify({"success": False, "message": "Geçersiz e-posta formatı."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz e-posta formatı.")}), 400
 
     # Parent tespit
     if is_platform_admin(current_user):
         parent_id = data.get("parent_tenant_id")
         if not parent_id:
-            return jsonify({"success": False, "message": "Platform Admin için üst kurum ID gerekli."}), 400
+            return jsonify({"success": False, "message": _("Platform Admin için üst kurum ID gerekli.")}), 400
         parent = Tenant.query.get(int(parent_id))
     else:
         parent = current_user.tenant
 
     if not parent or parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Geçersiz üst kurum."}), 400
+        return jsonify({"success": False, "message": _("Geçersiz üst kurum.")}), 400
 
     # Yetki: bayi/holding admin sadece kendi parent'ında işlem yapabilir
     if not is_platform_admin(current_user) and parent.id != current_user.tenant_id:
@@ -170,19 +171,19 @@ def admin_api_sub_tenants_create():
 
     # E-posta unique kontrolü
     if User.query.filter(db.func.lower(User.email) == admin_email).first():
-        return jsonify({"success": False, "message": "Bu e-posta zaten başka bir kullanıcıya ait."}), 400
+        return jsonify({"success": False, "message": _("Bu e-posta zaten başka bir kullanıcıya ait.")}), 400
 
     # Geçici şifre üretimi (verilmezse)
     import secrets
     if not admin_password:
         admin_password = "Kp_" + secrets.token_urlsafe(8)
     elif len(admin_password) < 8:
-        return jsonify({"success": False, "message": "Şifre en az 8 karakter olmalı."}), 400
+        return jsonify({"success": False, "message": _("Şifre en az 8 karakter olmalı.")}), 400
 
     # tenant_admin rolünü bul
     tenant_admin_role = Role.query.filter_by(name="tenant_admin").first()
     if not tenant_admin_role:
-        return jsonify({"success": False, "message": "Kurum yöneticisi rolü tanımlı değil."}), 500
+        return jsonify({"success": False, "message": _("Kurum yöneticisi rolü tanımlı değil.")}), 500
 
     # Paket id (opsiyonel)
     package_id = data.get("package_id")
@@ -192,9 +193,9 @@ def admin_api_sub_tenants_create():
             from app.models.saas import SubscriptionPackage
             pkg = SubscriptionPackage.query.get(package_id)
             if not pkg or not pkg.is_active:
-                return jsonify({"success": False, "message": "Seçilen paket geçersiz veya pasif."}), 400
+                return jsonify({"success": False, "message": _("Seçilen paket geçersiz veya pasif.")}), 400
         except (TypeError, ValueError):
-            return jsonify({"success": False, "message": "Paket ID geçersiz."}), 400
+            return jsonify({"success": False, "message": _("Paket ID geçersiz.")}), 400
     else:
         package_id = None
 
@@ -246,7 +247,7 @@ def admin_api_sub_tenants_create():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_sub_tenants_create] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Alt kurum oluşturulamadı."}), 500
+        return jsonify({"success": False, "message": _("Alt kurum oluşturulamadı.")}), 500
 
 
 # ─── Alt-tenant admin'inin parolasını sıfırla ────────────────────────────────
@@ -260,7 +261,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     sub = Tenant.query.get_or_404(sub_tenant_id)
     parent = sub.parent_tenant
     if not parent:
-        return jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400
+        return jsonify({"success": False, "message": _("Bu kurum bir alt kurum değil.")}), 400
 
     # Yetki
     if not is_platform_admin(current_user) and parent.id != current_user.tenant_id:
@@ -269,7 +270,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     # İlk admin'i bul
     tenant_admin_role = Role.query.filter_by(name="tenant_admin").first()
     if not tenant_admin_role:
-        return jsonify({"success": False, "message": "Kurum yöneticisi rolü tanımlı değil."}), 500
+        return jsonify({"success": False, "message": _("Kurum yöneticisi rolü tanımlı değil.")}), 500
     admin = (
         User.query
         .filter(User.tenant_id == sub.id, User.role_id == tenant_admin_role.id, User.is_active.is_(True))
@@ -277,7 +278,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
         .first()
     )
     if not admin:
-        return jsonify({"success": False, "message": "Bu alt kurumun aktif yöneticisi yok."}), 404
+        return jsonify({"success": False, "message": _("Bu alt kurumun aktif yöneticisi yok.")}), 404
 
     import secrets
     new_password = "Kp_" + secrets.token_urlsafe(8)
@@ -287,7 +288,7 @@ def admin_api_sub_tenant_admin_reset_password(sub_tenant_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sub_tenant_reset_password] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Parola sıfırlanamadı."}), 500
+        return jsonify({"success": False, "message": _("Parola sıfırlanamadı.")}), 500
 
     try:
         from app.utils.audit_logger import AuditLogger
@@ -316,7 +317,7 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
 
     sub = Tenant.query.get_or_404(sub_tenant_id)
     if not sub.parent_tenant:
-        return jsonify({"success": False, "message": "Bu kurum bir alt kurum değil."}), 400
+        return jsonify({"success": False, "message": _("Bu kurum bir alt kurum değil.")}), 400
     if not is_platform_admin(current_user) and sub.parent_tenant_id != current_user.tenant_id:
         return _403()
 
@@ -326,7 +327,7 @@ def admin_api_sub_tenant_toggle(sub_tenant_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[admin_api_sub_tenant_toggle] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem sırasında hata oluştu."}), 500
+        return jsonify({"success": False, "message": _("İşlem sırasında hata oluştu.")}), 500
 
     try:
         from app.utils.audit_logger import AuditLogger
@@ -374,12 +375,12 @@ def admin_api_sub_tenants_usage():
     if is_platform_admin(current_user):
         parent_id = request.args.get("parent_id", type=int)
         if not parent_id:
-            return jsonify({"success": False, "message": "Platform Admin için parent_id gerekli."}), 400
+            return jsonify({"success": False, "message": _("Platform Admin için parent_id gerekli.")}), 400
         parent = Tenant.query.get_or_404(parent_id)
     else:
         parent = current_user.tenant
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum yönetimine sahip değil."}), 400
+        return jsonify({"success": False, "message": _("Bu kurum tipi alt kurum yönetimine sahip değil.")}), 400
 
     from app.services.sub_tenant_billing_service import build_consolidated_usage
     try:
@@ -389,7 +390,7 @@ def admin_api_sub_tenants_usage():
         return jsonify({"success": True, **data})
     except Exception as e:
         current_app.logger.error(f"[sub_tenants_usage] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 @app_bp.route("/admin/api/sub-tenants/usage/export.xlsx")
@@ -406,7 +407,7 @@ def admin_api_sub_tenants_usage_export():
     else:
         parent = current_user.tenant
     if parent.tenant_type not in ("dealer", "holding"):
-        return jsonify({"success": False, "message": "Bu kurum tipi alt kurum yönetimine sahip değil."}), 400
+        return jsonify({"success": False, "message": _("Bu kurum tipi alt kurum yönetimine sahip değil.")}), 400
 
     from app.services.sub_tenant_billing_service import build_consolidated_usage
     data = build_consolidated_usage(parent.id)
@@ -418,7 +419,7 @@ def admin_api_sub_tenants_usage_export():
         from openpyxl.styles import Font, PatternFill, Alignment
         from io import BytesIO
     except ImportError:
-        return jsonify({"success": False, "message": "openpyxl kütüphanesi kurulu değil."}), 500
+        return jsonify({"success": False, "message": _("openpyxl kütüphanesi kurulu değil.")}), 500
     from flask import send_file
     import datetime as _dt
 

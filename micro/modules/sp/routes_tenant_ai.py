@@ -10,13 +10,14 @@ from extensions import db
 from app.models.tenant_llm_config import TenantLLMConfig
 from app.services.llm_gateway import test_tenant_config, PROVIDERS
 from micro.modules.sp.helpers import _check_sp_role
+from flask_babel import gettext as _
 
 
 def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/ayarlar/ai")
+@app_bp.route("/sp/settings/ai")
 @login_required
 def sp_ai_settings_page():
     if not _can():
@@ -86,7 +87,7 @@ def sp_api_ai_config_test():
         return jsonify({"success": result["success"], **result})
     except Exception as e:
         current_app.logger.error(f"ai_config_test error: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "Sunucu hatası oluştu."}), 500
+        return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
 @app_bp.route("/sp/api/ai-config", methods=["DELETE"])

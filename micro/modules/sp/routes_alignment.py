@@ -7,13 +7,14 @@ from platform_core import app_bp
 from extensions import db
 from app.services.plan_year_service import get_active_plan_year_for_user
 from micro.modules.sp.helpers import _check_sp_role
+from flask_babel import gettext as _
 
 
 def _can_view():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/strateji-proje-matris")
+@app_bp.route("/sp/strategy-project-matrix")
 @login_required
 def sp_strategy_project_matrix():
     if not _can_view():
@@ -105,4 +106,4 @@ def sp_api_strategy_project_matrix():
         }})
     except Exception as e:
         current_app.logger.error(f"[strategy_project_matrix] {e}", exc_info=True)
-        return jsonify({"success": False, "message": "İşlem tamamlanamadı."}), 500
+        return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500

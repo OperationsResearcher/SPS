@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Ayarlar — Kokpitim{% endblock %}
-{% block page_title %}Ayarlar{% endblock %}
+{% block title %}{{ _("Ayarlar") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Ayarlar") }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/ayarlar_index.css') }}">
@@ -30,24 +30,24 @@
   {% set is_platform_admin = role_name == 'Admin' %}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:18px;">
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #3b82f6;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kullanıcı</div>
+      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kullanıcı") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ current_user.email or '—' }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ role_name or 'rol yok' }}</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ role_name or _('rol yok') }}</div>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #16a34a;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Kurum</div>
+      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kurum") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ (current_user.tenant.name if current_user.tenant else '—') }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">Kurum #{{ current_user.tenant_id or '—' }}</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("Kurum") }} #{{ current_user.tenant_id or '—' }}</div>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #9333ea;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Tema</div>
-      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-theme">Aydınlık</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">çoklu cihaz senkronlu</div>
+      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Tema") }}</div>
+      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-theme">{{ _("Aydınlık") }}</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("çoklu cihaz senkronlu") }}</div>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Zamanlanmış Rapor</div>
+      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Zamanlanmış Rapor") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-sched">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">aktif abonelik</div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("aktif abonelik") }}</div>
     </div>
   </div>
 
@@ -55,7 +55,7 @@
   <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
     <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
       <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-      <input type="search" id="ayarlar-search" class="mc-form-input" placeholder="Ayar ara…"
+      <input type="search" id="ayarlar-search" class="mc-form-input" placeholder="{{ _('Ayar ara…') }}"
              style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
     </div>
     <span id="ayarlar-count-label" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
@@ -63,15 +63,15 @@
 
   {# ── Kişisel ──────────────────────────────────────────────────────── #}
   <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:18px 0 10px;">
-    <i class="fas fa-user" style="color:#3b82f6; margin-right:4px;"></i> Kişisel
+    <i class="fas fa-user" style="color:#3b82f6; margin-right:4px;"></i> {{ _("Kişisel") }}
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
     <a href="{{ url_for('app_bp.ayarlar_hesap') }}" class="ayarlar-tile" data-search="hesap bildirim tema dil saat dilimi">
       <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-user-cog" style="color:#3b82f6;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Hesap Ayarları</div>
-        <div class="ayarlar-tile-desc">Bildirim tercihleri, tema, dil ve saat dilimi</div>
+        <div class="ayarlar-tile-title">{{ _("Hesap Ayarları") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("Bildirim tercihleri, tema, dil ve saat dilimi") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
@@ -79,8 +79,8 @@
     <a href="{{ url_for('app_bp.profil') }}" class="ayarlar-tile" data-search="profil ad unvan departman foto">
       <div class="ayarlar-tile-icon" style="background:#f0fdf4;"><i class="fas fa-id-card" style="color:#16a34a;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Profil Bilgileri</div>
-        <div class="ayarlar-tile-desc">Ad, unvan, departman ve profil fotoğrafı</div>
+        <div class="ayarlar-tile-title">{{ _("Profil Bilgileri") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("Ad, unvan, departman ve profil fotoğrafı") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
@@ -89,15 +89,15 @@
   {# ── Kurum ────────────────────────────────────────────────────────── #}
   {% if is_kurum_admin or is_platform_admin %}
   <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:22px 0 10px;">
-    <i class="fas fa-building" style="color:#9333ea; margin-right:4px;"></i> Kurum
+    <i class="fas fa-building" style="color:#9333ea; margin-right:4px;"></i> {{ _("Kurum") }}
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
     <a href="{{ url_for('app_bp.ayarlar_eposta') }}" class="ayarlar-tile" data-search="e-posta eposta smtp bildirim">
       <div class="ayarlar-tile-icon" style="background:#fdf4ff;"><i class="fas fa-envelope-open-text" style="color:#9333ea;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">E-posta Bildirimleri</div>
-        <div class="ayarlar-tile-desc">SMTP yapılandırması ve bildirim tercihleri</div>
+        <div class="ayarlar-tile-title">{{ _("E-posta Bildirimleri") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("SMTP yapılandırması ve bildirim tercihleri") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
@@ -105,8 +105,8 @@
     <a href="{{ url_for('app_bp.scheduled_reports_page') }}" class="ayarlar-tile" data-search="zamanlanmış rapor haftalık sabah aylık digest abonelik">
       <div class="ayarlar-tile-icon" style="background:#eef2ff;"><i class="fas fa-clock" style="color:#6366f1;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Zamanlanmış Raporlar</div>
-        <div class="ayarlar-tile-desc">Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG</div>
+        <div class="ayarlar-tile-title">{{ _("Zamanlanmış Raporlar") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
@@ -115,8 +115,8 @@
     <a href="{{ url_for('app_bp.kurum_ayarlar') }}" class="ayarlar-tile" data-search="kurum şirket iletişim logo">
       <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-building" style="color:#3b82f6;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Kurum Ayarları</div>
-        <div class="ayarlar-tile-desc">İletişim bilgileri ve logo</div>
+        <div class="ayarlar-tile-title">{{ _("Kurum Ayarları") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("İletişim bilgileri ve logo") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
@@ -127,8 +127,8 @@
   {# ── Platform Yönetimi ────────────────────────────────────────────── #}
   {% if is_platform_admin %}
   <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:22px 0 10px;">
-    <i class="fas fa-screwdriver-wrench" style="color:#d97706; margin-right:4px;"></i> Platform Yönetimi
-    <span style="font-size:10px; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:10px; margin-left:6px; font-weight:600;">YALNIZ ADMIN</span>
+    <i class="fas fa-screwdriver-wrench" style="color:#d97706; margin-right:4px;"></i> {{ _("Platform Yönetimi") }}
+    <span style="font-size:10px; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:10px; margin-left:6px; font-weight:600;">{{ _("YALNIZ ADMIN") }}</span>
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
@@ -136,8 +136,8 @@
     <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-tile" data-search="yönetim panel login istatistik aktivite log">
       <div class="ayarlar-tile-icon" style="background:#ecfeff;"><i class="fas fa-chart-line" style="color:#0e7490;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">Yönetim Paneli</div>
-        <div class="ayarlar-tile-desc">Login istatistikleri ve aktivite kayıtları</div>
+        <div class="ayarlar-tile-title">{{ _("Yönetim Paneli") }}</div>
+        <div class="ayarlar-tile-desc">{{ _("Login istatistikleri ve aktivite kayıtları") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>

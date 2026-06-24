@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>İki Faktörlü Doğrulama — Kokpitim</title>
+  <title>{{ _("İki Faktörlü Doğrulama") }} — Kokpitim</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/components.css') }}">
@@ -17,9 +17,9 @@
       <div style="width:64px; height:64px; margin:0 auto 12px; background:#eef2ff; border-radius:50%; display:flex; align-items:center; justify-content:center;">
         <i class="fas fa-shield-alt" style="font-size:28px; color:#4f46e5;"></i>
       </div>
-      <h2 style="margin:0 0 4px; color:#0f172a; font-size:20px;">İki Faktörlü Doğrulama</h2>
+      <h2 style="margin:0 0 4px; color:#0f172a; font-size:20px;">{{ _("İki Faktörlü Doğrulama") }}</h2>
       <p style="margin:0; color:#64748b; font-size:13px;">
-        Telefonunuzdaki Authenticator uygulamasından 6 haneli kodu girin.
+        {{ _("Telefonunuzdaki Authenticator uygulamasından 6 haneli kodu girin.") }}
       </p>
     </div>
 
@@ -39,7 +39,7 @@
 
       <div id="code-mode">
         <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:500;">
-          Doğrulama Kodu
+          {{ _("Doğrulama Kodu") }}
         </label>
         <input type="text" name="code" id="code-input"
                class="mc-form-input"
@@ -51,29 +51,29 @@
 
       <div id="backup-mode" style="display:none;">
         <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:500;">
-          Yedek Kod
+          {{ _("Yedek Kod") }}
         </label>
         <input type="text" id="backup-input"
                class="mc-form-input" autocomplete="off"
-               placeholder="örn: ABCD-EFGH"
+               placeholder="{{ _('örn: ABCD-EFGH') }}"
                style="width:100%; font-size:16px; text-align:center; padding:12px; font-family:monospace;">
         <input type="hidden" name="is_backup" id="is-backup" value="0">
       </div>
 
       <button type="submit" class="mc-btn mc-btn-primary" style="width:100%; margin-top:16px; padding:12px; font-size:14px;">
-        <i class="fas fa-check"></i> Doğrula ve Giriş Yap
+        <i class="fas fa-check"></i> {{ _("Doğrula ve Giriş Yap") }}
       </button>
     </form>
 
     <div style="text-align:center; margin-top:16px; font-size:13px;">
       <a href="#" id="toggle-mode" style="color:#4f46e5; text-decoration:none;">
-        <span id="toggle-to-backup">Telefonum yanımda yok — yedek kod kullan</span>
-        <span id="toggle-to-code" style="display:none;">← Doğrulama kodu kullan</span>
+        <span id="toggle-to-backup">{{ _("Telefonum yanımda yok — yedek kod kullan") }}</span>
+        <span id="toggle-to-code" style="display:none;">{{ _("← Doğrulama kodu kullan") }}</span>
       </a>
     </div>
 
     <div style="text-align:center; margin-top:12px; font-size:12px; color:#94a3b8;">
-      <a href="{{ url_for('public_login') }}" style="color:#94a3b8;">← Farklı bir hesapla giriş yap</a>
+      <a href="{{ url_for('public_login') }}" style="color:#94a3b8;">{{ _("← Farklı bir hesapla giriş yap") }}</a>
     </div>
   </div>
 

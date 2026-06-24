@@ -1,9 +1,9 @@
 {% extends "platform/base.html" %}
-{% block title %}ESG Yönetimi — Kokpitim{% endblock %}
-{% block page_title %}ESG / Sürdürülebilirlik Yönetimi{% endblock %}
+{% block title %}{{ _("ESG Yönetimi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("ESG / Sürdürülebilirlik Yönetimi") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'K-Rapor', 'url': url_for('app_bp.raporlar_index')}, {'label': 'ESG Yönetimi', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('K-Rapor'), 'url': url_for('app_bp.raporlar_index')}, {'label': _('ESG Yönetimi'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -11,30 +11,29 @@
      id="esg-root"
      data-list-url="{{ url_for('app_bp.esg_api_metrics_list') }}"
      data-add-url="{{ url_for('app_bp.esg_api_metric_add') }}"
-     data-update-base="/raporlar/api/esg/metrics/"
+     data-update-base="/reports/api/esg/metrics/"
      data-can-edit="{{ 'true' if can_edit else 'false' }}">
 
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-leaf" style="color:#22c55e;"></i> ESG / Sürdürülebilirlik
+        <i class="fas fa-leaf" style="color:#22c55e;"></i> {{ _("ESG / Sürdürülebilirlik") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Çevresel (E) / Sosyal (S) / Yönetişim (G) metriklerini tanımla ve yıllık değerlerini gir.
-        Bu veriler ESG/GRI/TCFD raporunu besler.
+        {{ _("Çevresel (E) / Sosyal (S) / Yönetişim (G) metriklerini tanımla ve yıllık değerlerini gir. Bu veriler ESG/GRI/TCFD raporunu besler.") }}
       </p>
     </div>
     <div style="display:flex;gap:8px;">
-      <a href="{{ url_for('app_bp.raporlar_esg_rapor') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-file-pdf"></i> ESG Raporu</a>
+      <a href="{{ url_for('app_bp.raporlar_esg_rapor') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-file-pdf"></i> {{ _("ESG Raporu") }}</a>
       {% if can_edit %}
-      <button class="mc-btn mc-btn-primary" id="esg-add"><i class="fas fa-plus"></i> Metrik ekle</button>
+      <button class="mc-btn mc-btn-primary" id="esg-add"><i class="fas fa-plus"></i> {{ _("Metrik ekle") }}</button>
       {% endif %}
     </div>
   </div>
 
-  <div id="esg-loading" style="text-align:center;padding:30px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
+  <div id="esg-loading" style="text-align:center;padding:30px;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
   <div id="esg-groups" style="display:flex;flex-direction:column;gap:20px;"></div>
-  <div id="esg-empty" style="display:none;text-align:center;padding:30px;color:#94a3b8;">Henüz ESG metriği yok. "Metrik ekle" ile başla.</div>
+  <div id="esg-empty" style="display:none;text-align:center;padding:30px;color:#94a3b8;">{{ _('Henüz ESG metriği yok. "Metrik ekle" ile başla.') }}</div>
 </div>
 {% endblock %}
 

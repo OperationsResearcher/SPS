@@ -25,12 +25,12 @@
       const snippet = await res.text();
       const isHtml = snippet.trim().toLowerCase().startsWith("<!doctype") || snippet.includes("<html");
       if (res.status === 400 && isHtml) {
-        throw new Error("Oturum veya güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.");
+        throw new Error(t("Oturum veya güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin."));
       }
       if (res.status === 302 || res.status === 401 || res.status === 403) {
-        throw new Error("Oturum süresi dolmuş olabilir. Yeniden giriş yapın.");
+        throw new Error(t("Oturum süresi dolmuş olabilir. Yeniden giriş yapın."));
       }
-      throw new Error("Sunucu JSON yerine HTML döndü (HTTP " + res.status + ").");
+      throw new Error(t("Sunucu JSON yerine HTML döndü") + " (HTTP " + res.status + ").");
     }
     return res.json();
   }
@@ -43,15 +43,15 @@
   }
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
 
   async function confirmDelete(title, text) {
     const r = await Swal.fire({
-      title: title || "Emin misiniz?", text: text || "Bu işlem geri alınamaz.",
+      title: title || t("Emin misiniz?"), text: text || t("Bu işlem geri alınamaz."),
       icon: "warning", showCancelButton: true,
       confirmButtonColor: "#dc2626", cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil", cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"), cancelButtonText: t("İptal"),
     });
     return r.isConfirmed;
   }
@@ -93,17 +93,8 @@
       if (el) el.click();
     }
 
-    function getSpCardHelpMap() {
-      const el = document.getElementById("sp-card-help-json");
-      if (!el) return {};
-      try {
-        return JSON.parse(el.textContent);
-      } catch (err) {
-        return {};
-      }
-    }
-
-    /** Kart gövdesine tıklanınca kalem ile aynı işlem (modal veya yönlendirme) */
+    /** Kart gövdesine tıklanınca kalem ile aynı işlem (modal veya yönlendirme).
+        Kart bilgisi (i) artık merkezî base.html mekanizmasından gelir (data-card-code). */
     spRoot.addEventListener("click", (e) => {
       const wrap = e.target.closest(".mc-sp-card-body-trigger");
       if (!wrap) return;
@@ -116,31 +107,6 @@
       const editBtn = card.querySelector('.btn-sp-card-edit[data-sp-edit="' + kind + '"]');
       if (editBtn) {
         editBtn.click();
-        return;
-      }
-      const infoBtn = card.querySelector(".btn-sp-card-info[data-sp-help]");
-      if (infoBtn) {
-        infoBtn.click();
-      }
-    });
-
-    spRoot.addEventListener("click", async (e) => {
-      const infoBtn = e.target.closest(".btn-sp-card-info");
-      if (infoBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        const key = infoBtn.getAttribute("data-sp-help");
-        if (!key) return;
-        const map = getSpCardHelpMap();
-        const h = map[key];
-        if (!h || !h.title) return;
-        await openMcInfoModal({
-          title: h.title,
-          bodyHtml: h.html || "",
-          iconClass: "fas fa-circle-info",
-          confirmText: "Tamam",
-        });
-        return;
       }
     });
 
@@ -152,13 +118,13 @@
       const kind = editBtn.getAttribute("data-sp-edit");
       if (kind === "misyon") {
         const payload = await openMcFormModal({
-          title: "Misyon (Amaç) düzenle",
+          title: t("Misyon (Amaç) düzenle"),
           iconClass: "fas fa-bullseye",
           bodyHtml: `<div class="tm-field tm-full">
-            <label class="mc-form-label">Amaç / Misyon</label>
-            <textarea id="sp-modal-mission" class="mc-form-input" rows="8" placeholder="Kurum misyonunu yazın...">${escHtml(decodeAttr(initialPurpose))}</textarea>
+            <label class="mc-form-label">${t("Amaç / Misyon")}</label>
+            <textarea id="sp-modal-mission" class="mc-form-input" rows="8" placeholder="${t("Kurum misyonunu yazın...")}">${escHtml(decodeAttr(initialPurpose))}</textarea>
           </div>`,
-          confirmText: "Kaydet",
+          confirmText: t("Kaydet"),
           onConfirm: function () {
             var ta = document.getElementById("sp-modal-mission");
             return { purpose: ta ? ta.value : "" };
@@ -167,20 +133,20 @@
         if (payload === null) return;
         try {
           const d = await postJson(UPDATE_IDENTITY_URL, payload);
-          if (d.success) { toastSuccess(d.message || "Kaydedildi."); setTimeout(() => location.reload(), 800); }
-          else showError(d.message || "Kayıt başarısız.");
-        } catch (err) { showError("Sunucu hatası: " + err.message); }
+          if (d.success) { toastSuccess(d.message || t("Kaydedildi.")); setTimeout(() => location.reload(), 800); }
+          else showError(d.message || t("Kayıt başarısız."));
+        } catch (err) { showError(t("Sunucu hatası:") + " " + err.message); }
         return;
       }
       if (kind === "vizyon") {
         const payload = await openMcFormModal({
-          title: "Vizyon düzenle",
+          title: t("Vizyon düzenle"),
           iconClass: "fas fa-binoculars",
           bodyHtml: `<div class="tm-field tm-full">
-            <label class="mc-form-label">Vizyon</label>
-            <textarea id="sp-modal-vision" class="mc-form-input" rows="8" placeholder="Kurum vizyonunu yazın...">${escHtml(decodeAttr(initialVision))}</textarea>
+            <label class="mc-form-label">${t("Vizyon")}</label>
+            <textarea id="sp-modal-vision" class="mc-form-input" rows="8" placeholder="${t("Kurum vizyonunu yazın...")}">${escHtml(decodeAttr(initialVision))}</textarea>
           </div>`,
-          confirmText: "Kaydet",
+          confirmText: t("Kaydet"),
           onConfirm: function () {
             var ta = document.getElementById("sp-modal-vision");
             return { vision: ta ? ta.value : "" };
@@ -189,26 +155,26 @@
         if (payload === null) return;
         try {
           const d = await postJson(UPDATE_IDENTITY_URL, payload);
-          if (d.success) { toastSuccess(d.message || "Kaydedildi."); setTimeout(() => location.reload(), 800); }
-          else showError(d.message || "Kayıt başarısız.");
-        } catch (err) { showError("Sunucu hatası: " + err.message); }
+          if (d.success) { toastSuccess(d.message || t("Kaydedildi.")); setTimeout(() => location.reload(), 800); }
+          else showError(d.message || t("Kayıt başarısız."));
+        } catch (err) { showError(t("Sunucu hatası:") + " " + err.message); }
         return;
       }
       if (kind === "degerler") {
         const vals = await openMcFormModal({
-          title: "Değerler ve etik kuralları",
+          title: t("Değerler ve etik kuralları"),
           iconClass: "fas fa-heart",
           bodyHtml: `<div class="tm-grid-2">
             <div class="tm-field tm-full">
-              <label class="mc-form-label">Temel değerler</label>
-              <textarea id="sp-modal-cv" class="mc-form-input" rows="5" placeholder="Değerler...">${escHtml(decodeAttr(initialCoreValues))}</textarea>
+              <label class="mc-form-label">${t("Temel değerler")}</label>
+              <textarea id="sp-modal-cv" class="mc-form-input" rows="5" placeholder="${t("Değerler...")}">${escHtml(decodeAttr(initialCoreValues))}</textarea>
             </div>
             <div class="tm-field tm-full">
-              <label class="mc-form-label">Etik kurallar</label>
-              <textarea id="sp-modal-eth" class="mc-form-input" rows="5" placeholder="Etik kurallar...">${escHtml(decodeAttr(initialEthics))}</textarea>
+              <label class="mc-form-label">${t("Etik kurallar")}</label>
+              <textarea id="sp-modal-eth" class="mc-form-input" rows="5" placeholder="${t("Etik kurallar...")}">${escHtml(decodeAttr(initialEthics))}</textarea>
             </div>
           </div>`,
-          confirmText: "Kaydet",
+          confirmText: t("Kaydet"),
           onConfirm: function () {
             return {
               core_values: document.getElementById("sp-modal-cv").value,
@@ -219,9 +185,9 @@
         if (vals === null) return;
         try {
           const d = await postJson(UPDATE_IDENTITY_URL, vals);
-          if (d.success) { toastSuccess(d.message || "Kaydedildi."); setTimeout(() => location.reload(), 800); }
-          else showError(d.message || "Kayıt başarısız.");
-        } catch (err) { showError("Sunucu hatası: " + err.message); }
+          if (d.success) { toastSuccess(d.message || t("Kaydedildi.")); setTimeout(() => location.reload(), 800); }
+          else showError(d.message || t("Kayıt başarısız."));
+        } catch (err) { showError(t("Sunucu hatası:") + " " + err.message); }
         return;
       }
       if (kind === "strateji-listesi") {
@@ -251,33 +217,33 @@
       const kvRawMain = KV_ENABLED ? (btn.dataset.kvWeightRaw || "") : "";
       const kvBlockMain = KV_ENABLED
         ? `<div class="tm-field tm-full">
-            <label class="mc-form-label">K-Vektör ham ağırlık (vizyon 1000)</label>
-            <input type="number" step="any" id="sp-modal-main-kv-weight" class="mc-form-input" placeholder="Boş = eşit dağıtım" value="${escHtml(kvRawMain)}">
-            <p style="font-size:12px;color:#64748b;margin:6px 0 0;line-height:1.4;">Boş bırakırsanız bu ana strateji için eşit dağıtım uygulanır.</p>
+            <label class="mc-form-label">${t("K-Vektör ham ağırlık (vizyon 1000)")}</label>
+            <input type="number" step="any" id="sp-modal-main-kv-weight" class="mc-form-input" placeholder="${t("Boş = eşit dağıtım")}" value="${escHtml(kvRawMain)}">
+            <p style="font-size:12px;color:#64748b;margin:6px 0 0;line-height:1.4;">${t("Boş bırakırsanız bu ana strateji için eşit dağıtım uygulanır.")}</p>
           </div>`
         : "";
       const vals = await openMcFormModal({
-        title: "Ana strateji düzenle",
+        title: t("Ana strateji düzenle"),
         iconClass: "fas fa-chess",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-main-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}" placeholder="Strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-main-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}" placeholder="${t("Strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-main-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}" placeholder="Örn: ST1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-main-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}" placeholder="${t("Örn: ST1")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Açıklama</label>
-            <textarea id="sp-modal-main-desc" class="mc-form-input" rows="4" placeholder="Kısa açıklama">${escHtml(currentDesc)}</textarea>
+            <label class="mc-form-label">${t("Açıklama")}</label>
+            <textarea id="sp-modal-main-desc" class="mc-form-input" rows="4" placeholder="${t("Kısa açıklama")}">${escHtml(currentDesc)}</textarea>
           </div>
           ${kvBlockMain}
         </div>`,
-        confirmText: "Güncelle",
+        confirmText: t("Güncelle"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-main-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           var out = {
             title: title,
             code: document.getElementById("sp-modal-main-code").value.trim() || null,
@@ -296,34 +262,34 @@
       if (vals === null) return;
       try {
         const d = await postJson(UPDATE_STRATEGY_BASE + sid, vals);
-        if (d.success) { toastSuccess(d.message || "Güncellendi."); setTimeout(() => location.reload(), 800); }
-        else showError(d.message || "Güncelleme başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(d.message || t("Güncellendi.")); setTimeout(() => location.reload(), 800); }
+        else showError(d.message || t("Güncelleme başarısız."));
+      } catch (err) { showError(t("Sunucu hatası:") + " " + err.message); }
     });
 
     // Ana strateji ekle
     async function onAddStrategyClick() {
       const vals = await openMcFormModal({
-        title: "Yeni Strateji Ekle",
+        title: t("Yeni Strateji Ekle"),
         iconClass: "fas fa-plus-circle",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-add-title" type="text" class="mc-form-input" placeholder="Strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-add-title" type="text" class="mc-form-input" placeholder="${t("Strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-add-code" type="text" class="mc-form-input" placeholder="Örn: ST1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-add-code" type="text" class="mc-form-input" placeholder="${t("Örn: ST1")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Açıklama</label>
-            <textarea id="sp-modal-add-desc" class="mc-form-input" rows="4" placeholder="Kısa açıklama"></textarea>
+            <label class="mc-form-label">${t("Açıklama")}</label>
+            <textarea id="sp-modal-add-desc" class="mc-form-input" rows="4" placeholder="${t("Kısa açıklama")}"></textarea>
           </div>
         </div>`,
-        confirmText: "Kaydet",
+        confirmText: t("Kaydet"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-add-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           return {
             title: title,
             code: document.getElementById("sp-modal-add-code").value.trim() || null,
@@ -334,9 +300,9 @@
       if (vals === null) return;
       try {
         const d = await postJson(ADD_STRATEGY_URL, vals);
-        if (d.success) { toastSuccess("Strateji eklendi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Kayıt başarısız.");
-      } catch (e) { showError("Sunucu hatası: " + e.message); }
+        if (d.success) { toastSuccess(t("Strateji eklendi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Kayıt başarısız."));
+      } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }
     }
     document.getElementById("btn-strategy-add")?.addEventListener("click", onAddStrategyClick);
     document.getElementById("btn-strategy-add-empty")?.addEventListener("click", onAddStrategyClick);
@@ -347,22 +313,22 @@
       if (!btn) return;
       const strategyId = btn.dataset.strategyId;
       const vals = await openMcFormModal({
-        title: "Alt Strateji Ekle",
+        title: t("Alt Strateji Ekle"),
         iconClass: "fas fa-layer-group",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-sub-add-title" type="text" class="mc-form-input" placeholder="Alt strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-sub-add-title" type="text" class="mc-form-input" placeholder="${t("Alt strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-sub-add-code" type="text" class="mc-form-input" placeholder="Örn: ST1.1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-sub-add-code" type="text" class="mc-form-input" placeholder="${t("Örn: ST1.1")}">
           </div>
         </div>`,
-        confirmText: "Kaydet",
+        confirmText: t("Kaydet"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-sub-add-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           return {
             strategy_id: strategyId,
             title: title,
@@ -373,9 +339,9 @@
       if (vals === null) return;
       try {
         const d = await postJson(ADD_SUB_URL, vals);
-        if (d.success) { toastSuccess("Alt strateji eklendi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Kayıt başarısız.");
-      } catch (e) { showError("Sunucu hatası: " + e.message); }
+        if (d.success) { toastSuccess(t("Alt strateji eklendi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Kayıt başarısız."));
+      } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }
     });
 
     // Alt strateji güncelle
@@ -388,29 +354,29 @@
       const kvRawSub = KV_ENABLED ? (btn.dataset.kvWeightRaw || "") : "";
       const kvBlockSub = KV_ENABLED
         ? `<div class="tm-field tm-full">
-            <label class="mc-form-label">K-Vektör ham ağırlık (vizyon 1000)</label>
-            <input type="number" step="any" id="sp-modal-sub-kv-weight" class="mc-form-input" placeholder="Boş = eşit dağıtım" value="${escHtml(kvRawSub)}">
-            <p style="font-size:12px;color:#64748b;margin:6px 0 0;line-height:1.4;">Boş bırakırsanız bu alt strateji için eşit dağıtım uygulanır.</p>
+            <label class="mc-form-label">${t("K-Vektör ham ağırlık (vizyon 1000)")}</label>
+            <input type="number" step="any" id="sp-modal-sub-kv-weight" class="mc-form-input" placeholder="${t("Boş = eşit dağıtım")}" value="${escHtml(kvRawSub)}">
+            <p style="font-size:12px;color:#64748b;margin:6px 0 0;line-height:1.4;">${t("Boş bırakırsanız bu alt strateji için eşit dağıtım uygulanır.")}</p>
           </div>`
         : "";
       const vals = await openMcFormModal({
-        title: "Alt Strateji Düzenle",
+        title: t("Alt Strateji Düzenle"),
         iconClass: "fas fa-pen-to-square",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
             <input id="sp-modal-sub-edit-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
+            <label class="mc-form-label">${t("Kod")}</label>
             <input id="sp-modal-sub-edit-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}">
           </div>
           ${kvBlockSub}
         </div>`,
-        confirmText: "Güncelle",
+        confirmText: t("Güncelle"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-sub-edit-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           var out = {
             title: title,
             code: document.getElementById("sp-modal-sub-edit-code").value.trim() || null,
@@ -428,35 +394,35 @@
       if (vals === null) return;
       try {
         const d = await postJson(`${UPDATE_SUB_BASE}${subId}`, vals);
-        if (d.success) { toastSuccess("Alt strateji güncellendi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Güncelleme başarısız.");
-      } catch (e) { showError("Sunucu hatası: " + e.message); }
+        if (d.success) { toastSuccess(t("Alt strateji güncellendi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Güncelleme başarısız."));
+      } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }
     });
 
     // Ana strateji sil
     document.addEventListener("click", async (e) => {
       const btn = e.target.closest(".btn-strategy-delete");
       if (!btn) return;
-      const ok = await confirmDelete("Strateji silinsin mi?", `"${btn.dataset.title}" pasife alınacak.`);
+      const ok = await confirmDelete(t("Strateji silinsin mi?"), `"${btn.dataset.title}" ${t("pasife alınacak.")}`);
       if (!ok) return;
       try {
         const d = await postJson(`${DELETE_STRATEGY_BASE}${btn.dataset.strategyId}`, {});
-        if (d.success) { toastSuccess("Strateji silindi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Silme başarısız.");
-      } catch (e) { showError("Sunucu hatası: " + e.message); }
+        if (d.success) { toastSuccess(t("Strateji silindi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Silme başarısız."));
+      } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }
     });
 
     // Alt strateji sil
     document.addEventListener("click", async (e) => {
       const btn = e.target.closest(".btn-sub-delete");
       if (!btn) return;
-      const ok = await confirmDelete("Alt strateji silinsin mi?", `"${btn.dataset.title}" pasife alınacak.`);
+      const ok = await confirmDelete(t("Alt strateji silinsin mi?"), `"${btn.dataset.title}" ${t("pasife alınacak.")}`);
       if (!ok) return;
       try {
         const d = await postJson(`${DELETE_SUB_BASE}${btn.dataset.subId}`, {});
-        if (d.success) { toastSuccess("Alt strateji silindi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Silme başarısız.");
-      } catch (e) { showError("Sunucu hatası: " + e.message); }
+        if (d.success) { toastSuccess(t("Alt strateji silindi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Silme başarısız."));
+      } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }
     });
   }
 
@@ -488,7 +454,7 @@
     try {
       const res = await fetch(GRAPH_API);
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Graf verisi alınamadı.");
+      if (!data.success) throw new Error(data.message || t("Graf verisi alınamadı."));
       if (!data.nodes || data.nodes.length === 0) {
         emptyEl.classList.remove("hidden");
         return;
@@ -496,7 +462,7 @@
       renderGraph(data.nodes, data.edges);
       containerEl.style.display = "block";
     } catch (err) {
-      showError("Graf yüklenirken hata: " + err.message);
+      showError(t("Graf yüklenirken hata:") + " " + err.message);
     } finally {
       loadingEl.classList.add("hidden");
     }

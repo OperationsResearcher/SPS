@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Kurum Ayarları — Kokpitim{% endblock %}
-{% block page_title %}Kurum Ayarları{% endblock %}
+{% block title %}{{ _("Kurum Ayarları") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Kurum Ayarları") }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/kurum.css') }}?v={{ config.get('VERSION', '1') }}">
@@ -20,34 +20,34 @@
 
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">Kurum Ayarları</h2>
-      <p class="mc-page-subtitle">Kurum bilgilerini ve logosunu güncelle.</p>
+      <h2 class="mc-page-title">{{ _("Kurum Ayarları") }}</h2>
+      <p class="mc-page-subtitle">{{ _("Kurum bilgilerini ve logosunu güncelle.") }}</p>
     </div>
   </div>
 
   <div class="mc-alert mc-alert-info">
     <i class="fas fa-info-circle"></i>
-    <span>Yetkili kullanıcılar düzenleyebilir.</span>
+    <span>{{ _("Yetkili kullanıcılar düzenleyebilir.") }}</span>
   </div>
 
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-building"></i>Kurum Bilgileri
+        <i class="fas fa-building"></i>{{ _("Kurum Bilgileri") }}
       </span>
     </div>
     <div class="mc-card-body">
       <div class="mc-grid-2">
         <div class="mc-form-group">
-          <label class="mc-label" for="kurum_adi">Kurum Adı</label>
+          <label class="mc-label" for="kurum_adi">{{ _("Kurum Adı") }}</label>
           <input id="kurum_adi" class="mc-input" type="text" value="{{ tenant.name or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="sektor">Sektör</label>
+          <label class="mc-label" for="sektor">{{ _("Sektör") }}</label>
           <input id="sektor" class="mc-input" type="text" value="{{ tenant.sector or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="vergi_no">Vergi No</label>
+          <label class="mc-label" for="vergi_no">{{ _("Vergi No") }}</label>
           <input id="vergi_no" class="mc-input" type="text" value="{{ tenant.tax_number or '' }}">
         </div>
       </div>
@@ -57,25 +57,25 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-address-book"></i>İletişim
+        <i class="fas fa-address-book"></i>{{ _("İletişim") }}
       </span>
     </div>
     <div class="mc-card-body">
       <div class="mc-grid-2">
         <div class="mc-form-group">
-          <label class="mc-label" for="adres">Adres</label>
+          <label class="mc-label" for="adres">{{ _("Adres") }}</label>
           <textarea id="adres" class="mc-textarea" rows="3">{{ tenant.activity_area or '' }}</textarea>
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="telefon">Telefon</label>
+          <label class="mc-label" for="telefon">{{ _("Telefon") }}</label>
           <input id="telefon" class="mc-input" type="text" value="{{ tenant.phone_number or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="email">E-posta</label>
+          <label class="mc-label" for="email">{{ _("E-posta") }}</label>
           <input id="email" class="mc-input" type="email" value="{{ tenant.contact_email or '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="website">Website</label>
+          <label class="mc-label" for="website">{{ _("Website") }}</label>
           <input id="website" class="mc-input" type="text" value="{{ tenant.website_url or '' }}">
         </div>
       </div>
@@ -85,14 +85,14 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-vector-square"></i>K-Vektör (vizyon skoru)
+        <i class="fas fa-vector-square"></i>{{ _("K-Vektör (vizyon skoru)") }}
       </span>
     </div>
     <div class="mc-card-body">
       <p class="mc-empty-text kv-settings-intro">
-        Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır.
-        <strong>Ana ve alt strateji ham ağırlıkları</strong> <a href="{{ url_for('app_bp.sp') }}">Stratejik Planlama</a> (/sp) sayfasından girilir ve düzenlenir.
-        <strong>Süreç–alt strateji katkı %</strong> değerleri <a href="{{ url_for('app_bp.surec') }}">Süreç Yönetimi</a> (/process) üzerinden süreç kaydı açılarak girilir.
+        {{ _("Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır.") }}
+        {{ _("<strong>Ana ve alt strateji ham ağırlıkları</strong> <a href=\"%(sp_url)s\">Stratejik Planlama</a> (/sp) sayfasından girilir ve düzenlenir.", sp_url=url_for('app_bp.sp'))|safe }}
+        {{ _("<strong>Süreç–alt strateji katkı %%</strong> değerleri <a href=\"%(surec_url)s\">Süreç Yönetimi</a> (/process) üzerinden süreç kaydı açılarak girilir.", surec_url=url_for('app_bp.surec'))|safe }}
       </p>
       <div class="kv-enable-panel">
         <label class="kv-enable-toggle" for="k_vektor_enabled">
@@ -102,11 +102,11 @@
             <span class="kv-enable-toggle-thumb"></span>
           </span>
           <span class="kv-enable-toggle-copy">
-            <span class="kv-enable-toggle-title">K-Vektör kullanımını etkinleştir</span>
-            <span class="kv-enable-toggle-sub">Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer.</span>
+            <span class="kv-enable-toggle-title">{{ _("K-Vektör kullanımını etkinleştir") }}</span>
+            <span class="kv-enable-toggle-sub">{{ _("Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer.") }}</span>
             <span class="kv-enable-badges" aria-live="polite">
-              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
-              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
+              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> {{ _("Kapalı") }}</span>
+              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> {{ _("Açık") }}</span>
             </span>
           </span>
         </label>
@@ -117,14 +117,12 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-calendar-alt"></i>Yıllık Plan Dönemleri
+        <i class="fas fa-calendar-alt"></i>{{ _("Yıllık Plan Dönemleri") }}
       </span>
     </div>
     <div class="mc-card-body">
       <p class="mc-empty-text kv-settings-intro">
-        Açıldığında Stratejik Planlama sayfasında yıl seçici çubuğu görünür.
-        Her plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı tanımlanabilir.
-        Kapalı olduğunda tüm KPI hesapları mevcut <strong>ProcessKpi</strong> değerlerine göre yapılır.
+        {{ _("Açıldığında Stratejik Planlama sayfasında yıl seçici çubuğu görünür. Her plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı tanımlanabilir. Kapalı olduğunda tüm KPI hesapları mevcut <strong>ProcessKpi</strong> değerlerine göre yapılır.") }}
       </p>
       <div class="kv-enable-panel">
         <label class="kv-enable-toggle" for="plan_year_enabled">
@@ -134,11 +132,11 @@
             <span class="kv-enable-toggle-thumb"></span>
           </span>
           <span class="kv-enable-toggle-copy">
-            <span class="kv-enable-toggle-title">Yıllık dönem planlamasını etkinleştir</span>
-            <span class="kv-enable-toggle-sub">SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur.</span>
+            <span class="kv-enable-toggle-title">{{ _("Yıllık dönem planlamasını etkinleştir") }}</span>
+            <span class="kv-enable-toggle-sub">{{ _("SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur.") }}</span>
             <span class="kv-enable-badges" aria-live="polite">
-              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> Kapalı</span>
-              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> Açık</span>
+              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> {{ _("Kapalı") }}</span>
+              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> {{ _("Açık") }}</span>
             </span>
           </span>
         </label>
@@ -146,20 +144,20 @@
 
       <div id="plan-year-start-panel" style="margin-top:16px;" {% if not tenant.plan_year_enabled %}hidden{% endif %}>
         <label class="mc-label" for="plan_year_start" style="font-weight:600; margin-bottom:6px; display:block;">
-          <i class="fas fa-history" style="margin-right:6px; color:var(--mc-primary,#3b82f6);"></i>Geçmiş yılları dahil et
+          <i class="fas fa-history" style="margin-right:6px; color:var(--mc-primary,#3b82f6);"></i>{{ _("Geçmiş yılları dahil et") }}
         </label>
         <p style="margin:0 0 10px; font-size:13px; color:var(--mc-text-muted,#64748b);">
-          Seçilen yıldan bugüne kadar tüm yıllar otomatik oluşturulur. Mevcut SP verisi her yıla kopyalanır; sonradan yıl bazında değiştirilebilir.
+          {{ _("Seçilen yıldan bugüne kadar tüm yıllar otomatik oluşturulur. Mevcut SP verisi her yıla kopyalanır; sonradan yıl bazında değiştirilebilir.") }}
         </p>
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
           <select id="plan_year_start" name="plan_year_start" class="mc-input" style="width:auto; min-width:140px;">
-            <option value="">— Seçin —</option>
+            <option value="">{{ _("— Seçin —") }}</option>
             {% for yr in [2021, 2022, 2023, 2024, 2025, 2026] %}
-            <option value="{{ yr }}" {% if tenant.plan_year_start == yr %}selected{% endif %}>{{ yr }} yılından itibaren</option>
+            <option value="{{ yr }}" {% if tenant.plan_year_start == yr %}selected{% endif %}>{{ _("%(yr)s yılından itibaren", yr=yr) }}</option>
             {% endfor %}
           </select>
           {% if tenant.plan_year_start %}
-          <span style="font-size:13px; color:#16a34a;"><i class="fas fa-check-circle"></i> {{ tenant.plan_year_start }}–bugün arası yıllar aktif</span>
+          <span style="font-size:13px; color:#16a34a;"><i class="fas fa-check-circle"></i> {{ _("%(yr)s–bugün arası yıllar aktif", yr=tenant.plan_year_start) }}</span>
           {% endif %}
         </div>
       </div>
@@ -169,29 +167,29 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-image"></i>Kurum Logosu
+        <i class="fas fa-image"></i>{{ _("Kurum Logosu") }}
       </span>
     </div>
     <div class="mc-card-body">
       <div class="mc-grid-2">
         <div class="mc-form-group">
-          <label class="mc-label">Mevcut Logo</label>
+          <label class="mc-label">{{ _("Mevcut Logo") }}</label>
           {% if logo_url %}
-            <img src="{{ logo_url }}" alt="Kurum logosu">
+            <img src="{{ logo_url }}" alt="{{ _('Kurum logosu') }}">
           {% else %}
             <div class="mc-empty">
-              <div class="mc-empty-title">Logo yok</div>
+              <div class="mc-empty-title">{{ _("Logo yok") }}</div>
             </div>
           {% endif %}
         </div>
         <div class="mc-form-group">
-          <label class="mc-label">Logo Yükle (max 2MB)</label>
+          <label class="mc-label">{{ _("Logo Yükle (max 2MB)") }}</label>
           <input id="kurum_logo" type="file" accept="image/*" class="mc-input">
           <div class="mc-empty-text">
-            JPG/PNG/GIF/WEBP desteklenir.
+            {{ _("JPG/PNG/GIF/WEBP desteklenir.") }}
           </div>
           <button id="btn-logo-upload" type="button" class="mc-btn mc-btn-secondary mc-btn-sm">
-            <i class="fas fa-upload"></i> Logoyu Yükle
+            <i class="fas fa-upload"></i> {{ _("Logoyu Yükle") }}
           </button>
         </div>
       </div>
@@ -200,7 +198,7 @@
 
   <div class="kurum-ayarlar-actions">
     <button id="btn-save" class="mc-btn mc-btn-primary">
-      <i class="fas fa-save"></i> Kaydet
+      <i class="fas fa-save"></i> {{ _("Kaydet") }}
     </button>
   </div>
 

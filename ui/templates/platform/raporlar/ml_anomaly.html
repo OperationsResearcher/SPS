@@ -8,7 +8,7 @@
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
     <h1 class="mc-page-title"><i class="fas fa-brain" style="color:#dc2626;"></i> ML Anomali Tespiti</h1>
-    <p class="mc-page-subtitle">scikit-learn IsolationForest algoritmasıyla KPI ölçümlerinde olağandışı değer tespiti</p>
+    <p class="mc-page-subtitle">{{ _("scikit-learn IsolationForest algoritmasıyla KPI ölçümlerinde olağandışı değer tespiti") }}</p>
   </div>
 </div>
 
@@ -16,22 +16,21 @@
 <div style="max-width:1240px;margin:0 auto 18px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#991b1b;display:flex;gap:10px;align-items:flex-start;">
   <i class="fas fa-circle-info" style="margin-top:2px;flex-shrink:0;color:#dc2626;"></i>
   <div>
-    <strong>IsolationForest nedir?</strong> Z-score gibi istatistiksel eşiklerin ötesine geçen bir makine öğrenmesi yöntemidir.
-    Her PG için tüm tarihsel ölçüm değerleri bir model ile işlenerek <em>normalden sapan</em> ölçümler işaretlenir.
-    <span style="color:#64748b;margin-left:4px;">⚠ En az 6 ölçüm kaydı olan PG'ler analiz edilir; yetersiz veri olanlar atlanır.</span>
-    Analiz <strong>5–15 saniye</strong> sürebilir.
+    {{ _("<strong>IsolationForest nedir?</strong> Z-score gibi istatistiksel eşiklerin ötesine geçen bir makine öğrenmesi yöntemidir. Her PG için tüm tarihsel ölçüm değerleri bir model ile işlenerek <em>normalden sapan</em> ölçümler işaretlenir.") }}
+    <span style="color:#64748b;margin-left:4px;">{{ _("⚠ En az 6 ölçüm kaydı olan PG'ler analiz edilir; yetersiz veri olanlar atlanır.") }}</span>
+    {{ _("Analiz <strong>5–15 saniye</strong> sürebilir.") }}
   </div>
 </div>
 
 <div style="max-width:1240px;margin:0 auto;">
   <div id="ma-loading" style="text-align:center;padding:60px;color:#64748b;">
     <i class="fas fa-spinner fa-spin" style="font-size:24px;"></i>
-    <div style="margin-top:12px;font-size:13px;">ML modeli çalışıyor, lütfen bekleyin…</div>
+    <div style="margin-top:12px;font-size:13px;">{{ _("ML modeli çalışıyor, lütfen bekleyin…") }}</div>
   </div>
   <div id="ma-content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="ma-summary"></div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Tespit Edilen Anomaliler</h3>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_ml_anomaly.tespit_edilen_anomaliler">
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> {{ _("Tespit Edilen Anomaliler") }}</h3>
       <div id="ma-anomalies"></div>
     </div>
   </div>
@@ -41,28 +40,28 @@
 <script>
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const stat = (l, v, c, desc) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">
-    <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
+  const stat = (l, v, c, desc, code) => `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;"${code?` data-card-code="${code}"`:''}>
+    <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${esc(l)}</div>
     <div style="font-size:22px;font-weight:700;color:${c};">${esc(v)}</div>
     ${desc ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:2px;">${esc(desc)}</div>` : ''}
   </div>`;
 
   async function load() {
     try {
-      const j = await (await fetch('/raporlar/api/ml-anomaly', {credentials:'same-origin'})).json();
+      const j = await (await fetch('/reports/api/ml-anomaly', {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('ma-loading').style.display = 'none';
       document.getElementById('ma-content').style.display = 'block';
       const s = j.summary;
       document.getElementById('ma-summary').innerHTML = [
-        stat('Analiz Edilen PG',       s.kpis_analyzed, '#0f172a',  'IsolationForest modeli çalıştırıldı'),
-        stat('Yetersiz Veri (Atlandı)', s.kpis_skipped,  '#94a3b8',  'En az 6 ölçüm gerekir'),
-        stat('Anomali Tespit Edildi',   s.anomalies_found, s.anomalies_found > 0 ? '#dc2626' : '#10b981', 'Olağandışı ölçüm noktaları'),
+        stat(t('Analiz Edilen PG'),       s.kpis_analyzed, '#0f172a',  t('IsolationForest modeli çalıştırıldı'), 'raporlar_ml_anomaly.analiz_edilen_pg'),
+        stat(t('Yetersiz Veri (Atlandı)'), s.kpis_skipped,  '#94a3b8',  t('En az 6 ölçüm gerekir'), 'raporlar_ml_anomaly.yetersiz_veri_atlandi'),
+        stat(t('Anomali Tespit Edildi'),   s.anomalies_found, s.anomalies_found > 0 ? '#dc2626' : '#10b981', t('Olağandışı ölçüm noktaları'), 'raporlar_ml_anomaly.anomali_tespit_edildi'),
       ].join('');
 
       const el = document.getElementById('ma-anomalies');
       if (!j.anomalies.length) {
-        el.innerHTML = '<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:10px;"></i>Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda.</div>';
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:10px;"></i>${t("Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda.")}</div>`;
         return;
       }
       el.innerHTML = '<div style="display:grid;gap:8px;">' + j.anomalies.map(a => `
@@ -74,14 +73,14 @@
           </div>
           <div style="text-align:right;flex-shrink:0;">
             <div style="font-weight:700;color:#dc2626;font-size:15px;">${a.value}</div>
-            <div style="font-size:10.5px;color:#94a3b8;">Anomali skoru: ${a.anomaly_score}</div>
+            <div style="font-size:10.5px;color:#94a3b8;">${t("Anomali skoru:")} ${a.anomaly_score}</div>
           </div>
         </div>`).join('') + '</div>';
     } catch(e) {
       document.getElementById('ma-loading').style.display = 'none';
       const err = document.getElementById('ma-error');
       err.style.display = 'block';
-      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Hata: ' + esc(e.message);
+      err.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + t("Hata:") + ' ' + esc(e.message);
     }
   }
   load();

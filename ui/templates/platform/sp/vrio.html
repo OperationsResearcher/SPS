@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}VRIO Matrisi — Kokpitim{% endblock %}
-{% block page_title %}VRIO Analizi (Resource-Based View){% endblock %}
+{% block title %}{{ _("VRIO Matrisi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("VRIO Analizi (Resource-Based View)") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_vrio">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'VRIO', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Stratejik Planlama'), 'url': url_for('app_bp.sp_menu')}, {'label': _('VRIO'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,32 +19,32 @@
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-gem"></i> VRIO Analizi
+        <i class="fas fa-gem"></i> {{ _("VRIO Analizi") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Barney çerçevesi — kurumunuzun kaynak ve yeteneklerini 4 soru ile sınıflandırıp <b>rekabet avantajı tipini</b> belirler.
+        {{ _("Barney çerçevesi — kurumunuzun kaynak ve yeteneklerini 4 soru ile sınıflandırıp <b>rekabet avantajı tipini</b> belirler.") }}
       </p>
     </div>
-    <button class="mc-btn mc-btn-primary" id="vrio-new"><i class="fas fa-plus"></i> Yeni Kaynak</button>
+    <button class="mc-btn mc-btn-primary" id="vrio-new"><i class="fas fa-plus"></i> {{ _("Yeni Kaynak") }}</button>
   </div>
 
   <!-- VRIO Açıklama Kartları -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:16px;">
-    <div class="mc-card" style="padding:12px;border-left:3px solid #0ea5e9;">
-      <div style="font-weight:700;color:#0ea5e9;font-size:13px;">V — Değerli mi?</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">Bu kaynak müşteri için değer yaratıyor mu? Bir tehdidi azaltıyor veya fırsatı kullanmaya yarıyor mu?</div>
+    <div class="mc-card mc-card--accent-info" style="padding:12px">
+      <div style="font-weight:700;color:#0ea5e9;font-size:13px;">{{ _("V — Değerli mi?") }}</div>
+      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Bu kaynak müşteri için değer yaratıyor mu? Bir tehdidi azaltıyor veya fırsatı kullanmaya yarıyor mu?") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px;border-left:3px solid #8b5cf6;">
-      <div style="font-weight:700;color:#8b5cf6;font-size:13px;">R — Nadir mi?</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?</div>
+    <div class="mc-card mc-card--accent-info" style="padding:12px">
+      <div style="font-weight:700;color:#8b5cf6;font-size:13px;">{{ _("R — Nadir mi?") }}</div>
+      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px;border-left:3px solid #f59e0b;">
-      <div style="font-weight:700;color:#f59e0b;font-size:13px;">I — Taklit Edilemez mi?</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">Rakipler kopyalamaya çalışsa zorlanır mı? (yüksek maliyet, hukuki engel, kültürel bağ)</div>
+    <div class="mc-card mc-card--accent-warning" style="padding:12px">
+      <div style="font-weight:700;color:#f59e0b;font-size:13px;">{{ _("I — Taklit Edilemez mi?") }}</div>
+      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Rakipler kopyalamaya çalışsa zorlanır mı? (yüksek maliyet, hukuki engel, kültürel bağ)") }}</div>
     </div>
-    <div class="mc-card" style="padding:12px;border-left:3px solid #059669;">
-      <div style="font-weight:700;color:#059669;font-size:13px;">O — Organize mi?</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?</div>
+    <div class="mc-card mc-card--accent-success" style="padding:12px">
+      <div style="font-weight:700;color:#059669;font-size:13px;">{{ _("O — Organize mi?") }}</div>
+      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?") }}</div>
     </div>
   </div>
 
@@ -52,14 +52,14 @@
     <table id="vrio-tbl" style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead>
         <tr style="background:#f1f5f9;">
-          <th style="padding:8px;text-align:left;">Kaynak</th>
-          <th style="padding:8px;text-align:left;">Kategori</th>
-          <th style="padding:8px;text-align:center;" title="Değerli mi?">V</th>
-          <th style="padding:8px;text-align:center;" title="Nadir mi?">R</th>
-          <th style="padding:8px;text-align:center;" title="Taklit Edilemez mi?">I</th>
-          <th style="padding:8px;text-align:center;" title="Organize mi?">O</th>
-          <th style="padding:8px;text-align:left;">Sonuç</th>
-          <th style="padding:8px;text-align:center;">İşlem</th>
+          <th style="padding:8px;text-align:left;">{{ _("Kaynak") }}</th>
+          <th style="padding:8px;text-align:left;">{{ _("Kategori") }}</th>
+          <th style="padding:8px;text-align:center;" title="{{ _('Değerli mi?') }}">V</th>
+          <th style="padding:8px;text-align:center;" title="{{ _('Nadir mi?') }}">R</th>
+          <th style="padding:8px;text-align:center;" title="{{ _('Taklit Edilemez mi?') }}">I</th>
+          <th style="padding:8px;text-align:center;" title="{{ _('Organize mi?') }}">O</th>
+          <th style="padding:8px;text-align:left;">{{ _("Sonuç") }}</th>
+          <th style="padding:8px;text-align:center;">{{ _("İşlem") }}</th>
         </tr>
       </thead>
       <tbody id="vrio-body"></tbody>
@@ -68,13 +68,13 @@
 
   <!-- Sınıflandırma Açıklama -->
   <div class="mc-card" style="padding:14px;margin-top:16px;">
-    <h4 style="margin:0 0 10px;font-size:14px;color:#0f172a;">📊 Sonuç Sınıflandırması</h4>
+    <h4 style="margin:0 0 10px;font-size:14px;color:#0f172a;">📊 {{ _("Sonuç Sınıflandırması") }}</h4>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:12px;">
-      <div><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">Rekabetçi Dezavantaj</span><div style="color:#64748b;margin-top:4px;">Değerli değil → kaynak iş yaramıyor.</div></div>
-      <div><span style="background:#94a3b8;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">Rekabet Paritesi</span><div style="color:#64748b;margin-top:4px;">Değerli ama nadir değil → herkeste var.</div></div>
-      <div><span style="background:#0ea5e9;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">Geçici Rekabet Avantajı</span><div style="color:#64748b;margin-top:4px;">Değerli + nadir ama taklit edilebilir.</div></div>
-      <div><span style="background:#f59e0b;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">Kullanılmayan Avantaj</span><div style="color:#64748b;margin-top:4px;">VRI ✓ ama organizasyon eksik — potansiyel kaybediliyor.</div></div>
-      <div><span style="background:#059669;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">Sürdürülebilir Rekabet Avantajı</span><div style="color:#64748b;margin-top:4px;">VRIO ✓✓✓✓ — kurumsal kale.</div></div>
+      <div><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Rekabetçi Dezavantaj") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli değil → kaynak iş yaramıyor.") }}</div></div>
+      <div><span style="background:#94a3b8;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Rekabet Paritesi") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli ama nadir değil → herkeste var.") }}</div></div>
+      <div><span style="background:#0ea5e9;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Geçici Rekabet Avantajı") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli + nadir ama taklit edilebilir.") }}</div></div>
+      <div><span style="background:#f59e0b;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Kullanılmayan Avantaj") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("VRI ✓ ama organizasyon eksik — potansiyel kaybediliyor.") }}</div></div>
+      <div><span style="background:#059669;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Sürdürülebilir Rekabet Avantajı") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("VRIO ✓✓✓✓ — kurumsal kale.") }}</div></div>
     </div>
   </div>
 </div>
@@ -102,12 +102,12 @@
     const j = await r.json();
     const tbody = document.getElementById('vrio-body');
     if (!j.items || !j.items.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="padding:30px;text-align:center;color:#64748b;">Henüz kaynak eklenmedi. Üstteki <b>"Yeni Kaynak"</b> butonuyla başlayın.</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="8" style="padding:30px;text-align:center;color:#64748b;">${t("Henüz kaynak eklenmedi. Üstteki")} <b>"${t("Yeni Kaynak")}"</b> ${t("butonuyla başlayın.")}</td></tr>`;
       return;
     }
     const catLabels = {
-      'tangible':'Maddi Varlık', 'intangible':'Maddi Olmayan Varlık',
-      'human':'İnsan Kaynağı', 'financial':'Finansal', 'organizational':'Organizasyonel'
+      'tangible':t('Maddi Varlık'), 'intangible':t('Maddi Olmayan Varlık'),
+      'human':t('İnsan Kaynağı'), 'financial':t('Finansal'), 'organizational':t('Organizasyonel')
     };
     tbody.innerHTML = j.items.map(r => `
       <tr style="border-bottom:1px solid #e2e8f0;">
@@ -125,15 +125,15 @@
 
   window.vrio_delete = async function(rid, name) {
     const ok = await Swal.fire({
-      icon:'warning', title:'Sil?',
-      text:`"${name}" kaynağı silinecek.`,
-      showCancelButton:true, confirmButtonText:'Sil', cancelButtonText:'İptal',
+      icon:'warning', title:t('Sil?'),
+      text:`"${name}" ${t("kaynağı silinecek.")}`,
+      showCancelButton:true, confirmButtonText:t('Sil'), cancelButtonText:t('İptal'),
       confirmButtonColor:'#dc2626'
     });
     if (!ok.isConfirmed) return;
     const r = await fetch('/sp/api/vrio/' + rid, {method:'DELETE'});
     if (r.ok) load();
-    else Swal.fire({icon:'error',title:'Hata',text:'Silinemedi'});
+    else Swal.fire({icon:'error',title:t('Hata'),text:t('Silinemedi')});
   };
 
   window.vrio_update = async function(rid, field, value) {
@@ -147,39 +147,39 @@
 
   document.getElementById('vrio-new').onclick = async () => {
     const { value: form } = await Swal.fire({
-      title: 'Yeni Kaynak / Yetenek',
+      title: t('Yeni Kaynak / Yetenek'),
       width: 540,
       html: `
         <div style="text-align:left;font-size:12.5px;color:#475569;margin-bottom:12px;line-height:1.5;">
-          <b>Kaynak (Resource)</b> = kurumun sahip olduğu varlık (marka, patent, ekip, sermaye).<br>
-          <b>Yetenek (Capability)</b> = kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim verimi).
+          <b>${t("Kaynak (Resource)")}</b> = ${t("kurumun sahip olduğu varlık (marka, patent, ekip, sermaye).")}<br>
+          <b>${t("Yetenek (Capability)")}</b> = ${t("kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim verimi).")}
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Ad</label>
-          <input id="vr-name" class="swal2-input" style="margin:0;width:100%;" placeholder="Örn: Endüstriyel patent portföyü">
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Ad")}</label>
+          <input id="vr-name" class="swal2-input" style="margin:0;width:100%;" placeholder="${t('Örn: Endüstriyel patent portföyü')}">
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Kategori</label>
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Kategori")}</label>
           <select id="vr-cat" class="swal2-input" style="margin:0;width:100%;">
-            <option value="tangible">Maddi Varlık (bina, makine, stok)</option>
-            <option value="intangible" selected>Maddi Olmayan Varlık (marka, patent, itibar)</option>
-            <option value="human">İnsan Kaynağı (yetkinlik, deneyim)</option>
-            <option value="financial">Finansal (sermaye, nakit akışı)</option>
-            <option value="organizational">Organizasyonel (kültür, süreç, sistem)</option>
+            <option value="tangible">${t("Maddi Varlık (bina, makine, stok)")}</option>
+            <option value="intangible" selected>${t("Maddi Olmayan Varlık (marka, patent, itibar)")}</option>
+            <option value="human">${t("İnsan Kaynağı (yetkinlik, deneyim)")}</option>
+            <option value="financial">${t("Finansal (sermaye, nakit akışı)")}</option>
+            <option value="organizational">${t("Organizasyonel (kültür, süreç, sistem)")}</option>
           </select>
         </div>
         <div style="text-align:left;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">Açıklama (opsiyonel)</label>
-          <textarea id="vr-desc" class="swal2-textarea" style="margin:0;width:100%;" placeholder="Kaynağı kısaca açıklayın"></textarea>
+          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Açıklama (opsiyonel)")}</label>
+          <textarea id="vr-desc" class="swal2-textarea" style="margin:0;width:100%;" placeholder="${t('Kaynağı kısaca açıklayın')}"></textarea>
         </div>
       `,
-      confirmButtonText: 'Ekle',
-      cancelButtonText: 'İptal',
+      confirmButtonText: t('Ekle'),
+      cancelButtonText: t('İptal'),
       showCancelButton: true,
       focusConfirm: false,
       preConfirm: () => {
         const name = document.getElementById('vr-name').value.trim();
-        if (!name) { Swal.showValidationMessage('Ad gerekli'); return false; }
+        if (!name) { Swal.showValidationMessage(t('Ad gerekli')); return false; }
         return {
           name,
           category: document.getElementById('vr-cat').value,
@@ -193,7 +193,7 @@
       body: JSON.stringify(form),
     });
     if (r.ok) load();
-    else Swal.fire({icon:'error',title:'Hata',text:'Kaynak eklenemedi'});
+    else Swal.fire({icon:'error',title:t('Hata'),text:t('Kaynak eklenemedi')});
   };
 
   load();

@@ -1,9 +1,9 @@
 {% extends "platform/base.html" %}
-{% block title %}İstatistikler — Kokpitim{% endblock %}
-{% block page_title %}İstatistikler{% endblock %}
+{% block title %}{{ _("İstatistikler — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("İstatistikler") }}{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Admin Araçları', 'url': url_for('app_bp.admin_tools_home')}, {'label': 'İstatistikler', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('İstatistikler'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -12,18 +12,18 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-chart-column" style="color:#6366f1;"></i> İstatistikler
+        <i class="fas fa-chart-column" style="color:#6366f1;"></i> {{ _("İstatistikler") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır.
+        {{ _("Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır.") }}
       </p>
     </div>
   </div>
 
   {% if not stats %}
-  <div class="mc-card" style="padding:16px;border-left:4px solid #dc2626;background:#fef2f2;">
+  <div class="mc-card mc-card--accent-danger" style="padding:16px;background:#fef2f2">
     <i class="fas fa-circle-exclamation" style="color:#b91c1c;"></i>
-    <span style="font-size:13px;color:#991b1b;">İstatistikler alınamadı.</span>
+    <span style="font-size:13px;color:#991b1b;">{{ _("İstatistikler alınamadı.") }}</span>
   </div>
   {% else %}
 
@@ -31,15 +31,15 @@
   {% set t = stats.totals %}
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px;">
     {% set cards = [
-      ('Kurum', stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe'),
-      ('Kullanıcı', t.users, 'fa-users', '#7c3aed', '#ede9fe'),
-      ('Ana Strateji', t.strategies, 'fa-bullseye', '#b45309', '#fef3c7'),
-      ('Alt Strateji', t.sub_strategies, 'fa-list-ul', '#b45309', '#fffbeb'),
-      ('Süreç', t.processes, 'fa-diagram-project', '#0e7490', '#ecfeff'),
+      (_('Kurum'), stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe'),
+      (_('Kullanıcı'), t.users, 'fa-users', '#7c3aed', '#ede9fe'),
+      (_('Ana Strateji'), t.strategies, 'fa-bullseye', '#b45309', '#fef3c7'),
+      (_('Alt Strateji'), t.sub_strategies, 'fa-list-ul', '#b45309', '#fffbeb'),
+      (_('Süreç'), t.processes, 'fa-diagram-project', '#0e7490', '#ecfeff'),
       ('PG', t.kpis, 'fa-gauge-high', '#15803d', '#f0fdf4'),
-      ('PG Verisi', t.kpi_data, 'fa-database', '#16a34a', '#f0fdf4'),
-      ('Proje', t.projects, 'fa-folder-open', '#9333ea', '#faf5ff'),
-      ('Proje Task', t.tasks, 'fa-list-check', '#9333ea', '#faf5ff')
+      (_('PG Verisi'), t.kpi_data, 'fa-database', '#16a34a', '#f0fdf4'),
+      (_('Proje'), t.projects, 'fa-folder-open', '#9333ea', '#faf5ff'),
+      (_('Proje Task'), t.tasks, 'fa-list-check', '#9333ea', '#faf5ff')
     ] %}
     {% for label, value, icon, color, bg in cards %}
     <div class="mc-card" style="padding:14px;">
@@ -58,22 +58,22 @@
   <div class="mc-card" style="padding:0;overflow:hidden;">
     <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">
       <i class="fas fa-table" style="color:#475569;"></i>
-      <span style="font-size:14px;font-weight:700;color:var(--text-default);">Kurum Bazında Dağılım</span>
-      <span style="font-size:12px;color:#94a3b8;">({{ stats.tenant_count }} aktif kurum)</span>
+      <span style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Kurum Bazında Dağılım") }}</span>
+      <span style="font-size:12px;color:#94a3b8;">{{ _("(%(n)s aktif kurum)", n=stats.tenant_count) }}</span>
     </div>
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;">
         <thead>
           <tr style="background:#f8fafc;color:#475569;text-align:right;">
-            <th style="padding:9px 12px;text-align:left;position:sticky;left:0;background:#f8fafc;">Kurum</th>
-            <th style="padding:9px 12px;">Kullanıcı</th>
-            <th style="padding:9px 12px;">Ana Str.</th>
-            <th style="padding:9px 12px;">Alt Str.</th>
-            <th style="padding:9px 12px;">Süreç</th>
+            <th style="padding:9px 12px;text-align:left;position:sticky;left:0;background:#f8fafc;">{{ _("Kurum") }}</th>
+            <th style="padding:9px 12px;">{{ _("Kullanıcı") }}</th>
+            <th style="padding:9px 12px;">{{ _("Ana Str.") }}</th>
+            <th style="padding:9px 12px;">{{ _("Alt Str.") }}</th>
+            <th style="padding:9px 12px;">{{ _("Süreç") }}</th>
             <th style="padding:9px 12px;">PG</th>
-            <th style="padding:9px 12px;">PG Verisi</th>
-            <th style="padding:9px 12px;">Proje</th>
-            <th style="padding:9px 12px;">Proje Task</th>
+            <th style="padding:9px 12px;">{{ _("PG Verisi") }}</th>
+            <th style="padding:9px 12px;">{{ _("Proje") }}</th>
+            <th style="padding:9px 12px;">{{ _("Proje Task") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -104,13 +104,13 @@
           </tr>
           {% endif %}
           {% else %}
-          <tr><td colspan="9" style="padding:18px;text-align:center;color:#94a3b8;">Aktif kurum yok.</td></tr>
+          <tr><td colspan="9" style="padding:18px;text-align:center;color:#94a3b8;">{{ _("Aktif kurum yok.") }}</td></tr>
           {% endfor %}
         </tbody>
         {% if stats.rows %}
         <tfoot>
           <tr style="border-top:2px solid #e2e8f0;background:#f1f5f9;text-align:right;font-weight:800;color:#1e293b;">
-            <td style="padding:10px 12px;text-align:left;position:sticky;left:0;background:#f1f5f9;">SİSTEM TOPLAMI</td>
+            <td style="padding:10px 12px;text-align:left;position:sticky;left:0;background:#f1f5f9;">{{ _("SİSTEM TOPLAMI") }}</td>
             {% for m in stats.metrics %}
             <td style="padding:10px 12px;">{{ "{:,}".format(t[m]).replace(",", ".") }}</td>
             {% endfor %}

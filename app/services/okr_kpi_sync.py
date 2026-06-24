@@ -16,6 +16,7 @@ from typing import Optional
 from extensions import db
 from app.models.okr import OkrKeyResult
 from app.models.process import KpiData, ProcessKpi
+from flask_babel import gettext as _
 
 
 def _latest_actual_value(kpi_id: int) -> Optional[float]:
@@ -38,13 +39,13 @@ def sync_kr_from_kpi(kr_id: int) -> dict:
     """Belirli bir KR'yi bağlı KPI'sından senkronize et."""
     kr = OkrKeyResult.query.get(kr_id)
     if not kr:
-        return {"success": False, "message": "KR bulunamadı"}
+        return {"success": False, "message": _("KR bulunamadı")}
     if not kr.linked_process_kpi_id:
-        return {"success": False, "message": "KR bağlı KPI yok"}
+        return {"success": False, "message": _("KR bağlı KPI yok")}
 
     val = _latest_actual_value(kr.linked_process_kpi_id)
     if val is None:
-        return {"success": False, "message": "KPI'da son değer yok"}
+        return {"success": False, "message": _("KPI'da son değer yok")}
 
     old = kr.current_value
     kr.current_value = val

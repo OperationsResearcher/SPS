@@ -10,6 +10,7 @@ from platform_core import app_bp
 from app.models.portfolio_project import Project, Task
 from app_platform.modules.proje.helpers import kanban_task_buckets
 from app_platform.modules.proje.permissions import user_can_access_project
+from flask_babel import gettext as _
 
 
 @app_bp.route("/project/<int:project_id>/views/calendar")
@@ -17,7 +18,7 @@ from app_platform.modules.proje.permissions import user_can_access_project
 def project_view_calendar(project_id: int):
     proj = Project.query.get_or_404(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
     return render_template("platform/project/calendar.html", project=proj)
 
@@ -27,7 +28,7 @@ def project_view_calendar(project_id: int):
 def project_view_gantt(project_id: int):
     proj = Project.query.get_or_404(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
     tasks = Task.query.filter_by(project_id=project_id).all()
     return render_template("platform/project/gantt.html", project=proj, tasks=tasks)
@@ -38,7 +39,7 @@ def project_view_gantt(project_id: int):
 def project_view_raid(project_id: int):
     proj = Project.query.get_or_404(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
     return render_template("platform/project/raid.html", project=proj)
 
@@ -52,7 +53,7 @@ def project_view_kapasite(project_id: int):
     """
     proj = Project.query.get_or_404(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
     # Kapasite atanabilecek ekip: lider + üye (tekilleştir)
     ekip = {}
@@ -71,7 +72,7 @@ def project_view_kapasite(project_id: int):
 def project_view_kanban(project_id: int):
     proj = Project.query.get_or_404(project_id)
     if not user_can_access_project(current_user, proj):
-        flash("Bu projeye erişim yetkiniz yok.", "danger")
+        flash(_("Bu projeye erişim yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_list"))
     tasks = Task.query.filter_by(project_id=project_id).all()
     tasks_todo, tasks_inprogress, tasks_done = kanban_task_buckets(tasks)

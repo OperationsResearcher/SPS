@@ -3,7 +3,7 @@
 {% block page_title %}K-Radar{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'K-Radar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('K-Radar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -13,58 +13,58 @@
       <i class="fas fa-satellite-dish" style="color:#0ea5e9;"></i> K-Radar
     </h1>
     <p style="font-size:13.5px; color:#64748b; margin:0;">
-      Stratejik, operasyonel, finansal ve dönüşüm raporları — tüm tenant'ta gerçek zamanlı içgörüler.
+      {{ _("Stratejik, operasyonel, finansal ve dönüşüm raporları — tüm tenant'ta gerçek zamanlı içgörüler.") }}
     </p>
   </div>
 
   {% set items = [
-    {'url': url_for('app_bp.raporlar_veri_kalitesi'),       'icon': 'fa-database',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': 'Veri Kalitesi',                 'desc': 'PG doluluk, eksik alan ve son giriş tarihleri', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_pg_proje_etki'),       'icon': 'fa-diagram-project',  'color': '#6366f1', 'bg': '#eef2ff', 'name': 'PG × Proje Çapraz Etki',        'desc': 'Hangi proje hangi PG\'leri etkiliyor?', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_kv_carpiklik'),        'icon': 'fa-balance-scale',    'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': 'K-Vektör Çarpıklık',            'desc': 'Strateji ağırlığı × gerçek skor uyumsuzluğu', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_hizalama_sankey'),     'icon': 'fa-project-diagram',  'color': '#4f46e5', 'bg': '#eef2ff', 'name': 'Stratejik Akış Haritası',     'desc': 'Vizyon → strateji → süreç → PG akış görseli', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_hedef_revizyon'),      'icon': 'fa-history',          'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'PG Hedef Revizyon Sıklığı',     'desc': 'Yıl içinde hedef değişen PG\'ler', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_departman_performans'),'icon': 'fa-users-cog',        'color': '#db2777', 'bg': '#fdf2f8', 'name': 'Departman Performans Skoru',    'desc': 'Departman bazlı bireysel PG ortalaması', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_yonetici_liderlik'),   'icon': 'fa-user-tie',         'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'Yönetici Liderlik Skoru',       'desc': 'Süreç liderlerinin etkinlik puanı', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_initiative_bubble'),   'icon': 'fa-rocket',           'color': '#ef4444', 'bg': '#fef2f2', 'name': 'Stratejik Girişim Portföyü Balon Grafiği',     'desc': 'Bütçe × ilerleme × öncelik balon grafik', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_sabah_ozeti'),         'icon': 'fa-sun',              'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Operasyonel Sabah Özeti+',      'desc': 'Bugün biten/bekleyen faaliyet & kritik PG', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_evrim_filmi'),         'icon': 'fa-film',             'color': '#9333ea', 'bg': '#faf5ff', 'name': 'Yıllar Arası Evrim Filmi',      'desc': 'Strateji ağacının yıldan yıla animasyonu', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_ai_sunum'),            'icon': 'fa-magic',            'color': '#dc2626', 'bg': '#fff7ed', 'name': 'AI Yıl Sonu Sunum Üretici',     'desc': 'Yönetim kurulu için indirilebilir PPTX', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_veri_kalitesi'),       'icon': 'fa-database',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': _('Veri Kalitesi'),                 'desc': _('PG doluluk, eksik alan ve son giriş tarihleri'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_pg_proje_etki'),       'icon': 'fa-diagram-project',  'color': '#6366f1', 'bg': '#eef2ff', 'name': _('PG × Proje Çapraz Etki'),        'desc': _('Hangi proje hangi PG\'leri etkiliyor?'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_kv_carpiklik'),        'icon': 'fa-balance-scale',    'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': _('K-Vektör Çarpıklık'),            'desc': _('Strateji ağırlığı × gerçek skor uyumsuzluğu'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_hizalama_sankey'),     'icon': 'fa-project-diagram',  'color': '#4f46e5', 'bg': '#eef2ff', 'name': _('Stratejik Akış Haritası'),     'desc': _('Vizyon → strateji → süreç → PG akış görseli'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_hedef_revizyon'),      'icon': 'fa-history',          'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('PG Hedef Revizyon Sıklığı'),     'desc': _('Yıl içinde hedef değişen PG\'ler'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_departman_performans'),'icon': 'fa-users-cog',        'color': '#db2777', 'bg': '#fdf2f8', 'name': _('Departman Performans Skoru'),    'desc': _('Departman bazlı bireysel PG ortalaması'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_yonetici_liderlik'),   'icon': 'fa-user-tie',         'color': '#f59e0b', 'bg': '#fffbeb', 'name': _('Yönetici Liderlik Skoru'),       'desc': _('Süreç liderlerinin etkinlik puanı'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_initiative_bubble'),   'icon': 'fa-rocket',           'color': '#ef4444', 'bg': '#fef2f2', 'name': _('Stratejik Girişim Portföyü Balon Grafiği'),     'desc': _('Bütçe × ilerleme × öncelik balon grafik'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_sabah_ozeti'),         'icon': 'fa-sun',              'color': '#0d9488', 'bg': '#f0fdfa', 'name': _('Operasyonel Sabah Özeti+'),      'desc': _('Bugün biten/bekleyen faaliyet & kritik PG'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_evrim_filmi'),         'icon': 'fa-film',             'color': '#9333ea', 'bg': '#faf5ff', 'name': _('Yıllar Arası Evrim Filmi'),      'desc': _('Strateji ağacının yıldan yıla animasyonu'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_ai_sunum'),            'icon': 'fa-magic',            'color': '#dc2626', 'bg': '#fff7ed', 'name': _('AI Yıl Sonu Sunum Üretici'),     'desc': _('Yönetim kurulu için indirilebilir PPTX'), 'status': 'hazır'},
 
-    {'url': url_for('app_bp.raporlar_sunburst'),            'icon': 'fa-bullseye',         'color': '#4f46e5', 'bg': '#eef2ff', 'name': 'Stratejik Hiyerarşi Sunburst',  'desc': 'Vizyondan PG\'ye tek görsel hiyerarşi', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_vrio_portfoy'),        'icon': 'fa-gem',              'color': '#9333ea', 'bg': '#faf5ff', 'name': 'VRIO Portföy',                  'desc': 'Kaynak sınıflandırma — Sürdürülebilir Avantaj', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_okr_cascade'),         'icon': 'fa-tasks',            'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'OKR Cascade',                   'desc': 'Hedefler + Key Result hiyerarşik görünüm', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_initiative_roadmap'),  'icon': 'fa-road',             'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'Stratejik Girişim Yol Haritası',            'desc': 'Çok yıllık girişim Gantt zaman çizelgesi', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_muda_analizi'),        'icon': 'fa-recycle',          'color': '#16a34a', 'bg': '#f0fdf4', 'name': '7 Muda (İsraf) Analizi',        'desc': 'Lean prensipleri ile süreç verimsizliği', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_cmmi_heatmap'),        'icon': 'fa-layer-group',      'color': '#6366f1', 'bg': '#eef2ff', 'name': 'CMMI Olgunluk Heatmap',         'desc': 'Süreç olgunluk seviyesi (L1-L5) dağılımı', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_op_istatistik'),       'icon': 'fa-chart-area',       'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Operasyonel İstatistik',        'desc': 'Tüm süreçlerin PG + faaliyet sayım tablosu', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_bireysel_hizalama'),   'icon': 'fa-bullseye',         'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': 'Bireysel Hedef Hizalama',       'desc': 'Bireysel PG\'lerin kurum stratejisine bağ oranı', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_risk_heatmap'),        'icon': 'fa-shield-alt',       'color': '#dc2626', 'bg': '#fef2f2', 'name': 'Risk Heatmap (5×5)',            'desc': 'Olasılık × Etki matrisi + Top 10 risk', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_iki_fa'),              'icon': 'fa-key',              'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '2FA Kullanım Raporu',           'desc': 'TOTP etkin oranı + risk altındaki yöneticiler', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_carbon_trend'),        'icon': 'fa-leaf',             'color': '#10b981', 'bg': '#ecfdf5', 'name': 'Carbon Footprint Trend',        'desc': 'Scope 1+2+3 yıllık emisyon trendi', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_ai_danisman'),         'icon': 'fa-robot',            'color': '#6366f1', 'bg': '#eef2ff', 'name': 'AI Strateji Danışmanı',         'desc': 'Strateji pivot önerileri (refocus/sunset/accelerate)', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_ai_coach'),            'icon': 'fa-comments',         'color': '#10b981', 'bg': '#ecfdf5', 'name': 'AI Coach',                      'desc': 'En düşük 3 strateji için aksiyon önerisi', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_early_warning'),       'icon': 'fa-bell',             'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'AI Erken Uyarı',                'desc': 'Son 3+ dönem hedef altı PG tespit', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_sunburst'),            'icon': 'fa-bullseye',         'color': '#4f46e5', 'bg': '#eef2ff', 'name': _('Stratejik Hiyerarşi Sunburst'),  'desc': _('Vizyondan PG\'ye tek görsel hiyerarşi'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_vrio_portfoy'),        'icon': 'fa-gem',              'color': '#9333ea', 'bg': '#faf5ff', 'name': _('VRIO Portföy'),                  'desc': _('Kaynak sınıflandırma — Sürdürülebilir Avantaj'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_okr_cascade'),         'icon': 'fa-tasks',            'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'OKR Cascade',                   'desc': _('Hedefler + Key Result hiyerarşik görünüm'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_initiative_roadmap'),  'icon': 'fa-road',             'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('Stratejik Girişim Yol Haritası'),            'desc': _('Çok yıllık girişim Gantt zaman çizelgesi'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_muda_analizi'),        'icon': 'fa-recycle',          'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('7 Muda (İsraf) Analizi'),        'desc': _('Lean prensipleri ile süreç verimsizliği'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_cmmi_heatmap'),        'icon': 'fa-layer-group',      'color': '#6366f1', 'bg': '#eef2ff', 'name': _('CMMI Olgunluk Heatmap'),         'desc': _('Süreç olgunluk seviyesi (L1-L5) dağılımı'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_op_istatistik'),       'icon': 'fa-chart-area',       'color': '#0d9488', 'bg': '#f0fdfa', 'name': _('Operasyonel İstatistik'),        'desc': _('Tüm süreçlerin PG + faaliyet sayım tablosu'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_bireysel_hizalama'),   'icon': 'fa-bullseye',         'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': _('Bireysel Hedef Hizalama'),       'desc': _('Bireysel PG\'lerin kurum stratejisine bağ oranı'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_risk_heatmap'),        'icon': 'fa-shield-alt',       'color': '#dc2626', 'bg': '#fef2f2', 'name': _('Risk Heatmap (5×5)'),            'desc': _('Olasılık × Etki matrisi + Top 10 risk'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_iki_fa'),              'icon': 'fa-key',              'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': _('2FA Kullanım Raporu'),           'desc': _('TOTP etkin oranı + risk altındaki yöneticiler'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_carbon_trend'),        'icon': 'fa-leaf',             'color': '#10b981', 'bg': '#ecfdf5', 'name': 'Carbon Footprint Trend',        'desc': _('Scope 1+2+3 yıllık emisyon trendi'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_ai_danisman'),         'icon': 'fa-robot',            'color': '#6366f1', 'bg': '#eef2ff', 'name': _('AI Strateji Danışmanı'),         'desc': _('Strateji pivot önerileri (refocus/sunset/accelerate)'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_ai_coach'),            'icon': 'fa-comments',         'color': '#10b981', 'bg': '#ecfdf5', 'name': 'AI Coach',                      'desc': _('En düşük 3 strateji için aksiyon önerisi'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_early_warning'),       'icon': 'fa-bell',             'color': '#f59e0b', 'bg': '#fffbeb', 'name': _('AI Erken Uyarı'),                'desc': _('Son 3+ dönem hedef altı PG tespit'), 'status': 'hazır'},
 
-    {'url': url_for('app_bp.raporlar_cfo_dashboard'),       'icon': 'fa-coins',            'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'CFO Dashboard',                 'desc': 'Bütçe + EVM + LLM maliyet + ROI', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_coo_dashboard'),       'icon': 'fa-cogs',             'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'COO Dashboard',                 'desc': 'Süreç sağlık + darboğaz + olgunluk', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_chro_dashboard'),      'icon': 'fa-users',            'color': '#db2777', 'bg': '#fdf2f8', 'name': 'CHRO Dashboard',                'desc': 'Çalışan + departman + bireysel PG + 2FA', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_quarterly_review'),    'icon': 'fa-calendar-check',   'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'Çeyreklik Review Hazırlayıcı', 'desc': 'AI özet + agenda + ön çalışma soruları', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_strateji_hikayesi'),   'icon': 'fa-book',             'color': '#7c3aed', 'bg': '#faf5ff', 'name': 'AI Strateji Hikayeleştirici',   'desc': 'Yıllar arası stratejik plan evrim anlatımı', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_cfo_dashboard'),       'icon': 'fa-coins',            'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'CFO Dashboard',                 'desc': _('Bütçe + EVM + LLM maliyet + ROI'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_coo_dashboard'),       'icon': 'fa-cogs',             'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'COO Dashboard',                 'desc': _('Süreç sağlık + darboğaz + olgunluk'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_chro_dashboard'),      'icon': 'fa-users',            'color': '#db2777', 'bg': '#fdf2f8', 'name': 'CHRO Dashboard',                'desc': _('Çalışan + departman + bireysel PG + 2FA'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_quarterly_review'),    'icon': 'fa-calendar-check',   'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('Çeyreklik Review Hazırlayıcı'), 'desc': _('AI özet + agenda + ön çalışma soruları'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_strateji_hikayesi'),   'icon': 'fa-book',             'color': '#7c3aed', 'bg': '#faf5ff', 'name': _('AI Strateji Hikayeleştirici'),   'desc': _('Yıllar arası stratejik plan evrim anlatımı'), 'status': 'hazır'},
 
-    {'url': url_for('app_bp.raporlar_stratejik_yillik'),    'icon': 'fa-book-open',        'color': '#4f46e5', 'bg': '#eef2ff', 'name': '🏆 Stratejik Yıllık Kitap',     'desc': '~35 sayfa PREMIUM PDF — tam yıllık tablo', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_yatirimci_sunum'),     'icon': 'fa-handshake',        'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '🏆 Yatırımcı Sunumu',           '18 slayt PPTX — finansal + ESG + risk': '', 'desc': '18 slayt PPTX — yatırımcı paketinde her şey', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_esg_rapor'),           'icon': 'fa-globe',            'color': '#16a34a', 'bg': '#f0fdf4', 'name': '🏆 ESG Yıllık Rapor',           'desc': 'GRI · CDP · TCFD uyumlu standart PDF', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_audit_paketi'),        'icon': 'fa-file-shield',      'color': '#dc2626', 'bg': '#fef2f2', 'name': '🏆 Audit Çıktı Paketi',         'desc': 'Üçüncü parti denetçi için kurum genel PDF', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_bireysel_karne_batch'),'icon': 'fa-id-card',          'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': '🏆 Bireysel Karne Batch (ZIP)', 'desc': 'Tüm çalışanlar için toplu PDF (ZIP\'te)', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_stratejik_yillik'),    'icon': 'fa-book-open',        'color': '#4f46e5', 'bg': '#eef2ff', 'name': _('🏆 Stratejik Yıllık Kitap'),     'desc': _('~35 sayfa PREMIUM PDF — tam yıllık tablo'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_yatirimci_sunum'),     'icon': 'fa-handshake',        'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': _('🏆 Yatırımcı Sunumu'),           '18 slayt PPTX — finansal + ESG + risk': '', 'desc': _('18 slayt PPTX — yatırımcı paketinde her şey'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_esg_rapor'),           'icon': 'fa-globe',            'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('🏆 ESG Yıllık Rapor'),           'desc': _('GRI · CDP · TCFD uyumlu standart PDF'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_audit_paketi'),        'icon': 'fa-file-shield',      'color': '#dc2626', 'bg': '#fef2f2', 'name': _('🏆 Audit Çıktı Paketi'),         'desc': _('Üçüncü parti denetçi için kurum genel PDF'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_bireysel_karne_batch'),'icon': 'fa-id-card',          'color': '#8b5cf6', 'bg': '#f5f3ff', 'name': _('🏆 Bireysel Karne Batch (ZIP)'), 'desc': _('Tüm çalışanlar için toplu PDF (ZIP\'te)'), 'status': 'hazır'},
 
-    {'url': url_for('app_bp.raporlar_sektorel'),            'icon': 'fa-th-large',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '🌐 Sektörel Plan Paketleri',    'desc': '8 sektör için hazır şablonlar (3 hazır)', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_nlp_query'),           'icon': 'fa-comment-dots',     'color': '#7c3aed', 'bg': '#faf5ff', 'name': '🤖 AI Doğal Dil Sorgu',         'desc': 'Sistemi Türkçe sorularla sorgula', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_sektor_benchmark'),    'icon': 'fa-chart-line',       'color': '#0d9488', 'bg': '#f0fdfa', 'name': '🤖 AI Sektör Benchmark',        'desc': 'Kurum vs sektör ortalamaları + AI yorum', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_sektorel'),            'icon': 'fa-th-large',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': _('🌐 Sektörel Plan Paketleri'),    'desc': _('8 sektör için hazır şablonlar (3 hazır)'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_nlp_query'),           'icon': 'fa-comment-dots',     'color': '#7c3aed', 'bg': '#faf5ff', 'name': _('🤖 AI Doğal Dil Sorgu'),         'desc': _('Sistemi Türkçe sorularla sorgula'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_sektor_benchmark'),    'icon': 'fa-chart-line',       'color': '#0d9488', 'bg': '#f0fdfa', 'name': _('🤖 AI Sektör Benchmark'),        'desc': _('Kurum vs sektör ortalamaları + AI yorum'), 'status': 'hazır'},
 
-    {'url': url_for('app_bp.raporlar_mobile'),              'icon': 'fa-mobile-alt',       'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '📱 Mobile Hub (PWA)',           'desc': 'Cep telefonu için kompakt arayüz önizleme', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_bi_connector'),        'icon': 'fa-database',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '🔌 BI Connector',               'desc': 'Power BI / Tableau / Excel bağlantı endpointleri', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_ml_anomaly'),          'icon': 'fa-brain',            'color': '#dc2626', 'bg': '#fef2f2', 'name': '🧠 ML Anomali (IsolationForest)','desc': 'Z-score\'un ötesi: scikit-learn anomali', 'status': 'hazır'},
-    {'url': url_for('app_bp.raporlar_onay_zinciri'),        'icon': 'fa-stamp',            'color': '#7c3aed', 'bg': '#faf5ff', 'name': '✅ Onay Zinciri (Workflow MVP)', 'desc': 'Stratejik Girişim onay durumu — BPMN ileride', 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_mobile'),              'icon': 'fa-mobile-alt',       'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': _('📱 Mobile Hub (PWA)'),           'desc': _('Cep telefonu için kompakt arayüz önizleme'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_bi_connector'),        'icon': 'fa-database',         'color': '#0ea5e9', 'bg': '#e0f2fe', 'name': '🔌 BI Connector',               'desc': _('Power BI / Tableau / Excel bağlantı endpointleri'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_ml_anomaly'),          'icon': 'fa-brain',            'color': '#dc2626', 'bg': '#fef2f2', 'name': '🧠 ML Anomali (IsolationForest)','desc': _('Z-score\'un ötesi: scikit-learn anomali'), 'status': 'hazır'},
+    {'url': url_for('app_bp.raporlar_onay_zinciri'),        'icon': 'fa-stamp',            'color': '#7c3aed', 'bg': '#faf5ff', 'name': _('✅ Onay Zinciri (Workflow MVP)'), 'desc': _('Stratejik Girişim onay durumu — BPMN ileride'), 'status': 'hazır'},
   ] %}
 
   <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">
@@ -75,11 +75,11 @@
        style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-decoration:none; text-align:center; cursor:{{ 'pointer' if is_ready else 'not-allowed' }}; position:relative; {% if not is_ready %}opacity:0.5;{% endif %}"
        {% if not is_ready %}onclick="event.preventDefault(); Swal && Swal.fire({icon:'info',title:'Yakında',text:'Bu rapor henüz yayında değil — yol haritasında planlandı.',timer:2500,showConfirmButton:false});"{% endif %}>
       {% if is_ready %}
-      <span style="position:absolute;top:8px;right:8px;background:#10b981;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">HAZIR</span>
+      <span style="position:absolute;top:8px;right:8px;background:#10b981;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">{{ _("HAZIR") }}</span>
       {% elif it.status == 'planlanmış' %}
-      <span style="position:absolute;top:8px;right:8px;background:#94a3b8;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">YOL HARİTASI</span>
+      <span style="position:absolute;top:8px;right:8px;background:#94a3b8;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">{{ _("YOL HARİTASI") }}</span>
       {% else %}
-      <span style="position:absolute;top:8px;right:8px;background:#f59e0b;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">YAKINDA</span>
+      <span style="position:absolute;top:8px;right:8px;background:#f59e0b;color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">{{ _("YAKINDA") }}</span>
       {% endif %}
       <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:{{ it.bg }};">
         <i class="fas {{ it.icon }}" style="color:{{ it.color }};"></i>
@@ -96,7 +96,7 @@
 
   <div style="margin-top:32px; padding:16px 20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:12.5px; color:#64748b;">
     <i class="fas fa-info-circle" style="color:#0ea5e9;"></i>
-    <b>Not:</b> Bu bölüm <a href="/docs/rapor/27mayisraporu.md" style="color:#0ea5e9; text-decoration:underline;">27 Mayıs Rapor Önerileri</a> dokümanından seçilen 10 rapor için staging alanıdır. Hazır raporlar zamanla ilgili modüllere (SP, Süreç, Bireysel, K-Radar) taşınacak.
+    {{ _('<b>Not:</b> Bu bölüm <a href="/docs/rapor/27mayisraporu.md" style="color:#0ea5e9; text-decoration:underline;">27 Mayıs Rapor Önerileri</a> dokümanından seçilen 10 rapor için staging alanıdır. Hazır raporlar zamanla ilgili modüllere (SP, Süreç, Bireysel, K-Radar) taşınacak.') }}
   </div>
 </div>
 {% endblock %}

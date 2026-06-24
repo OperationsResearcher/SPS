@@ -22,7 +22,7 @@
     return;
   }
   if (typeof Gantt === "undefined") {
-    if (emptyEl) { emptyEl.style.display = "block"; emptyEl.textContent = "Gantt bileşeni yüklenemedi."; }
+    if (emptyEl) { emptyEl.style.display = "block"; emptyEl.textContent = t("Gantt bileşeni yüklenemedi."); }
     return;
   }
 
@@ -35,7 +35,7 @@
 
   const tasks = projects.map((p) => ({
     id: "proj-" + p.id,
-    name: p.name + "  (skor " + (p.score || 0) + ")",
+    name: p.name + "  (" + t("skor") + " " + (p.score || 0) + ")",
     start: p.start,
     end: p.end,
     progress: 0,
@@ -57,7 +57,7 @@
     });
     void g;
   } catch (e) {
-    if (emptyEl) { emptyEl.style.display = "block"; emptyEl.textContent = "Çizelge oluşturulamadı: " + e.message; }
+    if (emptyEl) { emptyEl.style.display = "block"; emptyEl.textContent = t("Çizelge oluşturulamadı: ") + e.message; }
   }
 
   // Skor renkleri (Frappe bar .bar-progress / .bar). Basit renk override.

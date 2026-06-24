@@ -2,6 +2,986 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-227 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n gözle-doğrulama + FAZ 3 boşluğu kapatma (27 atlanan şablon)
+**Modül:** project/auth/calendar/demo/errors/launcher şablonları, roles.py, translations
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+Yerelde `test_client` + `force_locale` ile gerçek HTTP gözle-doğrulama yapıldı (login'li
+6 sayfa, TR vs EN kelime oranı). Doğrulama FAZ 3'te HİÇ çevrilmemiş 27 şablon ortaya çıkardı
+(project/, auth/login-profil-2fa, calendar/, demo/, errors/, launcher, _hierarchy_help,
+maintenance, api/docs). 4 paralel ajanla çevrildi (~364 yeni msgid).
+
+### Değiştirilen Dosyalar (özet)
+- 27 şablon → `{{ _() }}`; launcher.html + base.html "Yükleniyor…" kaçakları
+- `app/constants/roles.py` → ROLE_LABELS_TR **lazy_gettext** + role_labels_json() (tojson-güvenli)
+- `app/__init__.py` context processor; `admin.js` ROLE_LABELS → t()
+- `scripts/i18n_extract.sh` → `-k _l -k lazy_gettext` (lazy çağrıları yakala)
+- translations, faz3b_tr_en.json
+
+### Kritik Düzeltmeler
+- **"Hoş geldiniz" → "Holding"**: babel fuzzy auto-match yanlış eşlemiş, unfuzzy adımı onaylamıştı
+  → "Welcome" düzeltildi. (Ders: unfuzzy dolu-ama-yanlış çevirileri onaylayabilir; kısa msgid'lerde
+  fuzzy-eşleşme taraması yapıldı, başka sistemik hata bulunmadı.)
+- roles.py lazy_gettext (modül-seviyesi statik gettext TR'ye sabitleniyordu)
+
+### Gözle-Doğrulama Sonucu (test_client, force_locale en)
+- launcher EN: 35→1 TR-kelime (kalan tek "Türkçe" = dil seçici adı, DOĞRU)
+- admin/users EN: 244→76 (kalan = kişi adları, kullanıcı verisi — çevrilemez)
+- /sp, /desktop EN: kalan TR'ler tenant'ın girdiği strateji/süreç İÇERİĞİ (veri, çevrilemez)
+- Tüm sayfalar HTTP 200. EN katalog 4295: 0 boş/fuzzy/%%-uyumsuz.
+
+### Notlar
+i18n statik UI katmanı artık eksiksiz (~4295 msgid). Kalan TR metinler yalnızca kullanıcı/tenant
+VERİSİ (girilen strateji adları, kişi adları) — bunlar i18n kapsamı değil. ~18 i18n commit'i daha,
+**push YOK / deploy YOK**.
+
+## TASK-226 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 5c — Python UI label/sabit + rapor içerikleri çevirisi (son eksik)
+**Modül:** module_registry, demo, api, raporlar/faz*, efqm/koe/öneri servisleri, translations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (özet)
+- `micro/core/module_registry.py` → sidebar modül adları/açıklamaları **lazy_gettext**
+- `micro/modules/demo/routes.py` → rol etiketleri lazy_gettext (+session yazımında str())
+- `micro/modules/api/routes.py` → Swagger desc; `raporlar/routes_faz0-4.py` → rapor başlık/bölüm/KPI label
+- `app/services/{efqm_assessment,koe_service,recommendation_service,ai_pivot_advisor,report,admin_logs}.py` → kriter/öneri/tablo etiketleri
+- `translations/{en,tr}`, `messages.pot`, supplement.json (3173), pylabel_tr_en.json
+
+### Yapılan İşlem
+Kullanıcı onayıyla (kapsam: tüm label + rapor içerikleri) bağlam-duyarlı 4 paralel ajan.
+Her ajan SADECE response/render'a giden görünür sabitleri sardı.
+
+### Kritik Bulgu — lazy_gettext
+Modül-seviyesi sabitler (`MODULES=[...]`, `DEMO_ROLES={...}`) import-time'da bir kez
+değerlenir → düz `gettext` orada TR'ye sabitlenir, dil değişince ÇEVRİLMEZ. Çözüm:
+bu dosyalarda `gettext as _` → **`lazy_gettext as _`** (her erişimde aktif locale).
+Doğrulama: `MODULES[0]['name']` EN="My Desktop" / TR="Masaüstüm" (dinamik). demo session'a
+yazılan label `str()` ile düz metne çevrildi (lazy obje JSON-serileştirilemez).
+
+### Bağlam-Duyarlı Atlananlar (kasıtlı, DOKUNULMADI)
+DB'ye seed edilen değerler, sözlük anahtarları, ==/enum/durum kodları, "birim" sembolleri
+(%, PPM, ‰, tCO₂e), log/exception mesajları, LLM system_prompt'ları, dosya/endpoint adları.
+seed JSON (`templates_data/*.json`) ve `.pyc` kapsam dışı.
+
+### Final Kontrol (hepsi ✅)
+py_compile 0 fail · app import OK · EN katalog **3921 girdi: 0 boş/fuzzy/%%-uyumsuz** ·
+lazy render TR↔EN dinamik doğrulandı · t/_ shadow taraması temiz.
+
+### Notlar
+i18n artık TAM kapsamlı: şablon `_()` + JS `t()` + inline-script `t()` + flash `_()` +
+API message `_()` + Python sabit `_()`/`lazy_gettext()`. Toplam ~3900 msgid çevrili.
+~15 i18n commit'i daha, **push YOK / deploy YOK** (kullanıcı kısıtı).
+
+## TASK-225 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n eksiklikleri kapatıldı — FAZ 4b (inline-script) + FAZ 5b (API message)
+**Modül:** ui/templates inline <script>, backend API yanıtları, translations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (özet)
+- **FAZ 4b:** 43 şablonun inline `<script>` bloklarında Türkçe → `t("...")`; `extract_inline_t.py` (babel JS extractor .html içi `<script>`'i kaçırıyordu — boşluk giderildi, i18n_extract.sh'e entegre); 418 yeni msgid
+- **FAZ 5b:** 60 backend dosyasında `"message": "TR"` → `"message": _("TR")` (537 yanıt) + gettext import; 277 yeni msgid
+- `translations/{en,tr}`, `messages.pot`, supplement.json (2759), extract_inline_t.py
+
+### Yapılan İşlem
+Önceki turdan bilinçli bırakılan iki eksiklik kapatıldı (kullanıcı onayıyla, kapsam: hepsi).
+6 paralel ajan + merkezi extract→fill→unfuzzy→compile→render-test→commit akışı.
+
+### Kritik Bulgular / Düzeltmeler
+- **Extract boşluğu:** babel `[javascript]` extractor yalnız `.js` tarar; `.html` içi `<script>`
+  `t()` çağrıları katalога hiç girmiyordu → `extract_inline_t.py` regex toplayıcı eklendi.
+- **t shadow:** inline `map((t,..))` callback'leri `t()` helper'ını gölgeliyordu → `it`/`task`.
+- **Python import sırası:** `_` import çok-satır import / `__future__` ortasına düşüyordu (23 dosya) → düzeltildi.
+- **Çok-satır message concatenation** `_()` içine alındı (admin/routes.py).
+
+### Final Kontrol (hepsi ✅)
+274 şablon parse · 75 inline-script + 86 harici JS node --check · 60 .py py_compile · app import ·
+EN katalog **3507 girdi: 0 boş/fuzzy/%%-uyumsuz** · .po format temiz · t-shadow taraması temiz.
+
+### Notlar
+i18n kapsamı artık TAM: şablon `_()` + JS `t()` + inline-script `t()` + flash `_()` + API message `_()`.
+12 i18n commit'i daha (toplam dalda ~47), **push YOK / deploy YOK**. Kalan tek alan: Python enum/sabit
+display label'ları (DB-key riski — kasıtlı dokunulmadı, gerekirse ayrı seçici tur).
+
+## TASK-224 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3-5 tamamlandı — tüm proje çoklu dil (TR/EN) — otonom tur
+**Modül:** k_radar, admin, raporlar, sp, tüm JS, backend flash + translations
+**Durum:** ✅ Tamamlandı (kullanıcı onayı beklemeden, 4 saatlik otonom program)
+
+### Değiştirilen Dosyalar (özet)
+- **FAZ 3g-3j şablonlar:** ui/k_radar (25), admin (17), raporlar (45), sp (31) → `{{ _() }}`
+- **FAZ 4 JS:** 86 JS dosyası → `t("...")`; `app/i18n.py::js_i18n_map()` + base.html `window._I18N`/`window.t()` mekanizması; babel.cfg `[javascript]`; `scripts/i18n_extract.sh` (-k t)
+- **FAZ 5 flash:** 11 backend dosyası, 97 `flash(_("..."))` + gettext import
+- `translations/{en,tr}/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/`: i18n_fill_surec.py (supplement loader + po_escape + çok-satır), i18n_supplement.json (2064), modül JSON sözlükleri
+
+### Yapılan İşlem
+docs/lang/ FAZ 3-5. Modül modül: 6'ya kadar paralel ajan ile `_()`/`t()` işaretleme →
+merkezi extract→fill(supplement)→unfuzzy→compile→render-test→commit. Tutarlı terminoloji
+(PG→PI, Kurum→Organization, K-Vektör→K-Vector; SWOT/OKR/EVM/CMMI marka korundu).
+
+### Kritik Bulgular / Düzeltmeler
+- **% escape:** Flask-Babel `_()` çıktısına daima %-format uygular → argümansız tek `%` = ValueError.
+  Tüm şablonlarda literal `%` → `%%`; supplement değerlerinde de `%%` tutarlılığı.
+- **JS `t` shadow:** `map((t,..))` callback'leri `t()` helper'ını gölgeliyordu (app.js, sp_porter.js,
+  sp_liste_analiz.js) → runtime crash; parametre `it`/`task` olarak yeniden adlandırıldı.
+- **calendar_quick_create.js** UTF-16 BOM → UTF-8 (babel extract için).
+- **menu.html** locale-bağımlı slug/karşılaştırma → URL-tabanlı stabil slug.
+- `js_i18n_map` `flask_babel.get_locale` kullanır (session-tabanlı get_locale force_locale'i görmez).
+
+### Final Kontrol (hepsi ✅)
+274 şablon parse 0 fail · 86 JS syntax 0 fail · EN katalog 2812 girdi: 0 boş/fuzzy/%%-uyumsuz ·
+.po format temiz · tek-% riski 0 · app import OK · EN render çevrili / TR fallback Türkçe.
+
+### Notlar
+9 i18n commit'i `claude/i18n-coklu-dil` dalında, **push YOK / deploy YOK** (kullanıcı kısıtı).
+KALAN (otonom kapsam dışı, kullanıcı dönüşünde): Python sabit/enum display label'ları (DB-key
+riski nedeniyle dokunulmadı), 24 inline `<script>` Swal (şablon içi) — `t()` mevcut, gelecekte taranabilir.
+Eski `(1).py` kopyalarına dokunulmadı (git-takipsiz).
+
+## TASK-223 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3g — k_rapor (K-Report) modülü çevirisi (2 dosya, ~210 metin)
+**Modül:** ui/k_rapor/{index,anomalies}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/k_rapor/index.html` → 22 sekme (kr_tabs n/d), EVM panelleri, risk/uyarı/paydaş/SWOT tabloları, 135 `<th>`, info-band'ler, kart başlıkları `{{ _() }}`
+- `ui/templates/platform/k_rapor/anomalies.html` → KPI anomali tespiti tüm görünür metin
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → k_rapor sözlüğü + **çok-satır msgid 2. geçiş** (uzun HTML info-band'leri için)
+- `translations/{tr,en}/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+
+### Yapılan İşlem
+docs/lang/ FAZ 3g. k_rapor index (955 satır) hibrit (manuel Edit + replace_all + regex script) ile işaretlendi.
+Fill scriptine k_rapor sözlüğü eklendi; tek-satır filler uzun HTML msgid'leri kaçırdığı için
+**çok-satır blok 2. geçişi** yazıldı. PG→PI, K-Vektör→K-Vector. EN katalog: **0 boş, 0 fuzzy**.
+force_locale('en') render testi 12 örnekte geçti; jinja parse OK. Push YOK (kullanıcı i18n push istemedi).
+
+### Notlar
+Fuzzy auto-eşleşmeler (Orta→Average, Kod→Code yanlış bağlam, ST→Hour) tek tek doğru çeviriyle düzeltildi.
+
+## TASK-222 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3f — kurum (Organization) modülü çevirisi (2 dosya)
+**Modül:** ui/kurum/{ayarlar,index}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3f. kurum modülünün 2 template'i (~110 metin) {{ _() }} ile işaretlendi: ayarlar
+(form alanları, K-Vektör/plan-yıl toggle'ları + açıklamalar, logo), index (stratejik kimlik akordeon,
+özet kartlar, süreç/proje özet panelleri — scoped+tenant, akordeon grafikler, stratejiler). EN (PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/kurum/ayarlar.html`, `index.html` → ~110 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +99 string (533 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Verimlilik
+Tekrar eden kısa etiketler (Aktif süreç, Geciken görev, Aktif PG — scoped+tenant 2'şer kez) replace_all
+ile + fill scriptinin tekrar-tek-msgid mantığı sayesinde verimli. HTML içeren çeviriler |safe + named param
+(%(yr)s, %(days)s, %(sp_url)s). compile 0 boş 0 fuzzy. force_locale EN doğrulandı.
+
+### Notlar
+data-card-* (KART kodları), data-ov/data-ov-t (overview anahtarları), JS DOKUNULMADI. "Kurum"→Organization,
+"Özet Bilgiler"→Summary Info fuzzy düzeltmesi. Tamamlanan: base, masaustu, surec(tam), bireysel, bildirim,
+analiz, ayarlar, kurum. Kalan büyük: sp(31), raporlar(45), k_radar, k_rapor, admin.
+
+## TASK-221 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3e — ayarlar (Settings) modülü çevirisi (3 dosya)
+**Modül:** ui/ayarlar/{index,eposta,zamanlanmis_raporlar}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3e. ayarlar modülünün 3 template'i (~70 metin) {{ _() }} ile işaretlendi:
+index (hub: istatistik kartları, tile başlık/açıklamalar), eposta (SMTP formu, bildirim tercihleri,
+test/kaydet), zamanlanmis_raporlar (4 rapor kartı, gün/saat seçiciler, gün isimleri). EN çevirileri (PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/ayarlar/index.html`, `eposta.html`, `zamanlanmis_raporlar.html` → ~70 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +70 string (425 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK (3 dosya). compile 0 boş 0 fuzzy. force_locale EN: "Account Settings|Custom SMTP Server|
+Weekly Strategy Summary|Monday|Organization". Gün isimleri liste indeksleme, named param %(email)s OK.
+
+### Notlar
+data-sub/data-key attribute'ları (weekly_digest, day) ve option value'ları (daily/mon) sabit korundu.
+JS toast metinleri (showToast) DOKUNULMADI — FAZ 4. Tamamlanan: base, masaustu, surec(tam), bireysel,
+bildirim, analiz, ayarlar. Kalan büyük: sp(31), raporlar(45), kurum, k_radar, k_rapor, admin.
+
+## TASK-220 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3d — bildirim (Notification) + analiz (Analysis) modülleri çevirisi
+**Modül:** ui/bildirim/index.html, ui/analiz/index.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3d — iki küçük modül tek dilimde. bildirim (97 satır, ~7 metin: başlık, boş durum, butonlar)
++ analiz (164 satır, ~28 metin: süreç seçici, frekans/tahmin option'ları, istatistik kartları, grafik
+başlıkları, boş durumlar). EN çevirileri (PG→PI). Dinamik içerik (b.title, b.message) DOKUNULMADI.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/bildirim/index.html`, `analiz/index.html` → ~35 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +34 string (333 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK (ikisi). compile 0 boş 0 fuzzy. force_locale EN: "Performance Analytics|Scan Anomalies|
+No notifications|5 notifications|Linear Forecast" (named param %(n)s bildirim dahil).
+
+### Notlar
+forecast/frequency option value'ları (monthly/linear) sabit, görünen çevrildi. Tamamlanan: base, masaustu,
+surec(tam), bireysel, bildirim, analiz. Kalan büyük: sp(31 dosya), raporlar(45), kurum, ayarlar, k_radar, k_rapor, admin.
+
+## TASK-219 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3c — bireysel (Individual) modülü çevirisi
+**Modül:** ui/bireysel/karne.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3c. bireysel/karne.html (298 satır) ~30 görünür HTML metni {{ _() }} ile işaretlendi:
+AI performans özeti, üst bar, ilerleme halkaları (SVG text), istatistik kartları, yıl özeti, timeline,
+PG/faaliyet tabloları (ay isimleri dahil). EN çevirileri (PG→PI). fill scriptine bireysel sözlüğü eklendi.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/bireysel/karne.html` → ~30 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +19 string (315 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK. compile 0 boş 0 fuzzy. force_locale EN: "My Individual Performance Scorecard|My Performance
+Indicators|What did I do this year?|Data Entered".
+
+### Notlar
+JS blokları (AI özet 43-63, halka 112+) DOKUNULMADI — FAZ 4. SVG <text> metni çevrildi (görünür).
+Sıradaki: sp veya raporlar (yoğun). Tamamlanan: base, masaustu, surec(tam), bireysel.
+
+## TASK-218 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3b devamı — surec/karne.html çevirisi (surec modülü TAM)
+**Modül:** ui/surec/karne.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3b son dilim. karne.html (1101 satır, en yoğun template) ~130 görünür HTML metni
+{{ _() }} ile işaretlendi: banner, AI özet, sağlık/KPI widget'ları, kanban (PG+faaliyet), 6 modal
+(PG ekle, veri girişi VGS, geçmiş düzenle/sil, micro PG tablo, veri detay/düzenle, K-Vektör analizi).
+Status/enum value'ları korundu (value="Aktif"/"RG"/"Increasing" sabit, görünen _() çevrildi).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/karne.html` → ~130 metin {{ _() }} (bölüm bölüm, 7 mantıksal grup)
+- `translations/en/LC_MESSAGES/messages.po` → +127 string (296 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → karne sözlüğü eklendi (~130 TR→EN)
+
+### Test
+karne.html Jinja parse OK (status değerleri, %% kaçış, named param %(i)s, liste indeksleme, multi-line
+syntax bozmadı). compile 0 boş 0 fuzzy. force_locale EN: "New Performance Indicator|Target Setting Method|
+Competitor-Based (CB)|Data Entry Wizard|Excellent|3 Points" (named param dahil).
+
+### Notlar
+surec modülü ARTIK TAM İngilizce (faaliyetler+index+karne). JS blokları (956+) DOKUNULMADI — FAZ 4.
+Hedef belirleme kısaltmaları çevrildi (RG→CB, HKY→TCM...) ama value kodları sabit. Sıradaki: bireysel modülü.
+
+## TASK-217 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3b — surec (Process) modülü: faaliyetler + index çevirisi
+**Modül:** ui/surec/{faaliyetler,index}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı (karne.html sonraki dilim)
+
+### Yapılan İşlem
+docs/lang/ FAZ 3b. surec modülünün 2 template'i (faaliyetler 8 + index ~50 metin) {{ _() }} ile işaretlendi:
+breadcrumb, istatistik kartları, kanban kolonları, arama/filtre, boş durum, süreç oluşturma modalı
+(status değerleri, parent, sınırlar, lider/üye seçici), ay kısaltmaları. EN çevirileri dolduruldu (PG→PI,
+K-Vektör→K-Vector). karne.html (1101 satır, ~105 metin) AYRI dilim — sonraki tur.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/faaliyetler.html`, `surec/index.html` → ~58 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +81 string (165 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → tek-seferlik toplu çeviri doldurma scripti
+
+### Verimlilik kararı
+~80 string elle Edit yerine: işaretle → extract → tek-seferlik fill scripti (TR→EN sözlük, sadece BOŞ/fuzzy
+doldurur, insan-onaylı çevirilere dokunmaz) → 81 msgstr tek seferde. Status değerleri value="Aktif" korundu,
+görünen _() ile çevrildi (DB anahtarı sabit). gettext %% kaçışı kullanıldı (% özel karakter).
+
+### Test
+compile 0 boş 0 fuzzy. force_locale EN: "Total Processes|Create New Process|On Target|On Hold|Jan".
+faaliyetler+index Jinja parse OK (liste indeksleme, multi-line, %% kaçış syntax bozmadı).
+
+### Notlar
+JS blokları (index.html 648+, karne.html script'leri) DOKUNULMADI — FAZ 4. Sıradaki: surec/karne.html.
+
+## TASK-216 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3a — masaustu (Desktop) modülü çevirisi
+**Modül:** ui/masaustu/index.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3 ilk dilim (masaustu = ana sayfa, herkes görür). ~40 görünür HTML metni {{ _() }}
+ile işaretlendi: karşılama, KOE widget, istatistik kartları, görev filtreleri, boş durumlar, karalama,
+alt başlıklar, bildirim. EN çevirileri dolduruldu (PG→PI: "Bireysel PG"→"Individual PI").
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/masaustu/index.html` → ~40 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +40 string tam çeviri (79 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot` güncellendi
+
+### Önemli ayrım
+JS template-literal içindeki metinler (${d.total} olan satırlar: 239, 283-297, 300+) DOKUNULMADI —
+bunlar FAZ 4 (JS) kapsamı; {{ _() }} Jinja JS string'inde çalışmaz. Sadece Jinja-render HTML metni sarıldı.
+Domain terimi koe (Kurumsal Olgunluk Endeksi) İngilizce metinde "Organizational Maturity Index" oldu.
+
+### Test
+compile 0 boş 0 fuzzy. force_locale EN render: "Organizational Maturity Index|Individual PI|Overdue|Refresh".
+masaustu template Jinja parse OK (i18n işaretlemeleri syntax bozmadı).
+
+### Notlar
+Sıradaki FAZ 3b: surec/ + surec.js (en yoğun). Akış kanıtlandı: işaretle→extract→update→EN doldur(fuzzy
+temizle)→compile→render test→parse test→commit. Fuzzy otomatik-eşleşmeler tehlikeli (Bireysel PG→yanlış
+"Individual Performance" eşleşmişti), elle düzeltildi.
+
+## TASK-215 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 1 — base.html ortak iskelet çevirisi (sidebar, topbar, dropdown, modal)
+**Modül:** ui/base.html, translations/{tr,en}, babel.cfg, app/i18n
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 1. base.html'deki ~38 ortak UI metni {{ _() }} ile işaretlendi (her sayfada görünür
+sidebar menü, bölüm başlıkları, topbar, kullanıcı dropdown, breadcrumb, kart-bilgi/komut-paleti modalı).
+EN çevirileri UI-TERMINOLOJI'ye uygun dolduruldu (Kurum→Organization, Süreç→Process, PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → ~38 metin {{ _() }} (Kokpitim marka adı korundu)
+- `babel.cfg` → obsolete jinja2.ext.autoescape/with_ extension satırı kaldırıldı (modern Jinja2 reddediyordu)
+- `translations/en/LC_MESSAGES/messages.po` → 38 string tam çevrildi (0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}` → güncellendi (TR=msgid)
+- `app/i18n.py` → **KRİTİK BUG FİX**: BABEL_TRANSLATION_DIRECTORIES göreli "translations" Flask-Babel'de
+  app.root_path'e (=.../app) göre çözülüp app/translations arıyordu → mutlak yola çevrildi (proje kökü)
+- `messages.pot` → extract şablonu (yeniden çeviri referansı)
+
+### Test
+force_locale render testi: EN → "Users | Process Management | Log Out", TR → "Kullanıcılar | Süreç
+Yönetimi" ✅. <html lang> en/tr doğru. Translations.load().gettext('Kullanıcılar')→'Users' byte-eşleşme OK.
+create_app OK, /health 200. (Authenticated sayfa testi şifre gerektirdiği için render testiyle kanıtlandı.)
+
+### Notlar
+KRİTİK ders: göreli translations yolu FAZ 0'da sessizce yanlıştı (gettext locale'i biliyor ama .mo'yu
+app/translations'da arıyor → çevirmiyor). Mutlak yol şart. Sıradaki: FAZ 3 modül modül (masaustu önce).
+Konsol UTF-8 yanılsamasına dikkat — gerçek doğrulama dosyaya UTF-8 yazıp okuyarak yapıldı.
+
+## TASK-214 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 0 — Çoklu dil altyapısını canlıya bağla (paket + dil seçici + set-language)
+**Modül:** app/i18n, app/__init__, base.html (2), requirements
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ planına göre FAZ 0 (altyapıyı canlıya bağla). Önceki yarım i18n iskeleti (Sprint 28/31)
+artık ÇALIŞIYOR. Henüz metin çevrilmedi — bu faz sadece dil değişim mekanizmasını aktif etti.
+
+### Değiştirilen Dosyalar
+- `requirements.txt` + `requirements-ai.txt` → Flask-Babel>=4.0.0
+- `.venv`'e flask-babel kuruldu (pytz null-byte bozulması da onarıldı — bilgisayar kapanışı kaynaklı)
+- `app/i18n.py` → init_babel'e get_locale context processor (Babel yoksa da fallback "tr")
+- `app/__init__.py` → /set-language/<lang> route (session + user.locale_preferences yazar, referer'a döner)
+- `ui/templates/platform/base.html` → topbar dil seçici (🇹🇷/🇬🇧 Alpine dropdown) + <html lang>={{ get_locale() }}
+- `templates/base.html` → <html lang> dinamik
+
+### Test
+flask_babel import OK (.venv). Restart: Babel başladı (artık "kurulu değil" uyarısı YOK). /set-language/en
+302→referer, geçersiz dil güvenli default. ?lang=en → <html lang>=en. session['lang']=en cookie ile
+sonraki istekte <html lang>=en (curl -H Cookie ile doğrulandı; curl -c jar Windows'ta yazmıyor, kod sorunu değil).
+en↔tr iki yönlü çalışıyor. /health 200 (regresyon yok).
+
+### Notlar
+Mevcut işleyiş bozulmadı (i18n zaten kapalıydı). Sıradaki: FAZ 1 (base.html metinlerini _() ile işaretle).
+Tüm faz planı: docs/lang/02-FAZ-PLANI.md. pytz onarımı: bilgisayar kapanışı bazı .venv paketlerini bozmuş
+olabilir — başka import hatası çıkarsa --force-reinstall ile onar.
+
+## TASK-213 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — sp PLAN-YIL grubu İngilizceye (10 route, 301 köprülü) — kullanıcı onayıyla
+**Modül:** sp (routes_donemler, routes_pages, routes_plan_year, routes_sp_proje), legacy_redirect, frontend
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+donemler→periods, donem-karsilastir→period-compare, rapor/donemsel→report/periodic,
+sihirbaz/yeni-yil→wizard/new-year (uygula→apply), api/proje→api/project, gorev→task.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_sp_proje.py` → 6 route (proje→project, gorev→task)
+- `micro/modules/sp/routes_donemler.py` → periods, period-compare
+- `micro/modules/sp/routes_pages.py` → report/periodic
+- `micro/modules/sp/routes_plan_year.py` → wizard/new-year (+preview/apply)
+- `app/legacy_redirect_config.py` → 8 plan-yıl köprüsü (gorev/ uzun-önce, proje genel)
+- `ui/templates/platform/sp/scenarios.html`, `ceyreklik_review.html` → href /sp/periods
+- `scripts/docs/take_screenshots.py` → /sp/periods
+
+### Yapılan İşlem
+project_sp_yillik_plan aktif işi — kullanıcı onayıyla çevrildi. Sihirbaz preview/apply URL'leri
+inline script'te url_for ile (data-compare-url da url_for) → fonksiyon adları korundu, OTOMATIK doğru.
+PlanProject/PlanProjectTask modeli, _require_plan_year, plan_year_id DOKUNULMADI (URL'den bağımsız).
+JS dosyalarında (sp_donemler, sp_plan_year, launcher/masaustu_plan_year) hardcoded plan-yıl URL'i YOK.
+
+### Test
+Restart: 6 yeni route 302/405(POST), 6 eski TR köprü 301 (uygula→apply, gorev→task iç segment dahil),
+strateji-haritasi/misyon/organization/desktop regresyon yok. pytest sp+module+legacy_sunset → 28/28 geçti.
+
+### Notlar
+sp plan-yıl artık İngilizce. /sp/api/proje/<id>/gorev (GET) köprüsü <id> sonrası gorev'i koruyamıyor
+(prefix sınırı) ama POST+frontend url_for olduğu için canlı etki yok. Kalan URL işi: /proje + /surec
+legacy alias (modern var), admin araçları, kule, test_smoke_routes (/micro kırık).
+
+## TASK-212 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — masaustu KÖKÜ /masaustu → /desktop (2 route, 301 köprülü)
+**Modül:** masaustu, nav/registry/middleware, legacy_redirect, hata_kontrol, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+/masaustu → /desktop, /masaustu/api/koe-danisman-ai → /desktop/api/koe-advisor-ai
+(koe = Kurumsal Olgunluk Endeksi kısaltması KORUNDU; danisman→advisor).
+
+### Değiştirilen Dosyalar
+- `micro/modules/masaustu/routes.py` → 2 route (fonksiyon adları korundu)
+- `app/__init__.py` nav, `micro/core/module_registry.py` url (id "masaustu" korundu)
+- `app/middleware/legacy_sunset.py` → canonical /desktop (+/)
+- `app/legacy_redirect_config.py` → EXACT /masaustu→app_bp.masaustu, PREFIX /masaustu/→/desktop/,
+  tam-yol köprü koe-danisman-ai→koe-advisor-ai (iç segment, canonical-öncesi)
+- `app/services/hata_kontrol_service.py` + `hata_kontrol_executor.py` → tarama hedefi /desktop
+- `tests/test_legacy_sunset.py` (dashboard→desktop, kurum-paneli→organization beklentileri),
+  `tests/test_module_smoke.py`, `tests/test_e2e_flow.py`
+
+### Yapılan İşlem
+/masaustu (modül) ≠ /masaustu-launcher (zaten /desktop-launcher, TASK-200) — KARIŞTIRILMADI
+(kelime sınırı: /masaustu exact + /masaustu/ slash'lı prefix). Fonksiyon adları korundu → /dashboard
+EXACT köprüsü url_for ile yeni /desktop'a otomatik yönlenir. koe-danisman-ai POST API: /masaustu/ prefix
+kuralı kökü çevirdi ama iç danisman→advisor için ek tam-yol köprü gerekti (yoksa /desktop/api/koe-danisman-ai
+= 404). frontend hardcoded YOK (url_for/data-*).
+
+### Test
+Restart: /desktop 302, /masaustu→/desktop 301, /masaustu/api/koe-danisman-ai→/desktop/api/koe-advisor-ai
+(iç segment dahil), /dashboard→/desktop, /masaustu-launcher→/desktop-launcher (karışmadı), kurum/sp regresyon yok.
+pytest legacy_sunset(redirect zinciri) + module → 26/26 geçti.
+
+### Notlar
+Kalan URL işi: sp plan-yıl grubu (aktif iş), /proje + /surec legacy alias (modern /project /process var),
+admin araçları, kule, test_smoke_routes (/micro kırık).
+
+## TASK-211 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — kurum KÖKÜ /kurum → /organization (15 route, 301 köprülü)
+**Modül:** kurum, nav/registry/middleware, legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Karar gerekçesi
+Kullanıcı "legacy dahil her şey /organization" dedi. İnceleme: legacy /kurum/kalite-politikalari,
+/kurum/degerler, /kurum/etik-kurallari sadece static/js/kurum_panel.js'de (HİÇBİR template yüklemiyor =
+ÖLÜ JS) + /api/kurum/* (api_bp /api prefix, ayrı yüzey). CANLI legacy /kurum route'u YOK. Dolayısıyla
+"canlı olan her şey" = modern kurum modülü (15 route). Ölü JS'e dokunulmadı (çalışmıyor, strangler silecek).
+
+### Değiştirilen Dosyalar
+- `micro/modules/kurum/routes.py` → 15 route /kurum* → /organization* (fonksiyon adları korundu)
+- `app/__init__.py` → nav; `micro/core/module_registry.py` → url (id "kurum" korundu)
+- `app/middleware/legacy_sunset.py` → canonical /organization (+/)
+- `app/legacy_redirect_config.py` → EXACT /kurum→app_bp.kurum, PREFIX /kurum/→/organization/,
+  TASK-206 iç köprüleri /organization'a güncellendi (/kurum/ayarlar→/organization/settings vb.)
+- `ui/templates/platform/kurum/index.html` (5 data-base), `ui/static/platform/js/kurum.js`,
+  `ui/static/platform/js/command_palette.js`
+- `tests/test_module_smoke.py` → /organization (+api/overview)
+
+### Yapılan İşlem
+Fonksiyon adları korundu → url_for/data-* otomatik doğru; /kurum-paneli, /kurum-yonetim EXACT_ENDPOINT
+(app_bp.kurum/kurum_ayarlar) url_for ile yeni /organization'a yönlenir. /kurumsal, /kurumlar, /kurum-
+KARIŞTIRILMADI (kelime sınırı: /kurum exact + /kurum/ slash'lı prefix). KART id "kurum" korundu.
+
+### Test
+Restart: /organization* 302, /kurum* (kök+settings+ayarlar+api+add-strategy) 301→/organization*,
+/kurum-paneli→/organization, /k-rapor/org-comparison etkilenmedi, sp/individual regresyon yok.
+pytest module+bireysel → 25/25 geçti.
+
+### Notlar
+ÖLÜ legacy: static/js/kurum_panel.js (/kurum/degerler vb.) çalışmıyor, dokunulmadı. Kalan URL işi:
+sp plan-yıl grubu (aktif iş), admin araçları, kule, test_smoke_routes (/micro prefix kırık).
+
+## TASK-210 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-rapor KALAN iç API segmentleri İngilizceye (8 route, 301 köprülü)
+**Modül:** k_rapor, legacy_redirect, test, KURALLAR-MASTER
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-rapor ürün adı KORUNDU)
+faaliyet→activity, faaliyet-matris→activity-matrix, bireysel→individual, rekabet→competition,
+aktivite-takvim→activity-calendar, kurum-karsilastirma→org-comparison, sorumlu-analiz→responsible-analysis,
+bildirim-analiz→notification-analysis. (TASK-205'te atlanan kalan segmentler; k-rapor artık tam İngilizce.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 8 route path (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → 8 köprü (faaliyet-matris uzun-önce, faaliyet'ten önce)
+- `tests/test_k_rapor_smoke.py` → rekabet→competition
+- `docs/KURALLAR-MASTER.md` → PG satırına "URL'de pi" istisnası eklendi (TASK-209 kalıcı not)
+
+### Yapılan İşlem
+TASK-205 kalıbı: k_rapor.js apiUrl(name)→dataset["api"+CamelCase(name)] mimarisi; data-api-* DEĞERLERİ
+url_for ile gelir → fonksiyon adları korunduğu için frontend otomatik doğru. apiUrl("faaliyet")/data-api-faaliyet
+ANAHTAR çiftine dokunulmadı (sadece route path + url_for değeri). Hardcoded frontend çağrısı YOK.
+
+### Test
+Restart: 8 yeni İngilizce 302, 8 eski TR köprü 301 (faaliyet-matris doğru hedefe — uzun-önce çalıştı),
+TASK-205(kurumsal) + PG→PI(pg-dagilim) regresyon yok. pytest k_rapor+module smoke → 17+19 geçti.
+
+### Notlar
+k-rapor modülü artık TAM İngilizce. Kalan URL işi: sp plan-yıl grubu (aktif iş), kurum kökü /organization,
+admin araçları, kule, test_smoke_routes (/micro prefix kırık - ayrı borç).
+
+## TASK-209 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — PG→PI (Performans Göstergesi = Performance Indicator) URL segmenti (8 route, 301 köprülü)
+**Modül:** bireysel, raporlar, k_rapor, legacy_redirect, nav, frontend
+**Durum:** ✅ Tamamlandı
+
+### Düzeltme (kullanıcı)
+PG İngilizcesi PI'dir. Önceki turlarda pg "korunan kısaltma" sanılıp bırakılmıştı; URL'de pi olmalı.
+KAPSAM: SADECE URL segmentleri. Kod/DB (pg_id, ProcessKpi), data-* attribute ADLARI, KART kodları DOKUNULMADI.
+
+### Çeviri haritası
+/individual/api/pg/* → /individual/api/pi/* (5 route; <int:pg_id> PARAMETRE adı korundu),
+/reports/pg-project-impact (+api) → /reports/pi-project-impact, /k-rapor/api/pg-dagilim → pi-dagilim.
+
+### Değiştirilen Dosyalar
+- `micro/modules/bireysel/routes.py` → 5× /individual/api/pi/
+- `micro/modules/raporlar/routes_faz5.py` → /reports/pi-project-impact (+api)
+- `micro/modules/k_rapor/routes.py` → /k-rapor/api/pi-dagilim
+- `app/legacy_redirect_config.py` → 4 yeni pg→pi köprüsü + TASK-204 pg-proje-etki hedefi pi'ye düzeltildi
+- `app/__init__.py` → component-visibility eşleme (pi-project-impact)
+- `ui/templates/platform/raporlar/pg_proje_etki.html` (fetch), `bireysel/karne.html` (2 data-base değeri),
+  `k_radar/hub.html` (link), `ui/static/platform/js/bireysel.js` (2 fallback değeri)
+
+### Yapılan İşlem
+Sadece URL string değerleri pg→pi. data-pg-*-base attribute ADLARI (JS dataset.pgUpdateBase eşleşmesi)
+ve PG_UPDATE_BASE JS değişken adları KORUNDU — yalnız değerleri /pi/. Template dosya adları (pg_proje_etki.html),
+fonksiyon adları, render hedefleri dokunulmadı. pg-dagilim'de 'dagilim' Türkçe kaldı (ayrı iş). hub.html
+görünen metin "PG × Proje" Türkçe kaldı (kullanıcı metni). İki nesil köprü: pg-proje-etki→pi-project-impact.
+
+### Test
+Restart: pi-* route'ları 302/405(POST), pg-* eski URL'ler 301→pi (pg-proje-etki dahil iki nesil zincir),
+k-radar/individual regresyon yok. pytest bireysel+module+k_rapor smoke → 42/42 geçti.
+
+### Notlar
+Kalan URL işi: sp plan-yıl grubu (aktif iş), kurum kökü /organization, admin araçları, kule, test_smoke_routes
+(/micro prefix kırık). Kod/DB katmanında pg hâlâ korunuyor (sadece URL pi oldu).
+
+## TASK-208 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-radar iç Türkçe segmentleri İngilizceye (11 route, 301 köprülü)
+**Modül:** k_radar (4 route dosyası), legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-radar ürün adı KORUNDU)
+cross/paydas→cross/stakeholder, kp/deger-zinciri→kp/value-chain, kp/kapasite→kp/capacity,
+kp/olgunluk→kp/maturity (+ekle→add), kpr/kaynak-kapasite→kpr/resource-capacity,
+ks/strateji-real→ks/strategy-real. (swot-real/swot-summary/cpm/evm/bcg vb. İngilizce — dokunulmadı.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_radar/routes_cross.py` (paydas→stakeholder)
+- `micro/modules/k_radar/routes_kp.py` (deger-zinciri, kapasite, olgunluk→maturity tamamı)
+- `micro/modules/k_radar/routes_kpr.py` (kaynak-kapasite→resource-capacity)
+- `micro/modules/k_radar/routes_ks.py` (strateji-real→strategy-real)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 11 k-radar köprüsü
+- `ui/templates/platform/k_radar/kp_deger_zinciri.html`, `ui/static/platform/js/vc_items.js` → data-update-base
+- `tests/test_k_radar_regression.py`, `tests/test_smoke_routes.py`, `scripts/k_radar_smoke_check.py`
+
+### Yapılan İşlem
+KART kodları (data-card-code="...paydas_haritasi") ve k-rapor ?tab=paydas anahtarlarına DOKUNULMADI
+(URL değil). Fonksiyon adları korundu → list-url/add-url url_for otomatik doğru; sadece data-update-base
+hardcoded değişti. olgunluk tutarlılık için tamamen maturity yapıldı (yarım çeviri tutarsızlık olurdu).
+
+### Test
+Restart: 6 yeni İngilizce route 302, 4 eski TR köprü 301→hedef, sp/reports/k-rapor regresyon yok.
+pytest k_radar_regression(login'li 403/200) + module + k_rapor smoke → 40/40 geçti.
+
+### Notlar
+test_smoke_routes.py ÖNCEDEN KIRIK (benden bağımsız): 19 route'un tümü /micro/ prefix'i kullanıyor ama
+route'lar artık kök URL'de (app_bp, /micro prefix yok). /micro/sp, /micro/process dahil hepsi 404.
+Bu ayrı bir refactor (tüm /micro/ → kök); bu turda kapsam dışı. Benim 3 satırım sadece zaten-kırık
+testlerin URL adını güncelledi. Kalan URL işi: sp plan-yıl grubu, kurum kökü /organization, admin araçları, kule.
+
+## TASK-207 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — sp güvenli iç segmentleri (plan-yıl HARİÇ, 11 route, 301 köprülü)
+**Modül:** sp (5 route dosyası), nav/gating, legacy_redirect, frontend, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /sp KORUNDU; plan-yıl grubu DOKUNULMADI)
+misyon→mission, vizyon→vision, degerler→values, strateji-haritasi→strategy-map (+api),
+strateji-proje-matris→strategy-project-matrix, ayarlar/ai→settings/ai, scenarios/kiyas→scenarios/compare,
+api/exec-ai-ozet→api/exec-ai-summary, api/savas-odasi→api/war-room.
+
+### Plan-yıl HARİÇ tutulanlar (aktif iş — çakışma riski, kullanıcı kararı)
+/sp/sihirbaz/yeni-yil (+api preview/uygula), /sp/donemler, /sp/api/donem-karsilastir,
+/sp/rapor/donemsel, /sp/api/proje + /gorev (PlanProject/PlanProjectTask bağımlı). TÜRKÇE kaldı.
+
+### Değiştirilen Dosyalar
+- `micro/modules/sp/routes_pages.py` → mission/vision/values/strategy-map (sayfa+api)
+- `micro/modules/sp/routes_tenant_ai.py` → /sp/settings/ai
+- `micro/modules/sp/routes_alignment.py` → /sp/strategy-project-matrix
+- `micro/modules/sp/routes_scenario.py` → /sp/scenarios/compare
+- `micro/modules/sp/routes_exec_advisor.py` → exec-ai-summary, war-room/fronts
+- `app/__init__.py` → component-visibility eşleme (strategy-map, strategy-project-matrix)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 10 sp köprüsü
+- `ui/templates/platform/sp/exec_dashboard.html`, `k_radar/hub.html` (2), `command_palette.js` → linkler
+- `tests/test_sp_strateji_haritasi.py` → /sp/strategy-map (+api)
+
+### Yapılan İşlem
+sp ~120 route, çoğu zaten İngilizce. Plan-yıl ile ilişkili route'lar (memory project_sp_yillik_plan
+aktif işi) BİLİNÇLİ dışarıda. routes_sp_proje.py PlanProject bağımlı → atlandı. Fonksiyon adları
+korundu → tüm url_for/data-* frontend otomatik doğru (hardcoded frontend çağrısı YOK). Köprü genel
+segment-rewrite listesine eklendi (canonical /sp/ muafiyetinden önce).
+
+### Test
+Restart: 7 yeni İngilizce route 302, 4+ eski TR köprü 301→hedef, plan-yıl grubu TÜRKÇE/çalışır (dokunulmadı),
+reports/kurum regresyon yok. pytest sp_strateji_haritasi + module smoke → 21/21 geçti.
+
+### Notlar
+Kalan: sp plan-yıl grubu (aktif iş bitince), kurum kökü /organization (geniş), admin araçları (ertelendi),
+kule (domain). Kullanıcı seçimi bekleniyor.
+
+## TASK-206 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — kurum iç Türkçe segmentleri İngilizceye (5 route, 301 köprülü)
+**Modül:** kurum, legacy_redirect, frontend, kilavuz_executor
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /kurum domain terimi olarak KORUNDU)
+ayarlar→settings, kimlik→identity. (overview/add-strategy vb. zaten İngilizce.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/kurum/routes.py` → /kurum/settings + 4× /kurum/api/identity/* (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 2 kurum köprüsü
+- `ui/templates/platform/kurum/index.html` → data-kimlik-base değeri /kurum/api/identity/
+- `ui/static/platform/js/kurum.js` → hardcoded fallback /kurum/api/identity/
+- `ui/static/platform/js/command_palette.js` → /kurum/settings
+- `app/services/kilavuz_olusturucu_executor.py` → goto /kurum/settings
+
+### Yapılan İşlem
+Modern kurum modülü dar: kök + 2 TR segment. /kurum/kalite-politikalari, etik-kurallari, degerler
+gibi route'lar LEGACY yüzeyde (S1, kurum micro modülünde DEĞİL) → dokunulmadı. url_for kullanan
+referanslar (donemler.html, ayarlar/index.html, ayarlar.html) fonksiyon adı korunduğu için otomatik
+doğru. data-kimlik-base attribute ADI (dataset.kimlikBase eşleşmesi) korundu, sadece değeri çevrildi.
+kimlik/<kind> içindeki misyon/vizyon/degerler PARAMETRE değerleridir (DB kayıt türü) — URL path değil, dokunulmadı.
+
+### Test
+Restart: /kurum/settings + /kurum/api/identity/* 302 (login gate); /kurum/ayarlar→/kurum/settings,
+/kurum/api/kimlik/<kind>/list→/kurum/api/identity/<kind>/list (alt yol korunarak) 301. k-rapor/reports/kurum kökü
+regresyon yok. pytest module+admin smoke → 31/31 geçti.
+
+### Notlar
+ATLANDI: admin araçları (hata-kontrolu/kilavuz/yonetim-paneli) — kullanıcı yüzeyi yok + bakim-modu
+middleware/self-scan bağımlılıkları; fayda düşük, risk orta. Kalan: sp (~12 path, aktif plan-yıl — ayrı
+dikkatli oturum), kurum kökü /organization (geniş), kule (domain).
+
+## TASK-205 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — k-rapor iç API segmentleri İngilizceye (9 segment, 301 köprülü)
+**Modül:** k_rapor, dashboard_widgets, legacy_redirect/sunset, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (kök /k-rapor ürün adı olarak KORUNDU)
+kurumsal→corporate, surec-pg→process-pg, uyum→compliance, veri-durumu→data-status,
+denetim→audit, uyari→alert, stratejik-analiz→strategic-analysis, paydas→stakeholder,
+strateji-kapsama→strategy-coverage. (risk/k-vektor/rekabet/anomalies/digest İngilizce — dokunulmadı.)
+
+### Değiştirilen Dosyalar
+- `micro/modules/k_rapor/routes.py` → 9 `@route("/k-rapor/api/<TR>")` → İngilizce (fonksiyon adları korundu)
+- `app/services/dashboard_widgets.py` → 2 hardcoded data_endpoint (corporate, stakeholder)
+- `app/legacy_redirect_config.py` → REPORTS_SEGMENT_REWRITE'a 9 k-rapor köprüsü
+- `app/middleware/legacy_sunset.py` → segment köprü bloğu GENELLEŞTİRİLDİ (tam-yol; /reports + /k-rapor)
+- `tests/test_k_rapor_smoke.py`, `test_module_smoke.py` → yeni segment adları
+
+### Yapılan İşlem
+k_rapor.js `apiUrl(name)` → `dataset["api"+CamelCase(name)]` mimarisi; data-api-* attribute DEĞERLERİ
+url_for ile geliyor → fonksiyon adları korunduğu için frontend otomatik doğru. Sadece route string'leri
++ 2 widget endpoint + testler değişti. `?tab=kurumsal` query/tab anahtarlarına DOKUNULMADI (URL path değil).
+Köprü: TASK-204'teki /reports-özel segment bloğu tam-yol mantığına genelleştirildi (canonical muafiyetinden
+önce çalışır); böylece /k-rapor/api/<TR> de köprülenir, /reports regresyonu yok.
+
+### Test
+Restart: 9 yeni API 302 (login gate), 9 eski TR segment 301→İngilizce. TASK-204 /reports köprü regresyonu
+yok. pytest k_rapor+module+bireysel smoke → 42/42 geçti.
+
+### Notlar
+Kalan: sp (~12 path, aktif plan-yıl — dikkatli), kurum kökü (/kurum → /organization, geniş), admin araçları
+(hata-kontrolu, kilavuz, yonetim-paneli), kule (domain). Kullanıcı seçimi bekleniyor.
+
+## TASK-204 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — raporlar İÇ Türkçe segmentleri İngilizceye (24 segment, 301 köprülü)
+**Modül:** raporlar (route+template+js), nav, legacy_sunset middleware + config
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası (24 segment)
+muda-analizi→muda-analysis, strateji-hikayesi→strategy-story, stratejik-yillik→strategic-annual,
+bireysel-hizalama→individual-alignment, bireysel-karne-batch→individual-scorecard-batch,
+operasyon-istatistik→operation-statistics, hizalama-sankey→alignment-sankey,
+departman-performans→department-performance, yonetici-liderlik→executive-leadership,
+sabah-ozeti→morning-summary, evrim-filmi→evolution-film, ai-sunum→ai-presentation,
+ai-danisman→ai-advisor, yatirimci-sunum→investor-presentation, esg-rapor→esg-report,
+esg-yonetim→esg-management, audit-paketi→audit-package, veri-kalitesi→data-quality,
+k-vektor-carpiklik→k-vector-skewness, hedef-revizyon→target-revision, onay-zinciri→approval-chain,
+pg-proje-etki→pg-project-impact (pg korundu), sektorel→sectoral, iki-fa→two-fa.
+
+### Değiştirilen Dosyalar (126 hit / 32 dosya — toplu script)
+- `scripts/_arsiv/fix_oneshot/rename_reports_segments.py` → çok-eşlemeli, uzun-anahtar-önce,
+  tam-segment sınırlı; köprü dosyaları + docs/htmlcov/ARCHIVE hariç
+- `micro/modules/raporlar/routes*.py` (8) → route string'leri (fonksiyon adları korundu)
+- `ui/templates/.../raporlar/*.html`, `ui/static/.../js/raporlar/*.js`, `k_radar/hub.html` (23),
+  `sp/ceyreklik_review.html`, `app/__init__.py` nav (23)
+- `app/legacy_redirect_config.py` → yeni REPORTS_SEGMENT_REWRITE listesi (24 kural)
+- `app/middleware/legacy_sunset.py` → REPORTS_SEGMENT_REWRITE'ı _should_skip'ten ÖNCE uygula;
+  hem /reports/<TR> hem /reports/api/<TR> (+alt yol) varyantlarını köprüler
+
+### Önemli teknik nokta
+`/reports/` TASK-203'te canonical (redirect muaf) yapılmıştı → iç segment köprüsü normal PREFIX_REWRITE'a
+ULAŞAMIYORDU (404 verdi). Çözüm: özel segment-rewrite bloğunu canonical kontrolünden ÖNCE çalıştır.
+İlk denemede /reports/api/<TR> yakalanmadı (sadece /reports/<TR>); api/ varyantı da eklendi.
+
+### Test
+git grep: canlı kodda Türkçe iç segment kalmadı. Köprüler: /reports/<TR> ve /reports/api/<TR>(+/preview)
+→ 301 yeni EN; çakışma testi (bireysel-hizalama vs -karne-batch) doğru ayrıştı. 37/37 smoke geçti.
+analiz/bireysel regresyon yok. raporlar modülü artık TAMAMEN İngilizce.
+
+### Notlar
+Kalan modüller: sp (~12 TR path, aktif plan-yıl — dikkatli), kurum (/kurum/ayarlar), k-rapor (birkaç),
+admin araçları (hata-kontrolu, kilavuz, yonetim-paneli), kule (domain terimi). Kullanıcı seçimi bekleniyor.
+
+## TASK-203 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — raporlar modülü KÖK segmenti `/raporlar` → `/reports` (95 route, 301 köprülü)
+**Modül:** raporlar (8 route dosyası), ui (template+js), nav, legacy_redirect
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (329 hit / 95 dosya — toplu script)
+- `scripts/_arsiv/fix_oneshot/rename_raporlar_to_reports.py` → tek-seferlik denetlenebilir script
+  (regex `/raporlar` kelime-sınırlı → `/reports`; docs/htmlcov/ARCHIVE/_arsiv + köprü dosyaları HARİÇ)
+- `micro/modules/raporlar/routes*.py` (8 dosya) → tüm `@route("/raporlar*")` → `/reports*`
+- `ui/templates/platform/raporlar/*.html` (44), `ui/static/platform/js/raporlar/*.js` (40+),
+  `k_radar/hub.html` (42 ref), `sp/ceyreklik_review.html`, `command_palette.js`, `app/__init__.py` nav
+- `app/legacy_redirect_config.py` → PREFIX_REWRITE `/raporlar`→`/reports` (301; iç segment korunur)
+- `app/middleware/legacy_sunset.py` → canonical prefix `/reports/`
+
+### Yapılan İşlem
+raporlar ~95 route, çoğu zaten İngilizce; sadece KÖK segment çevrildi. İç Türkçe segmentler
+(muda-analizi, strateji-hikayesi, bireysel-hizalama, sabah-ozeti, ai-sunum, stratejik-yillik vb.)
+BİLİNÇLİ olarak DOKUNULMADI — ayrı tur. 85+ dosyada hardcoded `/raporlar` olduğu için elle değil,
+dry-run ile denetlenen tek-seferlik script kullanıldı. Köprü dosyaları script'ten hariç tutuldu
+(yoksa `/raporlar→/reports` kuralı kendini ezerdi). PREFIX_REWRITE iç segmenti koruyarak köprüler.
+
+### Test
+git grep: canlı kodda `/raporlar` kalmadı (yalnız köprü). Restart: `/reports*` 302 (login gate),
+`/raporlar*` 301→`/reports*` (iç segment korunarak). pytest module+bireysel+admin → 37/37 geçti.
+analiz/bireysel/ayarlar regresyon yok.
+
+### Notlar
+İç Türkçe segmentler sıradaki tur: muda-analizi, strateji-hikayesi, bireysel-hizalama, operasyon-istatistik,
+hizalama-sankey, departman-performans, yonetici-liderlik, sabah-ozeti, evrim-filmi, ai-sunum/danisman,
+stratejik-yillik, yatirimci-sunum, esg-rapor/yonetim, audit-paketi, bireysel-karne-batch, veri-kalitesi,
+k-vektor-carpiklik, hedef-revizyon, onay-zinciri, pg-proje-etki, sektorel, iki-fa. Kullanıcı seçimi bekleniyor.
+
+## TASK-202 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — shared: ayarlar→settings, profil→profile, bildirim→notification (301 köprülü)
+**Modül:** shared/auth, shared/ayarlar, shared/scheduled_reports, shared/bildirim, search, nav/registry, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+ayarlar→settings, hesap→account, eposta→email, zamanlanmis-raporlar→scheduled-reports,
+profil→profile (foto-yukle→photo-upload), bildirim→notification.
+
+### Değiştirilen Dosyalar
+- `micro/modules/shared/auth/routes.py` → /profile, /profile/photo-upload, /settings, /settings/account
+- `micro/modules/shared/ayarlar/routes.py` → /settings/email (+ api/save|test|send-test)
+- `micro/modules/shared/scheduled_reports/routes.py` → /settings/scheduled-reports
+- `micro/modules/shared/bildirim/routes.py` → /notification (+ api/unread-count|mark-read|mark-all-read)
+- `micro/modules/shared/search/routes.py` → kullanıcı arama sonucu link /profile
+- `app/legacy_redirect_config.py` → 6 EXACT_ENDPOINT 301 köprü (eski Türkçe sayfa GET'leri)
+- `app/middleware/legacy_sunset.py` → canonical prefix /settings/ /profile/ /notification/
+- `ui/static/platform/js/command_palette.js` → 3 url; `ui/static/platform/js/masaustu.js` → mark-read base
+- `ui/templates/platform/bildirim/index.html` → href /settings
+- `app/__init__.py` → nav; `micro/core/module_registry.py` → 2 launcher url
+- `app/services/kilavuz_olusturucu_executor.py` → 3 Playwright goto URL
+- `tests/test_module_smoke.py` → /individual/api/scorecard (TASK-201 eksik kalan API satırları)
+- `tests/test_admin_smoke.py` → kırık `/ayarlar/yedekleme` → doğru `/admin/araclar/yedekleme`
+
+### Yapılan İşlem
+base.html'deki TÜM bildirim/profil/ayarlar referansları url_for ile geldiği için (topbar badge,
+sidebar, profil menüsü) fonksiyon adları korunarak otomatik doğru kaldı — sadece 3 hardcoded JS/HTML
+referansı + backend nav/registry güncellendi. API'ler POST → eski path canlı çağrı yok.
+
+### Test
+Restart: 7 yeni route 302 (login gate), 5 eski Türkçe URL 301→yeni hedef. Regresyon yok (analiz/bireysel/
+launcher sağlam). pytest module+bireysel+admin smoke → 25+9 geçti. Bonus: TASK-201'de kaçan
+test_module_smoke API satırları ve önceden kırık admin yedekleme testi düzeltildi.
+
+### Notlar
+İki ayrı profil sistemi var: legacy /profile/* (kök auth_bp, static/js/profile.js) ZATEN İngilizce,
+dokunulmadı. /kurum/ayarlar farklı modül (kurum), kapsam dışı. kule (tur) çevrilmedi. Modül id'leri
+(ayarlar/bildirim, DB/registry) korundu.
+
+## TASK-201 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — `bireysel` modülü → `/individual` (18 route, 301 köprülü)
+**Modül:** bireysel, legacy_redirect, nav/gating/registry, tests
+**Durum:** ✅ Tamamlandı
+
+### Çeviri haritası
+bireysel→individual, karne→scorecard, veri→data, faaliyet→activity, favori→favorite,
+hizalama-skoru→alignment-score, ekip-hizalama→team-alignment, ai-ozet→ai-summary. **pg korundu** (KURALLAR).
+
+### Değiştirilen Dosyalar
+- `micro/modules/bireysel/routes.py` → 18 route path `/bireysel*` → `/individual*` (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → EXACT_ENDPOINT'e `/bireysel` + `/bireysel/karne` → `app_bp.bireysel_karne` (301)
+- `app/middleware/legacy_sunset.py` → canonical `/bireysel`/`/bireysel/` → `/individual`
+- `ui/templates/platform/bireysel/karne.html` → 4 `data-*-base` (diğer 5 zaten url_for)
+- `ui/static/platform/js/bireysel.js` → 2 hardcoded fallback `/individual/...`
+- `ui/static/platform/js/command_palette.js` → `/individual/scorecard`
+- `platform_core/__init__.py` → gating prefix `/individual` (modül id `bireysel` korundu)
+- `app/__init__.py` → nav eşlemesi `/individual` / `/individual/scorecard`
+- `micro/core/module_registry.py` → launcher url `/individual/scorecard`
+- `micro/modules/shared/my_tasks/routes.py`, `micro/modules/masaustu/routes.py` → takvim/görev link url
+- `tests/test_bireysel_smoke.py`, `test_module_smoke.py`, `test_e2e_flow.py` → yeni URL'ler
+
+### Yapılan İşlem
+analiz pilotuyla aynı kalıp. 18 route İngilizceye çevrildi, fonksiyon adları korunduğu için url_for'lar
+otomatik doğru. Sayfa GET'leri (`/bireysel`, `/bireysel/karne`) 301 ile köprülendi; API'ler POST olduğu
+için middleware'e takılmaz, frontend güncellendiği için eski API path'lerine canlı çağrı kalmadı.
+Eski alias'lar (`/gorevlerim`, `/performans-kartim`, `/bireysel-panel`) zaten fonksiyona bağlı → çalışmaya devam.
+
+### Test
+Restart sonrası: `/individual*` 302 (login gate), `/bireysel`+`/bireysel/karne` 301→`/individual/scorecard`.
+`pytest tests/test_bireysel_smoke.py` → 6/6 geçti. analiz + launcher regresyon yok.
+
+### Notlar
+Çevrilmedi: `/raporlar/...bireysel-hizalama`, `bireysel-karne-batch` (AYRI raporlar modülü, bireysel değil).
+Modül id `bireysel` (DB/registry) ve `pg` kısaltması korundu. Sıradaki: kullanıcı seçimi.
+
+## TASK-200 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL tek-dil — izole route: `/masaustu-launcher` → `/desktop-launcher` (301 köprülü)
+**Modül:** core/launcher, legacy_redirect, nav
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/core/launcher.py` → alias `/masaustu-launcher` → `/desktop-launcher` (`/launcher` kanonik korundu)
+- `app/legacy_redirect_config.py` → EXACT_ENDPOINT'e `/masaustu-launcher` → `app_bp.launcher` (301)
+- `ui/templates/platform/base.html` → breadcrumb home `/desktop-launcher`
+- `ui/templates/platform/bildirim/index.html` → masaüstü butonu `/desktop-launcher`
+- `ui/static/platform/js/command_palette.js` → komut paleti url `/desktop-launcher`
+- `app/__init__.py` → nav eşlemesi `/desktop-launcher`
+
+### Yapılan İşlem
+`launcher()` fonksiyonu zaten `/launcher` (İngilizce) + `/masaustu-launcher` (Türkçe) alias'ı taşıyordu.
+Türkçe alias `/desktop-launcher`'a çevrildi, 4 canlı referans güncellendi, eski URL 301 ile köprülendi.
+
+### Test
+Restart sonrası: `/desktop-launcher` 302 (login gate), `/masaustu-launcher` 301→`/desktop-launcher`,
+`/launcher` korundu. Pilot `/analysis` ve `/analiz`→301 hâlâ sağlam (regresyon yok).
+
+### Notlar
+sp modülü (~120 route, çoğu İngilizce, aktif plan-yıl işi) riskli bulundu → ertelendi. Sıradaki
+aday: bireysel modülü (orta, izole). Kullanıcı onayı bekleniyor.
+
+## TASK-199 | 2026-06-23 | ✅ Tamamlandı
+
+**Görev:** URL Türkçe→İngilizce tek-dil çalışması — PİLOT: `analiz` modülü → `/analysis` (301 köprülü)
+**Modül:** analiz (micro/modules/analiz), legacy_redirect altyapısı
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/analiz/routes.py` → 7 route path `/analiz*` → `/analysis*` (fonksiyon adları korundu)
+- `app/legacy_redirect_config.py` → PREFIX_REWRITE'a `/analiz`→`/analysis` köprüsü eklendi (301)
+- `app/middleware/legacy_sunset.py` → canonical prefix `/analiz/`→`/analysis/` (yeni URL redirect'ten muaf)
+- `ui/templates/platform/analiz/index.html` → 4 `data-*-base` attribute `/analysis/...`
+- `ui/templates/platform/sp/exec_dashboard.html` → anomali kartı `href="/analysis"`
+- `ui/static/platform/js/command_palette.js` → komut paleti url `/analysis`
+- `app/__init__.py` → nav/breadcrumb eşlemesi `/analysis`
+- `platform_core/__init__.py` → paket gating prefix `/analysis` (modül id `analiz` korundu)
+- `micro/core/module_registry.py` → launcher modül url `/analysis`
+
+### Yapılan İşlem
+Strangler stratejisine uygun olarak modern `analiz` modülü pilot seçildi (7 route, tek endpoint kökü,
+JS data-attribute'tan okuyor → düşük risk). URL path'leri İngilizceye çevrildi; mevcut
+`legacy_sunset` middleware'i kullanılarak eski `/analiz*` yolları 301 ile `/analysis*`'e köprülendi.
+`url_for` endpoint adıyla çalıştığı için fonksiyon adları (analiz_api_*) değiştirilmedi.
+
+### Test
+`pybasla.py` ile restart → `/analysis` 302 (login gate, route kayıtlı), `/analiz` 301→`/analysis/`,
+`/analiz/api/trend/1` 301. Köprü ve yeni URL doğrulandı.
+
+### Notlar
+Bu bir PİLOT — yöntem kanıtlandı. Kalan ~141 Türkçe route faz faz aynı kalıpla çevrilebilir
+(legacy `main_bp`/`api_bp` route'ları strangler ile eridiği için düşük öncelik). Kullanıcının
+sıradaki modül seçimi bekleniyor. Çevrilmedi: marketing `/ozellikler/analiz-merkezi` (ayrı route),
+docs kılavuz HTML'leri.
+
+## TASK-198 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** KART/veri düzenleme katmanı + modül-bileşen eşlemesi onarımı (ağaçta boş bileşen)
+**Modül:** admin (düzenleme API+UI), scripts (remap), saas
+**Durum:** ✅ Yerelde runtime doğrulandı. Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → 5 düzenleme API (kart update, veri-kaynağı CRUD, bileşen listesi)
+- `ui/static/platform/js/admin_hierarchy.js` → inline düzenleme (required_component dropdown, kart düzenle, veri ekle/sil)
+- `scripts/remap_modul_bilesen.py` → yeni: module_component_slugs temizle+doğru dağıt
+
+### Yapılan İşlem
+(1) Düzenleme: admin hiyerarşi ağacında veri-paket eşlemesi (required_component) UI'dan değiştirilebilir.
+Kanıt: process_count kısıtsız yapılınca tom1 anında görüyor, geri alınca gizleniyor (koddan değil DB'den).
+(2) Onarım: module_component_slugs eski/karışıktı (35 bileşen sadece sp+surec'e, mantıksız; kurum/k_radar/
+bireysel/proje 0 bileşen → ağaçta boş görünüyordu). Temizlenip anlamlı dağıtıldı (kullanıcı onaylı):
+kimlik→kurum, SWOT/PESTEL→ileri_sp, PG/PGV→surec vb. 122 eski satır → 35 temiz bağ. Ağaç artık dolu
+(baslangic 18 bileşen, kurum'da 5 kimlik kartı). DB öncesi yedek.
+
+### Notlar
+k_radar/bireysel/proje/analiz/k_rapor modüllerinde hâlâ bileşen yok — onların bileşenleri henüz system_components'ta
+tanımlı değil (ayrı iş). Kullanıcının şikayeti kurum/sp boşluğuydu, o çözüldü. Kart işaretleme kademeli sürüyor.
+
+## TASK-197 | 2026-06-20 | ✅ Tamamlandı
+
+**Görev:** KART katmanı — otomatik keşif + 4-katman admin hiyerarşi UI
+**Modül:** saas (model), card_discovery_service, admin (route+UI)
+**Durum:** ✅ Yerelde runtime doğrulandı (keşif sıfırdan kurdu, ağaç render). Sadece YEREL.
+
+### Değiştirilen Dosyalar
+- `app/services/card_discovery_service.py` → yeni: template data-card-* tarayıp SystemCard+CardDataSource seed (idempotent)
+- `micro/modules/admin/routes.py` → /admin/cards/discover (keşif tetikleyici) + /admin/hierarchy (sayfa) + /admin/api/hierarchy (4-katman ağaç)
+- `ui/templates/platform/admin/hierarchy.html` + `admin_hierarchy.js` → 4-katman ağaç (açılır/kapanır) + keşif butonu + required_component rozeti
+- `ui/templates/platform/admin/packages.html` → "Hiyerarşi" linki
+- `ui/templates/platform/kurum/index.html` → özet kartına data-card-* işaretleri (keşfedilebilir)
+
+### Yapılan İşlem
+İşaretleme şeması: kart=data-card-code, veri=data-card-key + data-requires (gereken bileşen). Keşif servisi
+template'leri tarayıp DB'ye yansıtır (RouteRegistry sync felsefesi: tekrar tetiklenebilir). Admin sayfası
+4 katmanı (paket→modül→bileşen→kart→veri) ağaç olarak gösterir; veri kaynaklarında required_component rozeti
+= çapraz-paket veri farkındalığı görsel. Runtime: kart silinip keşif sıfırdan kurdu (1 kart+3 veri, required
+doğru), ağaç API 4 paket, zincir tam (yonetim>surec>surec_performansi>kurum_ozet_kartlar).
+
+### Notlar
+Keşif kademeli: kartlar çalıştıkça data-card-* ile işaretlenir (şu an /kurum özet kartı işaretli, örnek).
+Admin UI şu an GÖR + KEŞFET; düzenle/taşı (sira değiştir, veri-paket eşlemesi) sonraki adım. 4-katman temeli tam.
+
 ## TASK-196 | 2026-06-20 | ✅ Tamamlandı
 
 **Görev:** Radikal paket gating — paket-içerik yönetim UI (Faz 2) + route-düzeyi enforcement (Faz 3)

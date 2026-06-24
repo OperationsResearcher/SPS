@@ -25,6 +25,7 @@ from flask_login import login_user
 
 from extensions import db
 from app.models.core import User, Role, Tenant
+from flask_babel import gettext as _
 
 sso_bp = Blueprint("sso_bp", __name__, url_prefix="/sso")
 
@@ -58,12 +59,12 @@ def _oauth_client():
 def sso_google():
     """Google OAuth akışını başlat."""
     if not current_app.config.get("GOOGLE_OAUTH_ENABLED"):
-        flash("Google SSO bu ortamda devre dışı.", "warning")
+        flash(_("Google SSO bu ortamda devre dışı."), "warning")
         return redirect(url_for("auth_bp.login"))
 
     oauth = _oauth_client()
     if oauth is None or not hasattr(oauth, "google"):
-        flash("Google SSO yapılandırılmamış.", "danger")
+        flash(_("Google SSO yapılandırılmamış."), "danger")
         return redirect(url_for("auth_bp.login"))
 
     redirect_uri = url_for("sso_bp.sso_google_callback", _external=True)
@@ -81,24 +82,24 @@ def sso_google_callback():
         token = oauth.google.authorize_access_token()
     except Exception as e:
         current_app.logger.error(f"[sso_google] token alımı: {e}")
-        flash("Google girişi başarısız.", "danger")
+        flash(_("Google girişi başarısız."), "danger")
         return redirect(url_for("auth_bp.login"))
 
     user_info = token.get("userinfo") or oauth.google.parse_id_token(token, None)
     if not user_info:
-        flash("Google profil alınamadı.", "danger")
+        flash(_("Google profil alınamadı."), "danger")
         return redirect(url_for("auth_bp.login"))
 
     email = (user_info.get("email") or "").strip().lower()
     email_verified = user_info.get("email_verified", False)
 
     if not email:
-        flash("E-posta alınamadı.", "danger")
+        flash(_("E-posta alınamadı."), "danger")
         return redirect(url_for("auth_bp.login"))
 
     if not email_verified:
         current_app.logger.warning(f"[sso_google] verified=False email={email}")
-        flash("E-posta doğrulanmamış — Google hesabınızı doğrulayın.", "danger")
+        flash(_("E-posta doğrulanmamış — Google hesabınızı doğrulayın."), "danger")
         return redirect(url_for("auth_bp.login"))
 
     # Kullanıcıyı bul
@@ -139,5 +140,5 @@ def sso_google_callback():
     except Exception:
         pass
 
-    flash("Google ile giriş başarılı.", "success")
+    flash(_("Google ile giriş başarılı."), "success")
     return redirect(url_for("app_bp.launcher"))

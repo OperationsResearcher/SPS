@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" x-data="microApp()" :class="darkMode ? 'dark' : ''">
+<html lang="{{ get_locale() }}" x-data="microApp()" :class="darkMode ? 'dark' : ''">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +24,21 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+      // i18n (FAZ 4): JS tarafı çeviri sözlüğü + t() helper.
+      // window.t("Türkçe metin") → aktif dilde çevirisi varsa onu, yoksa Türkçe'yi döner.
+      // Named arg: t("%(n)s öğe", {n: 5}). Default dil (tr) için map boştur → her zaman Türkçe.
+      window._I18N = {{ js_i18n_map() | tojson }};
+      window.t = function (s, params) {
+        var out = (window._I18N && window._I18N[s]) || s;
+        if (params) {
+          out = out.replace(/%\(([^)]+)\)s/g, function (m, k) {
+            return (params[k] !== undefined && params[k] !== null) ? params[k] : m;
+          });
+        }
+        return out;
+      };
+    </script>
     <script>
       // Kokpitim UI Kılavuzu §6 — Chart.js global ayarları
       if (window.Chart) {
@@ -127,14 +142,14 @@
             {% set ep = request.endpoint or '' %}
 
             <!-- Ana Modüller -->
-            <div class="sidebar-section-label">Ana Modüller</div>
+            <div class="sidebar-section-label">{{ _("Ana Modüller") }}</div>
 
             {% set role_name = current_user.role.name if current_user.role else '' %}
 
             <a href="{{ url_for('app_bp.masaustu') }}"
                 class="sidebar-item {% if 'masaustu' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-home"></i></span>
-                <span class="sidebar-item-text">Masaüstüm</span>
+                <span class="sidebar-item-text">{{ _("Masaüstüm") }}</span>
             </a>
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
@@ -142,12 +157,12 @@
             <a href="{{ url_for('app_bp.sp_menu') }}"
                 class="sidebar-item {% if sp_active %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
-                <span class="sidebar-item-text">Stratejik Planlama</span>
+                <span class="sidebar-item-text">{{ _("Stratejik Planlama") }}</span>
             </a>
 
 <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
-                <span class="sidebar-item-text">Kurum Paneli</span>
+                <span class="sidebar-item-text">{{ _("Kurum Paneli") }}</span>
             </a>
 
             {# Holding admin → Konsolide Dashboard #}
@@ -156,7 +171,7 @@
             <a href="{{ url_for('app_bp.holding_dashboard_page') }}"
                class="sidebar-item {% if 'holding_dashboard' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-chart-network"></i></span>
-                <span class="sidebar-item-text">Holding Görünümü</span>
+                <span class="sidebar-item-text">{{ _("Holding Görünümü") }}</span>
             </a>
             {% endif %}
 
@@ -168,9 +183,9 @@
                 <span class="sidebar-item-icon"><i class="fas fa-sitemap"></i></span>
                 <span class="sidebar-item-text">
                   {% if current_user.tenant.tenant_type == 'holding' %}
-                    Alt Kurum Yönetimi
+                    {{ _("Alt Kurum Yönetimi") }}
                   {% else %}
-                    Müşteri Kurumlarım
+                    {{ _("Müşteri Kurumlarım") }}
                   {% endif %}
                 </span>
             </a>
@@ -180,7 +195,7 @@
             {% if sidebar_module_ids is none or 'surec' in sidebar_module_ids %}
             <a href="{{ url_for('app_bp.surec') }}" class="sidebar-item {% if 'surec' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-project-diagram"></i></span>
-                <span class="sidebar-item-text">Süreç Yönetimi</span>
+                <span class="sidebar-item-text">{{ _("Süreç Yönetimi") }}</span>
             </a>
             {% endif %}
 
@@ -188,7 +203,7 @@
             <a href="{{ url_for('app_bp.project_list') }}"
                 class="sidebar-item {% if 'app_bp.project_' in ep or 'proje_legacy_redirect' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-folder-open"></i></span>
-                <span class="sidebar-item-text">Proje Yönetimi</span>
+                <span class="sidebar-item-text">{{ _("Proje Yönetimi") }}</span>
             </a>
             {% endif %}
 
@@ -203,13 +218,13 @@
             <a href="{{ url_for('app_bp.k_radar_ks') }}"
                 class="sidebar-item {% if 'k_radar_ks' in ep or 'k_radar_kp' in ep or 'k_radar_kpr' in ep or 'k_radar_cross' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
-                <span class="sidebar-item-text">K-Analiz</span>
+                <span class="sidebar-item-text">{{ _("K-Analiz") }}</span>
             </a>
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
             <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="sidebar-item">
                 <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
-                <span class="sidebar-item-text">Savaş Odası</span>
+                <span class="sidebar-item-text">{{ _("Savaş Odası") }}</span>
             </a>
             {% endif %}
 
@@ -217,44 +232,44 @@
             <a href="{{ url_for('app_bp.bireysel_karne') }}"
                 class="sidebar-item {% if 'bireysel' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-id-card-clip"></i></span>
-                <span class="sidebar-item-text">Bireysel Performans</span>
+                <span class="sidebar-item-text">{{ _("Bireysel Performans") }}</span>
             </a>
             {% endif %}
 
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] and (sidebar_module_ids is none or 'analiz' in sidebar_module_ids) %}
             <a href="{{ url_for('app_bp.analiz') }}" class="sidebar-item {% if 'analiz' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-chart-line"></i></span>
-                <span class="sidebar-item-text">Performans Analitiği</span>
+                <span class="sidebar-item-text">{{ _("Performans Analitiği") }}</span>
             </a>
             {% endif %}
 
             <!-- Yönetim -->
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
-            <div class="sidebar-section-label">Yönetim</div>
+            <div class="sidebar-section-label">{{ _("Yönetim") }}</div>
 
             <a href="{{ url_for('app_bp.admin_users') }}"
                 class="sidebar-item {% if ep == 'app_bp.admin_users' %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-users-cog"></i></span>
-                <span class="sidebar-item-text">Kullanıcılar</span>
+                <span class="sidebar-item-text">{{ _("Kullanıcılar") }}</span>
             </a>
 
             <a href="{{ url_for('app_bp.admin_tenants') }}"
                 class="sidebar-item {% if ep == 'app_bp.admin_tenants' %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
-                <span class="sidebar-item-text">Kurumlar</span>
+                <span class="sidebar-item-text">{{ _("Kurumlar") }}</span>
             </a>
 
             <a href="{{ url_for('app_bp.admin_notifications') }}"
                 class="sidebar-item {% if ep == 'app_bp.admin_notifications' %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bell"></i></span>
-                <span class="sidebar-item-text">Bildirim Merkezi</span>
+                <span class="sidebar-item-text">{{ _("Bildirim Merkezi") }}</span>
             </a>
 
             {% if role_name == 'Admin' %}
             <a href="{{ url_for('app_bp.admin_packages') }}"
                 class="sidebar-item {% if ep == 'app_bp.admin_packages' %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-box"></i></span>
-                <span class="sidebar-item-text">SaaS Paketler</span>
+                <span class="sidebar-item-text">{{ _("SaaS Paketler") }}</span>
             </a>
             {% endif %}
 
@@ -262,33 +277,33 @@
             <a href="{{ url_for('app_bp.api_docs') }}"
                 class="sidebar-item {% if 'api_docs' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-plug"></i></span>
-                <span class="sidebar-item-text">API Dokümantasyonu</span>
+                <span class="sidebar-item-text">{{ _("API Dokümantasyonu") }}</span>
             </a>
             {% endif %}
             {% endif %}
 
             {% if role_name == 'Admin' %}
             <!-- Admin Araçları -->
-            <div class="sidebar-section-label">Admin Araçları</div>
+            <div class="sidebar-section-label">{{ _("Admin Araçları") }}</div>
             <a href="{{ url_for('app_bp.admin_tools_home') }}"
                 class="sidebar-item {% if 'admin_tools' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-toolbox"></i></span>
-                <span class="sidebar-item-text">Admin Araçları</span>
+                <span class="sidebar-item-text">{{ _("Admin Araçları") }}</span>
             </a>
             {% endif %}
 
             <!-- Sistem -->
-            <div class="sidebar-section-label">Sistem</div>
+            <div class="sidebar-section-label">{{ _("Sistem") }}</div>
 
             <a href="{{ url_for('app_bp.bildirim') }}"
                 class="sidebar-item {% if 'bildirim' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bell"></i></span>
-                <span class="sidebar-item-text">Bildirimler</span>
+                <span class="sidebar-item-text">{{ _("Bildirimler") }}</span>
             </a>
 
             <a href="{{ url_for('app_bp.ayarlar') }}" class="sidebar-item {% if 'ayarlar' in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
-                <span class="sidebar-item-text">Ayarlar</span>
+                <span class="sidebar-item-text">{{ _("Ayarlar") }}</span>
             </a>
         </nav>
 
@@ -306,7 +321,7 @@
                 </div>
                 <div style="flex:1; min-width:0;">
                     <div class="sidebar-user-name">{{ current_user.first_name or current_user.email }}</div>
-                    <div class="sidebar-user-role">{{ role_label_tr(current_user.role.name) if current_user.role else 'Kullanıcı' }}
+                    <div class="sidebar-user-role">{{ role_label_tr(current_user.role.name) if current_user.role else _('Kullanıcı') }}
                     </div>
                 </div>
                 <i class="fas fa-ellipsis-v" style="color:rgba(255,255,255,0.3); font-size:12px;"></i>
@@ -318,20 +333,20 @@
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.08)'"
                         onmouseout="this.style.background=''">
-                        <i class="fas fa-user-circle" style="width:14px;"></i> Profilim
+                        <i class="fas fa-user-circle" style="width:14px;"></i> {{ _("Profilim") }}
                     </a>
                     <button @click="toggleDark()"
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.08)'"
                         onmouseout="this.style.background=''">
                         <i class="fas fa-moon" style="width:14px;"></i>
-                        <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
+                        <span x-text="darkMode ? '{{ _('Aydınlık Mod') }}' : '{{ _('Karanlık Mod') }}'"></span>
                     </button>
                     <hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;">
                     <a href="{{ url_for('public_logout') }}"
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:#f87171; font-size:13px; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">
-                        <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
+                        <i class="fas fa-sign-out-alt" style="width:14px;"></i> {{ _("Çıkış Yap") }}
                     </a>
                 </div>
             </div>
@@ -348,7 +363,7 @@
         {% if current_user.is_authenticated %}
         <!-- Topbar -->
         <header class="micro-topbar">
-            <button class="topbar-hamburger" id="sidebar-hamburger" title="Menü">
+            <button class="topbar-hamburger" id="sidebar-hamburger" title="{{ _('Menü') }}">
                 <i class="fas fa-bars" style="font-size:15px;"></i>
             </button>
 
@@ -358,10 +373,10 @@
             {% if current_user.is_authenticated %}
             <button type="button" class="topbar-search-btn"
                     onclick="document.dispatchEvent(new KeyboardEvent('keydown', {key:'k', ctrlKey:true}));"
-                    title="Ara — Ctrl+K"
+                    title="{{ _('Ara — Ctrl+K') }}"
                     style="display:flex; align-items:center; gap:8px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12.5px; color:#64748b; margin-left:auto; margin-right:14px; min-width:220px; max-width:340px; flex:1; transition:background 0.15s, border-color 0.15s;">
               <i class="fas fa-search" style="color:#94a3b8;"></i>
-              <span>Sayfa, strateji, PG, proje ara…</span>
+              <span>{{ _("Sayfa, strateji, PG, proje ara…") }}</span>
               <span style="margin-left:auto; font-size:10px; background:#fff; border:1px solid #cbd5e1; padding:1px 6px; border-radius:3px; color:#475569;">Ctrl+K</span>
             </button>
             <style>
@@ -373,9 +388,24 @@
             {% endif %}
 
             <div class="topbar-actions">
+                <!-- Dil seçici (i18n) -->
+                <div x-data="{ langOpen: false }" style="position:relative;">
+                    <button @click="langOpen = !langOpen" class="topbar-icon-btn"
+                        style="width:auto; padding:0 8px; gap:4px; display:flex; align-items:center; font-weight:600; font-size:12px;"
+                        title="Dil / Language">
+                        <i class="fas fa-globe"></i>
+                        <span>{{ get_locale()|upper }}</span>
+                    </button>
+                    <div x-show="langOpen" @click.outside="langOpen = false" x-cloak
+                        style="position:absolute; right:0; top:calc(100% + 6px); background:var(--color-surface,#fff); border:1px solid var(--color-border,#e2e8f0); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.12); min-width:140px; z-index:1000; overflow:hidden;">
+                        <a href="{{ url_for('set_language', lang='tr') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'tr' %}font-weight:700;{% endif %}">🇹🇷 Türkçe {% if get_locale() == 'tr' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
+                        <a href="{{ url_for('set_language', lang='en') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'en' %}font-weight:700;{% endif %}">🇬🇧 English {% if get_locale() == 'en' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
+                    </div>
+                </div>
+
                 <!-- Bildirim -->
                 <a href="{{ url_for('app_bp.bildirim') }}" class="topbar-icon-btn topbar-notif-btn"
-                    title="Bildirimler" data-unread-url="{{ url_for('app_bp.bildirim_api_unread_count') }}">
+                    title="{{ _('Bildirimler') }}" data-unread-url="{{ url_for('app_bp.bildirim_api_unread_count') }}">
                     <i class="fas fa-bell"></i>
                     <span class="topbar-notif-badge" id="notif-badge" style="display:none;"></span>
                 </a>
@@ -416,13 +446,13 @@
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
                             <i class="fas fa-moon" style="color:#94a3b8; width:14px;"></i>
-                            <span x-text="darkMode ? 'Aydınlık Mod' : 'Karanlık Mod'"></span>
+                            <span x-text="darkMode ? '{{ _('Aydınlık Mod') }}' : '{{ _('Karanlık Mod') }}'"></span>
                         </button>
                         <hr style="border:none; border-top:1px solid #f1f5f9; margin:4px 0;">
                         <a href="{{ url_for('public_logout') }}"
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#dc2626; font-size:13px; text-decoration:none; transition:background 0.15s;"
                             onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
-                            <i class="fas fa-sign-out-alt" style="width:14px;"></i> Çıkış Yap
+                            <i class="fas fa-sign-out-alt" style="width:14px;"></i> {{ _("Çıkış Yap") }}
                         </a>
                     </div>
                 </div>
@@ -478,7 +508,7 @@
                 {%- endif -%}
             {%- endif -%}
             <nav class="mc-breadcrumb" aria-label="Sayfa konumu">
-                <a href="/masaustu-launcher" class="mc-breadcrumb-home" title="Ana Sayfa">
+                <a href="/desktop-launcher" class="mc-breadcrumb-home" title="{{ _('Ana Sayfa') }}">
                     <i class="fas fa-home"></i>
                 </a>
                 {%- if current_section -%}
@@ -523,13 +553,260 @@
         </main>
     </div>
 
+    {# ── Kart bilgi (i) butonu + ID rozeti ─────────────────────────────────
+       data-card-code taşıyan her kartın sağ üstüne:
+         • (i) butonu  → TÜM kullanıcılara: kartın amacı/içeriği (modal).
+         • ID rozeti   → yalnız sistem Admin: kısa kimlik (short_id), tıkla=kopyala.
+       short_id ve isim, sayfa yüklenince tek toplu istekle (cards-meta) çözülür. #}
+    {% if current_user.is_authenticated %}
+    {% set kk_is_admin = (current_user.role and current_user.role.name == 'Admin') %}
+    {% if kk_is_admin %}
+    {# Sayfa ID rozeti — yalnız Admin, sayfa üstünde ortada. Sayfadaki ilk
+       data-card-code'un prefix'inden sayfa kataloğu (system_pages) çözülür. #}
+    <div id="kk-page-badge" style="display:none; position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:9000;
+         font:600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; background:#0f172a; color:#fbbf24;
+         padding:4px 12px; border-radius:0 0 8px 8px; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:default;
+         user-select:all; white-space:nowrap;" title="{{ _('Sayfa ID (yalnız admin)') }}"></div>
+    {% endif %}
+    <div id="kk-card-info-modal-overlay">
+      <div id="kk-card-info-modal">
+        <div class="kk-h">
+          <div>
+            <h3 id="kk-card-info-name">{{ _("Kart Bilgisi") }}</h3>
+            {% if kk_is_admin %}<code id="kk-card-info-code"></code>{% endif %}
+          </div>
+          <button type="button" class="kk-x" id="kk-card-info-close" title="{{ _('Kapat') }}">✕</button>
+        </div>
+        <div class="kk-b" id="kk-card-info-body">{{ _("Yükleniyor…") }}</div>
+      </div>
+    </div>
+    <style>
+      .kk-card-admin-tools {
+        position:absolute; top:6px; right:6px; z-index:20;
+        display:inline-flex; align-items:center; gap:4px;
+      }
+      .kk-card-id-badge {
+        font:600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        background:#0f172a; color:#a5b4fc; padding:3px 6px; border-radius:5px;
+        opacity:.65; user-select:all; white-space:nowrap;
+        box-shadow:0 1px 3px rgba(0,0,0,.25); pointer-events:none;
+      }
+      /* (i) bilgi butonu — başlığın hemen sağında, akış içinde (inline) */
+      .kk-card-info-btn {
+        width:16px; height:16px; border:none; border-radius:50%;
+        background:#6366f1; color:#fff; font-size:9px; line-height:1;
+        cursor:pointer; opacity:.7; transition:opacity .15s, background .15s;
+        display:inline-flex; align-items:center; justify-content:center;
+        box-shadow:0 1px 2px rgba(0,0,0,.2); padding:0;
+        vertical-align:middle; flex:none;
+      }
+      .kk-card-info-btn:hover { opacity:1; background:#4f46e5; }
+      .kk-card-info-btn::before { content:""; }  /* gap başlıktan ::after ile gelir */
+      /* başlık ile (i) arasında normal kelime-arası boşluk */
+      .kk-info-gap { display:inline-block; width:.4em; }
+      #kk-card-info-modal-overlay {
+        position:fixed; inset:0; background:rgba(15,23,42,.6); z-index:10050;
+        display:none; align-items:center; justify-content:center; padding:20px;
+      }
+      #kk-card-info-modal {
+        background:#fff; border-radius:12px; width:min(560px,94vw); max-height:80vh;
+        display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.4); overflow:hidden;
+      }
+      #kk-card-info-modal .kk-h { padding:14px 18px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+      #kk-card-info-modal .kk-h h3 { margin:0; font-size:15px; font-weight:700; color:#0f172a; }
+      #kk-card-info-modal .kk-h code { font:600 11px/1 ui-monospace, monospace; color:#6366f1; background:#eef2ff; padding:3px 7px; border-radius:5px; }
+      #kk-card-info-modal .kk-b { padding:18px; overflow-y:auto; font-size:13.5px; line-height:1.6; color:#334155; white-space:pre-wrap; }
+      #kk-card-info-modal .kk-x { border:none; background:none; font-size:20px; color:#94a3b8; cursor:pointer; line-height:1; }
+    </style>
+    <script>
+    (function () {
+      var IS_ADMIN = {{ 'true' if kk_is_admin else 'false' }};
+      var INFO_URL = "{{ url_for('app_bp.admin_api_card_info', code='__CODE__') }}";
+      var META_URL = "{{ url_for('app_bp.admin_api_cards_meta') }}";
+      var PAGE_META_URL = "{{ url_for('app_bp.admin_api_page_meta', code='__CODE__') }}";
+      var META = {};            // code -> {short_id, name}
+      var badges = [];          // admin rozet elemanları (short_id sonra dolar)
+
+      // Kart içindeki başlık elemanını bul (standart: mc-card-title / mc-stat-label).
+      // İç içe kartlarda (örn. stat-grid kapsayıcı + içinde stat kartları) BAŞKA bir
+      // data-card-code elemanının içindeki başlığı ATLA — yoksa kapsayıcının (i)'si
+      // torun kartın başlığına düşer (çift (i) hatası).
+      function findTitle(el) {
+        var cands = el.querySelectorAll(".mc-card-title, .mc-stat-label, .mc-card-header h3, .mc-card-header h2");
+        for (var i = 0; i < cands.length; i++) {
+          if (cands[i].closest("[data-card-code]") === el) return cands[i];
+        }
+        return null;
+      }
+
+      function makeInfoBtn(code) {
+        var info = document.createElement("button");
+        info.type = "button";
+        info.className = "kk-card-info-btn";
+        info.innerHTML = "<i class='fas fa-info'></i>";
+        info.title = t("Bu kart ne için? (amaç / içerik)");
+        info.addEventListener("click", function (e) {
+          e.preventDefault(); e.stopPropagation();
+          openInfo(code);
+        });
+        return info;
+      }
+
+      function place(el) {
+        if (el.dataset.kkIdDone) return;
+        el.dataset.kkIdDone = "1";
+        var code = el.getAttribute("data-card-code");
+        if (!code) return;
+
+        // (i) bilgi butonu — TÜM kullanıcılara, BAŞLIĞIN hemen sağına
+        var title = findTitle(el);
+        var info = makeInfoBtn(code);
+        if (title) {
+          var gap = document.createElement("span");
+          gap.className = "kk-info-gap";
+          title.appendChild(gap);
+          title.appendChild(info);
+        } else {
+          // başlık bulunamadı → köşeye fallback (kart (i)'siz kalmasın)
+          var cs0 = getComputedStyle(el);
+          if (cs0.position === "static") el.style.position = "relative";
+          var fwrap = document.createElement("span");
+          fwrap.className = "kk-card-admin-tools";
+          fwrap.appendChild(info);
+          el.appendChild(fwrap);
+        }
+
+        // ID rozeti — yalnız Admin, köşede kalır
+        if (IS_ADMIN) {
+          var cs = getComputedStyle(el);
+          if (cs.position === "static") el.style.position = "relative";
+          var wrap = document.createElement("span");
+          wrap.className = "kk-card-admin-tools";
+          var b = document.createElement("span");
+          b.className = "kk-card-id-badge";
+          b.dataset.code = code;
+          b.textContent = "…";   // short_id meta gelince dolar
+          wrap.appendChild(b);
+          badges.push(b);
+          el.appendChild(wrap);
+        }
+      }
+
+      function fillBadges() {
+        badges.forEach(function (b) {
+          var m = META[b.dataset.code];
+          b.textContent = (m && m.short_id) ? m.short_id : "?";
+          if (!m || !m.short_id) b.title = t("Bu kart henüz numaralanmamış") + " (" + b.dataset.code + ")";
+        });
+      }
+
+      function loadMeta() {
+        var codes = Array.prototype.map.call(
+          document.querySelectorAll("[data-card-code]"),
+          function (el) { return el.getAttribute("data-card-code"); });
+        if (!codes.length) return;
+        var url = META_URL + "?codes=" + encodeURIComponent(codes.join(","));
+        fetch(url, {headers: {"Accept": "application/json"}})
+          .then(function (r) { return r.json(); })
+          .then(function (j) { if (j.success) { META = j.meta || {}; fillBadges(); } })
+          .catch(function () {});
+      }
+
+      // Sayfa ID rozeti (yalnız admin) — sayfadaki ilk data-card-code'un prefix'i = sayfa.
+      function loadPageBadge() {
+        if (!IS_ADMIN) return;
+        var badge = document.getElementById("kk-page-badge");
+        if (!badge) return;
+        var first = document.querySelector("[data-card-code]");
+        if (!first) return;
+        var code = first.getAttribute("data-card-code") || "";
+        var prefix = code.indexOf(".") >= 0 ? code.slice(0, code.lastIndexOf(".")) : code;
+        if (!prefix) return;
+        fetch(PAGE_META_URL.replace("__CODE__", encodeURIComponent(prefix)), {headers: {"Accept": "application/json"}})
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j.success && j.found && j.short_id) {
+              badge.textContent = "▼ " + j.short_id + " · " + (j.name || prefix);
+              badge.style.display = "block";
+            }
+          })
+          .catch(function () {});
+      }
+
+      function openInfo(code) {
+        var ov = document.getElementById("kk-card-info-modal-overlay");
+        var codeEl = document.getElementById("kk-card-info-code");
+        var nameEl = document.getElementById("kk-card-info-name");
+        var bodyEl = document.getElementById("kk-card-info-body");
+        if (codeEl) codeEl.textContent = "";
+        nameEl.textContent = "";
+        bodyEl.textContent = t("Yükleniyor…");
+        ov.style.display = "flex";
+        fetch(INFO_URL.replace("__CODE__", encodeURIComponent(code)))
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (!j.success) { bodyEl.textContent = t("Bilgi alınamadı."); return; }
+            nameEl.textContent = j.name || "";
+            // Kısa kimlik yalnız admin'e gösterilir (eleman sadece admin'de var)
+            if (codeEl) codeEl.textContent = j.short_id || "";
+            if (!j.found) {
+              bodyEl.textContent = t("Bu kart için henüz açıklama girilmemiş.");
+            } else if (!j.description) {
+              bodyEl.textContent = t("Bu kart için henüz açıklama girilmemiş.");
+            } else {
+              bodyEl.textContent = j.description;
+            }
+          })
+          .catch(function () { bodyEl.textContent = t("Bilgi alınamadı (ağ hatası)."); });
+      }
+      function closeInfo() {
+        var ov = document.getElementById("kk-card-info-modal-overlay");
+        if (ov) ov.style.display = "none";
+      }
+      function toast(msg) {
+        if (window.Swal) Swal.fire({toast:true, position:"top-end", icon:"success", title:msg, timer:1800, showConfirmButton:false});
+      }
+      function scan(root) {
+        (root || document).querySelectorAll("[data-card-code]").forEach(place);
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        scan(document);
+        loadMeta();
+        loadPageBadge();
+        var ov = document.getElementById("kk-card-info-modal-overlay");
+        if (ov) {
+          ov.addEventListener("click", function (e) { if (e.target === ov) closeInfo(); });
+          var x = document.getElementById("kk-card-info-close");
+          if (x) x.addEventListener("click", closeInfo);
+          document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeInfo(); });
+        }
+      });
+      // Dinamik içerik (AJAX ile gelen kartlar)
+      try {
+        new MutationObserver(function (muts) {
+          var added = false;
+          muts.forEach(function (m) {
+            m.addedNodes && m.addedNodes.forEach(function (n) {
+              if (n.nodeType === 1) {
+                if (n.hasAttribute && n.hasAttribute("data-card-code")) { place(n); added = true; }
+                if (n.querySelectorAll && n.querySelectorAll("[data-card-code]").length) { scan(n); added = true; }
+              }
+            });
+          });
+          if (added && IS_ADMIN) loadMeta();
+        }).observe(document.body, {childList:true, subtree:true});
+      } catch (e) {}
+    })();
+    </script>
+    {% endif %}
+
     {# ── Komut Paleti (Ctrl+K) ─────────────────────────────────────────── #}
     {% if current_user.is_authenticated %}
     <div id="cmd-palette-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); z-index:9999; align-items:flex-start; justify-content:center; padding-top:80px;">
       <div id="cmd-palette" style="background:#fff; border-radius:12px; width:min(640px, 92vw); max-height:70vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.35); overflow:hidden;">
         <div style="display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid #e2e8f0;">
           <i class="fas fa-search" style="color:#94a3b8;"></i>
-          <input id="cmd-palette-input" type="search" placeholder="Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
+          <input id="cmd-palette-input" type="search" placeholder="{{ _('Sayfa / strateji / PG / proje / süreç / kullanıcı ara…') }}"
                  autocomplete="off" spellcheck="false"
                  style="flex:1; border:none; outline:none; font-size:14px; background:transparent; color:#0f172a;">
           <span style="font-size:11px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">ESC</span>
@@ -551,7 +828,7 @@
             <div class="mc-modal-header">
                 <div class="mc-modal-title">
                     <i class="fas fa-pen-to-square" id="mc-modal-form-icon"></i>
-                    <span id="mc-modal-form-title">Düzenle</span>
+                    <span id="mc-modal-form-title">{{ _("Düzenle") }}</span>
                 </div>
                 <button type="button" class="mc-modal-close" id="mc-modal-form-close" aria-label="Kapat"><i
                         class="fas fa-times"></i></button>
@@ -561,7 +838,7 @@
                 <div id="mc-modal-form-body"></div>
             </div>
             <div class="mc-modal-footer">
-                <button type="button" class="mc-btn mc-btn-secondary" id="mc-modal-form-cancel">İptal</button>
+                <button type="button" class="mc-btn mc-btn-secondary" id="mc-modal-form-cancel">{{ _("İptal") }}</button>
                 <button type="button" class="mc-btn mc-btn-primary" id="mc-modal-form-save">
                     <i class="fas fa-save" id="mc-modal-form-save-icon"></i> <span id="mc-modal-form-save-label">Kaydet</span>
                 </button>

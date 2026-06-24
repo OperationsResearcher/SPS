@@ -11,9 +11,9 @@
   let currentData = null;
   let activeStrategyFilter = 'all';
 
-  function statCard(label, value, color, sub) {
-    return `<div class="mc-card" style="padding:12px 14px;">
-      <div style="font-size:10.5px; color:#64748b; font-weight:600; text-transform:uppercase;">${esc(label)}</div>
+  function statCard(label, value, color, sub, code) {
+    return `<div class="mc-card" style="padding:12px 14px;"${code?` data-card-code="${code}"`:''}>
+      <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; font-weight:600; text-transform:uppercase;">${esc(label)}</div>
       <div style="font-size:22px; font-weight:800; color:${color}; margin-top:3px;">${esc(value)}</div>
       ${sub ? `<div style="font-size:11px; color:#94a3b8;">${esc(sub)}</div>` : ''}
     </div>`;
@@ -185,12 +185,12 @@
   function renderSummary(d) {
     const s = d.summary;
     document.getElementById('hs-summary').innerHTML = [
-      statCard('Ana Strateji',  s.strategy_nodes,     '#4f46e5'),
-      statCard('Alt Strateji',  s.sub_strategy_nodes, '#8b5cf6'),
-      statCard('Süreç',         s.process_nodes,      '#10b981'),
-      statCard('PG',            s.pg_nodes,           '#0ea5e9'),
-      statCard('Bağlantı',      s.total_links,        '#6366f1'),
-      statCard('Hizalanmamış',  s.unaligned_processes, s.unaligned_processes > 0 ? '#dc2626' : '#10b981', 'süreç'),
+      statCard('Ana Strateji',  s.strategy_nodes,     '#4f46e5', '', 'raporlar_hizalama_sankey.ana_strateji'),
+      statCard('Alt Strateji',  s.sub_strategy_nodes, '#8b5cf6', '', 'raporlar_hizalama_sankey.alt_strateji'),
+      statCard('Süreç',         s.process_nodes,      '#10b981', '', 'raporlar_hizalama_sankey.surec'),
+      statCard('PG',            s.pg_nodes,           '#0ea5e9', '', 'raporlar_hizalama_sankey.pg'),
+      statCard('Bağlantı',      s.total_links,        '#6366f1', '', 'raporlar_hizalama_sankey.baglanti'),
+      statCard('Hizalanmamış',  s.unaligned_processes, s.unaligned_processes > 0 ? '#dc2626' : '#10b981', 'süreç', 'raporlar_hizalama_sankey.hizalanmamis'),
     ].join('');
   }
 
@@ -212,7 +212,7 @@
       document.getElementById('hs-content').style.display = 'none';
       document.getElementById('hs-error').style.display = 'none';
       const y = yearSel?.value || '';
-      const url = '/raporlar/api/hizalama-sankey' + (y ? '?year=' + encodeURIComponent(y) : '');
+      const url = '/reports/api/alignment-sankey' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message || 'Veri alınamadı');
       currentData = j;
