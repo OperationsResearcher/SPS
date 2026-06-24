@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 14:05+0300\n"
+"POT-Creation-Date: 2026-06-24 14:52+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -1283,7 +1283,7 @@ msgstr ""
 msgid "İçe aktarma sırasında hata oluştu."
 msgstr ""
 
-#: micro/modules/admin/routes.py:885 ui/static/platform/js/kurum_ayarlar.js:69
+#: micro/modules/admin/routes.py:885 ui/static/platform/js/kurum_ayarlar.js:70
 #, fuzzy
 msgid "Kurum adı zorunludur."
 msgstr "Kurum Paneli"
@@ -1601,14 +1601,14 @@ msgstr "Kurum Paneli"
 
 #: micro/modules/api/routes.py:150 ui/static/platform/js/k_radar_ks.js:905
 #: ui/static/platform/js/kurum.js:590 ui/static/platform/js/kurum.js:697
-#: ui/static/platform/js/pg_tablo_modal.js:734
+#: ui/static/platform/js/pg_tablo_modal.js:736
 #: ui/static/platform/js/surec.js:2693
 msgid "Güncellendi."
 msgstr ""
 
 #: micro/modules/api/routes.py:179 ui/static/platform/js/k_radar_ks.js:925
 #: ui/static/platform/js/kurum.js:601
-#: ui/static/platform/js/pg_tablo_modal.js:714
+#: ui/static/platform/js/pg_tablo_modal.js:716
 msgid "Silindi."
 msgstr ""
 
@@ -2062,7 +2062,7 @@ msgstr "Kurum Paneli"
 msgid "Logo dosyası 2MB'dan büyük olamaz."
 msgstr ""
 
-#: micro/modules/kurum/routes.py:163 ui/static/platform/js/kurum_ayarlar.js:79
+#: micro/modules/kurum/routes.py:163 ui/static/platform/js/kurum_ayarlar.js:80
 #, fuzzy
 msgid "Kurum ayarları kaydedildi."
 msgstr "Kurum Paneli"
@@ -2351,7 +2351,7 @@ msgstr "Stratejik Planlama"
 #: micro/modules/raporlar/routes_faz3.py:759
 #: micro/modules/raporlar/routes_faz4.py:240
 #: micro/modules/raporlar/routes_faz4.py:260
-#: ui/static/platform/js/surec_vgs.js:579
+#: ui/static/platform/js/surec_vgs.js:581
 #: ui/templates/platform/_hierarchy_help.html:64
 #: ui/templates/platform/admin/istatistikler.html:38
 #: ui/templates/platform/admin/istatistikler.html:72
@@ -2381,8 +2381,8 @@ msgstr ""
 
 #: micro/modules/raporlar/routes_faz0.py:477
 #: micro/modules/raporlar/routes_faz4.py:276
-#: ui/static/platform/js/k_rapor.js:1228 ui/static/platform/js/surec_vgs.js:541
-#: ui/static/platform/js/surec_vgs.js:587
+#: ui/static/platform/js/k_rapor.js:1228 ui/static/platform/js/surec_vgs.js:543
+#: ui/static/platform/js/surec_vgs.js:589
 #: ui/templates/platform/k_rapor/index.html:271
 #: ui/templates/platform/sp/dynamic_flow.html:29
 #: ui/templates/platform/sp/strateji_haritasi.html:69
@@ -3707,7 +3707,7 @@ msgid "Plan Year Aktif"
 msgstr ""
 
 #: micro/modules/raporlar/routes_faz3.py:737 ui/static/platform/js/admin.js:46
-#: ui/static/platform/js/pg_tablo_modal.js:700
+#: ui/static/platform/js/pg_tablo_modal.js:702
 msgid "Evet"
 msgstr ""
 
@@ -4194,7 +4194,7 @@ msgid "Geçersiz alt strateji."
 msgstr "Stratejik Planlama"
 
 #: micro/modules/sp/routes_analysis.py:558
-#: ui/static/platform/js/surec_vgs.js:459
+#: ui/static/platform/js/surec_vgs.js:460
 #, fuzzy
 msgid "Güncellenemedi."
 msgstr "Düzenle"
@@ -4508,16 +4508,16 @@ msgstr "Kurum Paneli"
 #: ui/static/platform/js/k_radar_ks.js:1286 ui/static/platform/js/kurum.js:48
 #: ui/static/platform/js/launcher_plan_year.js:39
 #: ui/static/platform/js/masaustu.js:217 ui/static/platform/js/masaustu.js:221
-#: ui/static/platform/js/masaustu_plan_year.js:44
-#: ui/static/platform/js/pg_tablo_modal.js:718
-#: ui/static/platform/js/pg_tablo_modal.js:740
+#: ui/static/platform/js/masaustu_plan_year.js:45
+#: ui/static/platform/js/pg_tablo_modal.js:720
+#: ui/static/platform/js/pg_tablo_modal.js:742
 #: ui/static/platform/js/profil.js:22 ui/static/platform/js/sp.js:47
 #: ui/static/platform/js/sp_analiz.js:111
 #: ui/static/platform/js/sp_analiz.js:149
 #: ui/static/platform/js/sp_analiz.js:186
 #: ui/static/platform/js/sp_donemler.js:30
 #: ui/static/platform/js/sp_donemler.js:276
-#: ui/static/platform/js/sp_plan_year.js:48 ui/static/platform/js/surec.js:122
+#: ui/static/platform/js/sp_plan_year.js:49 ui/static/platform/js/surec.js:122
 #: ui/static/platform/js/surec.js:3314 ui/static/platform/js/twofa.js:73
 #: ui/static/platform/js/twofa.js:170
 #: ui/static/platform/js/yonetim_paneli.js:10
@@ -4536,7 +4536,7 @@ msgstr ""
 #: ui/static/platform/js/k_radar_ks.js:1275 ui/static/platform/js/kurum.js:55
 #: ui/static/platform/js/kurum.js:476 ui/static/platform/js/masaustu.js:141
 #: ui/static/platform/js/mc-modal-form.js:25
-#: ui/static/platform/js/pg_tablo_modal.js:701
+#: ui/static/platform/js/pg_tablo_modal.js:703
 #: ui/static/platform/js/project_raid.js:301 ui/static/platform/js/sp.js:55
 #: ui/static/platform/js/surec.js:141 ui/static/platform/js/surec.js:3749
 #: ui/templates/platform/admin/sub_tenants.html:162
@@ -4690,7 +4690,7 @@ msgstr ""
 #: ui/static/platform/js/admin.js:669 ui/static/platform/js/admin.js:697
 #: ui/static/platform/js/ayarlar_eposta.js:92
 #: ui/static/platform/js/kurum.js:533 ui/static/platform/js/kurum.js:574
-#: ui/static/platform/js/kurum.js:653 ui/static/platform/js/kurum_ayarlar.js:83
+#: ui/static/platform/js/kurum.js:653 ui/static/platform/js/kurum_ayarlar.js:84
 #: ui/static/platform/js/surec.js:3727
 msgid "Kayıt başarısız."
 msgstr ""
@@ -4772,7 +4772,7 @@ msgstr ""
 msgid "Bildirim silindi."
 msgstr ""
 
-#: ui/static/platform/js/admin_hierarchy.js:64
+#: ui/static/platform/js/admin_hierarchy.js:65
 #: ui/static/platform/js/esg_yonetim.js:66
 #: ui/static/platform/js/esg_yonetim.js:91 ui/static/platform/js/k_radar.js:586
 #: ui/static/platform/js/k_radar.js:730 ui/static/platform/js/k_radar_ks.js:920
@@ -4780,23 +4780,23 @@ msgstr ""
 #: ui/static/platform/js/project_kapasite.js:61
 #: ui/static/platform/js/sp_liste_analiz.js:62
 #: ui/static/platform/js/sp_porter.js:63
-#: ui/static/platform/js/sp_projeler.js:81 ui/static/platform/js/surec.js:2372
+#: ui/static/platform/js/sp_projeler.js:83 ui/static/platform/js/surec.js:2372
 #: ui/static/platform/js/vc_items.js:76
 #: ui/templates/platform/admin/notifications.html:113
 msgid "Sil"
 msgstr ""
 
-#: ui/static/platform/js/admin_hierarchy.js:76
+#: ui/static/platform/js/admin_hierarchy.js:77
 #, fuzzy
 msgid "Kartı düzenle"
 msgstr "Düzenle"
 
-#: ui/static/platform/js/admin_hierarchy.js:78
+#: ui/static/platform/js/admin_hierarchy.js:79
 #, fuzzy
 msgid "Veri ekle"
 msgstr "Düzenle"
 
-#: ui/static/platform/js/admin_hierarchy.js:185
+#: ui/static/platform/js/admin_hierarchy.js:186
 msgid "örn: pgv_kapsami"
 msgstr ""
 
@@ -4840,7 +4840,7 @@ msgstr ""
 
 #: ui/static/platform/js/app.js:116 ui/static/platform/js/app.js:126
 #: ui/static/platform/js/auth.js:18 ui/static/platform/js/k_radar_ks.js:1294
-#: ui/static/platform/js/kule.js:193 ui/static/platform/js/mc-modal-form.js:127
+#: ui/static/platform/js/kule.js:200 ui/static/platform/js/mc-modal-form.js:127
 #: ui/static/platform/js/sp_donemler.js:267 ui/static/platform/js/surec.js:2931
 #: ui/templates/platform/admin/sub_tenants.html:195
 #, fuzzy
@@ -4867,7 +4867,7 @@ msgid "İşleniyor..."
 msgstr ""
 
 #: ui/static/platform/js/app.js:194 ui/static/platform/js/bildirim.js:94
-#: ui/static/platform/js/kurum_ayarlar.js:124
+#: ui/static/platform/js/kurum_ayarlar.js:126
 msgid "Sunucu bağlantı hatası."
 msgstr ""
 
@@ -4904,7 +4904,7 @@ msgid "Özel SMTP aktifken sunucu adresi ve kullanıcı adı zorunludur."
 msgstr ""
 
 #: ui/static/platform/js/ayarlar_eposta.js:84
-#: ui/static/platform/js/kurum_ayarlar.js:73
+#: ui/static/platform/js/kurum_ayarlar.js:74
 msgid "Kaydediliyor..."
 msgstr ""
 
@@ -5176,7 +5176,7 @@ msgstr ""
 #: ui/static/platform/js/k_radar.js:729
 #: ui/static/platform/js/mc-modal-form.js:21
 #: ui/static/platform/js/project_raid.js:214
-#: ui/static/platform/js/sp_projeler.js:80 ui/static/platform/js/surec.js:2369
+#: ui/static/platform/js/sp_projeler.js:82 ui/static/platform/js/surec.js:2369
 #: ui/static/platform/js/vc_items.js:75
 #: ui/templates/platform/admin/tenants.html:160
 #: ui/templates/platform/admin/tenants.html:161
@@ -5297,7 +5297,7 @@ msgstr ""
 msgid "Boyut:"
 msgstr ""
 
-#: ui/static/platform/js/k_radar.js:604 ui/static/platform/js/surec_vgs.js:463
+#: ui/static/platform/js/k_radar.js:604 ui/static/platform/js/surec_vgs.js:464
 msgid "Kayıt güncellendi."
 msgstr ""
 
@@ -5483,21 +5483,21 @@ msgstr ""
 #: ui/static/platform/js/k_radar_ks.js:973
 #: ui/static/platform/js/k_radar_ks.js:992
 #: ui/static/platform/js/k_radar_ks.js:1055
-#: ui/static/platform/js/launcher_plan_year.js:55
-#: ui/static/platform/js/launcher_plan_year.js:88
-#: ui/static/platform/js/launcher_plan_year.js:139
-#: ui/static/platform/js/masaustu_plan_year.js:61
-#: ui/static/platform/js/masaustu_plan_year.js:94
-#: ui/static/platform/js/masaustu_plan_year.js:148
+#: ui/static/platform/js/launcher_plan_year.js:56
+#: ui/static/platform/js/launcher_plan_year.js:90
+#: ui/static/platform/js/launcher_plan_year.js:143
+#: ui/static/platform/js/masaustu_plan_year.js:63
+#: ui/static/platform/js/masaustu_plan_year.js:97
+#: ui/static/platform/js/masaustu_plan_year.js:153
 #: ui/static/platform/js/sp_analiz.js:112
 #: ui/static/platform/js/sp_analiz.js:150
 #: ui/static/platform/js/sp_analiz.js:187
 #: ui/static/platform/js/sp_donemler.js:40
 #: ui/static/platform/js/sp_donemler.js:59
 #: ui/static/platform/js/sp_donemler.js:91
-#: ui/static/platform/js/sp_plan_year.js:66
-#: ui/static/platform/js/sp_plan_year.js:99
-#: ui/static/platform/js/sp_plan_year.js:153
+#: ui/static/platform/js/sp_plan_year.js:69
+#: ui/static/platform/js/sp_plan_year.js:103
+#: ui/static/platform/js/sp_plan_year.js:160
 msgid "Bağlantı hatası."
 msgstr ""
 
@@ -5976,56 +5976,56 @@ msgstr ""
 msgid "Bildirim"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:58
+#: ui/static/platform/js/kule.js:60
 msgid "Kule — sayfa yardımı"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:59
+#: ui/static/platform/js/kule.js:61
 msgid "Kule yardımcısını aç"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:72
+#: ui/static/platform/js/kule.js:74
 msgid "Bu sayfa henüz turlu değil"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:73
+#: ui/static/platform/js/kule.js:75
 msgid ""
 "Bu sayfa için Kule turu henüz hazırlanmadı. Stratejik Planlama, Süreçler "
 "veya Masaüstü gibi sayfalarda beni dene."
 msgstr ""
 
-#: ui/static/platform/js/kule.js:81
+#: ui/static/platform/js/kule.js:84
 msgid "Tur başlatılamadı"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:82
+#: ui/static/platform/js/kule.js:85
 msgid "Sunucuya ulaşılamadı. Sayfayı yenileyip tekrar dene."
 msgstr ""
 
-#: ui/static/platform/js/kule.js:167
+#: ui/static/platform/js/kule.js:174
 msgid "Tur kütüphanesi yüklenemedi"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:168
+#: ui/static/platform/js/kule.js:175
 msgid ""
 "Driver.js CDN'i engellenmiş olabilir. İnternet bağlantını veya ağ "
 "engellerini kontrol et."
 msgstr ""
 
-#: ui/static/platform/js/kule.js:191
+#: ui/static/platform/js/kule.js:198
 msgid "Devam →"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:192
+#: ui/static/platform/js/kule.js:199
 msgid "← Geri"
 msgstr ""
 
-#: ui/static/platform/js/kule.js:238
+#: ui/static/platform/js/kule.js:246
 #, fuzzy
 msgid "Tur yüklenemedi"
 msgstr "Düzenle"
 
-#: ui/static/platform/js/kule.js:239
+#: ui/static/platform/js/kule.js:247
 msgid "Sunucudan tur tanımı alınamadı."
 msgstr ""
 
@@ -6187,60 +6187,60 @@ msgstr "Stratejik Planlama"
 msgid "Alt strateji silindi."
 msgstr "Stratejik Planlama"
 
-#: ui/static/platform/js/kurum_ayarlar.js:92
+#: ui/static/platform/js/kurum_ayarlar.js:94
 msgid "Lütfen bir logo dosyası seçin."
 msgstr ""
 
-#: ui/static/platform/js/kurum_ayarlar.js:100
+#: ui/static/platform/js/kurum_ayarlar.js:102
 #, fuzzy
 msgid "Logo yükleniyor..."
 msgstr "Düzenle"
 
-#: ui/static/platform/js/kurum_ayarlar.js:116
+#: ui/static/platform/js/kurum_ayarlar.js:118
 #, fuzzy
 msgid "Logo yüklendi."
 msgstr "Düzenle"
 
-#: ui/static/platform/js/kurum_ayarlar.js:119
+#: ui/static/platform/js/kurum_ayarlar.js:121
 msgid "Logo yükleme başarısız."
 msgstr ""
 
-#: ui/static/platform/js/launcher_plan_year.js:52
-#: ui/static/platform/js/masaustu_plan_year.js:58
+#: ui/static/platform/js/launcher_plan_year.js:53
+#: ui/static/platform/js/masaustu_plan_year.js:60
 #: ui/static/platform/js/sp_donemler.js:39
 msgid "Dönem değiştirilemedi."
 msgstr ""
 
-#: ui/static/platform/js/launcher_plan_year.js:73
-#: ui/static/platform/js/masaustu_plan_year.js:79
+#: ui/static/platform/js/launcher_plan_year.js:75
+#: ui/static/platform/js/masaustu_plan_year.js:82
 #: ui/static/platform/js/sp_donemler.js:52
-#: ui/static/platform/js/sp_plan_year.js:84
+#: ui/static/platform/js/sp_plan_year.js:88
 msgid "Evet, Kapat"
 msgstr ""
 
-#: ui/static/platform/js/launcher_plan_year.js:74
-#: ui/static/platform/js/masaustu_plan_year.js:80
+#: ui/static/platform/js/launcher_plan_year.js:76
+#: ui/static/platform/js/masaustu_plan_year.js:83
 #: ui/static/platform/js/sp_donemler.js:52
-#: ui/static/platform/js/sp_plan_year.js:85
+#: ui/static/platform/js/sp_plan_year.js:89
 msgid "Vazgeç"
 msgstr ""
 
-#: ui/static/platform/js/launcher_plan_year.js:85
-#: ui/static/platform/js/masaustu_plan_year.js:91
+#: ui/static/platform/js/launcher_plan_year.js:87
+#: ui/static/platform/js/masaustu_plan_year.js:94
 #: ui/static/platform/js/sp_donemler.js:58
 #, fuzzy
 msgid "Dönem kapatılamadı."
 msgstr "Bireysel Karne"
 
-#: ui/static/platform/js/launcher_plan_year.js:120
-#: ui/static/platform/js/masaustu_plan_year.js:129
+#: ui/static/platform/js/launcher_plan_year.js:124
+#: ui/static/platform/js/masaustu_plan_year.js:134
 #: ui/static/platform/js/sp_donemler.js:82
-#: ui/static/platform/js/sp_plan_year.js:134
+#: ui/static/platform/js/sp_plan_year.js:141
 msgid "Geçerli bir yıl girin (2000-2100)."
 msgstr ""
 
-#: ui/static/platform/js/launcher_plan_year.js:136
-#: ui/static/platform/js/masaustu_plan_year.js:145
+#: ui/static/platform/js/launcher_plan_year.js:140
+#: ui/static/platform/js/masaustu_plan_year.js:150
 #: ui/static/platform/js/sp_donemler.js:90
 msgid "Dönem oluşturulamadı."
 msgstr ""
@@ -6379,43 +6379,43 @@ msgid "Aralık"
 msgstr "Ayarlar"
 
 #: ui/static/platform/js/pg_tablo_modal.js:141
-#: ui/static/platform/js/pg_tablo_modal.js:569
+#: ui/static/platform/js/pg_tablo_modal.js:571
 #: ui/static/platform/js/surec.js:332
 msgid "Ocak – Haziran"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:142
-#: ui/static/platform/js/pg_tablo_modal.js:570
+#: ui/static/platform/js/pg_tablo_modal.js:572
 #: ui/static/platform/js/surec.js:333
 msgid "Temmuz – Aralık"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:147
-#: ui/static/platform/js/pg_tablo_modal.js:564
+#: ui/static/platform/js/pg_tablo_modal.js:566
 #: ui/static/platform/js/surec.js:325
 msgid "I. Çeyrek"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:148
-#: ui/static/platform/js/pg_tablo_modal.js:565
+#: ui/static/platform/js/pg_tablo_modal.js:567
 #: ui/static/platform/js/surec.js:326
 msgid "II. Çeyrek"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:149
-#: ui/static/platform/js/pg_tablo_modal.js:566
+#: ui/static/platform/js/pg_tablo_modal.js:568
 #: ui/static/platform/js/surec.js:327
 msgid "III. Çeyrek"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:150
-#: ui/static/platform/js/pg_tablo_modal.js:567
+#: ui/static/platform/js/pg_tablo_modal.js:569
 #: ui/static/platform/js/surec.js:328
 msgid "IV. Çeyrek"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:152
-#: ui/static/platform/js/pg_tablo_modal.js:568
+#: ui/static/platform/js/pg_tablo_modal.js:570
 #: ui/static/platform/js/surec.js:378
 msgid "Yıl Sonu"
 msgstr ""
@@ -6465,16 +6465,16 @@ msgstr ""
 msgid "6 aylık"
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:358
+#: ui/static/platform/js/pg_tablo_modal.js:359
 msgid "Bu veri önceki yıldan hesaplanmıştır."
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:489
+#: ui/static/platform/js/pg_tablo_modal.js:491
 #, fuzzy
 msgid "Karne verisi yüklenemedi."
 msgstr "Düzenle"
 
-#: ui/static/platform/js/pg_tablo_modal.js:643
+#: ui/static/platform/js/pg_tablo_modal.js:645
 #: ui/templates/platform/project/detail.html:26
 #: ui/templates/platform/project/task_detail.html:3
 #: ui/templates/platform/project/task_detail.html:6
@@ -6483,29 +6483,29 @@ msgstr "Düzenle"
 msgid "Görev"
 msgstr "Düzenle"
 
-#: ui/static/platform/js/pg_tablo_modal.js:644
+#: ui/static/platform/js/pg_tablo_modal.js:646
 msgid "Bağlı görev yok."
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:647
+#: ui/static/platform/js/pg_tablo_modal.js:649
 #, fuzzy
 msgid "Yüklenemedi."
 msgstr "Düzenle"
 
-#: ui/static/platform/js/pg_tablo_modal.js:697
+#: ui/static/platform/js/pg_tablo_modal.js:699
 msgid "Veriyi pasifleştir?"
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:776
-#: ui/static/platform/js/surec.js:2921 ui/static/platform/js/surec_vgs.js:566
+#: ui/static/platform/js/pg_tablo_modal.js:778
+#: ui/static/platform/js/surec.js:2921 ui/static/platform/js/surec_vgs.js:568
 msgid "PG verisi girme yetkiniz yok."
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:780
+#: ui/static/platform/js/pg_tablo_modal.js:782
 msgid "Veri girişi sihirbazı şu an kullanılamıyor."
 msgstr ""
 
-#: ui/static/platform/js/pg_tablo_modal.js:784
+#: ui/static/platform/js/pg_tablo_modal.js:786
 #, fuzzy
 msgid "Önce bu sürece performans göstergesi ekleyin."
 msgstr "Bireysel Karne"
@@ -6833,15 +6833,15 @@ msgstr ""
 msgid "Karşılaştır"
 msgstr "Bireysel Karne"
 
-#: ui/static/platform/js/sp_plan_year.js:63
+#: ui/static/platform/js/sp_plan_year.js:66
 msgid "Yıl değiştirilemedi."
 msgstr ""
 
-#: ui/static/platform/js/sp_plan_year.js:96
+#: ui/static/platform/js/sp_plan_year.js:100
 msgid "Yıl kapatılamadı."
 msgstr ""
 
-#: ui/static/platform/js/sp_plan_year.js:150
+#: ui/static/platform/js/sp_plan_year.js:157
 msgid "Plan yılı oluşturulamadı."
 msgstr ""
 
@@ -7074,8 +7074,8 @@ msgid "Dönem"
 msgstr "Kurum Paneli"
 
 #: ui/static/platform/js/surec.js:2697 ui/static/platform/js/surec.js:2912
-#: ui/static/platform/js/surec_vgs.js:467
-#: ui/static/platform/js/surec_vgs.js:488
+#: ui/static/platform/js/surec_vgs.js:468
+#: ui/static/platform/js/surec_vgs.js:489
 msgid "Sunucu hatası."
 msgstr ""
 
@@ -7291,7 +7291,7 @@ msgid "Süreç oluşturuldu."
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3731 ui/static/platform/js/surec.js:3762
-#: ui/static/platform/js/surec_vgs.js:724
+#: ui/static/platform/js/surec_vgs.js:728
 msgid "Sunucu hatası:"
 msgstr ""
 
@@ -7308,70 +7308,70 @@ msgid "Geçerli bir tarih seçin."
 msgstr ""
 
 #: ui/static/platform/js/surec_vgs.js:190
-#: ui/static/platform/js/surec_vgs.js:653
+#: ui/static/platform/js/surec_vgs.js:657
 #, fuzzy
 msgid "Tarih işlenemedi."
 msgstr "Düzenle"
 
 #: ui/static/platform/js/surec_vgs.js:200
-#: ui/static/platform/js/surec_vgs.js:445
+#: ui/static/platform/js/surec_vgs.js:446
 msgid "Gerçekleşen değer zorunludur."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:345
+#: ui/static/platform/js/surec_vgs.js:346
 #, fuzzy
 msgid "Geçmiş yüklenemedi:"
 msgstr "Düzenle"
 
-#: ui/static/platform/js/surec_vgs.js:398
+#: ui/static/platform/js/surec_vgs.js:399
 msgid "Güncelleme penceresi veya adres yüklenemedi."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:424
+#: ui/static/platform/js/surec_vgs.js:425
 msgid "Silme penceresi veya adres yüklenemedi."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:480
+#: ui/static/platform/js/surec_vgs.js:481
 #, fuzzy
 msgid "Silinemedi."
 msgstr "Kurum Paneli"
 
-#: ui/static/platform/js/surec_vgs.js:484
+#: ui/static/platform/js/surec_vgs.js:485
 msgid "Kayıt pasifleştirildi."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:497
+#: ui/static/platform/js/surec_vgs.js:498
 msgid "Düzenlenecek satır bulunamadı."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:570
+#: ui/static/platform/js/surec_vgs.js:572
 #, fuzzy
 msgid "Veri girişi penceresi yüklenemedi."
 msgstr "Düzenle"
 
-#: ui/static/platform/js/surec_vgs.js:576
+#: ui/static/platform/js/surec_vgs.js:578
 msgid "PG bulunamadı; sayfayı yenileyin."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:683
+#: ui/static/platform/js/surec_vgs.js:687
 msgid "Bireysel PG eşlemesi oluşturulamadı."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:691
+#: ui/static/platform/js/surec_vgs.js:695
 msgid "Süreç verisi kaydedilemedi."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:712
+#: ui/static/platform/js/surec_vgs.js:716
 msgid ""
 "Süreç verisi kaydedildi; bireysel karne kaydı başarısız. Bireysel "
 "modülünü kontrol edin."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:721
+#: ui/static/platform/js/surec_vgs.js:725
 msgid "Veri kaydedildi (süreç + bireysel)."
 msgstr ""
 
-#: ui/static/platform/js/surec_vgs.js:739
+#: ui/static/platform/js/surec_vgs.js:743
 #, fuzzy
 msgid "Seçilen PG bulunamadı."
 msgstr "Kurum Paneli"
@@ -20961,6 +20961,2100 @@ msgstr "Stratejik Planlama"
 #: ui/templates/platform/surec/index.html:740
 msgid "Son 3 ay:"
 msgstr ""
+
+#: ui/static/platform/js/admin.js:67
+#, fuzzy
+msgid "Kurum Üst Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:146
+#, fuzzy
+msgid "Etkin"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/admin.js:146
+msgid "kullanıcı her girişte 6 haneli kod kullanıyor"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:151
+msgid "Devre dışı"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:151
+msgid "kullanıcı yalnızca şifre ile giriyor"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:170
+#, fuzzy
+msgid "E-posta zorunludur."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:180
+#, fuzzy
+msgid "Kaydediliyor…"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin.js:198
+#, fuzzy
+msgid "2FA Sıfırlanacak"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/admin.js:199
+msgid ""
+"kullanıcısının iki faktörlü doğrulaması kaldırılacak. Sonraki girişinde "
+"sadece şifre yeterli olacak. Kullanıcı isterse profilden yeniden "
+"etkinleştirebilir."
+msgstr ""
+
+#: ui/static/platform/js/admin.js:200
+#, fuzzy
+msgid "Evet, sıfırla"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/admin.js:214
+#, fuzzy
+msgid "sıfırlandı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/admin.js:218
+#, fuzzy
+msgid "Sıfırlama başarısız."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:241
+#, fuzzy
+msgid "Toplu Kullanıcı İçe Aktar"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:242
+msgid "Örnek Excel İndir"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:243
+msgid ""
+"Excel (.xlsx) veya CSV — kolonlar: Ad, Soyad, E-posta, Şifre, Unvan, "
+"Telefon"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:246
+msgid "İçe Aktar"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:249
+#, fuzzy
+msgid "Dosya seçiniz."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin.js:260
+#, fuzzy
+msgid "İçe aktarma başarısız."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:275
+#, fuzzy
+msgid "Kullanıcı pasife alınsın mı?"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:275
+#, fuzzy
+msgid "Kullanıcı aktifleştirilsin mi?"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:310
+#, fuzzy
+msgid "kullanıcı görüntüleniyor"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:417
+#, fuzzy
+msgid "Yeni Kurum Ekle"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:444
+msgid ""
+"aktif alt-tenant var. 'Normal'a düşürmek için önce hepsini "
+"transfer/pasifleştir."
+msgstr ""
+
+#: ui/static/platform/js/admin.js:548
+msgid "Arşivlenenleri Gizle"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:641
+#, fuzzy
+msgid "Paket Adı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:642
+#, fuzzy
+msgid "Örn: Başlangıç Paketi"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/admin.js:644
+msgid "Örn: starter"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:669
+#, fuzzy
+msgid "Modül Adı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:670
+#, fuzzy
+msgid "Örn: Süreç Yönetimi"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:672
+msgid "Örn: process_management"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:774
+msgid "Hedef Kurum (boş = tümü)"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:776
+#, fuzzy
+msgid "— Tüm Kurumlar —"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:785
+#, fuzzy
+msgid "Bildirim başlığı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin.js:787
+msgid "Bildirim mesajı"
+msgstr ""
+
+#: ui/static/platform/js/admin.js:788
+#, fuzzy
+msgid "Bağlantı (opsiyonel)"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/admin.js:819
+msgid "bildirimi okundu olarak işaretlenecek."
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:48
+msgid "— kısıtsız —"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:60
+#, fuzzy
+msgid "tabi:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/admin_hierarchy.js:70
+#, fuzzy
+msgid "veri kaynağı yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:78
+#, fuzzy
+msgid "veri"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:86
+#, fuzzy
+msgid "kart yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:98
+#, fuzzy
+msgid "bileşen yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:103
+msgid "bileşen"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:111
+#, fuzzy
+msgid "modül yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:117
+msgid "modül"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:135
+#, fuzzy
+msgid "Ağaç yüklenemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:149
+#, fuzzy
+msgid "Keşif tamam."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin_hierarchy.js:162
+#, fuzzy
+msgid "Veri eşlemesi güncellendi."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin_hierarchy.js:170
+#, fuzzy
+msgid "Veri kaynağı silinsin mi?"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:181
+#, fuzzy
+msgid "Veri kaynağı ekle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:184
+#, fuzzy
+msgid "Veri anahtarı *"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/admin_hierarchy.js:186
+#, fuzzy
+msgid "Etiket"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_hierarchy.js:188
+msgid "Tabi olduğu bileşen (paket)"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:193
+#, fuzzy
+msgid "Veri anahtarı zorunlu."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin_hierarchy.js:211
+#, fuzzy
+msgid "Kart adı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/admin_hierarchy.js:213
+msgid "Bağlı bileşen"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:215
+msgid "Sıra (yer)"
+msgstr ""
+
+#: ui/static/platform/js/admin_hierarchy.js:226
+#, fuzzy
+msgid "Kart güncellendi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/admin_package_modules.js:61
+msgid "içerdiği modüller"
+msgstr ""
+
+#: ui/static/platform/js/analiz.js:184
+#, fuzzy
+msgid "PG tarandı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/analiz.js:184
+#, fuzzy
+msgid "yöntem:"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/analiz.js:190
+#, fuzzy
+msgid "Anomali tespit edilmedi"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/analiz.js:201
+#, fuzzy
+msgid "Bilinmeyen PG"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/analiz.js:222
+msgid "Lütfen bir süreç seçin."
+msgstr ""
+
+#: ui/static/platform/js/analiz.js:268
+msgid "↑ Artış"
+msgstr ""
+
+#: ui/static/platform/js/analiz.js:268
+msgid "↓ Düşüş"
+msgstr ""
+
+#: ui/static/platform/js/analiz.js:268
+#, fuzzy
+msgid "→ Sabit"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/ayarlar_index.js:39
+#, fuzzy
+msgid "ayar"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/bireysel.js:34
+#, fuzzy
+msgid "Katman"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/bireysel.js:36
+msgid "Standart (rutin/operasyonel)"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:37
+#, fuzzy
+msgid "Stratejik (kuruma bağlı)"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:40
+#, fuzzy
+msgid "Bağlı strateji (opsiyonel)"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:42
+#, fuzzy
+msgid "— Seçilmedi —"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/bireysel.js:186
+msgid "Henüz PG yok — ilk göstergenizi ekleyin."
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:205
+msgid "ayda en az bir PG verisi"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:209
+msgid "gösterge bu yıl henüz veri almadı"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:232
+msgid "gösterge son veride hedefe göre zayıf görünüyor"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:233
+msgid ""
+"Tahmini göstergedir; resmi performans değerlendirmesi değildir. Hedef ve "
+"yön bilgisine bağlıdır."
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:262
+msgid "Aylık gerçekleşen (mini özet)"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:269
+#, fuzzy
+msgid "Detay alınamadı"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/bireysel.js:277
+msgid "Not"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:278
+msgid "Bu yıl için kayıtlı veri yok."
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:286
+#, fuzzy
+msgid "Kayıtlar"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:314
+#, fuzzy
+msgid "Karne verileri yüklenirken hata:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/bireysel.js:342
+#, fuzzy
+msgid "Henüz PG eklenmemiş."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/bireysel.js:362
+#, fuzzy
+msgid "Stratejik"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:428
+#, fuzzy
+msgid "Ad zorunludur."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/bireysel.js:443
+#, fuzzy
+msgid "PG eklendi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/bireysel.js:498
+#, fuzzy
+msgid "Veri Gir"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:500
+#, fuzzy
+msgid "Gerçekleşen Değer"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:501
+msgid "Örn: 92.5"
+msgstr ""
+
+#: ui/static/platform/js/bireysel.js:506
+#, fuzzy
+msgid "Değer boş bırakılamaz."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/bireysel.js:518
+#, fuzzy
+msgid "Veri kaydedildi."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:529
+#, fuzzy
+msgid "PG silinsin mi?"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/bireysel.js:529
+#, fuzzy
+msgid "Performans göstergesi pasife alınacak."
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/bireysel.js:534
+#, fuzzy
+msgid "PG silindi."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/calendar_quick_create.js:43
+#, fuzzy
+msgid "Meta yüklenemedi"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:102
+#, fuzzy
+msgid "Takvim seçimi:"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/calendar_quick_create.js:205
+#, fuzzy
+msgid "PG seçilmedi"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:230
+msgid "Süreçte atanabilir kullanıcı bulunamadı."
+msgstr ""
+
+#: ui/static/platform/js/calendar_quick_create.js:237
+msgid "Yalnızca kendinize atama yapılabilir; sunucu kurallarıyla doğrulanır."
+msgstr ""
+
+#: ui/static/platform/js/calendar_quick_create.js:290
+#, fuzzy
+msgid "Bağımsız"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/calendar_quick_create.js:309
+#, fuzzy
+msgid "Önce süreç seçin."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/calendar_quick_create.js:333
+#, fuzzy
+msgid "Süreç karnesi ile aynı form"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/calendar_quick_create.js:347
+#, fuzzy
+msgid "Proje görevi formu ile aynı"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:355
+#, fuzzy
+msgid "Bireysel faaliyet"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:381
+#, fuzzy
+msgid "Başlık girin."
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/calendar_quick_create.js:384
+msgid "Bitiş tarihi başlangıçtan önce olamaz."
+msgstr ""
+
+#: ui/static/platform/js/calendar_quick_create.js:389
+#, fuzzy
+msgid "Planlanan saat:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/calendar_quick_create.js:404
+#, fuzzy
+msgid "Süreç seçin."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/calendar_quick_create.js:405
+#, fuzzy
+msgid "Süreç için form yüklenemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:411
+msgid "Bitiş, başlangıçtan sonra olmalıdır."
+msgstr ""
+
+#: ui/static/platform/js/calendar_quick_create.js:415
+msgid "En az bir atanan seçin."
+msgstr ""
+
+#: ui/static/platform/js/calendar_quick_create.js:439
+#, fuzzy
+msgid "Proje seçin."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/calendar_quick_create.js:531
+#, fuzzy
+msgid "Beklenmeyen yanıt"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/calendar_quick_create.js:540
+#, fuzzy
+msgid "Takvim yüklenemedi:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/command_palette.js:92
+#, fuzzy
+msgid "Sonuç bulunamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/command_palette.js:92
+msgid "Yazmaya başlayın…"
+msgstr ""
+
+#: ui/static/platform/js/esg_yonetim.js:58
+#, fuzzy
+msgid "Değer girilmemiş."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/esg_yonetim.js:83
+msgid "SDG:"
+msgstr ""
+
+#: ui/static/platform/js/esg_yonetim.js:95
+#, fuzzy
+msgid "Yıllık Değerler"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/esg_yonetim.js:98
+#, fuzzy
+msgid "Değer gir"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/esg_yonetim.js:150
+#, fuzzy
+msgid "Baz yıl"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/esg_yonetim.js:153
+msgid "SDG kodları (virgülle)"
+msgstr ""
+
+#: ui/static/platform/js/esg_yonetim.js:179
+#, fuzzy
+msgid "Metrik düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/esg_yonetim.js:179
+#, fuzzy
+msgid "Yeni ESG metriği"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/esg_yonetim.js:197
+#, fuzzy
+msgid "Yıllık değer gir"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/esg_yonetim.js:227
+#, fuzzy
+msgid "Değer kaydedildi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/esg_yonetim.js:228
+#, fuzzy
+msgid "Kaydedilemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/esg_yonetim.js:234
+#, fuzzy
+msgid "Metrik silinsin mi?"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/esg_yonetim.js:234
+#, fuzzy
+msgid "ve değerleri pasife alınacak."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/esg_yonetim.js:249
+#, fuzzy
+msgid "Değer silindi."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/esg_yonetim.js:272
+#, fuzzy
+msgid "ESG verisi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/kule.js:100
+msgid "Kule'den"
+msgstr ""
+
+#: ui/static/platform/js/kule.js:131
+msgid "Hoş geldin"
+msgstr ""
+
+#: ui/static/platform/js/kule.js:137
+msgid "Şimdi değil"
+msgstr ""
+
+#: ui/static/platform/js/kule.js:140
+#, fuzzy
+msgid "Başlayalım"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/kule.js:217
+#, fuzzy
+msgid "Hazırsın"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/kurum.js:141
+msgid "Erişilebilir süreç yok"
+msgstr ""
+
+#: ui/static/platform/js/kurum.js:146
+#, fuzzy
+msgid "PG tanımlı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/kurum.js:146
+#, fuzzy
+msgid "PG yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/kurum.js:165
+#, fuzzy
+msgid "Stratejiye bağlı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/kurum.js:165
+#, fuzzy
+msgid "Bağlantı yok"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/kurum.js:180
+msgid "30g veri (süreç)"
+msgstr ""
+
+#: ui/static/platform/js/kurum.js:182
+msgid "Adet"
+msgstr ""
+
+#: ui/static/platform/js/kurum.js:252
+#, fuzzy
+msgid "Aktif PG yok"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/kurum.js:258
+#, fuzzy
+msgid "Düşük skor (<50)"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/kurum.js:543
+#, fuzzy
+msgid "Madde başlığı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/kurum.js:561
+#, fuzzy
+msgid "ekle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/kurum.js:578
+#, fuzzy
+msgid "düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/kurum.js:592
+#, fuzzy
+msgid "pasife alınacak."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_radar_ks.js:183
+#, fuzzy
+msgid "süreç bağlı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_radar_ks.js:237
+#, fuzzy
+msgid "Henüz girilmemiş"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_radar_ks.js:435
+#, fuzzy
+msgid "Fırsatlar"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_radar_ks.js:439
+#, fuzzy
+msgid "Tehditler"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_radar_ks.js:749
+#, fuzzy
+msgid "Çeyrek Hedefleri"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/k_radar_ks.js:781
+#, fuzzy
+msgid "KR Ekle"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_radar_ks.js:821
+#, fuzzy
+msgid "Henüz OKR tanımlanmamış"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_radar_ks.js:822
+msgid "yılı için ilk hedefinizi ekleyin."
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:826
+msgid "yılı OKR'leri"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1037
+msgid "Perspektif değiştir"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1050
+msgid "Bu perspektife atanmış KPI yok."
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1081
+msgid "Atanmış KPI yok."
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1113
+#, fuzzy
+msgid "Strateji bağlantısı olan KPI bulunamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_radar_ks.js:1122
+#, fuzzy
+msgid "Ata"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/k_radar_ks.js:1138
+#, fuzzy
+msgid "Denge skoru hesaplanıyor…"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/k_radar_ks.js:1147
+#, fuzzy
+msgid "atanmamış"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1149
+msgid "yılı"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1157
+#, fuzzy
+msgid "Başarı"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1194
+msgid "Fin"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1194
+msgid "Müş"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1194
+msgid "Öğr"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1199
+msgid "Denge Skoru"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1199
+#, fuzzy
+msgid "atanmış"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1203
+msgid "Kaplan-Norton ideal: %25 her perspektif"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1214
+msgid "Atanmamış PG'lerin adı/açıklamasından"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1214
+msgid "kural-tabanlı sınıflandırıcı"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1214
+msgid "ile uygun BSC perspektifi önerilir."
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1215
+#, fuzzy
+msgid "Yalnız"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1215
+msgid "%30 ve üzeri güvende"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1215
+msgid "olan öneriler uygulanır. Her zaman manuel düzenleyebilirsin."
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1235
+#, fuzzy
+msgid "PG otomatik atandı."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_radar_ks.js:1236
+msgid "düşük güvenli atlanan,"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1236
+#, fuzzy
+msgid "sınıflandırılamayan."
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1255
+msgid "EFQM 2025 değerlendirmesi hesaplanıyor…"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1333
+msgid "Kurumsal Manuel EFQM Puanı (KPI-327)"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1339
+#, fuzzy
+msgid "sapma"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_radar_ks.js:1359
+msgid "Olgunluk Seviyesi"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1379
+#, fuzzy
+msgid "Değerlendirme ve Öneriler"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_radar_ks.js:1385
+msgid "RADAR Tanı Aracı (EFQM 2025)"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1396
+msgid "Not: Bu modüldeki puanlar Kokpitim verisinden türev"
+msgstr ""
+
+#: ui/static/platform/js/k_radar_ks.js:1396
+#, fuzzy
+msgid "olgunluk göstergesidir"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/k_radar_ks.js:1396
+msgid ""
+"Resmi EFQM Tanınma puanlaması için eğitimli Değerlendiricilerden oluşan "
+"ekip tarafından RADAR Tabloları kullanılarak değerlendirme yapılmalıdır."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:56
+#, fuzzy
+msgid "Veri yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:210
+#, fuzzy
+msgid "başarı"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:273
+#, fuzzy
+msgid "Süreç verisi yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:282
+msgid "Trend görüntüle"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:313
+#, fuzzy
+msgid "Bu süreç için PG verisi yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:369
+#, fuzzy
+msgid "Vizyon Skoru:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:423
+#, fuzzy
+msgid "tamamlandı"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:433
+msgid "Teslim tarihi geçmiş"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:438
+#, fuzzy
+msgid "Tüm faaliyetler"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:612
+#, fuzzy
+msgid "Veri Girilmiş"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:617
+#, fuzzy
+msgid "Eksik"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:619
+#, fuzzy
+msgid "Veri girilmemiş PG"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:642
+#, fuzzy
+msgid "Eksik PG yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:801
+#, fuzzy
+msgid "Bitiş tarihi geçmiş"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:805
+#, fuzzy
+msgid "Yüksek Risk"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/k_rapor.js:918
+msgid "Zamanında"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:918
+#, fuzzy
+msgid "Geride"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:946
+msgid "Güçlü Yön"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:946
+msgid "Zayıf Yön"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:951
+msgid "Bu yıl için SWOT analizi yok."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:961
+#, fuzzy
+msgid "SO Stratejileri"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:961
+#, fuzzy
+msgid "ST Stratejileri"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:961
+#, fuzzy
+msgid "WO Stratejileri"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:961
+#, fuzzy
+msgid "WT Stratejileri"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:966
+msgid "Bu yıl için TOWS matrisi yok."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:984
+msgid "Bu yıl için PESTEL analizi yok."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1005
+msgid "Bu yıl için Porter analizi yok."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1021
+msgid "paydaş"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1023
+#, fuzzy
+msgid "anket"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1045
+#, fuzzy
+msgid "Anket verisi yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:1061
+#, fuzzy
+msgid "rakip"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1063
+#, fuzzy
+msgid "rapor"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:1069
+#, fuzzy
+msgid "Rekabetçi analiz verisi yok."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1139
+msgid "Medyan:"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1234
+#, fuzzy
+msgid "geciken"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:1273
+#, fuzzy
+msgid "Aktif Gün"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:1275
+msgid "Veri girilen gün sayısı"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1278
+msgid "Günlük Ort."
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1280
+#, fuzzy
+msgid "Aktif günlerde"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:1308
+#, fuzzy
+msgid "giriş"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1315
+msgid "Çok"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1402
+#, fuzzy
+msgid "Tüm alt str. bağlı"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1407
+#, fuzzy
+msgid "Bazı alt str. boş"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1410
+#, fuzzy
+msgid "Boş Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1412
+#, fuzzy
+msgid "Hiç süreç yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:1439
+#, fuzzy
+msgid "Tüm süreçler stratejiye bağlı."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1445
+#, fuzzy
+msgid "Tam"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/k_rapor.js:1605
+#, fuzzy
+msgid "Okunan"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1607
+#, fuzzy
+msgid "okunma oranı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1610
+#, fuzzy
+msgid "Okunmayan"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/k_rapor.js:1612
+msgid "Son 30 günde:"
+msgstr ""
+
+#: ui/static/platform/js/k_rapor.js:1615
+#, fuzzy
+msgid "Son 7 Gün"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:1617
+#, fuzzy
+msgid "yeni bildirim"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/k_rapor.js:1651
+#, fuzzy
+msgid "Tüm bildirimler okundu."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/k_rapor.js:1661
+#, fuzzy
+msgid "bildirim"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/launcher_plan_year.js:69
+#, fuzzy
+msgid "Dönemini Kapat"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/launcher_plan_year.js:70
+msgid "stratejik plan dönemi kapatılacak. Kapalı dönemler artık düzenlenemez."
+msgstr ""
+
+#: ui/static/platform/js/launcher_plan_year.js:82
+#, fuzzy
+msgid "dönemi kapatıldı."
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/launcher_plan_year.js:132
+#, fuzzy
+msgid "dönemi oluşturuldu."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/masaustu.js:129
+msgid "Tümünü aç"
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:130
+msgid "Tümünü kapat"
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:133
+msgid ""
+"Kapatılan kartlar sayfadan gizlenir (yalnız bu tarayıcıda). Sıralamayı "
+"kart başlığından sürükleyerek değiştirebilirsiniz."
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:373
+#, fuzzy
+msgid "Kritik KPI"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/masaustu.js:381
+#, fuzzy
+msgid "Bu Hafta Faaliyet"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/masaustu.js:385
+#, fuzzy
+msgid "Geciken Proje"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/masaustu.js:392
+msgid "Hedef Altı KPI'lar"
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:396
+msgid "Gerçekleşen:"
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:408
+msgid "gün gecikti"
+msgstr ""
+
+#: ui/static/platform/js/masaustu.js:416
+#, fuzzy
+msgid "Geciken Projeler"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/masaustu.js:447
+#, fuzzy
+msgid "Hazırlanıyor…"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/masaustu.js:472
+#, fuzzy
+msgid "AI ile zenginleştirildi"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/masaustu.js:479
+msgid "AI sağlayıcı yapılandırılmamış; mevcut öneriler gösteriliyor."
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:255
+msgid "Günlük görünümü"
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:257
+msgid "görünümü"
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:298
+#, fuzzy
+msgid "Performans Adı"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/pg_tablo_modal.js:298
+#, fuzzy
+msgid "Ağırlık (%)"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/pg_tablo_modal.js:298
+msgid "Ölçüm Per."
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:298
+#, fuzzy
+msgid "Yıllık Hedef"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/pg_tablo_modal.js:298
+#, fuzzy
+msgid "Önceki Yıl"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/pg_tablo_modal.js:301
+#, fuzzy
+msgid "Yıllık Gerçekleşme"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/pg_tablo_modal.js:301
+msgid "Ağırlıklı Başarı Puanı"
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:301
+msgid "Başarı Puanı"
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:301
+#, fuzzy
+msgid "İşlemler"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/pg_tablo_modal.js:313
+msgid "Gerç."
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:323
+#, fuzzy
+msgid "Henüz performans göstergesi yok."
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/pg_tablo_modal.js:623
+msgid "Bu periyot için kayıt yok."
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:627
+msgid "İşlem geçmişi"
+msgstr ""
+
+#: ui/static/platform/js/pg_tablo_modal.js:627
+#, fuzzy
+msgid "Eski"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/pg_tablo_modal.js:627
+#, fuzzy
+msgid "Yeni"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/pg_tablo_modal.js:635
+#, fuzzy
+msgid "Proje görevleri:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/pg_tablo_modal.js:651
+#, fuzzy
+msgid "Yükleme hatası."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/project_kapasite.js:56
+#, fuzzy
+msgid "sa"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/project_kapasite.js:67
+msgid "Bu projede ekip üyesi yok. Önce projeye lider/üye ekleyin."
+msgstr ""
+
+#: ui/static/platform/js/project_kapasite.js:101
+#, fuzzy
+msgid "Kapasite eklendi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/project_kapasite.js:102
+#, fuzzy
+msgid "Eklenemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/project_kapasite.js:108
+#, fuzzy
+msgid "Kapasite silinsin mi?"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/project_kapasite.js:134
+#, fuzzy
+msgid "Kapasite verisi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/sp.js:121
+#, fuzzy
+msgid "Misyon (Amaç) düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp.js:124
+msgid "Amaç / Misyon"
+msgstr ""
+
+#: ui/static/platform/js/sp.js:136
+#, fuzzy
+msgid "Kaydedildi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp.js:143
+#, fuzzy
+msgid "Vizyon düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp.js:165
+#, fuzzy
+msgid "Değerler ve etik kuralları"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp.js:220
+msgid "K-Vektör ham ağırlık (vizyon 1000)"
+msgstr ""
+
+#: ui/static/platform/js/sp.js:222
+msgid "Boş bırakırsanız bu ana strateji için eşit dağıtım uygulanır."
+msgstr ""
+
+#: ui/static/platform/js/sp.js:359
+msgid "Boş bırakırsanız bu alt strateji için eşit dağıtım uygulanır."
+msgstr ""
+
+#: ui/static/platform/js/sp.js:457
+#, fuzzy
+msgid "Graf verisi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/sp.js:465
+#, fuzzy
+msgid "Graf yüklenirken hata:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_bsc.js:64
+#, fuzzy
+msgid "— Atama yok —"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_bsc.js:77
+#, fuzzy
+msgid "perf"
+msgstr "Profil"
+
+#: ui/static/platform/js/sp_bsc.js:88
+msgid "Bu perspektifte gösterge yok."
+msgstr ""
+
+#: ui/static/platform/js/sp_bsc.js:96
+#, fuzzy
+msgid "gösterge"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_bsc.js:121
+#, fuzzy
+msgid "'e atandı."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_bsc.js:122
+#, fuzzy
+msgid "Atama başarısız."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_bsc.js:128
+#, fuzzy
+msgid "Otomatik sınıflandır?"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_bsc.js:129
+msgid ""
+"Atanmamış göstergeler ad/anahtar kelimeye göre perspektiflere önerilecek."
+" Mevcut atamalar korunur."
+msgstr ""
+
+#: ui/static/platform/js/sp_bsc.js:131
+msgid "Evet, sınıflandır"
+msgstr ""
+
+#: ui/static/platform/js/sp_bsc.js:141
+#, fuzzy
+msgid "Otomatik sınıflandırma tamam."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_bsc.js:142
+#, fuzzy
+msgid "Sınıflandırma başarısız."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/sp_donemler.js:145
+#, fuzzy
+msgid "Değişiklik yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_donemler.js:161
+#, fuzzy
+msgid "fark"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_donemler.js:162
+#, fuzzy
+msgid "Fark yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_donemler.js:189
+msgid "farklı alan bulundu."
+msgstr ""
+
+#: ui/static/platform/js/sp_donemler.js:199
+#, fuzzy
+msgid "Dönem Bilgileri"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/sp_donemler.js:204
+#, fuzzy
+msgid "Alan"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/sp_donemler.js:225
+#, fuzzy
+msgid "Karşılaştırması"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/sp_donemler.js:233
+#, fuzzy
+msgid "Çok Yıllık Stratejik Girişim / OKR / Bağlar"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_donemler.js:239
+#, fuzzy
+msgid "devam:"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/sp_donemler.js:240
+msgid "'de başlayan:"
+msgstr ""
+
+#: ui/static/platform/js/sp_donemler.js:241
+msgid "'den önce biten:"
+msgstr ""
+
+#: ui/static/platform/js/sp_donemler.js:244
+#, fuzzy
+msgid "OKR Hedefleri"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/sp_donemler.js:246
+#, fuzzy
+msgid "Süreç ↔ Alt-Strateji Bağları"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_liste_analiz.js:72
+#, fuzzy
+msgid "Madde yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_liste_analiz.js:87
+msgid "Madde metni…"
+msgstr ""
+
+#: ui/static/platform/js/sp_liste_analiz.js:89
+#, fuzzy
+msgid "Boş olamaz."
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/sp_plan_year.js:80
+msgid "Yılını Kapat"
+msgstr ""
+
+#: ui/static/platform/js/sp_plan_year.js:81
+msgid "stratejik plan yılı kapatılacak. Kapalı yıllar artık düzenlenemez."
+msgstr ""
+
+#: ui/static/platform/js/sp_plan_year.js:93
+#, fuzzy
+msgid "kapatıldı."
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/sp_plan_year.js:146
+#, fuzzy
+msgid "yılı planı oluşturuldu."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/sp_porter.js:70
+msgid "Baskı"
+msgstr ""
+
+#: ui/static/platform/js/sp_porter.js:88
+msgid "Gözlem / faktör…"
+msgstr ""
+
+#: ui/static/platform/js/sp_projeler.js:121
+#, fuzzy
+msgid "Proje silinsin mi?"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_projeler.js:121
+#, fuzzy
+msgid "Görevleri de silinecek."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_projeler.js:122
+#, fuzzy
+msgid "Evet, Sil"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_projeler.js:150
+#, fuzzy
+msgid "Proje silindi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_projeler.js:151
+msgid "Hata."
+msgstr ""
+
+#: ui/static/platform/js/sp_projeler.js:159
+#, fuzzy
+msgid "Proje Düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_projeler.js:185
+#, fuzzy
+msgid "Proje kaydedildi."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/sp_projeler.js:215
+#, fuzzy
+msgid "Henüz görev yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/sp_projeler.js:242
+#, fuzzy
+msgid "Görevi Düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:42
+#, fuzzy
+msgid "Sunucu JSON yanıtı okunamadı"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:64
+#, fuzzy
+msgid "Sunucu hatası oluştu"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/surec.js:68
+msgid "Sunucudan beklenmeyen yanıt alındı"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:578
+#, fuzzy
+msgid "Faaliyet Adı *"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:586
+#, fuzzy
+msgid "Atananlar *"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/surec.js:746
+#, fuzzy
+msgid "Veriler yüklenirken hata oluştu:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:773
+#, fuzzy
+msgid "Henüz PG tanımlı değil"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/surec.js:774
+msgid "tanesinde seçili yılda veri var"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1099
+msgid "Çok iyi"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1102
+msgid "Geliştirilmeli"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1149
+msgid "Başarılı (≥70%):"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1150
+#, fuzzy
+msgid "Orta (40–69%):"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1151
+#, fuzzy
+msgid "Kritik (&lt;40%):"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/surec.js:1152
+msgid "Hedef/veri eksik:"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1171
+msgid "Tanımsız"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1219
+#, fuzzy
+msgid "Tanımlı faaliyet yok"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:1220
+#, fuzzy
+msgid "faaliyet"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:1220
+msgid "tamamlanmış (ilerleme %100)"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1325
+#, fuzzy
+msgid "Aktif değil PG’ler"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:1325
+msgid "listeyi aç / kapat"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1330
+msgid ""
+"Başarı puanı aralığı tanımlanmamış PG yok; tüm PG’ler en az bir aralıkla "
+"yapılandırılmış."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1350
+msgid "Tanımlı aralık okunamadı veya boş."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1357
+msgid "0–100 tam sayı yüzdeleri tek başarı puanına eşleniyor."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1363
+msgid "Karşılıksız tam sayı yüzdeler:"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1364
+msgid "Birden fazla başarı puanına düşen yüzdeler:"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1373
+msgid ""
+"Aktif yapılandırılmış (en az bir aralık tanımlı) PG yok; aralık analizi "
+"uygulanmadı."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1375
+#, fuzzy
+msgid "Aktif yapılandırılmış"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:1375
+msgid "PG’nin tamamında 0–100 tam sayı yüzdeleri doğru kapsanıyor."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1376
+#, fuzzy
+msgid "PG listesi"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:1379
+msgid "aktif PG’de aralık hatası var"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1380
+#, fuzzy
+msgid "PG sorunsuz"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1382
+msgid "Hatalı PG’ler"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1385
+#, fuzzy
+msgid "Sorunsuz PG’ler"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1391
+msgid "1. PG ağırlık (%) toplamı"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1392
+#, fuzzy
+msgid "ağırlık girilen:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:1392
+#, fuzzy
+msgid "boş:"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1395
+msgid "Hiçbir PG için ağırlık girilmemiş."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1397
+msgid ""
+"K-Vektör tutarlılığı için bu süreçteki PG ağırlıklarının toplamı %100 "
+"olmalıdır."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1399
+msgid "Ağırlık toplamı %100."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1404
+msgid ""
+"PG için ağırlık alanı boş; toplam yalnızca girilen değerlere göre "
+"hesaplandı."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1407
+msgid "PG ağırlıklarını göster"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1413
+msgid "2. Başarı puanı yapılandırması (opsiyonel)"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1414
+msgid "Aktif (en az bir aralık tanımlı):"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1414
+#, fuzzy
+msgid "Aktif değil:"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1418
+msgid "3. Aktif PG’lerde aralık analizi (0–100 tam sayı %)"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1419
+msgid ""
+"Hesaplanan gerçekleşme yüzdesinin her tam sayı değeri (0–100) tam olarak "
+"bir başarı puanına ait olmalı; boşluk veya farklı puanlara çakışan değer "
+"hata sayılır."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1461
+#, fuzzy
+msgid "Performans göstergesini düzenle"
+msgstr "Bireysel Karne"
+
+#: ui/static/platform/js/surec.js:1524
+msgid "Düzenleme adresi tanımlı değil."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1530
+#, fuzzy
+msgid "PG bilgisi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1572
+#, fuzzy
+msgid "PG yüklenemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:1590
+#, fuzzy
+msgid "Gösterge adı zorunludur."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:1639
+msgid "Skor ağırlığı 0 ile 100 arasında olmalıdır."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1646
+#, fuzzy
+msgid "Güncelleme adresi tanımlı değil."
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/surec.js:1685
+#, fuzzy
+msgid "— PG Seçin —"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:1889
+msgid "Yıl sonu"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1952
+msgid "2. yarıyıl"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:1955
+msgid "1. yarıyıl"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:2388
+msgid "Veri Girişi Sihirbazı (VGS)"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:2413
+msgid "Periyot veri detayını görmek için tıklayın"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:2426
+#, fuzzy
+msgid "Ağırlık:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:2493
+#, fuzzy
+msgid "FAALİYET"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:2497
+msgid "Tamamlandı olarak işaretle"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:2508
+#, fuzzy
+msgid "Hatırlatma"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/surec.js:2508
+#, fuzzy
+msgid "kayıt"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:2600
+#, fuzzy
+msgid "Yeni Başlangıç"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/surec.js:2604
+#, fuzzy
+msgid "Yeni Bitiş"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec.js:2961
+#, fuzzy
+msgid "döneminde eşleşen süreç bulunamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec.js:3017
+msgid ""
+"Her puan seviyesi için gerçekleşme <strong>yüzdesi</strong> (gerçekleşen "
+"÷ hedef × 100) aralığını <strong>min-max</strong> formatında girin."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3023
+#, fuzzy
+msgid "Anlam"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:3027
+msgid "% 0 ile 40 arasında"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3028
+msgid "% 40.01 ile 60 arasında"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3029
+msgid "% 60.01 ile 80 arasında"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3030
+msgid "% 80.01 ile 100 arasında"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3031
+msgid "% 100.01 ve üzeri (üst sınır yok)"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3034
+msgid "⚠ Sınır değeri:"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3034
+msgid ""
+"Eşleşme <code>&lt;=</code> ile yapılır; 40 yazıldığında 1. aralığa düşer."
+" Çakışmayı önlemek için üst sınırı <code>40.01</code> gibi bir sonraki "
+"aralığın başlangıcına kaydırın."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3035
+#, fuzzy
+msgid "Açık uç:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec.js:3035
+msgid ""
+"Son puan için max kısmını boş bırakın (örn: <code>100.01-</code>) — üst "
+"sınır sonsuz kabul edilir."
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3403
+msgid "Katkı %"
+msgstr ""
+
+#: ui/static/platform/js/surec.js:3561
+msgid "İstek sunucuya gönderiliyor. Tamamlanınca liste yenilenecek."
+msgstr ""
+
+#: ui/static/platform/js/surec_vgs.js:136
+msgid "(yıllık)"
+msgstr ""
+
+#: ui/static/platform/js/surec_vgs.js:141
+msgid "çeyrek"
+msgstr ""
+
+#: ui/static/platform/js/surec_vgs.js:276
+#, fuzzy
+msgid "Veri girişi"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec_vgs.js:277
+#, fuzzy
+msgid "Silinme bilgisi"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/surec_vgs.js:405
+#, fuzzy
+msgid "Veri tarihi:"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/surec_vgs.js:405
+#, fuzzy
+msgid "Veri girişi:"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/surec_vgs.js:405
+msgid "Giren:"
+msgstr ""
+
+#: ui/static/platform/js/vc_items.js:91
+#, fuzzy
+msgid "Bu grupta faaliyet yok."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/vc_items.js:109
+#, fuzzy
+msgid "— Süreç bağı yok —"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/vc_items.js:114
+#, fuzzy
+msgid "Başlık *"
+msgstr "Ayarlar"
+
+#: ui/static/platform/js/vc_items.js:117
+msgid "Grup *"
+msgstr ""
+
+#: ui/static/platform/js/vc_items.js:119
+msgid "Muda (israf) türü"
+msgstr ""
+
+#: ui/static/platform/js/vc_items.js:122
+#, fuzzy
+msgid "Bağlı süreç"
+msgstr "Stratejik Planlama"
+
+#: ui/static/platform/js/vc_items.js:144
+#, fuzzy
+msgid "Faaliyet düzenle"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/vc_items.js:144
+#, fuzzy
+msgid "Yeni değer zinciri faaliyeti"
+msgstr "Düzenle"
+
+#: ui/static/platform/js/yonetim_paneli.js:120
+#, fuzzy
+msgid "Kullanıcı verisi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/yonetim_paneli.js:126
+#, fuzzy
+msgid "Sunucuya erişilemedi."
+msgstr "Düzenle"
+
+#: ui/static/platform/js/yonetim_paneli.js:163
+#, fuzzy
+msgid "Bilinmiyor"
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/yonetim_paneli.js:191
+msgid "Sunucuya erişilemedi. Lütfen tekrar deneyin."
+msgstr ""
+
+#: ui/static/platform/js/yonetim_paneli.js:209
+#, fuzzy
+msgid "Aktivite listesi alınamadı."
+msgstr "Kurum Paneli"
+
+#: ui/static/platform/js/yonetim_paneli.js:215
+msgid "Aktivite listesi alınırken sunucuya erişilemedi."
+msgstr ""
+
+#: ui/static/platform/js/yonetim_paneli.js:246
+msgid ""
+"Bakım şu an ortam değişkeni MAINTENANCE_MODE ile zorlanıyor; panelden "
+"kapatılamaz."
+msgstr ""
+
+#: ui/static/platform/js/yonetim_paneli.js:249
+msgid "MAINTENANCE_OVERRIDE_OFF etkin; yalnızca ortam/SSH ile yönetilir."
+msgstr ""
+
+#: ui/static/platform/js/yonetim_paneli.js:251
+msgid "Bu bayrak şu an panelden değiştirilemiyor."
+msgstr ""
+
+#: ui/static/platform/js/yonetim_paneli.js:275
+#, fuzzy
+msgid "Bakım modu kaydedilemedi."
+msgstr "Düzenle"
 
 #~ msgid "Hoş geldiniz"
 #~ msgstr "Hoş geldiniz"

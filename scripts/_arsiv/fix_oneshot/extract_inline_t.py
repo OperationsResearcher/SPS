@@ -15,20 +15,26 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 ROOT = r'c:\kokpitim'
 os.chdir(ROOT)
 
+def _scan_body(body, base_off, txt, f):
+    # t("...") / t('...') — template-literal ${t(...)} dahil (babel JS extractor bunu kaçırır)
+    for m in re.finditer(r'\bt\(\s*(["\'])((?:\\.|(?!\1).)*?)\1', body):
+        raw = m.group(2)
+        if not raw.strip():
+            continue
+        s = raw.replace('\\"', '"').replace("\\'", "'").replace('\\\\', '\\').replace('\\n', '\n').replace('\\t', '\t')
+        line = txt[:base_off + m.start()].count('\n') + 1
+        ids.setdefault(s, (f.replace('\\', '/'), line))
+
 ids = {}  # msgid -> (file, line)
+# 1) .html içindeki <script> blokları
 for f in glob.glob('ui/templates/**/*.html', recursive=True):
     txt = open(f, encoding='utf-8').read()
     for sm in re.finditer(r'<script[^>]*>(.*?)</script>', txt, re.S):
-        body = sm.group(1)
-        base_off = sm.start(1)
-        for m in re.finditer(r'\bt\(\s*(["\'])((?:\\.|(?!\1).)*?)\1', body):
-            raw = m.group(2)
-            if not raw.strip():
-                continue
-            # JS literal escape çöz
-            s = raw.replace('\\"', '"').replace("\\'", "'").replace('\\\\', '\\').replace('\\n', '\n').replace('\\t', '\t')
-            line = txt[:base_off + m.start()].count('\n') + 1
-            ids.setdefault(s, (f.replace('\\', '/'), line))
+        _scan_body(sm.group(1), sm.start(1), txt, f)
+# 2) harici .js dosyaları (babel ${t(...)} interpolation'ını kaçırır)
+for f in glob.glob('ui/static/platform/js/**/*.js', recursive=True):
+    txt = open(f, encoding='utf-8').read()
+    _scan_body(txt, 0, txt, f)
 
 from babel.messages.pofile import read_po, write_po
 from babel.messages.catalog import Catalog
