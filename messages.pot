@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 04:13+0300\n"
+"POT-Creation-Date: 2026-06-24 04:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,6 +55,7 @@ msgstr ""
 msgid "Proje Yönetimi"
 msgstr ""
 
+#: ui/templates/platform/analiz/index.html:62
 #: ui/templates/platform/base.html:206
 msgid "K-Analiz"
 msgstr ""
@@ -67,6 +68,8 @@ msgstr ""
 msgid "Bireysel Performans"
 msgstr ""
 
+#: ui/templates/platform/analiz/index.html:2
+#: ui/templates/platform/analiz/index.html:3
 #: ui/templates/platform/base.html:227
 msgid "Performans Analitiği"
 msgstr ""
@@ -106,6 +109,7 @@ msgid "Sistem"
 msgstr ""
 
 #: ui/templates/platform/base.html:286 ui/templates/platform/base.html:393
+#: ui/templates/platform/bildirim/index.html:18
 msgid "Bildirimler"
 msgstr ""
 
@@ -189,6 +193,168 @@ msgstr ""
 #: ui/templates/platform/surec/karne.html:795
 #: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:34
+msgid "Süreç ara…"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:37
+msgid "— Süreç Seçin —"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:42
+msgid "Trend frekansı"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:43
+#: ui/templates/platform/surec/karne.html:306
+#: ui/templates/platform/surec/karne.html:559
+#: ui/templates/platform/surec/karne.html:828
+msgid "Aylık"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:44
+#: ui/templates/platform/surec/karne.html:305
+#: ui/templates/platform/surec/karne.html:560
+#: ui/templates/platform/surec/karne.html:827
+msgid "Çeyreklik"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:45
+#: ui/templates/platform/surec/karne.html:307
+#: ui/templates/platform/surec/karne.html:829
+msgid "Haftalık"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:46
+#: ui/templates/platform/surec/karne.html:308
+#: ui/templates/platform/surec/karne.html:830
+msgid "Günlük"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:48
+msgid "Tahmin yöntemi"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:49
+msgid "Doğrusal Tahmin"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:50
+msgid "Hareketli Ortalama"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:51
+msgid "Mevsimsel"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:54
+msgid "Analiz Et"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:56
+msgid "Seçili sürecin (yoksa tüm) PG'lerinde anomali tara"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:58
+msgid "Anomali Tara"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:74
+msgid "Sağlık Skoru"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:76
+msgid "Hesaplanıyor…"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:80
+msgid "Trend"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:82
+msgid "Son dönem yönü"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:86
+msgid "Tahmin (3 Dönem)"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:88
+msgid "Sonraki dönem tahmini"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:92
+msgid "Anomali"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:94
+msgid "Tespit edilen"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:102
+msgid "Trend Analizi"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:105
+msgid "Excel İndir"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:112
+msgid "Trend verisi bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:121
+msgid "Tahmin Analizi (3 Dönem)"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:128
+msgid "Tahmin verisi bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:140
+msgid "Anomali Tespiti"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:153
+msgid "Analiz için süreç seçin"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:154
+msgid "Yukarıdan bir süreç seçip \"Analiz Et\" butonuna tıklayın."
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:19
+#, python-format
+msgid "%(n)s bildirim"
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:25
+msgid "Tümünü Okundu İşaretle"
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:79
+msgid "Bildirim yok"
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:81
+msgid ""
+"Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon "
+"gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan "
+"tetikleyici vb.) bildirimler burada görünür."
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:84
+msgid "Bildirim e-postası ve kanal ayarları"
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:85
+msgid "Bildirim Ayarları"
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:88
+msgid "Masaüstü"
 msgstr ""
 
 #: ui/templates/platform/bireysel/karne.html:36
@@ -1017,28 +1183,6 @@ msgstr ""
 #: ui/templates/platform/surec/karne.html:304
 #: ui/templates/platform/surec/karne.html:826
 msgid "6 aylık"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:305
-#: ui/templates/platform/surec/karne.html:560
-#: ui/templates/platform/surec/karne.html:827
-msgid "Çeyreklik"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:306
-#: ui/templates/platform/surec/karne.html:559
-#: ui/templates/platform/surec/karne.html:828
-msgid "Aylık"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:307
-#: ui/templates/platform/surec/karne.html:829
-msgid "Haftalık"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:308
-#: ui/templates/platform/surec/karne.html:830
-msgid "Günlük"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:314

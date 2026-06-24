@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 04:13+0300\n"
+"POT-Creation-Date: 2026-06-24 04:22+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -54,6 +54,7 @@ msgstr "Process Management"
 msgid "Proje Yönetimi"
 msgstr "Project Management"
 
+#: ui/templates/platform/analiz/index.html:62
 #: ui/templates/platform/base.html:206
 msgid "K-Analiz"
 msgstr "K-Analysis"
@@ -66,6 +67,8 @@ msgstr "War Room"
 msgid "Bireysel Performans"
 msgstr "Individual Performance"
 
+#: ui/templates/platform/analiz/index.html:2
+#: ui/templates/platform/analiz/index.html:3
 #: ui/templates/platform/base.html:227
 msgid "Performans Analitiği"
 msgstr "Performance Analytics"
@@ -105,6 +108,7 @@ msgid "Sistem"
 msgstr "System"
 
 #: ui/templates/platform/base.html:286 ui/templates/platform/base.html:393
+#: ui/templates/platform/bildirim/index.html:18
 msgid "Bildirimler"
 msgstr "Notifications"
 
@@ -190,6 +194,167 @@ msgstr "Edit"
 msgid "İptal"
 msgstr "Cancel"
 
+#: ui/templates/platform/analiz/index.html:34
+msgid "Süreç ara…"
+msgstr "Search process…"
+
+#: ui/templates/platform/analiz/index.html:37
+msgid "— Süreç Seçin —"
+msgstr "— Select Process —"
+
+#: ui/templates/platform/analiz/index.html:42
+msgid "Trend frekansı"
+msgstr "Trend frequency"
+
+#: ui/templates/platform/analiz/index.html:43
+#: ui/templates/platform/surec/karne.html:306
+#: ui/templates/platform/surec/karne.html:559
+#: ui/templates/platform/surec/karne.html:828
+msgid "Aylık"
+msgstr "Monthly"
+
+#: ui/templates/platform/analiz/index.html:44
+#: ui/templates/platform/surec/karne.html:305
+#: ui/templates/platform/surec/karne.html:560
+#: ui/templates/platform/surec/karne.html:827
+msgid "Çeyreklik"
+msgstr "Quarterly"
+
+#: ui/templates/platform/analiz/index.html:45
+#: ui/templates/platform/surec/karne.html:307
+#: ui/templates/platform/surec/karne.html:829
+msgid "Haftalık"
+msgstr "Weekly"
+
+#: ui/templates/platform/analiz/index.html:46
+#: ui/templates/platform/surec/karne.html:308
+#: ui/templates/platform/surec/karne.html:830
+msgid "Günlük"
+msgstr "Daily"
+
+#: ui/templates/platform/analiz/index.html:48
+msgid "Tahmin yöntemi"
+msgstr "Forecast method"
+
+#: ui/templates/platform/analiz/index.html:49
+msgid "Doğrusal Tahmin"
+msgstr "Linear Forecast"
+
+#: ui/templates/platform/analiz/index.html:50
+msgid "Hareketli Ortalama"
+msgstr "Moving Average"
+
+#: ui/templates/platform/analiz/index.html:51
+msgid "Mevsimsel"
+msgstr "Seasonal"
+
+#: ui/templates/platform/analiz/index.html:54
+msgid "Analiz Et"
+msgstr "Analyze"
+
+#: ui/templates/platform/analiz/index.html:56
+msgid "Seçili sürecin (yoksa tüm) PG'lerinde anomali tara"
+msgstr "Scan anomalies in the selected process (or all) PIs"
+
+#: ui/templates/platform/analiz/index.html:58
+msgid "Anomali Tara"
+msgstr "Scan Anomalies"
+
+#: ui/templates/platform/analiz/index.html:74
+msgid "Sağlık Skoru"
+msgstr "Health Score"
+
+#: ui/templates/platform/analiz/index.html:76
+msgid "Hesaplanıyor…"
+msgstr "Calculating…"
+
+#: ui/templates/platform/analiz/index.html:80
+msgid "Trend"
+msgstr "Trend"
+
+#: ui/templates/platform/analiz/index.html:82
+msgid "Son dönem yönü"
+msgstr "Latest period direction"
+
+#: ui/templates/platform/analiz/index.html:86
+msgid "Tahmin (3 Dönem)"
+msgstr "Forecast (3 Periods)"
+
+#: ui/templates/platform/analiz/index.html:88
+msgid "Sonraki dönem tahmini"
+msgstr "Next period forecast"
+
+#: ui/templates/platform/analiz/index.html:92
+msgid "Anomali"
+msgstr "Anomaly"
+
+#: ui/templates/platform/analiz/index.html:94
+msgid "Tespit edilen"
+msgstr "Detected"
+
+#: ui/templates/platform/analiz/index.html:102
+msgid "Trend Analizi"
+msgstr "Trend Analysis"
+
+#: ui/templates/platform/analiz/index.html:105
+msgid "Excel İndir"
+msgstr "Download Excel"
+
+#: ui/templates/platform/analiz/index.html:112
+msgid "Trend verisi bulunamadı."
+msgstr "No trend data found."
+
+#: ui/templates/platform/analiz/index.html:121
+msgid "Tahmin Analizi (3 Dönem)"
+msgstr "Forecast Analysis (3 Periods)"
+
+#: ui/templates/platform/analiz/index.html:128
+msgid "Tahmin verisi bulunamadı."
+msgstr "No forecast data found."
+
+#: ui/templates/platform/analiz/index.html:140
+msgid "Anomali Tespiti"
+msgstr "Anomaly Detection"
+
+#: ui/templates/platform/analiz/index.html:153
+msgid "Analiz için süreç seçin"
+msgstr "Select a process for analysis"
+
+#: ui/templates/platform/analiz/index.html:154
+msgid "Yukarıdan bir süreç seçip \"Analiz Et\" butonuna tıklayın."
+msgstr "Select a process above and click the \"Analyze\" button."
+
+#: ui/templates/platform/bildirim/index.html:19
+msgid "%(n)s bildirim"
+msgstr "%(n)s notifications"
+
+#: ui/templates/platform/bildirim/index.html:25
+msgid "Tümünü Okundu İşaretle"
+msgstr "Mark All as Read"
+
+#: ui/templates/platform/bildirim/index.html:79
+msgid "Bildirim yok"
+msgstr "No notifications"
+
+#: ui/templates/platform/bildirim/index.html:81
+msgid ""
+"Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon "
+"gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan "
+"tetikleyici vb.) bildirimler burada görünür."
+msgstr ""
+
+#: ui/templates/platform/bildirim/index.html:84
+msgid "Bildirim e-postası ve kanal ayarları"
+msgstr "Notification email and channel settings"
+
+#: ui/templates/platform/bildirim/index.html:85
+msgid "Bildirim Ayarları"
+msgstr "Notification Settings"
+
+#: ui/templates/platform/bildirim/index.html:88
+msgid "Masaüstü"
+msgstr "Desktop"
+
 #: ui/templates/platform/bireysel/karne.html:36
 msgid "AI PERFORMANS ÖZETİ"
 msgstr "AI PERFORMANCE SUMMARY"
@@ -256,6 +421,8 @@ msgstr "Year summary &amp; attention"
 #: ui/templates/platform/bireysel/karne.html:189
 msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
 msgstr "A brief summary of data coverage and your indicators for the selected year."
+"A brief summary of data coverage and your indicators for the selected "
+"year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -1027,28 +1194,6 @@ msgstr "Annual (year-end)"
 msgid "6 aylık"
 msgstr "Semi-annual"
 
-#: ui/templates/platform/surec/karne.html:305
-#: ui/templates/platform/surec/karne.html:560
-#: ui/templates/platform/surec/karne.html:827
-msgid "Çeyreklik"
-msgstr "Quarterly"
-
-#: ui/templates/platform/surec/karne.html:306
-#: ui/templates/platform/surec/karne.html:559
-#: ui/templates/platform/surec/karne.html:828
-msgid "Aylık"
-msgstr "Monthly"
-
-#: ui/templates/platform/surec/karne.html:307
-#: ui/templates/platform/surec/karne.html:829
-msgid "Haftalık"
-msgstr "Weekly"
-
-#: ui/templates/platform/surec/karne.html:308
-#: ui/templates/platform/surec/karne.html:830
-msgid "Günlük"
-msgstr "Daily"
-
 #: ui/templates/platform/surec/karne.html:314
 msgid "Önceki dönem"
 msgstr "Previous period"
@@ -1391,7 +1536,8 @@ msgstr "Edit record"
 msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir."
 msgstr "The data date does not change; only the actual value and description are updated."
 "The data date does not change; only the actual value and description are "
-"updated."
+"updated.The data date does not change; only the actual value and "
+"description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"

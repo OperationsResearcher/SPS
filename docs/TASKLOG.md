@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-220 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3d — bildirim (Notification) + analiz (Analysis) modülleri çevirisi
+**Modül:** ui/bildirim/index.html, ui/analiz/index.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3d — iki küçük modül tek dilimde. bildirim (97 satır, ~7 metin: başlık, boş durum, butonlar)
++ analiz (164 satır, ~28 metin: süreç seçici, frekans/tahmin option'ları, istatistik kartları, grafik
+başlıkları, boş durumlar). EN çevirileri (PG→PI). Dinamik içerik (b.title, b.message) DOKUNULMADI.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/bildirim/index.html`, `analiz/index.html` → ~35 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +34 string (333 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK (ikisi). compile 0 boş 0 fuzzy. force_locale EN: "Performance Analytics|Scan Anomalies|
+No notifications|5 notifications|Linear Forecast" (named param %(n)s bildirim dahil).
+
+### Notlar
+forecast/frequency option value'ları (monthly/linear) sabit, görünen çevrildi. Tamamlanan: base, masaustu,
+surec(tam), bireysel, bildirim, analiz. Kalan büyük: sp(31 dosya), raporlar(45), kurum, ayarlar, k_radar, k_rapor, admin.
+
 ## TASK-219 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3c — bireysel (Individual) modülü çevirisi

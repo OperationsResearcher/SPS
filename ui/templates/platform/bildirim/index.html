@@ -15,14 +15,14 @@
 
   <div class="mc-page-header">
     <div>
-      <h2 class="mc-page-title">Bildirimler</h2>
-      <p class="mc-page-subtitle" id="bildirim-count-label">{{ bildirimler|length }} bildirim</p>
+      <h2 class="mc-page-title">{{ _("Bildirimler") }}</h2>
+      <p class="mc-page-subtitle" id="bildirim-count-label">{{ _("%(n)s bildirim", n=bildirimler|length) }}</p>
     </div>
     {% if bildirimler %}
     <button id="btn-mark-all-read"
             class="mc-btn mc-btn-secondary mc-btn-sm"
             data-url="{{ url_for('app_bp.bildirim_api_mark_all_read') }}">
-      <i class="fas fa-check-double"></i> Tümünü Okundu İşaretle
+      <i class="fas fa-check-double"></i> {{ _("Tümünü Okundu İşaretle") }}
     </button>
     {% endif %}
   </div>
@@ -76,16 +76,16 @@
     {% else %}
     <div class="mc-empty bildirim-empty" id="bildirim-empty-state" style="padding:32px 20px;">
       <div class="mc-empty-icon"><i class="fas fa-bell-slash" style="color:#94a3b8;"></i></div>
-      <div class="mc-empty-title">Bildirim yok</div>
+      <div class="mc-empty-title">{{ _("Bildirim yok") }}</div>
       <div class="mc-empty-text" style="max-width:480px; margin:0 auto;">
-        Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan tetikleyici vb.) bildirimler burada görünür.
+        {{ _("Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan tetikleyici vb.) bildirimler burada görünür.") }}
       </div>
       <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
-        <a href="/settings" class="mc-btn mc-btn-secondary mc-btn-sm" title="Bildirim e-postası ve kanal ayarları">
-          <i class="fas fa-cog"></i> Bildirim Ayarları
+        <a href="/settings" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Bildirim e-postası ve kanal ayarları') }}">
+          <i class="fas fa-cog"></i> {{ _("Bildirim Ayarları") }}
         </a>
         <a href="/desktop-launcher" class="mc-btn mc-btn-secondary mc-btn-sm">
-          <i class="fas fa-home"></i> Masaüstü
+          <i class="fas fa-home"></i> {{ _("Masaüstü") }}
         </a>
       </div>
     </div>
