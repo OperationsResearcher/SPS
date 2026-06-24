@@ -2,6 +2,44 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-226 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 5c — Python UI label/sabit + rapor içerikleri çevirisi (son eksik)
+**Modül:** module_registry, demo, api, raporlar/faz*, efqm/koe/öneri servisleri, translations
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar (özet)
+- `micro/core/module_registry.py` → sidebar modül adları/açıklamaları **lazy_gettext**
+- `micro/modules/demo/routes.py` → rol etiketleri lazy_gettext (+session yazımında str())
+- `micro/modules/api/routes.py` → Swagger desc; `raporlar/routes_faz0-4.py` → rapor başlık/bölüm/KPI label
+- `app/services/{efqm_assessment,koe_service,recommendation_service,ai_pivot_advisor,report,admin_logs}.py` → kriter/öneri/tablo etiketleri
+- `translations/{en,tr}`, `messages.pot`, supplement.json (3173), pylabel_tr_en.json
+
+### Yapılan İşlem
+Kullanıcı onayıyla (kapsam: tüm label + rapor içerikleri) bağlam-duyarlı 4 paralel ajan.
+Her ajan SADECE response/render'a giden görünür sabitleri sardı.
+
+### Kritik Bulgu — lazy_gettext
+Modül-seviyesi sabitler (`MODULES=[...]`, `DEMO_ROLES={...}`) import-time'da bir kez
+değerlenir → düz `gettext` orada TR'ye sabitlenir, dil değişince ÇEVRİLMEZ. Çözüm:
+bu dosyalarda `gettext as _` → **`lazy_gettext as _`** (her erişimde aktif locale).
+Doğrulama: `MODULES[0]['name']` EN="My Desktop" / TR="Masaüstüm" (dinamik). demo session'a
+yazılan label `str()` ile düz metne çevrildi (lazy obje JSON-serileştirilemez).
+
+### Bağlam-Duyarlı Atlananlar (kasıtlı, DOKUNULMADI)
+DB'ye seed edilen değerler, sözlük anahtarları, ==/enum/durum kodları, "birim" sembolleri
+(%, PPM, ‰, tCO₂e), log/exception mesajları, LLM system_prompt'ları, dosya/endpoint adları.
+seed JSON (`templates_data/*.json`) ve `.pyc` kapsam dışı.
+
+### Final Kontrol (hepsi ✅)
+py_compile 0 fail · app import OK · EN katalog **3921 girdi: 0 boş/fuzzy/%%-uyumsuz** ·
+lazy render TR↔EN dinamik doğrulandı · t/_ shadow taraması temiz.
+
+### Notlar
+i18n artık TAM kapsamlı: şablon `_()` + JS `t()` + inline-script `t()` + flash `_()` +
+API message `_()` + Python sabit `_()`/`lazy_gettext()`. Toplam ~3900 msgid çevrili.
+~15 i18n commit'i daha, **push YOK / deploy YOK** (kullanıcı kısıtı).
+
 ## TASK-225 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n eksiklikleri kapatıldı — FAZ 4b (inline-script) + FAZ 5b (API message)
