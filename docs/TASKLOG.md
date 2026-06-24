@@ -2,6 +2,42 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-227 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n gözle-doğrulama + FAZ 3 boşluğu kapatma (27 atlanan şablon)
+**Modül:** project/auth/calendar/demo/errors/launcher şablonları, roles.py, translations
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+Yerelde `test_client` + `force_locale` ile gerçek HTTP gözle-doğrulama yapıldı (login'li
+6 sayfa, TR vs EN kelime oranı). Doğrulama FAZ 3'te HİÇ çevrilmemiş 27 şablon ortaya çıkardı
+(project/, auth/login-profil-2fa, calendar/, demo/, errors/, launcher, _hierarchy_help,
+maintenance, api/docs). 4 paralel ajanla çevrildi (~364 yeni msgid).
+
+### Değiştirilen Dosyalar (özet)
+- 27 şablon → `{{ _() }}`; launcher.html + base.html "Yükleniyor…" kaçakları
+- `app/constants/roles.py` → ROLE_LABELS_TR **lazy_gettext** + role_labels_json() (tojson-güvenli)
+- `app/__init__.py` context processor; `admin.js` ROLE_LABELS → t()
+- `scripts/i18n_extract.sh` → `-k _l -k lazy_gettext` (lazy çağrıları yakala)
+- translations, faz3b_tr_en.json
+
+### Kritik Düzeltmeler
+- **"Hoş geldiniz" → "Holding"**: babel fuzzy auto-match yanlış eşlemiş, unfuzzy adımı onaylamıştı
+  → "Welcome" düzeltildi. (Ders: unfuzzy dolu-ama-yanlış çevirileri onaylayabilir; kısa msgid'lerde
+  fuzzy-eşleşme taraması yapıldı, başka sistemik hata bulunmadı.)
+- roles.py lazy_gettext (modül-seviyesi statik gettext TR'ye sabitleniyordu)
+
+### Gözle-Doğrulama Sonucu (test_client, force_locale en)
+- launcher EN: 35→1 TR-kelime (kalan tek "Türkçe" = dil seçici adı, DOĞRU)
+- admin/users EN: 244→76 (kalan = kişi adları, kullanıcı verisi — çevrilemez)
+- /sp, /desktop EN: kalan TR'ler tenant'ın girdiği strateji/süreç İÇERİĞİ (veri, çevrilemez)
+- Tüm sayfalar HTTP 200. EN katalog 4295: 0 boş/fuzzy/%%-uyumsuz.
+
+### Notlar
+i18n statik UI katmanı artık eksiksiz (~4295 msgid). Kalan TR metinler yalnızca kullanıcı/tenant
+VERİSİ (girilen strateji adları, kişi adları) — bunlar i18n kapsamı değil. ~18 i18n commit'i daha,
+**push YOK / deploy YOK**.
+
 ## TASK-226 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 5c — Python UI label/sabit + rapor içerikleri çevirisi (son eksik)
