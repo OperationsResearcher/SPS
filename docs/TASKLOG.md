@@ -2,6 +2,43 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-224 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3-5 tamamlandı — tüm proje çoklu dil (TR/EN) — otonom tur
+**Modül:** k_radar, admin, raporlar, sp, tüm JS, backend flash + translations
+**Durum:** ✅ Tamamlandı (kullanıcı onayı beklemeden, 4 saatlik otonom program)
+
+### Değiştirilen Dosyalar (özet)
+- **FAZ 3g-3j şablonlar:** ui/k_radar (25), admin (17), raporlar (45), sp (31) → `{{ _() }}`
+- **FAZ 4 JS:** 86 JS dosyası → `t("...")`; `app/i18n.py::js_i18n_map()` + base.html `window._I18N`/`window.t()` mekanizması; babel.cfg `[javascript]`; `scripts/i18n_extract.sh` (-k t)
+- **FAZ 5 flash:** 11 backend dosyası, 97 `flash(_("..."))` + gettext import
+- `translations/{en,tr}/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/`: i18n_fill_surec.py (supplement loader + po_escape + çok-satır), i18n_supplement.json (2064), modül JSON sözlükleri
+
+### Yapılan İşlem
+docs/lang/ FAZ 3-5. Modül modül: 6'ya kadar paralel ajan ile `_()`/`t()` işaretleme →
+merkezi extract→fill(supplement)→unfuzzy→compile→render-test→commit. Tutarlı terminoloji
+(PG→PI, Kurum→Organization, K-Vektör→K-Vector; SWOT/OKR/EVM/CMMI marka korundu).
+
+### Kritik Bulgular / Düzeltmeler
+- **% escape:** Flask-Babel `_()` çıktısına daima %-format uygular → argümansız tek `%` = ValueError.
+  Tüm şablonlarda literal `%` → `%%`; supplement değerlerinde de `%%` tutarlılığı.
+- **JS `t` shadow:** `map((t,..))` callback'leri `t()` helper'ını gölgeliyordu (app.js, sp_porter.js,
+  sp_liste_analiz.js) → runtime crash; parametre `it`/`task` olarak yeniden adlandırıldı.
+- **calendar_quick_create.js** UTF-16 BOM → UTF-8 (babel extract için).
+- **menu.html** locale-bağımlı slug/karşılaştırma → URL-tabanlı stabil slug.
+- `js_i18n_map` `flask_babel.get_locale` kullanır (session-tabanlı get_locale force_locale'i görmez).
+
+### Final Kontrol (hepsi ✅)
+274 şablon parse 0 fail · 86 JS syntax 0 fail · EN katalog 2812 girdi: 0 boş/fuzzy/%%-uyumsuz ·
+.po format temiz · tek-% riski 0 · app import OK · EN render çevrili / TR fallback Türkçe.
+
+### Notlar
+9 i18n commit'i `claude/i18n-coklu-dil` dalında, **push YOK / deploy YOK** (kullanıcı kısıtı).
+KALAN (otonom kapsam dışı, kullanıcı dönüşünde): Python sabit/enum display label'ları (DB-key
+riski nedeniyle dokunulmadı), 24 inline `<script>` Swal (şablon içi) — `t()` mevcut, gelecekte taranabilir.
+Eski `(1).py` kopyalarına dokunulmadı (git-takipsiz).
+
 ## TASK-223 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3g — k_rapor (K-Report) modülü çevirisi (2 dosya, ~210 metin)
